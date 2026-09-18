@@ -24,6 +24,7 @@ export function marketStorage(market: MarketCode) {
         try {
           return JSON.parse(raw) as T;
         } catch {
+          // Necessary: bypass generic type constraint for unparsed raw string fallback
           return raw as unknown as T;
         }
       } catch {
@@ -55,6 +56,7 @@ export function globalStorage() {
         try {
           return JSON.parse(raw) as T;
         } catch {
+          // Necessary: bypass generic type constraint for unparsed raw string fallback
           return raw as unknown as T;
         }
       } catch {

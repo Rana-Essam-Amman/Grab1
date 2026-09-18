@@ -31,6 +31,7 @@ export const useRegisterStep1 = ({ onStageCredentials, onToast }: UseRegisterSte
 
   const clearErr = () => setError('');
   
+  const handleCountryChange = useCallback((code: string) => { setSelectedCountry(code as MarketCode); clearErr(); }, []);
   const handleCountrySelectChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => { setSelectedCountry(e.target.value as MarketCode); clearErr(); }, []);
   const handleFirstNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => { setFirstName(e.target.value); clearErr(); }, []);
   const handlePhoneChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => { setPhone(e.target.value); clearErr(); }, []);
@@ -74,7 +75,7 @@ export const useRegisterStep1 = ({ onStageCredentials, onToast }: UseRegisterSte
   return {
     isArabic, selectedCountry, firstName, phone, email, password, confirmPassword,
     showPassword, showConfirmPassword, error,
-    handleCountrySelectChange, handleFirstNameChange, handlePhoneChange, handleEmailChange,
+    handleCountryChange, handleCountrySelectChange, handleFirstNameChange, handlePhoneChange, handleEmailChange,
     handlePasswordChange, handleConfirmPasswordChange, handleToggleShowPassword,
     handleToggleShowConfirmPassword, handleRegisterUnified,
   };

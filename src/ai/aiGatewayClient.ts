@@ -30,7 +30,7 @@ Return ONLY valid JSON matching this exact structure:
 `;
 
 export async function requestAIGateway(payload: AIGatewayPayload): Promise<GeneratedListing> {
-  const metaEnv = (import.meta as unknown as { env: Record<string, string> }).env || {};
+  const metaEnv = import.meta.env || {};
   // Default to DeepSeek as requested for multi-modal vision processing
   const provider = metaEnv.VITE_AI_PROVIDER || 'deepseek';
   const apiKey = metaEnv.VITE_AI_API_KEY || '';

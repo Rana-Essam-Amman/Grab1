@@ -82,7 +82,11 @@ export class LocalStorageMonetizationAdapter implements MonetizationRepository {
         typeof obj.usedToday === 'number' &&
         typeof obj.lastResetAt === 'string'
       ) {
-        return parsed as unknown as AiQuota;
+        return {
+          dailyLimit: obj.dailyLimit,
+          usedToday: obj.usedToday,
+          lastResetAt: obj.lastResetAt,
+        };
       }
       return DEFAULT_QUOTA;
     } catch {

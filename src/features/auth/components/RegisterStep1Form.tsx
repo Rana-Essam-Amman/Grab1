@@ -18,7 +18,7 @@ export const RegisterStep1Form: React.FC<RegisterStep1FormProps> = ({
 }) => {
   const {
     isArabic, selectedCountry, firstName, phone, email, password, confirmPassword,
-    showPassword, showConfirmPassword, error, handleCountrySelectChange,
+    showPassword, showConfirmPassword, error, handleCountryChange,
     handleFirstNameChange, handlePhoneChange, handleEmailChange, handlePasswordChange,
     handleConfirmPasswordChange, handleToggleShowPassword, handleToggleShowConfirmPassword,
     handleRegisterUnified,
@@ -38,7 +38,7 @@ export const RegisterStep1Form: React.FC<RegisterStep1FormProps> = ({
       <form onSubmit={handleRegisterUnified} className="flex flex-col gap-5">
         <CountrySelector
           selectedCountry={selectedCountry}
-          onCountryChange={(code) => handleCountrySelectChange({ target: { value: code } } as unknown as React.ChangeEvent<HTMLSelectElement>)}
+          onCountryChange={handleCountryChange}
           isArabic={isArabic}
           label={isArabic ? 'سوق الدولة الحالي *' : 'Market Country *'}
         />

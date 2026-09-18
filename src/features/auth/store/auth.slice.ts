@@ -59,7 +59,9 @@ export const useAuthStore = create<AuthState>()(
         },
 
         ...createAuthActions(
+          // Necessary: bypass zustand's internal typing
           set as unknown as (fn: (state: AuthState) => void) => void,
+          // Necessary: bypass zustand's internal typing
           get as unknown as () => AuthState
         ),
       };

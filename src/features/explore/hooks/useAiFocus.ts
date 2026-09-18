@@ -9,17 +9,17 @@ export interface UseAiFocusReturn {
 
 export const useAiFocus = (): UseAiFocusReturn => {
   const [isFocused, setIsFocused] = useState(false);
-  const { setHeaderHidden } = useUI() as unknown as { setHeaderHidden?: (hidden: boolean) => void };
+  const { setIsAiFocused } = useUI();
 
   const handleFocus = useCallback(() => {
     setIsFocused(true);
-    if (setHeaderHidden) setHeaderHidden(true);
-  }, [setHeaderHidden]);
+    setIsAiFocused(true);
+  }, [setIsAiFocused]);
 
   const handleBlur = useCallback(() => {
     setIsFocused(false);
-    if (setHeaderHidden) setHeaderHidden(false);
-  }, [setHeaderHidden]);
+    setIsAiFocused(false);
+  }, [setIsAiFocused]);
 
   return {
     isFocused,
