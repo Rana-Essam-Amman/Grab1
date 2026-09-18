@@ -69,7 +69,7 @@ export const createAuthActions = (set: SetState, get: GetState) => ({
   },
 
   registerNewUser: (userData: RegisteredAccount) => {
-    const newUser: RegisteredAccount = { ...userData, status: userData.status || 'Active' };
+    const newUser: RegisteredAccount = { ...userData, status: userData.status || 'active' };
     const currentUsers = get().registeredUsers;
     const updated = [
       newUser,
@@ -84,7 +84,7 @@ export const createAuthActions = (set: SetState, get: GetState) => ({
       state.registeredUsers = updated;
     });
 
-    if (newUser.status === 'Active') {
+    if (newUser.status === 'active') {
       get().loginDirectly(newUser.email, newUser.phone, newUser.countryCode, newUser.firstName);
     }
   },

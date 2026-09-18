@@ -32,7 +32,7 @@ export const validateDuplicateAccount = (
 ): string | null => {
   const exists = registeredUsers.some(
     (user: RegisteredAccount) =>
-      user.status !== 'Pending' && (
+      user.status !== 'pending' && (
         user.email.toLowerCase() === email.trim().toLowerCase() ||
         (user.phone === phoneCleaned && user.countryCode === country)
       )

@@ -63,7 +63,7 @@ export const useRegisterStep1 = ({ onStageCredentials, onToast }: UseRegisterSte
     if (registerNewUser) {
       registerNewUser({
         firstName: firstName.trim() || 'Sufyan', email: email.trim(), phone: verification.cleaned,
-        countryCode: selectedCountry, password: password, status: 'Pending'
+        countryCode: selectedCountry, password: password, status: 'pending'
       });
     }
 

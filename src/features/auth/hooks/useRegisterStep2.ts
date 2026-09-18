@@ -50,7 +50,7 @@ export const useRegisterStep2 = ({
         phone: stagedPhone,
         countryCode: stagedCountry,
         password: stagedPassword,
-        status: 'Active'
+        status: 'active'
       });
       
       onToast?.(

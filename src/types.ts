@@ -32,6 +32,8 @@ export interface ListingAttribute {
   value: string;
 }
 
+export type ListingStatus = 'active' | 'pending' | 'sold' | 'archived';
+
 export interface Listing {
   id: string;
   title: string;
@@ -138,7 +140,7 @@ export interface RegisteredAccount {
   password?: string;
   firstName: string;
   lastName?: string;
-  status?: 'Pending' | 'Active';
+  status?: ListingStatus;
 }
 
 export interface PostDraft {

@@ -2,9 +2,9 @@ import { UserProfile, RegisteredAccount } from '@/types';
 import { globalStorage } from '@/shared/lib/marketStorage';
 
 export const INITIAL_MOCK_USERS: RegisteredAccount[] = [
-  { email: 'demo@deals.com', phone: '791234567', countryCode: 'JO', password: 'password123', firstName: 'Demo', lastName: 'User', status: 'Active' },
-  { email: 'taken@deals.com', phone: '792222222', countryCode: 'JO', password: 'password123', firstName: 'Tareq', lastName: 'Khaled', status: 'Active' },
-  { email: 'registered@deals.com', phone: '3123456', countryCode: 'LB', password: 'password123', firstName: 'Rami', lastName: 'Ahmad', status: 'Active' },
+  { email: 'demo@deals.com', phone: '791234567', countryCode: 'JO', password: 'password123', firstName: 'Demo', lastName: 'User', status: 'active' },
+  { email: 'taken@deals.com', phone: '792222222', countryCode: 'JO', password: 'password123', firstName: 'Tareq', lastName: 'Khaled', status: 'active' },
+  { email: 'registered@deals.com', phone: '3123456', countryCode: 'LB', password: 'password123', firstName: 'Rami', lastName: 'Ahmad', status: 'active' },
 ];
 
 export function getInitialSession(): {
