@@ -139,3 +139,105 @@ Every new AI agent must read:
 6. docs/SESSION_HANDOFF.md
 
 Then continue from "Next task".
+
+---
+
+## 9. Business Mission & Competitive Edge
+
+**Why This Matters:** Every AI agent must understand that this is NOT a hobby project or coding exercise. This is a real product with a real business goal.
+
+### 9.1 The Mission
+
+**Grab The Deals** aims to become the **leading AI-powered classifieds marketplace in the Middle East (MENA)**.
+
+We compete against established players:
+- **OpenSooq** (Jordan-based, dominant in Levant)
+- **Dubizzle / OLX** (regional, well-funded)
+- **Haraj** (Saudi-specific)
+- **Facebook Marketplace** (global, generic)
+
+### 9.2 Our Competitive Edge
+
+1. **AI-First, Not AI-Added**
+   - AI is core experience, not a feature
+   - Natural language search (Arabic + English)
+   - Voice-first interaction
+   - Auto-generated listings from speech/images
+   - Semantic understanding, not keyword matching
+
+2. **Multi-Market Native**
+   - 5 countries: Jordan, Saudi Arabia, Palestine, Lebanon, Syria
+   - Each market fully isolated (Rule 11)
+   - Localized currency, phone, governorates
+   - Cross-border intelligence
+
+3. **Premium UX (Not Generic Government-Style)**
+   - Modern design system (OKLCH + Dark Mode)
+   - 19 world-class libraries
+   - Motion-rich interactions
+   - RTL-native (Arabic-first)
+
+4. **Trust & Safety**
+   - Verified sellers (Trust Score)
+   - AI Fraud Detection
+   - Anti-spam limits
+   - Escrow for high-value items
+
+5. **Speed & Reliability**
+   - Bundle optimized (533 KB → 153 KB gzip)
+   - 337 tests + 19 E2E (CI green)
+   - 0 violations, 0 `any` types
+   - Continuous deployment ready
+
+### 9.3 Market Share Goals
+
+**Target:** Significant share in each market within 18 months of launch.
+
+**Strategy:**
+- Launch Jordan (2026-10-29) → prove model
+- Expand to Saudi Arabia → largest market
+- Lebanon, Palestine, Syria → follow
+- Become default AI-first classifieds in MENA
+
+### 9.4 Engineering Standard
+
+**We do NOT ship "good enough".**
+
+Every line of code must meet:
+- 0 `any` types (Rule 5)
+- 0 hardcoded hex (Rule 2)
+- 0 architecture violations (Rule 14)
+- Full test coverage (Rule 9)
+- World-class documentation
+
+**The bar:** Vercel, Linear, Stripe tier.
+
+### 9.5 What This Means for AI Agents
+
+When you work on this project:
+
+- 🎯 **Think product, not task**
+  - "Does this fix move us closer to market leadership?"
+  - "Would the world's best product team ship this?"
+
+- 🚫 **Don't settle for "works"**
+  - "Works" ≠ "world-class"
+  - Polish, optimize, delight
+
+- 📊 **Measure against competitors**
+  - Every feature must beat OpenSooq/Dubizzle
+  - Every screen must be prettier, faster, smarter
+
+- 🔒 **Protect the foundation**
+  - Never break tests
+  - Never introduce `any`
+  - Never violate Constitution rules
+
+- 📈 **Speed = Market Share**
+  - Every day we delay, competitors gain users
+  - Every bug we ship, users leave
+  - Every perfect release, users tell others
+
+**Remember:** You're not just fixing code. You're building a product that thousands of people will use daily. Act like it.
+
+---
