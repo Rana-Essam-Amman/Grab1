@@ -65,6 +65,11 @@ Complete timeline of all work.
 ### Phase 5b — Dead Code Removal
 - Removed 7 unused files (usePostWizardForm, HeaderCurrencySelector, paymentGateway, queryKeys, chat.schema, user.schema, seedData)
 
+### Phase 5c — Runtime Safety
+- Global Error Boundary integrated into App root.
+- "Reset App" recovery action (clear storage + reload).
+- Hardened store initialization with error guards.
+
 ## Bugs Documented
 
 - Bug #001 — Massive Untracked Files

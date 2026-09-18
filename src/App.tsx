@@ -11,7 +11,7 @@ import { registerAuthGetter } from '@/shared/store-getters/auth.getter';
 registerUIGetter(() => useUIStore.getState());
 registerAuthGetter(() => useAuthStore.getState().user);
 
-import { Header, BottomNav } from '@/shared/components';
+import { Header, BottomNav, ErrorBoundary } from '@/shared/components';
 import { TranslationProvider } from '@/shared/i18n';
 import { CountrySheet } from '@/features/markets/components/CountrySheet';
 import { ExploreScreen } from '@/features/explore/screens/ExploreScreen';
@@ -213,8 +213,12 @@ export default function App() {
   const locale = useUIStore((state) => state.locale);
 
   useEffect(() => {
-    registerListingsGetter(() => useListingsStore.getState().listings);
-    useListingsStore.getState().initialize();
+    try {
+      registerListingsGetter(() => useListingsStore.getState().listings);
+      useListingsStore.getState().initialize();
+    } catch (error) {
+      console.error('[App] Failed to initialize stores:', error);
+    }
 
     // Belt-and-suspenders: ensure direction matches persisted state on initial client mount
     if (locale) {
@@ -228,26 +232,28 @@ export default function App() {
   }
 
   return (
-    <RegistryProvider>
-      <QueryClientProvider client={queryClient}>
-        <TranslationProvider locale={locale}>
-          <MainNavigator />
-          <Toaster
-            position="top-center"
-            richColors
-            closeButton
-            toastOptions={{
-              style: {
-                background: 'var(--color-surface)',
-                color: 'var(--color-ink)',
-                border: '1px solid var(--color-line)',
-                borderRadius: 'var(--radius-lg)',
-              },
-            }}
-          />
+    <ErrorBoundary>
+      <RegistryProvider>
+        <QueryClientProvider client={queryClient}>
+          <TranslationProvider locale={locale}>
+            <MainNavigator />
+            <Toaster
+              position="top-center"
+              richColors
+              closeButton
+              toastOptions={{
+                style: {
+                  background: 'var(--color-surface)',
+                  color: 'var(--color-ink)',
+                  border: '1px solid var(--color-line)',
+                  borderRadius: 'var(--radius-lg)',
+                },
+              }}
+            />
 
-        </TranslationProvider>
-      </QueryClientProvider>
-    </RegistryProvider>
+          </TranslationProvider>
+        </QueryClientProvider>
+      </RegistryProvider>
+    </ErrorBoundary>
   );
 }
