@@ -60,6 +60,8 @@ Complete timeline of all work.
 - 53 → **0**
 - 6 batches (catch blocks, storage, contracts, registry, ui/store, misc)
 
+- DOC-1c: README + CONVENTIONS updated
+
 ## Bugs Documented
 
 - Bug #001 — Massive Untracked Files

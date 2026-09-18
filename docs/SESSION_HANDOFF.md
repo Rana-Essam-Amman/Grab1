@@ -8,8 +8,8 @@ Use this template when starting a new session or switching AI agents.
 - **Tests:** 337 passing (42 test files)
 - **Violations:** 0
 - **Working tree:** clean
-- **Last completed task:** DOC-1a (PROMPT_PATTERNS + LESSONS_LEARNED)
-- **Next task:** DOC-1b completion → Phase 5 (Dead Code)
+- **Last completed task:** DOC-1c (README + CONVENTIONS)
+- **Next task:** Phase 5: Dead Code cleanup
 
 ## Active Sprints
 

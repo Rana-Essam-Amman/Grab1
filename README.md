@@ -14,6 +14,15 @@
 | Backend | Firebase (pending) |
 | AI | Gemini 2.5 Flash |
 
+## 🛠️ Stack
+
+- Framework: React 18 + TypeScript + Vite
+- Styling: Tailwind CSS v4 + OKLCH tokens
+- State: Zustand + Repository Pattern
+- Testing: Vitest (337) + Playwright (19)
+- Design System: Radix UI + Iconsax + 16 more
+- Backend (pending): Supabase
+
 ## 🚀 Quick Start
 
 ```bash
@@ -32,11 +41,15 @@ npx playwright test   # E2E
 
 | File | Purpose |
 |------|---------|
-| PROJECT_CONSTITUTION.md | 39 architectural rules |
-| `docs/ARCHITECTURE.md` | Layered architecture pattern |
-| docs/CONVENTIONS.md | Naming, branches, tokens |
-| docs/ERROR_LOG.md | Bug history |
-| docs/REFERENCE_IMPLEMENTATIONS.md | Gold-standard files |
+| PROJECT_CONSTITUTION.md | 40 architectural rules |
+| docs/AI_AGENT_GUIDE.md | How AI agents work on this project |
+| docs/PROMPT_PATTERNS.md | Battle-tested prompt patterns |
+| docs/LESSONS_LEARNED.md | Bugs, issues, and lessons |
+| docs/PROJECT_HISTORY.md | Complete timeline |
+| docs/SESSION_HANDOFF.md | Session continuity template |
+| docs/ARCHITECTURE.md | Layered architecture pattern |
+| docs/ERROR_LOG.md | Bug tracking |
+| docs/CONVENTIONS.md | Repo conventions |
 
 ## 🏛️ Architecture
 
@@ -49,25 +62,31 @@ Grab The Deals uses **Clean Layered Architecture**:
 
 See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the full pattern.
 
-Governed by [`PROJECT_CONSTITUTION.md`](PROJECT_CONSTITUTION.md) — 39 non-negotiable rules.
+Governed by [`PROJECT_CONSTITUTION.md`](PROJECT_CONSTITUTION.md) — 40 non-negotiable rules.
 
 ## 🛡️ Quality Gates
 
 Every push to `main` MUST pass:
-- TypeScript (tsc --noEmit)
-- ESLint
-- Vitest (337 tests)
-- Architecture audit (0 violations)
-- Git health check (100%)
+- `tsc --noEmit` (0 errors)
+- `eslint src/` (0 errors)
+- `npm test` (337 tests)
+- `npm run audit:arch` (0 violations)
+- `npm run health:git` (100% ratio)
 
 ## 📅 Status
 
-- ✅ Sprint R7 (25 files refactored, 0 violations)
-- ✅ Constitution v1.1.4 (39 rules)
+- ✅ Sprint R7 (Cleanup) — 25 files refactored, 0 violations
+- ✅ Sprint R7.5 (Clean Layered Architecture)
+- ✅ Design System (UI-1) — 19 modern libraries
+- ✅ Constitution v1.1.5 (40 rules)
 - ✅ 5/5 Golden Paths (19 E2E tests)
 - ✅ 337 Vitest tests passing
 - ✅ CI/CD on GitHub Actions (green)
-- ✅ Clean Layered Architecture (R7.5)
-- 🟢 UI Polish (in progress)
+- ✅ 0 `any` types (fully type-safe)
+- ✅ 0 architecture violations
+- ✅ 0 direct localStorage (all via safeStorage)
+- ✅ Bundle optimized (533 KB → 153 KB gzip)
+- ✅ 9 documentation files in docs/
+- 🟢 UI-3: Home Redesign (next)
 - ⏳ Supabase Backend
 - ⏳ Beta Launch (target: 2026-10-29)

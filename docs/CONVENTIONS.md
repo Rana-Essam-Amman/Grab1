@@ -60,6 +60,19 @@ git push new-origin main
 Conventional Commits: `<type>(<scope>): <description>`
 Types: feat, fix, docs, test, refactor, chore, ci, recovery.
 
+## AI Agent Onboarding
+
+Any new AI agent working on this project MUST:
+1. Read `docs/AI_AGENT_GUIDE.md` first
+2. Read `PROJECT_CONSTITUTION.md`
+3. Read `docs/PROMPT_PATTERNS.md`
+4. Read `docs/LESSONS_LEARNED.md`
+5. Read `docs/SESSION_HANDOFF.md` for current state
+
+Then act as **Technical PM / Architect** — write prompts for Idx (the executor).
+
+See `docs/AI_AGENT_GUIDE.md` section 10 for full role definition.
+
 ## 📅 History
 
 - 2026-09-16: Initial version.
