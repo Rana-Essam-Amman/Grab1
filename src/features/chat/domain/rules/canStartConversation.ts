@@ -20,7 +20,7 @@ export function canStartConversation(
 ): CanStartConversationResult {
   const { listingCountryCode, activeMarketCountryCode } = input;
 
-  if (!VALID_MARKETS.includes(listingCountryCode as any)) {
+  if (!(VALID_MARKETS as readonly string[]).includes(listingCountryCode)) {
     return { allowed: false, reason: 'invalid-market' };
   }
 
