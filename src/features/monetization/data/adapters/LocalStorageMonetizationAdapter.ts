@@ -73,15 +73,16 @@ export class LocalStorageMonetizationAdapter implements MonetizationRepository {
 
   private _readQuota(): AiQuota {
     try {
-      const parsed = globalStorage().get<any>(AI_QUOTA_KEY);
+      const parsed = globalStorage().get<unknown>(AI_QUOTA_KEY);
       if (!parsed || typeof parsed !== 'object') return DEFAULT_QUOTA;
       
+      const obj = parsed as Record<string, unknown>;
       if (
-        typeof parsed.dailyLimit === 'number' &&
-        typeof parsed.usedToday === 'number' &&
-        typeof parsed.lastResetAt === 'string'
+        typeof obj.dailyLimit === 'number' &&
+        typeof obj.usedToday === 'number' &&
+        typeof obj.lastResetAt === 'string'
       ) {
-        return parsed as AiQuota;
+        return parsed as unknown as AiQuota;
       }
       return DEFAULT_QUOTA;
     } catch {
@@ -95,7 +96,7 @@ export class LocalStorageMonetizationAdapter implements MonetizationRepository {
 
   private _readPromotions(): PromotedAd[] {
     try {
-      const parsed = globalStorage().get<any>(PROMOTIONS_KEY);
+      const parsed = globalStorage().get<unknown>(PROMOTIONS_KEY);
       return Array.isArray(parsed) ? (parsed as PromotedAd[]) : [];
     } catch {
       return [];

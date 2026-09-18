@@ -15,22 +15,25 @@ export type { ScreenType, TabType };
  */
 const uiStorage: StateStorage = {
   getItem: (name: string): string | null => {
-    const raw = globalStorage().get<any>(name);
+    const raw = globalStorage().get<unknown>(name);
     if (raw === null || raw === undefined) return null;
     if (name === 'catch_locale') {
       if (raw === 'en' || raw === 'ar') {
         return JSON.stringify({ state: { locale: raw }, version: 0 });
       }
     }
-    if (typeof raw === 'object') {
+    if (raw && typeof raw === 'object') {
       return JSON.stringify(raw);
     }
-    try {
-      JSON.parse(typeof raw === 'string' ? raw : JSON.stringify(raw));
-      return typeof raw === 'string' ? raw : JSON.stringify(raw);
-    } catch {
-      return null;
+    if (typeof raw === 'string') {
+      try {
+        JSON.parse(raw);
+        return raw;
+      } catch {
+        return null;
+      }
     }
+    return null;
   },
   setItem: (name: string, value: string): void => {
     if (name === 'catch_locale') {

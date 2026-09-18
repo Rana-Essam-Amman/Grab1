@@ -14,12 +14,22 @@ const getStoredCountry = (): MarketCode => {
 const initialBrowseCountryCode = getStoredCountry();
 const initialCapital = DEFAULT_REGIONAL_CAPITALS[initialBrowseCountryCode] || DEFAULT_REGIONAL_CAPITALS.JO;
 
+interface AuthStored {
+  state?: {
+    authStatus?: string;
+  };
+  user?: {
+    countryCode?: string;
+  };
+  session?: unknown;
+}
+
 export const getInitialState = () => {
   const locale = (globalStorage().get<string>('locale') as 'en' | 'ar') || 'ar';
   const hasStoredCountry = !!globalStorage().get<MarketCode>('catch_browse_country');
   let hasAuth = false;
   try {
-    const authData = globalStorage().get<any>('catch_auth') || {};
+    const authData = globalStorage().get<AuthStored>('catch_auth') || {};
     if (authData?.state?.authStatus === 'authenticated') {
       hasAuth = true;
     }
