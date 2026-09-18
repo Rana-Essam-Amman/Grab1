@@ -8,8 +8,8 @@ Use this template when starting a new session or switching AI agents.
 - **Tests:** 337 passing (42 test files)
 - **Violations:** 0
 - **Working tree:** clean
-- **Last completed task:** Phase 5c (Runtime Safety)
-- **Next task:** Phase 6: World-Class Verification
+- **Last completed task:** Phase 6 (World-Class Verification)
+- **Next task:** Phase 7: Consistency (Hex → Tokens)
 
 ## Active Sprints
 
