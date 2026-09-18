@@ -5,7 +5,7 @@ export type ScreenGuard = 'public' | 'authenticated' | 'guest';
 
 export interface ScreenDefinition {
   name: string;
-  component: () => Promise<{ default: ComponentType<any> } | Record<string, any>>;
+  component: () => Promise<{ default: ComponentType<Record<string, unknown>> } | Record<string, unknown>>;
   tab?: 'explore' | 'categories' | 'messages' | 'my-ads';
   guard?: ScreenGuard;
 }
@@ -21,13 +21,13 @@ export interface MenuEntry {
 export interface FeatureManifest {
   name: string;
   screens?: Record<string, ScreenDefinition>;
-  store?: () => Promise<any>;
+  store?: () => Promise<unknown>;
   locales?: {
     ar?: () => Promise<{ default: Translations }>;
     en?: () => Promise<{ default: Translations }>;
   };
   menuEntry?: MenuEntry;
-  exports?: Record<string, () => Promise<any>>;
+  exports?: Record<string, () => Promise<unknown>>;
 }
 
 export interface RegistryState {

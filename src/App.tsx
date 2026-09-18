@@ -79,9 +79,9 @@ const MainNavigator: React.FC = () => {
   const { screens: registryScreens } = useRegistry();
 
   const registryLazyComponents = useMemo(() => {
-    const cache = new Map<string, React.LazyExoticComponent<React.ComponentType<any>>>();
+    const cache = new Map<string, React.LazyExoticComponent<React.ComponentType<Record<string, unknown>>>>();
     registryScreens.forEach((def, name) => {
-      cache.set(name, React.lazy(def.component as any));
+      cache.set(name, React.lazy(def.component as () => Promise<{ default: React.ComponentType<Record<string, unknown>> }>));
     });
     return cache;
   }, [registryScreens]);
