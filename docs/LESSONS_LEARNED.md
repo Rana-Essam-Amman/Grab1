@@ -135,3 +135,34 @@
 - Eliminated all 52 `any` types
 - Pattern: `unknown` + type narrowing > `any`
 - Files: contracts, stores, hooks, adapters
+
+## Architectural Debt (Phase 8 Backlog)
+
+### Type Mismatch: Domain Conversation vs UI Conversation
+
+**Files:**
+- src/features/chat/store/chat.slice.ts:76
+- src/features/listings/store/listings.slice.ts:26
+
+**Issue:** Two different `Conversation` and `Listing` types exist:
+- Domain: `features/chat/domain/Conversation` (title, imageUrl, sellerPhone)
+- UI: `@/types` (listingTitle, otherUser, image, sellerId)
+
+**Impact:** Requires `as unknown as` casts to bridge.
+
+**Recommended Fix (Phase 8):**
+- Deprecate `@/types` Conversation/Listing
+- Migrate all UI to domain types
+- Update adapters to return domain types consistently
+
+### Unsafe Auth Storage Deserialization
+
+**Files:**
+- src/features/auth/store/auth.slice.helpers.ts:21, 31
+
+**Issue:** `JSON.parse(localStorage)` without Zod schema validation.
+
+**Recommended Fix (Phase 8):**
+- Define Zod schemas for StoredUser + UserProfile
+- Use `readValidated` from safeStorage
+

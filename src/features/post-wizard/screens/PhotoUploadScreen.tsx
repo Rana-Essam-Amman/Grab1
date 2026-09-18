@@ -33,8 +33,8 @@ export const PhotoUploadScreen: React.FC = () => {
           <BackIcon size={18} className="text-white" />
         </Button>
         <div>
-          <div className="text-xs font-semibold" style={{ color: 'rgba(255,255,255,0.7)' }}>{isArabic ? 'الخطوة 3 من 6' : 'Step 3 of 6'}</div>
-          <h2 className="text-lg font-bold" style={{ color: '#FFFFFF' }}>{isArabic ? 'إضافة صور السلعة' : 'Upload Photos'}</h2>
+          <div className="text-xs font-semibold text-white/70">{isArabic ? 'الخطوة 3 من 6' : 'Step 3 of 6'}</div>
+          <h2 className="text-lg font-bold text-white">{isArabic ? 'إضافة صور السلعة' : 'Upload Photos'}</h2>
         </div>
       </div>
 

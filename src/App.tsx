@@ -191,8 +191,8 @@ const MainNavigator: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-canvas flex justify-center selection:bg-[#1B2A4A] selection:text-white">
-      <div className="w-full max-w-[440px] min-h-screen bg-[#f9f8f4] flex flex-col shadow-2xl relative">
+    <div className="min-h-screen bg-canvas flex justify-center selection:bg-brand selection:text-white">
+      <div className="w-full max-w-[440px] min-h-screen bg-canvas flex flex-col shadow-2xl relative">
         {currentScreen === 'main' && <Header />}
         <main className="flex-1 flex flex-col">
           <Suspense fallback={<ScreenLoader />}>

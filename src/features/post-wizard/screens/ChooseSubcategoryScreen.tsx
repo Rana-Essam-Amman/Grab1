@@ -45,10 +45,10 @@ export const ChooseSubcategoryScreen: React.FC = () => {
           <BackIcon size={18} className="text-white" />
         </Button>
         <div>
-          <div className="text-xs font-semibold" style={{ color: 'rgba(255,255,255,0.7)' }}>
+          <div className="text-xs font-semibold text-white/70">
             {isArabic ? 'الخطوة 2 من 6' : 'Step 2 of 6'} • {isArabic ? currentCategory.nameAr : currentCategory.nameEn}
           </div>
-          <h2 className="text-lg font-bold" style={{ color: '#FFFFFF' }}>
+          <h2 className="text-lg font-bold text-white">
             {isArabic ? 'اختر التصنيف الفرعي' : 'Choose Subcategory'}
           </h2>
         </div>

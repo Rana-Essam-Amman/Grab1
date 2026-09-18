@@ -17,8 +17,8 @@ export const AiDraftHeader: React.FC<Props> = ({ isArabic, onBack }) => {
           <BackIcon size={18} className="text-white" />
         </Button>
         <div>
-          <div className="text-[11px] font-bold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.7)' }}>{isArabic ? 'الخطوة 5 من 6' : 'Step 5 of 6'}</div>
-          <h2 className="text-lg font-bold" style={{ color: '#FFFFFF' }}>{isArabic ? 'صياغة الإعلان بالذكاء الاصطناعي' : 'AI Listing Assistant'}</h2>
+          <div className="text-[11px] font-bold uppercase tracking-wider text-white/70">{isArabic ? 'الخطوة 5 من 6' : 'Step 5 of 6'}</div>
+          <h2 className="text-lg font-bold text-white">{isArabic ? 'صياغة الإعلان بالذكاء الاصطناعي' : 'AI Listing Assistant'}</h2>
         </div>
       </div>
       <Badge variant="outline" size="sm" className="bg-white/10 text-white border-white/25 font-bold px-2.5 py-1">

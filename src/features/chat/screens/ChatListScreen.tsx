@@ -58,24 +58,24 @@ export const ChatListScreen: React.FC = () => {
   return (
     <div
       dir={isArabic ? 'rtl' : 'ltr'}
-      className="max-w-[440px] mx-auto w-full flex flex-col gap-3 pb-24 px-4 pt-3 font-cairo bg-[#fcfbfa] min-h-screen"
+      className="max-w-[440px] mx-auto w-full flex flex-col gap-3 pb-24 px-4 pt-3 font-cairo bg-surface-sunken min-h-screen"
     >
       {/* Header Banner */}
-      <div className="bg-white rounded-2xl border border-[#e7e3d8] p-4 flex items-center justify-between shadow-2xs">
+      <div className="bg-surface rounded-2xl border border-line p-4 flex items-center justify-between shadow-2xs">
         <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-xl bg-[#f2eee3] text-[#1B2A4A] flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-surface-raised text-brand flex items-center justify-center">
             <MessageSquare size={20} />
           </div>
           <div>
-            <h1 className="text-base font-bold text-[#1a1918] font-cairo">
+            <h1 className="text-base font-bold text-ink font-cairo">
               {isArabic ? 'الرسائل والمحادثات' : 'Messages & Chats'}
             </h1>
-            <p className="text-xs text-[#8c8982]">
+            <p className="text-xs text-ink-muted">
               {isArabic ? 'تواصل آمن ومباشر مع البائعين والمشترين' : 'Secure direct buyer & seller chat'}
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-1 text-[11px] font-bold text-[#1B2A4A] bg-[#1B2A4A]/10 px-2.5 py-1 rounded-full">
+        <div className="flex items-center gap-1 text-[11px] font-bold text-brand bg-brand/10 px-2.5 py-1 rounded-full">
           <ShieldCheck size={14} />
           <span>{isArabic ? 'محمي' : 'Secure'}</span>
         </div>
@@ -83,7 +83,7 @@ export const ChatListScreen: React.FC = () => {
 
       {/* Search Filter Input */}
       <div className="relative">
-        <span className="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-[#8c8982]">
+        <span className="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-ink-muted">
           <Search size={16} />
         </span>
         <input
@@ -91,7 +91,7 @@ export const ChatListScreen: React.FC = () => {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder={isArabic ? 'بحث في المحادثات أو الإعلانات...' : 'Search chats or listings...'}
-          className="w-full h-11 bg-white border border-[#e7e3d8] rounded-xl pr-10 pl-4 text-xs font-cairo text-[#1a1918] placeholder-[#8c8982] focus:outline-none focus:border-[#1B2A4A] transition-all shadow-2xs"
+          className="w-full h-11 bg-surface border border-line rounded-xl pr-10 pl-4 text-xs font-cairo text-ink placeholder-ink-muted focus:outline-none focus:border-brand transition-all shadow-2xs"
         />
       </div>
 

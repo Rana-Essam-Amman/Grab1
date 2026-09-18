@@ -48,7 +48,7 @@ export const ParentCategoryBanner: React.FC<ParentCategoryBannerProps> = ({
         className="w-full bg-ink text-white rounded-2xl p-4 flex items-center justify-between hover:bg-neutral-900 active:scale-[0.99] transition-all shadow-sm group cursor-pointer"
       >
         <div className="flex items-center gap-2.5">
-          <Sparkles size={18} className="text-[#e2b755]" />
+          <Sparkles size={18} className="text-accent" />
           <span className="font-cairo font-bold text-sm text-white">
             {t('categories.viewAllInParent')}
           </span>
@@ -59,7 +59,7 @@ export const ParentCategoryBanner: React.FC<ParentCategoryBannerProps> = ({
           </span>
           <ChevronIcon
             size={16}
-            className="text-[#e2b755] transition-transform group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5"
+            className="text-accent transition-transform group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5"
           />
         </div>
       </button>

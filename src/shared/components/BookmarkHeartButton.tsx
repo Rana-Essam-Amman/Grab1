@@ -77,7 +77,7 @@ export const BookmarkHeartButton: React.FC<BookmarkHeartButtonProps> = ({
         <Heart
           variant="Bold"
           size={iconSize}
-          color={isSaved ? '#EF4444' : '#94A3B8'}
+          color={isSaved ? 'var(--color-danger)' : 'var(--color-ink-muted)'}
         />
       </div>
 

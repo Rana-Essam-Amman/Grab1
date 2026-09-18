@@ -27,7 +27,7 @@ export const BottomNavItems: React.FC<BottomNavItemsProps> = ({
           activeTab === 'explore' ? 'nav-btn-active font-bold text-primary' : 'nav-btn-inactive text-ink-soft'
         }`}
       >
-        <Home variant="Bold" size={24} color={activeTab === 'explore' ? '#d4a24a' : '#94A3B8'} />
+        <Home variant="Bold" size={24} color={activeTab === 'explore' ? 'var(--color-accent)' : 'var(--color-ink-muted)'} />
         <span className="text-[10px]">{isArabic ? 'الرئيسية' : 'Explore'}</span>
       </motion.button>
 
@@ -39,7 +39,7 @@ export const BottomNavItems: React.FC<BottomNavItemsProps> = ({
           activeTab === 'categories' ? 'nav-btn-active font-bold text-primary' : 'nav-btn-inactive text-ink-soft'
         }`}
       >
-        <Category variant="Bold" size={24} color={activeTab === 'categories' ? '#d4a24a' : '#94A3B8'} />
+        <Category variant="Bold" size={24} color={activeTab === 'categories' ? 'var(--color-accent)' : 'var(--color-ink-muted)'} />
         <span className="text-[10px]">{isArabic ? 'الأقسام' : 'Categories'}</span>
       </motion.button>
 
@@ -67,7 +67,7 @@ export const BottomNavItems: React.FC<BottomNavItemsProps> = ({
         }`}
       >
         <div className="relative">
-          <MessageText variant="Bold" size={24} color={activeTab === 'messages' ? '#d4a24a' : '#94A3B8'} />
+          <MessageText variant="Bold" size={24} color={activeTab === 'messages' ? 'var(--color-accent)' : 'var(--color-ink-muted)'} />
           {hasUnread && (
             <span className="absolute -top-1 -right-1.5 w-2.5 h-2.5 rounded-full bg-danger border border-white shadow-xs" />
           )}
@@ -83,7 +83,7 @@ export const BottomNavItems: React.FC<BottomNavItemsProps> = ({
           activeTab === 'my-ads' ? 'nav-btn-active font-bold text-primary' : 'nav-btn-inactive text-ink-soft'
         }`}
       >
-        <Profile variant="Bold" size={24} color={activeTab === 'my-ads' ? '#d4a24a' : '#94A3B8'} />
+        <Profile variant="Bold" size={24} color={activeTab === 'my-ads' ? 'var(--color-accent)' : 'var(--color-ink-muted)'} />
         <span className="text-[10px]">{isArabic ? 'إعلاناتي' : 'My Ads'}</span>
       </motion.button>
     </>

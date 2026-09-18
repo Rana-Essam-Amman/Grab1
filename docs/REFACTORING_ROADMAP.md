@@ -17,3 +17,11 @@ Note: Earlier reports claimed LoginScreen = 102 lines. This was FALSE. Verified 
 - Remaining violations:
   * useAiAssistant.ts: 106 → target <100 (Sprint R7)
   * AiAssistantBox.tsx: 134 → target <120 (Sprint R7)
+
+## Phase 8 — Architectural Debt
+
+- [ ] Unify Conversation type (domain vs UI)
+- [ ] Unify Listing type (domain vs UI)
+- [ ] Add Zod schemas for auth storage
+- [ ] Reduce remaining 8 `as unknown as` (Category B) if possible
+

@@ -34,7 +34,7 @@ export const ExploreCategoryFilterDrawer: React.FC<ExploreCategoryFilterDrawerPr
           <div className="relative w-full h-8 mb-2">
             <button
               onClick={onClose}
-              className="absolute top-4 left-4 z-10 w-10 h-10 rounded-full bg-[#1B2A4A] text-white flex items-center justify-center shadow-lg cursor-pointer border-none"
+              className="absolute top-4 left-4 z-10 w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center shadow-lg cursor-pointer border-none"
               aria-label="Close"
             >
               <span className="text-lg font-bold">×</span>
