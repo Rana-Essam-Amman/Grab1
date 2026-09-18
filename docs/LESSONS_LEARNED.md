@@ -138,22 +138,10 @@
 
 ## Architectural Debt (Phase 8 Backlog)
 
-### Type Mismatch: Domain Conversation vs UI Conversation
-
-**Files:**
-- src/features/chat/store/chat.slice.ts:76
-- src/features/listings/store/listings.slice.ts:26
-
-**Issue:** Two different `Conversation` and `Listing` types exist:
-- Domain: `features/chat/domain/Conversation` (title, imageUrl, sellerPhone)
-- UI: `@/types` (listingTitle, otherUser, image, sellerId)
-
-**Impact:** Requires `as unknown as` casts to bridge.
-
-**Recommended Fix (Phase 8):**
-- Deprecate `@/types` Conversation/Listing
-- Migrate all UI to domain types
-- Update adapters to return domain types consistently
+### Conversation Unification (RESOLVED in Phase 8b)
+- Before: duplicate types in domain + @/types
+- After: domain is single source, @/types re-exports
+- Pattern: domain → re-export, not duplicate
 
 ### Unsafe Auth Storage Deserialization
 

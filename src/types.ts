@@ -103,14 +103,14 @@ export interface ChatMessage {
   timestamp: string;
 }
 
-export interface Conversation {
-  id: string;
-  listingId: string;
-  title: string;
-  imageUrl: string;
-  sellerPhone: string;
-  messages: ChatMessage[];
-}
+import type { Conversation as DomainConversation } from '@/features/chat/domain/entities/Conversation';
+
+// Re-export from domain (single source of truth) with mutable compatibility
+export type Conversation = {
+  -readonly [K in keyof DomainConversation]: K extends 'messages'
+    ? ChatMessage[]
+    : DomainConversation[K];
+};
 
 export interface ListingComment {
   id: string;

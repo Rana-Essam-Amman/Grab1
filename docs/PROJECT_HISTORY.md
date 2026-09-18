@@ -83,6 +83,9 @@ Complete timeline of all work.
 - Phase 7b: Documented Category C debt + reduced hex colors 81 → 27 (replaced with design tokens in nav items, chat list, search screen, filter drawers, and wizard headers; preserved brand colors)
 - Phase 7c: Console cleanup — removed 0 debug logs (none present), kept 34 infra & migration warnings/error handlers
 
+## Phase 8 — Clean Types
+- Phase 8b: Unified Conversation type (domain as single source of truth, 6 files)
+
 ## Bugs Documented
 
 - Bug #001 — Massive Untracked Files

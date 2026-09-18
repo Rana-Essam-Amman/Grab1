@@ -20,7 +20,7 @@ Note: Earlier reports claimed LoginScreen = 102 lines. This was FALSE. Verified 
 
 ## Phase 8 — Architectural Debt
 
-- [ ] Unify Conversation type (domain vs UI)
+- [x] Unify Conversation type (domain vs UI)
 - [ ] Unify Listing type (domain vs UI)
 - [ ] Add Zod schemas for auth storage
 - [ ] Reduce remaining 8 `as unknown as` (Category B) if possible
