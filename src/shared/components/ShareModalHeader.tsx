@@ -1,0 +1,64 @@
+import React from 'react';
+import { X, Share2 } from 'lucide-react';
+import { Listing } from '@/types';
+import { Button } from '@/shared/ui/Button';
+import { Card } from '@/shared/ui/Card';
+
+interface ShareModalHeaderProps {
+  isArabic: boolean;
+  listing: Listing;
+  displayCurrency: string;
+  onClose: () => void;
+}
+
+export const ShareModalHeader: React.FC<ShareModalHeaderProps> = ({
+  isArabic,
+  listing,
+  displayCurrency,
+  onClose,
+}) => {
+  return (
+    <>
+      <div className="flex items-center justify-between pb-3.5 border-b border-border">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+            <Share2 size={18} />
+          </div>
+          <div>
+            <h3 className="text-sm font-extrabold text-ink">
+              {isArabic ? 'مشاركة الإعلان' : 'Share Classified Listing'}
+            </h3>
+            <p className="text-[11px] text-ink-muted font-medium">
+              {isArabic ? 'انشر الإعلان مع أصدقائك عبر المنصات' : 'Spread the word across your favorite networks'}
+            </p>
+          </div>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onClose}
+          className="w-8 h-8 rounded-full bg-background text-ink-soft hover:bg-border transition-colors cursor-pointer"
+          aria-label={isArabic ? 'إغلاق' : 'Close'}
+        >
+          <X size={16} />
+        </Button>
+      </div>
+
+      <Card variant="default" className="my-4 p-3 flex items-center justify-between shadow-2xs">
+        <div className="flex items-center gap-3 overflow-hidden pe-2">
+          <img
+            src={listing.imageUrl}
+            alt={listing.title}
+            className="w-11 h-11 rounded-xl object-cover shrink-0 border border-border"
+          />
+          <div className="min-w-0">
+            <div className="text-xs font-bold text-ink truncate">{listing.title}</div>
+            <div className="text-xs font-extrabold text-danger mt-0.5">
+              {listing.price} {displayCurrency}
+            </div>
+          </div>
+        </div>
+      </Card>
+    </>
+  );
+};

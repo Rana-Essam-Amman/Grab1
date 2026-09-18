@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catch the deals — Review</title>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body { margin:0; background:#ebe6db; font-family:Tajawal,sans-serif; color:#4a4845; }
+    .app { max-width:430px; min-height:100vh; margin:0 auto; background:#f9f8f4; padding:18px; }
+    h1 { font-family:Newsreader,Georgia,serif; font-size:26px; color:#1a1918; }
+    .muted { color:#8c8982; margin:8px 0 16px; }
+    input, textarea { width:100%; border:1px solid #e7e3d8; border-radius:16px; padding:14px; font:inherit; margin-bottom:10px; }
+    textarea { min-height:140px; }
+    .cta { width:100%; height:52px; margin-top:10px; border:0; border-radius:26px; background:#b08931; color:#fff; font-weight:700; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>راجع الإعلان قبل النشر</h1>
+    <p class="muted">عدّل أي سطر. النشر بعد موافقتك فقط.</p>
+    <input id="title" />
+    <textarea id="desc"></textarea>
+    <input id="price" placeholder="السعر" />
+    <button class="cta" type="button" onclick="location.href='home.html'">موافق — نشر الإعلان</button>
+  </div>
+  <script>
+    const note = new URLSearchParams(location.search).get("note") || "";
+    const year = (note.match(/20\d{2}|19\d{2}/)||[])[0] || "";
+    const price = (note.match(/\d[\d,]{2,}/)||[])[0] || "";
+    let make = "";
+    ["كامري","تويوتا","هوندا","كيا","هيونداي"].forEach(b => { if(note.includes(b)) make = b; });
+    const city = ["خلدا","عمّان","عمان","إربد"].find(c => note.includes(c)) || "";
+    const km = (note.match(/(\d[\d,]*)\s*(ألف|الف|كم)/)||[])[1] || "";
+    document.getElementById("title").value = [make, year, "للبيع", city ? "— " + city : ""].filter(Boolean).join(" ");
+    document.getElementById("desc").value = [
+      (make || year) ? ("للبيع " + [make, year].filter(Boolean).join(" ") + " بحالة مناسبة للعرض.") : "إعلان للبيع بحالة مناسبة للعرض.",
+      km ? ("الممشى التقريبي: " + km + ".") : "",
+      note.includes("فحص") ? "الفحص مذكور كجيد/كامل حسب البائع." : "",
+      city ? ("الموقع: " + city + ".") : "",
+      price ? ("السعر المطلوب: " + price.replace(/,/g,"") + (note.includes("تفاوض") ? "، مع مجال تفاوض بسيط." : ".")) : "",
+      "التواصل عبر التطبيق بعد النشر."
+    ].filter(Boolean).join("\n");
+    document.getElementById("price").value = price.replace(/,/g,"");
+    const cat = new URLSearchParams(location.search).get("cat") || "motors";
+    if (cat !== "motors" && /كامري|سيارة|toyota|camry/i.test(note)) {
+      const box = document.getElementById("mismatch");
+      box.style.display = "block";
+      box.textContent = "لاحظنا إن الوصف أقرب لسيارات للبيع، وأنت اخترت قسم ثاني. ننقله بلمسة عند الموافقة.";
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('catch_locale');
+          var locale = 'ar';
+          if (saved) {
+            if (saved === 'en' || saved === 'ar') {
+              locale = saved;
+            } else {
+              var parsed = JSON.parse(saved);
+              locale = (parsed && parsed.state && parsed.state.locale) || 'ar';
+            }
+          }
+          document.documentElement.setAttribute('dir', locale === 'ar' ? 'rtl' : 'ltr');
+          document.documentElement.setAttribute('lang', locale);
+        } catch (e) {
+          document.documentElement.setAttribute('dir', 'rtl');
+          document.documentElement.setAttribute('lang', 'ar');
+        }
+      })();
+    </script>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/assets/icons/krakeeb.jpg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Catch the Deals</title>
+    <meta name="description" content="Regional classifieds marketplace for Jordan, Lebanon, Palestine, and Syria with local AI listing drafts and multi-currency support" />
+    <meta property="og:title" content="Catch the Deals" />
+    <meta property="og:description" content="Regional classifieds marketplace for Jordan, Lebanon, Palestine, and Syria with local AI listing drafts and multi-currency support" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      :lang(ar), [dir="rtl"] {
+        font-family: 'IBM Plex Sans Arabic', sans-serif;
+      }
+      :lang(en), [dir="ltr"] {
+        font-family: 'Geist', system-ui, sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-[#ebe6db] text-[#4a4845] antialiased">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

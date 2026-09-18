@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catch the deals — Post Ad</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#f9f8f4; --card:#fff; --dark:#1a1918; --muted:#8c8982; --border:#e7e3d8; --accent:#b08931; --soft:#f2eee3; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #ebe6db; font-family: Inter, sans-serif; color: #4a4845; }
+    .app { max-width: 430px; min-height: 100vh; margin: 0 auto; background: var(--bg); padding: 22px 18px 40px; }
+    h1 { font-family: Newsreader, Georgia, serif; font-size: 28px; color: var(--dark); }
+    .meta { color: var(--accent); font-weight: 700; margin: 8px 0 4px; }
+    .hint { color: var(--muted); font-size: 12px; margin-bottom: 16px; }
+    label { display: block; font-size: 12px; font-weight: 700; margin: 14px 0 8px; color: var(--dark); }
+    input, textarea, select { width: 100%; border: 1px solid var(--border); border-radius: 16px; padding: 14px 16px; background: var(--card); font: inherit; }
+    textarea { min-height: 110px; resize: vertical; }
+    .chips { display: flex; gap: 8px; margin-bottom: 8px; }
+    .chip { border: 1px solid var(--border); border-radius: 20px; padding: 6px 12px; background: #fff; font-size: 12px; font-weight: 700; }
+    .chip.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .cta { margin-top: 22px; width: 100%; height: 52px; border: 0; border-radius: 26px; background: var(--accent); color: #fff; font-weight: 700; }
+    .err { color: #8B3A2A; margin-top: 10px; font-size: 13px; }
+    a.back { display: block; text-align: center; margin-top: 16px; color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>Post Ad</h1>
+    <p class="meta" id="meta">Jordan · JOD</p>
+    <p class="hint">The listing is published in your account country only.</p>
+    <div class="chips" id="chips"></div>
+    <label>Title</label>
+    <input id="title" placeholder="iPhone 15 Pro" />
+    <label>Full details</label>
+    <textarea id="desc" placeholder="Condition, location notes, what’s included"></textarea>
+    <label>Price</label>
+    <input id="price" type="number" placeholder="0" />
+    <label>Category</label>
+    <select id="cat">
+      <option value="mobiles">Mobiles</option>
+      <option value="motors">Motors</option>
+      <option value="real-estate">Real Estate</option>
+      <option value="furniture">Furniture</option>
+      <option value="krakeeb">Odds & Ends</option>
+    </select>
+    <label>Governorate</label>
+    <select id="gov"></select>
+    <label>Neighborhood</label>
+    <select id="area"></select>
+    <p class="err" id="err" hidden></p>
+    <button class="cta" id="send" type="button">Publish listing</button>
+    <a class="back" href="home.html">Back to Home</a>
+  </div>
+  <script>
+    const locs = {
+      JO: { Amman: ["Abdoun","Khalda","Sweifieh"], Irbid: ["University St"], Aqaba: ["Aqaba City"] },
+      LB: { Beirut: ["Hamra","Achrafieh"], "Mount Lebanon": ["Jounieh"] },
+      PS: { Ramallah: ["Al Tireh"], Gaza: ["Gaza City"] },
+      SY: { Damascus: ["Mezzeh"], Aleppo: ["Aleppo City"] }
+    };
+    const currencies = { JO:["JOD"], LB:["LBP","USD"], PS:["ILS","JOD"], SY:["SYP","USD"] };
+    const country = "JO";
+    let currency = "JOD";
+    const gov = document.getElementById("gov");
+    const area = document.getElementById("area");
+    function fillGov() {
+      gov.innerHTML = Object.keys(locs[country]).map(k => `<option>${k}</option>`).join("");
+      fillArea();
+    }
+    function fillArea() {
+      area.innerHTML = (locs[country][gov.value] || []).map(k => `<option>${k}</option>`).join("");
+    }
+    gov.onchange = fillArea;
+    function chips() {
+      const box = document.getElementById("chips");
+      box.innerHTML = currencies[country].map(c => `<button class="chip ${c===currency?"on":""}" data-c="${c}">${c}</button>`).join("");
+      box.querySelectorAll(".chip").forEach(b => b.onclick = () => { currency = b.dataset.c; chips(); document.getElementById("meta").textContent = country + " · " + currency; });
+    }
+    fillGov(); chips();
+    document.getElementById("send").onclick = async () => {
+      const err = document.getElementById("err");
+      err.hidden = true;
+      const title = document.getElementById("title").value.trim();
+      const description = document.getElementById("desc").value.trim();
+      const price = Number(document.getElementById("price").value);
+      if (title.length < 3 || description.length < 8 || !price) { err.hidden = false; err.textContent = "Enter title, details and price"; return; }
+      const token = localStorage.getItem("sessionToken") || "";
+      const res = await fetch("/api/listings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+        body: JSON.stringify({
+          title, description, price, currency,
+          categorySlug: document.getElementById("cat").value,
+          city: gov.value,
+          neighborhood: area.value
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) { err.hidden = false; err.textContent = data.error === "unauthorized" ? "Register and confirm first" : (data.error === "free_limit" ? "Free limit: 5 listings" : "Could not publish"); return; }
+      location.href = "home.html";
+    };
+  </script>
+</body>
+</html>

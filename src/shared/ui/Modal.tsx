@@ -1,0 +1,142 @@
+import React, { forwardRef, useEffect, useId, ReactNode } from 'react';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { X } from 'lucide-react';
+import { cn } from '../lib/cn';
+
+export const modalVariants = cva(
+  'relative w-full bg-surface text-ink rounded-2xl shadow-xl border border-border flex flex-col overflow-hidden max-h-[90vh] z-50 transform transition-all duration-200 ease-out',
+  {
+    variants: {
+      size: {
+        sm: 'max-w-sm',
+        md: 'max-w-md',
+        lg: 'max-w-lg',
+        full: 'max-w-[calc(100vw-2rem)] sm:max-w-xl h-[calc(100vh-4rem)]',
+      },
+    },
+    defaultVariants: {
+      size: 'md',
+    },
+  }
+);
+
+export interface ModalProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof modalVariants> {
+  open: boolean;
+  onClose: () => void;
+  title?: string;
+  description?: string;
+  footer?: ReactNode;
+}
+
+export const Modal = forwardRef<HTMLDivElement, ModalProps>(
+  (
+    {
+      open,
+      onClose,
+      title,
+      description,
+      size,
+      footer,
+      className,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    const generatedId = useId();
+    const titleId = title ? `modal-title-${generatedId}` : undefined;
+    const descId = description ? `modal-desc-${generatedId}` : undefined;
+
+    useEffect(() => {
+      if (!open) return;
+
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+
+      const handleKeyDown = (event: KeyboardEvent) => {
+        if (event.key === 'Escape') {
+          onClose();
+        }
+      };
+
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    }, [open, onClose]);
+
+    if (!open) return null;
+
+    return (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        aria-modal="true"
+        role="dialog"
+        aria-labelledby={titleId}
+        aria-describedby={descId}
+      >
+        {/* Backdrop */}
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+          onClick={onClose}
+          aria-hidden="true"
+        />
+
+        {/* Modal Container */}
+        <div
+          ref={ref}
+          className={cn(modalVariants({ size, className }))}
+          onClick={(e) => e.stopPropagation()}
+          {...props}
+        >
+          {/* Close Button */}
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+            className="absolute top-4 end-4 p-1.5 text-ink-muted hover:text-ink hover:bg-background/60 rounded-xl transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary z-10"
+          >
+            <X size={18} />
+          </button>
+
+          {/* Header */}
+          {(title || description) && (
+            <div className="p-5 pb-3 pe-12 border-b border-border/50">
+              {title && (
+                <h2
+                  id={titleId}
+                  className="text-base font-bold text-ink leading-tight"
+                >
+                  {title}
+                </h2>
+              )}
+              {description && (
+                <p
+                  id={descId}
+                  className="text-xs text-ink-soft mt-1 leading-normal"
+                >
+                  {description}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Content Body */}
+          <div className="p-5 overflow-y-auto flex-1">{children}</div>
+
+          {/* Footer */}
+          {footer && (
+            <div className="p-4 bg-background/30 border-t border-border/60 flex items-center justify-end gap-2">
+              {footer}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+);
+
+Modal.displayName = 'Modal';

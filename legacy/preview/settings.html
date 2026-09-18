@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catch the deals — Settings</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body{margin:0;background:#ebe6db;font-family:Tajawal,sans-serif;color:#4a4845}
+    .app{max-width:430px;margin:0 auto;min-height:100vh;background:#f9f8f4;padding:18px}
+    a{color:#1a1918;text-decoration:none}
+    .tile{background:#fff;border:1px solid #e7e3d8;border-radius:16px;padding:16px;margin:10px 0}
+    .on{border-color:#b08931}
+    .muted{color:#8c8982}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <p><a href="home.html">Back</a></p>
+    <h1>Settings</h1>
+    <p class="muted">English is the working interface. Arabic is a choice here.</p>
+    <div class="tile on">English ✓</div>
+    <div class="tile" onclick="document.documentElement.lang='ar';document.documentElement.dir='rtl';this.classList.add('on');this.previousElementSibling.classList.remove('on')">العربية</div>
+  </div>
+</body>
+</html>
