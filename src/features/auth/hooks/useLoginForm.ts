@@ -75,8 +75,9 @@ export const useLoginForm = ({ onToast }: UseLoginFormOptions = {}): UseLoginFor
       if (onToast) {
         onToast(isArabic ? 'تم تسجيل الدخول بنجاح' : 'Logged in successfully');
       }
-    } catch (err: any) {
-      setError(err?.message || 'Login failed');
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      setError(error.message || 'Login failed');
     }
   }, [phone, selectedCountry, password, isArabic, onToast]);
 

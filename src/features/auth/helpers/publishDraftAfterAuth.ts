@@ -47,10 +47,11 @@ export function publishDraftAfterAuth(phoneNum: string, fName: string, market: s
       useUIStore.getState().setActiveTab('explore');
       useUIStore.getState().navigateTo('main');
     }
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
     const errorData = {
-      message: err?.message || String(err),
-      stack: err?.stack?.slice(0, 2000) || '',
+      message: error.message,
+      stack: error.stack?.slice(0, 2000) || '',
       timestamp: new Date().toISOString(),
       location: 'publishDraftAfterAuth/helper',
     };

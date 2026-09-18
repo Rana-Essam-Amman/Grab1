@@ -27,7 +27,7 @@ export const createListingsActions = (
         state.listings = [sanitizedListing, ...state.listings];
         saveListingsToStorage(state.listings);
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       logListingError(err);
       throw err;
     }

@@ -29,10 +29,11 @@ export const useDemoAuth = (): UseDemoAuthReturn => {
       
       // 3. Publish draft with fresh market value
       publishDraftAfterAuth('791234567', 'Sufyan', countryCode);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error(String(err));
       const errorData = {
-        message: err?.message || String(err),
-        stack: err?.stack?.slice(0, 2000) || '',
+        message: error.message,
+        stack: error.stack?.slice(0, 2000) || '',
         timestamp: new Date().toISOString(),
         location: 'useDemoAuth/handleQuickDemoAuth',
       };

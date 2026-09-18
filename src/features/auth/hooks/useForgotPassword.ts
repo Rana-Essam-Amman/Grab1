@@ -73,8 +73,9 @@ export const useForgotPassword = ({ onToast }: UseForgotPasswordOptions = {}): U
         : `Password reset link sent to ${email}`;
       setSuccessMsg(msg);
       if (onToast) onToast(msg);
-    } catch (err: any) {
-      setError(err?.message || 'Failed to reset password');
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      setError(error.message || 'Failed to reset password');
     } finally {
       setLoading(false);
     }

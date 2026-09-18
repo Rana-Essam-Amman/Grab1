@@ -44,8 +44,9 @@ export function useAiDraft(): UseAiDraftReturn {
 
       updatePostDraft({ title, price, description, generated });
       navigateTo('post-ai-review');
-    } catch (err: any) {
-      setError(err.message || 'Error generating draft');
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      setError(error.message || 'Error generating draft');
     } finally {
       setIsGenerating(false);
     }

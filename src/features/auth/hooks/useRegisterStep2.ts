@@ -63,8 +63,9 @@ export const useRegisterStep2 = ({
       publishDraftAfterAuth(stagedPhone, stagedFirstName || 'Sufyan', stagedCountry);
       
       onSuccess(stagedPhone, stagedFirstName || 'Sufyan');
-    } catch (err: any) {
-      setError(err.message || 'Activation failed');
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      setError(error.message || 'Activation failed');
     } finally {
       setLoading(false);
     }

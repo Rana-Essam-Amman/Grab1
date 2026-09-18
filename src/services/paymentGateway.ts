@@ -54,11 +54,12 @@ export async function initializeSecureCheckout(
 
   try {
     return await Promise.race([paymentExecution(), timeoutPromise]);
-  } catch (err: any) {
-    console.warn('Payment Gateway Error intercepted:', err);
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.warn('Payment Gateway Error intercepted:', error);
     return {
       success: false,
-      error: err.message || 'Payment initialization failed. Please try again.',
+      error: error.message || 'Payment initialization failed. Please try again.',
       transactionRef: `failed_${Date.now()}`,
     };
   }
