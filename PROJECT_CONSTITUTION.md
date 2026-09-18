@@ -221,6 +221,30 @@ Goal: Add, change, or DELETE any detail in < 30 minutes, without hunting through
     - Human reviewer MUST reject any report lacking raw evidence.
     - Verification prompts use ONLY read-only commands.
 
+### Rule 40: Continuous Documentation Discipline (NON-NEGOTIABLE)
+
+Every commit MUST update relevant documentation files. Documentation is continuous, not one-time.
+
+For every task completed, the following MUST be updated:
+
+1. `docs/PROJECT_HISTORY.md` — Append the task to the current phase section.
+2. `docs/SESSION_HANDOFF.md` — Update the "Current State" section (HEAD commit, Last task, Next task).
+3. `docs/LESSONS_LEARNED.md` — If a bug or non-obvious decision was made, add it.
+4. `docs/PROMPT_PATTERNS.md` — If a new prompt pattern emerged, add it.
+
+REQUIREMENTS:
+- Doc updates MUST be in the SAME commit as the code change.
+- Doc updates MUST be concise (5-15 lines per task).
+- Commit message MUST include "+ docs" suffix: `<type>(<scope>): <desc> + docs`
+
+FORBIDDEN:
+- ❌ Code commits without doc updates
+- ❌ "Will document later" (never happens)
+- ❌ Docs stale by more than 1 commit
+
+Also update Version History:
+- **v1.1.5 (2026-09-18)**: Added Rule 40 (Continuous Documentation Discipline).
+
 ### Rule 37: Mandatory GitHub Sync (NON-NEGOTIABLE)
 
 EVERY task completed by any agent or developer MUST end with these EXACT steps:

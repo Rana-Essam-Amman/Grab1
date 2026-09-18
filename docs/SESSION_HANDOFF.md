@@ -41,6 +41,17 @@ None.
 
 3. Continue from "Next task" section above.
 
+## For AI Agents: Doc Discipline (Rule 40)
+
+After EVERY task, you MUST update:
+1. docs/PROJECT_HISTORY.md — append task
+2. docs/SESSION_HANDOFF.md — update current state
+3. docs/LESSONS_LEARNED.md — if bug
+4. docs/PROMPT_PATTERNS.md — if new pattern
+
+Same commit as code. Message ends with `+ docs`.
+
+
 ## Session Log
 
 ### 2026-09-17 → 2026-09-18 (Night Session)

@@ -138,6 +138,29 @@ REPORT:
 - Working tree: clean/dirty
 ```
 
+## Pattern 8: Doc-First Task (MANDATORY for every task)
+
+**When:** Every task.
+**Why it works:** Keeps docs current, prevents stale state.
+
+**Add this block to EVERY prompt after the code fix:**
+
+```
+═══ DOCUMENTATION STEP (MANDATORY) ═══
+
+After code change, BEFORE commit:
+
+1. Update docs/PROJECT_HISTORY.md — append task description (1-5 lines)
+2. Update docs/SESSION_HANDOFF.md — update HEAD, Last task, Next task
+3. If bug → add entry to docs/LESSONS_LEARNED.md
+4. If new pattern → add entry to docs/PROMPT_PATTERNS.md
+
+5. Commit message ends with "+ docs":
+   git commit -m "<type>(<scope>): <desc> + docs"
+
+All doc updates in SAME commit as code.
+```
+
 ## Anti-Patterns (NEVER USE)
 
 - ❌ "Fix everything that's broken"

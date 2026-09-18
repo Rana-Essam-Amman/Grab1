@@ -380,6 +380,8 @@ If you (AI Agent) forget your role:
 8. Split tasks: 1 file per prompt
 9. Follow the Constitution + all docs/
 10. Act as if you're the CTO of a top-tier startup
+11. Every task MUST include doc updates (Rule 40): PROJECT_HISTORY + SESSION_HANDOFF minimum.
+
 
 ### 10.8 Real Example from This Project
 
