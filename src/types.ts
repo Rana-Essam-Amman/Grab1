@@ -1,3 +1,5 @@
+import type { CategoryMatch } from './ai/categoryMatch';
+
 export interface CategoryDef {
   slug: string;
   nameEn: string;
@@ -91,7 +93,7 @@ export interface GeneratedListing {
   year?: string;
   make?: string;
   missing: string[];
-  categoryMatch?: any;
+  categoryMatch?: CategoryMatch;
 }
 
 export interface ChatMessage {
