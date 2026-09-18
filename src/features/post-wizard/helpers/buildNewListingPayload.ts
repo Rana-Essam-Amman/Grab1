@@ -1,6 +1,8 @@
+import type { PostDraft, Listing, UserProfile } from '@/types';
+
 export interface BuildListingParams {
-  postDraft: any;
-  user: any;
+  postDraft: PostDraft;
+  user: UserProfile | null;
   browseCountryCode: string;
   activeCurrency: string;
 }
@@ -16,7 +18,7 @@ export function buildNewListingPayload({
   const description = postDraft.description || postDraft.generated?.description || '';
   const targetMarket = user?.countryCode || browseCountryCode;
 
-  const newListing = {
+  const newListing: Listing = {
     id: 'listing-' + Date.now(),
     title,
     description,

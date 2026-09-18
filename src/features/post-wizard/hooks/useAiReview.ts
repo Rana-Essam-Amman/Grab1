@@ -63,7 +63,7 @@ export function useAiReview(): UseAiReviewReturn {
     setIsPublishing(true);
     setError(null);
     try {
-      addListing(newListing as any, targetMarket, isArabic);
+      addListing(newListing, targetMarket, isArabic);
       resetPostDraft();
       setActiveTab('my-ads');
       navigateTo('main');
