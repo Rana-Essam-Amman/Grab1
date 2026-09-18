@@ -86,6 +86,7 @@ Complete timeline of all work.
 ## Phase 8 — Clean Types
 - Phase 8b: Unified Conversation type (domain as single source of truth, 6 files)
 - Phase 8c-1: Domain Listing became single source of truth (UI shape + optional status)
+- Phase 8c-2b: Filters + Adapter aligned to UI Listing
 
 ## Bugs Documented
 

@@ -1,4 +1,5 @@
-import type { Listing, ListingFilters } from '../../domain';
+import type { Listing } from '@/types';
+import type { ListingFilters } from '../../domain';
 
 export interface ListingsRepository {
   getAll(): Promise<Listing[]>;

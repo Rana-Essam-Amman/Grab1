@@ -8,8 +8,8 @@ Use this template when starting a new session or switching AI agents.
 - **Tests:** 337 passing (42 test files)
 - **Violations:** 0
 - **Working tree:** clean
-- **Last completed task:** Phase 8b (Conversation type unified)
-- **Next task:** Phase 8c (Listing type — needs decision)
+- **Last completed task:** Phase 8c-2b (Filters use UI Listing)
+- **Next task:** Phase 8c-3 (remove as unknown as casts)
 
 ## Active Sprints
 

@@ -1,8 +1,9 @@
-import type { Listing, ListingFilters } from '../../domain';
+import type { Listing } from '@/types';
+import type { ListingFilters } from '../../domain';
 
 /**
  * Pure function: filter listings by ListingFilters.
- * No side effects, no external dependencies.
+ * Works with UI Listing (from @/types).
  */
 export function filterListings(
   listings: readonly Listing[],
@@ -13,29 +14,26 @@ export function filterListings(
     if (l.countryCode !== filters.market) return false;
 
     // Category
-    if (filters.categoryId && l.categoryId !== filters.categoryId) return false;
+    if (filters.categoryId && l.categorySlug !== filters.categoryId) return false;
 
     // Subcategory
-    if (filters.subcategoryId && l.subcategoryId !== filters.subcategoryId) {
+    if (filters.subcategoryId && l.subcategorySlug !== filters.subcategoryId) {
       return false;
     }
 
-    // Price range
-    if (filters.priceMin !== undefined && l.price < filters.priceMin) {
-      return false;
-    }
-    if (filters.priceMax !== undefined && l.price > filters.priceMax) {
-      return false;
-    }
+    // Price range (parse string price to number)
+    const priceNum = Number(String(l.price).replace(/[^0-9.]/g, '')) || 0;
+    if (filters.priceMin !== undefined && priceNum < filters.priceMin) return false;
+    if (filters.priceMax !== undefined && priceNum > filters.priceMax) return false;
 
     // Location
-    if (filters.cityId && l.cityId !== filters.cityId) return false;
+    if (filters.cityId && l.city !== filters.cityId) return false;
 
-    // Featured
-    if (filters.onlyFeatured && !l.isFeatured) return false;
+    // Premium
+    if (filters.onlyFeatured && !l.isPremium) return false;
 
-    // Active
-    if (filters.onlyActive && l.status !== 'active') return false;
+    // Active (status may be optional)
+    if (filters.onlyActive && (l as { status?: string }).status && (l as { status?: string }).status !== 'active') return false;
 
     return true;
   });

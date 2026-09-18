@@ -1,4 +1,5 @@
-import type { Listing, ListingFilters } from '../../domain';
+import type { Listing } from '@/types';
+import type { ListingFilters } from '../../domain';
 import type { ListingsRepository } from '../repositories/ListingsRepository';
 import { filterListings } from './listingFilter.helper';
 import { globalStorage } from '@/shared/lib/marketStorage';
