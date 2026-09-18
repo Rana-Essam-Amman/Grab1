@@ -3,6 +3,11 @@
 **Purpose:** Every bug documented. Institutional memory.
 **Audience:** Any AI agent or developer joining the project.
 
+### Dead Code
+- Kept contracts/ even if 'unused' — architectural pattern
+- Kept CommandPalette.tsx — planned UI component
+- Kept marketAssertions.ts — Rule 11 critical
+
 ## Bugs
 
 ### Bug #001 — Massive Untracked Files (2026-09-16)

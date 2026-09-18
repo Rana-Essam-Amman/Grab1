@@ -62,6 +62,9 @@ Complete timeline of all work.
 
 - DOC-1c: README + CONVENTIONS updated
 
+### Phase 5b — Dead Code Removal
+- Removed 7 unused files (usePostWizardForm, HeaderCurrencySelector, paymentGateway, queryKeys, chat.schema, user.schema, seedData)
+
 ## Bugs Documented
 
 - Bug #001 — Massive Untracked Files
