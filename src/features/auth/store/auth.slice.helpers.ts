@@ -17,7 +17,8 @@ export function getInitialSession(): {
     const savedUser = globalStorage().get<UserProfile | string>('catch_user');
 
     if (savedUser && savedToken) {
-      const parsed: any = typeof savedUser === 'string' ? JSON.parse(savedUser) : savedUser;
+      interface StoredUser { id?: string; email?: string; countryCode?: string; isRevoked?: boolean; [k: string]: unknown }
+      const parsed = (typeof savedUser === 'string' ? JSON.parse(savedUser) : savedUser) as unknown as StoredUser;
       if (
         parsed &&
         typeof parsed === 'object' &&
@@ -27,7 +28,7 @@ export function getInitialSession(): {
       ) {
         return {
           authStatus: 'authenticated',
-          user: parsed as UserProfile,
+          user: parsed as unknown as UserProfile,
           sessionToken: savedToken,
         };
       }

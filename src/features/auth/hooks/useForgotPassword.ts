@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useUI } from '@/hooks/useUI';
+import type { MarketCode } from '@/shared/lib/marketGate';
 import {
   verifyForgotPasswordInputs,
   findRegisteredUserMatch,
@@ -11,7 +12,7 @@ export interface UseForgotPasswordOptions {
 
 export interface UseForgotPasswordReturn {
   selectedCountry: string;
-  setSelectedCountry: (country: any) => void;
+  setSelectedCountry: (country: string) => void;
   phone: string;
   handlePhoneChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   email: string;
@@ -25,7 +26,7 @@ export interface UseForgotPasswordReturn {
 
 export const useForgotPassword = ({ onToast }: UseForgotPasswordOptions = {}): UseForgotPasswordReturn => {
   const { browseCountryCode, isArabic } = useUI();
-  const [selectedCountry, setSelectedCountry] = useState(browseCountryCode || 'JO');
+  const [selectedCountry, setSelectedCountry] = useState<string>(browseCountryCode || 'JO');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);

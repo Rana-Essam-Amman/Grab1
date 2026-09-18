@@ -1,6 +1,7 @@
 import { globalStorage } from '@/shared/lib/marketStorage';
 import { MarketCode } from '@/shared/lib/marketGate';
 import { DEFAULT_REGIONAL_CAPITALS } from '../data/locations/capitals';
+import { ScreenType } from './ui.slice.types';
 
 // Derive initial browse country from storage
 const getStoredCountry = (): MarketCode => {
@@ -41,8 +42,8 @@ export const getInitialState = () => {
     locale,
     isArabic: locale === 'ar',
     activeTab: 'explore' as const,
-    screenHistory: shouldGoToMain ? ['main'] : ['login'] as any[],
-    currentScreen: (shouldGoToMain ? 'main' : 'login') as any,
+    screenHistory: (shouldGoToMain ? ['main'] : ['login']) as ScreenType[],
+    currentScreen: (shouldGoToMain ? 'main' : 'login') as ScreenType,
     browseCountryCode: initialBrowseCountryCode,
     browseCityEn: initialCapital.cityEn,
     browseCityAr: initialCapital.cityAr,

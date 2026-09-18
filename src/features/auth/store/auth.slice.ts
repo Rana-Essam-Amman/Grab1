@@ -58,7 +58,10 @@ export const useAuthStore = create<AuthState>()(
           });
         },
 
-        ...createAuthActions(set as any, get as any),
+        ...createAuthActions(
+          set as unknown as (fn: (state: AuthState) => void) => void,
+          get as unknown as () => AuthState
+        ),
       };
     }),
     {

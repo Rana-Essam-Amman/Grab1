@@ -6,7 +6,14 @@ import { validateRegionalSanity } from '../data/locations';
 import { getSanitizedCurrencyByCountry } from './ui.slice.helpers';
 import { UIState, ScreenType, TabType } from './ui.slice.types';
 
-export const createUIActions = (set: any, get: any) => ({
+export const createUIActions = (
+  set: (
+    partial:
+      | Partial<UIState>
+      | ((state: UIState) => Partial<UIState> | void)
+  ) => void,
+  get: () => UIState,
+) => ({
   setLocale: (locale: 'en' | 'ar') => {
     globalStorage().set('locale', locale);
     document.documentElement.dir = locale === 'ar' ? 'rtl' : 'ltr';
