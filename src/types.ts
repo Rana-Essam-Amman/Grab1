@@ -27,8 +27,6 @@ export interface CountryDef {
   currencies: CurrencyDef[];
 }
 
-export type ListingStatus = 'active' | 'pending' | 'sold' | 'archived';
-
 export interface ListingAttribute {
   label: string;
   value: string;
@@ -39,8 +37,8 @@ export interface Listing {
   title: string;
   description: string;
   price: string;
-  currency: 'JOD' | 'USD' | 'LBP' | 'SYP' | 'ILS' | 'SAR';
-  countryCode: 'JO' | 'LB' | 'PS' | 'SY' | 'SA';
+  currency: string;
+  countryCode: string;
   city: string;
   neighborhood: string;
   categorySlug: string;
@@ -52,7 +50,6 @@ export interface Listing {
   createdAt: string;
   views: number;
   attributes: ListingAttribute[];
-  status?: ListingStatus;
   isPremium?: boolean;
   lastBumpedAt?: string;
   isAutoBumpActive?: boolean;
