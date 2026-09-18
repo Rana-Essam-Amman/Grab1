@@ -5,10 +5,10 @@ export interface AuthStoreContract {
   user: UserProfile | null;
   sessionToken: string | null;
   registeredUsers: RegisteredAccount[];
-  loginDirectly: (...args: any[]) => void;
+  loginDirectly: (email: string, phone?: string, countryCode?: string, firstName?: string) => void;
   logout: () => void;
-  beginRegistration: (...args: any[]) => void;
-  confirmRegistration: (...args: any[]) => void;
+  beginRegistration: (userData: Partial<UserProfile>) => void;
+  confirmRegistration: (fallbackCountryCode?: string) => void;
   verifySession: () => Promise<boolean>;
-  registerNewUser: (...args: any[]) => void;
+  registerNewUser: (userData: RegisteredAccount) => void;
 }
