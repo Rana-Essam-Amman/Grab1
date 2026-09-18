@@ -4,7 +4,6 @@ import { ListingsState } from './listings.slice.types';
 import { createListingsActions } from './listings.slice.actions';
 import type { ListingsRepository } from '../data/repositories/ListingsRepository';
 import { LocalStorageListingsAdapter } from '../data/adapters/LocalStorageListingsAdapter';
-import type { Listing } from '../domain';
 
 export type { ListingsState };
 
@@ -23,7 +22,7 @@ export const useListingsStore = create<ListingsState>()(
       ...baseActions,
       addListing: (listing, activeCountry, isArabic) => {
         baseActions.addListing(listing, activeCountry, isArabic);
-        listingsRepository.create(listing as unknown as Listing).catch(console.error);
+        listingsRepository.create(listing).catch(console.error);
       },
       deleteListing: (id) => {
         baseActions.deleteListing(id);

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { LocalStorageListingsAdapter } from '../LocalStorageListingsAdapter';
-import type { Listing } from '../../../domain';
+import type { Listing } from '@/types';
 
 describe('LocalStorageListingsAdapter', () => {
   let adapter: LocalStorageListingsAdapter;
@@ -23,16 +23,22 @@ describe('LocalStorageListingsAdapter', () => {
   const baseListing: Listing = {
     id: 'l1',
     title: 'Toyota Camry',
-    price: 12000,
+    description: 'Clean 2018 Camry',
+    price: '12000',
     currency: 'JOD',
     countryCode: 'JO',
-    cityId: 'amman',
-    categoryId: 'motors',
-    subcategoryId: 'cars',
-    sellerId: 'u1',
-    status: 'active',
-    isFeatured: false,
-    viewsCount: 10,
+    city: 'Amman',
+    neighborhood: 'Khalda',
+    categorySlug: 'motors',
+    subcategorySlug: 'cars',
+    imageUrl: '/assets/listings/car.jpg',
+    images: ['/assets/listings/car.jpg'],
+    sellerPhone: '0791234567',
+    sellerName: 'Ahmad',
+    createdAt: new Date().toISOString(),
+    views: 10,
+    attributes: [],
+    isPremium: false,
   };
 
   it('returns empty array when no data', async () => {
@@ -60,7 +66,7 @@ describe('LocalStorageListingsAdapter', () => {
 
   it('filters by price range', async () => {
     await adapter.create(baseListing);
-    await adapter.create({ ...baseListing, id: 'l2', price: 5000 });
+    await adapter.create({ ...baseListing, id: 'l2', price: '5000' });
     const cheap = await adapter.filter({ market: 'JO', priceMax: 8000 });
     expect(cheap.length).toBe(1);
     expect(cheap[0].id).toBe('l2');
@@ -68,9 +74,9 @@ describe('LocalStorageListingsAdapter', () => {
 
   it('updates a listing', async () => {
     await adapter.create(baseListing);
-    await adapter.update('l1', { price: 10000 });
+    await adapter.update('l1', { price: '10000' });
     const found = await adapter.getById('l1');
-    expect(found?.price).toBe(10000);
+    expect(found?.price).toBe('10000');
   });
 
   it('deletes a listing', async () => {
