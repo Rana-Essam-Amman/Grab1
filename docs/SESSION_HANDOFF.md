@@ -9,7 +9,7 @@ Use this template when starting a new session or switching AI agents.
 - **Violations:** 0
 - **Working tree:** clean
 - **Last completed task:** UI-3f — Listing Detail spacing polished
-- **Next task:** Phase 9 (Supabase)
+- **Next task:** UX-Crush — Intent Detection (AI Box)
 
 ## Active Sprints
 
