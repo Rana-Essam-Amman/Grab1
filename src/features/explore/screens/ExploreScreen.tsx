@@ -3,19 +3,16 @@ import { useDraft } from '@/hooks/useDraft';
 import { useMonetization } from '@/hooks/useMonetization';
 import React, { useMemo, useCallback } from 'react';
 import { AiAssistantBox } from '@/features/explore/components/AiAssistantBox';
-import { ExploreFilterBar } from '@/features/explore/components/ExploreFilterBar';
-import { ExploreListingFeed } from '@/features/explore/components/ExploreListingFeed';
 import { MONETIZATION_MATRIX } from '@/data/monetization';
 import { useExploreListings } from '../hooks/useExploreListings';
 import { ExploreVoidedNoticeBanner } from '../components/ExploreVoidedNoticeBanner';
-import { ExploreCategoryGrid } from '../components/ExploreCategoryGrid';
+import { ExploreTopSections } from '../components/ExploreTopSections';
 import { ExploreQuotaPaywallModal } from '../components/ExploreQuotaPaywallModal';
-import { FeaturedDealCard } from '../components/FeaturedDealCard';
-import { TrustSignal } from '../components/TrustSignal';
-import { TrendingSection } from '../components/TrendingSection';
+import { ExploreFilterBar } from '@/features/explore/components/ExploreFilterBar';
+import { ExploreListingFeed } from '@/features/explore/components/ExploreListingFeed';
 
 export const ExploreScreen: React.FC = () => {
-  const { isArabic, setCategoryFilter, setSelectedParentCategory, navigateTo, setActiveTab, categoryFilter, browseCountryCode, setSelectedListingId } = useUI();
+  const { isArabic, categoryFilter, browseCountryCode } = useUI();
   const { startPostFlow } = useDraft();
   const { isQuotaExhausted, setIsQuotaExhausted } = useMonetization();
 
@@ -29,51 +26,10 @@ export const ExploreScreen: React.FC = () => {
     return MONETIZATION_MATRIX.packages[browseCountryCode] || MONETIZATION_MATRIX.packages['JO'];
   }, [browseCountryCode]);
 
-  const featuredListing = useMemo(
-    () => displayListings.find((l) => l.isPremium) || displayListings[0],
-    [displayListings]
-  );
-
-  const trendingListings = useMemo(
-    () => [...displayListings].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 6),
-    [displayListings]
-  );
-
-  const handleFeaturedClick = useCallback(() => {
-    if (featuredListing) {
-      setSelectedListingId(featuredListing.id);
-      navigateTo('listing-detail');
-    }
-  }, [featuredListing, setSelectedListingId, navigateTo]);
-
-  const handleTrendingClick = useCallback((id: string) => {
-    setSelectedListingId(id);
-    navigateTo('listing-detail');
-  }, [setSelectedListingId, navigateTo]);
-
-  const handleCategoryClick = useCallback((catSlug: string) => {
-    setSelectedParentCategory(catSlug);
-    navigateTo('sub-categories');
-  }, [setSelectedParentCategory, navigateTo]);
-
-  const handleViewAllCategories = useCallback(() => {
-    setCategoryFilter(null);
-    setActiveTab('categories');
-    navigateTo('main');
-  }, [setCategoryFilter, setActiveTab, navigateTo]);
-
   const handleStartPost = useCallback(() => {
     setIsQuotaExhausted(false);
     startPostFlow();
   }, [setIsQuotaExhausted, startPostFlow]);
-
-  const marketLabel = {
-    JO: isArabic ? 'عمّان' : 'Amman',
-    SA: isArabic ? 'الرياض' : 'Riyadh',
-    PS: isArabic ? 'القدس' : 'Jerusalem',
-    LB: isArabic ? 'بيروت' : 'Beirut',
-    SY: isArabic ? 'دمشق' : 'Damascus',
-  }[browseCountryCode] || browseCountryCode;
 
   return (
     <div 
@@ -98,34 +54,7 @@ export const ExploreScreen: React.FC = () => {
         />
       )}
 
-      {featuredListing && (
-        <FeaturedDealCard
-          listing={featuredListing}
-          isArabic={isArabic}
-          onClick={handleFeaturedClick}
-        />
-      )}
-
-      <TrustSignal
-        market={marketLabel}
-        listingsCount={displayListings.length}
-        isArabic={isArabic}
-      />
-
-      {trendingListings.length > 0 && (
-        <TrendingSection
-          listings={trendingListings}
-          isArabic={isArabic}
-          onListingClick={handleTrendingClick}
-        />
-      )}
-
-      {/* Category Horizontal / Grid Scroller */}
-      <ExploreCategoryGrid
-        isArabic={isArabic}
-        onViewAll={handleViewAllCategories}
-        onCategoryClick={handleCategoryClick}
-      />
+      <ExploreTopSections displayListings={displayListings} />
 
       {/* FILTER BAR & DRAWER CONTROLS */}
       <ExploreFilterBar

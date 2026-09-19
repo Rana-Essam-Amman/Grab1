@@ -8,11 +8,12 @@ Use this template when starting a new session or switching AI agents.
 - **Tests:** 337 passing (42 test files)
 - **Violations:** 0
 - **Working tree:** clean
-- **Last completed task:** UX-Crush B4b — AiAssistantControls extraction (48 lines)
-- **Next task:** UX-Crush B4c — extract ExploreTopSections
+- **Last completed task:** UX-Crush B4c — ExploreTopSections extraction (93 lines)
+- **Next task:** UX-Crush B4d — add suggestion state to useAiAssistant
 
 ## Active Sprints
 
+- **UX-Crush B4c:** ✅ ExploreTopSections extracted
 - **UX-Crush B4b:** ✅ AiAssistantControls extracted
 - **UX-Crush B4a:** ✅ useAiPublishFlow extracted (pure refactor)
 - **UX-Crush B3:** ✅ 26 tests for intentClassifier + intentScoring

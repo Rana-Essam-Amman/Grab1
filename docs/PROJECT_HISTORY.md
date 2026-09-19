@@ -192,3 +192,9 @@ Complete timeline of all work.
 - ESLint clean, TSC clean, 363 tests passing
 - Note: further extraction needed before B4d wiring
 
+### B4c — Extract ExploreTopSections (2026-09-19)
+- Created: ExploreTopSections.tsx (93 lines, presentational)
+- Extracted: Featured, Trust, Trending, and Categories sections
+- ExploreScreen.tsx: 165 → 95 lines
+- ESLint clean, TSC clean, 363 tests passing
+
