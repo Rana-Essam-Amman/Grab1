@@ -17,76 +17,130 @@ export interface ExploreFilterChipsBarProps {
   activeCurrency: string;
   activeNeighborhood?: string | null;
   onOpenDrawer: (drawer: 'category' | 'price' | 'location') => void;
+  onClearCategory?: () => void;
+  onClearPrice?: () => void;
+  onClearNeighborhood?: () => void;
 }
 
 export const ExploreFilterChipsBar: React.FC<ExploreFilterChipsBarProps> = React.memo(({
   isArabic, filterMode, onFilterModeChange, feedLayout, onFeedLayoutChange, listingCount, browseCityAr, browseCityEn,
   categoryFilter, activeCategoryTitle, minPriceFilter, maxPriceFilter, activeCurrency, activeNeighborhood, onOpenDrawer,
+  onClearCategory, onClearPrice, onClearNeighborhood,
 }) => {
   const isPriceActive = minPriceFilter !== null || maxPriceFilter !== null;
 
   const priceChipText = useMemo(() => {
     if (minPriceFilter === null && maxPriceFilter === null) {
-      return isArabic ? 'السعر الأقصى' : 'Max Price';
+      return isArabic ? 'السعر' : 'Price';
     }
     if (minPriceFilter !== null && maxPriceFilter === null) {
       return isArabic 
-        ? `أكثر من ${minPriceFilter.toLocaleString()} ${activeCurrency}` 
-        : `Over ${minPriceFilter.toLocaleString()} ${activeCurrency}`;
+        ? `+${minPriceFilter.toLocaleString()} ${activeCurrency}` 
+        : `>${minPriceFilter.toLocaleString()} ${activeCurrency}`;
     }
     if (minPriceFilter === null && maxPriceFilter !== null) {
       return isArabic 
-        ? `أقل من ${maxPriceFilter.toLocaleString()} ${activeCurrency}` 
-        : `Under ${maxPriceFilter.toLocaleString()} ${activeCurrency}`;
+        ? `-${maxPriceFilter.toLocaleString()} ${activeCurrency}` 
+        : `<${maxPriceFilter.toLocaleString()} ${activeCurrency}`;
     }
-    return `${minPriceFilter?.toLocaleString()} - ${maxPriceFilter?.toLocaleString()} ${activeCurrency}`;
+    return `${minPriceFilter?.toLocaleString()}-${maxPriceFilter?.toLocaleString()} ${activeCurrency}`;
   }, [minPriceFilter, maxPriceFilter, isArabic, activeCurrency]);
 
-  const chipBaseClass = "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-transparent border border-line text-ink text-xs font-medium hover:border-line-strong transition-colors flex-shrink-0 cursor-pointer";
+  const getChipClass = (isActive: boolean) => 
+    `inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-xs font-medium transition-all duration-200 flex-shrink-0 cursor-pointer select-none ${
+      isActive 
+        ? "bg-accent/10 border-accent/40 text-accent font-semibold shadow-sm" 
+        : "bg-surface border-line text-ink hover:border-line-strong hover:bg-canvas"
+    }`;
 
   return (
     <div className="flex flex-col gap-2 font-cairo">
-      {/* Task 1: Chips in one horizontal row */}
+      {/* Scrollable Chips Row */}
       <div className="flex flex-row items-center gap-2 overflow-x-auto no-scrollbar px-4 pb-2 -mx-4">
-        <button
-          type="button"
+        {/* Area Filter Chip */}
+        <div
+          className={getChipClass(!!activeNeighborhood)}
           onClick={() => onOpenDrawer('location')}
-          className={chipBaseClass}
         >
           <span>{isArabic ? 'المنطقة' : 'Area'}</span>
-          <span className="text-[10px] opacity-70">/</span>
-          <span>{activeNeighborhood || (isArabic ? browseCityAr : browseCityEn)}</span>
-          <span className="text-[8px] opacity-70">▼</span>
-        </button>
+          <span className="text-[10px] opacity-50">/</span>
+          <span className="truncate max-w-[85px]">{activeNeighborhood || (isArabic ? browseCityAr : browseCityEn)}</span>
+          {activeNeighborhood && onClearNeighborhood ? (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onClearNeighborhood();
+              }}
+              className="w-4 h-4 rounded-full hover:bg-accent/20 flex items-center justify-center text-accent text-sm leading-none transition-colors ml-1"
+              title={isArabic ? 'إلغاء الفلتر' : 'Clear filter'}
+            >
+              ×
+            </button>
+          ) : (
+            <span className="text-[8px] opacity-60">▼</span>
+          )}
+        </div>
 
+        {/* Entire Country Filter Chip */}
         <button
           type="button"
-          onClick={() => onFilterModeChange('all')}
-          className={chipBaseClass}
+          onClick={() => onFilterModeChange(filterMode === 'all' ? 'city' : 'all')}
+          className={getChipClass(filterMode === 'all')}
         >
           <span>{isArabic ? 'كل الدولة' : 'Entire Country'}</span>
         </button>
 
-        <button
-          type="button"
+        {/* Category Filter Chip */}
+        <div
+          className={getChipClass(!!categoryFilter)}
           onClick={() => onOpenDrawer('category')}
-          className={chipBaseClass}
         >
-          <span>{categoryFilter ? activeCategoryTitle : (isArabic ? 'القسم' : 'Category')}</span>
-          <span className="text-[8px] opacity-70">▼</span>
-        </button>
+          <span className="truncate max-w-[100px]">
+            {categoryFilter ? activeCategoryTitle : (isArabic ? 'القسم' : 'Category')}
+          </span>
+          {categoryFilter && onClearCategory ? (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onClearCategory();
+              }}
+              className="w-4 h-4 rounded-full hover:bg-accent/20 flex items-center justify-center text-accent text-sm leading-none transition-colors ml-1"
+              title={isArabic ? 'إلغاء الفلتر' : 'Clear filter'}
+            >
+              ×
+            </button>
+          ) : (
+            <span className="text-[8px] opacity-60">▼</span>
+          )}
+        </div>
 
-        <button
-          type="button"
+        {/* Price Filter Chip */}
+        <div
+          className={getChipClass(isPriceActive)}
           onClick={() => onOpenDrawer('price')}
-          className={chipBaseClass}
         >
           <span>{priceChipText}</span>
-          <span className="text-[8px] opacity-70">▼</span>
-        </button>
+          {isPriceActive && onClearPrice ? (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onClearPrice();
+              }}
+              className="w-4 h-4 rounded-full hover:bg-accent/20 flex items-center justify-center text-accent text-sm leading-none transition-colors ml-1"
+              title={isArabic ? 'إلغاء الفلتر' : 'Clear filter'}
+            >
+              ×
+            </button>
+          ) : (
+            <span className="text-[8px] opacity-60">▼</span>
+          )}
+        </div>
       </div>
 
-      {/* Task 4: Move listings count as small text below chips row, alongside layout toggler */}
+      {/* Listings Count & Layout Toggle */}
       <div className="flex items-center justify-between px-4 pb-1">
         <p className="text-xs text-ink-muted">
           {listingCount} {isArabic ? 'إعلان' : 'listings'}

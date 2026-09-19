@@ -73,6 +73,9 @@ export const ExploreFilterBar: React.FC<ExploreFilterBarProps> = ({
           activeCurrency={activeCurrency}
           activeNeighborhood={activeNeighborhood}
           onOpenDrawer={setOpenDrawer}
+          onClearCategory={() => setCategoryFilter(null)}
+          onClearPrice={() => { setMinPriceFilter(null); setMaxPriceFilter(null); }}
+          onClearNeighborhood={() => setActiveNeighborhood(null)}
         />
         {categoryFilter && (
           <ExploreActiveCategoryBanner isArabic={isArabic} activeCategoryTitle={activeCategoryTitle} onClearCategory={() => setCategoryFilter(null)} />

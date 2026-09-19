@@ -128,6 +128,7 @@ Complete timeline of all work.
 ## Phase 7 — UI Improvements
 - UI-3b: Trust Signal added ✅
 - UI-3c: Trending Section added ✅
+- UI-3d: Filter Chips polish added ✅
 
 ## Constitution Evolution
 
