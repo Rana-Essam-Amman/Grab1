@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@/shared/ui/Button';
 import { Badge } from '@/shared/ui/Badge';
-import { Loader2, MailOpen, CheckCircle } from 'lucide-react';
+import { Refresh, DirectInbox, TickCircle } from 'iconsax-react';
 import { useRegisterStep2 } from '../hooks/useRegisterStep2';
 import { MarketCode } from '@/shared/lib/marketGate';
 
@@ -29,7 +29,7 @@ export const RegisterStep2Form: React.FC<RegisterStep2FormProps> = (props) => {
   if (subPhase === 'sending') {
     return (
       <div className="p-8 flex flex-col items-center justify-center flex-1 gap-4 text-center">
-        <Loader2 size={36} className="text-primary animate-spin" />
+        <Refresh size={36} variant="Linear" color="#E57E25" className="animate-spin" />
         <div>
           <h3 className="text-base font-bold text-ink mb-1">
             {isArabic ? 'جاري إرسال الرابط التفعيل...' : 'Sending Activation Link...'}
@@ -47,7 +47,7 @@ export const RegisterStep2Form: React.FC<RegisterStep2FormProps> = (props) => {
   return (
     <div className="p-5 flex flex-col gap-6 flex-1 text-center justify-center max-w-sm mx-auto w-full">
       <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto text-primary">
-        <MailOpen size={28} />
+        <DirectInbox size={28} variant="Bold" color="#E57E25" />
       </div>
 
       <div className="flex flex-col gap-2">
@@ -57,7 +57,7 @@ export const RegisterStep2Form: React.FC<RegisterStep2FormProps> = (props) => {
         <Badge
           variant="success"
           size="md"
-          icon={<CheckCircle size={14} />}
+          icon={<TickCircle size={14} variant="Bold" color="#10B981" />}
           className="bg-green-50 text-green-700 border border-green-100 mx-auto font-bold py-1.5 px-3 rounded-lg"
         >
           {isArabic ? 'تم إرسال رابط التفعيل بنجاح' : 'Activation link sent successfully'}

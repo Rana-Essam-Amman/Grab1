@@ -1,6 +1,6 @@
 import { useUI } from '@/hooks/useUI';
 import React from 'react';
-import { ArrowLeft, ArrowRight, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ShieldTick } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { Card } from '@/shared/ui/Card';
 
@@ -13,7 +13,7 @@ export const TermsScreen: React.FC = () => {
       {/* Top Bar */}
       <div className="px-4 py-4 border-b border-border flex items-center gap-3 bg-surface sticky top-0 z-20">
         <Button variant="ghost" size="icon" onClick={goBack}>
-          <BackIcon size={18} />
+          <BackIcon size={18} variant="Linear" color="#0F172A" />
         </Button>
         <h1 className="text-base font-bold text-ink">
           {isArabic ? 'شروط الخدمة والخصوصية' : 'Terms & Privacy'}
@@ -22,7 +22,7 @@ export const TermsScreen: React.FC = () => {
 
       <div className="p-4 flex flex-col gap-4 text-xs text-ink-soft leading-relaxed">
         <div className="flex items-center gap-2 text-primary font-bold text-sm">
-          <ShieldCheck size={20} />
+          <ShieldTick size={20} variant="Bold" color="#E57E25" />
           <span>Catch the Deals — Community Standards</span>
         </div>
 

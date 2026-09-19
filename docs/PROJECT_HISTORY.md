@@ -117,6 +117,10 @@ Complete timeline of all work.
 - #7 Categories Not Circular
 - #8 Chat Crash on Open
 
+## Phase 6 — Iconsax Migration
+- Batch 1 & 2 (Shared UI & Components): 11 files migrated ✅
+- Batch 4 (Auth Feature Components & Screens): 12 files migrated (LoginForm, LoginGateway, RegisterFormFields, RegisterStep2Form, CountrySelector, GuestCountrySelect, AuthTopBar, AuthToastBanner, ForgotPasswordForm, ForgotPasswordHeader, ConfirmScreen, TermsScreen) ✅
+
 ## Constitution Evolution
 
 - v1.0: Baseline (Rules 1-15, 20-26)

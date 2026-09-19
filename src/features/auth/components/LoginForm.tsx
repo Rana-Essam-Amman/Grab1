@@ -3,7 +3,7 @@ import { Button } from '@/shared/ui/Button';
 import { Input } from '@/shared/ui/Input';
 import { CountrySelector } from './CountrySelector';
 import { useLoginForm } from '../hooks/useLoginForm';
-import { Lock, Phone, Eye, EyeOff } from 'lucide-react';
+import { Lock1, Call, Eye, EyeSlash } from 'iconsax-react';
 import { LoginHeader } from './LoginHeader';
 
 export interface LoginFormProps {
@@ -48,7 +48,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 
         <div>
           <label className="block text-xs font-bold text-ink mb-1.5 flex items-center gap-1.5">
-            <Phone size={14} className="text-primary" />
+            <Call size={14} variant="Linear" color="#E57E25" />
             {isArabic ? 'رقم الهاتف *' : 'Phone Number *'}
           </label>
           <Input
@@ -64,7 +64,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <label className="block text-xs font-bold text-ink flex items-center gap-1.5">
-              <Lock size={14} className="text-primary" />
+              <Lock1 size={14} variant="Linear" color="#E57E25" />
               {isArabic ? 'كلمة المرور *' : 'Password *'}
             </label>
             <button
@@ -87,7 +87,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
               onClick={handleToggleShowPassword}
               className="absolute inset-y-0 end-0 px-3 flex items-center text-ink-muted hover:text-ink cursor-pointer"
             >
-              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              {showPassword ? <EyeSlash size={16} variant="Linear" color="#94A3B8" /> : <Eye size={16} variant="Linear" color="#94A3B8" />}
             </button>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle2 } from 'lucide-react';
+import { TickCircle } from 'iconsax-react';
 
 export interface ForgotPasswordHeaderProps {
   isArabic: boolean;
@@ -33,7 +33,7 @@ export const ForgotPasswordHeader: React.FC<ForgotPasswordHeaderProps> = ({
 
       {successMsg && (
         <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2">
-          <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
+          <TickCircle size={16} variant="Bold" color="#059669" className="shrink-0" />
           <span>{successMsg}</span>
         </div>
       )}

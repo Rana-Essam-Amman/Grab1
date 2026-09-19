@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Info } from 'lucide-react';
+import { InfoCircle } from 'iconsax-react';
 
 interface AuthToastBannerProps {
   message: string | null;
@@ -20,7 +20,7 @@ export const AuthToastBanner: React.FC<AuthToastBannerProps> = ({ message, onDis
   return (
     <div className="mx-4 mt-3 p-3.5 bg-yellow-50 text-yellow-800 border border-yellow-200 rounded-xl text-xs font-bold shadow-md flex items-center justify-between gap-2 z-50 animate-pulse">
       <div className="flex items-center gap-2">
-        <Info size={16} className="text-primary shrink-0" />
+        <InfoCircle size={16} variant="Linear" color="#E57E25" className="shrink-0" />
         <span>{message}</span>
       </div>
       <button

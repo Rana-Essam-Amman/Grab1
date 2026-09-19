@@ -4,7 +4,7 @@ import { useDraft } from '@/hooks/useDraft';
 import { useListings } from '@/hooks/useListings';
 import React, { useState, useCallback } from 'react';
 import { Listing } from '@/types';
-import { ArrowLeft, ArrowRight, KeyRound } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Key } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 
 export const ConfirmScreen: React.FC = () => {
@@ -76,7 +76,7 @@ export const ConfirmScreen: React.FC = () => {
       {/* Top Bar */}
       <div className="px-4 py-4 border-b border-border flex items-center gap-3 bg-surface sticky top-0 z-20">
         <Button variant="ghost" size="icon" onClick={goBack}>
-          <BackIcon size={18} />
+          <BackIcon size={18} variant="Linear" color="#0F172A" />
         </Button>
         <h1 className="text-base font-bold text-ink">
           {isArabic ? 'تأكيد رمز التحقق' : 'Confirm Verification Code'}
@@ -85,7 +85,7 @@ export const ConfirmScreen: React.FC = () => {
 
       <form onSubmit={handleVerify} className="p-4 flex flex-col gap-5 flex-1 items-center justify-center max-w-sm mx-auto text-center">
         <div className="w-16 h-16 rounded-full bg-background text-primary flex items-center justify-center">
-          <KeyRound size={32} />
+          <Key size={32} variant="Bold" color="#E57E25" />
         </div>
 
         <div>

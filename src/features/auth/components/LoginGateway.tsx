@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/shared/ui/Button';
-import { ShieldCheck, Globe } from 'lucide-react';
+import { ShieldTick, Global } from 'iconsax-react';
 import { GuestCountrySelect } from './GuestCountrySelect';
 import { useTranslation } from '@/shared/i18n';
 
@@ -36,7 +36,7 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
       ) : (
         <>
           <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
-            <ShieldCheck size={32} />
+            <ShieldTick size={32} variant="Bold" color="#E57E25" />
           </div>
 
           <h2 className="text-xl font-bold text-ink mb-2">
@@ -77,7 +77,7 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
               fullWidth
               className="bg-background hover:bg-border text-ink-soft"
             >
-              <Globe size={16} />
+              <Global size={16} variant="Linear" color="#64748B" />
               <span>{t('auth.browseAsGuest')}</span>
             </Button>
           </div>

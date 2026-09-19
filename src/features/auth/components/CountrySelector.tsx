@@ -1,5 +1,5 @@
 import React from 'react';
-import { Globe } from 'lucide-react';
+import { Global } from 'iconsax-react';
 import { countries } from '@/data/countries';
 import { getFlagEmoji } from '../helpers/phoneValidation';
 
@@ -27,13 +27,13 @@ export const CountrySelector: React.FC<CountrySelectorProps> = ({
       {label !== undefined ? (
         label && (
           <label className="block text-sm font-bold text-ink mb-2 flex items-center gap-1.5">
-            <Globe size={15} className="text-primary" />
+            <Global size={15} variant="Linear" color="#E57E25" />
             {label}
           </label>
         )
       ) : (
         <label className="block text-sm font-bold text-ink mb-2 flex items-center gap-1.5">
-          <Globe size={15} className="text-primary" />
+          <Global size={15} variant="Linear" color="#E57E25" />
           {isArabic ? 'اختر بلد السوق الحالي *' : 'Choose Market Country *'}
         </label>
       )}

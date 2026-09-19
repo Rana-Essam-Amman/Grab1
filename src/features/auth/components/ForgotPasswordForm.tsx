@@ -4,7 +4,7 @@ import { Input } from '@/shared/ui/Input';
 import { CountrySelector } from './CountrySelector';
 import { ForgotPasswordHeader } from './ForgotPasswordHeader';
 import { useForgotPassword } from '../hooks/useForgotPassword';
-import { Mail, Phone, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Sms, Call, ArrowLeft, ArrowRight } from 'iconsax-react';
 
 export interface ForgotPasswordFormProps {
   onSwitchToLogin: () => void;
@@ -48,7 +48,7 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
 
         <div>
           <label className="text-xs font-bold text-ink mb-1.5 flex items-center gap-1.5">
-            <Phone size={14} className="text-primary" />
+            <Call size={14} variant="Linear" color="#E57E25" />
             {isArabic ? 'رقم الهاتف *' : 'Phone Number *'}
           </label>
           <Input
@@ -63,7 +63,7 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
 
         <div>
           <label className="text-xs font-bold text-ink mb-1.5 flex items-center gap-1.5">
-            <Mail size={14} className="text-primary" />
+            <Sms size={14} variant="Linear" color="#E57E25" />
             {isArabic ? 'البريد الإلكتروني المسجل *' : 'Registered Email *'}
           </label>
           <Input
@@ -93,7 +93,7 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
           onClick={onSwitchToLogin}
           className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline cursor-pointer"
         >
-          <BackIcon size={14} />
+          <BackIcon size={14} variant="Linear" color="#E57E25" />
           {isArabic ? 'العودة لتسجيل الدخول' : 'Back to Login'}
         </button>
       </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/shared/ui/Button';
-import { Globe } from 'lucide-react';
+import { Global } from 'iconsax-react';
 import { countries } from '@/data/countries';
 
 interface GuestCountrySelectProps {
@@ -17,7 +17,7 @@ export const GuestCountrySelect: React.FC<GuestCountrySelectProps> = ({
   return (
     <div className="w-full">
       <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6 mx-auto">
-        <Globe size={32} />
+        <Global size={32} variant="Bold" color="#E57E25" />
       </div>
       <h2 className="text-xl font-bold text-ink mb-2">
         {isArabic ? 'اختر الدولة للتصفح كزائر' : 'Select Country to Browse'}

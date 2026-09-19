@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/shared/ui/Button';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'iconsax-react';
 import { useTranslation } from '@/shared/i18n';
 
 interface AuthTopBarProps {
@@ -35,7 +35,7 @@ export const AuthTopBar: React.FC<AuthTopBarProps> = ({
           onClick={onBack}
           className="w-9 h-9 rounded-full bg-background text-ink-soft hover:bg-border transition-colors cursor-pointer"
         >
-          <BackIcon size={18} />
+          <BackIcon size={18} variant="Linear" color="#0F172A" />
         </Button>
         <h1 className="text-base font-bold text-ink">{getTitle()}</h1>
       </div>
