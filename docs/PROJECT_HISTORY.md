@@ -125,6 +125,9 @@ Complete timeline of all work.
 - Batch 7: Categories + Post-Wizard + Markets + My-Ads migrated ✅
 - Batch 8: Listings + Wishlist + Config (icons.config.ts) migrated & lucide-react uninstalled (0 usages, vendor-icons bundle reduced) ✅
 
+## Phase 7 — UI Improvements
+- UI-3b: Trust Signal added ✅
+
 ## Constitution Evolution
 
 - v1.0: Baseline (Rules 1-15, 20-26)

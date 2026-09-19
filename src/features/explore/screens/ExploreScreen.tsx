@@ -11,6 +11,7 @@ import { ExploreVoidedNoticeBanner } from '../components/ExploreVoidedNoticeBann
 import { ExploreCategoryGrid } from '../components/ExploreCategoryGrid';
 import { ExploreQuotaPaywallModal } from '../components/ExploreQuotaPaywallModal';
 import { FeaturedDealCard } from '../components/FeaturedDealCard';
+import { TrustSignal } from '../components/TrustSignal';
 
 export const ExploreScreen: React.FC = () => {
   const { isArabic, setCategoryFilter, setSelectedParentCategory, navigateTo, setActiveTab, categoryFilter, browseCountryCode, setSelectedListingId } = useUI();
@@ -55,6 +56,14 @@ export const ExploreScreen: React.FC = () => {
     startPostFlow();
   }, [setIsQuotaExhausted, startPostFlow]);
 
+  const marketLabel = {
+    JO: isArabic ? 'عمّان' : 'Amman',
+    SA: isArabic ? 'الرياض' : 'Riyadh',
+    PS: isArabic ? 'القدس' : 'Jerusalem',
+    LB: isArabic ? 'بيروت' : 'Beirut',
+    SY: isArabic ? 'دمشق' : 'Damascus',
+  }[browseCountryCode] || browseCountryCode;
+
   return (
     <div 
       className={`max-w-[440px] mx-auto w-full flex flex-col gap-2 pb-24 px-4 bg-surface ${isArabic ? 'font-cairo' : ''}`} dir={isArabic ? "rtl" : "ltr"}
@@ -85,6 +94,12 @@ export const ExploreScreen: React.FC = () => {
           onClick={handleFeaturedClick}
         />
       )}
+
+      <TrustSignal
+        market={marketLabel}
+        listingsCount={displayListings.length}
+        isArabic={isArabic}
+      />
 
       {/* Category Horizontal / Grid Scroller */}
       <ExploreCategoryGrid
