@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Search, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { SearchNormal1, Add } from 'iconsax-react';
 
 export interface AiSearchFallbackProps {
   isOpen: boolean;
@@ -20,7 +20,7 @@ export const AiSearchFallback: React.FC<AiSearchFallbackProps> = ({ isOpen, onCl
       dir={isArabic ? 'rtl' : 'ltr'}
       className="w-full max-w-[440px] mx-auto bg-surface rounded-2xl shadow-xs p-3.5 flex items-center gap-2 border border-neutral-100 font-cairo transition-all duration-300"
     >
-      <Search size={18} className="text-ink-muted shrink-0 select-none" />
+      <SearchNormal1 size={18} variant="Linear" color="#64748B" className="text-ink-muted shrink-0 select-none" />
       <input
         type="text"
         value={query}
@@ -45,7 +45,7 @@ export const AiSearchFallback: React.FC<AiSearchFallbackProps> = ({ isOpen, onCl
           className="p-1 text-ink-muted hover:text-ink-soft transition-colors cursor-pointer shrink-0 rounded-full hover:bg-neutral-100"
           title={isArabic ? 'مسح البحث' : 'Clear search'}
         >
-          <X size={15} />
+          <Add size={15} variant="Linear" color="#64748B" className="rotate-45" />
         </button>
       )}
     </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { X } from 'lucide-react';
+import { Add } from 'iconsax-react';
 
 export interface ExploreActiveCategoryBannerProps {
   isArabic: boolean;
@@ -23,7 +23,7 @@ export const ExploreActiveCategoryBanner: React.FC<ExploreActiveCategoryBannerPr
       </div>
       <button type="button" onClick={onClearCategory} className="text-xs font-bold text-ink-soft hover:text-danger flex items-center gap-1 cursor-pointer">
         <span>{isArabic ? 'إلغاء التصفية' : 'Clear filter'}</span>
-        <X size={14} />
+        <Add size={14} variant="Linear" color="#64748B" className="rotate-45" />
       </button>
     </div>
   );

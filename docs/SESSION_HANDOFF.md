@@ -8,8 +8,8 @@ Use this template when starting a new session or switching AI agents.
 - **Tests:** 337 passing (42 test files)
 - **Violations:** 0
 - **Working tree:** clean
-- **Last completed task:** Batch 5 (Profile + Chat icon migration — 12 files)
-- **Next task:** Batch 6 (Explore)
+- **Last completed task:** Batch 6 (Explore icon migration — 18 files)
+- **Next task:** Batch 7 (Categories + Post-Wizard + Markets + My-Ads)
 
 ## Active Sprints
 

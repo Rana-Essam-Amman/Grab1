@@ -1,5 +1,5 @@
 import React from 'react';
-import { Share2 } from 'lucide-react';
+import { ExportSquare } from 'iconsax-react';
 import { Modal } from '@/shared/ui/Modal';
 import { Button } from '@/shared/ui/Button';
 import { AiShareButtons } from './AiShareButtons';
@@ -88,7 +88,7 @@ export const AiShareDrawer: React.FC<AiShareDrawerProps> = ({
             }}
             className="flex-1 font-bold text-xs h-auto py-3 cursor-pointer"
           >
-            <Share2 size={15} className="text-ink-soft" />
+            <ExportSquare size={15} variant="Linear" color="#64748B" className="text-ink-soft" />
             <span>{isArabic ? 'نسخ رابط التطبيق' : 'Copy App Link'}</span>
           </Button>
 

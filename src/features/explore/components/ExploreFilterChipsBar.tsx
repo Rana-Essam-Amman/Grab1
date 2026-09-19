@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { LayoutGrid, List } from 'lucide-react';
+import { Grid1, RowVertical } from 'iconsax-react';
 
 export interface ExploreFilterChipsBarProps {
   isArabic: boolean;
@@ -98,7 +98,7 @@ export const ExploreFilterChipsBar: React.FC<ExploreFilterChipsBarProps> = React
           className="w-8 h-8 rounded-xl border border-line bg-transparent hover:bg-gray-50 text-ink flex items-center justify-center transition-colors cursor-pointer"
           title={isArabic ? 'تغيير طريقة العرض' : 'Toggle layout'}
         >
-          {feedLayout === 'list' ? <LayoutGrid size={15} /> : <List size={15} />}
+          {feedLayout === 'list' ? <Grid1 size={15} variant="Linear" /> : <RowVertical size={15} variant="Linear" />}
         </button>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin } from 'lucide-react';
+import { Location } from 'iconsax-react';
 
 interface ExploreLocationCityViewProps {
   currentLocations: Record<string, string[]>;
@@ -37,7 +37,7 @@ export const ExploreLocationCityView: React.FC<ExploreLocationCityViewProps> = (
                 onClick={() => handleCityTap(cityName)}
                 className="flex items-center gap-1.5 flex-1 text-start cursor-pointer font-bold border-none bg-transparent"
               >
-                <MapPin size={14} className={isSelected ? 'text-accent shrink-0' : 'text-ink-muted shrink-0 group-hover:text-ink'} />
+                <Location size={14} variant="Linear" className={isSelected ? 'text-accent shrink-0' : 'text-ink-muted shrink-0 group-hover:text-ink'} />
                 <span className="line-clamp-1">{cityName}</span>
               </button>
               {hasNeighs && (

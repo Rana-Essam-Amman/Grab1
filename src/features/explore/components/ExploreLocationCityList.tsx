@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check } from 'lucide-react';
+import { TickCircle } from 'iconsax-react';
 import { ExploreLocationCityView } from './ExploreLocationCityView';
 import { ExploreLocationNeighbourhoodView } from './ExploreLocationNeighbourhoodView';
 
@@ -32,7 +32,7 @@ export const ExploreLocationCityList: React.FC<ExploreLocationCityListProps> = (
         }`}
       >
         <span className="text-sm font-bold">{isArabic ? `كامل الدولة (${browseCountryCode})` : `Entire Country (${browseCountryCode})`}</span>
-        {!activeNeighborhood && <Check size={18} className="text-accent shrink-0" />}
+        {!activeNeighborhood && <TickCircle size={18} variant="Bold" color="#E57E25" className="text-accent shrink-0" />}
       </button>
 
       {selectedCityForNeighs ? (

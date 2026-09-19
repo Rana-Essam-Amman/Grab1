@@ -1,7 +1,7 @@
 import React from 'react';
 import { EmptyState } from '@/shared/ui/EmptyState';
 import { Button } from '@/shared/ui/Button';
-import { ShoppingBag } from 'lucide-react';
+import { ShoppingBag } from 'iconsax-react';
 
 export interface ExploreEmptyFeedStateProps {
   isArabic: boolean;
@@ -13,7 +13,7 @@ export const ExploreEmptyFeedState: React.FC<ExploreEmptyFeedStateProps> = React
   isArabic, hasActiveFilters, onResetFilters,
 }) => (
   <EmptyState
-    icon={<ShoppingBag size={40} />}
+    icon={<ShoppingBag size={40} variant="Linear" color="#64748B" />}
     title={isArabic ? 'لا توجد نتائج تطابق فلاتر البحث الحالية' : 'No listings match current search filters'}
     description={
       isArabic

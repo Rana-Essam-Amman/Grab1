@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Drawer } from '@/shared/ui/Drawer';
-import { Check } from 'lucide-react';
 import { locations, locationsAr } from '@/data/locations';
 import { ExploreLocationCityList } from './ExploreLocationCityList';
 

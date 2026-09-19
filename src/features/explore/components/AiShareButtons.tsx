@@ -1,5 +1,5 @@
 import React from 'react';
-import { Share2 } from 'lucide-react';
+import { ExportSquare } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { SOCIAL_BRANDS } from '@/data/socialBrands';
 
@@ -28,7 +28,7 @@ export const AiShareButtons: React.FC<AiShareButtonsProps> = ({ isArabic, onShar
           className="w-8 h-8 rounded-xl text-white flex items-center justify-center shrink-0"
           style={{ backgroundColor: brand.color }}
         >
-          <Share2 size={16} />
+          <ExportSquare size={16} variant="Linear" color="#FFFFFF" />
         </div>
         <span>{label}</span>
       </Button>

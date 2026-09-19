@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check, ArrowRight, ArrowLeft } from 'lucide-react';
+import { TickCircle, ArrowRight2, ArrowLeft2 } from 'iconsax-react';
 
 interface ExploreLocationNeighbourhoodViewProps {
   selectedCityForNeighs: string;
@@ -28,7 +28,7 @@ export const ExploreLocationNeighbourhoodView: React.FC<ExploreLocationNeighbour
           onClick={() => setSelectedCityForNeighs(null)} 
           className="text-xs font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer border-none bg-transparent"
         >
-          {isArabic ? <ArrowRight size={14} className="inline" /> : <ArrowLeft size={14} className="inline" />}
+          {isArabic ? <ArrowRight2 size={14} variant="Linear" className="inline" /> : <ArrowLeft2 size={14} variant="Linear" className="inline" />}
           <span>{isArabic ? 'العودة للمدن' : 'Back to Cities'}</span>
         </button>
         <span className="text-xs font-bold text-ink-muted">{selectedCityForNeighs}</span>
@@ -57,7 +57,7 @@ export const ExploreLocationNeighbourhoodView: React.FC<ExploreLocationNeighbour
               }`}
             >
               <span className="line-clamp-1">{neigh}</span>
-              {isSelected && <Check size={14} className="text-accent shrink-0" />}
+              {isSelected && <TickCircle size={14} variant="Bold" color="#E57E25" className="text-accent shrink-0" />}
             </button>
           );
         })}

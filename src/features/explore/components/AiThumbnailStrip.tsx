@@ -1,5 +1,5 @@
 import React from 'react';
-import { X } from 'lucide-react';
+import { Add } from 'iconsax-react';
 
 export interface AiThumbnailStripProps {
   images: string[];
@@ -22,7 +22,7 @@ export const AiThumbnailStrip: React.FC<AiThumbnailStripProps> = ({ images, onRe
             }}
             className="absolute top-0.5 start-0.5 w-3.5 h-3.5 rounded-full bg-black/60 text-white flex items-center justify-center text-[8px] hover:bg-danger transition-colors cursor-pointer"
           >
-            <X size={8} />
+            <Add size={8} variant="Linear" color="#FFFFFF" className="rotate-45" />
           </button>
         </div>
       ))}

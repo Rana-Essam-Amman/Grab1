@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertCircle, X } from 'lucide-react';
+import { Warning2, Add } from 'iconsax-react';
 import type { AiResponse } from '../hooks/useAiAssistant.types';
 
 export interface AiResponseCardProps {
@@ -20,11 +20,11 @@ export const AiResponseCard: React.FC<AiResponseCardProps> = ({ response, onDism
         onClick={onDismiss}
         className="absolute top-2 end-2 p-1 text-ink-muted hover:text-ink transition-colors rounded-full hover:bg-background cursor-pointer"
       >
-        <X size={14} />
+        <Add size={14} variant="Linear" color="#64748B" className="rotate-45" />
       </button>
       <div className="flex items-start gap-2.5">
         <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
-          <AlertCircle size={16} />
+          <Warning2 size={16} variant="Linear" color="#E57E25" />
         </div>
         <div className="flex-1 pr-4">
           <h4 className="text-sm font-bold text-ink mb-1">

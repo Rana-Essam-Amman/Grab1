@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check } from 'lucide-react';
+import { TickCircle } from 'iconsax-react';
 
 export interface ExplorePriceQuickPresetsProps {
   isArabic: boolean;
@@ -39,7 +39,7 @@ export const ExplorePriceQuickPresets: React.FC<ExplorePriceQuickPresetsProps> =
               }`}
             >
               <span>{preset.label}</span>
-              {isSelected && <Check size={14} className="text-accent shrink-0" />}
+              {isSelected && <TickCircle size={14} variant="Bold" color="#E57E25" className="text-accent shrink-0" />}
             </button>
           );
         })}

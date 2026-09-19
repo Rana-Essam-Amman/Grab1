@@ -1,7 +1,7 @@
 import React from 'react';
 import { Drawer } from '@/shared/ui/Drawer';
 import { categories } from '@/data/categories';
-import { Check } from 'lucide-react';
+import { TickCircle } from 'iconsax-react';
 
 export interface ExploreCategoryFilterDrawerProps {
   open: boolean;
@@ -53,7 +53,7 @@ export const ExploreCategoryFilterDrawer: React.FC<ExploreCategoryFilterDrawerPr
             }`}
           >
             <span className="text-sm font-bold">{isArabic ? 'جميع الأقسام' : 'All Categories'}</span>
-            {!activeCategory && <Check size={18} className="text-accent shrink-0" />}
+            {!activeCategory && <TickCircle size={18} variant="Bold" color="#E57E25" className="text-accent shrink-0" />}
           </button>
 
           <div className="grid grid-cols-2 gap-2 pt-1">
@@ -79,7 +79,7 @@ export const ExploreCategoryFilterDrawer: React.FC<ExploreCategoryFilterDrawerPr
                     />
                   </div>
                   <span className="text-xs font-bold line-clamp-1 flex-1">{isArabic ? cat.nameAr : cat.nameEn}</span>
-                  {isSelected && <Check size={16} className="text-accent shrink-0" />}
+                  {isSelected && <TickCircle size={16} variant="Bold" color="#E57E25" className="text-accent shrink-0" />}
                 </button>
               );
             })}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { categories } from '@/data/categories';
-import { ChevronRight, ChevronLeft } from 'lucide-react';
+import { ArrowRight2, ArrowLeft2 } from 'iconsax-react';
 
 export interface ExploreCategoryGridProps {
   isArabic: boolean;
@@ -10,14 +10,14 @@ export interface ExploreCategoryGridProps {
 }
 
 export const ExploreCategoryGrid: React.FC<ExploreCategoryGridProps> = React.memo(({ isArabic, onViewAll, onCategoryClick }) => {
-  const ChevronIcon = isArabic ? ChevronLeft : ChevronRight;
+  const ChevronIcon = isArabic ? ArrowLeft2 : ArrowRight2;
   return (
     <div className="bg-background rounded-2xl py-3.5 px-1 my-1">
       <div className="flex items-center justify-between px-5 mt-0.5 mb-1">
         <h2 className="text-ink font-cairo text-base font-bold my-0.5">{isArabic ? 'الأقسام' : 'Categories'}</h2>
         <button onClick={onViewAll} className="text-xs text-primary font-bold hover:underline cursor-pointer flex items-center gap-0.5">
           <span>{isArabic ? 'عرض الكل' : 'View All'}</span>
-          <ChevronIcon size={13} className="w-3.25 h-3.25" />
+          <ChevronIcon size={13} variant="Linear" className="w-3.25 h-3.25" />
         </button>
       </div>
 

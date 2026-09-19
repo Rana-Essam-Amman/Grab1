@@ -1,5 +1,5 @@
 import React from 'react';
-import { Camera, Mic, ArrowUp } from 'lucide-react';
+import { Camera, Microphone2, ArrowUp } from 'iconsax-react';
 
 export interface AiMediaButtonsProps {
   onCameraClick: (e: React.MouseEvent) => void;
@@ -33,7 +33,7 @@ export const AiMediaButtons: React.FC<AiMediaButtonsProps> = ({
         disabled={disabled}
         className="p-1.5 rounded-full flex items-center gap-1 shrink-0 transition-colors text-icon-blue bg-icon-blue/10 hover:bg-icon-blue/15 active:scale-95 cursor-pointer relative"
       >
-        <Camera size={18} className="transition-colors" />
+        <Camera size={18} variant="Linear" className="transition-colors" />
         {imageCount > 0 && (
           <span className="absolute -top-0.5 -end-0.5 w-3.5 h-3.5 rounded-full bg-primary text-white text-[8px] flex items-center justify-center font-extrabold shadow-xs">
             {imageCount}
@@ -48,7 +48,7 @@ export const AiMediaButtons: React.FC<AiMediaButtonsProps> = ({
         title={isArabic ? 'تحدث بصوتك' : 'Voice Input'}
         className="p-1.5 rounded-full flex items-center justify-center transition-all text-icon-red bg-icon-red/10 hover:bg-icon-red/15 hover:scale-110 active:scale-95 cursor-pointer relative"
       >
-        <Mic size={18} className={isRecording ? 'animate-bounce text-icon-red' : ''} />
+        <Microphone2 size={18} variant="Linear" className={isRecording ? 'animate-bounce text-icon-red' : ''} />
         {isRecording && (
           <span className="absolute -top-6 bg-danger text-white text-[10px] px-1.5 py-0.5 rounded-md shadow-sm whitespace-nowrap">
             {25 - recordingTime}s
@@ -67,7 +67,7 @@ export const AiMediaButtons: React.FC<AiMediaButtonsProps> = ({
             : 'bg-background text-ink-muted cursor-not-allowed opacity-60'
         }`}
       >
-        <ArrowUp size={15} className="stroke-[2.5]" />
+        <ArrowUp size={15} variant="Linear" className="stroke-[2.5]" />
       </button>
     </div>
   );

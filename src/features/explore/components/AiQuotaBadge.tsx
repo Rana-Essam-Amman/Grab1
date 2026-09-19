@@ -1,5 +1,5 @@
 import React from 'react';
-import { Gift, Zap } from 'lucide-react';
+import { Gift, Flash } from 'iconsax-react';
 
 export interface AiQuotaBadgeProps {
   quota: number;
@@ -16,7 +16,7 @@ export const AiQuotaBadge: React.FC<AiQuotaBadgeProps> = ({ quota, onOpenShareMo
           onClick={onOpenShareModal}
           className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-gradient-to-r from-primary/15 via-primary/25 to-primary/15 border border-primary/50 text-primary hover:text-primary-hover hover:border-primary shadow-2xs hover:shadow-xs transition-all active:scale-[0.99] cursor-pointer"
         >
-          <Gift size={16} className="text-primary shrink-0 animate-bounce" />
+          <Gift size={16} variant="Linear" color="#E57E25" className="shrink-0 animate-bounce" />
           <span className="text-xs sm:text-sm font-extrabold text-ink">
             {isArabic
               ? 'اضغط هنا للحصول على ٥ محاولات ذكية إضافية فوراً مجاناً! 🎁'
@@ -37,9 +37,9 @@ export const AiQuotaBadge: React.FC<AiQuotaBadgeProps> = ({ quota, onOpenShareMo
       }`}
     >
       {quota <= 2 ? (
-        <Gift size={10} className="text-danger fill-danger" />
+        <Gift size={10} variant="Bold" color="#EF4444" className="text-danger" />
       ) : (
-        <Zap size={10} className="text-icon-yellow fill-icon-yellow" />
+        <Flash size={10} variant="Bold" color="#EAB308" className="text-icon-yellow" />
       )}
       <span>{isArabic ? `${quota}/5 رصيد اليوم` : `${quota}/5 credits`}</span>
     </div>
