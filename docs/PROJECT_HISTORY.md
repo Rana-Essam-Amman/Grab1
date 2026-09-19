@@ -167,3 +167,12 @@ Complete timeline of all work.
 - Zero AI cost — deterministic keyword + regex
 - Tests: 337 passing (unchanged)
 
+### B3 — Test Suite (2026-09-19)
+- Created: intentClassifier.test.ts + intentScoring.test.ts
+- 26 isolated tests via it.each() parameterized pattern
+- All 10 spec cases from B1 verified
+- Edge cases: empty, whitespace, bug regressions
+- Score scenarios: threshold boundary, capping, signals accuracy
+- Location: src/features/explore/helpers/tests/
+- Tests: 337 → 363 (+26 passing)
+
