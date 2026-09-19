@@ -8,8 +8,8 @@ Use this template when starting a new session or switching AI agents.
 - **Tests:** 337 passing (42 test files)
 - **Violations:** 0
 - **Working tree:** clean
-- **Last completed task:** Batch 7 (Categories + Post-Wizard + Markets + My-Ads icon migration)
-- **Next task:** Batch 8 (Config + remove lucide)
+- **Last completed task:** Batch 8 (Listings + Wishlist + Config icon migration + lucide-react uninstalled)
+- **Next task:** Phase 5-8 (Cleanup → UI-3 → Supabase)
 
 ## Active Sprints
 

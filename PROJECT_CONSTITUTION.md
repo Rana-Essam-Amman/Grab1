@@ -168,7 +168,7 @@ Goal: Add, change, or DELETE any detail in < 30 minutes, without hunting through
 
 20. **Rule 20: No Unauthorized Libraries**:
     Only approved libraries may be imported. FORBIDDEN: react-router-dom, react-router, axios, jquery.
-    APPROVED: react, react-dom, zustand, immer, @tanstack/react-query, zod, lucide-react, motion, clsx, tailwind-merge, class-variance-authority.
+    APPROVED: react, react-dom, zustand, immer, @tanstack/react-query, zod, iconsax-react, motion, clsx, tailwind-merge, class-variance-authority.
     Enforced via ESLint no-restricted-imports.
 
 21. **Rule 21: No Circular Dependencies**:

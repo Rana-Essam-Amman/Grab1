@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, ArrowRight, Trash2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Trash } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 
 interface WishlistHeaderProps {
@@ -30,7 +30,7 @@ export const WishlistHeader: React.FC<WishlistHeaderProps> = ({
           onClick={goBack}
           className="w-9 h-9 rounded-full bg-background text-ink-soft hover:bg-border shrink-0 animate-none select-none"
         >
-          <BackIcon size={18} />
+          <BackIcon size={18} variant="Linear" />
         </Button>
 
         <div className="min-w-0">
@@ -51,7 +51,7 @@ export const WishlistHeader: React.FC<WishlistHeaderProps> = ({
           onClick={onClearClick}
           className="h-8 px-2.5 rounded-lg border border-border text-xs font-semibold text-red-600 hover:bg-red-50 flex items-center gap-1 transition-colors cursor-pointer"
         >
-          <Trash2 size={13} />
+          <Trash size={13} variant="Linear" color="#DC2626" />
           <span>{clearAllText}</span>
         </button>
       )}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bookmark, X } from 'lucide-react';
+import { ArchiveBook, CloseCircle } from 'iconsax-react';
 import { Listing } from '@/types';
 import { ListingCard } from '@/shared/components';
 
@@ -21,7 +21,7 @@ export const WishlistItemsList: React.FC<WishlistItemsListProps> = ({
   if (filteredListings.length === 0) {
     return (
       <div className="py-16 text-center border border-border border-dashed rounded-2xl bg-surface flex flex-col items-center gap-2">
-        <Bookmark size={28} className="text-ink-muted" />
+        <ArchiveBook size={28} variant="Linear" className="text-ink-muted" />
         <div className="text-xs font-bold text-ink">
           {isArabic ? 'لا توجد إعلانات في هذا القسم' : 'No items found in this category'}
         </div>
@@ -50,7 +50,7 @@ export const WishlistItemsList: React.FC<WishlistItemsListProps> = ({
               className="absolute top-2 start-2 w-7 h-7 rounded-full bg-surface/90 border border-border text-danger hover:bg-danger hover:text-white shadow-sm z-20 active:scale-90 transition-all flex items-center justify-center cursor-pointer"
               title={isArabic ? 'إزالة من المفضلة' : 'Remove from Favorites'}
             >
-              <X size={14} />
+              <CloseCircle size={14} variant="Linear" />
             </button>
           </div>
         ))}
@@ -72,7 +72,7 @@ export const WishlistItemsList: React.FC<WishlistItemsListProps> = ({
             className="absolute top-2 start-2 w-7 h-7 rounded-full bg-surface/90 border border-border text-danger hover:bg-danger hover:text-white shadow-sm z-20 active:scale-90 transition-all flex items-center justify-center cursor-pointer"
             title={isArabic ? 'إزالة من المفضلة' : 'Remove from Favorites'}
           >
-            <X size={14} />
+            <CloseCircle size={14} variant="Linear" />
           </button>
         </div>
       ))}

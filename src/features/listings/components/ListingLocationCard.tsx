@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card } from '@/shared/ui/Card';
-import { MapPin, ExternalLink } from 'lucide-react';
+import { Location, Export } from 'iconsax-react';
 import { googleMapsEmbedUrl } from '@/data/mapUrls';
 
 export interface ListingLocationCardProps {
@@ -23,7 +23,7 @@ export const ListingLocationCard: React.FC<ListingLocationCardProps> = React.mem
         className="text-xs font-bold text-primary flex items-center gap-1 hover:underline cursor-pointer"
       >
         <span>{isArabic ? 'فتح الخريطة' : 'Open Map'}</span>
-        <ExternalLink size={12} />
+        <Export size={12} variant="Linear" />
       </a>
     </div>
 
@@ -39,7 +39,7 @@ export const ListingLocationCard: React.FC<ListingLocationCardProps> = React.mem
       />
     </div>
     <div className="text-[11px] text-ink-muted font-medium flex items-center gap-1">
-      <MapPin size={12} className="text-danger" />
+      <Location size={12} variant="Linear" color="#DC2626" className="text-danger" />
       <span dir="auto">{locationText}</span>
     </div>
   </Card>

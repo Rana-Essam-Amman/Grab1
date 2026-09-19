@@ -2,14 +2,14 @@ import { useUI } from '@/hooks/useUI';
 import { useChat } from '@/hooks/useChat';
 import React, { useCallback } from 'react';
 import { Conversation } from '@/types';
-import { MessageSquare, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Message, ArrowRight2, ArrowLeft2 } from 'iconsax-react';
 import { Card } from '@/shared/ui/Card';
 import { EmptyState } from '@/shared/ui/EmptyState';
 
 export const MessagesScreen: React.FC = () => {
   const { isArabic, setSelectedThreadId, navigateTo } = useUI();
   const { conversations } = useChat();
-  const ChevronIcon = isArabic ? ChevronLeft : ChevronRight;
+  const ChevronIcon = isArabic ? ArrowLeft2 : ArrowRight2;
 
   const handleOpenThread = useCallback((threadId: string) => {
     setSelectedThreadId(threadId);
@@ -36,7 +36,7 @@ export const MessagesScreen: React.FC = () => {
 
       {conversations.length === 0 ? (
         <EmptyState
-          icon={<MessageSquare size={36} />}
+          icon={<Message size={36} variant="Linear" />}
           title={isArabic ? 'لا توجد محادثات بعد' : 'No messages yet'}
           description={
             isArabic
@@ -86,7 +86,7 @@ export const MessagesScreen: React.FC = () => {
                   </div>
                 </div>
 
-                <ChevronIcon size={18} className="text-ink-muted group-hover:text-primary shrink-0" />
+                <ChevronIcon size={18} variant="Linear" className="text-ink-muted group-hover:text-primary shrink-0" />
               </Card>
             );
           })}

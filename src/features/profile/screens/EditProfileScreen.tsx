@@ -3,7 +3,7 @@ import { useUI } from '@/hooks/useUI';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/shared/ui/Button';
 import { Input } from '@/shared/ui/Input';
-import { ArrowLeft, ArrowRight, Lock, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Lock1, TickCircle } from 'iconsax-react';
 import { AvatarUploader } from '../components/AvatarUploader';
 
 export const EditProfileScreen: React.FC = () => {
@@ -44,7 +44,7 @@ export const EditProfileScreen: React.FC = () => {
           onClick={goBack}
           className="w-9 h-9 rounded-full bg-background flex items-center justify-center text-ink-muted hover:bg-border transition-colors cursor-pointer"
         >
-          <BackIcon size={18} />
+          <BackIcon size={18} variant="Linear" />
         </button>
         <h1 className="text-base font-bold text-ink">
           {isArabic ? 'تعديل الملف الشخصي' : 'Edit Profile'}
@@ -82,7 +82,7 @@ export const EditProfileScreen: React.FC = () => {
             label={isArabic ? 'رقم الهاتف (لا يمكن تعديله)' : 'Phone Number (Read-only)'}
             value={user?.phone || ''}
             disabled
-            icon={<Lock size={16} className="text-ink-muted" />}
+            icon={<Lock1 size={16} variant="Linear" className="text-ink-muted" />}
             className="font-cairo opacity-70"
           />
 
@@ -123,7 +123,7 @@ export const EditProfileScreen: React.FC = () => {
       {/* Visual Toast Notification Overlay */}
       {toastMessage && (
         <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-ink text-surface px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-lg z-50 text-sm font-bold animate-in fade-in slide-in-from-bottom-4 duration-300">
-          <CheckCircle2 size={16} className="text-primary" />
+          <TickCircle size={16} variant="Linear" color="#E57E25" className="text-primary" />
           <span>{toastMessage}</span>
         </div>
       )}

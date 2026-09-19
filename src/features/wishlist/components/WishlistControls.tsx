@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, List } from 'lucide-react';
+import { Grid1, RowVertical } from 'iconsax-react';
 
 interface WishlistControlsProps {
   isArabic: boolean;
@@ -58,7 +58,7 @@ export const WishlistControls: React.FC<WishlistControlsProps> = ({
           }`}
           title={isArabic ? 'عرض شبكي' : 'Grid view'}
         >
-          <Grid size={16} />
+          <Grid1 size={16} variant="Linear" />
         </button>
         <button
           onClick={() => onChangeLayout('horizontal')}
@@ -67,7 +67,7 @@ export const WishlistControls: React.FC<WishlistControlsProps> = ({
           }`}
           title={isArabic ? 'عرض طولي' : 'List view'}
         >
-          <List size={16} />
+          <RowVertical size={16} variant="Linear" />
         </button>
       </div>
     </div>

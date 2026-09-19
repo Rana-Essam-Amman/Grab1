@@ -3,7 +3,7 @@ import { useUI } from '@/hooks/useUI';
 import { useTranslation } from '@/shared/i18n';
 import { Button } from '@/shared/ui/Button';
 import { Modal } from '@/shared/ui/Modal';
-import { Heart } from 'lucide-react';
+import { Heart } from 'iconsax-react';
 import { useWishlistFilter } from '../hooks/useWishlistFilter';
 import { WishlistHeader } from '../components/WishlistHeader';
 import { WishlistEmptyState } from '../components/WishlistEmptyState';
@@ -71,7 +71,7 @@ export const WishlistScreen: React.FC = () => {
 
       {showToast && (
         <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-ink text-white px-4 py-2.5 rounded-full text-xs font-semibold shadow-xl z-50 flex items-center gap-2 animate-fade-in transition-all">
-          <Heart size={14} className="fill-red-500 text-red-500 animate-pulse" />
+          <Heart size={14} variant="Bold" color="#EF4444" className="animate-pulse" />
           <span>{toastMessage}</span>
         </div>
       )}

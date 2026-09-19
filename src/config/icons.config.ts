@@ -1,42 +1,42 @@
 import {
   Home,
-  LayoutGrid,
-  MessageCircle,
+  Grid1,
+  Message,
   Tag,
-  Search,
+  SearchNormal1,
   ArrowRight,
-  Share2,
+  Share,
   Heart,
-  SlidersHorizontal,
-  MapPin,
+  Setting4,
+  Location,
   Camera,
   User,
-  Settings,
-  Bell,
-  ShieldCheck,
-  Sparkles,
-} from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+  Setting2,
+  Notification,
+  ShieldTick,
+  Magicpen,
+} from 'iconsax-react';
+import type { Icon } from 'iconsax-react';
 
-export const NAV_ICONS: Record<string, LucideIcon> = {
+export const NAV_ICONS: Record<string, Icon> = {
   explore: Home,
-  categories: LayoutGrid,
-  messages: MessageCircle,
+  categories: Grid1,
+  messages: Message,
   'my-ads': Tag,
 };
 
 export const UI_ICONS = {
-  search: Search,
+  search: SearchNormal1,
   back: ArrowRight, // RTL-aware
-  share: Share2,
+  share: Share,
   favorite: Heart,
-  filter: SlidersHorizontal,
-  location: MapPin,
+  filter: Setting4,
+  location: Location,
   camera: Camera,
   user: User,
-  settings: Settings,
-  notifications: Bell,
-  shield: ShieldCheck,
-  sparkles: Sparkles,
+  settings: Setting2,
+  notifications: Notification,
+  shield: ShieldTick,
+  sparkles: Magicpen,
 } as const;
 

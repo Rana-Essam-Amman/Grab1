@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from '@/shared/i18n';
-import { Phone, MessageCircle, MessageSquare } from 'lucide-react';
+import { Call, Whatsapp, Message } from 'iconsax-react';
 
 export interface ListingActionBarProps {
   isArabic: boolean;
@@ -31,7 +31,7 @@ export const ListingActionBar: React.FC<ListingActionBarProps> = React.memo(({
             : 'bg-ink text-white hover:bg-black cursor-pointer'
         }`}
       >
-        <Phone size={16} />
+        <Call size={16} variant="Linear" />
         <span>{t('listings.contact')}</span>
       </button>
 
@@ -45,7 +45,7 @@ export const ListingActionBar: React.FC<ListingActionBarProps> = React.memo(({
         }`}
         title={isArabic ? 'واتساب' : 'WhatsApp'}
       >
-        <MessageCircle size={16} />
+        <Whatsapp size={16} variant="Linear" />
       </button>
 
       <button
@@ -57,7 +57,7 @@ export const ListingActionBar: React.FC<ListingActionBarProps> = React.memo(({
             : 'bg-primary text-white hover:bg-primary-hover cursor-pointer'
         }`}
       >
-        <MessageSquare size={16} />
+        <Message size={16} variant="Linear" />
         <span>{t('listings.chat')}</span>
       </button>
     </div>

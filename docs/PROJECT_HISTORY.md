@@ -123,6 +123,7 @@ Complete timeline of all work.
 - Batch 5: Profile + Chat migrated ✅
 - Batch 6: Explore migrated ✅
 - Batch 7: Categories + Post-Wizard + Markets + My-Ads migrated ✅
+- Batch 8: Listings + Wishlist + Config (icons.config.ts) migrated & lucide-react uninstalled (0 usages, vendor-icons bundle reduced) ✅
 
 ## Constitution Evolution
 

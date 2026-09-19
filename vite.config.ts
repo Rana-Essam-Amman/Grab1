@@ -34,7 +34,7 @@ export default defineConfig({
           'vendor-react': ['react', 'react-dom'],
           'vendor-query': ['@tanstack/react-query'],
           'vendor-state': ['zustand', 'immer'],
-          'vendor-icons': ['iconsax-react', 'lucide-react'],
+          'vendor-icons': ['iconsax-react'],
           'vendor-radix': [
             '@radix-ui/react-dialog',
             '@radix-ui/react-dropdown-menu',

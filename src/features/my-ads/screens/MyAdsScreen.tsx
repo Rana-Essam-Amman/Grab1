@@ -37,20 +37,10 @@ export const MyAdsScreen: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div>
-          <h1 className="text-xl font-bold text-ink">
-            {isArabic ? 'إعلاناتي والمفضلة' : 'My Ads & Favorites'}
-          </h1>
-          <p className="text-xs text-ink-muted">
-            {isArabic ? 'إدارة إعلاناتك المنشورة وإعلاناتك المفضلة' : 'Manage your active listings and favorite ads'}
-          </p>
+          <h1 className="text-xl font-bold text-ink">{isArabic ? 'إعلاناتي والمفضلة' : 'My Ads & Favorites'}</h1>
+          <p className="text-xs text-ink-muted">{isArabic ? 'إدارة إعلاناتك المنشورة وإعلاناتك المفضلة' : 'Manage your active listings and favorite ads'}</p>
         </div>
-
-        <Button
-          variant="primary"
-          size="md"
-          onClick={startPostFlow}
-          className="rounded-full flex items-center gap-1 text-xs font-bold shadow-xs transition-colors"
-        >
+        <Button variant="primary" size="md" onClick={startPostFlow} className="rounded-full flex items-center gap-1 text-xs font-bold shadow-xs transition-colors">
           <Add size={16} variant="Linear" color="#FFFFFF" />
           <span>{isArabic ? 'إعلان جديد' : 'New Ad'}</span>
         </Button>
@@ -61,9 +51,7 @@ export const MyAdsScreen: React.FC = () => {
         <button
           onClick={() => handleTabChange('my')}
           className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-            activeSubTab === 'my'
-              ? 'bg-surface text-ink shadow-xs'
-              : 'text-ink-muted hover:text-ink'
+            activeSubTab === 'my' ? 'bg-surface text-ink shadow-xs' : 'text-ink-muted hover:text-ink'
           }`}
         >
           <Tag size={14} variant="Linear" />
@@ -73,18 +61,11 @@ export const MyAdsScreen: React.FC = () => {
         <button
           onClick={() => handleTabChange('wishlist')}
           className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-            activeSubTab === 'wishlist'
-              ? 'bg-surface text-ink shadow-xs'
-              : 'text-ink-muted hover:text-ink'
+            activeSubTab === 'wishlist' ? 'bg-surface text-ink shadow-xs' : 'text-ink-muted hover:text-ink'
           }`}
         >
           <div className="relative flex items-center justify-center">
-            <ArchiveBook
-              size={14}
-              variant={activeSubTab === 'wishlist' ? 'Bold' : 'Linear'}
-              color={activeSubTab === 'wishlist' ? '#E57E25' : undefined}
-              className={activeSubTab === 'wishlist' ? 'text-primary' : ''}
-            />
+            <ArchiveBook size={14} variant={activeSubTab === 'wishlist' ? 'Bold' : 'Linear'} color={activeSubTab === 'wishlist' ? '#E57E25' : undefined} className={activeSubTab === 'wishlist' ? 'text-primary' : ''} />
             <Heart size={7} variant="Bold" color="#FFFFFF" className="absolute top-[2px] text-white" />
           </div>
           <span>{isArabic ? 'المفضلة' : 'Favorites'} ({wishlistListings.length})</span>
@@ -98,16 +79,7 @@ export const MyAdsScreen: React.FC = () => {
             icon={<Tag size={24} variant="Linear" />}
             title={isArabic ? 'لم تقم بنشر أي إعلان بعد' : 'No active listings yet'}
             description={isArabic ? 'ابدأ بيع وتداول سلعك اليوم بسهولة وبسرعة!' : 'Start selling and trading your items today easily and quickly!'}
-            action={
-              <Button
-                variant="primary"
-                size="md"
-                onClick={startPostFlow}
-                className="rounded-full font-bold shadow-md"
-              >
-                {isArabic ? 'أضف أول إعلان لك الآن' : 'Post your first ad now'}
-              </Button>
-            }
+            action={<Button variant="primary" size="md" onClick={startPostFlow} className="rounded-full font-bold shadow-md">{isArabic ? 'أضف أول إعلان لك الآن' : 'Post your first ad now'}</Button>}
             className="py-16 bg-surface border border-border rounded-2xl"
           />
         ) : (
@@ -135,10 +107,7 @@ export const MyAdsScreen: React.FC = () => {
             </div>
           }
           title={isArabic ? 'قائمة المفضلة فارغة' : 'Your favorites list is empty'}
-          description={
-            isArabic
-              ? 'اضغط على رمز الإشارة المرجعية والقلب في أي إعلان لحفظه والرجوع إليه بسهولة لاحقاً.'
-              : 'Tap the bookmark heart on any listing to save it for quick reference.'}
+          description={isArabic ? 'اضغط على رمز الإشارة المرجعية والقلب في أي إعلان لحفظه والرجوع إليه بسهولة لاحقاً.' : 'Tap the bookmark heart on any listing to save it for quick reference.'}
           className="py-16 bg-surface border border-border rounded-2xl"
         />
       ) : (

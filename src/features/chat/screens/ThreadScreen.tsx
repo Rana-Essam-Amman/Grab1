@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useUI } from '@/hooks/useUI';
 import { useChat } from '@/hooks/useChat';
 import { useAuth } from '@/hooks/useAuth';
-import { MessageCircle } from 'lucide-react';
 import { useListings } from '@/hooks/useListings';
 import { getFormattedLocalPhone } from '@/features/listings/screens/ListingDetailScreen';
 import { Button } from '@/shared/ui/Button';

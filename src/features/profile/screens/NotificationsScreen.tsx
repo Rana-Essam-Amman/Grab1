@@ -1,6 +1,6 @@
 import { useUI } from '@/hooks/useUI';
 import React, { useState } from 'react';
-import { ArrowLeft, ArrowRight, Bell, CheckCircle2, Tag, MessageSquare } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Notification as BellIcon, TickCircle, Tag, Message } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { EmptyState } from '@/shared/ui/EmptyState';
 
@@ -69,7 +69,7 @@ export const NotificationsScreen: React.FC = () => {
           onClick={goBack}
           className="w-9 h-9 rounded-full bg-background text-ink hover:bg-primary hover:text-white transition-colors flex items-center justify-center shrink-0"
         >
-          {isArabic ? <ArrowRight size={18} /> : <ArrowLeft size={18} />}
+          {isArabic ? <ArrowRight size={18} variant="Linear" /> : <ArrowLeft size={18} variant="Linear" />}
         </Button>
         <h1 className="text-sm font-bold text-ink">
           {isArabic ? 'الإشعارات والتنبيهات' : 'Notifications'}
@@ -90,7 +90,7 @@ export const NotificationsScreen: React.FC = () => {
       {notifications.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center p-8">
           <EmptyState
-            icon={<Bell size={40} className="text-ink-muted animate-pulse" />}
+            icon={<BellIcon size={40} variant="Linear" className="text-ink-muted animate-pulse" />}
             title={isArabic ? 'لا توجد إشعارات' : 'No Notifications'}
             description={
               isArabic
@@ -116,8 +116,8 @@ export const NotificationsScreen: React.FC = () => {
                   n.type === 'message' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'
                 }`}
               >
-                {n.type === 'price' ? <Tag size={18} /> :
-                 n.type === 'message' ? <MessageSquare size={18} /> : <CheckCircle2 size={18} />}
+                {n.type === 'price' ? <Tag size={18} variant="Linear" /> :
+                 n.type === 'message' ? <Message size={18} variant="Linear" /> : <TickCircle size={18} variant="Linear" />}
               </div>
 
               <div className="flex-1 min-w-0">

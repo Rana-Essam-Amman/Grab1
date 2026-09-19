@@ -2,7 +2,7 @@ import { useUI } from '@/hooks/useUI';
 import { useListings } from '@/hooks/useListings';
 import React, { useMemo } from 'react';
 import { ListingCard } from '@/shared/components';
-import { ArrowLeft, ArrowRight, User, CheckCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, User, TickCircle } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { Card } from '@/shared/ui/Card';
 import { Avatar } from '@/shared/ui/Avatar';
@@ -33,7 +33,7 @@ export const SellerProfileScreen: React.FC = () => {
           onClick={goBack}
           aria-label={isArabic ? 'العودة' : 'Go back'}
         >
-          <BackIcon size={18} />
+          <BackIcon size={18} variant="Linear" />
         </Button>
         <h1 className="text-base font-bold text-ink">
           {isArabic ? 'ملف البائع' : 'Seller Profile'}
@@ -50,7 +50,7 @@ export const SellerProfileScreen: React.FC = () => {
           <div>
             <div className="flex items-center gap-1.5">
               <h2 className="text-base font-bold text-ink">{sellerName}</h2>
-              <CheckCircle size={15} className="text-success" />
+              <TickCircle size={15} variant="Linear" color="#16A34A" className="text-success" />
             </div>
             <div className="text-xs text-ink-muted mt-0.5">{selectedSellerPhone}</div>
           </div>
@@ -62,7 +62,7 @@ export const SellerProfileScreen: React.FC = () => {
           </h3>
           {sellerAds.length === 0 ? (
             <EmptyState
-              icon={<User size={40} />}
+              icon={<User size={40} variant="Linear" />}
               title={isArabic ? 'لا توجد إعلانات' : 'No Listings'}
               description={
                 isArabic

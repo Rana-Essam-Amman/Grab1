@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/shared/ui/Button';
-import { Sparkles, Mic, FileText, ChevronDown, ChevronUp } from 'lucide-react';
+import { Magicpen, Microphone2, DocumentText, ArrowDown2, ArrowUp2 } from 'iconsax-react';
 import { Badge } from '@/shared/ui/Badge';
 import { Input } from '@/shared/ui/Input';
 import { Textarea } from '@/shared/ui/Textarea';
@@ -48,11 +48,11 @@ export const AiDraftForm: React.FC<Props> = ({
         />
         <div className="flex items-center justify-between pt-3 border-t border-background mt-2">
           <Button variant="primary" size="sm" disabled={!noteText.trim() || loading || isListening} onClick={onGenerate} className="gap-2 text-xs font-bold">
-            <Sparkles size={14} />
+            <Magicpen size={14} variant="Linear" />
             <span>{loading ? (isArabic ? 'جاري الصياغة...' : 'Processing...') : (isArabic ? 'صياغة الإعلان' : 'Generate Listing')}</span>
           </Button>
           <Button variant={isListening ? 'primary' : 'outline'} size="sm" onClick={onVoice} disabled={loading} className="relative gap-2 text-xs font-bold transition-all">
-            <Mic size={16} className={isListening ? 'animate-bounce' : ''} />
+            <Microphone2 size={16} variant="Linear" className={isListening ? 'animate-bounce' : ''} />
             <span>{isListening ? (isArabic ? 'جاري الاستماع...' : 'Listening...') : (isArabic ? 'تحدث بالصوت' : 'Voice Mic')}</span>
           </Button>
         </div>
@@ -60,8 +60,8 @@ export const AiDraftForm: React.FC<Props> = ({
 
       <div className="mt-4 pt-4 border-t border-border">
         <Button variant="ghost" onClick={onToggleManual} className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-surface border border-border text-ink-soft text-xs font-bold">
-          <div className="flex items-center gap-2"><FileText size={16} /> {isArabic ? 'أو أضف التفاصيل يدوياً' : 'Or add details manually'}</div>
-          {showManualForm ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          <div className="flex items-center gap-2"><DocumentText size={16} variant="Linear" /> {isArabic ? 'أو أضف التفاصيل يدوياً' : 'Or add details manually'}</div>
+          {showManualForm ? <ArrowUp2 size={16} variant="Linear" /> : <ArrowDown2 size={16} variant="Linear" />}
         </Button>
         {showManualForm && (
           <form onSubmit={onManualSubmit} className="mt-3 p-4 rounded-2xl bg-surface border border-border flex flex-col gap-3">

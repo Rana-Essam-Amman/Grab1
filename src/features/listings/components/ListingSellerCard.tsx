@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card } from '@/shared/ui/Card';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft2, ArrowRight2 } from 'iconsax-react';
 
 export interface ListingSellerCardProps {
   sellerName: string;
@@ -10,7 +10,7 @@ export interface ListingSellerCardProps {
 }
 
 export const ListingSellerCard: React.FC<ListingSellerCardProps> = React.memo(({ sellerName, isArabic, onClick }) => {
-  const ChevronIcon = isArabic ? ChevronLeft : ChevronRight;
+  const ChevronIcon = isArabic ? ArrowLeft2 : ArrowRight2;
 
   return (
     <Card
@@ -26,7 +26,7 @@ export const ListingSellerCard: React.FC<ListingSellerCardProps> = React.memo(({
           <div className="text-sm font-bold text-ink">{sellerName}</div>
         </div>
       </div>
-      <ChevronIcon size={18} className="text-ink-muted" />
+      <ChevronIcon size={18} variant="Linear" className="text-ink-muted" />
     </Card>
   );
 });

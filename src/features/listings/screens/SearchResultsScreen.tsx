@@ -5,7 +5,7 @@ import { ListingCard } from '@/shared/components';
 import { categoryBySlug } from '@/data/categories';
 import { findSubcategoryBySlug } from '@/data/subcategories';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
-import { ArrowLeft, ArrowRight, Search, SlidersHorizontal, LayoutGrid, List } from 'lucide-react';
+import { ArrowLeft, ArrowRight, SearchNormal1, Grid1, RowVertical } from 'iconsax-react';
 
 export const SearchResultsScreen: React.FC = () => {
   const { isArabic, goBack, searchQuery, setSearchQuery, categoryFilter, setCategoryFilter, browseCountryCode } = useUI();
@@ -51,7 +51,7 @@ export const SearchResultsScreen: React.FC = () => {
           onClick={goBack}
           className="w-9 h-9 rounded-full bg-surface-raised flex items-center justify-center text-ink-muted hover:bg-surface-sunken"
         >
-          <BackIcon size={18} />
+          <BackIcon size={18} variant="Linear" />
         </button>
 
         <div className="flex-1 relative flex items-center">
@@ -62,7 +62,7 @@ export const SearchResultsScreen: React.FC = () => {
             placeholder={isArabic ? 'ابحث في الصفقات...' : 'Search deals...'}
             className="w-full h-10 pl-9 pr-9 rounded-xl bg-canvas border border-line text-xs text-ink focus:outline-none focus:border-brand"
           />
-          <Search size={16} className={`absolute ${isArabic ? 'right-3' : 'left-3'} text-ink-muted`} />
+          <SearchNormal1 size={16} variant="Linear" className={`absolute ${isArabic ? 'right-3' : 'left-3'} text-ink-muted`} />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
@@ -105,9 +105,9 @@ export const SearchResultsScreen: React.FC = () => {
             type="button"
           >
             {feedLayout === 'list' ? (
-              <LayoutGrid size={15} />
+              <Grid1 size={15} variant="Linear" />
             ) : (
-              <List size={15} />
+              <RowVertical size={15} variant="Linear" />
             )}
           </button>
           <span className="text-xs text-ink-muted">
@@ -121,7 +121,7 @@ export const SearchResultsScreen: React.FC = () => {
         {results.length === 0 ? (
           <div className="py-16 flex flex-col items-center justify-center text-center gap-2">
             <div className="w-12 h-12 rounded-full bg-surface-raised flex items-center justify-center text-ink-muted">
-              <Search size={22} />
+              <SearchNormal1 size={22} variant="Linear" />
             </div>
             <div className="text-sm font-bold text-ink">
               {isArabic ? 'لا توجد نتائج في بلدك الحالي' : 'No results found in your current country'}

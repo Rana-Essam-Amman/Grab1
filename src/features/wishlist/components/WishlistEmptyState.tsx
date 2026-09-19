@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bookmark, Heart } from 'lucide-react';
+import { ArchiveBook, Heart } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { EmptyState } from '@/shared/ui/EmptyState';
 
@@ -18,8 +18,8 @@ export const WishlistEmptyState: React.FC<WishlistEmptyStateProps> = ({
     <EmptyState
       icon={
         <div className="relative flex items-center justify-center">
-          <Bookmark size={40} className="text-primary" />
-          <Heart size={18} className="absolute top-7 fill-red-500 text-red-500" />
+          <ArchiveBook size={40} variant="Linear" color="#E57E25" className="text-primary" />
+          <Heart size={18} variant="Bold" color="#EF4444" className="absolute top-7" />
         </div>
       }
       title={emptyTitle}

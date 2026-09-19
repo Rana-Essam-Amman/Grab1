@@ -1,7 +1,7 @@
 import React from 'react';
 import { Input } from '@/shared/ui/Input';
 import { Card } from '@/shared/ui/Card';
-import { MapPin } from 'lucide-react';
+import { Location } from 'iconsax-react';
 import { googleMapsEmbedUrl } from '@/data/mapUrls';
 
 interface Props {
@@ -50,7 +50,7 @@ export const LocationFields: React.FC<Props> = ({
 
       <Card variant="default" className="p-2 border border-border bg-surface rounded-2xl">
         <div className="flex items-center gap-1.5 text-xs text-ink-muted mb-2 px-1">
-          <MapPin size={14} className="text-primary" />
+          <Location size={14} variant="Linear" color="#E57E25" className="text-primary" />
           <span>{mapQuery}</span>
         </div>
         <div className="w-full h-44 rounded-xl overflow-hidden bg-background">

@@ -5,13 +5,13 @@ import { Button } from '@/shared/ui/Button';
 import {
   ArrowLeft,
   ArrowRight,
-  Globe,
-  MapPin,
-  FileText,
-  ShieldCheck,
-  ChevronRight,
-  ChevronLeft,
-} from 'lucide-react';
+  Global,
+  Location,
+  DocumentText,
+  ShieldTick,
+  ArrowRight2,
+  ArrowLeft2,
+} from 'iconsax-react';
 import { SettingsProfileCard } from '../components/SettingsProfileCard';
 
 export const SettingsScreen: React.FC = () => {
@@ -25,7 +25,7 @@ export const SettingsScreen: React.FC = () => {
   const handleLogout = useCallback(() => logout(), [logout]);
 
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
-  const ChevronIcon = isArabic ? ChevronLeft : ChevronRight;
+  const ChevronIcon = isArabic ? ArrowLeft2 : ArrowRight2;
 
   return (
     <div className="flex flex-col min-h-screen bg-surface pb-16" dir={isArabic ? 'rtl' : 'ltr'}>
@@ -37,7 +37,7 @@ export const SettingsScreen: React.FC = () => {
           onClick={goBack}
           className="w-9 h-9 rounded-full bg-background flex items-center justify-center text-ink-soft hover:bg-border"
         >
-          <BackIcon size={18} />
+          <BackIcon size={18} variant="Linear" />
         </Button>
         <h1 className="text-base font-bold text-ink">
           {isArabic ? 'الإعدادات والحساب' : 'Settings & Account'}
@@ -66,7 +66,7 @@ export const SettingsScreen: React.FC = () => {
             className="p-3.5 flex items-center justify-between cursor-pointer hover:bg-surface border-b border-border/60 transition-colors"
           >
             <div className="flex items-center gap-3">
-              <Globe size={18} className="text-primary" />
+              <Global size={18} variant="Linear" color="#E57E25" className="text-primary" />
               <div>
                 <div className="text-sm font-semibold text-ink">
                   {isArabic ? 'لغة التطبيق' : 'App Language'}
@@ -87,7 +87,7 @@ export const SettingsScreen: React.FC = () => {
             className="p-3.5 flex items-center justify-between cursor-pointer hover:bg-surface transition-colors"
           >
             <div className="flex items-center gap-3">
-              <MapPin size={18} className="text-primary" />
+              <Location size={18} variant="Linear" color="#E57E25" className="text-primary" />
               <div>
                 <div className="text-sm font-semibold text-ink">
                   {isArabic ? 'الدولة والمدينة الحالية' : 'Active Region & City'}
@@ -97,7 +97,7 @@ export const SettingsScreen: React.FC = () => {
                 </div>
               </div>
             </div>
-            <ChevronIcon size={18} className="text-ink-muted" />
+            <ChevronIcon size={18} variant="Linear" className="text-ink-muted" />
           </div>
         </div>
 
@@ -112,17 +112,17 @@ export const SettingsScreen: React.FC = () => {
             className="p-3.5 flex items-center justify-between cursor-pointer hover:bg-surface border-b border-border/60 transition-colors"
           >
             <div className="flex items-center gap-3">
-              <FileText size={18} className="text-primary" />
+              <DocumentText size={18} variant="Linear" color="#E57E25" className="text-primary" />
               <div className="text-sm font-semibold text-ink">
                 {isArabic ? 'شروط الخدمة وسياسة الخصوصية' : 'Terms of Service & Privacy Policy'}
               </div>
             </div>
-            <ChevronIcon size={18} className="text-ink-muted" />
+            <ChevronIcon size={18} variant="Linear" className="text-ink-muted" />
           </div>
 
           <div className="p-3.5 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <ShieldCheck size={18} className="text-green-600" />
+              <ShieldTick size={18} variant="Linear" color="#16A34A" className="text-green-600" />
               <div>
                 <div className="text-sm font-semibold text-ink">Catch the Deals</div>
                 <div className="text-xs text-ink-muted">Version 1.0.0 (Regional Edition)</div>

@@ -1,6 +1,6 @@
 import { useUI } from '@/hooks/useUI';
 import React, { useState } from 'react';
-import { MessageSquare, Search, ShieldCheck } from 'lucide-react';
+import { Message, SearchNormal1, ShieldTick } from 'iconsax-react';
 import { ChatConversationList, ConversationItem } from '../components/ChatConversationList';
 
 const INITIAL_CONVERSATIONS: ConversationItem[] = [
@@ -64,7 +64,7 @@ export const ChatListScreen: React.FC = () => {
       <div className="bg-surface rounded-2xl border border-line p-4 flex items-center justify-between shadow-2xs">
         <div className="flex items-center gap-2.5">
           <div className="w-10 h-10 rounded-xl bg-surface-raised text-brand flex items-center justify-center">
-            <MessageSquare size={20} />
+            <Message size={20} variant="Linear" />
           </div>
           <div>
             <h1 className="text-base font-bold text-ink font-cairo">
@@ -76,7 +76,7 @@ export const ChatListScreen: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-1 text-[11px] font-bold text-brand bg-brand/10 px-2.5 py-1 rounded-full">
-          <ShieldCheck size={14} />
+          <ShieldTick size={14} variant="Linear" />
           <span>{isArabic ? 'محمي' : 'Secure'}</span>
         </div>
       </div>
@@ -84,7 +84,7 @@ export const ChatListScreen: React.FC = () => {
       {/* Search Filter Input */}
       <div className="relative">
         <span className="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-ink-muted">
-          <Search size={16} />
+          <SearchNormal1 size={16} variant="Linear" />
         </span>
         <input
           type="text"

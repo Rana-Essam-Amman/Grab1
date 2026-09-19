@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/shared/ui/Button';
-import { Send } from 'lucide-react';
+import { Send2 } from 'iconsax-react';
 
 interface ReviewPublishButtonProps {
   isArabic: boolean;
@@ -24,7 +24,7 @@ export const ReviewPublishButton: React.FC<ReviewPublishButtonProps> = ({
       disabled={hasMissingParams || isPublishing}
       className="mt-4"
     >
-      <Send size={16} />
+      <Send2 size={16} variant="Linear" color="#FFFFFF" />
       <span>
         {isPublishing
           ? (isArabic ? 'جاري النشر...' : 'Publishing...')

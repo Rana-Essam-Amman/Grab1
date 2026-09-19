@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Eye, Calendar } from 'lucide-react';
+import { Location, Eye, Calendar1 } from 'iconsax-react';
 
 export interface ListingMainInfoProps {
   title: string;
@@ -30,15 +30,15 @@ export const ListingMainInfo: React.FC<ListingMainInfoProps> = React.memo(({
     </div>
     <div className="flex items-center gap-2.5 text-xs text-ink-muted mt-2.5 flex-wrap">
       <div className="flex items-center gap-1 bg-surface px-2.5 py-1 rounded-lg border border-border">
-        <MapPin size={13} className="text-danger" />
+        <Location size={13} variant="Linear" color="#DC2626" className="text-danger" />
         <span className="font-semibold text-ink" dir="auto">{locationText}</span>
       </div>
       <div className="flex items-center gap-1 bg-surface px-2.5 py-1 rounded-lg border border-border">
-        <Eye size={13} />
+        <Eye size={13} variant="Linear" />
         <span>{views} {isArabic ? 'مشاهدة' : 'views'}</span>
       </div>
       <div className="flex items-center gap-1 bg-surface px-2.5 py-1 rounded-lg border border-border">
-        <Calendar size={13} />
+        <Calendar1 size={13} variant="Linear" />
         <span>{createdAt}</span>
       </div>
     </div>
