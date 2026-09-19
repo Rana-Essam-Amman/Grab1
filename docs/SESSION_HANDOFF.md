@@ -8,7 +8,7 @@ Use this template when starting a new session or switching AI agents.
 - **Tests:** 337 passing (42 test files)
 - **Violations:** 0
 - **Working tree:** clean
-- **Last completed task:** UI-3a (Featured Deal Card)
+- **Last completed task:** Phase 8c-6 (Heart + Canvas fix)
 - **Next task:** UI-3b (Trust Signal)
 
 ## Active Sprints

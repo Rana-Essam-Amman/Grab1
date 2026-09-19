@@ -104,6 +104,10 @@
 **Root Cause:** `setSelectedThreadId(threadId)` was NOT called before navigation.
 **Fix:** Added the missing line.
 
+### Issue #9 — Iconsax + CSS Variables
+Cause: Iconsax color prop doesn't support 'var(--color-*)'
+Fix: Use hex values directly (or currentColor + Tailwind text-*)
+
 ## Lessons by Category
 
 ### Git & Version Control

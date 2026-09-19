@@ -20,7 +20,7 @@
   --color-ms-yellow: #FFB900;
 
   /* ----- SURFACES ----- */
-  --color-canvas: oklch(0.87 0.015 250);
+  --color-canvas: oklch(0.97 0.005 250);
   --color-surface: oklch(1 0 0);
   --color-surface-elevated: oklch(1 0 0);
   --color-surface-sunken: oklch(0.82 0.018 250);
