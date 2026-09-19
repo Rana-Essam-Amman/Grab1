@@ -158,3 +158,12 @@ Complete timeline of all work.
 - Rule 14: 74 → 47 lines
 - Tests: 337 passing (unchanged)
 
+### B2 — intentScoring Helper (2026-09-19)
+- Created pure helper for PUBLISH-intent confidence scoring
+- 3-tier model: explicit (0.75) + weak (0.35) + bonuses (price/condition/detailed)
+- Threshold: INTENT_CONFIDENCE_THRESHOLD = 0.75
+- API: scoreIntent(text) → { confidence, signals }
+- Rule 14: 69 lines (limit 80)
+- Zero AI cost — deterministic keyword + regex
+- Tests: 337 passing (unchanged)
+
