@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { Grid1, RowVertical } from 'iconsax-react';
+import { FilterChip } from './FilterChip';
 
 export interface ExploreFilterChipsBarProps {
   isArabic: boolean;
@@ -58,29 +59,14 @@ export const ExploreFilterChipsBar: React.FC<ExploreFilterChipsBarProps> = React
       {/* Scrollable Chips Row */}
       <div className="flex flex-row items-center gap-2 overflow-x-auto no-scrollbar px-4 pb-2 -mx-4">
         {/* Area Filter Chip */}
-        <div
-          className={getChipClass(!!activeNeighborhood)}
+        <FilterChip
+          isArabic={isArabic}
+          isActive={!!activeNeighborhood}
+          label={isArabic ? 'المنطقة' : 'Area'}
+          value={activeNeighborhood || (isArabic ? browseCityAr : browseCityEn)}
           onClick={() => onOpenDrawer('location')}
-        >
-          <span>{isArabic ? 'المنطقة' : 'Area'}</span>
-          <span className="text-[10px] opacity-50">/</span>
-          <span className="truncate max-w-[85px]">{activeNeighborhood || (isArabic ? browseCityAr : browseCityEn)}</span>
-          {activeNeighborhood && onClearNeighborhood ? (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onClearNeighborhood();
-              }}
-              className="w-4 h-4 rounded-full hover:bg-accent/20 flex items-center justify-center text-accent text-sm leading-none transition-colors ml-1"
-              title={isArabic ? 'إلغاء الفلتر' : 'Clear filter'}
-            >
-              ×
-            </button>
-          ) : (
-            <span className="text-[8px] opacity-60">▼</span>
-          )}
-        </div>
+          onClear={activeNeighborhood && onClearNeighborhood ? onClearNeighborhood : undefined}
+        />
 
         {/* Entire Country Filter Chip */}
         <button
@@ -92,52 +78,24 @@ export const ExploreFilterChipsBar: React.FC<ExploreFilterChipsBarProps> = React
         </button>
 
         {/* Category Filter Chip */}
-        <div
-          className={getChipClass(!!categoryFilter)}
+        <FilterChip
+          isArabic={isArabic}
+          isActive={!!categoryFilter}
+          label={categoryFilter ? (activeCategoryTitle || '') : (isArabic ? 'القسم' : 'Category')}
+          value=""
           onClick={() => onOpenDrawer('category')}
-        >
-          <span className="truncate max-w-[100px]">
-            {categoryFilter ? activeCategoryTitle : (isArabic ? 'القسم' : 'Category')}
-          </span>
-          {categoryFilter && onClearCategory ? (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onClearCategory();
-              }}
-              className="w-4 h-4 rounded-full hover:bg-accent/20 flex items-center justify-center text-accent text-sm leading-none transition-colors ml-1"
-              title={isArabic ? 'إلغاء الفلتر' : 'Clear filter'}
-            >
-              ×
-            </button>
-          ) : (
-            <span className="text-[8px] opacity-60">▼</span>
-          )}
-        </div>
+          onClear={categoryFilter && onClearCategory ? onClearCategory : undefined}
+        />
 
         {/* Price Filter Chip */}
-        <div
-          className={getChipClass(isPriceActive)}
+        <FilterChip
+          isArabic={isArabic}
+          isActive={isPriceActive}
+          label={priceChipText}
+          value=""
           onClick={() => onOpenDrawer('price')}
-        >
-          <span>{priceChipText}</span>
-          {isPriceActive && onClearPrice ? (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onClearPrice();
-              }}
-              className="w-4 h-4 rounded-full hover:bg-accent/20 flex items-center justify-center text-accent text-sm leading-none transition-colors ml-1"
-              title={isArabic ? 'إلغاء الفلتر' : 'Clear filter'}
-            >
-              ×
-            </button>
-          ) : (
-            <span className="text-[8px] opacity-60">▼</span>
-          )}
-        </div>
+          onClear={isPriceActive && onClearPrice ? onClearPrice : undefined}
+        />
       </div>
 
       {/* Listings Count & Layout Toggle */}

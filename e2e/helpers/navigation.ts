@@ -13,7 +13,7 @@ export async function goToRegister(page: Page): Promise<void> {
   await goToHome(page);
 
   // Click profile icon in Header to go to Settings
-  const profileBtn = page.locator('header button[title*="Settings"], header button[title*="الإعدادات"]').first();
+  const profileBtn = page.locator('[data-testid="header-profile-btn"]').first();
   await expect(profileBtn).toBeVisible({ timeout: 5000 });
   await profileBtn.click();
   
@@ -30,7 +30,7 @@ export async function goToRegister(page: Page): Promise<void> {
 export async function goToLogin(page: Page): Promise<void> {
   await goToHome(page);
 
-  const profileBtn = page.locator('header button[title*="Settings"], header button[title*="الإعدادات"]').first();
+  const profileBtn = page.locator('[data-testid="header-profile-btn"]').first();
   await expect(profileBtn).toBeVisible({ timeout: 5000 });
   await profileBtn.click();
 
@@ -55,7 +55,7 @@ export async function goToLogin(page: Page): Promise<void> {
 export async function performQuickDemoLogin(page: Page): Promise<void> {
   await goToHome(page);
 
-  const profileBtn = page.locator('header button[title*="Settings"], header button[title*="الإعدادات"]').first();
+  const profileBtn = page.locator('[data-testid="header-profile-btn"]').first();
   await expect(profileBtn).toBeVisible({ timeout: 5000 });
   await profileBtn.click();
 

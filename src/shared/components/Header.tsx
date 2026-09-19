@@ -110,6 +110,7 @@ export const Header: React.FC = () => {
           onClick={handleProfileClick}
           className="w-9 h-9 rounded-full border border-white/20 overflow-hidden shadow-xs hover:ring-2 hover:ring-white/30 transition-all flex items-center justify-center bg-white/10 p-0"
           title={isArabic ? 'الإعدادات والحساب' : 'Settings & Account'}
+          data-testid="header-profile-btn"
         >
           <Avatar
             src={user?.avatar || user?.avatarUrl || '/assets/avatars/guest.jpg'}
