@@ -89,6 +89,9 @@ Complete timeline of all work.
 - Phase 8c-2b: Filters + Adapter aligned to UI Listing
 - Phase 8c-2c: Fixed adapter tests and listings slice to use UI Listing directly
 
+## Phase UI-3 — UI Enhancements
+- UI-3a: Featured Deal Card above categories
+
 ## Bugs Documented
 
 - Bug #001 — Massive Untracked Files

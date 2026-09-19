@@ -10,9 +10,10 @@ import { useExploreListings } from '../hooks/useExploreListings';
 import { ExploreVoidedNoticeBanner } from '../components/ExploreVoidedNoticeBanner';
 import { ExploreCategoryGrid } from '../components/ExploreCategoryGrid';
 import { ExploreQuotaPaywallModal } from '../components/ExploreQuotaPaywallModal';
+import { FeaturedDealCard } from '../components/FeaturedDealCard';
 
 export const ExploreScreen: React.FC = () => {
-  const { isArabic, setCategoryFilter, setSelectedParentCategory, navigateTo, setActiveTab, categoryFilter, browseCountryCode } = useUI();
+  const { isArabic, setCategoryFilter, setSelectedParentCategory, navigateTo, setActiveTab, categoryFilter, browseCountryCode, setSelectedListingId } = useUI();
   const { startPostFlow } = useDraft();
   const { isQuotaExhausted, setIsQuotaExhausted } = useMonetization();
 
@@ -25,6 +26,18 @@ export const ExploreScreen: React.FC = () => {
   const currentPackage = useMemo(() => {
     return MONETIZATION_MATRIX.packages[browseCountryCode] || MONETIZATION_MATRIX.packages['JO'];
   }, [browseCountryCode]);
+
+  const featuredListing = useMemo(
+    () => displayListings.find((l) => l.isPremium) || displayListings[0],
+    [displayListings]
+  );
+
+  const handleFeaturedClick = useCallback(() => {
+    if (featuredListing) {
+      setSelectedListingId(featuredListing.id);
+      navigateTo('listing-detail');
+    }
+  }, [featuredListing, setSelectedListingId, navigateTo]);
 
   const handleCategoryClick = useCallback((catSlug: string) => {
     setSelectedParentCategory(catSlug);
@@ -62,6 +75,14 @@ export const ExploreScreen: React.FC = () => {
           voidedNotice={voidedNotice}
           browseCountryCode={browseCountryCode}
           onDismiss={() => setVoidedNotice(null)}
+        />
+      )}
+
+      {featuredListing && (
+        <FeaturedDealCard
+          listing={featuredListing}
+          isArabic={isArabic}
+          onClick={handleFeaturedClick}
         />
       )}
 
