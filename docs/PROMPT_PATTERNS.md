@@ -161,6 +161,13 @@ After code change, BEFORE commit:
 All doc updates in SAME commit as code.
 ```
 
+## Pattern 9: Icon Migration (Lucide → Iconsax)
+- Import: iconsax-react with specific icon names
+- Use variant='Bold' for nav/actions, 'Linear' for subtle
+- Colors: HEX only (no var())
+- Sizes: 12, 16, 20, 24, 32 (5-step scale)
+- Reference file: src/shared/components/ListingCard.tsx
+
 ## Anti-Patterns (NEVER USE)
 
 - ❌ "Fix everything that's broken"

@@ -8,8 +8,8 @@ Use this template when starting a new session or switching AI agents.
 - **Tests:** 337 passing (42 test files)
 - **Violations:** 0
 - **Working tree:** clean
-- **Last completed task:** Icon Batch 1 (BottomNavItems fix)
-- **Next task:** UI-3b (Trust Signal)
+- **Last completed task:** Batch 2a (ListingCard reference)
+- **Next task:** Batch 2b (remaining Shared UI — 11 files)
 
 ## Active Sprints
 

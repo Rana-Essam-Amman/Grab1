@@ -92,6 +92,9 @@ Complete timeline of all work.
 ## Phase UI-3 — UI Enhancements
 - UI-3a: Featured Deal Card above categories
 
+## Phase Icon Migration
+- Batch 2a: ListingCard.tsx migrated (REFERENCE pattern)
+
 ## Bugs Documented
 
 - Bug #001 — Massive Untracked Files

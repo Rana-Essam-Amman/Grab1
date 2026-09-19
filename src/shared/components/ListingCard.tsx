@@ -2,7 +2,7 @@ import { useUI } from '@/hooks/useUI';
 import React, { useMemo, useCallback } from 'react';
 import { Listing } from '@/types';
 import { BookmarkHeartButton } from './BookmarkHeartButton';
-import { MapPin, Eye } from 'lucide-react';
+import { Location, Eye } from 'iconsax-react';
 import { getSanitizedRegionalLocation } from '@/data/locations';
 import { getSanitizedCurrency } from '@/data/countries';
 import { Badge } from '@/shared/ui/Badge';
@@ -96,7 +96,7 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
         <div>
           <div className="text-[15px] font-bold text-ink line-clamp-1" dir="auto">{listing.title}</div>
           <div className="flex items-center gap-1 text-xs text-ink-soft font-medium mt-1">
-            <MapPin size={12} className="text-danger shrink-0" />
+            <Location variant="Bold" size={12} color="#94A3B8" className="shrink-0" />
             <span className="truncate" dir="auto">{locationText}</span>
           </div>
         </div>
@@ -107,7 +107,7 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
             </span>
           </div>
           <div className="flex items-center gap-1 text-xs text-ink-soft font-semibold">
-            <Eye size={12} />
+            <Eye variant="Bold" size={12} color="#94A3B8" />
             <span>{listing.views}</span>
           </div>
         </div>
