@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useId, ReactNode } from 'react';
 import { motion, AnimatePresence, type HTMLMotionProps } from 'motion/react';
-import { X } from 'lucide-react';
+import { CloseCircle } from 'iconsax-react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '../lib/cn';
 
@@ -121,7 +121,7 @@ export const Sheet = forwardRef<HTMLDivElement, SheetProps>(
                       aria-label="Close"
                       className="p-1.5 rounded-full text-ink-muted hover:text-ink hover:bg-background/60 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary"
                     >
-                      <X size={18} />
+                      <CloseCircle variant="Linear" size={18} color="#94A3B8" />
                     </button>
                   )}
                 </div>

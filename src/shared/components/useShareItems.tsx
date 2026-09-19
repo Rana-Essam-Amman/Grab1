@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { Listing } from '@/types';
-import { Link2, Check, Share2 } from 'lucide-react';
+import { Link, TickCircle, ExportSquare } from 'iconsax-react';
 import { getSanitizedCurrency } from '@/data/countries';
 import { SHARE_PLATFORMS } from './sharePlatforms.config';
 import { copyTextToClipboard } from './shareUtils';
@@ -115,7 +115,7 @@ export const useShareItems = (listing: Listing, isArabic: boolean) => {
       name: isArabic ? 'نسخ الرابط' : 'Copy Link',
       bgColor: copied ? 'bg-success text-white' : 'bg-background text-ink hover:bg-border border border-border',
       shadowColor: 'shadow-2xs',
-      icon: copied ? <Check size={22} className="text-white" /> : <Link2 size={22} className="text-ink" />,
+      icon: copied ? <TickCircle variant="Bold" size={22} color="#FFFFFF" /> : <Link variant="Bold" size={22} color="#0F172A" />,
       action: handleCopyLink,
     });
 
@@ -125,7 +125,7 @@ export const useShareItems = (listing: Listing, isArabic: boolean) => {
         name: isArabic ? 'مشاركة' : 'Share',
         bgColor: 'bg-primary text-white hover:bg-primary-hover',
         shadowColor: 'shadow-[0_4px_14px_rgba(27,42,74,0.35)]',
-        icon: <Share2 size={22} className="text-white" />,
+        icon: <ExportSquare variant="Bold" size={22} color="#FFFFFF" />,
         action: handleNativeShare,
       });
     }

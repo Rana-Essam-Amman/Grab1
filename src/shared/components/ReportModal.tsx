@@ -1,7 +1,7 @@
 import { useUI } from '@/hooks/useUI';
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { Listing } from '@/types';
-import { X, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { CloseCircle, Danger, TickCircle } from 'iconsax-react';
 import { Modal } from '@/shared/ui/Modal';
 import { Button } from '@/shared/ui/Button';
 import { ReportReasonsList } from './ReportReasonsList';
@@ -66,7 +66,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({ listing: _listing, onC
       <div dir={isArabic ? 'rtl' : 'ltr'}>
         <div className="flex items-center justify-between pb-3 border-b border-border">
           <div className="flex items-center gap-2 text-danger">
-            <AlertTriangle size={18} />
+            <Danger variant="Bold" size={18} color="#EF4444" />
             <h3 className="text-base font-bold text-ink">
               {isArabic ? 'الإبلاغ عن الإعلان' : 'Report Listing'}
             </h3>
@@ -78,13 +78,13 @@ export const ReportModal: React.FC<ReportModalProps> = ({ listing: _listing, onC
             className="w-8 h-8 rounded-full bg-background text-ink-soft hover:bg-border transition-colors cursor-pointer"
             aria-label={isArabic ? 'إغلاق' : 'Close'}
           >
-            <X size={16} />
+            <CloseCircle variant="Linear" size={16} color="#94A3B8" />
           </Button>
         </div>
 
         {submitted ? (
           <div className="py-8 flex flex-col items-center justify-center text-center gap-2">
-            <CheckCircle2 size={40} className="text-success" />
+            <TickCircle variant="Bold" size={40} color="#10B981" />
             <h4 className="font-bold text-ink">
               {isArabic ? 'شكراً لك، تم استلام بلاغك' : 'Thank you, report submitted'}
             </h4>

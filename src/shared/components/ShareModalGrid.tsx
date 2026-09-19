@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles } from 'lucide-react';
+import { Magicpen } from 'iconsax-react';
 import { ShareItem } from './useShareItems';
 
 interface ShareModalGridProps {
@@ -34,7 +34,7 @@ export const ShareModalGrid: React.FC<ShareModalGridProps> = ({
 
       {toastMessage && (
         <div className="mt-3 p-3 bg-ink text-white rounded-2xl flex items-center justify-center gap-2 text-xs font-bold shadow-lg animate-in fade-in zoom-in duration-200">
-          <Sparkles size={16} className="text-primary" />
+          <Magicpen variant="Bold" size={16} color="#E57E25" />
           <span>{toastMessage}</span>
         </div>
       )}

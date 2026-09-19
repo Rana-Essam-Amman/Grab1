@@ -1,5 +1,5 @@
 import React, { forwardRef, ReactNode } from 'react';
-import { Inbox, SearchX } from 'lucide-react';
+import { DirectInbox, GlobalSearch } from 'iconsax-react';
 import { cn } from '../lib/cn';
 
 export interface EmptyStateProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -21,7 +21,7 @@ export const EmptyState = forwardRef<HTMLDivElement, EmptyStateProps>(
         {...props}
       >
         <div className="mb-4 text-ink-muted flex items-center justify-center">
-          {icon ? icon : <Inbox size={48} strokeWidth={1.5} />}
+          {icon ? icon : <DirectInbox variant="Linear" size={48} color="#94A3B8" />}
         </div>
         <h3 className="text-base font-bold text-ink leading-snug">
           {title}
@@ -60,7 +60,7 @@ export const EmptyStateNoResults = forwardRef<
     return (
       <EmptyState
         ref={ref}
-        icon={icon || <SearchX size={48} strokeWidth={1.5} />}
+        icon={icon || <GlobalSearch variant="Linear" size={48} color="#94A3B8" />}
         title={title}
         description={description}
         {...props}

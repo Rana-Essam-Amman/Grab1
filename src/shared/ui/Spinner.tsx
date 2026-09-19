@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Refresh } from 'iconsax-react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '../lib/cn';
 
@@ -53,8 +53,10 @@ export const Spinner = forwardRef<HTMLSpanElement, SpinnerProps>(
         className={cn(spinnerVariants({ variant, size, className }))}
         {...props}
       >
-        <Loader2
+        <Refresh
+          variant="Linear"
           size={iconDimension}
+          color="currentColor"
           className="animate-spin text-current"
           aria-hidden="true"
         />

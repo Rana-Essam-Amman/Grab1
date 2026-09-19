@@ -1,7 +1,7 @@
 import React from 'react';
 import { Listing } from '@/types';
 import { BookmarkHeartButton } from './BookmarkHeartButton';
-import { MapPin, Eye } from 'lucide-react';
+import { Location, Eye } from 'iconsax-react';
 import { Badge } from '@/shared/ui/Badge';
 
 interface ListingCardHorizontalProps {
@@ -51,7 +51,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
         <div>
           <div className="text-[15px] font-bold text-ink truncate" dir="auto">{listing.title}</div>
           <div className="flex items-center gap-1 text-xs text-ink-soft font-medium mt-1">
-            <MapPin size={12} className="text-success shrink-0" />
+            <Location variant="Bold" size={12} color="#94A3B8" className="shrink-0" />
             <span className="truncate" dir="auto">{locationText}</span>
           </div>
         </div>
@@ -62,7 +62,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
             </span>
           </div>
           <div className="flex items-center gap-1 text-xs text-ink-soft font-semibold">
-            <Eye size={12} />
+            <Eye variant="Bold" size={12} color="#94A3B8" />
             <span>{listing.views}</span>
           </div>
         </div>

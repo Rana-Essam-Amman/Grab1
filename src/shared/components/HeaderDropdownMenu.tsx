@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Globe, Heart, Bell } from 'lucide-react';
+import { User, Global, Heart, Notification } from 'iconsax-react';
 
 interface HeaderDropdownMenuProps {
   isArabic: boolean;
@@ -43,7 +43,7 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
             <span className="font-medium text-sm text-gray-900">
               {isArabic ? 'الملف الشخصي' : 'My Profile'}
             </span>
-            <User className="w-5 h-5 text-gray-500 shrink-0" />
+            <User variant="Bold" size={20} color="#64748B" className="shrink-0" />
           </button>
 
           <button
@@ -56,7 +56,7 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
             <span className="font-medium text-sm text-gray-900">
               {isArabic ? 'English' : 'العربية'}
             </span>
-            <Globe className="w-5 h-5 text-gray-500 shrink-0" />
+            <Global variant="Bold" size={20} color="#64748B" className="shrink-0" />
           </button>
 
           <button
@@ -76,7 +76,7 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
                 </span>
               )}
             </div>
-            <Heart className="w-5 h-5 text-red-500 shrink-0" />
+            <Heart variant="Bold" size={20} color="#EF4444" className="shrink-0" />
           </button>
 
           <button
@@ -89,7 +89,7 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
             <span className="font-medium text-sm text-gray-900">
               {isArabic ? 'الإشعارات والتنبيهات' : 'Notifications'}
             </span>
-            <Bell className="w-5 h-5 text-gray-500 shrink-0" />
+            <Notification variant="Bold" size={20} color="#64748B" className="shrink-0" />
           </button>
         </div>
       </div>

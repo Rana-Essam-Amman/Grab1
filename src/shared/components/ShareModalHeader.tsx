@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Share2 } from 'lucide-react';
+import { CloseCircle, ExportSquare } from 'iconsax-react';
 import { Listing } from '@/types';
 import { Button } from '@/shared/ui/Button';
 import { Card } from '@/shared/ui/Card';
@@ -22,7 +22,7 @@ export const ShareModalHeader: React.FC<ShareModalHeaderProps> = ({
       <div className="flex items-center justify-between pb-3.5 border-b border-border">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-            <Share2 size={18} />
+            <ExportSquare variant="Bold" size={18} color="#E57E25" />
           </div>
           <div>
             <h3 className="text-sm font-extrabold text-ink">
@@ -40,7 +40,7 @@ export const ShareModalHeader: React.FC<ShareModalHeaderProps> = ({
           className="w-8 h-8 rounded-full bg-background text-ink-soft hover:bg-border transition-colors cursor-pointer"
           aria-label={isArabic ? 'إغلاق' : 'Close'}
         >
-          <X size={16} />
+          <CloseCircle variant="Linear" size={16} color="#94A3B8" />
         </Button>
       </div>
 

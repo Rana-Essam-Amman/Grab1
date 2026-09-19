@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useId, ReactNode } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { X } from 'lucide-react';
+import { CloseCircle } from 'iconsax-react';
 import { cn } from '../lib/cn';
 
 export const modalVariants = cva(
@@ -99,7 +99,7 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(
             aria-label="Close"
             className="absolute top-4 end-4 p-1.5 text-ink-muted hover:text-ink hover:bg-background/60 rounded-xl transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary z-10"
           >
-            <X size={18} />
+            <CloseCircle variant="Linear" size={18} color="#94A3B8" />
           </button>
 
           {/* Header */}
