@@ -108,6 +108,10 @@
 Cause: Iconsax color prop doesn't support 'var(--color-*)'
 Fix: Use hex values directly (or currentColor + Tailwind text-*)
 
+### Issue #10 — Iconsax + var() Global
+Iconsax color prop doesn't support CSS variables.
+Always use HEX values directly (or #E57E25 as accent gold).
+
 ## Lessons by Category
 
 ### Git & Version Control
