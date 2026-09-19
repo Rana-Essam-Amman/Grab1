@@ -130,6 +130,7 @@ Complete timeline of all work.
 - UI-3c: Trending Section added ✅
 - UI-3d: Filter Chips polish added ✅
 - UI-3e: Home Screen final polish (Crush Sprint Day 1) added ✅
+- UI-3f: Listing Detail spacing polished ✅
 
 ## Constitution Evolution
 
