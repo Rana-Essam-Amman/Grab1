@@ -184,3 +184,11 @@ Complete timeline of all work.
 - Zero behavior change — pure refactor
 - ESLint clean, tsc clean, 363 tests passing
 
+### B4b — Extract AiAssistantControls (2026-09-19)
+- Created: AiAssistantControls.tsx (48 lines, presentational)
+- Extracted: bottom action bar (quota + media buttons)
+- AiAssistantBox.tsx: 116 → 114 lines
+- API: 11 readonly props
+- ESLint clean, TSC clean, 363 tests passing
+- Note: further extraction needed before B4d wiring
+

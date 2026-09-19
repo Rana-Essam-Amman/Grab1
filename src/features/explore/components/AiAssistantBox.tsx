@@ -9,7 +9,7 @@ import { AiQuotaBadge } from './AiQuotaBadge';
 import { AiInputTextarea } from './AiInputTextarea';
 import { AiThumbnailStrip } from './AiThumbnailStrip';
 import { AiSearchFallback } from './AiSearchFallback';
-import { AiMediaButtons } from './AiMediaButtons';
+import { AiAssistantControls } from './AiAssistantControls';
 import { AiResponseCard } from './AiResponseCard';
 import { AiShareDrawer } from './AiShareDrawer';
 import { AiAssistantOverlay } from './AiAssistantOverlay';
@@ -64,20 +64,19 @@ export const AiAssistantBox: React.FC<AiAssistantBoxProps> = (props) => {
               isAnalyzing ? (isArabic ? 'جاري التحليل...' : 'Analyzing...') : undefined
             }
           />
-          <div className="flex items-center justify-between mt-2 pt-1 border-t border-line/40">
-            <AiQuotaBadge quota={quota} onOpenShareModal={() => setIsShareModalOpen(true)} isArabic={isArabic} />
-            <AiMediaButtons
-              onCameraClick={(e) => { e.preventDefault(); fileInputRef.current?.click(); }}
-              onMicToggle={(e) => { e.preventDefault(); handleVoiceToggle(); }}
-              isRecording={isRecording}
-              recordingTime={recordingTime}
-              onSend={onUnifiedSend}
-              canSend={!!query.trim() || images.length > 0}
-              disabled={isAnalyzing}
-              isArabic={isArabic}
-              imageCount={images.length}
-            />
-          </div>
+          <AiAssistantControls
+            quota={quota}
+            isRecording={isRecording}
+            recordingTime={recordingTime}
+            canSend={!!query.trim() || images.length > 0}
+            disabled={isAnalyzing}
+            isArabic={isArabic}
+            imageCount={images.length}
+            onOpenShareModal={() => setIsShareModalOpen(true)}
+            onCameraClick={(e) => { e.preventDefault(); fileInputRef.current?.click(); }}
+            onMicToggle={(e) => { e.preventDefault(); handleVoiceToggle(); }}
+            onSend={onUnifiedSend}
+          />
           <AiResponseCard response={aiResponse} onDismiss={clearResponse} isArabic={isArabic} />
         </div>
       ) : (
