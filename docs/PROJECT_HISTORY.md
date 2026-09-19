@@ -176,3 +176,11 @@ Complete timeline of all work.
 - Location: src/features/explore/helpers/tests/
 - Tests: 337 → 363 (+26 passing)
 
+### B4a — Extract useAiPublishFlow (2026-09-19)
+- Extracted processPublishFlow logic from useAiAssistant
+- New hook: src/features/explore/hooks/useAiPublishFlow.ts (39 lines)
+- useAiAssistant.ts: 92 → 62 lines (Rule 14 headroom for B4b)
+- Signature preserved: processPublishFlow(raw, images, cb)
+- Zero behavior change — pure refactor
+- ESLint clean, tsc clean, 363 tests passing
+

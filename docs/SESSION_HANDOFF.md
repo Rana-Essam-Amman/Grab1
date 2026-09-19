@@ -8,11 +8,12 @@ Use this template when starting a new session or switching AI agents.
 - **Tests:** 337 passing (42 test files)
 - **Violations:** 0
 - **Working tree:** clean
-- **Last completed task:** UX-Crush B3 — Test suite (26 tests, it.each pattern, 337→363 total)
-- **Next task:** UX-Crush B4 — integrate scoring into useAiAssistant
+- **Last completed task:** UX-Crush B4a — useAiPublishFlow extraction (92→62 in useAiAssistant)
+- **Next task:** UX-Crush B4b — add suggestion state to useAiAssistant
 
 ## Active Sprints
 
+- **UX-Crush B4a:** ✅ useAiPublishFlow extracted (pure refactor)
 - **UX-Crush B3:** ✅ 26 tests for intentClassifier + intentScoring
 - **UX-Crush B2:** ✅ intentScoring.ts created (pure helper)
 - **P1 Cleanup:** P0 + P1-a + P1-b + P1-c + P1-d (any = 0) ✅

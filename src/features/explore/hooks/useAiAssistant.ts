@@ -1,11 +1,9 @@
 import { useState, useCallback } from 'react';
 import { parseNaturalLanguageSearch } from '@/ai/searchQueryParser';
 import { useUI } from '@/hooks/useUI';
-import { useDraft } from '@/hooks/useDraft';
-import { matchCategory } from '@/ai/categoryMatch';
-import { generateListing } from '@/ai/listingCopyAgent';
 import { classifyUserIntent, extractCleanSearchFallback } from '../helpers/intentClassifier';
 import type { AiResponse } from './useAiAssistant.types';
+import { useAiPublishFlow } from './useAiPublishFlow';
 
 export interface UseAiAssistantReturn {
   query: string;
@@ -26,38 +24,11 @@ export const useAiAssistant = (props: {
   const [query, setQuery] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [aiResponse, setAiResponse] = useState<AiResponse | null>(null);
-  const { isArabic, browseCountryCode, browseCityAr, setCategoryFilter, setSearchQuery, navigateTo } = useUI();
-  const { updatePostDraft } = useDraft();
+  const { browseCountryCode, setCategoryFilter, setSearchQuery } = useUI();
+  const { processPublishFlow } = useAiPublishFlow(setIsAnalyzing);
 
   const handleQueryChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => setQuery(e.target.value), []);
   const clearResponse = useCallback(() => setAiResponse(null), []);
-
-  const processPublishFlow = async (rawInput: string, images: string[], cb?: () => void) => {
-    const raw = rawInput || (isArabic ? 'إعلان جديد للبيع' : 'New Item for sale');
-    setIsAnalyzing(true);
-    const photosToUse = images.length > 0 ? images : ['/assets/listings/car.jpg'];
-    try {
-      const aiPromise = (async () => {
-        const match = matchCategory({ chosenCategory: '', chosenSub: '', note: raw });
-        const generated = await generateListing({ raw, categorySlug: match.effectiveCategory, subcategorySlug: match.effectiveSub, arabic: isArabic, city: browseCityAr, countryCode: browseCountryCode });
-        generated.categoryMatch = match;
-        return { match, generated };
-      })();
-      const timeoutPromise = new Promise<never>((_, rej) => setTimeout(() => rej(new Error('Timeout')), 10000));
-      const { match, generated } = await Promise.race([aiPromise, timeoutPromise]);
-      updatePostDraft({ noteText: raw, photos: photosToUse, categorySlug: match.effectiveCategory, subcategorySlug: match.effectiveSub, city: generated.city || '', generated });
-    } catch (error) {
-      const fallbackMatch = matchCategory({ chosenCategory: '', chosenSub: '', note: raw });
-      updatePostDraft({
-        noteText: raw, photos: photosToUse, categorySlug: fallbackMatch.effectiveCategory, subcategorySlug: fallbackMatch.effectiveSub, city: '',
-        generated: { title: raw, price: '', city: '', categorySlug: fallbackMatch.effectiveCategory, subcategorySlug: fallbackMatch.effectiveSub, description: raw, categoryMatch: fallbackMatch, missing: ['price', 'city'] }
-      });
-    } finally {
-      setIsAnalyzing(false);
-      cb?.();
-      navigateTo('post-ai-review');
-    }
-  };
 
   const handleSend = useCallback(async (images: string[] = [], onSuccess?: () => void) => {
     const raw = query.trim();
@@ -85,7 +56,7 @@ export const useAiAssistant = (props: {
     } else {
       await processPublishFlow(raw, images, onSuccess);
     }
-  }, [query, browseCountryCode, isArabic, browseCityAr, setCategoryFilter, setSearchQuery, navigateTo, updatePostDraft, props]);
+  }, [query, browseCountryCode, processPublishFlow, setCategoryFilter, setSearchQuery, props]);
 
   return { query, setQuery, handleQueryChange, isAnalyzing, aiResponse, handleSend, clearResponse };
 };
