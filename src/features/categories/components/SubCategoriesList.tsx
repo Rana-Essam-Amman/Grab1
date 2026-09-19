@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft2, ArrowRight2 } from 'iconsax-react';
 import { SubcategoryDef } from '@/types';
 
 interface SubCategoriesListProps {
@@ -17,7 +17,7 @@ export const SubCategoriesList: React.FC<SubCategoriesListProps> = ({
   t,
   handleSelectSubCategory,
 }) => {
-  const ChevronIcon = isArabic ? ChevronLeft : ChevronRight;
+  const ChevronIcon = isArabic ? ArrowLeft2 : ArrowRight2;
 
   return (
     <div className="flex flex-col gap-2.5">
@@ -42,6 +42,7 @@ export const SubCategoriesList: React.FC<SubCategoriesListProps> = ({
               </span>
               <ChevronIcon
                 size={18}
+                variant="Linear"
                 className="text-ink-muted group-hover:text-primary transition-transform group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5"
               />
             </div>

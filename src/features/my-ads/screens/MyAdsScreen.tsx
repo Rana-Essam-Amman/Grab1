@@ -4,7 +4,7 @@ import { useListings } from '@/hooks/useListings';
 import { useDraft } from '@/hooks/useDraft';
 import React, { useState, useMemo, useCallback } from 'react';
 import { ListingCard } from '@/shared/components';
-import { Plus, Tag, Bookmark, Heart, Trash2 } from 'lucide-react';
+import { Add, Tag, ArchiveBook, Heart, Trash } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { EmptyState } from '@/shared/ui/EmptyState';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
@@ -51,7 +51,7 @@ export const MyAdsScreen: React.FC = () => {
           onClick={startPostFlow}
           className="rounded-full flex items-center gap-1 text-xs font-bold shadow-xs transition-colors"
         >
-          <Plus size={16} />
+          <Add size={16} variant="Linear" color="#FFFFFF" />
           <span>{isArabic ? 'إعلان جديد' : 'New Ad'}</span>
         </Button>
       </div>
@@ -66,7 +66,7 @@ export const MyAdsScreen: React.FC = () => {
               : 'text-ink-muted hover:text-ink'
           }`}
         >
-          <Tag size={14} />
+          <Tag size={14} variant="Linear" />
           <span>{isArabic ? 'إعلاناتي المنشورة' : 'My Listings'} ({displayedMyAds.length})</span>
         </button>
 
@@ -79,8 +79,13 @@ export const MyAdsScreen: React.FC = () => {
           }`}
         >
           <div className="relative flex items-center justify-center">
-            <Bookmark size={14} className={activeSubTab === 'wishlist' ? 'text-primary fill-primary' : ''} />
-            <Heart size={6.5} className="absolute top-[2px] text-white fill-white" />
+            <ArchiveBook
+              size={14}
+              variant={activeSubTab === 'wishlist' ? 'Bold' : 'Linear'}
+              color={activeSubTab === 'wishlist' ? '#E57E25' : undefined}
+              className={activeSubTab === 'wishlist' ? 'text-primary' : ''}
+            />
+            <Heart size={7} variant="Bold" color="#FFFFFF" className="absolute top-[2px] text-white" />
           </div>
           <span>{isArabic ? 'المفضلة' : 'Favorites'} ({wishlistListings.length})</span>
         </button>
@@ -90,7 +95,7 @@ export const MyAdsScreen: React.FC = () => {
       {activeSubTab === 'my' ? (
         displayedMyAds.length === 0 ? (
           <EmptyState
-            icon={<Tag size={24} />}
+            icon={<Tag size={24} variant="Linear" />}
             title={isArabic ? 'لم تقم بنشر أي إعلان بعد' : 'No active listings yet'}
             description={isArabic ? 'ابدأ بيع وتداول سلعك اليوم بسهولة وبسرعة!' : 'Start selling and trading your items today easily and quickly!'}
             action={
@@ -115,7 +120,7 @@ export const MyAdsScreen: React.FC = () => {
                   className="absolute bottom-3 start-3 p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors z-20"
                   title={isArabic ? 'حذف الإعلان' : 'Delete ad'}
                 >
-                  <Trash2 size={16} />
+                  <Trash size={16} variant="Linear" color="#DC2626" />
                 </button>
               </div>
             ))}
@@ -125,8 +130,8 @@ export const MyAdsScreen: React.FC = () => {
         <EmptyState
           icon={
             <div className="relative flex items-center justify-center">
-              <Bookmark size={24} className="text-primary" />
-              <Heart size={11} className="absolute top-4 fill-red-500 text-red-500" />
+              <ArchiveBook size={24} variant="Linear" color="#E57E25" className="text-primary" />
+              <Heart size={11} variant="Bold" color="#EF4444" className="absolute top-4 text-red-500" />
             </div>
           }
           title={isArabic ? 'قائمة المفضلة فارغة' : 'Your favorites list is empty'}

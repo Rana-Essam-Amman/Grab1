@@ -6,7 +6,7 @@ import { categoryBySlug, categories } from '@/data/categories';
 import { subcategoriesByCategory } from '@/data/subcategories';
 import { SubcategoryDef } from '@/types';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'iconsax-react';
 import { ParentCategoryBanner } from '../components/ParentCategoryBanner';
 import { SubCategoriesList } from '../components/SubCategoriesList';
 
@@ -91,7 +91,7 @@ export const SubCategoriesScreen: React.FC = () => {
             className="w-9 h-9 rounded-full bg-background hover:bg-border text-ink flex items-center justify-center transition-all cursor-pointer active:scale-95"
             title={isArabic ? 'رجوع' : 'Back'}
           >
-            <BackIcon size={18} />
+            <BackIcon size={18} variant="Linear" />
           </button>
           <div className="flex flex-col">
             <h1 className="text-base sm:text-lg font-bold text-ink font-cairo leading-snug">

@@ -5,14 +5,14 @@ import { useListings } from '@/hooks/useListings';
 import { categories } from '@/data/categories';
 import { subcategoriesByCategory } from '@/data/subcategories';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
-import { ChevronRight, ChevronLeft } from 'lucide-react';
+import { ArrowRight2, ArrowLeft2 } from 'iconsax-react';
 
 export const CategoriesScreen: React.FC = () => {
   const { isArabic, navigateTo, setSelectedParentCategory, browseCountryCode } = useUI();
   const { t } = useTranslation();
   const { listings } = useListings();
 
-  const ChevronIcon = isArabic ? ChevronLeft : ChevronRight;
+  const ChevronIcon = isArabic ? ArrowLeft2 : ArrowRight2;
 
   const handleSelectPrimaryCategory = useCallback((catSlug: string) => {
     setSelectedParentCategory(catSlug);
@@ -94,6 +94,7 @@ export const CategoriesScreen: React.FC = () => {
                 <div className="w-8 h-8 rounded-full bg-surface flex items-center justify-center group-hover:bg-background transition-colors">
                   <ChevronIcon
                     size={16}
+                    variant="Linear"
                     className="text-ink-muted group-hover:text-primary transition-transform group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5"
                   />
                 </div>

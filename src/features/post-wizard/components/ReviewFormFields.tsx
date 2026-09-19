@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/shared/ui/Button';
-import { AlertTriangle, Send, CheckCircle2 } from 'lucide-react';
+import { Warning2 } from 'iconsax-react';
 import { Input } from '@/shared/ui/Input';
 import { Textarea } from '@/shared/ui/Textarea';
 import { Badge } from '@/shared/ui/Badge';
@@ -36,7 +36,7 @@ export const ReviewFormFields: React.FC<Props> = ({
       {hasMissingParams && (
         <div className="p-4 rounded-2xl bg-red-50 border-2 border-danger text-red-900 flex flex-col gap-2 shadow-xs">
           <div className="flex items-center gap-2 font-extrabold text-xs text-danger">
-            <AlertTriangle size={18} className="text-danger shrink-0 animate-bounce" />
+            <Warning2 size={18} variant="Linear" color="#EF4444" className="text-danger shrink-0 animate-bounce" />
             <span>{isArabic ? 'رتبنا نص إعلانك، تفضل بلمسة تفاصيل أخيرة للنشر' : 'We arranged your listing note, please add final details to publish'}</span>
           </div>
           <div className="flex flex-wrap gap-2 pt-1">
@@ -48,7 +48,7 @@ export const ReviewFormFields: React.FC<Props> = ({
 
       {hasMismatch && match?.suggested && (
         <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 flex flex-col gap-2">
-          <div className="flex items-center gap-2 text-amber-800 font-bold text-xs"><AlertTriangle size={16} /> <span>{isArabic ? 'ملاحظة ذكية' : 'Smart Notice'}</span></div>
+          <div className="flex items-center gap-2 text-amber-800 font-bold text-xs"><Warning2 size={16} variant="Linear" color="#D97706" /> <span>{isArabic ? 'ملاحظة ذكية' : 'Smart Notice'}</span></div>
           <Button type="button" variant="secondary" size="sm" onClick={onApplyCategory} className="bg-amber-600 hover:bg-amber-700 text-white text-xs">
             {isArabic ? 'تحديث إلى القسم المقترح' : 'Switch to Suggested'}
           </Button>

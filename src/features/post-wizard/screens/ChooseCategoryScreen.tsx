@@ -3,7 +3,7 @@ import { usePostWizard } from '../hooks/usePostWizard';
 import { useAuth } from '@/hooks/useAuth';
 import React, { useEffect, useCallback } from 'react';
 import { categories } from '@/data/categories';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { Card } from '@/shared/ui/Card';
 
@@ -52,7 +52,7 @@ export const ChooseCategoryScreen: React.FC = () => {
           className="w-10 h-10 rounded-full bg-white/15 text-white hover:bg-white/25 cursor-pointer flex items-center justify-center p-0"
           aria-label={isArabic ? 'رجوع' : 'Back'}
         >
-          <BackIcon size={18} className="text-white" />
+          <BackIcon size={18} variant="Linear" color="#FFFFFF" className="text-white" />
         </Button>
         <div>
           <div className="text-xs font-semibold text-white/70">

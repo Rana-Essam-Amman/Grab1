@@ -1,5 +1,5 @@
 import React from 'react';
-import { Camera } from 'lucide-react';
+import { Camera } from 'iconsax-react';
 import { listingMaxPhotos } from '@/data/photoRules';
 
 interface Props {
@@ -18,7 +18,7 @@ export const PhotoUploader: React.FC<Props> = ({ photoCount, isArabic, onFiles }
         onChange={(e) => onFiles(e.target.files)}
         className="hidden"
       />
-      <Camera size={24} className="text-ink-muted" />
+      <Camera size={24} variant="Linear" className="text-ink-muted" />
       <span className="text-[11px] font-semibold text-ink-muted">
         {isArabic ? 'إضافة صورة' : 'Add Photo'}
       </span>

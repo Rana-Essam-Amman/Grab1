@@ -3,7 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { countries } from '@/data/countries';
 import { locations, locationsAr } from '@/data/locations';
-import { Lock } from 'lucide-react';
+import { Lock1 } from 'iconsax-react';
 import { Drawer } from '@/shared/ui/Drawer';
 import { CountrySelectorTabs } from './CountrySelectorTabs';
 import { CountrySheetCities } from './CountrySheetCities';
@@ -76,7 +76,7 @@ export const CountrySheet: React.FC = () => {
         <div className="flex flex-col gap-4 max-h-[55vh] overflow-y-auto pe-1 -me-1">
           {isAuthenticated && (
             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/5 text-primary rounded-xl text-[10px] font-bold self-start border border-primary/10">
-              <Lock size={12} />
+              <Lock1 size={12} variant="Linear" />
               <span>{isArabic ? 'تم قفل المتجر على دولتك المسجلة' : 'Store locked to your registered country'}</span>
             </div>
           )}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check } from 'lucide-react';
+import { TickCircle } from 'iconsax-react';
 
 interface CountrySheetCitiesProps {
   citiesEn: string[];
@@ -44,7 +44,7 @@ export const CountrySheetCities: React.FC<CountrySheetCitiesProps> = ({
               }`}
             >
               <span className="text-sm">{isArabic ? cityAr : cityEn}</span>
-              {isCurrent && <Check size={16} className="text-accent shrink-0" />}
+              {isCurrent && <TickCircle size={16} variant="Bold" color="#E57E25" className="text-accent shrink-0" />}
             </button>
           );
         })}

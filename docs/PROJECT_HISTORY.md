@@ -122,6 +122,7 @@ Complete timeline of all work.
 - Batch 4 (Auth Feature Components & Screens): 12 files migrated (LoginForm, LoginGateway, RegisterFormFields, RegisterStep2Form, CountrySelector, GuestCountrySelect, AuthTopBar, AuthToastBanner, ForgotPasswordForm, ForgotPasswordHeader, ConfirmScreen, TermsScreen) ✅
 - Batch 5: Profile + Chat migrated ✅
 - Batch 6: Explore migrated ✅
+- Batch 7: Categories + Post-Wizard + Markets + My-Ads migrated ✅
 
 ## Constitution Evolution
 

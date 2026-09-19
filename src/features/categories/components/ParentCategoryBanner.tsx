@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layers, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Layer, Magicpen, ArrowLeft2, ArrowRight2 } from 'iconsax-react';
 import { CategoryDef } from '@/types';
 
 interface ParentCategoryBannerProps {
@@ -17,7 +17,7 @@ export const ParentCategoryBanner: React.FC<ParentCategoryBannerProps> = ({
   t,
   handleSelectAllParentCategory,
 }) => {
-  const ChevronIcon = isArabic ? ChevronLeft : ChevronRight;
+  const ChevronIcon = isArabic ? ArrowLeft2 : ArrowRight2;
 
   return (
     <div className="flex flex-col gap-3">
@@ -25,7 +25,7 @@ export const ParentCategoryBanner: React.FC<ParentCategoryBannerProps> = ({
       <div className="bg-surface rounded-2xl p-4 border border-border flex items-center justify-between shadow-xs">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-            <Layers size={22} />
+            <Layer size={22} variant="Linear" color="#E57E25" />
           </div>
           <div>
             <div className="text-xs font-semibold text-ink-soft font-cairo">
@@ -48,7 +48,7 @@ export const ParentCategoryBanner: React.FC<ParentCategoryBannerProps> = ({
         className="w-full bg-ink text-white rounded-2xl p-4 flex items-center justify-between hover:bg-neutral-900 active:scale-[0.99] transition-all shadow-sm group cursor-pointer"
       >
         <div className="flex items-center gap-2.5">
-          <Sparkles size={18} className="text-accent" />
+          <Magicpen size={18} variant="Linear" color="#E57E25" className="text-accent" />
           <span className="font-cairo font-bold text-sm text-white">
             {t('categories.viewAllInParent')}
           </span>
@@ -59,6 +59,8 @@ export const ParentCategoryBanner: React.FC<ParentCategoryBannerProps> = ({
           </span>
           <ChevronIcon
             size={16}
+            variant="Linear"
+            color="#E57E25"
             className="text-accent transition-transform group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5"
           />
         </div>
