@@ -120,6 +120,7 @@ Complete timeline of all work.
 ## Phase 6 — Iconsax Migration
 - Batch 1 & 2 (Shared UI & Components): 11 files migrated ✅
 - Batch 4 (Auth Feature Components & Screens): 12 files migrated (LoginForm, LoginGateway, RegisterFormFields, RegisterStep2Form, CountrySelector, GuestCountrySelect, AuthTopBar, AuthToastBanner, ForgotPasswordForm, ForgotPasswordHeader, ConfirmScreen, TermsScreen) ✅
+- Batch 5: Profile + Chat migrated ✅
 
 ## Constitution Evolution
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Gift } from 'lucide-react';
+import { Magicpen, Gift } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { Badge } from '@/shared/ui/Badge';
 
@@ -24,7 +24,7 @@ export const ProfileQuotaCard: React.FC<ProfileQuotaCardProps> = ({
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-xs font-bold text-ink">
-          <Sparkles size={16} className="text-primary" />
+          <Magicpen size={16} variant="Linear" color="#E57E25" />
           <span>{isArabic ? 'رصيد المساعد الذكي اليومي' : 'Daily AI Assistant Quota'}</span>
         </div>
         <Badge
@@ -48,7 +48,7 @@ export const ProfileQuotaCard: React.FC<ProfileQuotaCardProps> = ({
           onClick={handleShare}
           className="gap-2 text-xs font-bold bg-primary hover:bg-primary-hover text-white flex items-center justify-center py-2.5 rounded-xl cursor-pointer"
         >
-          <Gift size={16} className="animate-bounce" />
+          <Gift size={16} variant="Linear" color="#FFFFFF" className="animate-bounce" />
           <span>
             {isArabic
               ? 'شارك التطبيق لفتح محاولات إضافية فوراً! 🎁'

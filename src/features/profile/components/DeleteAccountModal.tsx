@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal } from '@/shared/ui/Modal';
 import { Button } from '@/shared/ui/Button';
-import { AlertTriangle } from 'lucide-react';
+import { Warning2 } from 'iconsax-react';
 
 interface DeleteAccountModalProps {
   open: boolean;
@@ -24,7 +24,7 @@ export const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
     >
       <div className="flex flex-col items-center text-center gap-4 py-3" dir={isArabic ? 'rtl' : 'ltr'}>
         <div className="w-16 h-16 rounded-full bg-danger/10 flex items-center justify-center text-danger shrink-0 animate-pulse">
-          <AlertTriangle size={48} />
+          <Warning2 size={48} variant="Bold" color="#EF4444" />
         </div>
         
         <div className="flex flex-col gap-2">

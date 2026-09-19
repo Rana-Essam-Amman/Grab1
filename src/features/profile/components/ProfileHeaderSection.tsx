@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, ArrowRight, MapPin } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Location } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { Avatar } from '@/shared/ui/Avatar';
 
@@ -32,7 +32,7 @@ export const ProfileHeaderSection: React.FC<ProfileHeaderSectionProps> = ({
           onClick={goBack}
           className="w-9 h-9 rounded-full bg-background text-ink-muted hover:bg-border shrink-0 flex items-center justify-center cursor-pointer"
         >
-          {isArabic ? <ArrowRight size={18} /> : <ArrowLeft size={18} />}
+          {isArabic ? <ArrowRight size={18} variant="Linear" color="#0F172A" /> : <ArrowLeft size={18} variant="Linear" color="#0F172A" />}
         </Button>
         <h1 className="text-base font-bold text-ink">
           {isArabic ? 'الملف الشخصي' : 'My Profile'}
@@ -52,7 +52,7 @@ export const ProfileHeaderSection: React.FC<ProfileHeaderSectionProps> = ({
             {profileTitle}
           </h1>
           <div className="flex items-center gap-1.5 text-xs text-ink-muted">
-            <MapPin size={13} className="text-primary" />
+            <Location size={13} variant="Linear" color="#E57E25" />
             <span>
               {isArabic
                 ? `${browseCountry.nameAr} • ${browseCityAr}`

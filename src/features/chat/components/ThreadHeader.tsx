@@ -1,5 +1,5 @@
 import React from 'react';
-import { Phone, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Call, ArrowLeft, ArrowRight } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 
 interface ThreadHeaderProps {
@@ -32,7 +32,7 @@ export const ThreadHeader: React.FC<ThreadHeaderProps> = ({
           onClick={goBack}
           className="w-9 h-9 rounded-full bg-background text-ink-soft hover:bg-border shrink-0 animate-none select-none"
         >
-          <BackIcon size={18} />
+          <BackIcon size={18} variant="Linear" color="#0F172A" />
         </Button>
         <div
           onClick={handleViewListing}
@@ -60,7 +60,7 @@ export const ThreadHeader: React.FC<ThreadHeaderProps> = ({
           className="w-9 h-9 rounded-full bg-background flex items-center justify-center text-ink hover:bg-border shrink-0 ms-2"
           title={isArabic ? 'اتصال بالمعلن' : 'Call seller'}
         >
-          <Phone size={16} />
+          <Call size={16} variant="Linear" color="#0F172A" />
         </a>
       )}
     </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { MessageSquare, ChevronRight } from 'lucide-react';
+import { MessageText, ArrowRight2 } from 'iconsax-react';
 
 export interface ConversationItem {
   id: string;
@@ -67,9 +67,11 @@ export const ChatConversationList: React.FC<ChatConversationListProps> = ({
                 className="w-11 h-11 rounded-xl object-cover border border-line"
                 referrerPolicy="no-referrer"
               />
-              <ChevronRight
+              <ArrowRight2
                 size={16}
-                className="text-ink-muted group-hover:text-brand transition-transform group-hover:translate-x-0.5"
+                variant="Linear"
+                color="#94A3B8"
+                className="group-hover:text-brand transition-transform group-hover:translate-x-0.5"
               />
             </div>
           </div>
@@ -77,7 +79,7 @@ export const ChatConversationList: React.FC<ChatConversationListProps> = ({
       ) : (
         <div className="py-16 bg-surface rounded-2xl border border-line text-center flex flex-col items-center gap-2 shadow-2xs">
           <div className="w-12 h-12 rounded-full bg-surface-raised text-ink-muted flex items-center justify-center">
-            <MessageSquare size={20} />
+            <MessageText size={20} variant="Linear" color="#94A3B8" />
           </div>
           <p className="text-xs font-bold text-ink font-cairo">
             {isArabic ? 'لا توجد محادثات مطابقة' : 'No matching conversations'}

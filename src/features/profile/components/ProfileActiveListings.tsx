@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tag } from 'lucide-react';
+import { Tag } from 'iconsax-react';
 import { Listing } from '@/types';
 import { ListingCard } from '@/shared/components';
 import { EmptyState } from '@/shared/ui/EmptyState';
@@ -17,7 +17,7 @@ export const ProfileActiveListings: React.FC<ProfileActiveListingsProps> = ({
     <div className="flex flex-col gap-3 pt-2">
       <div className="flex items-center justify-between px-0.5">
         <div className="flex items-center gap-2">
-          <Tag size={16} className="text-primary" />
+          <Tag size={16} variant="Linear" color="#E57E25" />
           <h2 className="text-sm font-bold text-ink font-cairo">
             {isArabic ? 'إعلاناتي النشطة' : 'My Active Listings'}
           </h2>
@@ -34,7 +34,7 @@ export const ProfileActiveListings: React.FC<ProfileActiveListingsProps> = ({
         ) : (
           <div className="flex flex-col items-center justify-center p-4">
             <EmptyState
-              icon={<Tag size={40} className="text-ink-muted" />}
+              icon={<Tag size={40} variant="Linear" color="#94A3B8" />}
               title={isArabic ? 'لا توجد إعلانات نشطة حالياً' : 'No active listings at the moment'}
               description=""
             />

@@ -1,5 +1,5 @@
 import React from 'react';
-import { UserCog, Shield, LogOut, Trash2 } from 'lucide-react';
+import { ProfileCircle, ShieldSecurity, Logout, Trash } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { ScreenType } from '@/store/ui.slice.types';
 
@@ -35,7 +35,7 @@ export const ProfileAccountMenu: React.FC<ProfileAccountMenuProps> = ({
           className="flex items-center justify-between font-bold border border-border px-4 py-3"
         >
           <div className="flex items-center gap-2.5">
-            <UserCog size={18} className="text-primary" />
+            <ProfileCircle size={18} variant="Linear" color="#E57E25" />
             <span>{isArabic ? 'تعديل الملف الشخصي' : 'Edit Profile'}</span>
           </div>
         </Button>
@@ -48,7 +48,7 @@ export const ProfileAccountMenu: React.FC<ProfileAccountMenuProps> = ({
           className="flex items-center justify-between font-bold border border-border px-4 py-3"
         >
           <div className="flex items-center gap-2.5">
-            <Shield size={18} className="text-primary" />
+            <ShieldSecurity size={18} variant="Linear" color="#E57E25" />
             <span>{isArabic ? 'سياسة الخصوصية والشروط' : 'Privacy Policy & Terms'}</span>
           </div>
         </Button>
@@ -61,7 +61,7 @@ export const ProfileAccountMenu: React.FC<ProfileAccountMenuProps> = ({
           className="flex items-center justify-between font-bold border border-danger/30 text-danger hover:bg-danger/5 px-4 py-3"
         >
           <div className="flex items-center gap-2.5">
-            <LogOut size={18} />
+            <Logout size={18} variant="Linear" color="#EF4444" />
             <span>{signOutText}</span>
           </div>
         </Button>
@@ -73,7 +73,7 @@ export const ProfileAccountMenu: React.FC<ProfileAccountMenuProps> = ({
           onClick={() => setShowDeleteModal(true)}
           className="flex items-center justify-center font-bold text-danger hover:bg-danger/5 gap-2"
         >
-          <Trash2 size={16} />
+          <Trash size={16} variant="Linear" color="#EF4444" />
           <span>{isArabic ? 'حذف الحساب نهائياً' : 'Delete Account Permanently'}</span>
         </Button>
       </div>

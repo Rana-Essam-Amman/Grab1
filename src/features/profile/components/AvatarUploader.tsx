@@ -1,6 +1,6 @@
 import React, { useRef, useState, useCallback } from 'react';
 import { Avatar } from '@/shared/ui/Avatar';
-import { Loader2 } from 'lucide-react';
+import { Refresh } from 'iconsax-react';
 import { validateImageFile, compressImageToDataUrl } from '@/shared/lib/imageUtils';
 import { AvatarUploaderButtons } from './AvatarUploaderButtons';
 
@@ -83,7 +83,7 @@ export const AvatarUploader: React.FC<AvatarUploaderProps> = ({
         />
         {isCompressing && (
           <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center text-white backdrop-blur-xs">
-            <Loader2 className="animate-spin text-primary-hover w-1/3 h-1/3" />
+            <Refresh size={24} variant="Linear" color="#E57E25" className="animate-spin w-1/3 h-1/3" />
           </div>
         )}
         <AvatarUploaderButtons

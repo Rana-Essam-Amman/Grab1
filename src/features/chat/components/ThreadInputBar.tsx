@@ -1,5 +1,5 @@
 import React from 'react';
-import { Phone, Send } from 'lucide-react';
+import { Call, Send2 } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { Input } from '@/shared/ui/Input';
 
@@ -33,7 +33,7 @@ export const ThreadInputBar: React.FC<ThreadInputBarProps> = ({
             href={`tel:${formattedPhone.dialNumber}`}
             className="w-full h-12 rounded-xl bg-primary hover:opacity-95 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-md active:scale-98 transition-all"
           >
-            <Phone size={16} />
+            <Call size={16} variant="Linear" color="#FFFFFF" />
             <span>
               {isArabic
                 ? `اتصل بالبائع: ${formattedPhone.displayFormatted}`
@@ -69,7 +69,7 @@ export const ThreadInputBar: React.FC<ThreadInputBarProps> = ({
             : 'bg-background text-ink-muted cursor-not-allowed'
         }`}
       >
-        <Send size={16} className="transform rotate-45" />
+        <Send2 size={16} variant="Linear" color={inputText.trim() ? "#FFFFFF" : "#94A3B8"} className="transform rotate-45" />
       </Button>
     </form>
   );

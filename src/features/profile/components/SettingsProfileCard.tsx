@@ -1,7 +1,7 @@
 import React from 'react';
-import { User as UserIcon, LogOut } from 'lucide-react';
+import { User, Logout } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
-import type { User } from '@/features/auth/domain';
+import type { User as UserType } from '@/features/auth/domain';
 
 interface SettingsProfileCardProps {
   registered: boolean | undefined;
@@ -22,7 +22,7 @@ export const SettingsProfileCard: React.FC<SettingsProfileCardProps> = ({
     <div className="p-4 rounded-2xl bg-surface border border-border flex items-center justify-between shadow-xs">
       <div className="flex items-center gap-3">
         <div className="w-13 h-13 rounded-full bg-background border border-border overflow-hidden flex items-center justify-center">
-          <UserIcon size={24} className="text-primary" />
+          <User size={24} variant="Linear" color="#E57E25" />
         </div>
         <div>
           <div className="text-sm font-bold text-ink">
@@ -48,7 +48,7 @@ export const SettingsProfileCard: React.FC<SettingsProfileCardProps> = ({
           className="p-2 rounded-full text-red-600 hover:bg-red-50"
           title={isArabic ? 'تسجيل الخروج' : 'Log out'}
         >
-          <LogOut size={18} />
+          <Logout size={18} variant="Linear" color="#EF4444" />
         </button>
       )}
     </div>
