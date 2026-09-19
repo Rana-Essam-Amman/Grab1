@@ -198,3 +198,10 @@ Complete timeline of all work.
 - ExploreScreen.tsx: 165 → 95 lines
 - ESLint clean, TSC clean, 363 tests passing
 
+
+### UX-Crush Refactor — FilterChip Extraction (2026-09-19)
+- Created: FilterChip.tsx (56 lines, presentational)
+- Refactored: ExploreFilterChipsBar.tsx (120 lines, responsive)
+- Updated: Header.tsx with data-testid="header-profile-btn"
+- Updated: e2e/helpers/navigation.ts to use new selector
+- ESLint clean, TSC clean, 369 tests passing
