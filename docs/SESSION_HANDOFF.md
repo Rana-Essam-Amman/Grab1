@@ -8,8 +8,8 @@ Use this template when starting a new session or switching AI agents.
 - **Tests:** 337 passing (42 test files)
 - **Violations:** 0
 - **Working tree:** clean
-- **Last completed task:** UI-3b — Trust Signal with market + count
-- **Next task:** UI-3c (Trending)
+- **Last completed task:** UI-3c — Trending Section on Home
+- **Next task:** UI-3d (Filter Chips polish)
 
 ## Active Sprints
 

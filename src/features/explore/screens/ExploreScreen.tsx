@@ -12,6 +12,7 @@ import { ExploreCategoryGrid } from '../components/ExploreCategoryGrid';
 import { ExploreQuotaPaywallModal } from '../components/ExploreQuotaPaywallModal';
 import { FeaturedDealCard } from '../components/FeaturedDealCard';
 import { TrustSignal } from '../components/TrustSignal';
+import { TrendingSection } from '../components/TrendingSection';
 
 export const ExploreScreen: React.FC = () => {
   const { isArabic, setCategoryFilter, setSelectedParentCategory, navigateTo, setActiveTab, categoryFilter, browseCountryCode, setSelectedListingId } = useUI();
@@ -33,12 +34,22 @@ export const ExploreScreen: React.FC = () => {
     [displayListings]
   );
 
+  const trendingListings = useMemo(
+    () => [...displayListings].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 6),
+    [displayListings]
+  );
+
   const handleFeaturedClick = useCallback(() => {
     if (featuredListing) {
       setSelectedListingId(featuredListing.id);
       navigateTo('listing-detail');
     }
   }, [featuredListing, setSelectedListingId, navigateTo]);
+
+  const handleTrendingClick = useCallback((id: string) => {
+    setSelectedListingId(id);
+    navigateTo('listing-detail');
+  }, [setSelectedListingId, navigateTo]);
 
   const handleCategoryClick = useCallback((catSlug: string) => {
     setSelectedParentCategory(catSlug);
@@ -100,6 +111,14 @@ export const ExploreScreen: React.FC = () => {
         listingsCount={displayListings.length}
         isArabic={isArabic}
       />
+
+      {trendingListings.length > 0 && (
+        <TrendingSection
+          listings={trendingListings}
+          isArabic={isArabic}
+          onListingClick={handleTrendingClick}
+        />
+      )}
 
       {/* Category Horizontal / Grid Scroller */}
       <ExploreCategoryGrid
