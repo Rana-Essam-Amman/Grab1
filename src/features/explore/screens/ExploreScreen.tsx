@@ -77,8 +77,8 @@ export const ExploreScreen: React.FC = () => {
 
   return (
     <div 
-      className={`max-w-[440px] mx-auto w-full flex flex-col gap-2 pb-24 px-4 bg-surface ${isArabic ? 'font-cairo' : ''}`} dir={isArabic ? "rtl" : "ltr"}
-      style={{ WebkitOverflowScrolling: 'touch', paddingTop: '8px' }}
+      className={`max-w-[440px] mx-auto w-full flex flex-col gap-3 pt-3 pb-28 px-4 bg-surface ${isArabic ? 'font-cairo' : ''}`} dir={isArabic ? "rtl" : "ltr"}
+      style={{ WebkitOverflowScrolling: 'touch' }}
     >
       {/* UNIFIED AI ASSISTANT & SEARCH ENGINE LAYER */}
       <AiAssistantBox

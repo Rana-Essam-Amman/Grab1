@@ -8,7 +8,7 @@ Use this template when starting a new session or switching AI agents.
 - **Tests:** 337 passing (42 test files)
 - **Violations:** 0
 - **Working tree:** clean
-- **Last completed task:** UI-3d — Filter Chips polish
+- **Last completed task:** UI-3e — Home Screen final polish
 - **Next task:** Phase 5-8 (Dead Code cleanup)
 
 ## Active Sprints
