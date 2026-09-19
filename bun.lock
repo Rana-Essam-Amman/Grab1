@@ -27,7 +27,6 @@
         "date-fns": "^4.4.0",
         "iconsax-react": "^0.0.8",
         "immer": "^11.1.18",
-        "lucide-react": "^1.16.0",
         "motion": "^12.4.7",
         "nanoid": "^6.0.1",
         "react": "^18.3.1",
@@ -790,8 +789,6 @@
     "loose-envify": ["loose-envify@1.4.0", "", { "dependencies": { "js-tokens": "^3.0.0 || ^4.0.0" }, "bin": "cli.js" }, ""],
 
     "lru-cache": ["lru-cache@11.5.2", "", {}, ""],
-
-    "lucide-react": ["lucide-react@1.46.0", "", { "peerDependencies": { "react": "^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-Bv+FZXgZPrxc/NCl1e7JJVQFLdiCxYgxNVhqoV7X0p6I8ADJo8DxBnK1auH0fZz4AmqOJ3jgneL4f1i8LJQRAA=="],
 
     "lz-string": ["lz-string@1.5.0", "", { "bin": "bin/bin.js" }, ""],
 
