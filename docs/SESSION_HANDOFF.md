@@ -5,14 +5,15 @@ Use this template when starting a new session or switching AI agents.
 ## Current State (Update before ending session)
 
 - **HEAD commit:** 2bdf7cd
-- **Tests:** 337 passing (42 test files)
+- **Tests:** 369 passing (43 test files)
 - **Violations:** 0
 - **Working tree:** clean
-- **Last completed task:** UX-Crush B4c — ExploreTopSections extraction (93 lines)
-- **Next task:** UX-Crush B4d — add suggestion state to useAiAssistant
+- **Last completed task:** UX-Crush B4d — useAiSuggestion (53 lines, 6 tests)
+- **Next task:** UX-Crush B4e — AI code cleanup (3 fixes)
 
 ## Active Sprints
 
+- **UX-Crush B4d:** ✅ useAiSuggestion hook
 - **UX-Crush B4c:** ✅ ExploreTopSections extracted
 - **UX-Crush B4b:** ✅ AiAssistantControls extracted
 - **UX-Crush B4a:** ✅ useAiPublishFlow extracted (pure refactor)
@@ -20,7 +21,7 @@ Use this template when starting a new session or switching AI agents.
 - **UX-Crush B2:** ✅ intentScoring.ts created (pure helper)
 - **P1 Cleanup:** P0 + P1-a + P1-b + P1-c + P1-d (any = 0) ✅
 - **DOC-1:** 1a done, 1b in progress, 1c pending
-- **Next:** Phase 5-8 (Cleanup → UI-3 → Supabase)
+- **Next:** UX-Crush B4e — AI code cleanup (3 fixes)
 
 ## Blocked Items
 

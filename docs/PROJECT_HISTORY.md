@@ -198,3 +198,11 @@ Complete timeline of all work.
 - ExploreScreen.tsx: 165 → 95 lines
 - ESLint clean, TSC clean, 363 tests passing
 
+### B4d — useAiSuggestion Hook (2026-09-19)
+- New hook: src/features/explore/hooks/useAiSuggestion.ts (53 lines)
+- Pure state: suggestion, isDismissed
+- API: evaluate(text), dismiss(), clear()
+- Consumes scoreIntent + INTENT_CONFIDENCE_THRESHOLD
+- Session-scoped dismiss (no reset)
+- Tests: 6 cases via renderHook (369 total passing)
+
