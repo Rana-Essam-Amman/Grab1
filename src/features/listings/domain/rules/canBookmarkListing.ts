@@ -1,4 +1,4 @@
-import type { Listing } from '../entities/Listing';
+import type { Listing } from '@/types';
 import type { MarketCountry } from '@/features/auth/domain';
 
 export type CanBookmarkReason = 'cross-market' | 'listing-archived' | 'already-bookmarked';

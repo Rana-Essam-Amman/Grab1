@@ -25,6 +25,7 @@ export const ListingSchema = z.object({
   views: z.number().nonnegative(),
   attributes: z.array(ListingAttributeSchema),
   isPremium: z.boolean().optional(),
+  status: z.enum(['active', 'pending', 'sold', 'archived']).optional().default('active'),
   lastBumpedAt: z.string().optional(),
   isAutoBumpActive: z.boolean().optional(),
   sourceLocale: z.enum(['ar', 'en']).optional(),

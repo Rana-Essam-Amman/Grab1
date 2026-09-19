@@ -23,8 +23,8 @@ export function buildNewListingPayload({
     title,
     description,
     price,
-    currency: activeCurrency,
-    countryCode: targetMarket,
+    currency: activeCurrency as Listing['currency'],
+    countryCode: targetMarket as Listing['countryCode'],
     city: postDraft.city || '',
     neighborhood: postDraft.neighborhood || '',
     categorySlug: postDraft.categorySlug,
@@ -35,6 +35,7 @@ export function buildNewListingPayload({
     sellerName: user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : 'Seller',
     createdAt: new Date().toISOString().split('T')[0],
     views: 1,
+    status: 'active',
     attributes: [
       { label: 'Category', value: postDraft.categorySlug },
       { label: 'City', value: postDraft.city || '' },

@@ -32,8 +32,8 @@ export const ConfirmScreen: React.FC = () => {
         title: gen.title,
         description: gen.description,
         price: gen.price || '0',
-        currency: activeCurrency,
-        countryCode: browseCountryCode,
+        currency: activeCurrency as Listing['currency'],
+        countryCode: browseCountryCode as Listing['countryCode'],
         city: postDraft.city || 'عمّان',
         neighborhood: postDraft.neighborhood || '',
         categorySlug: gen.categorySlug || postDraft.categorySlug,
@@ -44,6 +44,7 @@ export const ConfirmScreen: React.FC = () => {
         sellerName: `${registrationPendingUser?.firstName || 'User'} ${registrationPendingUser?.lastName || ''}`.trim(),
         createdAt: new Date().toISOString().split('T')[0],
         views: 1,
+        status: 'active',
         attributes: [
           { label: 'Category', value: gen.categorySlug || postDraft.categorySlug },
           { label: 'City', value: postDraft.city },

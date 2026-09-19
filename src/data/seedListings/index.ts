@@ -11,6 +11,11 @@ export const seedListings: Listing[] = [
   ...LB_LISTINGS,
   ...PS_LISTINGS,
   ...SY_LISTINGS,
-];
+].map(l => ({
+  ...l,
+  status: (l.status || 'active') as Listing['status'],
+  countryCode: l.countryCode as Listing['countryCode'],
+  currency: l.currency as Listing['currency'],
+}));
 
 export type { SeedListingsByCountry } from './types';

@@ -25,6 +25,7 @@ export function createMockListing(overrides: Partial<Listing> = {}): Listing {
     createdAt: '2026-01-01',
     views: 0,
     attributes: [],
+    status: 'active',
     ...overrides,
   };
 }

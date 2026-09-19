@@ -1,20 +1,27 @@
 import { describe, it, expect } from 'vitest';
 import { canBookmarkListing } from '../rules/canBookmarkListing';
-import type { Listing } from '../entities/Listing';
+import type { Listing } from '@/types';
 
 const baseListing: Listing = {
   id: 'l1',
   title: 'Toyota Camry',
-  price: 12000,
+  description: 'Clean',
+  price: '12000',
   currency: 'JOD',
   countryCode: 'JO',
-  cityId: 'amman',
-  categoryId: 'motors',
-  subcategoryId: 'cars',
-  sellerId: 'u1',
+  city: 'Amman',
+  neighborhood: 'Khalda',
+  categorySlug: 'motors',
+  subcategorySlug: 'cars',
+  imageUrl: '/img.jpg',
+  images: ['/img.jpg'],
+  sellerPhone: '0791234567',
+  sellerName: 'Ahmad',
+  createdAt: '2026-09-18',
+  views: 10,
+  attributes: [],
+  isPremium: false,
   status: 'active',
-  isFeatured: false,
-  viewsCount: 10,
 };
 
 describe('canBookmarkListing', () => {

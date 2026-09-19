@@ -39,7 +39,7 @@ export interface Listing {
   title: string;
   description: string;
   price: string;
-  currency: string;
+  currency: 'JOD' | 'SAR' | 'ILS' | 'LBP' | 'SYP' | 'USD';
   countryCode: string;
   city: string;
   neighborhood: string;
@@ -53,6 +53,7 @@ export interface Listing {
   views: number;
   attributes: ListingAttribute[];
   isPremium?: boolean;
+  status?: ListingStatus;
   lastBumpedAt?: string;
   isAutoBumpActive?: boolean;
   sourceLocale?: 'ar' | 'en';

@@ -13,10 +13,10 @@ export const sanitizeListingData = (listing: Listing, activeCountry: string, isA
 
   return {
     ...listing,
-    countryCode: country,
+    countryCode: country as Listing['countryCode'],
     city: sanitizedLoc.city,
     neighborhood: sanitizedLoc.neighborhood,
-    currency: sanitizedCurr,
+    currency: sanitizedCurr as Listing['currency'],
   };
 };
 

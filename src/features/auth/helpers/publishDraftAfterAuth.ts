@@ -4,6 +4,7 @@ import { useListingsStore } from '@/features/listings/store/listings.slice';
 import { useDraftStore } from '@/features/post-wizard/store/draft.slice';
 import { getSanitizedCurrency } from '@/data/countries';
 import { globalStorage } from '@/shared/lib/marketStorage';
+import type { Listing } from '@/types';
 
 export function publishDraftAfterAuth(phoneNum: string, fName: string, market: string): void {
   try {
@@ -15,13 +16,13 @@ export function publishDraftAfterAuth(phoneNum: string, fName: string, market: s
       const gen = draft.generated;
       const currency = getSanitizedCurrency(market);
       
-      const newListing = {
+      const newListing: Listing = {
         id: 'listing-' + Date.now(),
         title: gen.title,
         description: gen.description,
         price: gen.price || '0',
-        currency,
-        countryCode: market,
+        currency: currency as Listing['currency'],
+        countryCode: market as Listing['countryCode'],
         city: draft.city || '',
         neighborhood: draft.neighborhood || '',
         categorySlug: gen.categorySlug || draft.categorySlug,
@@ -32,6 +33,7 @@ export function publishDraftAfterAuth(phoneNum: string, fName: string, market: s
         sellerName: fName || 'Seller',
         createdAt: new Date().toISOString().split('T')[0],
         views: 1,
+        status: 'active',
         attributes: [
           { label: 'Category', value: gen.categorySlug || draft.categorySlug },
           { label: 'City', value: draft.city || '' },
