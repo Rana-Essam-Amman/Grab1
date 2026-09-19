@@ -148,3 +148,13 @@ Complete timeline of all work.
 - any: 53 → 0
 - Constitution: 39 rules
 - Bundle (gzip): 153 KB
+
+## Phase UX-Crush — Intent Detection
+
+### B1 — intentClassifier Refactor (2026-09-19)
+- Fixed 2 bugs: 'بدي' priority inversion + ambiguous matching
+- Algorithm: binary keyword match → count-based weighted scoring
+- Exports: SELL_KEYWORDS, BUY_KEYWORDS (readonly, extensible)
+- Rule 14: 74 → 47 lines
+- Tests: 337 passing (unchanged)
+
