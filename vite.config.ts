@@ -37,11 +37,7 @@ export default defineConfig({
           'vendor-icons': ['iconsax-react'],
           'vendor-radix': [
             '@radix-ui/react-dialog',
-            '@radix-ui/react-dropdown-menu',
             '@radix-ui/react-popover',
-            '@radix-ui/react-select',
-            '@radix-ui/react-tabs',
-            '@radix-ui/react-tooltip',
           ],
           'vendor-motion': ['motion'],
           'vendor-forms': ['zod', 'class-variance-authority', 'clsx', 'tailwind-merge'],
