@@ -22,10 +22,10 @@ export const ListingDetailHeader: React.FC<ListingDetailHeaderProps> = React.mem
       <div className="flex items-center gap-2">
         <BookmarkHeartButton listingId={listingId} size="md" />
         <button onClick={onShare} className="w-9 h-9 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center transition-colors cursor-pointer" aria-label={isArabic ? 'مشاركة' : 'Share'}>
-          <Share size={18} variant="Bold" color="#FFFFFF" />
+          <Share size={18} variant="Bold" color="#3B82F6" />
         </button>
         <button onClick={onReport} className="w-9 h-9 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center transition-colors cursor-pointer" aria-label={isArabic ? 'إبلاغ' : 'Report'}>
-          <Warning2 size={18} variant="Bold" color="#FFFFFF" />
+          <Warning2 size={18} variant="Bold" color="#DC2626" />
         </button>
         {isOwner && (
           <button onClick={onDelete} className="w-9 h-9 rounded-full bg-danger/10 flex items-center justify-center text-danger hover:bg-danger/20 transition-colors cursor-pointer" aria-label={isArabic ? 'حذف الإعلان' : 'Delete listing'} title={isArabic ? 'حذف الإعلان' : 'Delete listing'}>
