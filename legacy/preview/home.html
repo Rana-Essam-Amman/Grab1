@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catch the deals — Explore</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f9f8f4;
+      --card: #ffffff;
+      --dark: #1a1918;
+      --text: #4a4845;
+      --muted: #8c8982;
+      --border: #e7e3d8;
+      --soft: #f2eee3;
+      --accent: #b08931;
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #ebe6db; color: var(--text); font-family: Inter, Arial, sans-serif; }
+    button, input { font: inherit; border: 0; background: none; }
+    .app { width: 100%; max-width: 430px; min-height: 100vh; margin: 0 auto; background: var(--bg); position: relative; padding-bottom: 110px; box-shadow: 0 10px 40px rgba(0,0,0,.06); }
+    .header { padding: 22px 18px 10px; }
+    .top-row { display: flex; align-items: center; justify-content: space-between; }
+    .brand { font-family: Newsreader, Georgia, serif; font-size: 35px; line-height: 1; letter-spacing: -1.5px; color: var(--dark); }
+    .brand-sub { font-family: Inter, sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 2px; margin-left: 5px; color: var(--accent); vertical-align: middle; }
+    .header-actions { display: flex; align-items: center; gap: 10px; }
+    .icon-button { width: 42px; height: 42px; border: 1px solid var(--border); border-radius: 50%; background: var(--card); display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,.03); }
+    .notification-dot { position: absolute; top: 7px; right: 7px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); border: 2px solid var(--card); }
+    .avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border); }
+    .location { padding: 4px 18px 16px; display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 13px; }
+    .location strong { color: var(--dark); }
+    .search-wrap { padding: 0 18px 23px; }
+    .search { width: 100%; height: 50px; background: var(--card); border: 1px solid var(--border); border-radius: 26px; display: flex; align-items: center; gap: 11px; padding: 0 17px; color: var(--muted); box-shadow: 0 4px 15px rgba(0,0,0,.03); }
+    .section { padding: 0 18px; margin-bottom: 28px; }
+    .section-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 15px; }
+    .section-title { font-family: Newsreader, Georgia, serif; font-size: 25px; color: var(--dark); }
+    .section-link { color: var(--accent); font-size: 12px; font-weight: 600; }
+    .categories { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 10px; }
+    .category { text-align: center; }
+    .category-card { width: 100%; aspect-ratio: 1; margin: 0 auto 6px; border-radius: 20px; background: var(--card); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .category-card img { width: 75%; height: 75%; object-fit: contain; }
+    .category-name { font-size: 11px; font-weight: 600; color: var(--dark); }
+    .category-ar { display: block; margin-top: 1px; font-family: Tajawal, sans-serif; font-size: 9px; color: var(--muted); }
+    .listings { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+    .listing { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .listing-image-wrap { position: relative; aspect-ratio: 1 / .88; background: var(--soft); }
+    .listing-image { width: 100%; height: 100%; object-fit: cover; }
+    .heart { position: absolute; top: 9px; right: 9px; width: 32px; height: 32px; background: rgba(255,255,255,.9); border-radius: 50%; border: 1px solid var(--border); }
+    .listing-body { padding: 11px; }
+    .listing-category { font-size: 9px; letter-spacing: .8px; color: var(--accent); font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+    .listing-title { font-size: 13px; font-weight: 700; color: var(--dark); margin-bottom: 7px; }
+    .listing-price { font-family: Newsreader, Georgia, serif; font-size: 18px; color: var(--dark); }
+    .floating-toolbar { position: fixed; left: 50%; bottom: 84px; transform: translateX(-50%); width: calc(100% - 36px); max-width: 394px; height: 52px; background: var(--card); border: 1px solid var(--border); border-radius: 27px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,.08); z-index: 20; }
+    .toolbar-button { height: 42px; padding: 0 18px; display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; }
+    .toolbar-button + .toolbar-button { border-left: 1px solid var(--border); }
+    .filter-count { min-width: 18px; height: 18px; border-radius: 10px; background: var(--accent); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; }
+    .bottom-nav { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); width: 100%; max-width: 430px; height: 88px; background: rgba(249,248,244,.92); border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(5, 1fr); z-index: 30; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--muted); font-size: 11px; font-weight: 600; } .nav-item .ico { font-size: 26px; line-height: 1; }
+    .nav-item.active { color: var(--accent); }
+    .post-button { width: 62px; height: 62px; margin-top: -26px; border-radius: 50%; background: var(--accent); color: #fff; border: 4px solid var(--bg); display: flex; align-items: center; justify-content: center; margin-left: auto; margin-right: auto; font-size: 28px; }
+    .post-label { font-size: 10px; color: var(--muted); text-align: center; }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div class="top-row">
+      <div class="brand">Catch <span class="brand-sub">THE DEALS</span></div>
+      <div class="header-actions">
+        <button class="icon-button" aria-label="Notifications"><span class="notification-dot"></span>🔔</button>
+        <img class="avatar" onclick="location.href='settings.html'" src="assets/avatars/guest.jpg" alt="">
+      </div>
+    </div>
+  </header>
+  <div class="location">📍 Jordan • <strong>Amman</strong></div>
+  <div class="search-wrap">
+    <div class="search">🔍 Ask Catch what you're looking for…</div>
+  </div>
+  <section class="section">
+    <div class="section-head">
+      <h2 class="section-title">All Categories</h2>
+      <span class="section-link">View all</span>
+    </div>
+    <div class="categories" id="cats"></div>
+  </section>
+  <section class="section">
+    <div class="section-head">
+      <h2 class="section-title">Recent Classifieds</h2>
+      <span class="section-link">See all</span>
+    </div>
+    <div class="listings">
+      <article class="listing" onclick="location.href='listing.html?id=jo-1'">
+        <div class="listing-image-wrap">
+          <img class="listing-image" src="assets/listings/watch.jpg" alt="">
+          <button class="heart">♡</button>
+        </div>
+        <div class="listing-body">
+          <div class="listing-category">Beauty</div>
+          <div class="listing-title">Hair treatment & styling</div>
+          <div class="listing-price">25 JOD</div>
+        </div>
+      </article>
+      <article class="listing" onclick="location.href='listing.html?id=jo-2'">
+        <div class="listing-image-wrap">
+          <img class="listing-image" src="assets/listings/phone.jpg" alt="">
+          <button class="heart">♡</button>
+        </div>
+        <div class="listing-body">
+          <div class="listing-category">Mobiles</div>
+          <div class="listing-title">iPhone 15 Pro Max 256GB</div>
+          <div class="listing-price">650 JOD</div>
+        </div>
+      </article>
+    </div>
+  </section>
+  <div class="floating-toolbar">
+    <button class="toolbar-button">🗺 Map View</button>
+    <button class="toolbar-button">☰ Filters <span class="filter-count">2</span></button>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-item active"><span class="ico">🏠</span><span>Explore</span></button>
+    <button class="nav-item"><span class="ico">▦</span><span>Categories</span></button>
+    <div><a href="choose-category.html" style="text-decoration:none;color:inherit"><div class="post-button">+</div><div class="post-label">Post Ad</div></a></div>
+    <a class="nav-item" href="messages.html" style="text-decoration:none;color:inherit"><span class="ico">💬</span><span>Messages</span></a>
+    <a class="nav-item" href="my-ads.html" style="text-decoration:none;color:inherit"><span class="ico">👤</span><span>My Ads</span></a>
+  </nav>
+</div>
+<script>
+const cats = [
+  ["Motors","سيارات","assets/icons/motors.jpg"],
+  ["Real Estate","عقارات","assets/icons/real-estate.jpg"],
+  ["Mobiles","موبايل","assets/icons/mobiles.jpg"],
+  ["Watches","ساعات","assets/icons/watches.jpg"],
+  ["Computers","كمبيوتر","assets/icons/computers.jpg"],
+  ["Electronics","أجهزة","assets/icons/electronics.jpg"],
+  ["Furniture","أثاث","assets/icons/furniture.jpg"],
+  ["Fashion","أزياء","assets/icons/fashion.jpg"],
+  ["Services","خدمات","assets/icons/services.jpg"],
+  ["Jobs","وظائف","assets/icons/jobs.jpg"],
+  ["Baby & Kids","أطفال","assets/icons/kids.jpg"],
+  ["Beauty","جمال","assets/icons/beauty.jpg"],
+  ["Pets","حيوانات","assets/icons/pets.jpg"],
+  ["Sports","رياضة","assets/icons/sports.jpg"],
+  ["Books","كتب","assets/icons/books.jpg"],
+  ["Home","المنزل","assets/icons/home-garden.jpg"],
+  ["Odds & Ends","كراكيب","assets/icons/krakeeb.jpg"]
+];
+document.getElementById("cats").innerHTML = cats.map(c => `<button class="category"><div class="category-card"><img src="${c[2]}" alt=""></div><div class="category-name">${c[0]}</div><span class="category-ar">${c[1]}</span></button>`).join("");
+</script>
+</body>
+</html>

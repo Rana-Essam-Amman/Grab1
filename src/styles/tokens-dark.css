@@ -1,0 +1,44 @@
+/* =====================================================
+ * Design Tokens 2.0 — Dark Mode Overrides
+ * Applied when [data-theme="dark"] is set on <html>
+ * ===================================================== */
+
+[data-theme="dark"] {
+  /* BRAND */
+  --color-brand: oklch(0.65 0.15 250);
+  --color-brand-soft: oklch(0.75 0.12 250);
+  --color-brand-strong: oklch(0.55 0.18 250);
+
+  --color-accent: oklch(0.78 0.18 45);
+  --color-accent-soft: oklch(0.90 0.09 45);
+  --color-accent-strong: oklch(0.68 0.20 45);
+
+  /* SURFACES */
+  --color-canvas: oklch(0.15 0.02 250);
+  --color-surface: oklch(0.20 0.02 250);
+  --color-surface-elevated: oklch(0.25 0.02 250);
+  --color-surface-sunken: oklch(0.12 0.02 250);
+
+  /* TEXT */
+  --color-ink: oklch(0.95 0.01 250);
+  --color-ink-soft: oklch(0.75 0.015 250);
+  --color-ink-muted: oklch(0.55 0.02 250);
+  --color-ink-inverse: oklch(0.18 0.02 250);
+
+  /* BORDERS */
+  --color-line: oklch(0.30 0.02 250);
+  --color-line-strong: oklch(0.40 0.02 250);
+
+  /* STATUS */
+  --color-success: oklch(0.72 0.15 155);
+  --color-warning: oklch(0.82 0.16 75);
+  --color-danger: oklch(0.70 0.20 25);
+  --color-info: oklch(0.75 0.14 240);
+
+  /* SHADOWS (stronger for dark) */
+  --shadow-xs: 0 1px 2px oklch(0 0 0 / 0.30);
+  --shadow-sm: 0 2px 4px oklch(0 0 0 / 0.35);
+  --shadow-md: 0 4px 12px oklch(0 0 0 / 0.40);
+  --shadow-lg: 0 8px 24px oklch(0 0 0 / 0.45);
+  --shadow-xl: 0 16px 48px oklch(0 0 0 / 0.50);
+}

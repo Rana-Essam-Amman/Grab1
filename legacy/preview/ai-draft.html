@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catch the deals — Describe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body { margin:0; background:#ebe6db; font-family:Tajawal,sans-serif; color:#4a4845; }
+    .app { max-width:430px; min-height:100vh; margin:0 auto; background:#f9f8f4; padding:18px; }
+    h1 { font-family:Newsreader,Georgia,serif; font-size:26px; color:#1a1918; }
+    .muted { color:#8c8982; margin:8px 0 16px; line-height:1.45; }
+    textarea { width:100%; min-height:140px; border:1px solid #e7e3d8; border-radius:16px; padding:14px; font:inherit; }
+    .cta { width:100%; height:52px; margin-top:18px; border:0; border-radius:26px; background:#b08931; color:#fff; font-weight:700; }
+    a { color:#b08931; text-decoration:none; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <a href="photos.html">رجوع</a>
+    <h1>صف إعلانك بجملة</h1>
+    <p class="muted">مثال: عندي كامري 2020 للبيع بـ 15000 دينار، فحص 4 جيد، خلدا.</p>
+    <div style="position:relative">
+      <textarea id="note" placeholder="اكتب أو سجّل اللي عندك…" style="padding-bottom:64px"></textarea>
+      <button type="button" onclick="speak()" aria-label="mic" style="position:absolute;bottom:12px;left:12px;width:48px;height:48px;border:0;border-radius:50%;background:#b08931;color:#fff;font-size:20px">🎤</button>
+    </div>
+    <button class="cta" type="button" onclick="go()">جهّز الإعلان</button>
+  </div>
+  <script>
+    const params = new URLSearchParams(location.search);
+    function speak(){
+      const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if(!Rec){ alert("الميكروفون على المتصفح غير متاح، اكتب بنفس المربع."); return; }
+      const r = new Rec(); r.lang = "ar-JO";
+      r.onresult = e => { document.getElementById("note").value += (document.getElementById("note").value ? " " : "") + e.results[0][0].transcript; };
+      r.start();
+    }
+    function go(){
+      const note = document.getElementById("note").value.trim();
+      if(note.length < 8) return;
+      location.href = "ai-review.html?cat=" + encodeURIComponent(params.get("cat")||"motors") + "&sub=" + encodeURIComponent(params.get("sub")||"cars-sale") + "&note=" + encodeURIComponent(note);
+    }
+  </script>
+</body>
+</html>

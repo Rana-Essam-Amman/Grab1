@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catch the deals — Subcategory</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#f9f8f4; --card:#fff; --dark:#1a1918; --muted:#8c8982; --border:#e7e3d8; --accent:#b08931; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background:#ebe6db; font-family: Tajawal, Inter, sans-serif; color:#4a4845; }
+    .app { max-width:430px; min-height:100vh; margin:0 auto; background:var(--bg); padding:18px; }
+    .top { display:flex; justify-content:space-between; align-items:center; color:var(--dark); }
+    a { color:inherit; text-decoration:none; }
+    h1 { font-family: Newsreader, Georgia, serif; font-size:26px; color:var(--dark); margin:18px 0 8px; line-height:1.3; }
+    .sub { color:var(--muted); margin-bottom:16px; }
+    input { width:100%; height:48px; border:1px solid var(--border); border-radius:16px; padding:0 16px; background:#fff; margin-bottom:16px; font:inherit; }
+    .row { display:block; background:#fff; border:1px solid var(--border); border-radius:16px; padding:18px 16px; margin-bottom:10px; font-weight:600; }
+    .row span { float:left; color:var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="top"><a href="choose-category.html">→</a><b id="parent">سيارات</b><a href="home.html">✕</a></div>
+    <h1>ما الذي تود بيعه أو الإعلان عنه؟</h1>
+    <p class="sub">اختر القسم المناسب لإضافة الإعلان</p>
+    <input id="q" placeholder="ابحث في القسم" />
+    <div id="list"></div>
+  </div>
+  <script>
+    const data = {
+      motors: { name:"سيارات", items:[
+        ["cars-sale","سيارات للبيع"],
+        ["cars-rent","مركبات للإيجار"],
+        ["motorcycles","دراجات نارية ومستلزماتها"],
+        ["heavy","آليات ثقيلة"],
+        ["trucks-buses","الحافلات والشاحنات والمقطورات"],
+        ["boats","قوارب وجت سكي"],
+        ["plate-numbers","أرقام مركبات مميزة للبيع"],
+        ["tires-rims","إطارات وجنطات"],
+        ["spare-parts","قطع غيار سيارات ومركبات"],
+        ["accessories","إكسسوارات السيارات والمركبات"],
+        ["scrap","سكراب — سيارات ومركبات أخرى"]
+      ]},
+      "real-estate": { name:"عقارات", items:[["sale","عقارات للبيع"],["rent","عقارات للإيجار"],["land","أراضي"],["offices","مكاتب ومحلات"]] },
+      services: { name:"خدمات", items:[["home","خدمات منزلية"],["pro","خدمات مهنية"],["education","تعليم وتدريب"],["transport","نقل وتوصيل"]] },
+      jobs: { name:"وظائف", items:[["full-time","دوام كامل"],["part-time","دوام جزئي"],["freelance","عمل حر"]] }
+    };
+    const cat = new URLSearchParams(location.search).get("cat") || "motors";
+    const pack = data[cat] || data.motors;
+    document.getElementById("parent").textContent = pack.name;
+    function draw(filter="") {
+      document.getElementById("list").innerHTML = pack.items
+        .filter(i => !filter || i[1].includes(filter))
+        .map(i => `<a class="row" href="photos.html?cat=${cat}&sub=${i[0]}">${i[1]} <span>‹</span></a>`).join("");
+    }
+    document.getElementById("q").oninput = e => draw(e.target.value);
+    draw();
+  </script>
+</body>
+</html>

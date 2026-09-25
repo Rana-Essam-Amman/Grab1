@@ -1,0 +1,135 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { renderHook, act } from '@testing-library/react';
+import { useAiReview } from '../useAiReview';
+
+const mockNavigateTo = vi.fn();
+const mockSetActiveTab = vi.fn();
+const mockUpdatePostDraft = vi.fn();
+const mockResetPostDraft = vi.fn();
+const mockAddListing = vi.fn();
+
+let mockAuthStatus = 'authenticated';
+let mockPostDraft = {
+  photos: [] as string[],
+  title: 'Test Car',
+  price: '5000',
+  city: 'Amman',
+  neighborhood: 'Abdoun',
+  description: 'Nice car',
+  generated: {
+    fields: [{ key: 'year', label: 'Year', value: '2020', required: true }],
+  },
+};
+
+vi.mock('@/hooks/useUI', () => ({
+  useUI: () => ({
+    navigateTo: mockNavigateTo,
+    setActiveTab: mockSetActiveTab,
+    browseCountryCode: 'JO',
+    activeCurrency: 'JOD',
+    isArabic: false,
+  }),
+}));
+
+vi.mock('@/hooks/useAuth', () => ({
+  useAuth: () => ({
+    authStatus: mockAuthStatus,
+    user: { id: 'u1', name: 'John' },
+  }),
+}));
+
+vi.mock('../usePostWizard', () => ({
+  usePostWizard: () => ({
+    postDraft: mockPostDraft,
+    updatePostDraft: mockUpdatePostDraft,
+  }),
+}));
+
+vi.mock('@/hooks/useDraft', () => ({
+  useDraft: () => ({
+    resetPostDraft: mockResetPostDraft,
+  }),
+}));
+
+vi.mock('@/hooks/useListings', () => ({
+  useListings: () => ({
+    addListing: mockAddListing,
+  }),
+}));
+
+describe('useAiReview', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockAuthStatus = 'authenticated';
+    mockPostDraft = {
+      photos: ['photo1.jpg'],
+      title: 'Test Car',
+      price: '5000',
+      city: 'Amman',
+      neighborhood: 'Abdoun',
+      description: 'Nice car',
+      generated: {
+        fields: [{ key: 'year', label: 'Year', value: '2020', required: true }],
+      },
+    };
+  });
+
+  it('returns draft values correctly', () => {
+    const { result } = renderHook(() => useAiReview());
+    expect(result.current.title).toBe('Test Car');
+    expect(result.current.price).toBe('5000');
+    expect(result.current.city).toBe('Amman');
+    expect(result.current.photos).toEqual(['photo1.jpg']);
+  });
+
+  it('setAttributeValue updates draft fields', () => {
+    const { result } = renderHook(() => useAiReview());
+    act(() => {
+      result.current.setAttributeValue('year', '2022');
+    });
+    expect(mockUpdatePostDraft).toHaveBeenCalledWith({
+      generated: {
+        fields: [{ key: 'year', label: 'Year', value: '2022', required: true }],
+      },
+    });
+  });
+
+  it('handlePublish navigates to register when unauthenticated', async () => {
+    mockAuthStatus = 'unauthenticated';
+    const { result } = renderHook(() => useAiReview());
+
+    await act(async () => {
+      await result.current.handlePublish();
+    });
+
+    expect(mockNavigateTo).toHaveBeenCalledWith('register');
+    expect(mockAddListing).not.toHaveBeenCalled();
+  });
+
+  it('handlePublish succeeds and navigates to listing-detail', async () => {
+    const { result } = renderHook(() => useAiReview());
+
+    await act(async () => {
+      await result.current.handlePublish();
+    });
+
+    expect(mockAddListing).toHaveBeenCalledTimes(1);
+    expect(mockResetPostDraft).toHaveBeenCalledTimes(1);
+    expect(mockSetActiveTab).toHaveBeenCalledWith('my-ads');
+    expect(mockNavigateTo).toHaveBeenCalledWith('main');
+  });
+
+  it('handlePublish sets error state when addListing throws', async () => {
+    mockAddListing.mockImplementationOnce(() => {
+      throw new Error('Publish error');
+    });
+
+    const { result } = renderHook(() => useAiReview());
+
+    await act(async () => {
+      await result.current.handlePublish();
+    });
+
+    expect(result.current.error).toBe('فشل نشر الإعلان');
+  });
+});

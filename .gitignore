@@ -1,0 +1,30 @@
+node_modules/
+dist/
+build/
+coverage/
+coverage-report/
+.env
+.env.*
+*.log
+.DS_Store
+.idea/
+.vscode/
+tsconfig.tsbuildinfo
+.husky/_/
+
+# Playwright
+playwright-report/
+test-results/
+playwright/.cache/
+
+# Build artifacts
+.vite/
+templates/.cache/
+
+# Editor
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+.env.local

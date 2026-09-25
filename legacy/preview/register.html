@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catch the deals — Register</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#f9f8f4; --card:#fff; --dark:#1a1918; --muted:#8c8982; --border:#e7e3d8; --accent:#b08931; --soft:#f2eee3; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #ebe6db; font-family: Inter, sans-serif; color: #4a4845; }
+    .app { max-width: 430px; min-height: 100vh; margin: 0 auto; background: var(--bg); padding: 24px 18px 40px; }
+    .brand { font-family: Newsreader, Georgia, serif; font-size: 35px; color: var(--dark); }
+    .brand span { font-family: Inter, sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 2px; color: var(--accent); margin-left: 6px; }
+    p.lead { color: var(--muted); margin: 8px 0 22px; font-size: 14px; line-height: 1.45; }
+    label { display: block; font-size: 12px; font-weight: 700; margin: 14px 0 8px; color: var(--dark); }
+    .select { border: 1px solid var(--border); border-radius: 16px; background: var(--card); overflow: hidden; }
+    .select.open { border-color: var(--accent); }
+    .select-btn, .opt { display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 16px; background: transparent; border: 0; font: inherit; text-align: left; }
+    .opt { border-top: 1px solid var(--border); }
+    .select img, .opt img { width: 28px; height: 20px; object-fit: cover; border-radius: 3px; }
+    .grow { flex: 1; }
+    .row { display: flex; gap: 8px; }
+    .prefix { height: 50px; padding: 0 12px; border: 1px solid var(--border); border-radius: 16px; background: var(--soft); display: flex; align-items: center; font-weight: 700; gap: 6px; }
+    .prefix img { width: 18px; height: 13px; object-fit: cover; border-radius: 2px; }
+    input { width: 100%; height: 50px; border: 1px solid var(--border); border-radius: 16px; padding: 0 16px; background: var(--card); font-size: 15px; }
+    .hint { color: var(--muted); font-size: 12px; margin-top: 10px; }
+    .err { color: #8B3A2A; font-size: 13px; margin-top: 10px; }
+    .cta { margin-top: 22px; width: 100%; height: 52px; border: 0; border-radius: 26px; background: var(--accent); color: #fff; font-weight: 700; }
+    .terms { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 500; color: var(--dark); white-space: nowrap; }
+    .terms input { width: 16px; height: 16px; accent-color: #1a1918; flex: none; }
+    a.home { display: block; text-align: center; margin-top: 16px; color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 600; }
+    .photo { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 8px 0 4px; }
+    #photoCircle { width: 88px; height: 88px; border-radius: 50%; border: 1px solid var(--border); background: var(--card); display: flex; align-items: center; justify-content: center; overflow: hidden; font-size: 28px; color: var(--muted); }
+    #photoCircle img { width: 100%; height: 100%; object-fit: cover; }
+    .menu { display: none; }
+    .select.open .menu { display: block; }
+    .lang { display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 8px; }
+    .lang button { border: 1px solid var(--border); background: #fff; border-radius: 999px; padding: 4px 10px; font-size: 11px; font-weight: 700; color: var(--muted); }
+    .lang button.on { color: var(--dark); border-color: var(--dark); }
+    [dir="rtl"] .select-btn, [dir="rtl"] .opt { text-align: right; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="lang">
+      <button type="button" id="langEn" class="on">EN</button>
+      <button type="button" id="langAr">AR</button>
+    </div>
+    <div class="brand">Catch <span>THE DEALS</span></div>
+    <p class="lead" id="lead">Choose your country. Phone prefix follows the flag you pick. After email confirmation you enter that country's Catch the deals.</p>
+    <label id="lblCountry">Choose country</label>
+    <div class="select" id="select">
+      <button class="select-btn" id="toggle" type="button">
+        <img id="selFlag" src="assets/flags/jo.png" alt="">
+        <span class="grow" id="selLabel"><b>Jordan</b> · JOD</span>
+        ▾
+      </button>
+      <div class="menu" id="menu">
+        <button class="opt" type="button" data-code="JO" data-prefix="+962" data-flag="jo" data-label="Jordan · JOD">
+          <img src="assets/flags/jo.png" alt="Jordan"><span class="grow">Jordan · الأردن · +962</span>
+        </button>
+        <button class="opt" type="button" data-code="LB" data-prefix="+961" data-flag="lb" data-label="Lebanon · LBP">
+          <img src="assets/flags/lb.png" alt="Lebanon"><span class="grow">Lebanon · لبنان · +961</span>
+        </button>
+        <button class="opt" type="button" data-code="PS" data-prefix="+970" data-flag="ps" data-label="Palestine · ILS">
+          <img src="assets/flags/ps.png" alt="Palestine"><span class="grow">Palestine · فلسطين · +970</span>
+        </button>
+        <button class="opt" type="button" data-code="SY" data-prefix="+963" data-flag="sy" data-label="Syria · SYP">
+          <img src="assets/flags/sy.png" alt="Syria"><span class="grow">Syria · سوريا · +963</span>
+        </button>
+      </div>
+    </div>
+    <label id="lblPhoto">Profile photo</label>
+    <label class="photo">
+      <input id="photo" type="file" accept="image/*" hidden />
+      <span id="photoCircle">+</span>
+      <small>Optional</small>
+    </label>
+    <label id="lblFirst">First name</label>
+    <input id="firstName" type="text" placeholder="Ahmad" />
+    <label id="lblLast">Last name</label>
+    <input id="lastName" type="text" placeholder="Khalil" />
+    <label id="lblEmail">Email</label>
+    <input id="email" type="email" placeholder="you@email.com" />
+    <label id="lblPhone">Phone</label>
+    <div class="row">
+      <div class="prefix"><img id="prefixFlag" src="assets/flags/jo.png" alt=""> <span id="prefix">+962</span></div>
+      <input id="phone" type="tel" placeholder="7XXXXXXXX" />
+    </div>
+    <p class="hint" id="hintMail">Any of the four countries. Confirmation is email, not SMS.</p>
+    <label class="terms"><input id="terms" type="checkbox"> <a href="terms.html">I agree to Catch the deals terms</a></label>
+    <p class="err" id="err" hidden></p>
+    <button class="cta" id="send" type="button">Send confirmation or sign-in link</button>
+    <p class="hint" id="hintLogin">If you already have an account, use the same email and phone.</p>
+    <a class="home" id="backHome" href="home.html">Back to Home</a>
+  </div>
+  <script>
+    let country = "JO";
+    let avatar = "";
+    let lang = "en";
+    const i18n = {
+      en: { lead:"Choose your country. Phone prefix follows the flag you pick. After email confirmation you enter that country's Catch the deals.", country:"Choose country", photo:"Profile photo", first:"First name", last:"Last name", email:"Email", phone:"Phone", hint:"Any of the four countries. Confirmation is email, not SMS.", send:"Send confirmation or sign-in link", login:"If you already have an account, use the same email and phone.", back:"Back to Home" },
+      ar: { lead:"اختر دولتك. مفتاح الرقم بيتغيّر مع العلم. بعد تأكيد الإيميل بتفوت سوق دولتك.", country:"اختر الدولة", photo:"صورة البروفايل", first:"الاسم الأول", last:"اسم العائلة", email:"الإيميل", phone:"الموبايل", hint:"أربع دول. التأكيد من الإيميل مش SMS.", send:"إرسال رابط التأكيد أو الدخول", login:"إذا عندك حساب، استخدم نفس الإيميل والرقم.", back:"العودة للرئيسية" }
+    };
+    function applyLang(next) {
+      lang = next;
+      document.documentElement.lang = next;
+      document.documentElement.dir = next === "ar" ? "rtl" : "ltr";
+      document.getElementById("langEn").classList.toggle("on", next === "en");
+      document.getElementById("langAr").classList.toggle("on", next === "ar");
+      const t = i18n[next];
+      document.getElementById("lead").textContent = t.lead;
+      document.getElementById("lblCountry").textContent = t.country;
+      document.getElementById("lblPhoto").textContent = t.photo;
+      document.getElementById("lblFirst").textContent = t.first;
+      document.getElementById("lblLast").textContent = t.last;
+      document.getElementById("lblEmail").textContent = t.email;
+      document.getElementById("lblPhone").textContent = t.phone;
+      document.getElementById("hintMail").textContent = t.hint;
+      document.getElementById("send").textContent = t.send;
+      document.getElementById("hintLogin").textContent = t.login;
+      document.getElementById("backHome").textContent = t.back;
+    }
+    document.getElementById("langEn").onclick = () => applyLang("en");
+    document.getElementById("langAr").onclick = () => applyLang("ar");
+    const select = document.getElementById("select");
+    document.getElementById("photo").onchange = (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const size = 256;
+          canvas.width = size; canvas.height = size;
+          canvas.getContext("2d").drawImage(img, 0, 0, size, size);
+          avatar = canvas.toDataURL("image/jpeg", 0.7);
+          const circle = document.getElementById("photoCircle");
+          circle.innerHTML = "";
+          const shown = document.createElement("img");
+          shown.src = avatar;
+          circle.appendChild(shown);
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    };
+    document.getElementById("toggle").onclick = () => select.classList.toggle("open");
+    document.querySelectorAll(".opt").forEach(btn => {
+      btn.onclick = () => {
+        country = btn.dataset.code;
+        document.getElementById("selFlag").src = "assets/flags/" + btn.dataset.flag + ".png";
+        document.getElementById("selLabel").innerHTML = "<b>" + btn.dataset.label + "</b>";
+        document.getElementById("prefix").textContent = btn.dataset.prefix;
+        document.getElementById("prefixFlag").src = "assets/flags/" + btn.dataset.flag + ".png";
+        select.classList.remove("open");
+      };
+    });
+    document.getElementById("send").onclick = async () => {
+      const err = document.getElementById("err");
+      const firstName = document.getElementById("firstName").value.trim();
+      const lastName = document.getElementById("lastName").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const local = document.getElementById("phone").value.replace(/[^0-9]/g, "");
+      const prefix = document.getElementById("prefix").textContent;
+      if (!document.getElementById("terms").checked) { err.hidden = false; err.textContent = "Accept the terms first"; return; }
+      if (firstName.length < 2 || lastName.length < 2) { err.hidden = false; err.textContent = "Enter first and last name"; return; }
+      if (!email.includes("@") || !email.includes(".")) { err.hidden = false; err.textContent = "Enter a valid email"; return; }
+      if (local.length < 7) { err.hidden = false; err.textContent = "Enter a valid phone number"; return; }
+      err.hidden = true;
+      const res = await fetch("/api/register", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ firstName, lastName, email, phone: prefix + local, country, avatar }) });
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 409 && data.error === "duplicate_phone") { err.hidden = false; err.textContent = "This phone already has an account"; return; }
+      if (res.status === 409) { err.hidden = false; err.textContent = "This email already has an account"; return; }
+      if (data.ok) location.href = "home.html";
+      else { err.hidden = false; err.textContent = data.error || "Could not register"; }
+    };
+  </script>
+</body>
+</html>

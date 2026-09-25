@@ -1,0 +1,191 @@
+@import './styles/tokens.css';
+@import './styles/tokens-dark.css';
+@import './styles/motion.css';
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/*
+  ==============================================================================
+  DESIGN THEME SYSTEM & VISUAL CONTROL CENTER
+  ==============================================================================
+  - All application design tokens and colors are defined centrally in the @theme block.
+  - To change primary color across the entire app -> edit --color-primary in ONE place.
+  - To customize surfaces, ink, borders, or state colors -> edit the respective token below.
+  - Dark mode can be supported seamlessly by defining corresponding [data-theme="dark"] tokens.
+  ==============================================================================
+*/
+
+@theme {
+  --font-arabic: 'IBM Plex Sans Arabic', 'Cairo', sans-serif;
+  --font-latin: 'Geist', 'Inter', system-ui, sans-serif;
+  --font-sans: var(--font-arabic);
+  --font-cairo: var(--font-arabic);
+  --font-tajawal: var(--font-arabic);
+  --font-inter: var(--font-latin);
+
+  --color-primary: var(--color-brand);
+  --color-primary-hover: var(--color-brand-strong);
+  --color-background: var(--color-canvas);
+  --color-surface: var(--color-surface);
+  --color-ink: var(--color-ink);
+  --color-ink-soft: var(--color-ink-soft);
+  --color-ink-muted: var(--color-ink-muted);
+  --color-border: var(--color-line);
+  --color-danger: var(--color-danger);
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+
+  --color-icon-blue: var(--color-info);
+  --color-icon-red: var(--color-danger);
+  --color-icon-yellow: var(--color-warning);
+  --color-icon-green: var(--color-success);
+}
+
+@layer base {
+  :root {
+    --bg: #E5E7EB;
+    --card: #ffffff;
+    --dark: #111827;
+    --text: #111827;
+    --muted: #4b5563;
+    --border: #d1d5db;
+    --soft: #f3f4f6;
+    --accent: #EF4444;
+    --accent-dark: #dc2626;
+    --radius: 18px;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-arabic), var(--font-latin), system-ui, sans-serif;
+    font-weight: 500;
+  }
+
+  /* Global utility overrides for exact grey background floor */
+
+
+  /* Arabic font override */
+  [dir="rtl"] {
+    font-family: 'Cairo', 'Tajawal', sans-serif;
+  }
+
+  /* Main Section Headers: 18px-19px Bold, Dark Charcoal/Black */
+}
+
+.font-serif-title {
+  font-family: 'Newsreader', Georgia, serif;
+}
+
+.font-arabic {
+  font-family: var(--font-arabic);
+}
+
+.nav-btn-active {
+  color: #1B2A4A !important;
+  font-weight: 700 !important;
+}
+.nav-btn-inactive {
+  color: #4b5563 !important;
+  font-weight: 600 !important;
+}
+.post-ad-btn {
+  background: linear-gradient(135deg, #1B2A4A 0%, #111C34 100%) !important;
+}
+
+/* Category Labels: 14px Semi-Bold / Medium, Dark Charcoal/Black */
+.category-label {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #111827 !important;
+  line-height: 1.25 !important;
+  display: block;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
+}
+
+.subtext-boost {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #111827 !important;
+}
+
+.price-tag {
+  color: #EF4444 !important;
+  font-weight: 800 !important;
+}
+
+@keyframes pop-in {
+  0%   { transform: scale(0.3); opacity: 0; }
+  60%  { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1);    opacity: 1; }
+}
+
+@keyframes slide-down {
+  from { max-height: 0;     opacity: 0; transform: translateY(-4px); }
+  to   { max-height: 2000px; opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-danger {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.5; }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes chip-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+@keyframes underline-draw {
+  from { transform: scaleX(0); transform-origin: right; }
+  to   { transform: scaleX(1); transform-origin: right; }
+}
+
+@keyframes check-pop {
+  0%   { transform: scale(0); opacity: 0; }
+  60%  { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes halo-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(229, 126, 37, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(229, 126, 37, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(229, 126, 37, 0);
+  }
+}
+
+@keyframes screen-enter {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes card-tap {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+
+.screen-enter {
+  animation: screen-enter 0.28s ease-out both;
+}
+
+.card-tap {
+  animation: card-tap 0.18s ease-out;
+}
+
+
+
+

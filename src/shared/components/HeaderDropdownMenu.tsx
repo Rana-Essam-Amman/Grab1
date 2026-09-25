@@ -1,0 +1,127 @@
+import React from 'react';
+import { User, Global, Heart, Notification, Location } from 'iconsax-react';
+
+interface HeaderDropdownMenuProps {
+  isArabic: boolean;
+  browseCountry: { nameAr: string; nameEn: string; flagUrl: string; currencies: Array<{ code: string }> };
+  displayCityAr: string;
+  displayCityEn: string;
+  handleMenuClose: () => void;
+  handleProfileNav: () => void;
+  handleLanguageToggle: () => void;
+  handleWishlistNav: () => void;
+  wishlistLength: number;
+  handleNotificationsNav: () => void;
+  activeCurrency: string;
+  handleCurrencySelect: (code: string) => void;
+  setIsCountrySheetOpen: (open: boolean) => void;
+}
+
+export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
+  isArabic, browseCountry, displayCityAr, displayCityEn,
+  handleMenuClose, handleProfileNav, handleLanguageToggle,
+  handleWishlistNav, wishlistLength, handleNotificationsNav,
+  setIsCountrySheetOpen,
+}) => {
+  return (
+    <>
+      {/* Backdrop covers entire screen to handle outside click closing */}
+      <div
+        className="fixed inset-0 z-[99] cursor-pointer"
+        onClick={handleMenuClose}
+      />
+
+      {/* Dropdown panel */}
+      <div
+        className="absolute top-full start-0 w-72 mt-1 z-[100] bg-white rounded-2xl border border-[#E2E8F0] shadow-2xl overflow-hidden font-cairo"
+      >
+        <div className="divide-y divide-[#E2E8F0] bg-white flex flex-col">
+          <button
+            onClick={() => {
+              handleMenuClose();
+              setIsCountrySheetOpen(true);
+            }}
+            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-[#DDE3EC]/40 active:scale-[0.99] transition-all bg-white border-none cursor-pointer"
+          >
+            <span className="text-sm font-bold text-[#0F172A]">
+              {isArabic ? `الدولة: ${browseCountry.nameAr}` : `Country: ${browseCountry.nameEn}`}
+            </span>
+            <Global variant="Bold" size={22} color="#3B82F6" className="shrink-0" />
+          </button>
+
+          <button
+            onClick={() => {
+              handleMenuClose();
+              setIsCountrySheetOpen(true);
+            }}
+            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-[#DDE3EC]/40 active:scale-[0.99] transition-all bg-white border-none cursor-pointer"
+          >
+            <span className="text-sm font-bold text-[#0F172A]">
+              {isArabic ? displayCityAr : displayCityEn}
+            </span>
+            <Location variant="Bold" size={22} color="#E57E25" className="shrink-0" />
+          </button>
+
+          <button
+            onClick={() => {
+              handleProfileNav();
+              handleMenuClose();
+            }}
+            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-[#DDE3EC]/40 active:scale-[0.99] transition-all bg-white border-none cursor-pointer"
+          >
+            <span className="text-sm font-bold text-[#0F172A]">
+              {isArabic ? 'الملف الشخصي' : 'My Profile'}
+            </span>
+            <User variant="Bold" size={22} color="#8B5CF6" className="shrink-0" />
+          </button>
+
+          <button
+            onClick={() => {
+              handleLanguageToggle();
+              handleMenuClose();
+            }}
+            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-[#DDE3EC]/40 active:scale-[0.99] transition-all bg-white border-none cursor-pointer"
+          >
+            <span className="text-sm font-bold text-[#0F172A]">
+              {isArabic ? 'English' : 'العربية'}
+            </span>
+            <Global variant="Bold" size={22} color="#10B981" className="shrink-0" />
+          </button>
+
+          <button
+            onClick={() => {
+              handleWishlistNav();
+              handleMenuClose();
+            }}
+            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-[#DDE3EC]/40 active:scale-[0.99] transition-all bg-white border-none cursor-pointer"
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-bold text-[#0F172A]">
+                {isArabic ? 'المفضلة' : 'Favorites'}
+              </span>
+              {wishlistLength > 0 && (
+                <span className="bg-[#EF4444] text-white rounded-full px-2 py-0.5 text-[10px] font-bold shrink-0">
+                  {wishlistLength}
+                </span>
+              )}
+            </div>
+            <Heart variant="Bold" size={22} color="#EF4444" className="shrink-0" />
+          </button>
+
+          <button
+            onClick={() => {
+              handleNotificationsNav();
+              handleMenuClose();
+            }}
+            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-[#DDE3EC]/40 active:scale-[0.99] transition-all bg-white border-none cursor-pointer"
+          >
+            <span className="text-sm font-bold text-[#0F172A]">
+              {isArabic ? 'الإشعارات والتنبيهات' : 'Notifications'}
+            </span>
+            <Notification variant="Bold" size={22} color="#F59E0B" className="shrink-0" />
+          </button>
+        </div>
+      </div>
+    </>
+  );
+};

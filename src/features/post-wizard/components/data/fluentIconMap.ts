@@ -1,0 +1,45 @@
+// Microsoft Fluent Emoji 3D icon names for listing attributes.
+// Source: https://icon-sets.iconify.design/fluent-emoji/
+// License: MIT
+export const FLUENT_BY_KEY: Record<string, string> = {
+  make: 'fluent-emoji:label',
+  brand: 'fluent-emoji:label',
+  model: 'fluent-emoji:label',
+  year: 'fluent-emoji:calendar',
+  km: 'fluent-emoji:motorway',
+  color: 'fluent-emoji:artist-palette',
+  transmission: 'fluent-emoji:gear',
+  fuel: 'fluent-emoji:fuel-pump',
+  inspection: 'fluent-emoji:magnifying-glass-tilted-right',
+  origin: 'fluent-emoji:globe-showing-europe-africa',
+  type: 'fluent-emoji:package',
+  size: 'fluent-emoji:straight-ruler',
+  condition: 'fluent-emoji:sparkles',
+  material: 'fluent-emoji:wood',
+  area: 'fluent-emoji:triangular-ruler',
+  rooms: 'fluent-emoji:door',
+  bathrooms: 'fluent-emoji:shower',
+  floor: 'fluent-emoji:office-building',
+  furnished: 'fluent-emoji:couch-and-lamp',
+  buildingAge: 'fluent-emoji:building-construction',
+  view: 'fluent-emoji:sunset',
+  storage: 'fluent-emoji:floppy-disk',
+  battery: 'fluent-emoji:battery',
+  processor: 'fluent-emoji:high-voltage',
+  ram: 'fluent-emoji:floppy-disk',
+  gender: 'fluent-emoji:bust-in-silhouette',
+  ageRange: 'fluent-emoji:baby',
+  age: 'fluent-emoji:birthday-cake',
+  serviceType: 'fluent-emoji:wrench',
+  serviceArea: 'fluent-emoji:world-map',
+  availability: 'fluent-emoji:alarm-clock',
+  jobType: 'fluent-emoji:briefcase',
+  field: 'fluent-emoji:office-building',
+  salary: 'fluent-emoji:money-bag',
+  breed: 'fluent-emoji:paw-prints',
+  language: 'fluent-emoji:globe-with-meridians',
+  features: 'fluent-emoji:star',
+};
+
+export const iconFor = (key: string): string =>
+  FLUENT_BY_KEY[key] || 'fluent-emoji:pushpin';

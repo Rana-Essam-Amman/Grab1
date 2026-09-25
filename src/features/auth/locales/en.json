@@ -1,0 +1,18 @@
+{
+  "loginTitle": "Unified Login Gateway",
+  "loginSubtitle": "Welcome to the safest deals platform",
+  "createAccount": "New User / Create Account",
+  "haveAccount": "I Have an Account / Log In",
+  "browseAsGuest": "Browse as Guest",
+  "demoLogin": "Quick Demo Login",
+  "chooseDemoCountry": "Choose Demo Country",
+  "phoneLabel": "Phone Number",
+  "passwordLabel": "Password",
+  "emailLabel": "Email Address",
+  "firstNameLabel": "First Name",
+  "confirmPasswordLabel": "Confirm Password",
+  "loginBtn": "Sign In",
+  "registerBtn": "Create Account",
+  "forgotPassword": "Forgot Password?",
+  "backToLogin": "Back to Sign In"
+}

@@ -1,0 +1,18 @@
+{
+  "loginTitle": "بوابة الدخول الموحدة",
+  "loginSubtitle": "مرحباً بك في منصة الصفقات الأكثر أماناً",
+  "createAccount": "مستخدم جديد / إنشاء حساب",
+  "haveAccount": "لدي حساب بالفعل / تسجيل الدخول",
+  "browseAsGuest": "التصفح كزائر",
+  "demoLogin": "الدخول كحساب تجريبي سريع",
+  "chooseDemoCountry": "اختر الدولة التجريبية",
+  "phoneLabel": "رقم الهاتف",
+  "passwordLabel": "كلمة المرور",
+  "emailLabel": "البريد الإلكتروني",
+  "firstNameLabel": "الاسم الأول",
+  "confirmPasswordLabel": "تأكيد كلمة المرور",
+  "loginBtn": "تسجيل الدخول",
+  "registerBtn": "إنشاء الحساب",
+  "forgotPassword": "نسيت كلمة المرور؟",
+  "backToLogin": "العودة لتسجيل الدخول"
+}
