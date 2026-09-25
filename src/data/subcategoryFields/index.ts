@@ -5,6 +5,9 @@ import { REAL_ESTATE_SUBCATEGORY_FIELDS } from './real-estate';
 import { MOBILES_SUBCATEGORY_FIELDS } from './mobiles';
 import { COMPUTERS_SUBCATEGORY_FIELDS } from './computers';
 import { ELECTRONICS_SUBCATEGORY_FIELDS } from './electronics';
+import { WATCHES_SUBCATEGORY_FIELDS } from './watches';
+import { FASHION_SUBCATEGORY_FIELDS } from './fashion';
+import { FURNITURE_SUBCATEGORY_FIELDS } from './furniture';
 
 const SUBCATEGORY_FIELDS: Record<string, Record<string, readonly CategoryFieldDef[]>> = {
   motors: MOTORS_SUBCATEGORY_FIELDS,
@@ -12,6 +15,9 @@ const SUBCATEGORY_FIELDS: Record<string, Record<string, readonly CategoryFieldDe
   mobiles: MOBILES_SUBCATEGORY_FIELDS,
   computers: COMPUTERS_SUBCATEGORY_FIELDS,
   electronics: ELECTRONICS_SUBCATEGORY_FIELDS,
+  watches: WATCHES_SUBCATEGORY_FIELDS,
+  fashion: FASHION_SUBCATEGORY_FIELDS,
+  furniture: FURNITURE_SUBCATEGORY_FIELDS,
 };
 
 export function getFieldsForListing(
