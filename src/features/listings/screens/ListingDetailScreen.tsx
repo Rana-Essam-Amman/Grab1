@@ -23,7 +23,7 @@ export const ListingDetailScreen: React.FC = () => {
 
   return (
     <ErrorBoundary>
-      <div className="max-w-[440px] mx-auto w-full flex flex-col min-h-screen bg-surface pb-28 relative shadow-md" dir={detail.isArabic ? 'rtl' : 'ltr'}>
+      <div className="max-w-[440px] mx-auto w-full flex flex-col min-h-screen bg-canvas pb-28 relative shadow-md" dir={detail.isArabic ? 'rtl' : 'ltr'}>
         <ListingDetailHeader
           isArabic={detail.isArabic}
           onBack={detail.goBack}

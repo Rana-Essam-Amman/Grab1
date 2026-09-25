@@ -28,7 +28,7 @@ export const ListingActionBar: React.FC<ListingActionBarProps> = React.memo(({
         className={`flex-1 py-3 px-2 rounded-xl flex items-center justify-center gap-1.5 font-bold text-xs shadow-xs transition-colors ${
           isCountryMismatch
             ? 'bg-border text-ink-muted cursor-not-allowed pointer-events-none'
-            : 'bg-brand text-white hover:bg-brand/90 cursor-pointer'
+            : 'bg-[#1a2238] text-white hover:bg-[#111827] cursor-pointer'
         }`}
       >
         <Call size={16} variant="Linear" />
@@ -54,7 +54,7 @@ export const ListingActionBar: React.FC<ListingActionBarProps> = React.memo(({
         className={`flex-1 py-3 px-2 rounded-xl flex items-center justify-center gap-1.5 font-bold text-xs shadow-xs transition-colors ${
           isCountryMismatch
             ? 'bg-border text-ink-muted cursor-not-allowed'
-            : 'bg-primary text-white hover:bg-primary-hover cursor-pointer'
+            : 'bg-[#1a2238] text-white hover:bg-[#111827] cursor-pointer'
         }`}
       >
         <Message size={16} variant="Linear" />
