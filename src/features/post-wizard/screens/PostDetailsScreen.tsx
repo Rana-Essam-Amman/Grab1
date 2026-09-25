@@ -6,8 +6,11 @@ import { Textarea } from '@/shared/ui/Textarea';
 import { Combobox } from '@/shared/ui/Combobox';
 import { AiReviewSectionCard } from '../components/AiReviewSectionCard';
 import { usePostDetails } from '../hooks/usePostDetails';
+import { useUI } from '@/hooks/useUI';
+import { PostFlowHeader } from '../components/PostFlowHeader';
 
 export const PostDetailsScreen: React.FC = () => {
+  const { isArabic, goBack } = useUI();
   const {
     title, setTitle,
     price, setPrice,
@@ -17,14 +20,17 @@ export const PostDetailsScreen: React.FC = () => {
     missingRequired,
     canContinue,
     handleContinue,
-    isArabic
   } = usePostDetails();
 
   return (
     <div dir={isArabic ? 'rtl' : 'ltr'} className="flex flex-col min-h-screen bg-canvas">
-      <header className="sticky top-0 z-20 bg-[#1a2238] p-4 text-white font-bold text-lg shadow-sm">
-        {isArabic ? 'تفاصيل الإعلان' : 'Listing Details'}
-      </header>
+      <PostFlowHeader
+        step={5}
+        titleAr="تفاصيل الإعلان"
+        titleEn="Listing Details"
+        isArabic={isArabic}
+        onBack={goBack}
+      />
 
       <div className="p-4 flex flex-col gap-3">
         <AiReviewSectionCard title={isArabic ? 'المعلومات الأساسية' : 'Basic Info'}>

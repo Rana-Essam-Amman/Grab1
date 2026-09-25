@@ -7,13 +7,13 @@ import { ArrowLeft, ArrowRight, Warning2 } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { PhotoPreviewList } from '../components/PhotoPreviewList';
 import { PhotoUploader } from '../components/PhotoUploader';
+import { PostFlowHeader } from '../components/PostFlowHeader';
 
 export const PhotoUploadScreen: React.FC = () => {
   const { isArabic, goBack, navigateTo } = useUI();
   const { postDraft } = usePostWizard();
   const { photos, handleFiles, handleRemove, handleUseSample } = usePhotoUpload();
   
-  const BackIcon = isArabic ? ArrowRight : ArrowLeft;
   const NextIcon = isArabic ? ArrowLeft : ArrowRight;
 
   const handleContinue = useCallback(() => {
@@ -28,15 +28,13 @@ export const PhotoUploadScreen: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-surface pb-12" dir={isArabic ? 'rtl' : 'ltr'}>
-      <div className="px-4 py-4 border-b border-white/10 flex items-center gap-3 bg-[#1a2238] sticky top-0 z-20">
-        <Button variant="ghost" size="icon" onClick={goBack} className="w-10 h-10 rounded-full bg-white/15 text-white hover:bg-white/25 cursor-pointer flex items-center justify-center p-0" aria-label={isArabic ? 'رجوع' : 'Back'}>
-          <BackIcon size={18} variant="Linear" color="#FFFFFF" className="text-white" />
-        </Button>
-        <div>
-          <div className="text-xs font-semibold text-white/70">{isArabic ? 'الخطوة 3 من 6' : 'Step 3 of 6'}</div>
-          <h2 className="text-lg font-bold text-white">{isArabic ? 'إضافة صور السلعة' : 'Upload Photos'}</h2>
-        </div>
-      </div>
+      <PostFlowHeader
+        step={3}
+        titleAr="إضافة صور السلعة"
+        titleEn="Upload Photos"
+        isArabic={isArabic}
+        onBack={goBack}
+      />
 
       <div className="p-4 flex-1 flex flex-col gap-4">
         <div className="p-3.5 rounded-2xl bg-[#E57E25]/8 border border-[#E57E25]/20 flex items-start gap-2.5">
