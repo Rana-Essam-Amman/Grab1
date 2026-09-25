@@ -24,8 +24,8 @@ export const SELECTORS = {
   },
   postAd: {
     fabButton: 'button[aria-label="Post ad"], button[aria-label="أضف إعلان"]',
-    categoryCard: 'div.cursor-pointer',
-    subcategoryCard: 'div.cursor-pointer',
+    categoryCard: '[data-testid^="category-card-"]',
+    subcategoryCard: '[data-testid^="subcategory-card-"]',
     samplePhotoButton: 'button:has-text("Use sample photo"), button:has-text("استخدم صورة")',
     continueToLocationButton: 'button:has-text("Continue to Location"), button:has-text("متابعة")',
     citySelect: 'select',

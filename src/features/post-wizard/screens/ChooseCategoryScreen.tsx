@@ -68,6 +68,7 @@ export const ChooseCategoryScreen: React.FC = () => {
           <button
             key={cat.slug}
             type="button"
+            data-testid={`category-card-${cat.slug}`}
             onClick={() => handleSelect(cat.slug)}
             className="p-3.5 flex flex-col items-center text-center gap-2.5 transition-all group active:scale-[0.97] cursor-pointer rounded-2xl bg-white border border-line hover:border-[#E57E25]/50 hover:shadow-md"
           >

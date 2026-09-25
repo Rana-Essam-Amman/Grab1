@@ -58,6 +58,7 @@ export const ChooseSubcategoryScreen: React.FC = () => {
           <button
             key={sub.slug}
             type="button"
+            data-testid={`subcategory-card-${sub.slug}`}
             onClick={() => handleSelectSub(sub.slug)}
             className="w-full p-4 flex items-center justify-between text-start transition-all group active:scale-[0.99] cursor-pointer rounded-2xl bg-white border border-line hover:border-[#E57E25]/50 hover:shadow-sm"
           >
