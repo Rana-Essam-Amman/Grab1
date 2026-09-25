@@ -6,7 +6,6 @@ import { subcategoriesByCategory } from '@/data/subcategories';
 import { SubcategoryDef } from '@/types';
 import { ArrowLeft, ArrowRight, ArrowRight2, ArrowLeft2 } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
-import { Card } from '@/shared/ui/Card';
 
 export const ChooseSubcategoryScreen: React.FC = () => {
   const { isArabic, goBack, navigateTo } = useUI();
@@ -34,7 +33,7 @@ export const ChooseSubcategoryScreen: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-surface pb-12" dir={isArabic ? 'rtl' : 'ltr'}>
       {/* Top Bar */}
-      <div className="px-4 py-4 border-b border-white/10 flex items-center gap-3 bg-brand sticky top-0 z-20">
+      <div className="px-4 py-4 border-b border-white/10 flex items-center gap-3 bg-[#1a2238] sticky top-0 z-20">
         <Button
           variant="ghost"
           size="icon"
@@ -54,23 +53,23 @@ export const ChooseSubcategoryScreen: React.FC = () => {
         </div>
       </div>
 
-      <div className="p-4 flex flex-col gap-2.5">
+      <div className="p-4 flex flex-col gap-2">
         {subs.map((sub: SubcategoryDef) => (
-          <Card
+          <button
             key={sub.slug}
-            variant="interactive"
-            padding="none"
+            type="button"
             onClick={() => handleSelectSub(sub.slug)}
-            className="w-full p-4 flex items-center justify-between text-start transition-all group active:scale-99 cursor-pointer"
+            className="w-full p-4 flex items-center justify-between text-start transition-all group active:scale-[0.99] cursor-pointer rounded-2xl bg-white border border-line hover:border-[#E57E25]/50 hover:shadow-sm"
           >
-            <span className="text-sm font-bold text-ink group-hover:text-primary">
+            <span className="text-[14px] font-bold text-ink group-hover:text-[#E57E25] transition-colors">
               {isArabic ? sub.nameAr : sub.nameEn}
             </span>
-            <ChevronIcon size={18} variant="Linear" className="text-ink-muted group-hover:text-primary transition-colors" />
-          </Card>
+            <span className="w-7 h-7 rounded-full bg-canvas border border-line flex items-center justify-center group-hover:bg-[#E57E25] group-hover:border-[#E57E25] transition-colors shrink-0">
+              <ChevronIcon size={14} variant="Bold" className="text-ink-muted group-hover:text-white transition-colors" />
+            </span>
+          </button>
         ))}
       </div>
     </div>
   );
 };
-

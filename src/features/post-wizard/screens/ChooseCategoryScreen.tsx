@@ -5,7 +5,6 @@ import React, { useEffect, useCallback } from 'react';
 import { categories } from '@/data/categories';
 import { ArrowLeft, ArrowRight } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
-import { Card } from '@/shared/ui/Card';
 
 export const ChooseCategoryScreen: React.FC = () => {
   const { isArabic, goBack, navigateTo } = useUI();
@@ -44,7 +43,7 @@ export const ChooseCategoryScreen: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-surface pb-12" dir={isArabic ? 'rtl' : 'ltr'}>
       {/* Top Bar */}
-      <div className="px-4 py-4 border-b border-white/10 flex items-center gap-3 bg-brand sticky top-0 z-20">
+      <div className="px-4 py-4 border-b border-white/10 flex items-center gap-3 bg-[#1a2238] sticky top-0 z-20">
         <Button
           variant="ghost"
           size="icon"
@@ -66,14 +65,13 @@ export const ChooseCategoryScreen: React.FC = () => {
 
       <div className="p-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
         {categories.map((cat) => (
-          <Card
+          <button
             key={cat.slug}
-            variant="interactive"
-            padding="none"
+            type="button"
             onClick={() => handleSelect(cat.slug)}
-            className="p-3.5 flex flex-col items-center text-center gap-2.5 transition-all group active:scale-97 cursor-pointer"
+            className="p-3.5 flex flex-col items-center text-center gap-2.5 transition-all group active:scale-[0.97] cursor-pointer rounded-2xl bg-white border border-line hover:border-[#E57E25]/50 hover:shadow-md"
           >
-            <div className="w-16 h-16 rounded-2xl bg-background overflow-hidden border border-border group-hover:scale-105 transition-transform flex items-center justify-center">
+            <div className="w-16 h-16 rounded-2xl bg-canvas overflow-hidden border border-line group-hover:scale-105 transition-transform flex items-center justify-center">
               <img
                 src={cat.asset}
                 alt={cat.nameEn}
@@ -81,13 +79,12 @@ export const ChooseCategoryScreen: React.FC = () => {
                 onError={handleImageError}
               />
             </div>
-            <span className="text-xs font-bold text-ink group-hover:text-primary line-clamp-1">
+            <span className="text-[13px] font-bold text-ink group-hover:text-[#E57E25] line-clamp-1 transition-colors">
               {isArabic ? cat.nameAr : cat.nameEn}
             </span>
-          </Card>
+          </button>
         ))}
       </div>
     </div>
   );
 };
-
