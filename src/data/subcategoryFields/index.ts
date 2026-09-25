@@ -8,6 +8,12 @@ import { ELECTRONICS_SUBCATEGORY_FIELDS } from './electronics';
 import { WATCHES_SUBCATEGORY_FIELDS } from './watches';
 import { FASHION_SUBCATEGORY_FIELDS } from './fashion';
 import { FURNITURE_SUBCATEGORY_FIELDS } from './furniture';
+import { KIDS_SUBCATEGORY_FIELDS } from './kids';
+import { BEAUTY_SUBCATEGORY_FIELDS } from './beauty';
+import { PETS_SUBCATEGORY_FIELDS } from './pets';
+import { SPORTS_SUBCATEGORY_FIELDS } from './sports';
+import { BOOKS_SUBCATEGORY_FIELDS } from './books';
+import { HOME_GARDEN_SUBCATEGORY_FIELDS } from './home-garden';
 
 const SUBCATEGORY_FIELDS: Record<string, Record<string, readonly CategoryFieldDef[]>> = {
   motors: MOTORS_SUBCATEGORY_FIELDS,
@@ -18,6 +24,12 @@ const SUBCATEGORY_FIELDS: Record<string, Record<string, readonly CategoryFieldDe
   watches: WATCHES_SUBCATEGORY_FIELDS,
   fashion: FASHION_SUBCATEGORY_FIELDS,
   furniture: FURNITURE_SUBCATEGORY_FIELDS,
+  kids: KIDS_SUBCATEGORY_FIELDS,
+  beauty: BEAUTY_SUBCATEGORY_FIELDS,
+  pets: PETS_SUBCATEGORY_FIELDS,
+  sports: SPORTS_SUBCATEGORY_FIELDS,
+  books: BOOKS_SUBCATEGORY_FIELDS,
+  'home-garden': HOME_GARDEN_SUBCATEGORY_FIELDS,
 };
 
 export function getFieldsForListing(
