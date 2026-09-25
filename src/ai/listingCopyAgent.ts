@@ -186,7 +186,7 @@ export async function generateListing({
       title: copy.title, description: copy.body, price: copy.facts.price || '',
       categorySlug, subcategorySlug, city: copy.facts.city || city,
       year: copy.facts.year, make: copy.facts.make,
-      fields: buildFieldsFromFacts(copy.facts, categorySlug, arabic), missing: copy.missing,
+      fields: buildFieldsFromFacts(copy.facts, categorySlug, subcategorySlug, arabic), missing: copy.missing,
     };
   }
 }

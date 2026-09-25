@@ -75,7 +75,12 @@ export const useAiPublishFlow = (setIsAnalyzing: (val: boolean) => void) => {
             subcategorySlug: fallbackMatch.effectiveSub,
             categoryMatch: fallbackMatch,
             missing: copy.missing,
-            fields: buildFieldsFromFacts(copy.facts, fallbackCategory, isArabic),
+            fields: buildFieldsFromFacts(
+              copy.facts,
+              fallbackCategory,
+              fallbackMatch.effectiveSub || '',
+              isArabic
+            ),
           },
         });
       } finally {

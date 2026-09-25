@@ -37,7 +37,7 @@ describe('extractFacts — universal (non-car categories)', () => {
 describe('buildFieldsFromFacts — all schema fields always present', () => {
   it('returns ALL fashion fields even when partial facts', () => {
     const facts = extractFacts('فستان أحمر مقاس M');
-    const fields = buildFieldsFromFacts(facts, 'fashion', false);
+    const fields = buildFieldsFromFacts(facts, 'fashion', '', false);
     expect(fields.length).toBe(4);
     expect(fields.find((f) => f.key === 'type')?.value).toBe('فستان');
     expect(fields.find((f) => f.key === 'size')?.value).toBe('M');
@@ -45,14 +45,14 @@ describe('buildFieldsFromFacts — all schema fields always present', () => {
 
   it('returns ALL furniture fields when nothing extracted', () => {
     const facts = extractFacts('شيء للبيع');
-    const fields = buildFieldsFromFacts(facts, 'furniture', false);
+    const fields = buildFieldsFromFacts(facts, 'furniture', '', false);
     expect(fields.length).toBe(4);
     expect(fields.every((f) => typeof f.value === 'string')).toBe(true);
   });
 
   it('returns ALL motors fields (10) even with empty facts', () => {
     const facts = extractFacts('');
-    const fields = buildFieldsFromFacts(facts, 'motors', false);
+    const fields = buildFieldsFromFacts(facts, 'motors', '', false);
     expect(fields.length).toBe(10);
   });
 });

@@ -1,5 +1,5 @@
 import { GeneratedListing } from '../types';
-import { getCategoryFields } from '@/data/categoryFields';
+import { getFieldsForListing } from '@/data/subcategoryFields';
 
 export interface AIGatewayPayload {
   rawText: string;
@@ -115,8 +115,8 @@ Set required=true only for fields the user explicitly marked as required. Otherw
 
 Return ONLY valid JSON. No markdown. No comments.`;
 
-export function buildSchemaSpec(categorySlug: string, arabic: boolean): string {
-  const fields = getCategoryFields(categorySlug);
+export function buildSchemaSpec(categorySlug: string, subcategorySlug: string, arabic: boolean): string {
+  const fields = getFieldsForListing(categorySlug, subcategorySlug);
   if (fields.length === 0) return '(no schema — infer from category)';
   return fields.map((f) => {
     const opts = f.options && f.options.length > 0
@@ -133,7 +133,11 @@ export async function requestAIGateway(payload: AIGatewayPayload): Promise<Gener
     throw new Error('VITE_GEMINI_API_KEY not configured');
   }
 
-  const schemaSpec = buildSchemaSpec(payload.categorySlug || '', payload.arabic);
+  const schemaSpec = buildSchemaSpec(
+    payload.categorySlug || '',
+    payload.subcategorySlug || '',
+    payload.arabic
+  );
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 15000);
@@ -192,7 +196,10 @@ export async function requestAIGateway(payload: AIGatewayPayload): Promise<Gener
       throw new Error('Gemini response missing required fields');
     }
 
-    const schemaFields = getCategoryFields(parsed.categorySlug || payload.categorySlug || '');
+    const schemaFields = getFieldsForListing(
+      parsed.categorySlug || payload.categorySlug || '',
+      parsed.subcategorySlug || payload.subcategorySlug || ''
+    );
     const aiFields = parsed.fields || [];
     const mergedFields = schemaFields.length > 0
       ? schemaFields.map((def) => {

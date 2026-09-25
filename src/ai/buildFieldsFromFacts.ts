@@ -1,5 +1,5 @@
 import { ListingFacts } from '../types';
-import { getCategoryFields } from '@/data/categoryFields';
+import { getFieldsForListing } from '@/data/subcategoryFields';
 
 export interface FieldItem {
   key: string;
@@ -31,9 +31,10 @@ function getValueForKey(key: string, facts: ListingFacts, arabic: boolean): stri
 export function buildFieldsFromFacts(
   facts: ListingFacts,
   categorySlug: string,
+  subcategorySlug: string,
   arabic: boolean
 ): FieldItem[] {
-  const defs = getCategoryFields(categorySlug);
+  const defs = getFieldsForListing(categorySlug, subcategorySlug);
   return defs.map((def) => ({
     key: def.key,
     label: arabic ? def.labelAr : def.labelEn,
