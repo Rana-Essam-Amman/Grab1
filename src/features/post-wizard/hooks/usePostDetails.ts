@@ -23,9 +23,12 @@ export function usePostDetails() {
 
   const fields = useMemo(() => getCategoryFields(postDraft.categorySlug).map(f => {
     if (f.key === 'make' || f.key === 'brand') return { ...f, type: 'select' as const, options: bOpts };
-    if (f.key === 'model') return { ...f, type: 'select' as const, options: mOpts };
+    if (f.key === 'model') {
+      const disabled = !cBrand;
+      return { ...f, type: 'select' as const, options: mOpts, disabled };
+    }
     return f;
-  }), [postDraft.categorySlug, bOpts, mOpts]);
+  }), [postDraft.categorySlug, bOpts, mOpts, cBrand]);
 
   const setField = useCallback((k: string, v: string) => setValues(p => ({ ...p, [k]: v })), []);
   const missing = fields.filter(f => f.required && !(values[f.key] || '').trim()).map(f => isArabic ? f.labelAr : f.labelEn);
