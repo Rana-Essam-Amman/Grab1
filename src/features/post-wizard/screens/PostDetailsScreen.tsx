@@ -59,6 +59,11 @@ export const PostDetailsScreen: React.FC = () => {
                   <label className="text-xs font-bold text-ink">
                     {isArabic ? f.labelAr : f.labelEn} {f.required && <span className="text-danger">*</span>}
                   </label>
+                  {f.disabled && f.key === 'model' && (
+                    <span className="text-[10px] text-ink-muted -mt-0.5">
+                      {isArabic ? 'اختر الماركة أولاً' : 'Select brand first'}
+                    </span>
+                  )}
                   {f.type === 'select' && f.options && f.options.length > 20 ? (
                     <Combobox
                       testId={`field-${f.key}`}
@@ -67,6 +72,7 @@ export const PostDetailsScreen: React.FC = () => {
                       placeholder={isArabic ? 'اختر...' : 'Select...'}
                       searchPlaceholder={isArabic ? 'ابحث...' : 'Search...'}
                       emptyText={isArabic ? 'لا نتائج' : 'No results'}
+                      disabled={f.disabled}
                       onChange={(v) => {
                         setField(f.key, v);
                         if (f.key === 'make' || f.key === 'brand') setField('model', '');
@@ -76,6 +82,7 @@ export const PostDetailsScreen: React.FC = () => {
                     <div className="relative">
                       <select
                         value={values[f.key] || ''}
+                        disabled={f.disabled}
                         onChange={(e) => {
                           setField(f.key, e.target.value);
                           if (f.key === 'make' || f.key === 'brand') setField('model', '');
