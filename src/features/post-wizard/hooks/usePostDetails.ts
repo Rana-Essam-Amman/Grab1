@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { usePostWizard } from './usePostWizard';
-import { getCategoryFields } from '@/data/categoryFields';
+import { getFieldsForListing } from '@/data/subcategoryFields';
 import { useUI } from '@/hooks/useUI';
 import { getBrandOptions, getModelOptions } from '@/data/brands';
 
@@ -16,19 +16,18 @@ export function usePostDetails() {
     return out;
   });
 
-  const bKey = postDraft.categorySlug === 'motors' ? 'make' : 'brand';
-  const cBrand = values[bKey] || '';
+  const cBrand = values.make || values.brand || values.carMake || '';
   const bOpts = useMemo(() => getBrandOptions(postDraft.categorySlug, isArabic), [postDraft.categorySlug, isArabic]);
   const mOpts = useMemo(() => cBrand ? getModelOptions(postDraft.categorySlug, cBrand, isArabic) : [], [postDraft.categorySlug, cBrand, isArabic]);
 
-  const fields = useMemo(() => getCategoryFields(postDraft.categorySlug).map(f => {
-    if (f.key === 'make' || f.key === 'brand') return { ...f, type: 'select' as const, options: bOpts };
+  const fields = useMemo(() => getFieldsForListing(postDraft.categorySlug, postDraft.subcategorySlug).map(f => {
+    if (f.key === 'make' || f.key === 'brand' || f.key === 'carMake') return { ...f, type: 'select' as const, options: bOpts };
     if (f.key === 'model') {
       const disabled = !cBrand;
       return { ...f, type: 'select' as const, options: mOpts, disabled };
     }
     return f;
-  }), [postDraft.categorySlug, bOpts, mOpts, cBrand]);
+  }), [postDraft.categorySlug, postDraft.subcategorySlug, bOpts, mOpts, cBrand]);
 
   const setField = useCallback((k: string, v: string) => setValues(p => ({ ...p, [k]: v })), []);
   const missing = fields.filter(f => f.required && !(values[f.key] || '').trim()).map(f => isArabic ? f.labelAr : f.labelEn);
