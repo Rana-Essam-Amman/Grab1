@@ -6,6 +6,7 @@ import { useListings } from '@/hooks/useListings';
 import { useDraft } from '@/hooks/useDraft';
 import { buildNewListingPayload } from '../helpers/buildNewListingPayload';
 import { globalStorage } from '@/shared/lib/marketStorage';
+import { useAiReviewAttributes } from './useAiReviewAttributes';
 
 export interface UseAiReviewReturn {
   title: string; price: string; city: string; description: string; photos: string[];
@@ -13,7 +14,14 @@ export interface UseAiReviewReturn {
   neighborhood: string; setNeighborhood: (n: string) => void;
   setTitle: (t: string) => void; setPrice: (p: string) => void;
   setCity: (c: string) => void; setDescription: (d: string) => void;
-  attributes: readonly { key: string; label: string; value: string; required?: boolean }[];
+  attributes: readonly {
+    key: string;
+    label: string;
+    value: string;
+    required?: boolean;
+    type?: 'text' | 'number' | 'select' | 'textarea';
+    options?: readonly string[];
+  }[];
   setAttributeValue: (key: string, value: string) => void;
   handlePublish: () => Promise<void>; isPublishing: boolean; hasMissingParams: boolean;
   readonly missingRequiredLabels: readonly string[]; error?: string | null;
@@ -31,7 +39,11 @@ export function useAiReview(): UseAiReviewReturn {
 
   const photos = postDraft.photos || [];
   const neighborhood = postDraft.neighborhood || '';
-  const attributes = postDraft.generated?.fields || [];
+  const attributes = useAiReviewAttributes(
+    postDraft.categorySlug,
+    postDraft.generated?.fields || [],
+    isArabic
+  );
 
   const setAttributeValue = (key: string, value: string) => {
     const current = postDraft.generated?.fields || [];
