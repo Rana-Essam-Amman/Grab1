@@ -91,3 +91,57 @@
 
 Rule: Do NOT paint every icon #64748B. Pick the color that matches the icon's meaning.
 
+---
+
+## v7 System (2026-09-25) — Post Flow + AI Review
+
+### Screen Header
+- Navy solid: `bg-[#1a2238]`
+- Back button: circular 40px, `bg-white/15 text-white hover:bg-white/25`
+- Title: white, bold, `text-lg`
+- Subtitle above: `text-xs font-semibold text-white/70`
+- Pattern: shared `PostFlowHeader` component (5 Post screens)
+
+### Section Card
+- Header: `bg-[#E57E25]` solid, white text, `text-[14px] font-bold`
+- Body: `bg-white px-4 py-4`
+- Wrapper: `rounded-2xl overflow-hidden border border-line shadow-sm`
+- Pattern: `AiReviewSectionCard` + `PostFlowHeader`
+
+### Chips (specs + location)
+- Shape: `rounded-2xl` (not full circle)
+- Background: white + `border border-line`
+- Icon: Fluent Emoji 3D (`@iconify/react`)
+- Location pin (content): `noto:round-pushpin`
+- Location pin (UI menus): Iconsax `Location` (unchanged)
+- Empty state: dashed border + icon `opacity-50` + red dot if required
+- Filled state: colored icon + label + `·` + value
+
+### Motion (CSS keyframes)
+- `fade-up`: section mount (300ms, 60ms stagger)
+- `halo-pulse`: enabled CTAs (2s infinite)
+- `underline-draw`: inline edit (200ms)
+- `chip-pop`: chip fill (250ms)
+
+### Colors (hex explicit only)
+| Token | Hex | Use |
+|---|---|---|
+| Brand | #E57E25 | Headers, CTAs, chips |
+| Navy | #1a2238 | Screen headers, primary text |
+| Success | #10B981 | Validation, confirmation |
+| Danger | #EF4444 / #DC2626 | Errors, destructive |
+| Border | #E2E8F0 | Dividers, card borders |
+| Text | #0F172A | Primary text |
+| Muted | #64748B | Secondary text |
+
+### Do NOT use
+- Generic `bg-brand` when it renders navy (use explicit `bg-[#E57E25]`)
+- Tailwind tokens for hex-critical surfaces (causes Bug #008 ambiguity)
+- 3D emoji for UI controls (arrows, X, trash — keep Iconsax)
+- Fonts > 16px except Price display (2xl max in Listing Detail)
+
+### Reference implementations
+- Post flow: `src/features/post-wizard/screens/*`
+- AI Review: `src/features/post-wizard/components/AiReview*`
+- Cards: `src/shared/components/ListingCard.tsx`
+

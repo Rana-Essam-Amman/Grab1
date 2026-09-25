@@ -27,6 +27,9 @@ Goal: Add, change, or DELETE any detail in < 30 minutes, without hunting through
 8. **Localization**: All user-facing strings in `locales/ar.json` and `locales/en.json` (per feature).
 
 9. **Testing**: Every feature must have tests (Vitest). Target: 70% coverage.
+    Infrastructure (hooks/, stores/, adapters/) MUST reach ≥ 60% coverage.
+    Critical hooks (useUI, useAuth, useDraft, useListings, useChat) MUST
+    have co-located unit tests before any dependant feature ships.
 
 10. **Performance**: Code splitting per screen. Virtualization for lists > 20 items. Memoize expensive computations.
 
@@ -336,6 +339,49 @@ See `docs/ARCHITECTURE.md` for details.
     Violations: multiple commits, "nothing to commit" misread as failure, stale cache misread as state.
     Prevention: verification runs BEFORE commit. Final report ends with RAW of the successful push.
     Enforcement: pre-commit runs once. Contradictory success+failure in same response = REJECTED (Rule 36).
+    Scope Lock: idx MUST NOT add fixes, refactors, or improvements outside
+    the explicit scope of the prompt. If a change seems beneficial but wasn't
+    requested → STOP + RAW with suggestion. Wait for authorization.
+
+44. **Rule 44: No Force Push (NON-NEGOTIABLE)**:
+    - `git push --force` and `git push -f` are FORBIDDEN in ALL contexts.
+    - If a normal push fails → STOP + RAW. Do NOT escalate to force push.
+    - Rationale: force push destroyed remote history on 2026-09-25 (Bug #009).
+    - Enforcement: pre-commit hook + human review.
+
+45. **Rule 45: Secret & Token Redaction (NON-NEGOTIABLE)**:
+    - Any command that may print a credential MUST pipe output through:
+        `sed 's/[A-Za-z0-9_]*@/***@/g'`
+    - Applies to: git ls-remote, git remote -v, env dumps, log outputs.
+    - Rationale: GitHub PAT leaked in output on 2026-09-25 (Bug #010).
+    - Enforcement: any reported raw output containing `token=`, `pat_`,
+      `ghp_`, or `@github.com` MUST trigger immediate rotation.
+
+46. **Rule 46: Subcategory-Aware Data Architecture (NON-NEGOTIABLE)**:
+    - Any category with >1 subcategory MUST have its own
+      `src/data/subcategoryFields/<category>.ts` file.
+    - `getFieldsForListing(categorySlug, subcategorySlug)` is the ONLY
+      public accessor for listing fields.
+    - Fallback to `categoryFields.ts` is allowed ONLY when no override
+      exists for the subcategory.
+    - Rationale: proven competitive advantage — 17 categories × ~90
+      subcategories with tailored fields.
+    - Enforcement: audit script checks each category has subcategoryFields.
+
+47. **Rule 47: AI Agent Prompt Protocol (NON-NEGOTIABLE)**:
+    - Every prompt to an AI executor (idx or equivalent) MUST:
+      1. Open with role: "You are a Senior [Role] specializing in [Domain]..."
+      2. Include a 5-line context block:
+         🎯 Differentiator vs competitors
+         🌍 World-class step
+         💡 User benefit
+         ⚙️ Applicable (yes/no + reason)
+         💰 Cost (zero / minimal / expensive)
+      3. Define SCOPE LOCKED (exact files touched)
+      4. Define FORBIDDEN actions (force push, --no-verify, out-of-scope edits)
+      5. Require RAW report at end
+    - Rationale: prompt structure materially affects AI output quality.
+    - Enforcement: prompt templates in docs/PROMPT_PATTERNS.md.
 
 
 ## Part V: Quality & Future Rules (Rules 27-31)
@@ -421,6 +467,7 @@ This section defines HOW the Constitution evolves. It transforms mistakes into p
 - **v1.1.6 (2026-09-22)**: Added Rule 41 (Competitor Analysis Before Logic).
 - **v1.1.7 (2026-09-22)**: Added Rule 42 (Zero-Cost Auth First).
 - **v1.1.8 (2026-09-23)**: Added Rule 43 (Post-Commit Stop Discipline). Triggered by 3 idx retry loops (2026-09-23) burning ~45% of session context.
+- **v1.1.9 (2026-09-25)**: Added Rule 44 (No Force Push) after Bug #009, Rule 45 (Secret Redaction) after Bug #010, Rule 46 (Subcategory-Aware Data), Rule 47 (AI Agent Prompt Protocol). Updated Rule 9 (infra coverage ≥ 60%) and Rule 43 (scope lock discipline).
 - **v1.2 (Planned)**: Rule 36+ for CI-enforced rules (test coverage gate, mutation testing, SLO enforcement). Learning System automation.
 
 ## Part VIII: Build Discipline

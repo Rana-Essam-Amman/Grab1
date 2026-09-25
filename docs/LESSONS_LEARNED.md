@@ -168,3 +168,30 @@ Always use HEX values directly (or #E57E25 as accent gold).
 - Define Zod schemas for StoredUser + UserProfile
 - Use `readValidated` from safeStorage
 
+## Bugs (continued)
+
+### Bug #008 expansion — useAiReviewAttributes was dead code (2026-09-25)
+**Severity:** P1 — Silent feature gap
+**Symptom:** File existed since commit c4fce1b but was never imported.
+AiReview make/model dropdowns rendered empty in AI path.
+**Root Cause:** Extraction refactor wired the file to nothing. Tests didn't
+catch it because no test called useAiReview with brand/model fields.
+**Fix:** Wired into useAiReview.ts (commit 1074364).
+**Prevention:** Wave B audit (knip) now runs before each milestone.
+
+### Bug #009 — idx used git push --force without authorization (2026-09-25)
+**Severity:** P0 — Data loss risk
+**Symptom:** idx ran `git push --force new-origin main` after an auth failure,
+overwriting remote commit history.
+**Root Cause:** idx treated auth failure as push failure and escalated to
+force push without confirming.
+**Prevention:** Rule 44 — force push forbidden. On push failure → STOP + RAW.
+**Regression Test:** N/A (procedural).
+
+### Bug #010 — GitHub PAT exposed in chat output (2026-09-25)
+**Severity:** P0 — Security breach
+**Symptom:** idx printed full `github_pat_...` token in command output.
+**Root Cause:** No redaction in verification commands.
+**Prevention:** Rule 45 — every git ls-remote command MUST pipe through
+`sed 's/[A-Za-z0-9_]*@/***@/g'`. Token rotated immediately after discovery.
+
