@@ -28,7 +28,7 @@ export const PhotoUploadScreen: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-surface pb-12" dir={isArabic ? 'rtl' : 'ltr'}>
-      <div className="px-4 py-4 border-b border-white/10 flex items-center gap-3 bg-brand sticky top-0 z-20">
+      <div className="px-4 py-4 border-b border-white/10 flex items-center gap-3 bg-[#1a2238] sticky top-0 z-20">
         <Button variant="ghost" size="icon" onClick={goBack} className="w-10 h-10 rounded-full bg-white/15 text-white hover:bg-white/25 cursor-pointer flex items-center justify-center p-0" aria-label={isArabic ? 'رجوع' : 'Back'}>
           <BackIcon size={18} variant="Linear" color="#FFFFFF" className="text-white" />
         </Button>
@@ -39,12 +39,10 @@ export const PhotoUploadScreen: React.FC = () => {
       </div>
 
       <div className="p-4 flex-1 flex flex-col gap-4">
-        <div className="p-3.5 rounded-2xl bg-background border border-border flex items-start gap-2.5">
-          <Warning2 size={18} variant="Linear" color="#E57E25" className="text-primary shrink-0 mt-0.5" />
-          <div className="text-xs text-ink-soft">
-            {isArabic
-              ? `يجب إضافة صورة واحدة على الأقل. الصور الواضحة تضاعف سرعة بيع السلعة.`
-              : `Add at least 1 photo. Clear photos increase buyer interest.`}
+        <div className="p-3.5 rounded-2xl bg-[#E57E25]/8 border border-[#E57E25]/20 flex items-start gap-2.5">
+          <Warning2 size={16} variant="Bold" color="#E57E25" className="shrink-0 mt-0.5" />
+          <div className="text-[12px] font-medium text-ink leading-relaxed">
+            {isArabic ? 'يجب إضافة صورة واحدة على الأقل. الصور الواضحة تضاعف سرعة بيع السلعة.' : 'Add at least 1 photo. Clear photos increase buyer interest.'}
           </div>
         </div>
 
@@ -60,7 +58,14 @@ export const PhotoUploadScreen: React.FC = () => {
         )}
 
         <div className="mt-auto pt-6">
-          <Button variant="primary" fullWidth size="lg" disabled={photos.length < listingMinPhotos} onClick={handleContinue} className="gap-2">
+          <Button
+            variant="primary"
+            fullWidth
+            size="lg"
+            disabled={photos.length < listingMinPhotos}
+            onClick={handleContinue}
+            className={`gap-2 ${photos.length >= listingMinPhotos ? 'animate-[halo-pulse_2s_ease-in-out_infinite]' : ''}`}
+          >
             <span>{isArabic ? 'متابعة إلى تحديد الموقع' : 'Continue to Location'}</span>
             <NextIcon size={18} variant="Linear" />
           </Button>
