@@ -1,12 +1,10 @@
 import { useUI } from '@/hooks/useUI';
 import React, { useMemo, useCallback } from 'react';
 import { Listing } from '@/types';
-import { BookmarkHeartButton } from './BookmarkHeartButton';
-import { Crown } from 'iconsax-react';
 import { Icon } from '@iconify/react';
 import { getSanitizedRegionalLocation } from '@/data/locations';
 import { getSanitizedCurrency } from '@/data/countries';
-import { Badge } from '@/shared/ui/Badge';
+import { ListingCardImage } from './ListingCardImage';
 import { ListingCardHorizontal } from './ListingCardHorizontal';
 import { pickSpecs } from '@/features/listings/helpers/pickSpecs';
 import { ListingSpecsRow } from './ListingSpecsRow';
@@ -79,25 +77,14 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
       className={`${premiumClasses} rounded-2xl overflow-hidden border flex flex-col cursor-pointer hover:border-primary/60 transition-all shadow-xs group active:scale-[0.98]`}
       dir={isArabic ? 'rtl' : 'ltr'}
     >
-      <div className="w-full aspect-4/3 bg-background relative overflow-hidden">
-        <img
-          src={listing.imageUrl}
-          alt={listing.title}
-          className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
-          onError={handleImageError}
-        />
-        {listing.isPremium && (
-          <div className="absolute top-2 end-2 z-10">
-            <Badge variant="warning" size="sm" className="flex items-center gap-1">
-              <span>{isArabic ? 'مُميز' : 'Featured'}</span>
-              <Crown size={12} variant="Bold" color="#E57E25" />
-            </Badge>
-          </div>
-        )}
-        <div className={`absolute top-2 ${listing.isPremium ? 'end-16' : 'end-2'}`}>
-          <BookmarkHeartButton listingId={listing.id} size="md" />
-        </div>
-      </div>
+      <ListingCardImage
+        imageUrl={listing.imageUrl}
+        title={listing.title}
+        isPremium={listing.isPremium}
+        listingId={listing.id}
+        isArabic={isArabic}
+        onImageError={handleImageError}
+      />
       <div className="p-3 flex flex-col flex-1 justify-between">
         <div>
           <div className="text-[15px] font-bold text-ink line-clamp-1" dir="auto">{listing.title}</div>
