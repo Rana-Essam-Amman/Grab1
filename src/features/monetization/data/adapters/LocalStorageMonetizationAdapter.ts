@@ -1,6 +1,7 @@
 import type { AiQuota, PromotedAd } from '../../domain';
 import type { MonetizationRepository } from '../repositories/MonetizationRepository';
 import { globalStorage } from '@/shared/lib/marketStorage';
+import { z } from 'zod';
 
 const AI_QUOTA_KEY = 'monetization_ai_quota_v1';
 const PROMOTIONS_KEY = 'monetization_promotions_v1';
@@ -9,6 +10,20 @@ const DEFAULT_QUOTA: AiQuota = {
   usedToday: 0,
   lastResetAt: new Date().toISOString(),
 };
+
+const AI_QUOTA_SCHEMA = z.object({
+  dailyLimit: z.number(),
+  usedToday: z.number(),
+  lastResetAt: z.string(),
+});
+
+const PROMOTED_AD_SCHEMA = z.object({
+  listingId: z.string(),
+  tier: z.enum(['basic', 'premium']),
+  promotedUntil: z.string(),
+});
+
+const PROMOTIONS_ARRAY_SCHEMA = z.array(PROMOTED_AD_SCHEMA);
 
 /**
  * LocalStorage implementation of MonetizationRepository.
@@ -74,21 +89,8 @@ export class LocalStorageMonetizationAdapter implements MonetizationRepository {
   private _readQuota(): AiQuota {
     try {
       const parsed = globalStorage().get<unknown>(AI_QUOTA_KEY);
-      if (!parsed || typeof parsed !== 'object') return DEFAULT_QUOTA;
-      
-      const obj = parsed as Record<string, unknown>;
-      if (
-        typeof obj.dailyLimit === 'number' &&
-        typeof obj.usedToday === 'number' &&
-        typeof obj.lastResetAt === 'string'
-      ) {
-        return {
-          dailyLimit: obj.dailyLimit,
-          usedToday: obj.usedToday,
-          lastResetAt: obj.lastResetAt,
-        };
-      }
-      return DEFAULT_QUOTA;
+      const result = AI_QUOTA_SCHEMA.safeParse(parsed);
+      return result.success ? result.data : DEFAULT_QUOTA;
     } catch {
       return DEFAULT_QUOTA;
     }
@@ -101,7 +103,8 @@ export class LocalStorageMonetizationAdapter implements MonetizationRepository {
   private _readPromotions(): PromotedAd[] {
     try {
       const parsed = globalStorage().get<unknown>(PROMOTIONS_KEY);
-      return Array.isArray(parsed) ? (parsed as PromotedAd[]) : [];
+      const result = PROMOTIONS_ARRAY_SCHEMA.safeParse(parsed);
+      return result.success ? result.data : [];
     } catch {
       return [];
     }
@@ -111,3 +114,4 @@ export class LocalStorageMonetizationAdapter implements MonetizationRepository {
     globalStorage().set(PROMOTIONS_KEY, promotions);
   }
 }
+
