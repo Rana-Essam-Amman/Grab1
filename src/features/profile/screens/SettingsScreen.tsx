@@ -11,6 +11,8 @@ import {
   ShieldTick,
   ArrowRight2,
   ArrowLeft2,
+  InfoCircle,
+  Call,
 } from 'iconsax-react';
 import { SettingsProfileCard } from '../components/SettingsProfileCard';
 
@@ -22,6 +24,10 @@ export const SettingsScreen: React.FC = () => {
   const handleLanguageToggle = useCallback(() => setLocale(isArabic ? 'en' : 'ar'), [setLocale, isArabic]);
   const handleCountryChange = useCallback(() => setIsCountrySheetOpen(true), [setIsCountrySheetOpen]);
   const handleTermsNav = useCallback(() => navigateTo('terms'), [navigateTo]);
+  const handlePrivacyNav = useCallback(() => navigateTo('privacy'), [navigateTo]);
+  const handleSupportNav = useCallback(() => navigateTo('support'), [navigateTo]);
+  const handleSafetyNav = useCallback(() => navigateTo('safety'), [navigateTo]);
+  const handleAboutNav = useCallback(() => navigateTo('about'), [navigateTo]);
   const handleLogout = useCallback(() => logout(), [logout]);
 
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
@@ -108,6 +114,58 @@ export const SettingsScreen: React.FC = () => {
               <DocumentText size={18} variant="Linear" color="#E57E25" className="text-primary" />
               <div className="text-sm font-semibold text-ink">
                 {isArabic ? 'شروط الخدمة وسياسة الخصوصية' : 'Terms of Service & Privacy Policy'}
+              </div>
+            </div>
+            <ChevronIcon size={18} variant="Linear" className="text-ink-muted" />
+          </div>
+
+          <div
+            onClick={handleSafetyNav}
+            className="p-3.5 flex items-center justify-between cursor-pointer hover:bg-surface border-b border-border/60 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <ShieldTick size={18} variant="Linear" color="#16A34A" className="text-green-600" />
+              <div className="text-sm font-semibold text-ink">
+                {isArabic ? 'الأمان' : 'Safety'}
+              </div>
+            </div>
+            <ChevronIcon size={18} variant="Linear" className="text-ink-muted" />
+          </div>
+
+          <div
+            onClick={handleSupportNav}
+            className="p-3.5 flex items-center justify-between cursor-pointer hover:bg-surface border-b border-border/60 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <Call size={18} variant="Linear" color="#E57E25" className="text-primary" />
+              <div className="text-sm font-semibold text-ink">
+                {isArabic ? 'الدعم والمساعدة' : 'Support'}
+              </div>
+            </div>
+            <ChevronIcon size={18} variant="Linear" className="text-ink-muted" />
+          </div>
+
+          <div
+            onClick={handlePrivacyNav}
+            className="p-3.5 flex items-center justify-between cursor-pointer hover:bg-surface border-b border-border/60 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <DocumentText size={18} variant="Linear" color="#E57E25" className="text-primary" />
+              <div className="text-sm font-semibold text-ink">
+                {isArabic ? 'سياسة الخصوصية' : 'Privacy Policy'}
+              </div>
+            </div>
+            <ChevronIcon size={18} variant="Linear" className="text-ink-muted" />
+          </div>
+
+          <div
+            onClick={handleAboutNav}
+            className="p-3.5 flex items-center justify-between cursor-pointer hover:bg-surface border-b border-border/60 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <InfoCircle size={18} variant="Linear" color="#E57E25" className="text-primary" />
+              <div className="text-sm font-semibold text-ink">
+                {isArabic ? 'حول التطبيق' : 'About'}
               </div>
             </div>
             <ChevronIcon size={18} variant="Linear" className="text-ink-muted" />
