@@ -3,7 +3,7 @@ import { useUI } from '@/hooks/useUI';
 import { useListings } from '@/hooks/useListings';
 import React, { useState, useMemo, useCallback } from 'react';
 import { ListingCard } from '@/shared/components';
-import { Add, Tag, ArchiveBook, Heart, Trash } from 'iconsax-react';
+import { Add, Tag, ArchiveBook, Heart, Trash, TickCircle } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { EmptyState } from '@/shared/ui/EmptyState';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
@@ -11,7 +11,7 @@ import { Icon } from '@iconify/react';
 
 export const MyAdsScreen: React.FC = () => {
   const { isArabic, browseCountryCode, navigateTo } = useUI();
-  const { listings, userListings, wishlistListings, deleteListing } = useListings();
+  const { listings, userListings, wishlistListings, deleteListing, updateListing } = useListings();
 
   const [activeSubTab, setActiveSubTab] = useState<'my' | 'wishlist'>('my');
 
@@ -26,6 +26,11 @@ export const MyAdsScreen: React.FC = () => {
     e.stopPropagation();
     deleteListing(listingId);
   }, [deleteListing]);
+
+  const handleMarkSold = useCallback((e: React.MouseEvent, listingId: string) => {
+    e.stopPropagation();
+    updateListing(listingId, { status: 'sold' });
+  }, [updateListing]);
 
   const handleTabChange = useCallback((tab: 'my' | 'wishlist') => {
     setActiveSubTab(tab);
@@ -86,13 +91,24 @@ export const MyAdsScreen: React.FC = () => {
             {displayedMyAds.map((listing: Listing) => (
               <div key={listing.id} className="relative">
                 <ListingCard listing={listing} layout="horizontal" />
-                <button
-                  onClick={(e) => handleDelete(e, listing.id)}
-                  className="absolute bottom-3 start-3 p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors z-20"
-                  title={isArabic ? 'حذف الإعلان' : 'Delete ad'}
-                >
-                  <Trash size={16} variant="Linear" color="#DC2626" />
-                </button>
+                <div className="absolute bottom-3 start-3 flex gap-2 z-20">
+                  {listing.status !== 'sold' && (
+                    <button
+                      onClick={(e) => handleMarkSold(e, listing.id)}
+                      className="p-2 rounded-lg bg-green-50 text-green-700 hover:bg-green-100 transition-colors"
+                      title={isArabic ? 'تم البيع' : 'Mark as sold'}
+                    >
+                      <TickCircle size={16} variant="Linear" color="#16A34A" />
+                    </button>
+                  )}
+                  <button
+                    onClick={(e) => handleDelete(e, listing.id)}
+                    className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+                    title={isArabic ? 'حذف الإعلان' : 'Delete ad'}
+                  >
+                    <Trash size={16} variant="Linear" color="#DC2626" />
+                  </button>
+                </div>
               </div>
             ))}
           </div>

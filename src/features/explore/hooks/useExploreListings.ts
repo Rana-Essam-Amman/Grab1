@@ -68,6 +68,7 @@ export function useExploreListings(): UseExploreListingsReturn {
   const displayListings = useMemo(() => {
     const effectiveSearch = (activeSearchText || searchQuery || '').trim();
     const filtered = marketListings.filter((item) => {
+      if (item.status === 'sold' || item.status === 'archived') return false;
       if (categoryFilter && item.categorySlug !== categoryFilter && item.subcategorySlug !== categoryFilter) return false;
       if (!matchPrice(item, minPriceFilter, maxPriceFilter)) return false;
       if (activeNeighborhood && !matchNeighborhood(item, activeNeighborhood)) return false;
