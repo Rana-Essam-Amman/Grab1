@@ -1,53 +1,58 @@
-import React, { useState } from 'react';
-import { searchCategories } from '../../../data/categoryAliases';
-import { CategoryDef } from '../../../types';
+import React, { useState, ChangeEvent } from 'react';
+import { CategoryDef } from '@/types';
+import { searchCategories } from '@/data/categoryAliases';
 
-interface CategorySearchBarProps {
+export interface CategorySearchBarProps {
   isArabic: boolean;
   onSelect: (slug: string) => void;
   disabled?: boolean;
 }
 
-export const CategorySearchBar: React.FC<CategorySearchBarProps> = ({ isArabic, onSelect, disabled }) => {
+export const CategorySearchBar: React.FC<CategorySearchBarProps> = ({
+  isArabic,
+  onSelect,
+  disabled = false,
+}) => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<CategoryDef[]>([]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    setQuery(val);
-    setResults(searchCategories(val));
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const nextVal = e.target.value;
+    setQuery(nextVal);
+    setResults(searchCategories(nextVal));
   };
 
-  const handleSelect = (slug: string) => {
+  const handleItemClick = (slug: string) => {
     onSelect(slug);
     setQuery('');
     setResults([]);
   };
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full" dir={isArabic ? 'rtl' : 'ltr'}>
       <input
         type="text"
-        disabled={disabled}
         value={query}
         onChange={handleChange}
+        disabled={disabled}
         placeholder={isArabic ? 'ابحث: كامري، ايفون، شقة...' : 'Search: camry, iphone...'}
-        className="w-full px-4 py-2 bg-surface border border-line rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+        className="w-full px-4 py-2.5 rounded-xl border border-line bg-surface text-ink text-sm outline-none focus:ring-2 focus:ring-primary/40 disabled:opacity-50"
       />
       {results.length > 0 && (
-        <div className="absolute z-50 left-0 right-0 mt-1 bg-surface border border-line rounded-lg shadow-lg max-h-60 overflow-y-auto">
+        <ul className="absolute z-30 left-0 right-0 mt-1 max-h-56 overflow-y-auto rounded-xl border border-line bg-surface shadow-lg divide-y divide-line">
           {results.map((cat) => (
-            <button
-              key={cat.slug}
-              type="button"
-              onClick={() => handleSelect(cat.slug)}
-              className="w-full px-4 py-2.5 text-left flex items-center justify-between hover:bg-line/20 text-ink text-sm transition-colors border-b border-line last:border-b-0"
-            >
-              <span>{isArabic ? cat.nameAr : cat.nameEn}</span>
-              <span className="text-xs text-muted capitalize">{cat.slug}</span>
-            </button>
+            <li key={cat.slug}>
+              <button
+                type="button"
+                onClick={() => handleItemClick(cat.slug)}
+                className="w-full px-4 py-2.5 text-start text-sm text-ink hover:bg-canvas transition-colors flex items-center justify-between"
+              >
+                <span className="font-medium">{isArabic ? cat.nameAr : cat.nameEn}</span>
+                <span className="text-xs text-ink-muted">{isArabic ? cat.nameEn : cat.nameAr}</span>
+              </button>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   );
