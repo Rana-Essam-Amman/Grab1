@@ -1,5 +1,5 @@
 import React from 'react';
-import { Edit, Trash, TickCircle } from 'iconsax-react';
+import { Edit, Trash, TickCircle, ArrowUp2 } from 'iconsax-react';
 
 export interface ListingActionsRowProps {
   readonly isArabic: boolean;
@@ -7,12 +7,24 @@ export interface ListingActionsRowProps {
   readonly onEdit: () => void;
   readonly onMarkSold: () => void;
   readonly onDelete: () => void;
+  readonly onBump: () => void;
+  readonly bumpDisabled?: boolean;
 }
 
 export const ListingActionsRow: React.FC<ListingActionsRowProps> = ({
-  isArabic, status, onEdit, onMarkSold, onDelete,
+  isArabic, status, onEdit, onMarkSold, onDelete, onBump, bumpDisabled = false,
 }) => (
   <div className="absolute bottom-3 start-3 flex gap-2 z-20">
+    {status !== 'sold' && (
+      <button
+        onClick={onBump}
+        disabled={bumpDisabled}
+        className={`p-2 rounded-lg transition-colors ${bumpDisabled ? 'bg-canvas text-ink-muted cursor-not-allowed' : 'bg-amber-50 text-amber-700 hover:bg-amber-100'}`}
+        title={isArabic ? 'رفع الإعلان (3 مرات/يوم)' : 'Bump ad (3×/day)'}
+      >
+        <ArrowUp2 size={16} variant="Linear" color={bumpDisabled ? '#94A3B8' : '#D97706'} />
+      </button>
+    )}
     <button
       onClick={onEdit}
       className="p-2 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"

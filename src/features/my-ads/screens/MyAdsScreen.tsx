@@ -9,6 +9,7 @@ import { EmptyState } from '@/shared/ui/EmptyState';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
 import { Icon } from '@iconify/react';
 import { ListingActionsRow } from '../components/ListingActionsRow';
+import { useBumpLimits } from '../hooks/useBumpLimits';
 
 export const MyAdsScreen: React.FC = () => {
   const { isArabic, browseCountryCode, navigateTo, setSelectedListingId } = useUI();
@@ -22,6 +23,9 @@ export const MyAdsScreen: React.FC = () => {
     const marketFiltered = filterListingsByMarket(listings, browseCountryCode);
     return marketFiltered.slice(0, 2);
   }, [userListings, listings, browseCountryCode]);
+
+  const displayedIds = useMemo(() => displayedMyAds.map((l) => l.id), [displayedMyAds]);
+  const { counts: bumpCounts, bump } = useBumpLimits(displayedIds);
 
   const handleTabChange = useCallback((tab: 'my' | 'wishlist') => {
     setActiveSubTab(tab);
@@ -91,6 +95,12 @@ export const MyAdsScreen: React.FC = () => {
                   }}
                   onMarkSold={() => updateListing(listing.id, { status: 'sold' })}
                   onDelete={() => deleteListing(listing.id)}
+                  onBump={() => {
+                    if (bump(listing.id)) {
+                      updateListing(listing.id, { lastBumpedAt: new Date().toISOString() });
+                    }
+                  }}
+                  bumpDisabled={(bumpCounts[listing.id] || 0) >= 3}
                 />
               </div>
             ))}
