@@ -1,15 +1,21 @@
 import { useUI } from '@/hooks/useUI';
 import { usePostWizard } from '../hooks/usePostWizard';
 import { useAuth } from '@/hooks/useAuth';
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useMemo, useState } from 'react';
 import { categories } from '@/data/categories';
 import { PostFlowHeader } from '../components/PostFlowHeader';
 import { CategorySearchBar } from '../components/CategorySearchBar';
+import { searchCategories } from '@/data/searchIndex';
 
 export const ChooseCategoryScreen: React.FC = () => {
   const { isArabic, goBack, navigateTo } = useUI();
   const { updatePostDraft } = usePostWizard();
   const { authStatus } = useAuth();
+  const [query, setQuery] = useState('');
+  const isSearching = query.trim().length > 0;
+  const matches = useMemo(() => (isSearching ? searchCategories(query) : []), [query, isSearching]);
+  const noMatch = isSearching && matches.length === 0;
+  const visible = noMatch || !isSearching ? categories : matches;
 
   // Protect listing creation with a session guard redirect
   useEffect(() => {
@@ -50,11 +56,17 @@ export const ChooseCategoryScreen: React.FC = () => {
       />
 
       <div className="p-4">
-        <CategorySearchBar isArabic={isArabic} onSelect={handleSelect} />
+        <CategorySearchBar isArabic={isArabic} value={query} onChange={setQuery} />
       </div>
 
+      {noMatch && (
+        <p className="px-4 pb-2 text-xs text-ink-muted">
+          {isArabic ? 'لا يوجد تطابق — اختر من الأقسام' : 'No match — pick from categories'}
+        </p>
+      )}
+
       <div className="px-4 pb-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
-        {categories.map((cat) => (
+        {visible.map((cat) => (
           <button
             key={cat.slug}
             type="button"

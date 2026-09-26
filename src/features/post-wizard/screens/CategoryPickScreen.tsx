@@ -1,17 +1,24 @@
 import { useUI } from '@/hooks/useUI';
 import { useDraft } from '@/hooks/useDraft';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { categories } from '@/data/categories';
 import { ArrowLeft, ArrowRight, MagicStar } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { Card } from '@/shared/ui/Card';
 import { useAiPublishFlow } from '@/features/explore/hooks/useAiPublishFlow';
 import { CategorySearchBar } from '../components/CategorySearchBar';
+import { searchCategories } from '@/data/searchIndex';
 
 export const CategoryPickScreen: React.FC = () => {
   const { isArabic, goBack } = useUI();
   const { postDraft } = useDraft();
+  const initialQuery = (postDraft.noteText || '').split(/\s+/).slice(0, 6).join(' ');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [query, setQuery] = useState(initialQuery);
+  const isSearching = query.trim().length > 0;
+  const matches = useMemo(() => (isSearching ? searchCategories(query) : []), [query, isSearching]);
+  const noMatch = isSearching && matches.length === 0;
+  const visible = noMatch || !isSearching ? categories : matches;
   const { processPublishFlow } = useAiPublishFlow(setIsAnalyzing);
 
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
@@ -49,10 +56,15 @@ export const CategoryPickScreen: React.FC = () => {
         ) : (
           <>
             <div className="mb-3">
-              <CategorySearchBar isArabic={isArabic} onSelect={handleSelect} />
+              <CategorySearchBar isArabic={isArabic} value={query} onChange={setQuery} />
             </div>
+            {noMatch && (
+              <p className="mb-2 text-xs text-ink-muted">
+                {isArabic ? 'لا يوجد تطابق — اختر من الأقسام' : 'No match — pick from categories'}
+              </p>
+            )}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {categories.map((cat) => (
+              {visible.map((cat) => (
                 <Card
                   key={cat.slug}
                   variant="interactive"
