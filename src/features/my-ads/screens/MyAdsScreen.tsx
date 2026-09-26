@@ -3,11 +3,12 @@ import { useUI } from '@/hooks/useUI';
 import { useListings } from '@/hooks/useListings';
 import React, { useState, useMemo, useCallback } from 'react';
 import { ListingCard } from '@/shared/components';
-import { Add, Tag, ArchiveBook, Heart, Trash, TickCircle, Edit } from 'iconsax-react';
+import { Add, Tag, ArchiveBook, Heart } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { EmptyState } from '@/shared/ui/EmptyState';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
 import { Icon } from '@iconify/react';
+import { ListingActionsRow } from '../components/ListingActionsRow';
 
 export const MyAdsScreen: React.FC = () => {
   const { isArabic, browseCountryCode, navigateTo, setSelectedListingId } = useUI();
@@ -21,22 +22,6 @@ export const MyAdsScreen: React.FC = () => {
     const marketFiltered = filterListingsByMarket(listings, browseCountryCode);
     return marketFiltered.slice(0, 2);
   }, [userListings, listings, browseCountryCode]);
-
-  const handleDelete = useCallback((e: React.MouseEvent, listingId: string) => {
-    e.stopPropagation();
-    deleteListing(listingId);
-  }, [deleteListing]);
-
-  const handleMarkSold = useCallback((e: React.MouseEvent, listingId: string) => {
-    e.stopPropagation();
-    updateListing(listingId, { status: 'sold' });
-  }, [updateListing]);
-
-  const handleEdit = useCallback((e: React.MouseEvent, listingId: string) => {
-    e.stopPropagation();
-    setSelectedListingId(listingId);
-    navigateTo('edit-post');
-  }, [setSelectedListingId, navigateTo]);
 
   const handleTabChange = useCallback((tab: 'my' | 'wishlist') => {
     setActiveSubTab(tab);
@@ -97,31 +82,16 @@ export const MyAdsScreen: React.FC = () => {
             {displayedMyAds.map((listing: Listing) => (
               <div key={listing.id} className="relative">
                 <ListingCard listing={listing} layout="horizontal" />
-                <div className="absolute bottom-3 start-3 flex gap-2 z-20">
-                  <button
-                    onClick={(e) => handleEdit(e, listing.id)}
-                    className="p-2 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
-                    title={isArabic ? 'تعديل الإعلان' : 'Edit ad'}
-                  >
-                    <Edit size={16} variant="Linear" color="#2563EB" />
-                  </button>
-                  {listing.status !== 'sold' && (
-                    <button
-                      onClick={(e) => handleMarkSold(e, listing.id)}
-                      className="p-2 rounded-lg bg-green-50 text-green-700 hover:bg-green-100 transition-colors"
-                      title={isArabic ? 'تم البيع' : 'Mark as sold'}
-                    >
-                      <TickCircle size={16} variant="Linear" color="#16A34A" />
-                    </button>
-                  )}
-                  <button
-                    onClick={(e) => handleDelete(e, listing.id)}
-                    className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
-                    title={isArabic ? 'حذف الإعلان' : 'Delete ad'}
-                  >
-                    <Trash size={16} variant="Linear" color="#DC2626" />
-                  </button>
-                </div>
+                <ListingActionsRow
+                  isArabic={isArabic}
+                  status={listing.status}
+                  onEdit={() => {
+                    setSelectedListingId(listing.id);
+                    navigateTo('edit-post');
+                  }}
+                  onMarkSold={() => updateListing(listing.id, { status: 'sold' })}
+                  onDelete={() => deleteListing(listing.id)}
+                />
               </div>
             ))}
           </div>
