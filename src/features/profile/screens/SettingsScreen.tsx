@@ -7,14 +7,11 @@ import {
   ArrowRight,
   Global,
   Location,
-  DocumentText,
-  ShieldTick,
   ArrowRight2,
   ArrowLeft2,
-  InfoCircle,
-  Call,
 } from 'iconsax-react';
 import { SettingsProfileCard } from '../components/SettingsProfileCard';
+import { SettingsLegalSection } from '../components/SettingsLegalSection';
 
 export const SettingsScreen: React.FC = () => {
   const { isArabic, goBack, navigateTo, setLocale, browseCountry, browseCityAr, browseCityEn, setIsCountrySheetOpen } = useUI();
@@ -100,87 +97,14 @@ export const SettingsScreen: React.FC = () => {
           </div>
         </div>
 
-        {/* Legal & About Section */}
-        <div className="bg-surface rounded-2xl border border-border overflow-hidden shadow-xs">
-          <div className="p-3 bg-background/40 border-b border-border text-xs font-bold text-ink uppercase tracking-wider">
-            {isArabic ? 'عن التطبيق والشروط' : 'About & Legal'}
-          </div>
-
-          <div
-            onClick={handleTermsNav}
-            className="p-3.5 flex items-center justify-between cursor-pointer hover:bg-surface border-b border-border/60 transition-colors"
-          >
-            <div className="flex items-center gap-3">
-              <DocumentText size={18} variant="Linear" color="#E57E25" className="text-primary" />
-              <div className="text-sm font-semibold text-ink">
-                {isArabic ? 'شروط الخدمة وسياسة الخصوصية' : 'Terms of Service & Privacy Policy'}
-              </div>
-            </div>
-            <ChevronIcon size={18} variant="Linear" className="text-ink-muted" />
-          </div>
-
-          <div
-            onClick={handleSafetyNav}
-            className="p-3.5 flex items-center justify-between cursor-pointer hover:bg-surface border-b border-border/60 transition-colors"
-          >
-            <div className="flex items-center gap-3">
-              <ShieldTick size={18} variant="Linear" color="#16A34A" className="text-green-600" />
-              <div className="text-sm font-semibold text-ink">
-                {isArabic ? 'الأمان' : 'Safety'}
-              </div>
-            </div>
-            <ChevronIcon size={18} variant="Linear" className="text-ink-muted" />
-          </div>
-
-          <div
-            onClick={handleSupportNav}
-            className="p-3.5 flex items-center justify-between cursor-pointer hover:bg-surface border-b border-border/60 transition-colors"
-          >
-            <div className="flex items-center gap-3">
-              <Call size={18} variant="Linear" color="#E57E25" className="text-primary" />
-              <div className="text-sm font-semibold text-ink">
-                {isArabic ? 'الدعم والمساعدة' : 'Support'}
-              </div>
-            </div>
-            <ChevronIcon size={18} variant="Linear" className="text-ink-muted" />
-          </div>
-
-          <div
-            onClick={handlePrivacyNav}
-            className="p-3.5 flex items-center justify-between cursor-pointer hover:bg-surface border-b border-border/60 transition-colors"
-          >
-            <div className="flex items-center gap-3">
-              <DocumentText size={18} variant="Linear" color="#E57E25" className="text-primary" />
-              <div className="text-sm font-semibold text-ink">
-                {isArabic ? 'سياسة الخصوصية' : 'Privacy Policy'}
-              </div>
-            </div>
-            <ChevronIcon size={18} variant="Linear" className="text-ink-muted" />
-          </div>
-
-          <div
-            onClick={handleAboutNav}
-            className="p-3.5 flex items-center justify-between cursor-pointer hover:bg-surface border-b border-border/60 transition-colors"
-          >
-            <div className="flex items-center gap-3">
-              <InfoCircle size={18} variant="Linear" color="#E57E25" className="text-primary" />
-              <div className="text-sm font-semibold text-ink">
-                {isArabic ? 'حول التطبيق' : 'About'}
-              </div>
-            </div>
-            <ChevronIcon size={18} variant="Linear" className="text-ink-muted" />
-          </div>
-
-          <div className="p-3.5 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <ShieldTick size={18} variant="Linear" color="#16A34A" className="text-green-600" />
-              <div>
-                <div className="text-sm font-semibold text-ink">Catch the Deals</div>
-                <div className="text-xs text-ink-muted">Version 1.0.0 (Regional Edition)</div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <SettingsLegalSection
+          isArabic={isArabic}
+          onTerms={handleTermsNav}
+          onSafety={handleSafetyNav}
+          onSupport={handleSupportNav}
+          onPrivacy={handlePrivacyNav}
+          onAbout={handleAboutNav}
+        />
       </div>
     </div>
   );
