@@ -16,8 +16,7 @@ import { TranslationProvider } from '@/shared/i18n';
 import { CountrySheet } from '@/features/markets/components/CountrySheet';
 import { ExploreScreen } from '@/features/explore/screens/ExploreScreen';
 import { Spinner } from '@/shared/ui/Spinner';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { queryClient } from './api/queryClient';
+
 import { RegistryProvider, useRegistry } from '@/shared/registry';
 import { CatalogScreen } from '@/features/dev/screens/CatalogScreen';
 import { Toaster } from 'sonner';
@@ -256,7 +255,7 @@ export default function App() {
   return (
     <ErrorBoundary>
       <RegistryProvider>
-        <QueryClientProvider client={queryClient}>
+        <>
           <TranslationProvider locale={locale}>
             <MainNavigator />
             <Toaster
@@ -274,7 +273,7 @@ export default function App() {
             />
 
           </TranslationProvider>
-        </QueryClientProvider>
+        </>
       </RegistryProvider>
     </ErrorBoundary>
   );
