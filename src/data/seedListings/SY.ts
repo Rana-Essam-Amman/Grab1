@@ -1,4 +1,4 @@
-// RULE-14-EXCEPTION: Seed data file
+// RULE-14-EXCEPTION: Static seed data
 import type { Listing } from '@/types';
 
 export const SY_LISTINGS: Listing[] = [
