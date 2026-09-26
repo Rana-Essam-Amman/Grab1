@@ -84,7 +84,7 @@ export const ThreadScreen: React.FC = () => {
           {isArabic ? 'المحادثة غير متوفرة' : 'Conversation not available'}
         </p>
         <button
-          onClick={() => navigateTo('threads')}
+          onClick={() => navigateTo('messages')}
           className="px-6 py-3 rounded-xl bg-brand text-white font-medium"
         >
           {isArabic ? 'العودة للرسائل' : 'Back to Messages'}

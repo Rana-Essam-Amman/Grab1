@@ -3,21 +3,15 @@ import { AppTheme } from '@/features/ui/domain';
 
 export type ScreenType =
   | 'main'
-  | 'browse'
   | 'listing-detail'
   | 'profile'
   | 'notifications'
   | 'thread'
-  | 'threads'
-  | 'chat'
+  | 'messages'
   | 'seller-profile'
   | 'settings'
-  | 'language-settings'
-  | 'search'
   | 'search-results'
-  | 'category-browse'
   | 'sub-categories'
-  | 'post-wizard'
   | 'post-category'
   | 'post-subcategory'
   | 'post-photos'
@@ -28,9 +22,7 @@ export type ScreenType =
   | 'post-ad-entry'
   | 'post-ai-capture'
   | 'post-category-pick'
-  | 'edit-post'
   | 'edit-profile'
-  | 'saved-listings'
   | 'my-listings'
   | 'about'
   | 'safety'
@@ -49,11 +41,9 @@ export interface UIState {
   locale: 'en' | 'ar';
   isArabic: boolean;
   setLocale: (locale: 'en' | 'ar') => void;
-
   // Theme
   theme: AppTheme;
   setTheme: (theme: AppTheme) => void;
-
   // Navigation
   activeTab: TabType;
   currentScreen: ScreenType;
@@ -61,7 +51,6 @@ export interface UIState {
   navigateTo: (screen: ScreenType) => void;
   goBack: () => void;
   setActiveTab: (tab: TabType) => void;
-
   // Browse context
   browseCountryCode: MarketCode;
   browseCityEn: string;
@@ -69,7 +58,6 @@ export interface UIState {
   activeCurrency: string;
   setBrowseLocation: (countryCode: MarketCode, cityEn: string, cityAr: string) => void;
   setActiveCurrency: (currency: string) => void;
-
   // Search & Filters
   searchQuery: string;
   categoryFilter: string | null;
@@ -83,7 +71,6 @@ export interface UIState {
   setMinPriceFilter: (price: number | null) => void;
   setMaxPriceFilter: (price: number | null) => void;
   setNeighborhoodFilter: (neighborhood: string | null) => void;
-
   // Selected entities
   selectedListingId: string | null;
   selectedThreadId: string | null;
@@ -91,7 +78,6 @@ export interface UIState {
   setSelectedListingId: (id: string | null) => void;
   setSelectedThreadId: (id: string | null) => void;
   setSelectedSellerPhone: (phone: string | null) => void;
-
   // UI Toggles
   isAiFocused: boolean;
   isCountrySheetOpen: boolean;
