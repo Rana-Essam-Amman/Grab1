@@ -32,7 +32,6 @@ export default defineConfig({
       output: {
         manualChunks: {
           'vendor-react': ['react', 'react-dom'],
-          'vendor-query': ['@tanstack/react-query'],
           'vendor-state': ['zustand', 'immer'],
           'vendor-icons': ['iconsax-react'],
           'vendor-radix': [
