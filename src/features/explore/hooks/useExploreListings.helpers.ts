@@ -1,4 +1,5 @@
 import { Listing } from '@/types';
+import { normalizeArabic } from '@/data/arabicNormalize';
 
 export const parsePrice = (p: unknown): number => Number(String(p).replace(/,/g, '').trim());
 
@@ -19,8 +20,10 @@ export const matchNeighborhood = (item: Listing, target: string): boolean => {
 };
 
 export const matchSearch = (item: Listing, q: string): boolean => {
-  const query = q.trim().toLowerCase();
+  const query = normalizeArabic(q);
   if (!query) return true;
+
+  const itemExt = item as unknown as { make?: string; year?: string };
 
   // Primary text fields
   const primary = [
@@ -28,6 +31,10 @@ export const matchSearch = (item: Listing, q: string): boolean => {
     item.description || '',
     item.categorySlug || '',
     item.subcategorySlug || '',
+    itemExt.make || '',
+    itemExt.year || '',
+    item.city || '',
+    item.neighborhood || '',
   ];
 
   // Spec fields from generated.fields (make, model, color, etc.)
@@ -39,7 +46,7 @@ export const matchSearch = (item: Listing, q: string): boolean => {
     }
   }
 
-  const haystack = [...primary, ...specValues].join(' ').toLowerCase();
+  const haystack = normalizeArabic([...primary, ...specValues].join(' '));
   return haystack.includes(query);
 };
 
