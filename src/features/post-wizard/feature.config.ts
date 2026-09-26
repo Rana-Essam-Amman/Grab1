@@ -28,6 +28,11 @@ export default defineFeature({
       component: () => import('./screens/PostDetailsScreen').then((m) => ({ default: m.PostDetailsScreen })),
       guard: 'public',
     },
+    'edit-post': {
+      name: 'edit-post',
+      component: () => import('./screens/EditListingScreen').then((m) => ({ default: m.EditListingScreen })),
+      guard: 'authenticated',
+    },
     'post-ai-draft': {
       name: 'post-ai-draft',
       component: () => import('./screens/AiDraftScreen').then((m) => ({ default: m.AiDraftScreen })),

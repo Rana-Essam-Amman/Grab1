@@ -17,6 +17,7 @@ export type ScreenType =
   | 'post-photos'
   | 'post-location'
   | 'post-details'
+  | 'edit-post'
   | 'post-ai-draft'
   | 'post-ai-review'
   | 'post-ad-entry'
