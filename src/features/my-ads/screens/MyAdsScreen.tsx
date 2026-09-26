@@ -8,7 +8,7 @@ import { Button } from '@/shared/ui/Button';
 import { EmptyState } from '@/shared/ui/EmptyState';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
 import { Icon } from '@iconify/react';
-import { ListingActionsRow } from '../components/ListingActionsRow';
+import { ListingActionsBar } from '../components/ListingActionsBar';
 import { useBumpLimits } from '../hooks/useBumpLimits';
 
 export const MyAdsScreen: React.FC = () => {
@@ -84,25 +84,25 @@ export const MyAdsScreen: React.FC = () => {
         ) : (
           <div className="flex flex-col gap-3">
             {displayedMyAds.map((listing: Listing) => (
-              <div key={listing.id} className="relative">
-                <ListingCard listing={listing} layout="horizontal" />
-                <ListingActionsRow
-                  isArabic={isArabic}
-                  status={listing.status}
-                  onEdit={() => {
-                    setSelectedListingId(listing.id);
-                    navigateTo('edit-post');
-                  }}
-                  onMarkSold={() => updateListing(listing.id, { status: 'sold' })}
-                  onDelete={() => deleteListing(listing.id)}
-                  onBump={() => {
-                    if (bump(listing.id)) {
-                      updateListing(listing.id, { lastBumpedAt: new Date().toISOString() });
-                    }
-                  }}
-                  bumpDisabled={(bumpCounts[listing.id] || 0) >= 3}
-                />
-              </div>
+          <div key={listing.id} className="rounded-2xl border border-line bg-surface overflow-hidden">
+            <ListingCard listing={listing} layout="horizontal" />
+            <ListingActionsBar
+              isArabic={isArabic}
+              status={listing.status}
+              bumpDisabled={(bumpCounts[listing.id] || 0) >= 3}
+              onEdit={() => {
+                setSelectedListingId(listing.id);
+                navigateTo('edit-post');
+              }}
+              onMarkSold={() => updateListing(listing.id, { status: 'sold' })}
+              onDelete={() => deleteListing(listing.id)}
+              onBump={() => {
+                if (bump(listing.id)) {
+                  updateListing(listing.id, { lastBumpedAt: new Date().toISOString() });
+                }
+              }}
+            />
+          </div>
             ))}
           </div>
         )
