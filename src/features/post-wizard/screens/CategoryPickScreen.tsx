@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, MagicStar } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { Card } from '@/shared/ui/Card';
 import { useAiPublishFlow } from '@/features/explore/hooks/useAiPublishFlow';
+import { CategorySearchBar } from '../components/CategorySearchBar';
 
 export const CategoryPickScreen: React.FC = () => {
   const { isArabic, goBack } = useUI();
@@ -46,24 +47,29 @@ export const CategoryPickScreen: React.FC = () => {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {categories.map((cat) => (
-              <Card
-                key={cat.slug}
-                variant="interactive"
-                padding="none"
-                onClick={() => handleSelect(cat.slug)}
-                className="p-3.5 flex flex-col items-center text-center gap-2.5 transition-all group cursor-pointer"
-              >
-                <div className="w-16 h-16 rounded-2xl bg-background overflow-hidden border border-border group-hover:scale-105 transition-transform flex items-center justify-center">
-                  <img src={cat.asset} alt={cat.nameEn} className="w-full h-full object-cover" />
-                </div>
-                <span className="text-xs font-bold text-ink group-hover:text-primary line-clamp-1">
-                  {isArabic ? cat.nameAr : cat.nameEn}
-                </span>
-              </Card>
-            ))}
-          </div>
+          <>
+            <div className="mb-3">
+              <CategorySearchBar isArabic={isArabic} onSelect={handleSelect} />
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {categories.map((cat) => (
+                <Card
+                  key={cat.slug}
+                  variant="interactive"
+                  padding="none"
+                  onClick={() => handleSelect(cat.slug)}
+                  className="p-3.5 flex flex-col items-center text-center gap-2.5 transition-all group cursor-pointer"
+                >
+                  <div className="w-16 h-16 rounded-2xl bg-background overflow-hidden border border-border group-hover:scale-105 transition-transform flex items-center justify-center">
+                    <img src={cat.asset} alt={cat.nameEn} className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-xs font-bold text-ink group-hover:text-primary line-clamp-1">
+                    {isArabic ? cat.nameAr : cat.nameEn}
+                  </span>
+                </Card>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>

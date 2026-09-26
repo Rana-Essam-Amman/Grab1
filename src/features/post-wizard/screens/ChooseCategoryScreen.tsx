@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import React, { useEffect, useCallback } from 'react';
 import { categories } from '@/data/categories';
 import { PostFlowHeader } from '../components/PostFlowHeader';
+import { CategorySearchBar } from '../components/CategorySearchBar';
 
 export const ChooseCategoryScreen: React.FC = () => {
   const { isArabic, goBack, navigateTo } = useUI();
@@ -48,7 +49,11 @@ export const ChooseCategoryScreen: React.FC = () => {
         onBack={goBack}
       />
 
-      <div className="p-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
+      <div className="p-4">
+        <CategorySearchBar isArabic={isArabic} onSelect={handleSelect} />
+      </div>
+
+      <div className="px-4 pb-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
         {categories.map((cat) => (
           <button
             key={cat.slug}
