@@ -8,6 +8,12 @@ import { z } from 'zod';
 const STORAGE_KEY = 'listings_v1';
 const BOOKMARKS_KEY = 'listings_bookmarks_v1';
 
+const ATTRIBUTE_SCHEMA = z.object({
+  key: z.string(),
+  label: z.string().optional(),
+  value: z.union([z.string(), z.number(), z.boolean()]),
+}).passthrough();
+
 const LISTING_SCHEMA = z.object({
   id: z.string(),
   title: z.string(),
@@ -25,7 +31,7 @@ const LISTING_SCHEMA = z.object({
   sellerName: z.string().optional(),
   createdAt: z.string().optional(),
   views: z.number().optional(),
-  attributes: z.array(z.any()).optional(),
+  attributes: z.array(ATTRIBUTE_SCHEMA).optional(),
   isPremium: z.boolean().optional(),
   status: z.string().optional(),
 }).passthrough();
