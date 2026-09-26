@@ -72,7 +72,7 @@ export const ChooseCategoryScreen: React.FC = () => {
             type="button"
             data-testid={`category-card-${cat.slug}`}
             onClick={() => handleSelect(cat.slug)}
-            className="p-3.5 flex flex-col items-center text-center gap-2.5 transition-all group active:scale-[0.97] cursor-pointer rounded-2xl bg-white border border-line hover:border-[#E57E25]/50 hover:shadow-md"
+            className="p-3.5 flex flex-col items-center text-center gap-2.5 transition-all group active:scale-[0.97] cursor-pointer rounded-2xl bg-white border border-line hover:border-accent/50 hover:shadow-md"
           >
             <div className="w-16 h-16 rounded-2xl bg-canvas overflow-hidden border border-line group-hover:scale-105 transition-transform flex items-center justify-center">
               <img
@@ -82,7 +82,7 @@ export const ChooseCategoryScreen: React.FC = () => {
                 onError={handleImageError}
               />
             </div>
-            <span className="text-[13px] font-bold text-ink group-hover:text-[#E57E25] line-clamp-1 transition-colors">
+            <span className="text-[13px] font-bold text-ink group-hover:text-accent line-clamp-1 transition-colors">
               {isArabic ? cat.nameAr : cat.nameEn}
             </span>
           </button>
