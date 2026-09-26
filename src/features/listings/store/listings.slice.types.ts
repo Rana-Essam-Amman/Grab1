@@ -10,6 +10,7 @@ export interface ListingsState {
   // Actions
   initialize: () => void;
   addListing: (listing: Listing, activeCountry: string, isArabic?: boolean) => void;
+  updateListing: (id: string, updates: Partial<Listing>) => void;
   deleteListing: (id: string) => void;
   toggleWishlist: (id: string, countryCode?: string) => void;
   clearWishlist: () => void;

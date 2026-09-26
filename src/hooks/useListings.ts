@@ -38,6 +38,7 @@ export const useListings = () => {
     toggleWishlist: store.toggleWishlist,
     toggleFavorite: store.toggleWishlist,
     addListing: store.addListing,
+    updateListing: store.updateListing,
     deleteListing: store.deleteListing,
     getListing,
     getUserListings,

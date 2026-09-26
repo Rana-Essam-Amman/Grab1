@@ -33,6 +33,15 @@ export const createListingsActions = (
     }
   },
 
+  updateListing: (id: string, updates: Partial<Listing>) => {
+    set((state) => {
+      state.listings = state.listings.map((item) =>
+        item.id === id ? { ...item, ...updates } : item
+      );
+      saveListingsToStorage(state.listings);
+    });
+  },
+
   deleteListing: (id: string) => {
     set((state) => {
       state.listings = state.listings.filter((item) => item.id !== id);

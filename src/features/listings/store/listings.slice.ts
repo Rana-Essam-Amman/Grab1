@@ -24,6 +24,10 @@ export const useListingsStore = create<ListingsState>()(
         baseActions.addListing(listing, activeCountry, isArabic);
         listingsRepository.create(listing).catch(console.error);
       },
+      updateListing: (id, updates) => {
+        baseActions.updateListing(id, updates);
+        listingsRepository.update(id, updates).catch(console.error);
+      },
       deleteListing: (id) => {
         baseActions.deleteListing(id);
         listingsRepository.delete(id).catch(console.error);
