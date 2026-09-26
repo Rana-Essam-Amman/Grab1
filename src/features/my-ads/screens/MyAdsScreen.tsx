@@ -3,14 +3,14 @@ import { useUI } from '@/hooks/useUI';
 import { useListings } from '@/hooks/useListings';
 import React, { useState, useMemo, useCallback } from 'react';
 import { ListingCard } from '@/shared/components';
-import { Add, Tag, ArchiveBook, Heart, Trash, TickCircle } from 'iconsax-react';
+import { Add, Tag, ArchiveBook, Heart, Trash, TickCircle, Edit } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { EmptyState } from '@/shared/ui/EmptyState';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
 import { Icon } from '@iconify/react';
 
 export const MyAdsScreen: React.FC = () => {
-  const { isArabic, browseCountryCode, navigateTo } = useUI();
+  const { isArabic, browseCountryCode, navigateTo, setSelectedListingId } = useUI();
   const { listings, userListings, wishlistListings, deleteListing, updateListing } = useListings();
 
   const [activeSubTab, setActiveSubTab] = useState<'my' | 'wishlist'>('my');
@@ -31,6 +31,12 @@ export const MyAdsScreen: React.FC = () => {
     e.stopPropagation();
     updateListing(listingId, { status: 'sold' });
   }, [updateListing]);
+
+  const handleEdit = useCallback((e: React.MouseEvent, listingId: string) => {
+    e.stopPropagation();
+    setSelectedListingId(listingId);
+    navigateTo('edit-post');
+  }, [setSelectedListingId, navigateTo]);
 
   const handleTabChange = useCallback((tab: 'my' | 'wishlist') => {
     setActiveSubTab(tab);
@@ -92,6 +98,13 @@ export const MyAdsScreen: React.FC = () => {
               <div key={listing.id} className="relative">
                 <ListingCard listing={listing} layout="horizontal" />
                 <div className="absolute bottom-3 start-3 flex gap-2 z-20">
+                  <button
+                    onClick={(e) => handleEdit(e, listing.id)}
+                    className="p-2 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
+                    title={isArabic ? 'تعديل الإعلان' : 'Edit ad'}
+                  >
+                    <Edit size={16} variant="Linear" color="#2563EB" />
+                  </button>
                   {listing.status !== 'sold' && (
                     <button
                       onClick={(e) => handleMarkSold(e, listing.id)}
