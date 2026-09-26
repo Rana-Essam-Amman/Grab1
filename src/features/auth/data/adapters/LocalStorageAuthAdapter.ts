@@ -48,7 +48,7 @@ export class LocalStorageAuthAdapter implements AuthRepository {
     }
 
     const user: StoredUser = {
-      id: `u_${Date.now()}`,
+      id: `u_${crypto.randomUUID()}`,
       phone: payload.phone,
       countryCode: payload.countryCode as User['countryCode'],
       name: payload.name,
@@ -61,7 +61,7 @@ export class LocalStorageAuthAdapter implements AuthRepository {
 
     const { password, ...sessionUser } = user;
     const session: AuthSession = {
-      token: `t_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+      token: `t_${crypto.randomUUID()}`,
       user: sessionUser,
       createdAt: new Date().toISOString(),
     };
@@ -82,7 +82,7 @@ export class LocalStorageAuthAdapter implements AuthRepository {
 
     const { password, ...sessionUser } = match;
     const session: AuthSession = {
-      token: `t_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+      token: `t_${crypto.randomUUID()}`,
       user: sessionUser,
       createdAt: new Date().toISOString(),
     };
