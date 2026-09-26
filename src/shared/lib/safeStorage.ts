@@ -1,5 +1,10 @@
 import { ZodSchema } from 'zod';
 
+// NOTE (Rule 11 exception): This module reads/writes RAW localStorage
+// WITHOUT a market prefix. This is intentional for AUTH data only —
+// a user is the same across all markets (JO/LB/PS/SY/SA).
+// All market-scoped data MUST use marketStorage() instead.
+
 /**
  * Safely reads and validates data from localStorage using a Zod schema.
  * If reading or validation fails, logs a warning in dev mode and returns fallback.
@@ -52,7 +57,7 @@ export function writeValidated<T>(key: string, schema: ZodSchema<T>, value: T): 
         console.warn('[safeStorage] Quota exceeded for ' + key + '. Attempting cleanup.');
         // Attempt to clear stale data
         try {
-          localStorage.removeItem('catch_conversations'); // Clear non-critical high-volume keys
+          localStorage.removeItem('chat_conversations'); // Clear non-critical high-volume keys
           localStorage.setItem(key, JSON.stringify(result.data));
         } catch {
           console.error('[safeStorage] Quota still exceeded. Data not saved.');
