@@ -54,11 +54,23 @@ function add(index: Record<string, Set<string>>, term: string, slug: string): vo
   index[norm].add(slug);
 }
 
+function collectStrings(value: unknown): string[] {
+  const out: string[] = [];
+  const walk = (v: unknown) => {
+    if (typeof v === 'string') { if (v) out.push(v); return; }
+    if (Array.isArray(v)) { for (const x of v) walk(x); return; }
+    if (v && typeof v === 'object') {
+      for (const x of Object.values(v as Record<string, unknown>)) walk(x);
+    }
+  };
+  walk(value);
+  return out;
+}
+
 function buildIndex(): Record<string, Set<string>> {
   const index: Record<string, Set<string>> = {};
   for (const cat of categories) {
-    add(index, cat.nameAr, cat.slug);
-    add(index, cat.nameEn, cat.slug);
+    for (const s of collectStrings(cat)) add(index, s, cat.slug);
   }
   for (const alias of categoryAliases) {
     for (const term of alias.terms) add(index, term, alias.slug);
@@ -67,11 +79,7 @@ function buildIndex(): Record<string, Set<string>> {
     for (const [subKey, fields] of Object.entries(subs)) {
       add(index, subKey, catSlug);
       for (const field of fields) {
-        add(index, field.labelAr, catSlug);
-        add(index, field.labelEn, catSlug);
-        if (field.options) {
-          for (const opt of field.options) add(index, opt, catSlug);
-        }
+        for (const s of collectStrings(field)) add(index, s, catSlug);
       }
     }
   }
