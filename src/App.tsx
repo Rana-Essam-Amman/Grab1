@@ -268,16 +268,7 @@ export default function App() {
         closeButton
         duration={2500}
         toastOptions={{
-          style: {
-            background: '#1a2238',
-            color: '#ffffff',
-            border: '1px solid rgba(255,255,255,0.1)',
-            fontSize: '14px',
-            fontWeight: '600',
-            padding: '14px 18px',
-            borderRadius: '14px',
-            boxShadow: '0 12px 32px rgba(0,0,0,0.25)',
-          },
+          className: 'font-bold text-sm',
         }}
       />
 
