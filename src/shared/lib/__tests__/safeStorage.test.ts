@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { readValidated, writeValidated } from '../safeStorage';
+import { readValidated, writeValidated, removeStored } from '../safeStorage';
 import { z } from 'zod';
 
 describe('safeStorage', () => {
@@ -113,6 +113,37 @@ describe('safeStorage', () => {
     it('handles null/undefined data by not writing', () => {
       writeValidated(key, schema, null as any);
       expect(localStorage.getItem(key)).toBeNull();
+    });
+  });
+
+  describe('removeStored', () => {
+    it('removes an existing key', () => {
+      localStorage.setItem(key, 'something');
+      removeStored(key);
+      expect(localStorage.getItem(key)).toBeNull();
+    });
+
+    it('is a no-op when key does not exist', () => {
+      expect(() => removeStored('nonexistent_key')).not.toThrow();
+      expect(localStorage.getItem('nonexistent_key')).toBeNull();
+    });
+
+    it('handles empty string key gracefully', () => {
+      expect(() => removeStored('')).not.toThrow();
+    });
+  });
+
+  describe('readValidated edge cases', () => {
+    it('handles array schema correctly', () => {
+      const arrSchema = z.array(z.string());
+      const arrFallback: string[] = [];
+      localStorage.setItem(key, JSON.stringify(['a', 'b', 'c']));
+      expect(readValidated(key, arrSchema, arrFallback)).toEqual(['a', 'b', 'c']);
+    });
+
+    it('falls back when stored value is empty string', () => {
+      localStorage.setItem(key, '');
+      expect(readValidated(key, schema, fallback)).toEqual(fallback);
     });
   });
 });
