@@ -19,6 +19,8 @@ export const categories: CategoryDef[] = [
   { slug: 'books', nameEn: 'Books & Hobbies', nameAr: 'كتب وهوايات', asset: '/assets/icons/books.jpg' },
   { slug: 'home-garden', nameEn: 'Home & Garden', nameAr: 'حديقة ومنزل', asset: '/assets/icons/home-garden.jpg' },
   { slug: 'krakeeb', nameEn: 'Odds & Ends', nameAr: 'كراكيب ومستعمل', asset: '/assets/icons/krakeeb.jpg' },
+  { slug: 'cleaning', nameEn: 'Cleaning', nameAr: 'تنظيف', asset: '/assets/icons/cleaning.jpg' },
+  { slug: 'handymen', nameEn: 'Handymen', nameAr: 'صنايعي', asset: '/assets/icons/handymen.jpg' },
 ];
 
 export function categoryBySlug(slug: string): CategoryDef {
