@@ -31,7 +31,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
   const displayExpires = isArabic ? expiresLabelAr : expiresLabel;
 
   return (
-    <Modal open={open} onClose={onClose} size="md" className="max-w-[400px] rounded-3xl p-5 bg-surface [&>button:first-child]:hidden">
+    <Modal open={open} onClose={onClose} size="md" className="max-w-[400px] rounded-3xl bg-white [&>button:first-child]:hidden">
       <div dir={isArabic ? 'rtl' : 'ltr'} className="flex flex-col gap-4">
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2.5">
@@ -59,7 +59,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
           <p className="text-sm text-ink-soft leading-relaxed">{displayDesc}</p>
         )}
 
-        <div className="rounded-2xl border border-line bg-canvas/60 px-4 py-3 flex items-center justify-between">
+        <div className="rounded-2xl border border-line bg-canvas px-4 py-3 flex items-center justify-between">
           <span className="text-xs font-bold text-ink-muted uppercase tracking-wide">
             {isArabic ? 'المبلغ' : 'Amount'}
           </span>
