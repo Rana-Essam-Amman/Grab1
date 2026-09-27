@@ -12,11 +12,10 @@ export const AiReviewSectionCard: React.FC<AiReviewSectionCardProps> = ({
   children,
 }) => (
   <div className="rounded-2xl overflow-hidden border border-line bg-surface shadow-xs">
-    <div className="px-4 py-3 flex items-center gap-2.5 border-b border-line bg-canvas/40">
-      <span className="w-1 h-4 rounded-full bg-accent shrink-0" />
-      <h3 className="text-[13px] font-bold text-ink flex-1">{title}</h3>
+    <div className="px-4 py-3 flex items-center justify-between gap-2 bg-accent/12 border-b border-accent/20">
+      <h3 className="text-[13px] font-bold text-accent-strong">{title}</h3>
       {trailing && (
-        <span className="text-[11px] font-bold text-ink-muted">{trailing}</span>
+        <span className="text-[11px] font-bold text-accent-strong/70">{trailing}</span>
       )}
     </div>
     <div className="bg-surface px-4 py-4">{children}</div>
