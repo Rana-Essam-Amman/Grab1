@@ -6,6 +6,7 @@ import { locations, locationsAr } from '@/data/locations';
 import { Button } from '@/shared/ui/Button';
 import { Avatar } from '@/shared/ui/Avatar';
 import { HeaderDropdownMenu } from './HeaderDropdownMenu';
+import { CountryFlag } from './CountryFlag';
 import { HambergerMenu } from 'iconsax-react';
 
 const DEFAULT_CAPITALS: Record<string, { en: string; ar: string; cityEn?: string; cityAr?: string }> = {
@@ -98,7 +99,10 @@ export const Header: React.FC = () => {
           onClick={handleLogoClick}
         >
           <div className="flex flex-col items-center justify-center m-0 p-0">
-            <h1 className="text-[32px] font-black text-white font-cairo tracking-[-1px] leading-none m-0">Grab</h1>
+            <div className="flex items-center gap-1.5">
+              <h1 className="text-[32px] font-black text-white font-cairo tracking-[-1px] leading-none m-0">Grab</h1>
+              <CountryFlag code={countryCode} size={26} />
+            </div>
             <span className="text-[10px] font-semibold text-white tracking-[2px] uppercase block mt-0.5 m-0">the deals</span>
           </div>
         </div>
