@@ -3,7 +3,7 @@ import { useUI } from '@/hooks/useUI';
 import { useListings } from '@/hooks/useListings';
 import React, { useState, useMemo, useCallback } from 'react';
 import { ListingCard } from '@/shared/components';
-import { Add, Tag, ArchiveBook, Heart } from 'iconsax-react';
+import { Add, Tag, ArchiveBook, Heart, ArrowLeft, ArrowRight } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { EmptyState } from '@/shared/ui/EmptyState';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
@@ -12,8 +12,10 @@ import { ListingActionsBar } from '../components/ListingActionsBar';
 import { useBumpLimits } from '../hooks/useBumpLimits';
 
 export const MyAdsScreen: React.FC = () => {
-  const { isArabic, browseCountryCode, navigateTo, setSelectedListingId } = useUI();
+  const { isArabic, browseCountryCode, navigateTo, setSelectedListingId, goBack } = useUI();
   const { listings, userListings, wishlistListings, deleteListing, updateListing } = useListings();
+
+  const BackIcon = isArabic ? ArrowRight : ArrowLeft;
 
   const [activeSubTab, setActiveSubTab] = useState<'my' | 'wishlist'>('my');
 
@@ -34,10 +36,20 @@ export const MyAdsScreen: React.FC = () => {
   return (
     <div className="flex flex-col pb-24 px-4 pt-3" dir={isArabic ? 'rtl' : 'ltr'}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-3">
-        <div>
-          <h1 className="text-xl font-bold text-ink">{isArabic ? 'إعلاناتي والمفضلة' : 'My Ads & Favorites'}</h1>
-          <p className="text-xs text-ink-muted">{isArabic ? 'إدارة إعلاناتك المنشورة وإعلاناتك المفضلة' : 'Manage your active listings and favorite ads'}</p>
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex items-start gap-2">
+          <button
+            type="button"
+            onClick={goBack}
+            aria-label={isArabic ? 'رجوع' : 'Back'}
+            className="mt-0.5 w-9 h-9 rounded-full bg-canvas border border-line flex items-center justify-center hover:bg-surface transition-colors shrink-0"
+          >
+            <BackIcon size={18} variant="Linear" className="text-ink" />
+          </button>
+          <div>
+            <h1 className="text-xl font-bold text-ink">{isArabic ? 'إعلاناتي والمفضلة' : 'My Ads & Favorites'}</h1>
+            <p className="text-xs text-ink-muted">{isArabic ? 'إدارة إعلاناتك المنشورة وإعلاناتك المفضلة' : 'Manage your active listings and favorite ads'}</p>
+          </div>
         </div>
         <Button variant="primary" size="md" onClick={() => navigateTo('post-ad-entry')} className="rounded-full flex items-center gap-1 text-xs font-bold shadow-xs transition-colors">
           <Add size={16} variant="Linear" color="#FFFFFF" />
