@@ -31,7 +31,7 @@ export default defineFeature({
     'edit-post': {
       name: 'edit-post',
       component: () => import('./screens/EditListingScreen').then((m) => ({ default: m.EditListingScreen })),
-      guard: 'authenticated',
+      guard: 'public',
     },
     'post-ai-draft': {
       name: 'post-ai-draft',
