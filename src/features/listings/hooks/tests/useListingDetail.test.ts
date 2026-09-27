@@ -109,4 +109,133 @@ describe('useListingDetail', () => {
     expect(mockDeleteListing).toHaveBeenCalledWith('item-123');
     expect(mockGoBack).toHaveBeenCalledTimes(1);
   });
+
+  it('handleSelectSeller sets selectedSellerPhone and navigates to seller-profile', () => {
+    const { result } = renderHook(() => useListingDetail());
+    act(() => {
+      result.current.handleSelectSeller();
+    });
+    expect(mockSetSelectedSellerPhone).toHaveBeenCalledWith(mockListing.sellerPhone);
+    expect(mockNavigateTo).toHaveBeenCalledWith('seller-profile');
+  });
+
+  it('handleStartChat with authenticated user starts conversation and navigates to thread', () => {
+    mockStartOrOpenConversation.mockReturnValue('thread-123');
+
+    const { result } = renderHook(() => useListingDetail());
+    act(() => {
+      result.current.handleStartChat();
+    });
+
+    expect(mockStartOrOpenConversation).toHaveBeenCalledWith(mockListing);
+    expect(mockSetSelectedThreadId).toHaveBeenCalledWith('thread-123');
+    expect(mockNavigateTo).toHaveBeenCalledWith('thread');
+  });
+
+  it('handleStartChat is a no-op when isCountryMismatch is true', () => {
+    vi.mocked(useAuth).mockReturnValue({
+      authStatus: 'authenticated',
+      user: { id: 'u1', phone: '0799999999', countryCode: 'SA' },
+    } as unknown as ReturnType<typeof useAuth>);
+
+    const { result } = renderHook(() => useListingDetail());
+    expect(result.current.isCountryMismatch).toBe(true);
+
+    act(() => {
+      result.current.handleStartChat();
+    });
+
+    expect(mockStartOrOpenConversation).not.toHaveBeenCalled();
+    expect(mockNavigateTo).not.toHaveBeenCalled();
+  });
+
+  it('handleCall with unauthenticated user navigates to login', () => {
+    vi.mocked(useAuth).mockReturnValue({
+      authStatus: 'unauthenticated',
+      user: null,
+    } as unknown as ReturnType<typeof useAuth>);
+
+    const originalLocation = window.location;
+    const mockLocation = { href: '' };
+    Object.defineProperty(window, 'location', {
+      writable: true,
+      value: mockLocation,
+    });
+
+    const { result } = renderHook(() => useListingDetail());
+    act(() => {
+      result.current.handleCall();
+    });
+
+    expect(mockNavigateTo).toHaveBeenCalledWith('login');
+    expect(mockLocation.href).toBe('');
+
+    Object.defineProperty(window, 'location', {
+      writable: true,
+      value: originalLocation,
+    });
+  });
+
+  it('handleCall with authenticated user sets window.location.href to tel: link', () => {
+    const originalLocation = window.location;
+    const mockLocation = { href: '' };
+    Object.defineProperty(window, 'location', {
+      writable: true,
+      value: mockLocation,
+    });
+
+    const { result } = renderHook(() => useListingDetail());
+    act(() => {
+      result.current.handleCall();
+    });
+
+    expect(mockLocation.href).toBe('tel:+962791234567');
+
+    Object.defineProperty(window, 'location', {
+      writable: true,
+      value: originalLocation,
+    });
+  });
+
+  it('handleWhatsApp with authenticated user opens WhatsApp URL', () => {
+    const spyOpen = vi.spyOn(window, 'open').mockImplementation(() => null);
+
+    const { result } = renderHook(() => useListingDetail());
+    act(() => {
+      result.current.handleWhatsApp();
+    });
+
+    expect(spyOpen).toHaveBeenCalled();
+    const urlCalled = spyOpen.mock.calls[0][0] as string;
+    expect(urlCalled).toContain('wa.me');
+    expect(urlCalled).toContain('791234567');
+    spyOpen.mockRestore();
+  });
+
+  it('handleWhatsApp is a no-op when isCountryMismatch is true', () => {
+    vi.mocked(useAuth).mockReturnValue({
+      authStatus: 'authenticated',
+      user: { id: 'u1', phone: '0799999999', countryCode: 'SA' },
+    } as unknown as ReturnType<typeof useAuth>);
+
+    const spyOpen = vi.spyOn(window, 'open').mockImplementation(() => null);
+
+    const { result } = renderHook(() => useListingDetail());
+    act(() => {
+      result.current.handleWhatsApp();
+    });
+
+    expect(spyOpen).not.toHaveBeenCalled();
+    spyOpen.mockRestore();
+  });
+
+  it('exposes isOwner=true when user.phone equals listing.sellerPhone', () => {
+    vi.mocked(useAuth).mockReturnValue({
+      authStatus: 'authenticated',
+      user: { id: 'u1', phone: '0791234567', countryCode: 'JO' },
+    } as unknown as ReturnType<typeof useAuth>);
+
+    const { result } = renderHook(() => useListingDetail());
+    expect(result.current.isOwner).toBe(true);
+  });
 });
