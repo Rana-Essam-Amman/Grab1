@@ -261,19 +261,25 @@ export default function App() {
         <>
           <TranslationProvider locale={locale}>
             <MainNavigator />
-            <Toaster
-              position="top-center"
-              richColors
-              closeButton
-              toastOptions={{
-                style: {
-                  background: 'var(--color-surface)',
-                  color: 'var(--color-ink)',
-                  border: '1px solid var(--color-line)',
-                  borderRadius: 'var(--radius-lg)',
-                },
-              }}
-            />
+      <Toaster
+        position="top-center"
+        theme="light"
+        richColors
+        closeButton
+        duration={2500}
+        toastOptions={{
+          style: {
+            background: '#1a2238',
+            color: '#ffffff',
+            border: '1px solid rgba(255,255,255,0.1)',
+            fontSize: '14px',
+            fontWeight: '600',
+            padding: '14px 18px',
+            borderRadius: '14px',
+            boxShadow: '0 12px 32px rgba(0,0,0,0.25)',
+          },
+        }}
+      />
 
           </TranslationProvider>
         </>
