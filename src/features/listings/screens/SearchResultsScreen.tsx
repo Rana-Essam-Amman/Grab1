@@ -13,7 +13,7 @@ export const SearchResultsScreen: React.FC = () => {
   const {
     isArabic, navigateTo, searchQuery, setSearchQuery, categoryFilter, setCategoryFilter,
     minPriceFilter, setMinPriceFilter, maxPriceFilter, setMaxPriceFilter,
-    neighborhoodFilter, setNeighborhoodFilter, browseCountryCode, browseCityEn
+    neighborhoodFilter, setNeighborhoodFilter, browseCountryCode, browseCityEn, browseCityAr
   } = useUI();
   const { listings } = useListings();
 
@@ -39,7 +39,9 @@ export const SearchResultsScreen: React.FC = () => {
         if (minPriceFilter !== null && !isNaN(priceNum) && priceNum < minPriceFilter) return false;
         if (maxPriceFilter !== null && !isNaN(priceNum) && priceNum > maxPriceFilter) return false;
         if (neighborhoodFilter && l.neighborhood !== neighborhoodFilter) return false;
-        if (filterMode === 'city' && browseCityEn && l.city !== browseCityEn) return false;
+        
+        const hasActiveQuery = Boolean(searchQuery.trim());
+        if (!hasActiveQuery && filterMode === 'city' && browseCityEn && l.city !== browseCityEn && l.city !== browseCityAr) return false;
         return true;
       })
       .map((l) => {
@@ -52,7 +54,7 @@ export const SearchResultsScreen: React.FC = () => {
 
     if (!q) return scored.map((s) => s.item);
     return [...scored].sort((a, b) => b.score - a.score).map((s) => s.item);
-  }, [marketListings, categoryFilter, minPriceFilter, maxPriceFilter, neighborhoodFilter, filterMode, browseCityEn, searchQuery]);
+  }, [marketListings, categoryFilter, minPriceFilter, maxPriceFilter, neighborhoodFilter, filterMode, browseCityEn, browseCityAr, searchQuery]);
 
   return (
     <div className="flex flex-col min-h-screen bg-canvas pb-16" dir={isArabic ? 'rtl' : 'ltr'}>
