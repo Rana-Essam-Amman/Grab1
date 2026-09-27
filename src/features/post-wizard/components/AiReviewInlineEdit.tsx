@@ -20,9 +20,16 @@ const VIEW_CLASS: Record<Variant, string> = {
 };
 
 const EDIT_CLASS: Record<Variant, string> = {
-  title: 'text-[14px] font-bold text-ink leading-snug w-full bg-transparent outline-none text-start',
-  price: 'text-[14px] font-bold text-brand leading-none w-full bg-transparent outline-none text-start',
-  description: 'text-[14px] font-medium text-ink-soft leading-relaxed w-full min-h-[60px] bg-transparent outline-none resize-none text-start',
+  title: 'text-[15px] font-bold text-ink leading-snug w-full bg-transparent border-0 outline-none p-0 m-0 text-start',
+  price: 'text-[15px] font-bold text-ink leading-none w-full bg-transparent border-0 outline-none p-0 m-0 text-start',
+  description: 'text-[14px] font-medium text-ink-soft leading-relaxed w-full min-h-[80px] bg-transparent border-0 outline-none p-0 m-0 resize-none text-start',
+};
+
+const INPUT_ATTRS = {
+  autoComplete: 'off' as const,
+  autoCorrect: 'off' as const,
+  autoCapitalize: 'off' as const,
+  spellCheck: false,
 };
 
 export const AiReviewInlineEdit: React.FC<AiReviewInlineEditProps> = ({
@@ -38,36 +45,49 @@ export const AiReviewInlineEdit: React.FC<AiReviewInlineEditProps> = ({
   }, [editing, variant]);
 
   if (editing) {
-    const input = variant === 'description' ? (
-      <textarea
-        ref={ref}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onBlur={onStopEdit}
-        className={EDIT_CLASS.description}
-        placeholder={placeholder}
-      />
-    ) : (
-      <input
-        ref={ref}
-        type="text"
-        inputMode={variant === 'price' ? 'numeric' : 'text'}
-        value={value}
-        onChange={(e) => onChange(variant === 'price' ? e.target.value.replace(/[^0-9]/g, '') : e.target.value)}
-        onBlur={onStopEdit}
-        onKeyDown={(e) => { if (e.key === 'Enter') onStopEdit(); }}
-        className={EDIT_CLASS[variant]}
-        placeholder={placeholder}
-      />
-    );
-
     return (
-      <div className="relative animate-[fade-up_0.2s_ease-out]">
-        {input}
-        <span
-          className="absolute bottom-0 inset-x-0 h-0.5 bg-brand block animate-[underline-draw_0.2s_ease-out]"
-          style={{ animationFillMode: 'forwards' }}
-        />
+      <div className="rounded-xl border-2 border-accent bg-surface px-3.5 py-3 shadow-sm animate-[fade-up_0.2s_ease-out]">
+        {variant === 'description' ? (
+          <textarea
+            ref={ref}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            onBlur={onStopEdit}
+            className={EDIT_CLASS.description}
+            placeholder={placeholder}
+            {...INPUT_ATTRS}
+          />
+        ) : variant === 'price' ? (
+          <div className="flex items-baseline gap-2">
+            <input
+              ref={ref}
+              type="text"
+              inputMode="numeric"
+              value={value}
+              onChange={(e) => onChange(e.target.value.replace(/[^0-9]/g, ''))}
+              onBlur={onStopEdit}
+              onKeyDown={(e) => { if (e.key === 'Enter') onStopEdit(); }}
+              className={EDIT_CLASS.price}
+              placeholder={placeholder}
+              {...INPUT_ATTRS}
+            />
+            {currency && (
+              <span className="text-[13px] font-bold text-ink-muted shrink-0">{currency}</span>
+            )}
+          </div>
+        ) : (
+          <input
+            ref={ref}
+            type="text"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            onBlur={onStopEdit}
+            onKeyDown={(e) => { if (e.key === 'Enter') onStopEdit(); }}
+            className={EDIT_CLASS.title}
+            placeholder={placeholder}
+            {...INPUT_ATTRS}
+          />
+        )}
       </div>
     );
   }
