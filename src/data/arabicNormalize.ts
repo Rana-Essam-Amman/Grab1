@@ -8,8 +8,11 @@ export function normalizeArabic(s: string): string {
   if (!s) return '';
 
   return s
+    .normalize('NFD') // Decompose accented characters (café → cafe + accent)
+    .replace(/[\u0300-\u036f]/g, '') // Strip Latin combining marks (é → e, Ä → A)
+    .normalize('NFC') // Recompose back to NFC so that Arabic Hamza combinations are restored
     .toLowerCase()
-    .replace(/[\u064B-\u0652]/g, '') // Remove diacritics
+    .replace(/[\u064B-\u0652]/g, '') // Remove Arabic diacritics
     .replace(/\u0640/g, '') // Remove tatweel
     .replace(/[أإآ]/g, 'ا') // Normalize Alif
     .replace(/ى/g, 'ي') // Normalize Yaa
