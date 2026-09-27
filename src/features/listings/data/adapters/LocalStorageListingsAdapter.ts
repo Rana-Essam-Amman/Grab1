@@ -9,9 +9,9 @@ const STORAGE_KEY = 'listings_v1';
 const BOOKMARKS_KEY = 'listings_bookmarks_v1';
 
 const ATTRIBUTE_SCHEMA = z.object({
-  key: z.string(),
+  key: z.string().optional(),
   label: z.string().optional(),
-  value: z.union([z.string(), z.number(), z.boolean()]),
+  value: z.union([z.string(), z.number(), z.boolean()]).optional(),
 }).passthrough();
 
 const LISTING_SCHEMA = z.object({
