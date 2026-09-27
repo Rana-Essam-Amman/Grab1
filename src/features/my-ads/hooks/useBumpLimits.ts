@@ -4,11 +4,15 @@ import { getBumpCount, canBump, recordBump } from '../helpers/bumpLimit';
 export function useBumpLimits(listingIds: readonly string[]) {
   const [counts, setCounts] = useState<Record<string, number>>({});
 
+  const idsKey = listingIds.join('|');
+
   useEffect(() => {
     const next: Record<string, number> = {};
-    for (const id of listingIds) next[id] = getBumpCount(id);
+    for (const id of idsKey.split('|')) {
+      if (id) next[id] = getBumpCount(id);
+    }
     setCounts(next);
-  }, [listingIds]);
+  }, [idsKey]);
 
   const bump = useCallback((id: string) => {
     if (!canBump(id)) return false;
