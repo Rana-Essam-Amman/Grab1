@@ -1,4 +1,6 @@
-const MAX_BUMPS_PER_DAY = 3;
+import { MONETIZATION_MATRIX } from '@/data/monetization';
+
+const MAX_BUMPS_PER_DAY = MONETIZATION_MATRIX.freeLimits.bumpDailyLimit;
 const keyFor = (id: string, day: string) => `bump_${id}_${day}`;
 const today = () => new Date().toISOString().slice(0, 10);
 

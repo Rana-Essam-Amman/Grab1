@@ -6,6 +6,7 @@ import { useListings } from '@/hooks/useListings';
 import { useDraft } from '@/hooks/useDraft';
 import { buildNewListingPayload } from '../helpers/buildNewListingPayload';
 import { globalStorage } from '@/shared/lib/marketStorage';
+import { MONETIZATION_MATRIX } from '@/data/monetization';
 import { useAiReviewAttributes } from './useAiReviewAttributes';
 import type { UseAiReviewReturn } from './useAiReview.types';
 
@@ -35,7 +36,7 @@ export function useAiReview(): UseAiReviewReturn {
     updatePostDraft({ generated: postDraft.generated ? { ...postDraft.generated, fields: updated } : undefined });
   };
 
-  const addPhotos = (p: string[]) => updatePostDraft({ photos: [...photos, ...p].slice(0, 10) });
+  const addPhotos = (p: string[]) => updatePostDraft({ photos: [...photos, ...p].slice(0, MONETIZATION_MATRIX.freeLimits.photoLimit) });
   const removePhoto = (i: number) => {
     const url = photos[i];
     if (url?.startsWith('blob:')) URL.revokeObjectURL(url);
