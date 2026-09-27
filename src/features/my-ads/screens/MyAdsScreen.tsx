@@ -12,7 +12,7 @@ import { ListingActionsBar } from '../components/ListingActionsBar';
 import { useBumpLimits } from '../hooks/useBumpLimits';
 
 export const MyAdsScreen: React.FC = () => {
-  const { isArabic, browseCountryCode, navigateTo, setSelectedListingId, goBack } = useUI();
+  const { isArabic, browseCountryCode, navigateTo, setSelectedListingId, setActiveTab } = useUI();
   const { listings, userListings, wishlistListings, deleteListing, updateListing } = useListings();
 
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
@@ -40,7 +40,7 @@ export const MyAdsScreen: React.FC = () => {
         <div className="flex items-start gap-2">
           <button
             type="button"
-            onClick={goBack}
+            onClick={() => { setActiveTab('explore'); navigateTo('main'); }}
             aria-label={isArabic ? 'رجوع' : 'Back'}
             className="mt-0.5 w-9 h-9 rounded-full bg-canvas border border-line flex items-center justify-center hover:bg-surface transition-colors shrink-0"
           >
