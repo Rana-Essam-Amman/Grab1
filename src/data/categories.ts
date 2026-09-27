@@ -21,6 +21,7 @@ export const categories: CategoryDef[] = [
   { slug: 'krakeeb', nameEn: 'Miscellaneous', nameAr: 'أغراض متفرقة', asset: '/assets/icons/krakeeb.jpg' },
   { slug: 'cleaning', nameEn: 'Cleaning', nameAr: 'تنظيف', asset: '/assets/icons/cleaning.jpg' },
   { slug: 'handymen', nameEn: 'Handymen', nameAr: 'صنايعي', asset: '/assets/icons/handymen.jpg' },
+  { slug: 'projects', nameEn: 'Projects & Business', nameAr: 'مشاريع للبيع أو للشراكة', asset: '/assets/icons/projects.jpg' },
 ];
 
 export function categoryBySlug(slug: string): CategoryDef {
