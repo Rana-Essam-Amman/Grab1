@@ -1,5 +1,6 @@
 import { GeneratedListing } from '../types';
 import { getFieldsForListing } from '@/data/subcategoryFields';
+import { getAIGatewayRequestConfig } from './aiConfig';
 
 export interface AIGatewayPayload {
   rawText: string;
@@ -128,9 +129,9 @@ export function buildSchemaSpec(categorySlug: string, subcategorySlug: string, a
 }
 
 export async function requestAIGateway(payload: AIGatewayPayload): Promise<GeneratedListing> {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY as string | undefined;
-  if (!apiKey) {
-    throw new Error('VITE_GEMINI_API_KEY not configured');
+  const gatewayConfig = getAIGatewayRequestConfig();
+  if (!gatewayConfig) {
+    throw new Error('AI gateway not configured');
   }
 
   const schemaSpec = buildSchemaSpec(
@@ -143,7 +144,7 @@ export async function requestAIGateway(payload: AIGatewayPayload): Promise<Gener
   const timeoutId = setTimeout(() => controller.abort(), 15000);
 
   try {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    const url = gatewayConfig.url;
 
     const userText = [
       `User input: ${payload.rawText}`,
@@ -162,7 +163,7 @@ export async function requestAIGateway(payload: AIGatewayPayload): Promise<Gener
 
     const response = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: gatewayConfig.headers,
       body: JSON.stringify({
         systemInstruction: {
           parts: [{ text: SYSTEM_PROMPT }],
