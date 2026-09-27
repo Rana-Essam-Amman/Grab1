@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useUI } from '@/hooks/useUI';
 import { globalStorage } from '@/shared/lib/marketStorage';
+import type { MarketCode } from '@/shared/lib/marketGate';
 
 export function useProfileActions() {
   const { logout, user } = useAuth();
@@ -28,27 +29,40 @@ export function useProfileActions() {
       // Silently ignore if fingerprint fails
     }
 
-    // 2. Clear ALL user-specific storage keys
-    const keysToRemove = [
-      'catch_user_session',
-      'catch_registered_accounts',
-      'catch_listings',
-      'catch_conversations',
-      'catch_wishlist_JO',
-      'catch_wishlist_LB',
-      'catch_wishlist_PS',
-      'catch_wishlist_SY',
-      'catch_wishlist_SA',
-      'catch_quota_state',
+    // 2. Clear global user-specific keys (exact names, not resolved)
+    const globalKeys = [
+      'catch_token',
+      'catch_user',
+      'catch_registered_users',
       'catch_browse_country',
-      'catch_locale',
-      'catch_post_draft',
+      'catch_pending_publish',
+      'catch_crash_last',
     ];
-    keysToRemove.forEach((k) => {
-      try { globalStorage().remove(k); } catch {}
+    globalKeys.forEach((k) => {
+      try { localStorage.removeItem(k); } catch {}
     });
 
-    // 3. Clear auth state
+    // 3. Clear market-scoped keys for all 5 markets
+    const markets: MarketCode[] = ['JO', 'LB', 'PS', 'SY', 'SA'];
+    const marketKeys = [
+      'listings_v1',
+      'listings_bookmarks_v1',
+      'chat_conversations_v1',
+      'monetization_ai_quota_v1',
+      'monetization_promotions_v1',
+      'ai_quota_v1',
+      'post_draft_v1',
+      'wishlist',
+    ];
+    for (const market of markets) {
+      for (const key of marketKeys) {
+        try {
+          localStorage.removeItem(`catch_${market}_${key}`);
+        } catch {}
+      }
+    }
+
+    // 4. Clear auth state
     logout();
 
     // 4. Redirect to home as guest
