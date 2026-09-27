@@ -83,11 +83,12 @@ export const scoreListing = (item: Listing, q: string): number => {
 
 export const matchSearch = (item: Listing, q: string): boolean => scoreListing(item, q) > 0;
 
+const PREMIUM_BOOST_MS = 3 * 60 * 60 * 1000; // 3 hours
+
 export const sortListingsByPriority = (a: Listing, b: Listing): number => {
-  const aPrem = Boolean(a.isPremium);
-  const bPrem = Boolean(b.isPremium);
-  if (aPrem !== bPrem) return (bPrem ? 1 : 0) - (aPrem ? 1 : 0);
-  const aTime = new Date(a.lastBumpedAt || a.createdAt || 0).getTime();
-  const bTime = new Date(b.lastBumpedAt || b.createdAt || 0).getTime();
-  return bTime - aTime;
+  const aBase = new Date(a.lastBumpedAt || a.createdAt || 0).getTime();
+  const bBase = new Date(b.lastBumpedAt || b.createdAt || 0).getTime();
+  const aEffective = aBase + (a.isPremium ? PREMIUM_BOOST_MS : 0);
+  const bEffective = bBase + (b.isPremium ? PREMIUM_BOOST_MS : 0);
+  return bEffective - aEffective;
 };

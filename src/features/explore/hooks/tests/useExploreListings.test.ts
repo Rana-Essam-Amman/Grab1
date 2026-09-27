@@ -51,11 +51,12 @@ describe('useExploreListings', () => {
     expect(result.current.displayListings[0].countryCode).toBe('JO');
   });
 
-  it('sorts premium listings first', () => {
+  it('sorts premium listings first (when times are close)', () => {
+    const commonDate = '2026-01-01T12:00:00Z';
     useListingsStore.setState({
       listings: [
-        makeListing('regular', { isPremium: false, createdAt: '2026-02-01' }),
-        makeListing('premium', { isPremium: true, createdAt: '2026-01-01' }),
+        makeListing('regular', { isPremium: false, createdAt: commonDate }),
+        makeListing('premium', { isPremium: true, createdAt: commonDate }),
       ] as never,
     });
     const { result } = renderHook(() => useExploreListings());
