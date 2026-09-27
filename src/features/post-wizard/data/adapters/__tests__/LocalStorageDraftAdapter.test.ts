@@ -4,69 +4,112 @@ import type { PostDraftWithMeta } from '../../../domain';
 
 describe('LocalStorageDraftAdapter', () => {
   let adapter: LocalStorageDraftAdapter;
-  let storage: Record<string, string>;
 
-  beforeEach(() => {
-    storage = {};
-    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(
-      (key: string) => storage[key] ?? null,
-    );
-    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(
-      (key: string, value: string) => { storage[key] = value; },
-    );
-    vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(
-      (key: string) => { delete storage[key]; },
-    );
-    adapter = new LocalStorageDraftAdapter();
-  });
-
-  const sampleDraft: PostDraftWithMeta = {
+  const validDraft: PostDraftWithMeta = {
     categorySlug: 'motors',
     subcategorySlug: 'cars',
-    photos: ['photo1.jpg'],
+    photos: ['blob:1', 'blob:2'],
     city: 'Amman',
-    neighborhood: 'Khalda',
+    neighborhood: 'Abdoun',
     site: '',
-    noteText: 'Toyota Camry 2018',
+    noteText: 'Toyota Camry 2019',
     step: 'review',
-    lastUpdatedAt: '2026-09-16T12:00:00Z',
+    lastUpdatedAt: '2026-09-27T00:00:00.000Z',
   };
 
-  it('returns null when no draft exists', async () => {
-    const result = await adapter.getCurrent();
-    expect(result).toBeNull();
+  beforeEach(() => {
+    localStorage.clear();
+    adapter = new LocalStorageDraftAdapter();
+    vi.clearAllMocks();
   });
 
-  it('saves and retrieves a draft', async () => {
-    await adapter.save(sampleDraft);
-    const retrieved = await adapter.getCurrent();
-    expect(retrieved?.categorySlug).toBe('motors');
-    expect(retrieved?.step).toBe('review');
+  describe('getCurrent', () => {
+    it('returns null when no draft exists', async () => {
+      expect(await adapter.getCurrent()).toBeNull();
+    });
+
+    it('returns the saved draft after save', async () => {
+      await adapter.save(validDraft);
+      const result = await adapter.getCurrent();
+      expect(result).toEqual(validDraft);
+    });
+
+    it('returns null when stored data is malformed JSON', async () => {
+      localStorage.setItem('post_draft_v1', 'not-json{');
+      expect(await adapter.getCurrent()).toBeNull();
+    });
+
+    it('returns null when stored data fails schema validation', async () => {
+      localStorage.setItem('post_draft_v1', JSON.stringify({ categorySlug: 123 }));
+      expect(await adapter.getCurrent()).toBeNull();
+    });
+
+    it('returns null when step is invalid enum value', async () => {
+      localStorage.setItem('post_draft_v1', JSON.stringify({ ...validDraft, step: 'bogus' }));
+      expect(await adapter.getCurrent()).toBeNull();
+    });
+
+    it('returns null when photos is not an array', async () => {
+      localStorage.setItem('post_draft_v1', JSON.stringify({ ...validDraft, photos: 'not-array' }));
+      expect(await adapter.getCurrent()).toBeNull();
+    });
   });
 
-  it('overwrites existing draft on save', async () => {
-    await adapter.save(sampleDraft);
-    await adapter.save({ ...sampleDraft, city: 'Zarqa' });
-    const retrieved = await adapter.getCurrent();
-    expect(retrieved?.city).toBe('Zarqa');
+  describe('save', () => {
+    it('persists a valid draft', async () => {
+      await adapter.save(validDraft);
+      const raw = localStorage.getItem('post_draft_v1');
+      expect(raw).not.toBeNull();
+      expect(JSON.parse(raw!)).toEqual(validDraft);
+    });
+
+    it('overwrites an existing draft', async () => {
+      await adapter.save(validDraft);
+      const updated = { ...validDraft, noteText: 'Updated note' };
+      await adapter.save(updated);
+      expect(await adapter.getCurrent()).toEqual(updated);
+    });
+
+    it('does not write when draft fails schema', async () => {
+      const bad = { ...validDraft, step: 'invalid-step' } as unknown as PostDraftWithMeta;
+      await adapter.save(bad);
+      expect(localStorage.getItem('post_draft_v1')).toBeNull();
+    });
+
+    it('handles empty photos array', async () => {
+      const emptyPhotos = { ...validDraft, photos: [] };
+      await adapter.save(emptyPhotos);
+      expect(await adapter.getCurrent()).toEqual(emptyPhotos);
+    });
+
+    it('handles empty strings in text fields', async () => {
+      const emptyText = { ...validDraft, noteText: '', city: '', neighborhood: '' };
+      await adapter.save(emptyText);
+      expect(await adapter.getCurrent()).toEqual(emptyText);
+    });
   });
 
-  it('clears the draft', async () => {
-    await adapter.save(sampleDraft);
-    await adapter.clear();
-    const result = await adapter.getCurrent();
-    expect(result).toBeNull();
+  describe('clear', () => {
+    it('removes the draft from storage', async () => {
+      await adapter.save(validDraft);
+      await adapter.clear();
+      expect(await adapter.getCurrent()).toBeNull();
+      expect(localStorage.getItem('post_draft_v1')).toBeNull();
+    });
+
+    it('is a no-op when no draft exists', async () => {
+      await expect(adapter.clear()).resolves.not.toThrow();
+      expect(localStorage.getItem('post_draft_v1')).toBeNull();
+    });
   });
 
-  it('handles corrupt JSON gracefully', async () => {
-    storage['post_draft_v1'] = 'invalid json {';
-    const result = await adapter.getCurrent();
-    expect(result).toBeNull();
-  });
-
-  it('handles empty string gracefully', async () => {
-    storage['post_draft_v1'] = '';
-    const result = await adapter.getCurrent();
-    expect(result).toBeNull();
+  describe('round-trip', () => {
+    it('save → getCurrent → clear works in sequence', async () => {
+      expect(await adapter.getCurrent()).toBeNull();
+      await adapter.save(validDraft);
+      expect(await adapter.getCurrent()).toEqual(validDraft);
+      await adapter.clear();
+      expect(await adapter.getCurrent()).toBeNull();
+    });
   });
 });
