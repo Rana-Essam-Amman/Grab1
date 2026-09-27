@@ -10,6 +10,7 @@ import { filterListingsByMarket } from '@/shared/lib/marketGate';
 import { Icon } from '@iconify/react';
 import { ListingActionsBar } from '../components/ListingActionsBar';
 import { useBumpLimits } from '../hooks/useBumpLimits';
+import { toast } from 'sonner';
 
 export const MyAdsScreen: React.FC = () => {
   const { isArabic, browseCountryCode, navigateTo, setSelectedListingId, setActiveTab } = useUI();
@@ -25,6 +26,14 @@ export const MyAdsScreen: React.FC = () => {
     const marketFiltered = filterListingsByMarket(listings, browseCountryCode);
     return marketFiltered.slice(0, 2);
   }, [userListings, listings, browseCountryCode]);
+
+  const sortedMyAds = useMemo(() => {
+    return [...displayedMyAds].sort((a, b) => {
+      const aT = new Date(a.lastBumpedAt || a.createdAt || 0).getTime();
+      const bT = new Date(b.lastBumpedAt || b.createdAt || 0).getTime();
+      return bT - aT;
+    });
+  }, [displayedMyAds]);
 
   const displayedIds = useMemo(() => displayedMyAds.map((l) => l.id), [displayedMyAds]);
   const { counts: bumpCounts, bump } = useBumpLimits(displayedIds);
@@ -95,7 +104,7 @@ export const MyAdsScreen: React.FC = () => {
           />
         ) : (
           <div className="flex flex-col gap-3">
-            {displayedMyAds.map((listing: Listing) => (
+            {sortedMyAds.map((listing: Listing) => (
           <div key={listing.id} className="rounded-2xl border border-line bg-surface overflow-hidden">
             <ListingCard listing={listing} layout="horizontal" />
             <ListingActionsBar
@@ -111,6 +120,9 @@ export const MyAdsScreen: React.FC = () => {
               onBump={() => {
                 if (bump(listing.id)) {
                   updateListing(listing.id, { lastBumpedAt: new Date().toISOString() });
+                  toast.success(isArabic ? 'تم رفع الإعلان ✓' : 'Ad bumped ✓');
+                } else {
+                  toast.error(isArabic ? 'تجاوزت الحد اليومي (3 مرات)' : 'Daily limit reached (3×)');
                 }
               }}
             />
