@@ -6,6 +6,7 @@ import { filterListingsByMarket } from '@/shared/lib/marketGate';
 import { ArrowLeft, ArrowRight, SearchNormal1, Grid1, RowVertical } from 'iconsax-react';
 import { ExploreFilterBar } from '@/features/explore/components/ExploreFilterBar';
 import { SearchResultsEmpty } from '../components/SearchResultsEmpty';
+import { normalizeArabic } from '@/data/arabicNormalize';
 
 export const SearchResultsScreen: React.FC = () => {
   const {
@@ -45,11 +46,17 @@ export const SearchResultsScreen: React.FC = () => {
       if (neighborhoodFilter && l.neighborhood !== neighborhoodFilter) return false;
       if (filterMode === 'city' && browseCityEn && l.city !== browseCityEn) return false;
       if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
-        const inTitle = l.title.toLowerCase().includes(q);
-        const inDesc = l.description.toLowerCase().includes(q);
-        const inCity = l.city.toLowerCase().includes(q);
-        return inTitle || inDesc || inCity;
+        const q = normalizeArabic(searchQuery);
+        if (!q) return true;
+        const haystack = normalizeArabic([
+          l.title || '',
+          l.description || '',
+          l.city || '',
+          l.neighborhood || '',
+          (l as any).make || '',
+          (l as any).year || '',
+        ].join(' '));
+        return haystack.includes(q);
       }
       return true;
     });
