@@ -1,7 +1,7 @@
 import type { Listing } from '@/types';
 import { normalizeArabic } from '@/data/arabicNormalize';
 import { filterListingsByMarket, MarketCode } from '@/shared/lib/marketGate';
-import { matchPrice, matchNeighborhood, scoreListing, sortListingsByPriority } from '@/features/explore/hooks/useExploreListings.helpers';
+import { matchPrice, matchNeighborhood, scoreListing, sortListingsByPriority } from '@/shared/lib/listingSearch';
 
 export interface FilterListingsOptions {
   readonly market: string;
