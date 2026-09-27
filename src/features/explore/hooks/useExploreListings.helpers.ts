@@ -17,41 +17,66 @@ export const matchNeighborhood = (item: Listing, target: string): boolean => {
   return n === t || c === t || n.includes(t) || t.includes(n) || c.includes(t) || t.includes(c);
 };
 
-const collectStrings = (value: unknown, out: string[]): void => {
-  if (typeof value === 'string') { if (value) out.push(value); return; }
-  if (typeof value === 'number' || typeof value === 'boolean') { out.push(String(value)); return; }
-  if (Array.isArray(value)) { value.forEach(v => collectStrings(v, out)); return; }
+const SEARCH_STOP_WORDS = new Set([
+  'في', 'من', 'على', 'الى', 'إلى', 'او', 'أو', 'و', 'مع', 'عن', 'هذا', 'هذه', 'ذلك',
+  'a', 'an', 'the', 'of', 'in', 'on', 'at', 'with', 'for', 'and', 'or',
+]);
+
+const collectSearchStrings = (value: unknown, out: string[]): void => {
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+    const s = String(value);
+    if (s) out.push(s);
+    return;
+  }
+  if (Array.isArray(value)) {
+    for (const v of value) collectSearchStrings(v, out);
+    return;
+  }
   if (value && typeof value === 'object') {
-    Object.values(value as Record<string, unknown>).forEach(v => collectStrings(v, out));
+    for (const v of Object.values(value as Record<string, unknown>)) collectSearchStrings(v, out);
   }
 };
 
 export const scoreListing = (item: Listing, q: string): number => {
   const query = (q || '').trim();
   if (!query) return 1;
-  const tokens = query.split(/\s+/).map((t) => normalizeArabic(t)).filter((t) => t.length >= 1);
-  if (tokens.length === 0) return 1;
+
+  const rawTokens = query.split(/\s+/).map((t) => normalizeArabic(t)).filter(Boolean);
+  const tokens = rawTokens.filter((t) => t.length >= 2 && !SEARCH_STOP_WORDS.has(t));
+  const effectiveTokens = tokens.length > 0 ? tokens : rawTokens.filter((t) => t.length >= 1);
+  if (effectiveTokens.length === 0) return 1;
 
   const title = normalizeArabic(item.title || '');
   const desc = normalizeArabic(item.description || '');
   const catSlug = normalizeArabic(item.categorySlug || '');
   const subSlug = normalizeArabic(item.subcategorySlug || '');
-  const city = normalizeArabic(item.city || '');
-  const nbhd = normalizeArabic(item.neighborhood || '');
 
   const itemObj = item as unknown as Record<string, unknown>;
   const otherStrings: string[] = [];
-  collectStrings({ make: itemObj.make, year: itemObj.year, attributes: itemObj.attributes, generated: itemObj.generated }, otherStrings);
+  collectSearchStrings(
+    {
+      city: item.city,
+      neighborhood: item.neighborhood,
+      price: item.price,
+      currency: item.currency,
+      make: itemObj.make,
+      year: itemObj.year,
+      attributes: itemObj.attributes,
+      generated: itemObj.generated,
+    },
+    otherStrings
+  );
   const other = normalizeArabic(otherStrings.join(' '));
 
   let score = 0;
-  for (const t of tokens) {
-    if (!t) continue;
-    if (title.includes(t)) score += 10;
-    if (catSlug.includes(t) || subSlug.includes(t)) score += 8;
-    if (city.includes(t) || nbhd.includes(t)) score += 6;
-    if (desc.includes(t)) score += 5;
-    if (other.includes(t)) score += 3;
+  for (const t of effectiveTokens) {
+    let tokenScore = 0;
+    if (title.includes(t)) tokenScore += 10;
+    if (catSlug.includes(t) || subSlug.includes(t)) tokenScore += 8;
+    if (desc.includes(t)) tokenScore += 5;
+    if (other.includes(t)) tokenScore += 3;
+    if (tokenScore === 0) return 0;
+    score += tokenScore;
   }
   return score;
 };
