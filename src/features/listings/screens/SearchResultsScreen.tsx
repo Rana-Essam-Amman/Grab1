@@ -6,8 +6,7 @@ import { filterListingsByMarket } from '@/shared/lib/marketGate';
 import { ArrowLeft, ArrowRight, SearchNormal1, Grid1, RowVertical } from 'iconsax-react';
 import { ExploreFilterBar } from '@/features/explore/components/ExploreFilterBar';
 import { SearchResultsEmpty } from '../components/SearchResultsEmpty';
-import { searchCategories } from '@/data/searchIndex';
-import { scoreListing } from '@/features/explore/hooks/useExploreListings.helpers';
+import { filterListings } from '../helpers/filterListings';
 
 export const SearchResultsScreen: React.FC = () => {
   const {
@@ -29,32 +28,18 @@ export const SearchResultsScreen: React.FC = () => {
   const marketListings = useMemo(() => filterListingsByMarket(listings, browseCountryCode), [listings, browseCountryCode]);
 
   const results = useMemo(() => {
-    const q = searchQuery.trim();
-    const matchedCategorySlugs = q ? new Set(searchCategories(q).map((c) => c.slug)) : null;
-
-    const scored = marketListings
-      .filter((l) => {
-        if (categoryFilter && l.categorySlug !== categoryFilter && l.subcategorySlug !== categoryFilter) return false;
-        const priceNum = Number(l.price);
-        if (minPriceFilter !== null && !isNaN(priceNum) && priceNum < minPriceFilter) return false;
-        if (maxPriceFilter !== null && !isNaN(priceNum) && priceNum > maxPriceFilter) return false;
-        if (neighborhoodFilter && l.neighborhood !== neighborhoodFilter) return false;
-        
-        const hasActiveQuery = Boolean(searchQuery.trim());
-        if (!hasActiveQuery && filterMode === 'city' && browseCityEn && l.city !== browseCityEn && l.city !== browseCityAr) return false;
-        return true;
-      })
-      .map((l) => {
-        if (!q) return { item: l, score: 1, categoryHit: false };
-        const inCategory = Boolean(matchedCategorySlugs?.has(l.categorySlug));
-        const score = inCategory ? Math.max(scoreListing(l, q), 15) : scoreListing(l, q);
-        return { item: l, score, categoryHit: inCategory };
-      })
-      .filter((entry) => !q || entry.categoryHit || entry.score > 0);
-
-    if (!q) return scored.map((s) => s.item);
-    return [...scored].sort((a, b) => b.score - a.score).map((s) => s.item);
-  }, [marketListings, categoryFilter, minPriceFilter, maxPriceFilter, neighborhoodFilter, filterMode, browseCityEn, browseCityAr, searchQuery]);
+    return filterListings(marketListings, {
+      market: browseCountryCode,
+      searchQuery,
+      categorySlug: categoryFilter,
+      minPrice: minPriceFilter,
+      maxPrice: maxPriceFilter,
+      neighborhood: neighborhoodFilter,
+      cityAr: browseCityAr,
+      cityEn: browseCityEn,
+      filterMode: searchQuery.trim() ? 'all' : filterMode,
+    });
+  }, [marketListings, browseCountryCode, searchQuery, categoryFilter, minPriceFilter, maxPriceFilter, neighborhoodFilter, browseCityAr, browseCityEn, filterMode]);
 
   return (
     <div className="flex flex-col min-h-screen bg-canvas pb-16" dir={isArabic ? 'rtl' : 'ltr'}>
