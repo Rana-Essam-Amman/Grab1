@@ -6,7 +6,8 @@ import { filterListingsByMarket } from '@/shared/lib/marketGate';
 import { ArrowLeft, ArrowRight, SearchNormal1, Grid1, RowVertical } from 'iconsax-react';
 import { ExploreFilterBar } from '@/features/explore/components/ExploreFilterBar';
 import { SearchResultsEmpty } from '../components/SearchResultsEmpty';
-import { normalizeArabic } from '@/data/arabicNormalize';
+import { searchCategories } from '@/data/searchIndex';
+import { matchSearch } from '@/features/explore/hooks/useExploreListings.helpers';
 
 export const SearchResultsScreen: React.FC = () => {
   const {
@@ -36,6 +37,10 @@ export const SearchResultsScreen: React.FC = () => {
   );
 
   const results = useMemo(() => {
+    const q = searchQuery.trim();
+    const matchedCategorySlugs = q
+      ? new Set(searchCategories(q).map((c) => c.slug))
+      : null;
     return marketListings.filter((l) => {
       if (categoryFilter && l.categorySlug !== categoryFilter && l.subcategorySlug !== categoryFilter) {
         return false;
@@ -45,18 +50,11 @@ export const SearchResultsScreen: React.FC = () => {
       if (maxPriceFilter !== null && !isNaN(priceNum) && priceNum > maxPriceFilter) return false;
       if (neighborhoodFilter && l.neighborhood !== neighborhoodFilter) return false;
       if (filterMode === 'city' && browseCityEn && l.city !== browseCityEn) return false;
-      if (searchQuery.trim()) {
-        const q = normalizeArabic(searchQuery);
-        if (!q) return true;
-        const haystack = normalizeArabic([
-          l.title || '',
-          l.description || '',
-          l.city || '',
-          l.neighborhood || '',
-          (l as any).make || '',
-          (l as any).year || '',
-        ].join(' '));
-        return haystack.includes(q);
+
+      if (q) {
+        const inCategory = Boolean(matchedCategorySlugs && matchedCategorySlugs.has(l.categorySlug));
+        const textMatch = matchSearch(l, q);
+        if (!inCategory && !textMatch) return false;
       }
       return true;
     });

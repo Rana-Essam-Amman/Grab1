@@ -4,7 +4,8 @@ import { useListings } from '@/hooks/useListings';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
 import { EXPLORE_CONFIG } from '@/config/explore.config';
 import { UseExploreListingsReturn } from './useExploreListings.types';
-import { parsePrice, matchPrice, matchNeighborhood, matchSearch, countCityListings, computeAdaptiveFilterMode, sortListingsByPriority } from './useExploreListings.helpers';
+import { matchPrice, matchNeighborhood, matchSearch, countCityListings, computeAdaptiveFilterMode, sortListingsByPriority } from './useExploreListings.helpers';
+import { searchCategories } from '@/data/searchIndex';
 
 export function useExploreListings(): UseExploreListingsReturn {
   const {
@@ -67,12 +68,19 @@ export function useExploreListings(): UseExploreListingsReturn {
 
   const displayListings = useMemo(() => {
     const effectiveSearch = (activeSearchText || searchQuery || '').trim();
+    const matchedCategorySlugs = effectiveSearch
+      ? new Set(searchCategories(effectiveSearch).map((c) => c.slug))
+      : null;
     const filtered = marketListings.filter((item) => {
       if (item.status === 'sold' || item.status === 'archived') return false;
       if (categoryFilter && item.categorySlug !== categoryFilter && item.subcategorySlug !== categoryFilter) return false;
       if (!matchPrice(item, minPriceFilter, maxPriceFilter)) return false;
       if (activeNeighborhood && !matchNeighborhood(item, activeNeighborhood)) return false;
-      if (!matchSearch(item, effectiveSearch)) return false;
+      if (effectiveSearch) {
+        const inCategory = Boolean(matchedCategorySlugs && matchedCategorySlugs.has(item.categorySlug));
+        const textMatch = matchSearch(item, effectiveSearch);
+        if (!inCategory && !textMatch) return false;
+      }
       const isSearching = Boolean(
         (activeSearchText || searchQuery || '').trim()
       );

@@ -19,34 +19,32 @@ export const matchNeighborhood = (item: Listing, target: string): boolean => {
   return n === t || c === t || n.includes(t) || t.includes(n) || c.includes(t) || t.includes(c);
 };
 
+const collectStrings = (value: unknown, out: string[]): void => {
+  if (typeof value === 'string') {
+    if (value) out.push(value);
+    return;
+  }
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    out.push(String(value));
+    return;
+  }
+  if (Array.isArray(value)) {
+    for (const v of value) collectStrings(v, out);
+    return;
+  }
+  if (value && typeof value === 'object') {
+    for (const v of Object.values(value as Record<string, unknown>)) {
+      collectStrings(v, out);
+    }
+  }
+};
+
 export const matchSearch = (item: Listing, q: string): boolean => {
   const query = normalizeArabic(q);
   if (!query) return true;
-
-  const itemExt = item as unknown as { make?: string; year?: string };
-
-  // Primary text fields
-  const primary = [
-    item.title || '',
-    item.description || '',
-    item.categorySlug || '',
-    item.subcategorySlug || '',
-    itemExt.make || '',
-    itemExt.year || '',
-    item.city || '',
-    item.neighborhood || '',
-  ];
-
-  // Spec fields from generated.fields (make, model, color, etc.)
-  const specValues: string[] = [];
-  const generated = (item as unknown as { generated?: { fields?: readonly { value?: string }[] } }).generated;
-  if (generated?.fields) {
-    for (const f of generated.fields) {
-      if (f.value) specValues.push(f.value);
-    }
-  }
-
-  const haystack = normalizeArabic([...primary, ...specValues].join(' '));
+  const strings: string[] = [];
+  collectStrings(item, strings);
+  const haystack = normalizeArabic(strings.join(' '));
   return haystack.includes(query);
 };
 
