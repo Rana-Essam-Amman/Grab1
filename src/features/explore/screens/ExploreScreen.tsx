@@ -10,10 +10,24 @@ import { ExploreQuotaPaywallModal } from '../components/ExploreQuotaPaywallModal
 import { ExploreFilterBar } from '@/features/explore/components/ExploreFilterBar';
 import { ExploreListingFeed } from '@/features/explore/components/ExploreListingFeed';
 
+function useDebouncedValue<T>(value: T, delayMs: number): T {
+  const [debounced, setDebounced] = React.useState(value);
+  React.useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delayMs);
+    return () => clearTimeout(timer);
+  }, [value, delayMs]);
+  return debounced;
+}
+
 export const ExploreScreen: React.FC = () => {
   const { isArabic, categoryFilter, browseCountryCode, navigateTo, setSearchQuery, isSearchFocused, setIsSearchFocused } = useUI();
   const { isQuotaExhausted, setIsQuotaExhausted } = useMonetization();
   const [searchInput, setSearchInput] = useState('');
+  const debouncedSearch = useDebouncedValue(searchInput, 300);
+
+  React.useEffect(() => {
+    setSearchQuery(debouncedSearch.trim());
+  }, [debouncedSearch, setSearchQuery]);
 
   const {
     filterMode, setFilterMode, feedLayout, setFeedLayout, minPriceFilter, setMinPriceFilter,

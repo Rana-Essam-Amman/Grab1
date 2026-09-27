@@ -23,30 +23,18 @@ export const SearchResultsScreen: React.FC = () => {
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
 
   const handleBack = () => {
-    setSearchQuery('');
-    setCategoryFilter(null);
-    setMinPriceFilter(null);
-    setMaxPriceFilter(null);
-    setNeighborhoodFilter(null);
-    navigateTo('main');
+    setSearchQuery(''); setCategoryFilter(null); setMinPriceFilter(null); setMaxPriceFilter(null); setNeighborhoodFilter(null); navigateTo('main');
   };
 
-  const marketListings = useMemo(
-    () => filterListingsByMarket(listings, browseCountryCode),
-    [listings, browseCountryCode]
-  );
+  const marketListings = useMemo(() => filterListingsByMarket(listings, browseCountryCode), [listings, browseCountryCode]);
 
   const results = useMemo(() => {
     const q = searchQuery.trim();
-    const matchedCategorySlugs = q
-      ? new Set(searchCategories(q).map((c) => c.slug))
-      : null;
+    const matchedCategorySlugs = q ? new Set(searchCategories(q).map((c) => c.slug)) : null;
 
     const scored = marketListings
       .filter((l) => {
-        if (categoryFilter && l.categorySlug !== categoryFilter && l.subcategorySlug !== categoryFilter) {
-          return false;
-        }
+        if (categoryFilter && l.categorySlug !== categoryFilter && l.subcategorySlug !== categoryFilter) return false;
         const priceNum = Number(l.price);
         if (minPriceFilter !== null && !isNaN(priceNum) && priceNum < minPriceFilter) return false;
         if (maxPriceFilter !== null && !isNaN(priceNum) && priceNum > maxPriceFilter) return false;
@@ -56,19 +44,14 @@ export const SearchResultsScreen: React.FC = () => {
       })
       .map((l) => {
         if (!q) return { item: l, score: 1, categoryHit: false };
-        const inCategory = Boolean(matchedCategorySlugs && matchedCategorySlugs.has(l.categorySlug));
+        const inCategory = Boolean(matchedCategorySlugs?.has(l.categorySlug));
         const score = inCategory ? Math.max(scoreListing(l, q), 15) : scoreListing(l, q);
         return { item: l, score, categoryHit: inCategory };
       })
-      .filter((entry) => {
-        if (!q) return true;
-        return entry.categoryHit || entry.score > 0;
-      });
+      .filter((entry) => !q || entry.categoryHit || entry.score > 0);
 
     if (!q) return scored.map((s) => s.item);
-    return [...scored]
-      .sort((a, b) => b.score - a.score)
-      .map((s) => s.item);
+    return [...scored].sort((a, b) => b.score - a.score).map((s) => s.item);
   }, [marketListings, categoryFilter, minPriceFilter, maxPriceFilter, neighborhoodFilter, filterMode, browseCityEn, searchQuery]);
 
   return (
@@ -84,53 +67,32 @@ export const SearchResultsScreen: React.FC = () => {
             <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={isArabic ? 'ابحث في الصفقات...' : 'Search deals...'} className="w-full h-10 pl-9 pr-9 rounded-xl bg-canvas border border-line text-xs text-ink focus:outline-none focus:border-brand" />
             <SearchNormal1 size={16} variant="Linear" className={`absolute ${isArabic ? 'right-3' : 'left-3'} text-ink-muted`} />
             {searchQuery && (
-              <button onClick={() => setSearchQuery('')} className={`absolute ${isArabic ? 'left-3' : 'right-3'} text-xs text-ink-muted cursor-pointer`}>
-                ✕
-              </button>
+              <button onClick={() => setSearchQuery('')} className={`absolute ${isArabic ? 'left-3' : 'right-3'} text-xs text-ink-muted cursor-pointer`}>✕</button>
             )}
           </div>
         </div>
 
         <ExploreFilterBar
-          filterMode={filterMode}
-          setFilterMode={setFilterMode}
-          feedLayout={feedLayout}
-          setFeedLayout={setFeedLayout}
-          totalListingsCount={results.length}
-          minPriceFilter={minPriceFilter}
-          setMinPriceFilter={setMinPriceFilter}
-          maxPriceFilter={maxPriceFilter}
-          setMaxPriceFilter={setMaxPriceFilter}
-          activeNeighborhood={neighborhoodFilter}
-          setActiveNeighborhood={setNeighborhoodFilter}
-          activeSearchText={searchQuery}
-          onClearSearch={() => setSearchQuery('')}
+          filterMode={filterMode} setFilterMode={setFilterMode} feedLayout={feedLayout} setFeedLayout={setFeedLayout}
+          totalListingsCount={results.length} minPriceFilter={minPriceFilter} setMinPriceFilter={setMinPriceFilter}
+          maxPriceFilter={maxPriceFilter} setMaxPriceFilter={setMaxPriceFilter} activeNeighborhood={neighborhoodFilter}
+          setActiveNeighborhood={setNeighborhoodFilter} activeSearchText={searchQuery} onClearSearch={() => setSearchQuery('')}
         />
       </div>
 
       {/* Results Header */}
       <div className="px-4.5 pt-4 pb-2 flex items-center justify-between">
-        <h2 className="text-sm font-bold text-ink">
-          {isArabic ? 'نتائج البحث' : 'Search Results'}
-        </h2>
-        
+        <h2 className="text-sm font-bold text-ink">{isArabic ? 'نتائج البحث' : 'Search Results'}</h2>
         <div className="flex items-center gap-2.5">
-          {/* Layout Toggle */}
           <button
             onClick={() => setFeedLayout((prev) => (prev === 'list' ? 'grid' : 'list'))}
             className="w-8 h-8 rounded-xl border border-line bg-surface hover:bg-surface-raised text-ink-muted flex items-center justify-center transition-colors cursor-pointer"
             title={isArabic ? 'تغيير طريقة العرض' : 'Toggle layout'}
             type="button"
           >
-            {feedLayout === 'list' ? (
-              <Grid1 size={15} variant="Linear" />
-            ) : (
-              <RowVertical size={15} variant="Linear" />
-            )}
+            {feedLayout === 'list' ? <Grid1 size={15} variant="Linear" /> : <RowVertical size={15} variant="Linear" />}
           </button>
-          <span className="text-xs text-ink-muted">
-            {results.length} {isArabic ? 'إعلان متوفر' : 'listings available'}
-          </span>
+          <span className="text-xs text-ink-muted">{results.length} {isArabic ? 'إعلان متوفر' : 'listings available'}</span>
         </div>
       </div>
 
@@ -140,13 +102,7 @@ export const SearchResultsScreen: React.FC = () => {
           <SearchResultsEmpty isArabic={isArabic} />
         ) : (
           <div className={feedLayout === 'grid' ? "grid grid-cols-2 gap-3.5" : "flex flex-col gap-3.5"}>
-            {results.map((item) => (
-              <ListingCard
-                key={item.id}
-                listing={item}
-                layout={feedLayout === 'list' ? 'horizontal' : 'grid'}
-              />
-            ))}
+            {results.map((item) => <ListingCard key={item.id} listing={item} layout={feedLayout === 'list' ? 'horizontal' : 'grid'} />)}
           </div>
         )}
       </div>

@@ -7,9 +7,7 @@ export const matchPrice = (item: Listing, min: number | null, max: number | null
   if (min === null && max === null) return true;
   const p = parsePrice(item.price);
   if (isNaN(p)) return true;
-  if (min !== null && min > 0 && p < min) return false;
-  if (max !== null && max > 0 && p > max) return false;
-  return true;
+  return !((min !== null && min > 0 && p < min) || (max !== null && max > 0 && p > max));
 };
 
 export const matchNeighborhood = (item: Listing, target: string): boolean => {
@@ -20,32 +18,18 @@ export const matchNeighborhood = (item: Listing, target: string): boolean => {
 };
 
 const collectStrings = (value: unknown, out: string[]): void => {
-  if (typeof value === 'string') {
-    if (value) out.push(value);
-    return;
-  }
-  if (typeof value === 'number' || typeof value === 'boolean') {
-    out.push(String(value));
-    return;
-  }
-  if (Array.isArray(value)) {
-    for (const v of value) collectStrings(v, out);
-    return;
-  }
+  if (typeof value === 'string') { if (value) out.push(value); return; }
+  if (typeof value === 'number' || typeof value === 'boolean') { out.push(String(value)); return; }
+  if (Array.isArray(value)) { value.forEach(v => collectStrings(v, out)); return; }
   if (value && typeof value === 'object') {
-    for (const v of Object.values(value as Record<string, unknown>)) {
-      collectStrings(v, out);
-    }
+    Object.values(value as Record<string, unknown>).forEach(v => collectStrings(v, out));
   }
 };
 
 export const scoreListing = (item: Listing, q: string): number => {
   const query = (q || '').trim();
   if (!query) return 1;
-  const tokens = query
-    .split(/\s+/)
-    .map((t) => normalizeArabic(t))
-    .filter((t) => t.length >= 1);
+  const tokens = query.split(/\s+/).map((t) => normalizeArabic(t)).filter((t) => t.length >= 1);
   if (tokens.length === 0) return 1;
 
   const title = normalizeArabic(item.title || '');
@@ -57,15 +41,7 @@ export const scoreListing = (item: Listing, q: string): number => {
 
   const itemObj = item as unknown as Record<string, unknown>;
   const otherStrings: string[] = [];
-  collectStrings(
-    {
-      make: itemObj.make,
-      year: itemObj.year,
-      attributes: itemObj.attributes,
-      generated: itemObj.generated,
-    },
-    otherStrings
-  );
+  collectStrings({ make: itemObj.make, year: itemObj.year, attributes: itemObj.attributes, generated: itemObj.generated }, otherStrings);
   const other = normalizeArabic(otherStrings.join(' '));
 
   let score = 0;
@@ -80,21 +56,12 @@ export const scoreListing = (item: Listing, q: string): number => {
   return score;
 };
 
-export const matchSearch = (item: Listing, q: string): boolean =>
-  scoreListing(item, q) > 0;
+export const matchSearch = (item: Listing, q: string): boolean => scoreListing(item, q) > 0;
 
-export const countCityListings = (
-  listings: Listing[],
-  cityAr: string,
-  cityEn: string
-): number =>
+export const countCityListings = (listings: Listing[], cityAr: string, cityEn: string): number =>
   listings.filter((l) => l.city === cityAr || l.city === cityEn || !l.city).length;
 
-export const computeAdaptiveFilterMode = (
-  userMode: 'city' | 'all' | null,
-  cityCount: number,
-  minDensity: number
-): 'city' | 'all' =>
+export const computeAdaptiveFilterMode = (userMode: 'city' | 'all' | null, cityCount: number, minDensity: number): 'city' | 'all' =>
   userMode !== null ? userMode : cityCount >= minDensity ? 'city' : 'all';
 
 export const sortListingsByPriority = (a: Listing, b: Listing): number => {
