@@ -4,13 +4,6 @@ const OTHER = 'أخرى';
 
 export const SERVICES_SUBCATEGORY_FIELDS: Record<string, readonly CategoryFieldDef[]> = {
 
-  maintenance: [
-    { key: 'serviceType', labelAr: 'نوع الخدمة', labelEn: 'Service Type', type: 'select', required: true, options: ['كهربائي', 'سباك', 'نجار', 'تكييف', 'دهان', 'بلاط', 'جبصين', 'ألمنيوم', 'زجاج', 'تركيب مطابخ', 'تركيب أثاث', 'كاميرات مراقبة', OTHER] },
-    { key: 'coverageArea', labelAr: 'منطقة التغطية', labelEn: 'Coverage Area', type: 'text', required: true, placeholder: 'مثال: عمّان، الزرقاء...' },
-    { key: 'availability', labelAr: 'التوفر', labelEn: 'Availability', type: 'select', required: true, options: ['24/7', 'صباحاً', 'مساءً', 'نهاية الأسبوع', 'حسب الاتفاق', OTHER] },
-    { key: 'experience', labelAr: 'سنوات الخبرة', labelEn: 'Experience', type: 'select', required: false, options: ['1-2 سنة', '3-5 سنوات', '5-10 سنوات', '10+ سنوات', OTHER] },
-  ],
-
   delivery: [
     { key: 'deliveryType', labelAr: 'نوع الخدمة', labelEn: 'Service Type', type: 'select', required: true, options: ['نقل عفش', 'نقل مكاتب', 'توصيل طرود', 'سطحة سيارات', 'فك وتركيب أثاث', 'تخزين', OTHER] },
     { key: 'vehicleType', labelAr: 'نوع المركبة', labelEn: 'Vehicle Type', type: 'select', required: false, options: ['بيك أب', 'شاحنة صغيرة', 'شاحنة كبيرة', 'ونش', 'سيارة خاصة', OTHER] },
@@ -23,13 +16,6 @@ export const SERVICES_SUBCATEGORY_FIELDS: Record<string, readonly CategoryFieldD
     { key: 'coverageArea', labelAr: 'منطقة التغطية', labelEn: 'Coverage Area', type: 'text', required: true },
     { key: 'availability', labelAr: 'التوفر', labelEn: 'Availability', type: 'select', required: false, options: ['نهاية الأسبوع', 'أي يوم', 'حسب المناسبة', OTHER] },
     { key: 'portfolio', labelAr: 'أعمال سابقة', labelEn: 'Portfolio', type: 'text', required: false },
-  ],
-
-  cleaning: [
-    { key: 'cleaningType', labelAr: 'نوع الخدمة', labelEn: 'Service Type', type: 'select', required: true, options: ['منازل', 'مكاتب', 'سجاد وكنب', 'خزانات مياه', 'مسابح', 'واجهات زجاج', 'بعد البناء', 'مكافحة حشرات', 'جلي رخام', OTHER] },
-    { key: 'coverageArea', labelAr: 'منطقة التغطية', labelEn: 'Coverage Area', type: 'text', required: true },
-    { key: 'materialsIncluded', labelAr: 'مع المواد', labelEn: 'Materials Included', type: 'select', required: false, options: ['نعم', 'لا', 'حسب الطلب', OTHER] },
-    { key: 'availability', labelAr: 'التوفر', labelEn: 'Availability', type: 'select', required: false, options: ['24/7', 'صباحاً', 'مساءً', OTHER] },
   ],
 
   design: [
