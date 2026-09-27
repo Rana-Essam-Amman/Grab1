@@ -48,6 +48,7 @@ export const ExploreFilterChipsBar: React.FC<ExploreFilterChipsBarProps> = React
           value={activeNeighborhood || (isArabic ? browseCityAr : browseCityEn)}
           onClick={() => onOpenDrawer('location')}
           onClear={activeNeighborhood && onClearNeighborhood ? onClearNeighborhood : undefined}
+          onDarkBackground={onDarkBackground}
         />
 
         {/* Category Filter Chip */}
@@ -58,6 +59,7 @@ export const ExploreFilterChipsBar: React.FC<ExploreFilterChipsBarProps> = React
           value=""
           onClick={() => onOpenDrawer('category')}
           onClear={categoryFilter && onClearCategory ? onClearCategory : undefined}
+          onDarkBackground={onDarkBackground}
         />
 
         {/* Price Filter Chip */}
@@ -68,6 +70,7 @@ export const ExploreFilterChipsBar: React.FC<ExploreFilterChipsBarProps> = React
           value=""
           onClick={() => onOpenDrawer('price')}
           onClear={isPriceActive && onClearPrice ? onClearPrice : undefined}
+          onDarkBackground={onDarkBackground}
         />
 
         {activeSearchText && (
@@ -78,6 +81,7 @@ export const ExploreFilterChipsBar: React.FC<ExploreFilterChipsBarProps> = React
             value={activeSearchText}
             onClick={() => {}}
             onClear={onClearSearch}
+            onDarkBackground={onDarkBackground}
           />
         )}
       </div>
