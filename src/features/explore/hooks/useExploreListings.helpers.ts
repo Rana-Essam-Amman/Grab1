@@ -39,14 +39,49 @@ const collectStrings = (value: unknown, out: string[]): void => {
   }
 };
 
-export const matchSearch = (item: Listing, q: string): boolean => {
-  const query = normalizeArabic(q);
-  if (!query) return true;
-  const strings: string[] = [];
-  collectStrings(item, strings);
-  const haystack = normalizeArabic(strings.join(' '));
-  return haystack.includes(query);
+export const scoreListing = (item: Listing, q: string): number => {
+  const query = (q || '').trim();
+  if (!query) return 1;
+  const tokens = query
+    .split(/\s+/)
+    .map((t) => normalizeArabic(t))
+    .filter((t) => t.length >= 1);
+  if (tokens.length === 0) return 1;
+
+  const title = normalizeArabic(item.title || '');
+  const desc = normalizeArabic(item.description || '');
+  const catSlug = normalizeArabic(item.categorySlug || '');
+  const subSlug = normalizeArabic(item.subcategorySlug || '');
+  const city = normalizeArabic(item.city || '');
+  const nbhd = normalizeArabic(item.neighborhood || '');
+
+  const itemObj = item as unknown as Record<string, unknown>;
+  const otherStrings: string[] = [];
+  collectStrings(
+    {
+      make: itemObj.make,
+      year: itemObj.year,
+      attributes: itemObj.attributes,
+      generated: itemObj.generated,
+    },
+    otherStrings
+  );
+  const other = normalizeArabic(otherStrings.join(' '));
+
+  let score = 0;
+  for (const t of tokens) {
+    if (!t) continue;
+    if (title.includes(t)) score += 10;
+    if (catSlug.includes(t) || subSlug.includes(t)) score += 8;
+    if (city.includes(t) || nbhd.includes(t)) score += 6;
+    if (desc.includes(t)) score += 5;
+    if (other.includes(t)) score += 3;
+  }
+  return score;
 };
+
+export const matchSearch = (item: Listing, q: string): boolean =>
+  scoreListing(item, q) > 0;
 
 export const countCityListings = (
   listings: Listing[],

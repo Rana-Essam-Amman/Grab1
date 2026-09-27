@@ -4,7 +4,7 @@ import { useListings } from '@/hooks/useListings';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
 import { EXPLORE_CONFIG } from '@/config/explore.config';
 import { UseExploreListingsReturn } from './useExploreListings.types';
-import { matchPrice, matchNeighborhood, matchSearch, countCityListings, computeAdaptiveFilterMode, sortListingsByPriority } from './useExploreListings.helpers';
+import { matchPrice, matchNeighborhood, countCityListings, computeAdaptiveFilterMode, sortListingsByPriority, scoreListing } from './useExploreListings.helpers';
 import { searchCategories } from '@/data/searchIndex';
 
 export function useExploreListings(): UseExploreListingsReturn {
@@ -71,26 +71,52 @@ export function useExploreListings(): UseExploreListingsReturn {
     const matchedCategorySlugs = effectiveSearch
       ? new Set(searchCategories(effectiveSearch).map((c) => c.slug))
       : null;
-    const filtered = marketListings.filter((item) => {
-      if (item.status === 'sold' || item.status === 'archived') return false;
-      if (categoryFilter && item.categorySlug !== categoryFilter && item.subcategorySlug !== categoryFilter) return false;
-      if (!matchPrice(item, minPriceFilter, maxPriceFilter)) return false;
-      if (activeNeighborhood && !matchNeighborhood(item, activeNeighborhood)) return false;
-      if (effectiveSearch) {
+
+    const scored = marketListings
+      .filter((item) => {
+        if (item.status === 'sold' || item.status === 'archived') return false;
+        if (categoryFilter && item.categorySlug !== categoryFilter && item.subcategorySlug !== categoryFilter) return false;
+        if (!matchPrice(item, minPriceFilter, maxPriceFilter)) return false;
+        if (activeNeighborhood && !matchNeighborhood(item, activeNeighborhood)) return false;
+        return true;
+      })
+      .map((item) => {
+        if (!effectiveSearch) {
+          return { item, score: 1, categoryHit: false };
+        }
         const inCategory = Boolean(matchedCategorySlugs && matchedCategorySlugs.has(item.categorySlug));
-        const textMatch = matchSearch(item, effectiveSearch);
-        if (!inCategory && !textMatch) return false;
-      }
-      const isSearching = Boolean(
-        (activeSearchText || searchQuery || '').trim()
-      );
-      if (!isSearching && filterMode === 'city' && !activeNeighborhood) {
+        const score = inCategory ? Math.max(scoreListing(item, effectiveSearch), 15) : scoreListing(item, effectiveSearch);
+        return { item, score, categoryHit: inCategory };
+      })
+      .filter((entry) => {
+        if (!effectiveSearch) return true;
+        return entry.categoryHit || entry.score > 0;
+      });
+
+    const filtered = scored.map((s) => s.item);
+    const isSearching = Boolean(effectiveSearch);
+    if (isSearching) {
+      const sortedScored = [...scored].sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        return sortListingsByPriority(a.item, b.item);
+      });
+      // Preserve any subsequent filter logic by re-applying the original city check
+      const finalScored = sortedScored.filter(({ item }) => {
+        if (!effectiveSearch && filterMode === 'city' && !activeNeighborhood) {
+          return item.city === browseCityAr || item.city === browseCityEn || !item.city;
+        }
+        return true;
+      });
+      return finalScored.map((s) => s.item);
+    }
+
+    const finalFiltered = filtered.filter((item) => {
+      if (!effectiveSearch && filterMode === 'city' && !activeNeighborhood) {
         return item.city === browseCityAr || item.city === browseCityEn || !item.city;
       }
       return true;
     });
-
-    return [...filtered].sort(sortListingsByPriority);
+    return [...finalFiltered].sort(sortListingsByPriority);
   }, [marketListings, categoryFilter, minPriceFilter, maxPriceFilter, activeNeighborhood, activeSearchText, searchQuery, filterMode, browseCityAr, browseCityEn]);
 
   return {

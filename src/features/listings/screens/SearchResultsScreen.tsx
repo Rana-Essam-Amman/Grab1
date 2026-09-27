@@ -7,7 +7,7 @@ import { ArrowLeft, ArrowRight, SearchNormal1, Grid1, RowVertical } from 'iconsa
 import { ExploreFilterBar } from '@/features/explore/components/ExploreFilterBar';
 import { SearchResultsEmpty } from '../components/SearchResultsEmpty';
 import { searchCategories } from '@/data/searchIndex';
-import { matchSearch } from '@/features/explore/hooks/useExploreListings.helpers';
+import { scoreListing } from '@/features/explore/hooks/useExploreListings.helpers';
 
 export const SearchResultsScreen: React.FC = () => {
   const {
@@ -41,23 +41,34 @@ export const SearchResultsScreen: React.FC = () => {
     const matchedCategorySlugs = q
       ? new Set(searchCategories(q).map((c) => c.slug))
       : null;
-    return marketListings.filter((l) => {
-      if (categoryFilter && l.categorySlug !== categoryFilter && l.subcategorySlug !== categoryFilter) {
-        return false;
-      }
-      const priceNum = Number(l.price);
-      if (minPriceFilter !== null && !isNaN(priceNum) && priceNum < minPriceFilter) return false;
-      if (maxPriceFilter !== null && !isNaN(priceNum) && priceNum > maxPriceFilter) return false;
-      if (neighborhoodFilter && l.neighborhood !== neighborhoodFilter) return false;
-      if (filterMode === 'city' && browseCityEn && l.city !== browseCityEn) return false;
 
-      if (q) {
+    const scored = marketListings
+      .filter((l) => {
+        if (categoryFilter && l.categorySlug !== categoryFilter && l.subcategorySlug !== categoryFilter) {
+          return false;
+        }
+        const priceNum = Number(l.price);
+        if (minPriceFilter !== null && !isNaN(priceNum) && priceNum < minPriceFilter) return false;
+        if (maxPriceFilter !== null && !isNaN(priceNum) && priceNum > maxPriceFilter) return false;
+        if (neighborhoodFilter && l.neighborhood !== neighborhoodFilter) return false;
+        if (filterMode === 'city' && browseCityEn && l.city !== browseCityEn) return false;
+        return true;
+      })
+      .map((l) => {
+        if (!q) return { item: l, score: 1, categoryHit: false };
         const inCategory = Boolean(matchedCategorySlugs && matchedCategorySlugs.has(l.categorySlug));
-        const textMatch = matchSearch(l, q);
-        if (!inCategory && !textMatch) return false;
-      }
-      return true;
-    });
+        const score = inCategory ? Math.max(scoreListing(l, q), 15) : scoreListing(l, q);
+        return { item: l, score, categoryHit: inCategory };
+      })
+      .filter((entry) => {
+        if (!q) return true;
+        return entry.categoryHit || entry.score > 0;
+      });
+
+    if (!q) return scored.map((s) => s.item);
+    return [...scored]
+      .sort((a, b) => b.score - a.score)
+      .map((s) => s.item);
   }, [marketListings, categoryFilter, minPriceFilter, maxPriceFilter, neighborhoodFilter, filterMode, browseCityEn, searchQuery]);
 
   return (
