@@ -1,3 +1,5 @@
+import type { GeneratedListing } from '@/types';
+
 export type DraftStep =
   | 'category'
   | 'subcategory'
@@ -14,6 +16,10 @@ export interface PostDraft {
   readonly neighborhood: string;
   readonly site: string;
   readonly noteText: string;
+  readonly title?: string;
+  readonly description?: string;
+  readonly price?: string;
+  readonly generated?: GeneratedListing;
 }
 
 export interface PostDraftWithMeta extends PostDraft {

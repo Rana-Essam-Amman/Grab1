@@ -6,6 +6,15 @@ import { z } from 'zod';
 
 const STORAGE_KEY = 'post_draft_v1';
 
+const GENERATED_SCHEMA = z.object({
+  title: z.string(),
+  description: z.string(),
+  price: z.string(),
+  categorySlug: z.string(),
+  subcategorySlug: z.string(),
+  missing: z.array(z.string()),
+}).passthrough();
+
 const DRAFT_SCHEMA = z.object({
   categorySlug: z.string(),
   subcategorySlug: z.string(),
@@ -16,6 +25,10 @@ const DRAFT_SCHEMA = z.object({
   noteText: z.string(),
   step: z.enum(['category', 'subcategory', 'photos', 'location', 'ai-draft', 'review']),
   lastUpdatedAt: z.string(),
+  title: z.string().optional(),
+  description: z.string().optional(),
+  price: z.string().optional(),
+  generated: GENERATED_SCHEMA.optional(),
 });
 
 /**
@@ -29,7 +42,7 @@ export class LocalStorageDraftAdapter implements DraftRepository {
   }
 
   async save(draft: PostDraftWithMeta): Promise<void> {
-    writeValidated(STORAGE_KEY, DRAFT_SCHEMA, draft);
+    writeValidated(STORAGE_KEY, DRAFT_SCHEMA as z.ZodType<PostDraftWithMeta>, draft);
   }
 
   async clear(): Promise<void> {
