@@ -11,6 +11,8 @@ import { Icon } from '@iconify/react';
 import { ListingActionsBar } from '../components/ListingActionsBar';
 import { useBumpLimits } from '../hooks/useBumpLimits';
 import { toast } from 'sonner';
+import { usePayment, PaywallModal } from '@/features/payment';
+import { MONETIZATION_MATRIX } from '@/data/monetization';
 
 export const MyAdsScreen: React.FC = () => {
   const { isArabic, browseCountryCode, navigateTo, setSelectedListingId, setActiveTab } = useUI();
@@ -19,6 +21,9 @@ export const MyAdsScreen: React.FC = () => {
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
 
   const [activeSubTab, setActiveSubTab] = useState<'my' | 'wishlist'>('my');
+  const [promoteTarget, setPromoteTarget] = useState<Listing | null>(null);
+  const { purchase, isProcessing } = usePayment();
+  const pkg = MONETIZATION_MATRIX.packages[browseCountryCode] || MONETIZATION_MATRIX.packages['JO'];
 
   // If user hasn't created listings yet, show recent seed listings as mock user ads or empty state
   const displayedMyAds = useMemo(() => {
@@ -41,6 +46,27 @@ export const MyAdsScreen: React.FC = () => {
   const handleTabChange = useCallback((tab: 'my' | 'wishlist') => {
     setActiveSubTab(tab);
   }, []);
+
+  const handlePromoteConfirm = useCallback(async () => {
+    if (!promoteTarget) return;
+    const receipt = await purchase({
+      type: 'featured-ad',
+      listingId: promoteTarget.id,
+      countryCode: browseCountryCode,
+      currency: pkg.currency,
+      amount: pkg.featuredAdCost,
+    });
+    if (receipt) {
+      updateListing(promoteTarget.id, {
+        isPremium: true,
+        lastBumpedAt: new Date().toISOString(),
+      });
+      toast.success(isArabic ? 'تم تمييز الإعلان ✓' : 'Listing promoted ✓');
+    } else {
+      toast.error(isArabic ? 'فشل الدفع' : 'Payment failed');
+    }
+    setPromoteTarget(null);
+  }, [promoteTarget, purchase, browseCountryCode, pkg, updateListing, isArabic]);
 
   return (
     <div className="flex flex-col pb-24 px-4 pt-3" dir={isArabic ? 'rtl' : 'ltr'}>
@@ -125,6 +151,7 @@ export const MyAdsScreen: React.FC = () => {
                   toast.error(isArabic ? 'تجاوزت الحد اليومي (3 مرات)' : 'Daily limit reached (3×)');
                 }
               }}
+              onPromote={() => setPromoteTarget(listing)}
             />
           </div>
             ))}
@@ -144,6 +171,22 @@ export const MyAdsScreen: React.FC = () => {
           ))}
         </div>
       )}
+
+      <PaywallModal
+        open={Boolean(promoteTarget)}
+        onClose={() => setPromoteTarget(null)}
+        onConfirm={handlePromoteConfirm}
+        isArabic={isArabic}
+        isProcessing={isProcessing}
+        title="Feature your listing"
+        titleAr="تمييز الإعلان"
+        description="Your listing will appear at the top of search results for 7 days with a Featured badge."
+        descriptionAr="سيظهر إعلانك في أعلى نتائج البحث لمدة 7 أيام مع شارة (مُميز)."
+        amount={pkg.featuredAdCost}
+        currency={pkg.currencySymbol}
+        expiresLabel="Duration: 7 days"
+        expiresLabelAr="المدة: 7 أيام"
+      />
     </div>
   );
 };

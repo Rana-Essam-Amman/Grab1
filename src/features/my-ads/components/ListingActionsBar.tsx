@@ -1,5 +1,5 @@
 import React from 'react';
-import { Edit, Trash, TickCircle, ArrowUp2 } from 'iconsax-react';
+import { Edit, Trash, TickCircle, ArrowUp2, Crown } from 'iconsax-react';
 
 export interface ListingActionsBarProps {
   readonly isArabic: boolean;
@@ -7,12 +7,13 @@ export interface ListingActionsBarProps {
   readonly bumpDisabled?: boolean;
   readonly onEdit: () => void;
   readonly onBump: () => void;
+  readonly onPromote: () => void;
   readonly onMarkSold: () => void;
   readonly onDelete: () => void;
 }
 
 export const ListingActionsBar: React.FC<ListingActionsBarProps> = ({
-  isArabic, status, bumpDisabled = false, onEdit, onBump, onMarkSold, onDelete,
+  isArabic, status, bumpDisabled = false, onEdit, onBump, onPromote, onMarkSold, onDelete,
 }) => {
   const isSold = status === 'sold';
   const cell = 'flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-bold transition-colors active:scale-[0.98]';
@@ -23,6 +24,16 @@ export const ListingActionsBar: React.FC<ListingActionsBarProps> = ({
         <Edit size={16} variant="Linear" color="#2563EB" />
         <span>{isArabic ? 'تعديل' : 'Edit'}</span>
       </button>
+      {status !== 'sold' && (
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onPromote(); }}
+          className={`${cell} text-amber-700 hover:bg-amber-50`}
+        >
+          <Crown size={16} variant="Bold" color="#D97706" />
+          <span>{isArabic ? 'تمييز' : 'Promote'}</span>
+        </button>
+      )}
       {!isSold && (
         <button
           type="button"
