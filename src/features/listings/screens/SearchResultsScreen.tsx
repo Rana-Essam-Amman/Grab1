@@ -64,6 +64,7 @@ export const SearchResultsScreen: React.FC = () => {
           totalListingsCount={results.length} minPriceFilter={minPriceFilter} setMinPriceFilter={setMinPriceFilter}
           maxPriceFilter={maxPriceFilter} setMaxPriceFilter={setMaxPriceFilter} activeNeighborhood={neighborhoodFilter}
           setActiveNeighborhood={setNeighborhoodFilter} activeSearchText={searchQuery} onClearSearch={() => setSearchQuery('')}
+          onDarkBackground={true}
         />
       </div>
 

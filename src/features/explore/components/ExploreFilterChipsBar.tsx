@@ -10,12 +10,14 @@ export interface ExploreFilterChipsBarProps {
   activeNeighborhood?: string | null; onOpenDrawer: (drawer: 'category' | 'price' | 'location') => void;
   onClearCategory?: () => void; onClearPrice?: () => void; onClearNeighborhood?: () => void;
   readonly activeSearchText?: string; readonly onClearSearch?: () => void;
+  readonly onDarkBackground?: boolean;
 }
 
 export const ExploreFilterChipsBar: React.FC<ExploreFilterChipsBarProps> = React.memo(({
   isArabic, filterMode, onFilterModeChange, feedLayout, onFeedLayoutChange, listingCount, browseCityAr, browseCityEn,
   categoryFilter, activeCategoryTitle, minPriceFilter, maxPriceFilter, activeCurrency, activeNeighborhood, onOpenDrawer,
   onClearCategory, onClearPrice, onClearNeighborhood, activeSearchText, onClearSearch,
+  onDarkBackground = false,
 }) => {
   const isPriceActive = minPriceFilter !== null || maxPriceFilter !== null;
   const priceChipText = useMemo(() => {
@@ -82,7 +84,7 @@ export const ExploreFilterChipsBar: React.FC<ExploreFilterChipsBarProps> = React
 
       {/* Listings Count & Layout Toggle */}
       <div className="flex items-center justify-between px-4 pb-1">
-        <p className="text-xs text-ink-muted">
+        <p className={`text-xs ${onDarkBackground ? 'text-white' : 'text-ink-muted'}`}>
           {listingCount} {isArabic ? 'إعلان' : 'listings'}
         </p>
 

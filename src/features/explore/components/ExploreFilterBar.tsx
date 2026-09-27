@@ -23,12 +23,14 @@ export interface ExploreFilterBarProps {
   setActiveNeighborhood: (n: string | null) => void;
   readonly activeSearchText?: string;
   readonly onClearSearch?: () => void;
+  readonly onDarkBackground?: boolean;
 }
 
 export const ExploreFilterBar: React.FC<ExploreFilterBarProps> = ({
   filterMode, setFilterMode, feedLayout, setFeedLayout, totalListingsCount,
   minPriceFilter, setMinPriceFilter, maxPriceFilter, setMaxPriceFilter, activeNeighborhood, setActiveNeighborhood,
   activeSearchText, onClearSearch,
+  onDarkBackground,
 }) => {
   const { isArabic, categoryFilter, setCategoryFilter, browseCountryCode, browseCityAr, browseCityEn, activeCurrency, setBrowseLocation } = useUI();
   const [openDrawer, setOpenDrawer] = useState<'category' | 'price' | 'location' | null>(null);
@@ -81,6 +83,7 @@ export const ExploreFilterBar: React.FC<ExploreFilterBarProps> = ({
           onClearNeighborhood={() => setActiveNeighborhood(null)}
           activeSearchText={activeSearchText}
           onClearSearch={onClearSearch}
+          onDarkBackground={onDarkBackground}
         />
         {categoryFilter && (
           <ExploreActiveCategoryBanner isArabic={isArabic} activeCategoryTitle={activeCategoryTitle} onClearCategory={() => setCategoryFilter(null)} />
