@@ -16,11 +16,14 @@ import { BOOKS_SUBCATEGORY_FIELDS as bk } from './books';
 import { HOME_GARDEN_SUBCATEGORY_FIELDS as hg } from './home-garden';
 import { JOBS_SUBCATEGORY_FIELDS as jb } from './jobs';
 import { SERVICES_SUBCATEGORY_FIELDS as sv } from './services';
+import { CLEANING_SUBCATEGORY_FIELDS as cl } from './cleaning';
+import { HANDYMEN_SUBCATEGORY_FIELDS as hm } from './handymen';
 
 const SUBCATEGORY_FIELDS: Record<string, Record<string, readonly CategoryFieldDef[]>> = {
   motors, 'real-estate': re, mobiles, computers: pc, electronics: el,
   watches: wt, fashion: fs, furniture: fr, kids: kd, beauty: bt, pets: pt, sports: sp,
-  books: bk, 'home-garden': hg, jobs: jb, services: sv
+  books: bk, 'home-garden': hg, jobs: jb, services: sv,
+  cleaning: cl, handymen: hm,
 };
 
 export function getFieldsForListing(cat: string, sub: string): readonly CategoryFieldDef[] {
