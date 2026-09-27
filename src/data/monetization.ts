@@ -5,13 +5,16 @@ export interface CountryMonetizationPackage {
   currencySymbol: string;
   turboAdCost: number;
   autoBumpCost: number;
+  featuredAdCost: number;
   vipStoreMonthlyCost: number;
 }
 
 export interface MonetizationMatrix {
   freeLimits: {
-    generalCategoryLimit: number; // 5 for electronics, fashion, etc.
-    premiumCategoryLimit: number; // 2 for motors, real-estate
+    generalCategoryLimit: number;
+    premiumCategoryLimit: number;
+    bumpDailyLimit: number;
+    photoLimit: number;
   };
   packages: Record<string, CountryMonetizationPackage>;
 }
@@ -20,47 +23,54 @@ export const MONETIZATION_MATRIX: MonetizationMatrix = {
   freeLimits: {
     generalCategoryLimit: 5,
     premiumCategoryLimit: 2,
+    bumpDailyLimit: 3,
+    photoLimit: 10,
   },
   packages: {
     JO: {
       countryCode: 'JO',
       currency: 'JOD',
       currencySymbol: 'دينار',
-      turboAdCost: 3,
+      turboAdCost: 1.5,
       autoBumpCost: 1.5,
-      vipStoreMonthlyCost: 19,
+      featuredAdCost: 3,
+      vipStoreMonthlyCost: 15,
     },
     LB: {
       countryCode: 'LB',
       currency: 'LBP',
       currencySymbol: 'ليرة',
-      turboAdCost: 270000,
+      turboAdCost: 135000,
       autoBumpCost: 135000,
-      vipStoreMonthlyCost: 1700000,
+      featuredAdCost: 180000,
+      vipStoreMonthlyCost: 900000,
     },
     PS: {
       countryCode: 'PS',
       currency: 'ILS',
       currencySymbol: 'شيكل',
-      turboAdCost: 15,
+      turboAdCost: 7,
       autoBumpCost: 7,
-      vipStoreMonthlyCost: 95,
+      featuredAdCost: 7,
+      vipStoreMonthlyCost: 50,
     },
     SY: {
       countryCode: 'SY',
       currency: 'SYP',
       currencySymbol: 'ليرة',
-      turboAdCost: 60000,
+      turboAdCost: 30000,
       autoBumpCost: 30000,
-      vipStoreMonthlyCost: 380000,
+      featuredAdCost: 15000,
+      vipStoreMonthlyCost: 200000,
     },
     SA: {
       countryCode: 'SA',
       currency: 'SAR',
       currencySymbol: 'ر.س',
-      turboAdCost: 15,
+      turboAdCost: 7.5,
       autoBumpCost: 7.5,
-      vipStoreMonthlyCost: 95,
+      featuredAdCost: 15,
+      vipStoreMonthlyCost: 60,
     },
   },
 };
