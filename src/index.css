@@ -24,18 +24,11 @@
   --font-tajawal: var(--font-arabic);
   --font-inter: var(--font-latin);
 
+  /* Mapped aliases — original values live in styles/tokens.css */
   --color-primary: var(--color-brand);
   --color-primary-hover: var(--color-brand-strong);
   --color-background: var(--color-canvas);
-  --color-surface: var(--color-surface);
-  --color-ink: var(--color-ink);
-  --color-ink-soft: var(--color-ink-soft);
-  --color-ink-muted: var(--color-ink-muted);
   --color-border: var(--color-line);
-  --color-danger: var(--color-danger);
-  --color-success: var(--color-success);
-  --color-warning: var(--color-warning);
-
   --color-icon-blue: var(--color-info);
   --color-icon-red: var(--color-danger);
   --color-icon-yellow: var(--color-warning);
