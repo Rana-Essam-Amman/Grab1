@@ -3,7 +3,6 @@ import { useListings } from '@/hooks/useListings';
 import React, { useMemo } from 'react';
 import { ListingCard } from '@/shared/components';
 import { ArrowLeft, ArrowRight, User, TickCircle } from 'iconsax-react';
-import { Button } from '@/shared/ui/Button';
 import { Card } from '@/shared/ui/Card';
 import { Avatar } from '@/shared/ui/Avatar';
 import { EmptyState } from '@/shared/ui/EmptyState';
@@ -26,16 +25,16 @@ export const SellerProfileScreen: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-background pb-16" dir={isArabic ? 'rtl' : 'ltr'}>
-      <div className="p-4 bg-surface border-b border-border flex items-center gap-3 sticky top-0 z-20">
-        <Button
-          variant="ghost"
-          size="icon"
+      <div className="px-4 py-4 bg-[#1a2238] border-b border-white/10 flex items-center gap-3 sticky top-0 z-20">
+        <button
+          type="button"
           onClick={goBack}
           aria-label={isArabic ? 'العودة' : 'Go back'}
+          className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center shrink-0 cursor-pointer transition-colors"
         >
-          <BackIcon size={18} variant="Linear" />
-        </Button>
-        <h1 className="text-base font-bold text-ink">
+          <BackIcon size={18} variant="Linear" color="#FFFFFF" />
+        </button>
+        <h1 className="text-base font-bold text-white">
           {isArabic ? 'ملف البائع' : 'Seller Profile'}
         </h1>
       </div>
