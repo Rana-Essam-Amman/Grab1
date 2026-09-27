@@ -194,7 +194,6 @@ const MainNavigator: React.FC = () => {
         return fromRegistry ?? <ProfileScreen />;
       }
       case 'main':
-      default:
         switch (activeTab) {
           case 'categories':
             return <CategoriesScreen />;
@@ -206,6 +205,10 @@ const MainNavigator: React.FC = () => {
           default:
             return <ExploreScreen />;
         }
+      default: {
+        const fromRegistry = renderRegistryScreen(currentScreen);
+        return fromRegistry ?? null;
+      }
     }
   };
 
