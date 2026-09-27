@@ -17,22 +17,24 @@ export const useAiPublishFlow = (setIsAnalyzing: (val: boolean) => void) => {
       const photosToUse = images;
       let nextScreen: ScreenType = 'post-ai-review';
 
-      try {
-        const match = matchCategory({
-          chosenCategory: overrideCategory || '',
-          chosenSub: '',
-          note: raw,
-        });
-        if (!match.effectiveCategory) {
-          updatePostDraft({ noteText: raw, photos: photosToUse, categorySlug: '' });
-          nextScreen = 'post-category-pick';
-          return;
-        }
+      const initialMatch = matchCategory({
+        chosenCategory: overrideCategory || '',
+        chosenSub: '',
+        note: raw,
+      });
 
+      // Category to pass to Gemini:
+      //  - overrideCategory (from CategoryPickScreen) wins
+      //  - then matchCategory's best guess
+      //  - otherwise empty string → Gemini infers from text
+      const categoryForAI = overrideCategory || initialMatch.effectiveCategory || '';
+      const subForAI = initialMatch.effectiveSub || '';
+
+      try {
         const aiPromise = generateListing({
           raw,
-          categorySlug: match.effectiveCategory,
-          subcategorySlug: match.effectiveSub,
+          categorySlug: categoryForAI,
+          subcategorySlug: subForAI,
           arabic: isArabic,
           city: browseCityAr,
           countryCode: browseCountryCode,
@@ -41,19 +43,46 @@ export const useAiPublishFlow = (setIsAnalyzing: (val: boolean) => void) => {
           setTimeout(() => rej(new Error('Timeout')), 10000)
         );
         const generated = await Promise.race([aiPromise, timeoutPromise]);
-        generated.categoryMatch = match;
+        if (!generated) {
+          throw new Error('Generation failed');
+        }
+
+        // Gemini's categorySlug wins
+        const effectiveCategory =
+          overrideCategory || generated.categorySlug || initialMatch.effectiveCategory || '';
+        const effectiveSub =
+          generated.subcategorySlug || initialMatch.effectiveSub || '';
+
+        if (!effectiveCategory) {
+          throw new Error('No category determined');
+        }
 
         updatePostDraft({
           noteText: raw,
           photos: photosToUse,
-          categorySlug: match.effectiveCategory,
-          subcategorySlug: match.effectiveSub,
+          categorySlug: effectiveCategory,
+          subcategorySlug: effectiveSub,
           city: generated.city || browseCityAr,
-          generated,
+          generated: {
+            ...generated,
+            categorySlug: effectiveCategory,
+            subcategorySlug: effectiveSub,
+            categoryMatch: initialMatch,
+          },
         });
       } catch {
         const fallbackMatch = matchCategory({ chosenCategory: '', chosenSub: '', note: raw });
-        const fallbackCategory = fallbackMatch.effectiveCategory || 'krakeeb';
+        const fallbackCategory =
+          overrideCategory || initialMatch.effectiveCategory || fallbackMatch.effectiveCategory;
+
+        if (!fallbackCategory) {
+          updatePostDraft({ noteText: raw, photos: photosToUse, categorySlug: '' });
+          nextScreen = 'post-category-pick';
+          return;
+        }
+
+        const fallbackSub =
+          initialMatch.effectiveSub || fallbackMatch.effectiveSub || '';
         const copy = writeListingCopy({
           raw,
           arabic: isArabic,
@@ -64,7 +93,7 @@ export const useAiPublishFlow = (setIsAnalyzing: (val: boolean) => void) => {
           noteText: raw,
           photos: photosToUse,
           categorySlug: fallbackCategory,
-          subcategorySlug: fallbackMatch.effectiveSub,
+          subcategorySlug: fallbackSub,
           city: browseCityAr,
           generated: {
             title: copy.title,
@@ -72,13 +101,13 @@ export const useAiPublishFlow = (setIsAnalyzing: (val: boolean) => void) => {
             price: copy.facts.price || '',
             city: browseCityAr,
             categorySlug: fallbackCategory,
-            subcategorySlug: fallbackMatch.effectiveSub,
+            subcategorySlug: fallbackSub,
             categoryMatch: fallbackMatch,
             missing: copy.missing,
             fields: buildFieldsFromFacts(
               copy.facts,
               fallbackCategory,
-              fallbackMatch.effectiveSub || '',
+              fallbackSub || '',
               isArabic
             ),
           },
