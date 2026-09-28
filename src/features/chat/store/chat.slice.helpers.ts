@@ -1,6 +1,4 @@
-import { createJSONStorage, StateStorage } from 'zustand/middleware';
 import { Conversation } from '@/types';
-import { globalStorage } from '@/shared/lib/marketStorage';
 
 export const initialConversations: Conversation[] = [
   {
@@ -25,45 +23,3 @@ export const initialConversations: Conversation[] = [
     ],
   },
 ];
-
-export const chatStorage: StateStorage = {
-  getItem: (name) => {
-    const raw = globalStorage().get<unknown>(name);
-    if (raw === null || raw === undefined) return null;
-    if (Array.isArray(raw)) {
-      // Convert legacy array format to Zustand state format
-      return JSON.stringify({ state: { conversations: raw }, version: 0 });
-    }
-    if (raw && typeof raw === 'object') {
-      return JSON.stringify(raw);
-    }
-    if (typeof raw === 'string') {
-      try {
-        JSON.parse(raw);
-        return raw;
-      } catch {
-        return null;
-      }
-    }
-    return null;
-  },
-  setItem: (name, value) => {
-    try {
-      const parsed = JSON.parse(value);
-      // Extract conversations and store as a simple array like the old Context did
-      if (parsed.state && Array.isArray(parsed.state.conversations)) {
-        globalStorage().set(name, parsed.state.conversations);
-      } else {
-        globalStorage().set(name, value);
-      }
-    } catch {
-      globalStorage().set(name, value);
-    }
-  },
-  removeItem: (name) => globalStorage().remove(name),
-};
-
-export const chatStorageOptions = {
-  name: 'catch_conversations',
-  storage: createJSONStorage(() => chatStorage),
-};
