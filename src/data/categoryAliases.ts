@@ -1,7 +1,4 @@
 // RULE-14-EXCEPTION: Static taxonomy
-import { CategoryDef } from '../types';
-import { categories } from './categories';
-import { normalizeArabic } from './arabicNormalize';
 
 export interface CategoryAlias {
   slug: string;
@@ -199,36 +196,3 @@ export const categoryAliases: CategoryAlias[] = [
     ],
   },
 ];
-
-export function searchCategories(query: string): CategoryDef[] {
-  const q = normalizeArabic(query);
-  if (!q) {
-    return [];
-  }
-
-  const matchedSlugs = new Set<string>();
-
-  for (const cat of categories) {
-    const nameAr = normalizeArabic(cat.nameAr);
-    const nameEn = normalizeArabic(cat.nameEn);
-
-    if (q.includes(nameAr) || nameAr.includes(q) || q.includes(nameEn) || nameEn.includes(q)) {
-      matchedSlugs.add(cat.slug);
-      continue;
-    }
-
-    const alias = categoryAliases.find((a) => a.slug === cat.slug);
-    if (alias) {
-      for (const rawTerm of alias.terms) {
-        const term = normalizeArabic(rawTerm);
-        if (q.includes(term) || term.includes(q)) {
-          matchedSlugs.add(cat.slug);
-          break;
-        }
-      }
-    }
-  }
-
-  const results = categories.filter((c) => matchedSlugs.has(c.slug));
-  return results.sort((a, b) => a.slug.localeCompare(b.slug));
-}

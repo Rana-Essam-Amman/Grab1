@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { normalizeArabic } from '../arabicNormalize';
-import { searchCategories } from '../categoryAliases';
+import { searchCategories } from '../searchIndex';
 
 describe('normalizeArabic', () => {
   it('normalizes hamzas: إيفون -> ايفون', () => {
