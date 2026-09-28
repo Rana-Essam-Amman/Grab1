@@ -35,3 +35,25 @@ API responses MUST also pass these schemas.
 
 ## Interface contracts (source of truth)
 - src/features/*/data/repositories/*Repository.ts
+
+## Storage Layer — As-Built vs Intended
+
+**Intended (design):**
+- Market-scoped data uses `marketStorage(country)` → key `catch_JO_listings`
+- Global data uses `globalStorage()`
+
+**As-built (current):**
+- `marketStorage()` has ZERO consumers
+- All data uses `safeStorage`/`globalStorage` with manual keys
+- Market isolation is enforced at READ time via `filterListingsByMarket`
+  (filters on `listing.countryCode` field)
+- Wishlists use manual suffix keys: `catch_wishlist_JO`, `catch_wishlist_LB`
+
+**Why it works:**
+- Data is stored globally with `countryCode` field
+- Filtering excludes cross-market items on read
+- Market Lock (authenticated users) prevents switching entirely
+
+**Migration to Supabase:**
+- RLS policies per market will replace read-time filtering
+- No code changes needed in UI layer — Repository pattern abstracts it

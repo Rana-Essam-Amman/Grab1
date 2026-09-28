@@ -1,9 +1,19 @@
 import { ZodSchema } from 'zod';
 
-// NOTE (Rule 11 exception): This module reads/writes RAW localStorage
-// WITHOUT a market prefix. This is intentional for AUTH data only —
-// a user is the same across all markets (JO/LB/PS/SY/SA).
-// All market-scoped data MUST use marketStorage() instead.
+// NOTE (Rule 11 — as-built):
+// This module reads/writes RAW localStorage WITHOUT a market prefix.
+// Intended for AUTH + global preferences only.
+//
+// CURRENT REALITY (as of 2026-09-28):
+// marketStorage() exists but has ZERO consumers. Market-scoped data
+// (listings, wishlists) is stored with GLOBAL keys and filtered by
+// `filterListingsByMarket` (countryCode field) at read time. This works
+// correctly but does NOT match the original design intent.
+//
+// MIGRATION PLAN:
+// The Supabase migration will re-architect storage with RLS per market.
+// Until then, the read-time filter is the compensating control.
+// See BACKEND_INTEGRATION.md for details.
 
 /**
  * Safely reads and validates data from localStorage using a Zod schema.
