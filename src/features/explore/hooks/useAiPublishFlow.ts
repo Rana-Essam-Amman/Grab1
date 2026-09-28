@@ -2,9 +2,9 @@ import { useCallback } from 'react';
 import { useUI } from '@/hooks/useUI';
 import { useDraft } from '@/hooks/useDraft';
 import { matchCategory } from '@/ai/categoryMatch';
-import { generateListing, writeListingCopy } from '@/ai/listingCopyAgent';
-import { buildFieldsFromFacts } from '@/ai/buildFieldsFromFacts';
+import { generateListing } from '@/ai/listingCopyAgent';
 import type { ScreenType } from '@/store/ui.slice.types';
+import { buildAppliedDraft, buildFallbackDraft } from './useAiPublishFlow.helpers';
 
 export const useAiPublishFlow = (setIsAnalyzing: (val: boolean) => void) => {
   const { isArabic, browseCountryCode, browseCityAr, navigateTo } = useUI();
@@ -43,75 +43,45 @@ export const useAiPublishFlow = (setIsAnalyzing: (val: boolean) => void) => {
           setTimeout(() => rej(new Error('Timeout')), 10000)
         );
         const generated = await Promise.race([aiPromise, timeoutPromise]);
-        if (!generated) {
-          throw new Error('Generation failed');
-        }
-
-        // Gemini's categorySlug wins
-        const effectiveCategory =
-          overrideCategory || generated.categorySlug || initialMatch.effectiveCategory || '';
-        const effectiveSub =
-          generated.subcategorySlug || initialMatch.effectiveSub || '';
-
-        if (!effectiveCategory) {
-          throw new Error('No category determined');
-        }
-
-        updatePostDraft({
-          noteText: raw,
-          photos: photosToUse,
-          categorySlug: effectiveCategory,
-          subcategorySlug: effectiveSub,
-          city: generated.city || browseCityAr,
-          generated: {
-            ...generated,
-            categorySlug: effectiveCategory,
-            subcategorySlug: effectiveSub,
-            categoryMatch: initialMatch,
-          },
-        });
+        updatePostDraft(
+          buildAppliedDraft({
+            generated,
+            match: initialMatch,
+            raw,
+            photos: photosToUse,
+            isArabic,
+            browseCityAr,
+            categoryForAI,
+            subForAI,
+          })
+        );
       } catch {
-        const fallbackMatch = matchCategory({ chosenCategory: '', chosenSub: '', note: raw });
-        const fallbackCategory =
-          overrideCategory || initialMatch.effectiveCategory || fallbackMatch.effectiveCategory;
+        const fallbackMatch = matchCategory({
+          chosenCategory: overrideCategory || '',
+          chosenSub: '',
+          note: raw,
+        });
+        const fallbackCategory = fallbackMatch.effectiveCategory || overrideCategory || '';
 
+        // No category can be determined → hand off to manual picker.
         if (!fallbackCategory) {
           updatePostDraft({ noteText: raw, photos: photosToUse, categorySlug: '' });
           nextScreen = 'post-category-pick';
           return;
         }
 
-        const fallbackSub =
-          initialMatch.effectiveSub || fallbackMatch.effectiveSub || '';
-        const copy = writeListingCopy({
-          raw,
-          arabic: isArabic,
-          categorySlug: fallbackCategory,
-          countryCode: browseCountryCode,
-        });
-        updatePostDraft({
-          noteText: raw,
-          photos: photosToUse,
-          categorySlug: fallbackCategory,
-          subcategorySlug: fallbackSub,
-          city: browseCityAr,
-          generated: {
-            title: copy.title,
-            description: copy.body,
-            price: copy.facts.price || '',
-            city: browseCityAr,
+        updatePostDraft(
+          buildFallbackDraft({
+            raw,
+            photos: photosToUse,
+            isArabic,
+            browseCityAr,
+            browseCountryCode,
             categorySlug: fallbackCategory,
-            subcategorySlug: fallbackSub,
-            categoryMatch: fallbackMatch,
-            missing: copy.missing,
-            fields: buildFieldsFromFacts(
-              copy.facts,
-              fallbackCategory,
-              fallbackSub || '',
-              isArabic
-            ),
-          },
-        });
+            subcategorySlug: fallbackMatch.effectiveSub,
+            match: fallbackMatch,
+          })
+        );
       } finally {
         setIsAnalyzing(false);
         cb?.();
