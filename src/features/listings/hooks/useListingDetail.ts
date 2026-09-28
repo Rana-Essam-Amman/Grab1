@@ -92,9 +92,8 @@ export function useListingDetail(): UseListingDetailReturn {
   }, [listing, deleteListing, goBack]);
 
   return {
-    listing, activeCountry, isCountryMismatch, sanitizedLoc: derived.sanitizedLoc, locationText: derived.locationText,
-    mapUrl: derived.mapUrl, displayCurrency: derived.displayCurrency, images: derived.images, mapQuery: derived.mapQuery,
-    formattedPhone: derived.formattedPhone, activePhotoIdx, setActivePhotoIdx, showShare, setShowShare, showReport, setShowReport,
-    handleStartChat, handleCall, handleWhatsApp, handleDelete, handleSelectSeller, isAuthenticated, isOwner, isArabic, goBack, navigateTo,
+    listing, activeCountry, isCountryMismatch, ...derived, activePhotoIdx, setActivePhotoIdx, 
+    showShare, setShowShare, showReport, setShowReport, handleStartChat, handleCall, 
+    handleWhatsApp, handleDelete, handleSelectSeller, isAuthenticated, isOwner, isArabic, goBack, navigateTo,
   };
 }
