@@ -10,7 +10,7 @@ export const EditListingScreen: React.FC = () => {
   const { isArabic, goBack } = useUI();
   const {
     listing, title, setTitle, price, setPrice, description, setDescription,
-    values, setField, fields, missingRequired, canSave, handleSave,
+    values, setField, fields, missingRequired, canSave, handleSave, submitAttempted,
   } = useEditListing();
 
   if (!listing) {
@@ -55,6 +55,7 @@ export const EditListingScreen: React.FC = () => {
           values={values}
           setField={setField}
           fields={fields}
+          submitAttempted={submitAttempted}
         />
 
         {missingRequired.length > 0 && (

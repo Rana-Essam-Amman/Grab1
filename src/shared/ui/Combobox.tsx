@@ -11,6 +11,7 @@ interface ComboboxProps {
   readonly onChange: (value: string) => void;
   readonly disabled?: boolean;
   readonly testId?: string;
+  readonly hasError?: boolean;
 }
 
 export const Combobox: React.FC<ComboboxProps> = ({
@@ -22,6 +23,7 @@ export const Combobox: React.FC<ComboboxProps> = ({
   onChange,
   disabled,
   testId,
+  hasError = false,
 }) => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -46,7 +48,7 @@ export const Combobox: React.FC<ComboboxProps> = ({
           disabled={disabled}
           data-testid={testId}
           data-combobox="true"
-          className="w-full h-10 px-3.5 rounded-xl bg-surface text-ink border border-line focus:border-primary text-sm flex items-center justify-between gap-2 disabled:opacity-50 cursor-pointer"
+          className={`w-full h-10 px-3.5 rounded-xl bg-surface text-ink border ${hasError ? 'border-danger focus:border-danger' : 'border-line'} focus:border-primary text-sm flex items-center justify-between gap-2 disabled:opacity-50 cursor-pointer`}
         >
           <span className={value ? 'text-ink font-medium' : 'text-ink-muted'}>
             {value || placeholder}

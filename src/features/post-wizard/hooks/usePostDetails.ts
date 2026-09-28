@@ -15,6 +15,7 @@ export function usePostDetails() {
     (postDraft.generated?.fields || []).forEach(f => { out[f.key] = f.value || ''; });
     return out;
   });
+  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   const cBrand = values.make || values.brand || values.carMake || '';
   const bOpts = useMemo(() => getBrandOptions(postDraft.categorySlug, isArabic), [postDraft.categorySlug, isArabic]);
@@ -34,6 +35,7 @@ export function usePostDetails() {
   const canContinue = title.trim().length >= 5 && price.trim().length > 0 && description.trim().length >= 10 && missing.length === 0;
 
   const handleContinue = () => {
+    setSubmitAttempted(true);
     if (!canContinue) return;
     const genFields = fields.map(f => {
       const v = (values[f.key] || '').trim();
@@ -49,5 +51,5 @@ export function usePostDetails() {
     navigateTo('post-ai-review');
   };
 
-  return { title, setTitle, price, setPrice, description, setDescription, values, setField, fields, missingRequired: missing, canContinue, handleContinue, isArabic };
+  return { title, setTitle, price, setPrice, description, setDescription, values, setField, fields, missingRequired: missing, canContinue, handleContinue, isArabic, submitAttempted };
 }

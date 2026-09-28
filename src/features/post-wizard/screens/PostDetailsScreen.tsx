@@ -16,6 +16,7 @@ export const PostDetailsScreen: React.FC = () => {
     missingRequired,
     canContinue,
     handleContinue,
+    submitAttempted,
   } = usePostDetails();
 
   return (
@@ -40,6 +41,7 @@ export const PostDetailsScreen: React.FC = () => {
           values={values}
           setField={setField}
           fields={fields}
+          submitAttempted={submitAttempted}
         />
 
         {missingRequired.length > 0 && (

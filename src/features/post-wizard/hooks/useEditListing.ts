@@ -21,6 +21,7 @@ export function useEditListing() {
     });
     return out;
   });
+  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   const categorySlug = listing?.categorySlug || '';
   const subcategorySlug = listing?.subcategorySlug || '';
@@ -40,6 +41,7 @@ export function useEditListing() {
   const canSave = title.trim().length >= 5 && price.trim().length > 0 && description.trim().length >= 10 && missing.length === 0;
 
   const handleSave = useCallback(() => {
+    setSubmitAttempted(true);
     if (!canSave || !listing) return;
     const attributes = fields
       .filter((f) => (values[f.key] || '').trim())
@@ -55,6 +57,6 @@ export function useEditListing() {
 
   return {
     listing, title, setTitle, price, setPrice, description, setDescription,
-    values, setField, fields, missingRequired: missing, canSave, handleSave, isArabic,
+    values, setField, fields, missingRequired: missing, canSave, handleSave, isArabic, submitAttempted,
   };
 }
