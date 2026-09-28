@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { Conversation, Listing } from '@/types';
 import { getListingsSnapshot } from './chat.slice.deps';
-import { ChatState } from './chat.slice.types';
+import { ChatState, MAX_CHAT_MESSAGES } from './chat.slice.types';
 import { initialConversations } from './chat.slice.helpers';
 import type { ChatRepository } from '../data/repositories/ChatRepository';
 import { LocalStorageChatAdapter } from '../data/adapters/LocalStorageChatAdapter';
@@ -25,7 +25,7 @@ export const useChatStore = create<ChatState>()((set, get) => ({
     if (existing) return existing.id;
 
     const newThread: Conversation = {
-      id: 'thread-' + Date.now(),
+      id: `thread-${crypto.randomUUID()}`,
       listingId: listing.id,
       title: listing.title,
       imageUrl: listing.imageUrl,
@@ -43,6 +43,7 @@ export const useChatStore = create<ChatState>()((set, get) => ({
     const { conversations } = get();
     const thread = conversations.find((c) => c.id === threadId);
     if (!thread) return;
+    if (thread.messages.length >= MAX_CHAT_MESSAGES) return;
 
     if (activeCountry && thread.listingId) {
       const listings = getListingsSnapshot();
@@ -53,7 +54,7 @@ export const useChatStore = create<ChatState>()((set, get) => ({
     }
 
     const message = {
-      id: 'm-' + Date.now(),
+      id: `m-${crypto.randomUUID()}`,
       text,
       fromBuyer: true,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -76,3 +77,4 @@ chatRepository.getAll().then((conversations) => {
     useChatStore.setState({ conversations: conversations as unknown as Conversation[] });
   }
 });
+
