@@ -4,12 +4,14 @@ import { useUIStore } from './store/ui.slice';
 import { useAuthStore } from '@/features/auth/store/auth.slice';
 import { useListingsStore } from './features/listings/store/listings.slice';
 import { registerListingsGetter } from '@/features/chat/store/chat.slice.deps';
+import { registerListingsGetterForMonetization } from '@/features/monetization/store/deps';
 import { registerUIGetter } from '@/shared/store-getters/ui.getter';
 import { registerAuthGetter } from '@/shared/store-getters/auth.getter';
 
 // Register cross-store getters ONCE at module load
 registerUIGetter(() => useUIStore.getState());
 registerAuthGetter(() => useAuthStore.getState().user);
+registerListingsGetterForMonetization(() => useListingsStore.getState().listings);
 
 import { Header, BottomNav, ErrorBoundary } from '@/shared/components';
 import { TranslationProvider } from '@/shared/i18n';

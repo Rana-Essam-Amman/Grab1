@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { validateAdQuotaAvailability as validateHelper } from '@/data/monetization';
-import { useListingsStore } from '@/features/listings/store/listings.slice';
+import { getListingsSnapshot } from './deps';
 import { getCurrentUser } from '@/shared/store-getters/auth.getter';
 import { getBrowseCountryCode } from '@/shared/store-getters/ui.getter';
 
@@ -20,7 +20,7 @@ export const useMonetizationStore = create<MonetizationState>()(
       });
     },
     validateAdQuotaAvailability: (categorySlug) => {
-      const { listings } = useListingsStore.getState();
+      const listings = getListingsSnapshot();
       const user = getCurrentUser();
       const browseCountryCode = getBrowseCountryCode();
 
