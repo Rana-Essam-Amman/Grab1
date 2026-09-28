@@ -6,7 +6,7 @@ import { locations, locationsAr } from '@/data/locations';
 import { Lock1, CloseCircle } from 'iconsax-react';
 import { Drawer } from '@/shared/ui/Drawer';
 import { CountrySelectorTabs } from './CountrySelectorTabs';
-import { CountrySheetCities } from './CountrySheetCities';
+import { CountrySheetCities } from '@/shared/components/markets/CountrySheetCities';
 
 export const CountrySheet: React.FC = () => {
   const { isArabic, isCountrySheetOpen, setIsCountrySheetOpen, browseCountryCode, browseCityEn, browseCityAr, setBrowseLocation } = useUI();

@@ -1,7 +1,7 @@
 import React from 'react';
 import { CloseCircle } from 'iconsax-react';
 import { Drawer } from '@/shared/ui/Drawer';
-import { CountrySheetCities } from '@/features/markets/components/CountrySheetCities';
+import { CountrySheetCities } from '@/shared/components/markets/CountrySheetCities';
 import { locations, locationsAr } from '@/data/locations';
 
 interface AiReviewCityDrawerProps {
