@@ -4,10 +4,6 @@ import { immer } from 'zustand/middleware/immer';
 import { AuthState } from './auth.slice.types';
 import { getInitialSession, getInitialRegisteredUsers } from './auth.slice.helpers';
 import { createAuthActions } from './auth.slice.actions';
-import type { AuthRepository } from '../data/repositories/AuthRepository';
-import { LocalStorageAuthAdapter } from '../data/adapters/LocalStorageAuthAdapter';
-
-const authRepository: AuthRepository = new LocalStorageAuthAdapter();
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -31,12 +27,7 @@ export const useAuthStore = create<AuthState>()(
         updateUser: (updates) => {
           set((state) => {
             if (state.user) {
-              const updatedUser = { ...state.user, ...updates };
-              state.user = updatedUser;
-              authRepository.updateProfile({
-                name: `${updatedUser.firstName} ${updatedUser.lastName}`.trim(),
-                avatarUrl: updatedUser.avatarUrl || updatedUser.avatar,
-              }).catch(console.error);
+              state.user = { ...state.user, ...updates };
             }
           });
         },
@@ -51,9 +42,6 @@ export const useAuthStore = create<AuthState>()(
                 state.user.avatar = dataUrl;
                 state.user.avatarUrl = dataUrl;
               }
-              authRepository.updateProfile({
-                avatarUrl: dataUrl || undefined,
-              }).catch(console.error);
             }
           });
         },
