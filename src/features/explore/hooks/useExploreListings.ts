@@ -5,7 +5,7 @@ import { filterListingsByMarket } from '@/shared/lib/marketGate';
 import { EXPLORE_CONFIG } from '@/config/explore.config';
 import { UseExploreListingsReturn } from './useExploreListings.types';
 import { countCityListings, computeAdaptiveFilterMode } from './useExploreListings.helpers';
-import { filterListings } from '@/features/listings/helpers/filterListings';
+import { filterListings } from '@/shared/lib/filterListings';
 
 export function useExploreListings(): UseExploreListingsReturn {
   const {

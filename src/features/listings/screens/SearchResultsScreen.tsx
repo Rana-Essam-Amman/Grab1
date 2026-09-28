@@ -6,7 +6,7 @@ import { filterListingsByMarket } from '@/shared/lib/marketGate';
 import { ArrowLeft, ArrowRight, SearchNormal1, Grid1, RowVertical } from 'iconsax-react';
 import { ExploreFilterBar } from '@/features/explore/components/ExploreFilterBar';
 import { SearchResultsEmpty } from '../components/SearchResultsEmpty';
-import { filterListings } from '../helpers/filterListings';
+import { filterListings } from '@/shared/lib/filterListings';
 
 export const SearchResultsScreen: React.FC = () => {
   const {
