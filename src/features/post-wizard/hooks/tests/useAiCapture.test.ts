@@ -34,7 +34,7 @@ vi.mock('@/shared/ai/hooks/useVoiceCapture', () => ({
   }),
 }));
 
-vi.mock('@/features/explore/hooks/useAiPublishFlow', () => ({
+vi.mock('@/features/post-wizard/hooks/useAiPublishFlow', () => ({
   useAiPublishFlow: () => ({ processPublishFlow: mockProcessPublishFlow }),
 }));
 

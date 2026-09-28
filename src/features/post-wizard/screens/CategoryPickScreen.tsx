@@ -5,7 +5,7 @@ import { categories } from '@/data/categories';
 import { ArrowLeft, ArrowRight, MagicStar } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { Card } from '@/shared/ui/Card';
-import { useAiPublishFlow } from '@/features/explore/hooks/useAiPublishFlow';
+import { useAiPublishFlow } from '../hooks/useAiPublishFlow';
 import { CategorySearchBar } from '../components/CategorySearchBar';
 import { searchCategories } from '@/data/searchIndex';
 

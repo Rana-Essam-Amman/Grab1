@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { useUI } from '@/hooks/useUI';
 import { useImageUpload } from '@/shared/ai/hooks/useImageUpload';
 import { useVoiceCapture } from '@/shared/ai/hooks/useVoiceCapture';
-import { useAiPublishFlow } from '@/features/explore/hooks/useAiPublishFlow';
+import { useAiPublishFlow } from './useAiPublishFlow';
 
 export const useAiCapture = () => {
   const { isArabic } = useUI();
