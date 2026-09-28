@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import { GeneratedListing } from '../types';
 import { getFieldsForListing } from '@/data/subcategoryFields';
 import { getAIGatewayRequestConfig } from './aiConfig';
@@ -128,6 +129,41 @@ export function buildSchemaSpec(categorySlug: string, subcategorySlug: string, a
   }).join('\n');
 }
 
+const AI_FIELD_SCHEMA = z.object({
+  key: z.string(),
+  label: z.string(),
+  value: z.string(),
+  required: z.boolean().optional(),
+});
+
+const AI_RESPONSE_SCHEMA = z.object({
+  title: z.string().min(1),
+  description: z.string().min(1),
+  price: z.string().optional().default(''),
+  categorySlug: z.string().optional().default(''),
+  subcategorySlug: z.string().optional().default(''),
+  city: z.string().optional(),
+  year: z.string().optional(),
+  make: z.string().optional(),
+  missing: z.array(z.string()).optional().default([]),
+  fields: z.array(AI_FIELD_SCHEMA).optional().default([]),
+}).passthrough();
+
+async function withRetry<T>(fn: () => Promise<T>, attempts = 2): Promise<T> {
+  let lastErr: unknown;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastErr = err;
+      if (i < attempts - 1) {
+        await new Promise((r) => setTimeout(r, 500));
+      }
+    }
+  }
+  throw lastErr;
+}
+
 export async function requestAIGateway(payload: AIGatewayPayload): Promise<GeneratedListing> {
   const gatewayConfig = getAIGatewayRequestConfig();
   if (!gatewayConfig) {
@@ -140,94 +176,101 @@ export async function requestAIGateway(payload: AIGatewayPayload): Promise<Gener
     payload.arabic
   );
 
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 15000);
+  const performRequest = async (): Promise<GeneratedListing> => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    try {
+      const url = gatewayConfig.url;
 
-  try {
-    const url = gatewayConfig.url;
+      const userText = [
+        `User input: ${payload.rawText}`,
+        `Category hint: ${payload.categorySlug || 'unknown'}`,
+        `Subcategory hint: ${payload.subcategorySlug || 'unknown'}`,
+        `Country: ${payload.countryCode || 'JO'}`,
+        `City: ${payload.city || ''}`,
+        `Language: ${payload.arabic ? 'Arabic' : 'English'}`,
+        `Images attached: ${payload.images?.length || 0}`,
+        '',
+        'Fields to return (use these EXACT keys):',
+        schemaSpec,
+        '',
+        'Extract the value for each field from the user input. Leave value="" if not mentioned.',
+      ].join('\n');
 
-    const userText = [
-      `User input: ${payload.rawText}`,
-      `Category hint: ${payload.categorySlug || 'unknown'}`,
-      `Subcategory hint: ${payload.subcategorySlug || 'unknown'}`,
-      `Country: ${payload.countryCode || 'JO'}`,
-      `City: ${payload.city || ''}`,
-      `Language: ${payload.arabic ? 'Arabic' : 'English'}`,
-      `Images attached: ${payload.images?.length || 0}`,
-      '',
-      'Fields to return (use these EXACT keys):',
-      schemaSpec,
-      '',
-      'Extract the value for each field from the user input. Leave value="" if not mentioned.',
-    ].join('\n');
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: gatewayConfig.headers,
+        body: JSON.stringify({
+          systemInstruction: {
+            parts: [{ text: SYSTEM_PROMPT }],
+          },
+          contents: [
+            { role: 'user', parts: [{ text: userText }] },
+          ],
+          generationConfig: {
+            responseMimeType: 'application/json',
+            temperature: 0.6,
+            maxOutputTokens: 2048,
+          },
+        }),
+        signal: controller.signal,
+      });
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: gatewayConfig.headers,
-      body: JSON.stringify({
-        systemInstruction: {
-          parts: [{ text: SYSTEM_PROMPT }],
-        },
-        contents: [
-          { role: 'user', parts: [{ text: userText }] },
-        ],
-        generationConfig: {
-          responseMimeType: 'application/json',
-          temperature: 0.6,
-          maxOutputTokens: 2048,
-        },
-      }),
-      signal: controller.signal,
-    });
+      if (!response.ok) {
+        const errText = await response.text().catch(() => '');
+        throw new Error(`Gemini error ${response.status}: ${errText.slice(0, 200)}`);
+      }
 
-    clearTimeout(timeoutId);
+      const data = await response.json();
+      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!text) throw new Error('Empty response from Gemini');
 
-    if (!response.ok) {
-      const errText = await response.text().catch(() => '');
-      throw new Error(`Gemini error ${response.status}: ${errText.slice(0, 200)}`);
+      let rawParsed: unknown;
+      try {
+        rawParsed = JSON.parse(text);
+      } catch {
+        throw new Error('Gemini response is not valid JSON');
+      }
+
+      const validated = AI_RESPONSE_SCHEMA.safeParse(rawParsed);
+      if (!validated.success) {
+        throw new Error('Gemini response failed schema validation');
+      }
+      const parsed: GeneratedListing = validated.data;
+
+      const schemaFields = getFieldsForListing(
+        parsed.categorySlug || payload.categorySlug || '',
+        parsed.subcategorySlug || payload.subcategorySlug || ''
+      );
+      const aiFields = parsed.fields || [];
+      const mergedFields = schemaFields.length > 0
+        ? schemaFields.map((def) => {
+            const aiMatch = aiFields.find((f) => f.key === def.key);
+            return {
+              key: def.key,
+              label: payload.arabic ? def.labelAr : def.labelEn,
+              value: aiMatch?.value || '',
+              required: def.required,
+              type: def.type,
+              options: def.options,
+              placeholder: def.placeholder,
+            };
+          })
+        : aiFields.map((f) => ({
+            key: f.key,
+            label: f.label,
+            value: f.value,
+            required: f.required,
+            type: undefined,
+            options: undefined,
+            placeholder: undefined,
+          }));
+
+      return { ...parsed, fields: mergedFields };
+    } finally {
+      clearTimeout(timeoutId);
     }
+  };
 
-    const data = await response.json();
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!text) throw new Error('Empty response from Gemini');
-
-    const parsed = JSON.parse(text) as GeneratedListing;
-
-    if (!parsed.title || !parsed.description) {
-      throw new Error('Gemini response missing required fields');
-    }
-
-    const schemaFields = getFieldsForListing(
-      parsed.categorySlug || payload.categorySlug || '',
-      parsed.subcategorySlug || payload.subcategorySlug || ''
-    );
-    const aiFields = parsed.fields || [];
-    const mergedFields = schemaFields.length > 0
-      ? schemaFields.map((def) => {
-          const aiMatch = aiFields.find((f) => f.key === def.key);
-          return {
-            key: def.key,
-            label: payload.arabic ? def.labelAr : def.labelEn,
-            value: aiMatch?.value || '',
-            required: def.required,
-            type: def.type,
-            options: def.options,
-            placeholder: def.placeholder,
-          };
-        })
-      : aiFields.map((f) => ({
-          key: f.key,
-          label: f.label,
-          value: f.value,
-          required: f.required,
-          type: undefined,
-          options: undefined,
-          placeholder: undefined,
-        }));
-
-    return { ...parsed, fields: mergedFields };
-  } catch (err) {
-    clearTimeout(timeoutId);
-    throw err;
-  }
+  return withRetry(performRequest, 2);
 }
