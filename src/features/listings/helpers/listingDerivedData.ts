@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { getSanitizedRegionalLocation } from '@/data/locations';
 import { getSanitizedCurrency } from '@/data/countries';
 import { googleSearchQuery, googleMapsOpenUrl } from '@/data/mapUrls';
-import { getFormattedLocalPhone, FormattedPhone } from './phoneFormatting';
+import { getFormattedLocalPhone, FormattedPhone } from '@/shared/lib/phoneFormatting';
 import { Listing } from '@/types';
 
 export interface ListingDerivedData {

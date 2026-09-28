@@ -12,8 +12,6 @@ import { ListingActionBar } from '../components/ListingActionBar';
 import { ListingNotFound } from '../components/ListingNotFound';
 import { ShareModal, ReportModal, ErrorBoundary } from '@/shared/components';
 
-export { getFormattedLocalPhone } from '../helpers/phoneFormatting';
-
 export const ListingDetailScreen: React.FC = () => {
   const detail = useListingDetail();
 

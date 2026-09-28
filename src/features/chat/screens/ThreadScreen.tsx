@@ -3,7 +3,7 @@ import { useUI } from '@/hooks/useUI';
 import { useChat } from '@/hooks/useChat';
 import { useAuth } from '@/hooks/useAuth';
 import { useListings } from '@/hooks/useListings';
-import { getFormattedLocalPhone } from '@/features/listings/screens/ListingDetailScreen';
+import { getFormattedLocalPhone } from '@/shared/lib/phoneFormatting';
 import { ThreadHeader } from '../components/ThreadHeader';
 import { ThreadMessageFlow } from '../components/ThreadMessageFlow';
 import { ThreadInputBar } from '../components/ThreadInputBar';

@@ -4,7 +4,7 @@ import { useListings } from '@/hooks/useListings';
 import { useChat } from '@/hooks/useChat';
 import { useAuth } from '@/hooks/useAuth';
 import { isValidMarket } from '@/shared/lib/marketGate';
-import { FormattedPhone } from '../helpers/phoneFormatting';
+import { FormattedPhone } from '@/shared/lib/phoneFormatting';
 import { useListingDerivedData, getWhatsAppUrl } from '../helpers/listingDerivedData';
 import { Listing } from '@/types';
 import { ScreenType } from '@/store/ui.slice';
