@@ -9,7 +9,9 @@ export const AiCaptureScreen: React.FC = () => {
   const { isArabic, goBack } = useUI();
   const {
     images, fileInputRef, handleImageSelect, handleRemoveImage, rawText, setRawText,
-    isRecording, recordingTime, handleVoiceToggle, isSupported, errorMsg, isAnalyzing, canSubmit, hasPhoto, hasText, handleGenerate
+    isRecording, recordingTime, isWarning, interimText,
+    handleVoiceToggle, isSupported, errorMsg,
+    isAnalyzing, canSubmit, hasPhoto, hasText, handleGenerate
   } = useAiCapture();
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
   const triggerUpload = () => fileInputRef.current?.click();
@@ -61,9 +63,29 @@ export const AiCaptureScreen: React.FC = () => {
           <div className={`relative border rounded-xl p-3 bg-canvas/20 transition-all ${isRecording ? 'border-brand ring-2 ring-brand/10' : 'border-line'}`}>
             <textarea rows={5} value={rawText} onChange={(e) => setRawText(e.target.value)} disabled={isAnalyzing || isRecording} placeholder={isRecording ? (isArabic ? 'جاري الاستماع...' : 'Listening...') : (isArabic ? 'اوصف السلعة: الاسم، الموديل، السنة، السعر، الحالة...' : 'Describe: name, model, year, price, condition...')} className="w-full bg-transparent text-sm text-ink placeholder:text-ink-muted focus:outline-none resize-none" />
             {isRecording && (
-              <div className="flex items-center gap-2 mt-2 px-3 py-1 rounded-lg bg-brand/10 text-brand text-xs font-bold border border-brand/20 animate-pulse w-max">
-                <span className="w-2 h-2 rounded-full bg-brand animate-ping" />
-                <span>{isArabic ? `جاري التسجيل: ${recordingTime} ثانية` : `Recording: ${recordingTime}s`}</span>
+              <div className={`flex items-center gap-2 mt-2 px-3 py-1 rounded-lg text-xs font-bold border w-max ${
+                isWarning
+                  ? 'bg-danger/10 text-danger border-danger/30 animate-pulse'
+                  : 'bg-brand/10 text-brand border-brand/20 animate-pulse'
+              }`}>
+                <span className={`w-2 h-2 rounded-full animate-ping ${isWarning ? 'bg-danger' : 'bg-brand'}`} />
+                <span>
+                  {isArabic
+                    ? isWarning
+                      ? `تحذير: ${recordingTime} ثانية — سيتم الإيقاف عند 90`
+                      : `جاري التسجيل: ${recordingTime} ثانية`
+                    : isWarning
+                      ? `Warning: ${recordingTime}s — auto stop at 90`
+                      : `Recording: ${recordingTime}s`}
+                </span>
+              </div>
+            )}
+            {isRecording && interimText && (
+              <div className="mt-2 px-3 py-2 rounded-lg bg-canvas/60 border border-dashed border-line text-xs text-ink-muted italic">
+                <span className="font-bold text-ink-soft me-1">
+                  {isArabic ? 'يسمع:' : 'Hearing:'}
+                </span>
+                {interimText}
               </div>
             )}
           </div>

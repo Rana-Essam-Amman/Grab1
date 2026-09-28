@@ -40,19 +40,19 @@ describe('useVoiceCapture', () => {
   });
 
   it('isSupported is true when SpeechRecognition exists', () => {
-    const { result } = renderHook(() => useVoiceCapture(mockOnTranscript, false));
+    const { result } = renderHook(() => useVoiceCapture(mockOnTranscript, 'SA', false));
     expect(result.current.isSupported).toBe(true);
   });
 
   it('isSupported is false when speech recognition is absent', () => {
     vi.stubGlobal('SpeechRecognition', undefined);
     vi.stubGlobal('webkitSpeechRecognition', undefined);
-    const { result } = renderHook(() => useVoiceCapture(mockOnTranscript, false));
+    const { result } = renderHook(() => useVoiceCapture(mockOnTranscript, 'SA', false));
     expect(result.current.isSupported).toBe(false);
   });
 
   it('handleVoiceToggle starts recording when supported', () => {
-    const { result } = renderHook(() => useVoiceCapture(mockOnTranscript, false));
+    const { result } = renderHook(() => useVoiceCapture(mockOnTranscript, 'SA', false));
     act(() => {
       result.current.handleVoiceToggle();
     });
@@ -61,7 +61,7 @@ describe('useVoiceCapture', () => {
   });
 
   it('error path sets errorMsg and sets isRecording to false', () => {
-    const { result } = renderHook(() => useVoiceCapture(mockOnTranscript, false));
+    const { result } = renderHook(() => useVoiceCapture(mockOnTranscript, 'SA', false));
     act(() => {
       result.current.handleVoiceToggle();
     });

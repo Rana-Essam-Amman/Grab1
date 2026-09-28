@@ -5,7 +5,7 @@ import { useVoiceCapture } from '@/shared/ai/hooks/useVoiceCapture';
 import { useAiPublishFlow } from './useAiPublishFlow';
 
 export const useAiCapture = () => {
-  const { isArabic } = useUI();
+  const { isArabic, browseCountryCode } = useUI();
   const [rawText, setRawText] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
@@ -21,8 +21,12 @@ export const useAiCapture = () => {
     setRawText((prev) => (prev ? `${prev} ${text}` : text));
   }, []);
 
-  const { isRecording, recordingTime, handleVoiceToggle, isSupported, errorMsg } = useVoiceCapture(
+  const {
+    isRecording, recordingTime, isWarning, interimText,
+    handleVoiceToggle, isSupported, errorMsg,
+  } = useVoiceCapture(
     handleTranscript,
+    browseCountryCode,
     isArabic
   );
 
@@ -50,6 +54,8 @@ export const useAiCapture = () => {
     setRawText,
     isRecording,
     recordingTime,
+    isWarning,
+    interimText,
     handleVoiceToggle,
     isSupported,
     errorMsg,
