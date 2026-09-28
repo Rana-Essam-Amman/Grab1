@@ -1,15 +1,16 @@
-import { useAuthStore } from '@/features/auth/store/auth.slice';
 import { useUIStore } from '@/store/ui.slice';
-import { useListingsStore } from '@/features/listings/store/listings.slice';
-import { useDraftStore } from '@/features/post-wizard/store/draft.slice';
 import { getSanitizedCurrency } from '@/data/countries';
 import { globalStorage } from '@/shared/lib/marketStorage';
 import type { Listing } from '@/types';
+import {
+  getDraftSnapshot,
+  resetDraftFromHelper,
+  addListingFromHelper,
+} from '@/shared/store-getters/postWizard.getter';
 
 export function publishDraftAfterAuth(phoneNum: string, fName: string, market: string): void {
   try {
-    const draftStore = useDraftStore.getState();
-    const draft = draftStore.postDraft;
+    const draft = getDraftSnapshot();
     
     // 1. If there's a completed draft, publish it
     if (draft?.generated) {
@@ -40,8 +41,8 @@ export function publishDraftAfterAuth(phoneNum: string, fName: string, market: s
         ],
       };
       
-      useListingsStore.getState().addListing(newListing, market, true);
-      draftStore.resetPostDraft();
+      addListingFromHelper(newListing, market, true);
+      resetDraftFromHelper();
       useUIStore.getState().setActiveTab('my-ads');
       useUIStore.getState().navigateTo('main');
     } else {
