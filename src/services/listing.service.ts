@@ -61,7 +61,3 @@ export function saveWishlistForMarket(market: string, ids: string[]): void {
 export function executeAutoBumpScheduler(listings: Listing[]): Listing[] {
   return runBumpScheduler(listings);
 }
-
-export function filterListingsByMarket(listings: Listing[], market: string): Listing[] {
-  return listings.filter((l) => l.countryCode === market);
-}

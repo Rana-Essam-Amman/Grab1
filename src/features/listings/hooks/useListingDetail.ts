@@ -3,6 +3,7 @@ import { useUI } from '@/hooks/useUI';
 import { useListings } from '@/hooks/useListings';
 import { useChat } from '@/hooks/useChat';
 import { useAuth } from '@/hooks/useAuth';
+import { isValidMarket } from '@/shared/lib/marketGate';
 import { FormattedPhone } from '../helpers/phoneFormatting';
 import { useListingDerivedData, getWhatsAppUrl } from '../helpers/listingDerivedData';
 import { Listing } from '@/types';
@@ -47,7 +48,7 @@ export function useListingDetail(): UseListingDetailReturn {
   const [showReport, setShowReport] = useState(false);
 
   const listing = selectedListingId ? getListing(selectedListingId) || null : null;
-  const activeCountry = authStatus === 'authenticated' && user?.countryCode && ['JO', 'LB', 'PS', 'SY', 'SA'].includes(user.countryCode) ? user.countryCode : browseCountryCode;
+  const activeCountry = authStatus === 'authenticated' && user?.countryCode && isValidMarket(user.countryCode) ? user.countryCode : browseCountryCode;
   const isCountryMismatch = useMemo(() => Boolean(listing && listing.countryCode !== activeCountry), [listing, activeCountry]);
   const derived = useListingDerivedData(listing, isArabic);
   const isAuthenticated = authStatus === 'authenticated';
