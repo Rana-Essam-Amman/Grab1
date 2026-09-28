@@ -5,7 +5,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
 import { useBumpLimits } from '../hooks/useBumpLimits';
 import { toast } from 'sonner';
-import { usePayment, PaywallModal } from '@/features/payment';
+import { usePayment, PaywallModal } from '@/shared/services/payment';
 import { MONETIZATION_MATRIX } from '@/data/monetization';
 import { MyAdsHeader } from '../components/MyAdsHeader';
 import { MyAdsTabs } from '../components/MyAdsTabs';
