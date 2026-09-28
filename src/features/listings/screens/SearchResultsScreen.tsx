@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { ListingCard } from '@/shared/components';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
 import { ArrowLeft, ArrowRight, SearchNormal1, Grid1, RowVertical } from 'iconsax-react';
-import { ExploreFilterBar } from '@/features/explore/components/ExploreFilterBar';
+import { ExploreFilterBar } from '@/shared/components/filters/ExploreFilterBar';
 import { SearchResultsEmpty } from '../components/SearchResultsEmpty';
 import { filterListings } from '@/shared/lib/filterListings';
 

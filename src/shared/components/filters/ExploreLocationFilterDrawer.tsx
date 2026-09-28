@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Drawer } from '@/shared/ui/Drawer';
 import { CloseCircle } from 'iconsax-react';
 import { ExploreLocationCityList } from './ExploreLocationCityList';
-import { getCityPair } from '../helpers/locationHelpers';
+import { getCityPair } from '@/shared/lib/locationHelpers';
 import { EntireCountryPill } from './EntireCountryPill';
 
 export interface ExploreLocationFilterDrawerProps {

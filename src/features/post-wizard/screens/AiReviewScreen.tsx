@@ -5,7 +5,7 @@ import { Send2 } from 'iconsax-react';
 import { AiReviewHeader } from '../components/AiReviewHeader';
 import { AiReviewBody } from '../components/AiReviewBody';
 import { AiReviewCityDrawer } from '../components/AiReviewCityDrawer';
-import { ExploreLocationFilterDrawer } from '@/features/explore/components/ExploreLocationFilterDrawer';
+import { ExploreLocationFilterDrawer } from '@/shared/components/filters/ExploreLocationFilterDrawer';
 import { locations, locationsAr } from '@/data/locations';
 
 export const AiReviewScreen: React.FC = () => {

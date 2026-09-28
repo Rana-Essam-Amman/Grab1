@@ -7,7 +7,7 @@ import { useExploreListings } from '../hooks/useExploreListings';
 import { ExploreVoidedNoticeBanner } from '../components/ExploreVoidedNoticeBanner';
 import { ExploreTopSections } from '../components/ExploreTopSections';
 import { ExploreQuotaPaywallModal } from '../components/ExploreQuotaPaywallModal';
-import { ExploreFilterBar } from '@/features/explore/components/ExploreFilterBar';
+import { ExploreFilterBar } from '@/shared/components/filters/ExploreFilterBar';
 import { ExploreListingFeed } from '@/features/explore/components/ExploreListingFeed';
 
 function useDebouncedValue<T>(value: T, delayMs: number): T {
