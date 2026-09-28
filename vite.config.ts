@@ -34,11 +34,11 @@ export default defineConfig({
           'vendor-react': ['react', 'react-dom'],
           'vendor-state': ['zustand', 'immer'],
           'vendor-icons': ['iconsax-react'],
+          'vendor-motion': ['motion'],
           'vendor-radix': [
             '@radix-ui/react-dialog',
             '@radix-ui/react-popover',
           ],
-          'vendor-motion': ['motion'],
           'vendor-forms': ['zod', 'class-variance-authority', 'clsx', 'tailwind-merge'],
         },
       },
