@@ -14,7 +14,7 @@ vi.mock('@/hooks/useUI', () => ({
   useUI: () => ({ isArabic: false }),
 }));
 
-vi.mock('@/features/explore/hooks/useImageUpload', () => ({
+vi.mock('@/shared/ai/hooks/useImageUpload', () => ({
   useImageUpload: () => ({
     selectedImages: mockImages,
     fileInputRef: { current: null },
@@ -24,7 +24,7 @@ vi.mock('@/features/explore/hooks/useImageUpload', () => ({
   }),
 }));
 
-vi.mock('@/features/explore/hooks/useVoiceCapture', () => ({
+vi.mock('@/shared/ai/hooks/useVoiceCapture', () => ({
   useVoiceCapture: () => ({
     isRecording: false,
     recordingTime: 0,

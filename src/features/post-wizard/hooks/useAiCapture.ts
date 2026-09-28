@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useUI } from '@/hooks/useUI';
-import { useImageUpload } from '@/features/explore/hooks/useImageUpload';
-import { useVoiceCapture } from '@/features/explore/hooks/useVoiceCapture';
+import { useImageUpload } from '@/shared/ai/hooks/useImageUpload';
+import { useVoiceCapture } from '@/shared/ai/hooks/useVoiceCapture';
 import { useAiPublishFlow } from '@/features/explore/hooks/useAiPublishFlow';
 
 export const useAiCapture = () => {
