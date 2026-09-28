@@ -18,8 +18,18 @@ export default {
       name: 'no-feature-to-feature',
       severity: 'warn',
       comment: 'Features should not import each other directly. Extract shared logic to shared/ or use the Registry.',
-      from: { path: '^src/features/([^/]+)/' },
-      to: { path: '^src/features/([^/]+)/', pathNot: ['^src/features/$1/'] }
+      from: {
+        path: '^src/features/([^/]+)/',
+        pathNot: [
+          '\\.(test|spec)\\.tsx?$',
+          '^src/features/dev/'
+        ]
+      },
+      to: {
+        path: '^src/features/([^/]+)/',
+        pathNot: ['^src/features/$1/'],
+        dependencyTypesNot: ['type-only']
+      }
     },
     {
       name: 'no-orphans',
