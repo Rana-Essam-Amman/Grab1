@@ -1,7 +1,7 @@
 import { useUI } from '@/hooks/useUI';
 import { useMonetization } from '@/hooks/useMonetization';
 import React, { useMemo, useCallback, useState } from 'react';
-import { SearchBar } from '@/shared/components';
+import { SearchBar } from '@/features/explore/components/SearchBar';
 import { MONETIZATION_MATRIX } from '@/data/monetization';
 import { useExploreListings } from '../hooks/useExploreListings';
 import { ExploreVoidedNoticeBanner } from '../components/ExploreVoidedNoticeBanner';
