@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useMonetization } from '../useMonetization';
-import { useMonetizationStore } from '@/features/listings/store/monetization.slice';
+import { useMonetizationStore } from '@/features/monetization/store/monetization.slice';
 
 describe('useMonetization', () => {
   beforeEach(() => {

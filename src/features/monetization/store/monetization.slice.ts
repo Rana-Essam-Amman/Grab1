@@ -4,10 +4,6 @@ import { validateAdQuotaAvailability as validateHelper } from '@/data/monetizati
 import { useListingsStore } from '@/features/listings/store/listings.slice';
 import { getCurrentUser } from '@/shared/store-getters/auth.getter';
 import { getBrowseCountryCode } from '@/shared/store-getters/ui.getter';
-import type { MonetizationRepository } from '@/features/monetization/data/repositories/MonetizationRepository';
-import { LocalStorageMonetizationAdapter } from '@/features/monetization/data/adapters/LocalStorageMonetizationAdapter';
-
-const monetizationRepository: MonetizationRepository = new LocalStorageMonetizationAdapter();
 
 export interface MonetizationState {
   isQuotaExhausted: boolean;
@@ -27,22 +23,19 @@ export const useMonetizationStore = create<MonetizationState>()(
       const { listings } = useListingsStore.getState();
       const user = getCurrentUser();
       const browseCountryCode = getBrowseCountryCode();
-      
+
       const userId = user?.phone || user?.email || 'guest';
       const isVip = Boolean(user?.isVipShop);
-      
+
       const result = validateHelper(listings, userId, browseCountryCode, categorySlug, isVip);
-      
+
       set((state) => {
         state.isQuotaExhausted = !result.allowed;
       });
-      
-      monetizationRepository.getAiQuota().catch(console.error);
 
       return result.allowed;
     }
   }))
 );
 
-monetizationRepository.getAiQuota().catch(console.error);
 

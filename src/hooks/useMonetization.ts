@@ -1,4 +1,4 @@
-import { useMonetizationStore } from '@/features/listings/store/monetization.slice';
+import { useMonetizationStore } from '@/features/monetization/store/monetization.slice';
 
 export const useMonetization = () => {
   const store = useMonetizationStore();
