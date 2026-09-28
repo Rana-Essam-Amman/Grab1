@@ -17,6 +17,29 @@ export interface AIGatewayRequestConfig {
   readonly headers: Record<string, string>;
 }
 
+export interface AIGatewayModelConfig {
+  readonly url: string;
+  readonly headers: Record<string, string>;
+  readonly model: string;
+}
+
+export const AI_MODEL_CHAIN = [
+  'gemini-flash-latest',
+  'gemini-3.7-flash',
+  'gemini-3.5-flash',
+] as const;
+
+export function getAIGatewayModelConfigs(): AIGatewayModelConfig[] {
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY as string | undefined;
+  if (!apiKey) return [];
+
+  return AI_MODEL_CHAIN.map((model) => ({
+    model,
+    url: `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+    headers: { 'Content-Type': 'application/json' },
+  }));
+}
+
 export function getAIGatewayRequestConfig(): AIGatewayRequestConfig | null {
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY as string | undefined;
   if (!apiKey) return null;

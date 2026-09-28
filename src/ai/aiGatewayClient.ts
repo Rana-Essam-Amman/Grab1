@@ -1,6 +1,6 @@
 import { GeneratedListing } from '../types';
 import { getFieldsForListing } from '@/data/subcategoryFields';
-import { getAIGatewayRequestConfig } from './aiConfig';
+import { getAIGatewayModelConfigs } from './aiConfig';
 import { AI_RESPONSE_SCHEMA, withRetry } from './aiSchemas';
 
 export interface AIGatewayPayload {
@@ -130,8 +130,8 @@ export function buildSchemaSpec(categorySlug: string, subcategorySlug: string, a
 }
 
 export async function requestAIGateway(payload: AIGatewayPayload): Promise<GeneratedListing> {
-  const gatewayConfig = getAIGatewayRequestConfig();
-  if (!gatewayConfig) {
+  const modelConfigs = getAIGatewayModelConfigs();
+  if (modelConfigs.length === 0) {
     throw new Error('AI gateway not configured');
   }
 
@@ -145,8 +145,6 @@ export async function requestAIGateway(payload: AIGatewayPayload): Promise<Gener
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000);
     try {
-      const url = gatewayConfig.url;
-
       const userText = [
         `User input: ${payload.rawText}`,
         `Category hint: ${payload.categorySlug || 'unknown'}`,
@@ -162,76 +160,90 @@ export async function requestAIGateway(payload: AIGatewayPayload): Promise<Gener
         'Extract the value for each field from the user input. Leave value="" if not mentioned.',
       ].join('\n');
 
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: gatewayConfig.headers,
-        body: JSON.stringify({
-          systemInstruction: {
-            parts: [{ text: SYSTEM_PROMPT }],
-          },
-          contents: [
-            { role: 'user', parts: [{ text: userText }] },
-          ],
-          generationConfig: {
-            responseMimeType: 'application/json',
-            temperature: 0.6,
-            maxOutputTokens: 2048,
-          },
-        }),
-        signal: controller.signal,
-      });
+      let lastError: Error | null = null;
+      for (const modelConfig of modelConfigs) {
+        try {
+          const response = await fetch(modelConfig.url, {
+            method: 'POST',
+            headers: modelConfig.headers,
+            body: JSON.stringify({
+              systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+              contents: [{ role: 'user', parts: [{ text: userText }] }],
+              generationConfig: {
+                responseMimeType: 'application/json',
+                temperature: 0.6,
+                maxOutputTokens: 2048,
+              },
+            }),
+            signal: controller.signal,
+          });
 
-      if (!response.ok) {
-        const errText = await response.text().catch(() => '');
-        throw new Error(`Gemini error ${response.status}: ${errText.slice(0, 200)}`);
+          if (!response.ok) {
+            const errText = await response.text().catch(() => '');
+            lastError = new Error(`Gemini ${modelConfig.model} ${response.status}: ${errText.slice(0, 200)}`);
+            // Retry next model on 5xx/503, otherwise bail
+            if (response.status >= 500 || response.status === 429) continue;
+            throw lastError;
+          }
+
+          const data = await response.json();
+          const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (!text) {
+            lastError = new Error(`Empty response from ${modelConfig.model}`);
+            continue;
+          }
+
+          let rawParsed: unknown;
+          try {
+            rawParsed = JSON.parse(text);
+          } catch {
+            lastError = new Error(`Invalid JSON from ${modelConfig.model}`);
+            continue;
+          }
+
+          const validated = AI_RESPONSE_SCHEMA.safeParse(rawParsed);
+          if (!validated.success) {
+            lastError = new Error(`Schema validation failed for ${modelConfig.model}`);
+            continue;
+          }
+          const parsed: GeneratedListing = validated.data;
+
+          const schemaFields = getFieldsForListing(
+            parsed.categorySlug || payload.categorySlug || '',
+            parsed.subcategorySlug || payload.subcategorySlug || ''
+          );
+          const aiFields = parsed.fields || [];
+          const mergedFields = schemaFields.length > 0
+            ? schemaFields.map((def) => {
+                const aiMatch = aiFields.find((f) => f.key === def.key);
+                return {
+                  key: def.key,
+                  label: payload.arabic ? def.labelAr : def.labelEn,
+                  value: aiMatch?.value || '',
+                  required: def.required,
+                  type: def.type,
+                  options: def.options,
+                  placeholder: def.placeholder,
+                };
+              })
+            : aiFields.map((f) => ({
+                key: f.key,
+                label: f.label,
+                value: f.value,
+                required: f.required,
+                type: undefined,
+                options: undefined,
+                placeholder: undefined,
+              }));
+
+          return { ...parsed, fields: mergedFields };
+        } catch (err) {
+          lastError = err instanceof Error ? err : new Error(String(err));
+          continue;
+        }
       }
 
-      const data = await response.json();
-      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!text) throw new Error('Empty response from Gemini');
-
-      let rawParsed: unknown;
-      try {
-        rawParsed = JSON.parse(text);
-      } catch {
-        throw new Error('Gemini response is not valid JSON');
-      }
-
-      const validated = AI_RESPONSE_SCHEMA.safeParse(rawParsed);
-      if (!validated.success) {
-        throw new Error('Gemini response failed schema validation');
-      }
-      const parsed: GeneratedListing = validated.data;
-
-      const schemaFields = getFieldsForListing(
-        parsed.categorySlug || payload.categorySlug || '',
-        parsed.subcategorySlug || payload.subcategorySlug || ''
-      );
-      const aiFields = parsed.fields || [];
-      const mergedFields = schemaFields.length > 0
-        ? schemaFields.map((def) => {
-            const aiMatch = aiFields.find((f) => f.key === def.key);
-            return {
-              key: def.key,
-              label: payload.arabic ? def.labelAr : def.labelEn,
-              value: aiMatch?.value || '',
-              required: def.required,
-              type: def.type,
-              options: def.options,
-              placeholder: def.placeholder,
-            };
-          })
-        : aiFields.map((f) => ({
-            key: f.key,
-            label: f.label,
-            value: f.value,
-            required: f.required,
-            type: undefined,
-            options: undefined,
-            placeholder: undefined,
-          }));
-
-      return { ...parsed, fields: mergedFields };
+      throw lastError || new Error('All AI models failed');
     } finally {
       clearTimeout(timeoutId);
     }
