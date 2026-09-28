@@ -65,7 +65,7 @@ export const AiDraftForm: React.FC<Props> = ({
         </Button>
         {showManualForm && (
           <form onSubmit={onManualSubmit} className="mt-3 p-4 rounded-2xl bg-surface border border-border flex flex-col gap-3">
-            <Input label={isArabic ? 'العنوان' : 'Title'} required value={manualTitle} onChange={onManualTitleChange} className="h-10 text-xs" />
+            <Input label={isArabic ? 'عنوان الإعلان' : 'Listing Title'} required value={manualTitle} onChange={onManualTitleChange} className="h-10 text-xs" />
             <Input label={isArabic ? 'السعر' : 'Price'} type="number" value={manualPrice} onChange={onManualPriceChange} className="h-10 text-xs" />
             <Textarea label={isArabic ? 'الوصف' : 'Description'} rows={3} value={manualDesc} onChange={onManualDescChange} className="text-xs min-h-[80px]" />
             <Button type="submit" variant="primary" fullWidth size="lg"> {isArabic ? 'متابعة' : 'Continue'} </Button>

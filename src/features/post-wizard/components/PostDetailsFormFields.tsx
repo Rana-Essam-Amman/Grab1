@@ -27,7 +27,7 @@ export const PostDetailsFormFields: React.FC<PostDetailsFormFieldsProps> = ({
     <AiReviewSectionCard title={isArabic ? 'المعلومات الأساسية' : 'Basic Info'}>
       <div className="flex flex-col gap-4">
         <Input
-          label={isArabic ? 'العنوان' : 'Title'}
+          label={isArabic ? 'عنوان الإعلان' : 'Listing Title'}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder={isArabic ? 'مثلاً: آيفون 13 برو نظيف' : 'e.g. iPhone 13 Pro clean'}

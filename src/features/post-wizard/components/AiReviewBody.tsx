@@ -54,7 +54,7 @@ export const AiReviewBody: React.FC<AiReviewBodyProps> = ({
       <div className="flex flex-col px-4 pt-4 gap-3">
         <AiReviewProgress isArabic={isArabic} completed={completedCount} total={totalCount} />
         
-        <AiReviewSectionCard title={isArabic ? 'العنوان' : 'Title'}>
+        <AiReviewSectionCard title={isArabic ? 'عنوان الإعلان' : 'Listing Title'}>
           <AiReviewInlineEdit value={title} placeholder={isArabic ? 'أضف عنواناً' : 'Add a title'} editing={editing === 'title'} variant="title" onChange={onTitleChange} onStartEdit={() => setEditing('title')} onStopEdit={stop} />
         </AiReviewSectionCard>
 
