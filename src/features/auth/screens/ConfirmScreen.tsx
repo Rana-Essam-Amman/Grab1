@@ -28,7 +28,7 @@ export const ConfirmScreen: React.FC = () => {
     if (postDraft.generated) {
       const gen = postDraft.generated;
       const newListing: Listing = {
-        id: 'listing-' + Date.now(),
+        id: `listing-${crypto.randomUUID()}`,
         title: gen.title,
         description: gen.description,
         price: gen.price || '0',

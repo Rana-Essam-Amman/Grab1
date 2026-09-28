@@ -19,7 +19,7 @@ export function buildNewListingPayload({
   const targetMarket = user?.countryCode || browseCountryCode;
 
   const newListing: Listing = {
-    id: 'listing-' + Date.now(),
+    id: `listing-${crypto.randomUUID()}`,
     title,
     description,
     price,

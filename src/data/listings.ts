@@ -49,7 +49,7 @@ export function injectNewListing(
     safeNeighborhood = defaultNeighborhood;
   }
 
-  const newId = `listing-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+  const newId = `listing-${crypto.randomUUID()}`;
   const parsedPrice = typeof payload.price === 'string' 
     ? payload.price.replace(/[^\d]/g, '') 
     : String(payload.price || '0');

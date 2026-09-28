@@ -17,7 +17,7 @@ export function publishDraftAfterAuth(phoneNum: string, fName: string, market: s
       const currency = getSanitizedCurrency(market);
       
       const newListing: Listing = {
-        id: 'listing-' + Date.now(),
+        id: `listing-${crypto.randomUUID()}`,
         title: gen.title,
         description: gen.description,
         price: gen.price || '0',
