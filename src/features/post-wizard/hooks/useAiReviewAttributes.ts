@@ -39,6 +39,10 @@ export function useAiReviewAttributes(
         return { ...f, type: 'select' as const, options: brandOptions };
       }
       if (f.key === 'model') {
+        // When brand is "أخرى", user types the model freely (no catalog exists)
+        if (currentBrand === 'أخرى' || currentBrand === 'Other') {
+          return { ...f, type: 'text' as const };
+        }
         return { ...f, type: 'select' as const, options: modelOptions };
       }
       return f;

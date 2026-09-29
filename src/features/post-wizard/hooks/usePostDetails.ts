@@ -24,6 +24,10 @@ export function usePostDetails() {
   const fields = useMemo(() => getFieldsForListing(postDraft.categorySlug, postDraft.subcategorySlug).map(f => {
     if (f.key === 'make' || f.key === 'brand' || f.key === 'carMake') return { ...f, type: 'select' as const, options: bOpts };
     if (f.key === 'model') {
+      // When brand is "أخرى", user types the model freely (no catalog exists)
+      if (cBrand === 'أخرى' || cBrand === 'Other') {
+        return { ...f, type: 'text' as const };
+      }
       const disabled = !cBrand;
       return { ...f, type: 'select' as const, options: mOpts, disabled };
     }

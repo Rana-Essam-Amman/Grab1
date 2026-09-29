@@ -32,7 +32,13 @@ export function useEditListing() {
 
   const fields = useMemo(() => getFieldsForListing(categorySlug, subcategorySlug).map((f) => {
     if (f.key === 'make' || f.key === 'brand' || f.key === 'carMake') return { ...f, type: 'select' as const, options: bOpts };
-    if (f.key === 'model') return { ...f, type: 'select' as const, options: mOpts, disabled: !cBrand };
+    if (f.key === 'model') {
+      // When brand is "أخرى", user types the model freely (no catalog exists)
+      if (cBrand === 'أخرى' || cBrand === 'Other') {
+        return { ...f, type: 'text' as const };
+      }
+      return { ...f, type: 'select' as const, options: mOpts, disabled: !cBrand };
+    }
     return f;
   }), [categorySlug, subcategorySlug, bOpts, mOpts, cBrand]);
 
