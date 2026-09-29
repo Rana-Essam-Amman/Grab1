@@ -36,16 +36,19 @@ export function useAiReviewAttributes(
   return useMemo(() => {
     return rawFields.map((f) => {
       if (f.key === 'make' || f.key === 'brand' || f.key === 'carMake') {
-        return { ...f, type: 'select' as const, options: brandOptions };
+        // Category has brand catalog → dropdown; otherwise → free text
+        return brandOptions.length > 0
+          ? { ...f, type: 'select' as const, options: brandOptions }
+          : { ...f, type: 'text' as const };
       }
       if (f.key === 'model') {
-        // When brand is "أخرى", user types the model freely (no catalog exists)
-        if (currentBrand === 'أخرى' || currentBrand === 'Other') {
+        // Free text when: no brand yet, brand is "أخرى", or brand has no models
+        if (!currentBrand || currentBrand === 'أخرى' || currentBrand === 'Other' || modelOptions.length === 0) {
           return { ...f, type: 'text' as const };
         }
         return { ...f, type: 'select' as const, options: modelOptions };
       }
       return f;
     });
-  }, [rawFields, brandOptions, modelOptions]);
+  }, [rawFields, brandOptions, modelOptions, currentBrand]);
 }

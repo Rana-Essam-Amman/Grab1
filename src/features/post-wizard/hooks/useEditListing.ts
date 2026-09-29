@@ -31,13 +31,18 @@ export function useEditListing() {
   const mOpts = useMemo(() => cBrand ? getModelOptions(categorySlug, cBrand, isArabic) : [], [categorySlug, cBrand, isArabic]);
 
   const fields = useMemo(() => getFieldsForListing(categorySlug, subcategorySlug).map((f) => {
-    if (f.key === 'make' || f.key === 'brand' || f.key === 'carMake') return { ...f, type: 'select' as const, options: bOpts };
+    if (f.key === 'make' || f.key === 'brand' || f.key === 'carMake') {
+      // Category has brand catalog → dropdown; otherwise → free text
+      return bOpts.length > 0
+        ? { ...f, type: 'select' as const, options: bOpts }
+        : { ...f, type: 'text' as const };
+    }
     if (f.key === 'model') {
-      // When brand is "أخرى", user types the model freely (no catalog exists)
-      if (cBrand === 'أخرى' || cBrand === 'Other') {
+      // Free text when: no brand yet, brand is "أخرى", or brand has no models
+      if (!cBrand || cBrand === 'أخرى' || cBrand === 'Other' || mOpts.length === 0) {
         return { ...f, type: 'text' as const };
       }
-      return { ...f, type: 'select' as const, options: mOpts, disabled: !cBrand };
+      return { ...f, type: 'select' as const, options: mOpts };
     }
     return f;
   }), [categorySlug, subcategorySlug, bOpts, mOpts, cBrand]);
