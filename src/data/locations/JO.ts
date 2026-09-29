@@ -7,7 +7,15 @@ export const JO_EN: CountryLocations = {
     'Tabarbour', 'Abu Alanda', 'Sahab', 'Wadi Al Seer', 'Bayader Wadi Al Seer', 'Naour',
     'Marj Al Hamam', 'Abu Nussair', 'Sweileh', 'Shafa Badran', 'Umm Al Summaq', 'Deir Ghbar',
     'Ras Al Ain', 'Al Madina', 'Al Qweismeh', 'Al Muqabalain', 'Al Yarmouk', 'Al Jizah',
-    'Al Juwaideh', 'Al Manara', 'Dahiyat Al Amir Hasan'
+    'Al Juwaideh', 'Al Manara', 'Dahiyat Al Amir Hasan',
+    'Al Karameh', 'Al Zaheer', 'Dahiyat Al Arz', 'Al Sahaba', 'Rujm Omaish',
+    'Al Bnayyat Al Shamaliyah', 'Al Bnayyat Al Janoubiyah', 'Al Furqan', 'Ghamdan',
+    'Iskan Al Hilal', 'Al Huwaiti', 'Dahiyat Al Nakheel', 'Iskan Al Tayyareen',
+    'Dahiyat Al Farouq', 'Al Amal', 'Al Abrar', 'Al Safa', 'Al Rabee', 'Al Hidaya',
+    'Umm Rummanah', 'Al Tunayb', 'Manja', 'Umm Al Walid',
+    'Zizya East', 'Zizya West', 'Zizya South', 'Al Mushatta',
+    'Al Thuraya', 'Al Majidiyah', 'Al Thalatheen', 'Nitl', 'Al Lubban', 'Umm Qasr',
+    'Areenbeh', 'Al Khraym', 'Dabaa'
   ],
   Irbid: [
     'Irbid City', 'University Street', 'Al Hoson', 'Hakama', 'Ramtha', 'Al Mazar Al Shamali',
@@ -63,7 +71,14 @@ export const JO_AR: CountryLocations = {
     'وسط البلد', 'جبل عمّان', 'جبل اللويبدة', 'جبل الحسين', 'جبل النصر', 'ماركا', 'طبربور',
     'أبو علندا', 'سحاب', 'وادي السير', 'بيادر وادي السير', 'ناعور', 'مرج الحمام', 'أبو نصير',
     'صويلح', 'شفا بدران', 'أم السماق', 'دير غبار', 'رأس العين', 'المدينة', 'القويسمة', 'المقابلين',
-    'اليرموك', 'الجيزة', 'الجويدة', 'المنارة', 'ضاحية الأمير حسن'
+    'اليرموك', 'الجيزة', 'الجويدة', 'المنارة', 'ضاحية الأمير حسن',
+    'الكرامة', 'الظهير', 'ضاحية الأرز', 'الصحابة', 'رجم عميش',
+    'البنيات الشمالية', 'البنيات الجنوبية', 'الفرقان', 'غمدان', 'إسكان الهلال', 'الحويطي',
+    'ضاحية النخيل', 'إسكان الطيارين', 'ضاحية الفاروق', 'الأمل', 'الأبرار', 'الصفاء', 'الربيع', 'الهداية',
+    'أم رمانة', 'الطنيب', 'منجا', 'أم الوليد',
+    'زيزيا الشرقي', 'زيزيا الغربي', 'زيزيا الجنوبي', 'المشتى',
+    'أراضي الثريا', 'الماجدية', 'الثلاثين', 'نتل', 'اللبن', 'أم قصر',
+    'أرينبة', 'الخريم', 'ضبعة'
   ],
   'إربد': [
     'مدينة إربد', 'شارع الجامعة', 'الحصن', 'حكما', 'الرمثا', 'المزار الشمالي', 'بني كنانة',
