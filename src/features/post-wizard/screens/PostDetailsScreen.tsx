@@ -1,10 +1,10 @@
 import React from 'react';
 import { Button } from '@/shared/ui/Button';
-import { MissingFieldsNotice } from '@/shared/ui/MissingFieldsNotice';
 import { usePostDetails } from '../hooks/usePostDetails';
 import { useUI } from '@/hooks/useUI';
 import { PostFlowHeader } from '../components/PostFlowHeader';
 import { PostDetailsFormFields } from '../components/PostDetailsFormFields';
+import { MissingFieldsNotice } from '@/shared/ui/MissingFieldsNotice';
 
 export const PostDetailsScreen: React.FC = () => {
   const { isArabic, goBack } = useUI();
@@ -18,6 +18,8 @@ export const PostDetailsScreen: React.FC = () => {
     canContinue,
     handleContinue,
     submitAttempted,
+    isPublishing,
+    error,
   } = usePostDetails();
 
   return (
@@ -47,13 +49,21 @@ export const PostDetailsScreen: React.FC = () => {
 
         <MissingFieldsNotice isArabic={isArabic} fields={missingRequired} />
 
+        {error && (
+          <div className="rounded-2xl bg-danger/5 border border-danger/20 px-4 py-3">
+            <p className="text-xs font-bold text-danger">{error}</p>
+          </div>
+        )}
+
         <Button
           onClick={handleContinue}
-          disabled={!canContinue}
+          disabled={!canContinue || isPublishing}
           size="lg"
           fullWidth
         >
-          {isArabic ? 'متابعة للمراجعة' : 'Continue to Review'}
+          {isPublishing
+            ? (isArabic ? 'جاري النشر...' : 'Publishing...')
+            : (isArabic ? 'انشر الإعلان' : 'Publish Now')}
         </Button>
 
         <div className="h-8"></div>
