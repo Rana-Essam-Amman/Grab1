@@ -29,7 +29,7 @@ export function computeListingDerivedData(listing: Listing | null, isArabic: boo
   const neighborhood = listing?.neighborhood || '';
 
   const sanitizedLoc = listing
-    ? getSanitizedRegionalLocation(countryCode, city, neighborhood, isArabic ? 'ar' : 'en')
+    ? getSanitizedRegionalLocation(countryCode, city, neighborhood, isArabic ? 'ar' : 'en', { allowUnknown: true })
     : { city: '', neighborhood: '' };
 
   const locationText = sanitizedLoc.neighborhood ? `${sanitizedLoc.neighborhood}, ${sanitizedLoc.city}` : sanitizedLoc.city;
