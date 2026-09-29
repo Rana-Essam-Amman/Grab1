@@ -73,7 +73,7 @@ describe('AiReviewBody — v5 inline-edit architecture', () => {
 
   it('renders missing fields message when missingRequiredLabels not empty', () => {
     render(<AiReviewBody {...defaultProps} />);
-    const el = screen.getByText(/Complete:/);
+    const el = screen.getByText(/Required fields:/);
     expect(el).toBeInTheDocument();
   });
 });
