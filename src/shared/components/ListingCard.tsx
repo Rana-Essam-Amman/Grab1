@@ -23,7 +23,8 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
         listing.countryCode,
         listing.city,
         listing.neighborhood,
-        isArabic ? 'ar' : 'en'
+        isArabic ? 'ar' : 'en',
+        { allowUnknown: true }
       ),
     [listing.countryCode, listing.city, listing.neighborhood, isArabic]
   );

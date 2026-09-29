@@ -8,7 +8,7 @@ export const sanitizeListingData = (listing: Listing, activeCountry: string, isA
   if (!country) {
     throw new Error('Market Isolation Violation: Listing market parameter is required and cannot be omitted.');
   }
-  const sanitizedLoc = getSanitizedRegionalLocation(country, listing.city, listing.neighborhood, isArabic ? 'ar' : 'en');
+  const sanitizedLoc = getSanitizedRegionalLocation(country, listing.city, listing.neighborhood, isArabic ? 'ar' : 'en', { allowUnknown: true });
   const sanitizedCurr = getSanitizedCurrency(country, listing.currency);
 
   return {
