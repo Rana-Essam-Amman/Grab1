@@ -62,10 +62,8 @@ export const subcategories: Record<string, SubcategoryDef[]> = {
     { slug: 'perfumes', nameEn: 'Perfumes & Fragrances', nameAr: 'عطور' },
   ],
   services: [
-    { slug: 'maintenance', nameEn: 'Home Maintenance', nameAr: 'صيانة منزلية' },
     { slug: 'delivery', nameEn: 'Delivery & Transport', nameAr: 'توصيل ونقل' },
     { slug: 'events', nameEn: 'Events & Catering', nameAr: 'مناسبات وضيافة' },
-    { slug: 'cleaning', nameEn: 'Cleaning Services', nameAr: 'خدمات تنظيف' },
     { slug: 'design', nameEn: 'Design & Marketing', nameAr: 'تصميم وتسويق' },
     { slug: 'tutor', nameEn: 'Private Tutoring', nameAr: 'دروس خصوصية' },
   ],
