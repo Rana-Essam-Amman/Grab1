@@ -7,6 +7,10 @@ export function validateRegionalSanity(
 ): boolean {
   if (!countryCode || !city) return false;
 
+  // Accept "Other" as an explicit opt-out for both city and neighborhood.
+  if (city === 'Other' || city === 'أخرى') return true;
+  if (neighborhood === 'Other' || neighborhood === 'أخرى') return true;
+
   const countryDataEn = locations[countryCode];
   const countryDataAr = locationsAr[countryCode];
 

@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { usePostWizard } from './usePostWizard';
 import { useUI } from '@/hooks/useUI';
-import { locations, locationsAr } from '@/data/locations';
+import { locationsWithOther, locationsArWithOther } from '@/data/locations';
 import { googleSearchQuery } from '@/data/mapUrls';
 
 export interface UseLocationPickReturn {
@@ -22,7 +22,7 @@ export function useLocationPick(): UseLocationPickReturn {
   const { isArabic, browseCountryCode, navigateTo } = useUI();
 
   const citiesRecord = useMemo(() => {
-    return isArabic ? locationsAr[browseCountryCode] : locations[browseCountryCode];
+    return isArabic ? locationsArWithOther[browseCountryCode] : locationsWithOther[browseCountryCode];
   }, [isArabic, browseCountryCode]);
 
   const cities = useMemo(() => Object.keys(citiesRecord || {}), [citiesRecord]);

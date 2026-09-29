@@ -2,7 +2,7 @@ import React from 'react';
 import { CloseCircle } from 'iconsax-react';
 import { Drawer } from '@/shared/ui/Drawer';
 import { CountrySheetCities } from '@/shared/components/markets/CountrySheetCities';
-import { locations, locationsAr } from '@/data/locations';
+import { locationsWithOther, locationsArWithOther } from '@/data/locations';
 
 interface AiReviewCityDrawerProps {
   readonly isArabic: boolean;
@@ -16,8 +16,8 @@ interface AiReviewCityDrawerProps {
 export const AiReviewCityDrawer: React.FC<AiReviewCityDrawerProps> = ({
   isArabic, open, onClose, browseCountryCode, currentCity, onSelect,
 }) => {
-  const citiesEn = Object.keys(locations[browseCountryCode] || {});
-  const citiesAr = Object.keys(locationsAr[browseCountryCode] || {});
+  const citiesEn = Object.keys(locationsWithOther[browseCountryCode] || {});
+  const citiesAr = Object.keys(locationsArWithOther[browseCountryCode] || {});
   const currentIdx = citiesEn.indexOf(currentCity);
   const currentCityAr = currentIdx >= 0 ? (citiesAr[currentIdx] || currentCity) : currentCity;
 
