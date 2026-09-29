@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from '@/shared/ui/Button';
+import { MissingFieldsNotice } from '@/shared/ui/MissingFieldsNotice';
 import { useUI } from '@/hooks/useUI';
 import { PostFlowHeader } from '../components/PostFlowHeader';
 import { PostDetailsFormFields } from '../components/PostDetailsFormFields';
@@ -58,14 +59,7 @@ export const EditListingScreen: React.FC = () => {
           submitAttempted={submitAttempted}
         />
 
-        {missingRequired.length > 0 && (
-          <div className="rounded-2xl bg-danger/5 border border-danger/20 px-4 py-3">
-            <p className="text-xs font-bold text-danger mb-1">
-              {isArabic ? 'يرجى ملء الحقول المطلوبة:' : 'Required fields:'}
-            </p>
-            <p className="text-xs text-ink-soft">{missingRequired.join(' · ')}</p>
-          </div>
-        )}
+        <MissingFieldsNotice isArabic={isArabic} fields={missingRequired} />
 
         <Button onClick={handleSave} disabled={!canSave} size="lg" fullWidth>
           {isArabic ? 'حفظ التعديلات' : 'Save Changes'}

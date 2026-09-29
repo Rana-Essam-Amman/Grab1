@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { MissingFieldsNotice } from '@/shared/ui/MissingFieldsNotice';
 import { AiReviewPhotoHero } from './AiReviewPhotoHero';
 import { AiReviewInlineEdit } from './AiReviewInlineEdit';
 import { AiReviewSpecsChips } from './AiReviewSpecsChips';
@@ -76,13 +77,7 @@ export const AiReviewBody: React.FC<AiReviewBodyProps> = ({
           <AiReviewLocationSection isArabic={isArabic} city={city} neighborhood={neighborhood} mapQuery={mapQuery} onOpenCityPicker={onOpenCityPicker} onOpenNeighborhoodPicker={onOpenNeighborhoodPicker} />
         </AiReviewSectionCard>
 
-        {missingRequiredLabels.length > 0 && (
-          <div className="text-center pt-1">
-            <span className="text-[11px] font-bold text-danger/80">
-              {isArabic ? 'أكمل: ' : 'Complete: '}{missingRequiredLabels.join(' · ')}
-            </span>
-          </div>
-        )}
+        <MissingFieldsNotice isArabic={isArabic} fields={missingRequiredLabels} className="mb-2" />
       </div>
     </div>
   );

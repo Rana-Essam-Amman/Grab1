@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from '@/shared/ui/Button';
+import { MissingFieldsNotice } from '@/shared/ui/MissingFieldsNotice';
 import { usePostDetails } from '../hooks/usePostDetails';
 import { useUI } from '@/hooks/useUI';
 import { PostFlowHeader } from '../components/PostFlowHeader';
@@ -44,14 +45,7 @@ export const PostDetailsScreen: React.FC = () => {
           submitAttempted={submitAttempted}
         />
 
-        {missingRequired.length > 0 && (
-          <div className="rounded-2xl bg-danger/5 border border-danger/20 px-4 py-3">
-            <p className="text-xs font-bold text-danger mb-1">
-              {isArabic ? 'يرجى ملء الحقول المطلوبة:' : 'Required fields:'}
-            </p>
-            <p className="text-xs text-ink-soft">{missingRequired.join(' · ')}</p>
-          </div>
-        )}
+        <MissingFieldsNotice isArabic={isArabic} fields={missingRequired} />
 
         <Button
           onClick={handleContinue}
@@ -61,6 +55,7 @@ export const PostDetailsScreen: React.FC = () => {
         >
           {isArabic ? 'متابعة للمراجعة' : 'Continue to Review'}
         </Button>
+
         <div className="h-8"></div>
       </div>
     </div>
