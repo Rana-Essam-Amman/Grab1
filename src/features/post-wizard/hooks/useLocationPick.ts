@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { usePostWizard } from './usePostWizard';
 import { useUI } from '@/hooks/useUI';
-import { locationsWithOther, locationsArWithOther } from '@/data/locations';
+import { locationsWithOther, locationsArWithOther, isOtherValue } from '@/data/locations';
 import { googleSearchQuery } from '@/data/mapUrls';
 
 export interface UseLocationPickReturn {
@@ -10,6 +10,10 @@ export interface UseLocationPickReturn {
   selectedCity: string;
   selectedNeighborhood: string;
   site: string;
+  readonly customCity: string;
+  readonly setCustomCity: (v: string) => void;
+  readonly customNeighborhood: string;
+  readonly setCustomNeighborhood: (v: string) => void;
   handleCityChange: (c: string) => void;
   handleNeighborhoodChange: (n: string) => void;
   handleSiteChange: (s: string) => void;
@@ -26,26 +30,50 @@ export function useLocationPick(): UseLocationPickReturn {
   }, [isArabic, browseCountryCode]);
 
   const cities = useMemo(() => Object.keys(citiesRecord || {}), [citiesRecord]);
-
-  const [selectedCity, setSelectedCity] = useState(postDraft.city || cities[0] || '');
-  const [selectedNeighborhood, setSelectedNeighborhood] = useState(postDraft.neighborhood || (citiesRecord?.[selectedCity]?.[0] || ''));
-  const [site, setSite] = useState(postDraft.site || '');
+  const [selectedCity, setSelectedCity] = useState(postDraft.city || cities[0] || "");
+  const [selectedNeighborhood, setSelectedNeighborhood] = useState(postDraft.neighborhood || (citiesRecord?.[selectedCity]?.[0] || ""));
+  const [site, setSite] = useState(postDraft.site || "");
+  const [customCity, setCustomCity] = useState("");
+  const [customNeighborhood, setCustomNeighborhood] = useState("");
 
   const handleCityChange = useCallback((c: string) => {
     setSelectedCity(c);
+    setCustomCity("");
     const hoods = citiesRecord?.[c] || [];
-    setSelectedNeighborhood(hoods[0] || '');
+    setSelectedNeighborhood(hoods[0] || "");
+    setCustomNeighborhood("");
   }, [citiesRecord]);
 
-  const handleNeighborhoodChange = useCallback((n: string) => setSelectedNeighborhood(n), []);
+  const handleNeighborhoodChange = useCallback((n: string) => {
+    setSelectedNeighborhood(n);
+    setCustomNeighborhood("");
+  }, []);
+
   const handleSiteChange = useCallback((s: string) => setSite(s), []);
 
   const mapQuery = useMemo(() => googleSearchQuery({ city: selectedCity, area: selectedNeighborhood, site }), [selectedCity, selectedNeighborhood, site]);
 
   const saveAndContinue = useCallback(() => {
-    updatePostDraft({ city: selectedCity, neighborhood: selectedNeighborhood, site });
-    navigateTo('post-details');
-  }, [selectedCity, selectedNeighborhood, site, updatePostDraft, navigateTo]);
+    const finalCity = isOtherValue(selectedCity) && customCity.trim() ? customCity.trim() : selectedCity;
+    const finalNeighborhood = isOtherValue(selectedNeighborhood) && customNeighborhood.trim() ? customNeighborhood.trim() : selectedNeighborhood;
+    updatePostDraft({ city: finalCity, neighborhood: finalNeighborhood, site });
+    navigateTo("post-details");
+  }, [selectedCity, selectedNeighborhood, customCity, customNeighborhood, site, updatePostDraft, navigateTo]);
 
-  return { cities, neighborhoods: citiesRecord?.[selectedCity] || [], selectedCity, selectedNeighborhood, site, handleCityChange, handleNeighborhoodChange, handleSiteChange, mapQuery, saveAndContinue };
+  return {
+    cities,
+    neighborhoods: citiesRecord?.[selectedCity] || [],
+    selectedCity,
+    selectedNeighborhood,
+    site,
+    customCity,
+    setCustomCity,
+    customNeighborhood,
+    setCustomNeighborhood,
+    handleCityChange,
+    handleNeighborhoodChange,
+    handleSiteChange,
+    mapQuery,
+    saveAndContinue,
+  };
 }
