@@ -63,6 +63,11 @@ export const LocationFields: React.FC<Props> = ({
           <select value={selectedNeighborhood} onChange={(e) => onNeighborhoodChange(e.target.value)} className="w-full h-11 px-3.5 rounded-xl bg-surface border border-border text-sm text-ink focus:outline-none focus:border-primary">
             {neighborhoods.map((hood) => <option key={hood} value={hood}>{hood}</option>)}
           </select>
+
+          {/* TEMP DEBUG */}
+          <div data-testid="loc-debug" style={{ padding: 6, marginTop: 6, background: '#fef3c7', border: '1px solid #f59e0b', borderRadius: 6, fontSize: 10, fontFamily: 'monospace', direction: 'ltr', wordBreak: 'break-all' }}>
+            DEBUG: selCity=[{selectedCity}] selHood=[{selectedNeighborhood}] isOther={String(isOtherValue(selectedNeighborhood))} hoods={neighborhoods.length}
+          </div>
           {isOtherValue(selectedNeighborhood) && (
             <Input
               label={isArabic ? "اكتب اسم المنطقة" : "Type neighborhood name"}

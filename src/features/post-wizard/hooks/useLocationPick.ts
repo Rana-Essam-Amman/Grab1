@@ -45,6 +45,8 @@ export function useLocationPick(): UseLocationPickReturn {
   }, [citiesRecord]);
 
   const handleNeighborhoodChange = useCallback((n: string) => {
+    // eslint-disable-next-line no-console
+    console.log('[DEBUG-LOC] hood change', { newValue: n, isOther: isOtherValue(n) });
     setSelectedNeighborhood(n);
     setCustomNeighborhood("");
   }, []);

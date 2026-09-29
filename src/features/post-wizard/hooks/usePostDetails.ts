@@ -65,19 +65,23 @@ export function usePostDetails() {
       return;
     }
 
-    const prepared = preparePublish({ postDraft, draftData, user, browseCountryCode, activeCurrency });
-    if (!prepared) return;
-
     setIsPublishing(true);
     setError(null);
     try {
+      const prepared = preparePublish({ postDraft, draftData, user, browseCountryCode, activeCurrency });
+      if (!prepared) {
+        setError('DEBUG: missing title or price');
+        return;
+      }
       addListing(prepared.newListing, prepared.targetMarket, isArabic);
       resetPostDraft();
       setActiveTab('my-ads');
       navigateTo('main');
     } catch (err) {
       console.error('[PUBLISH ERROR]', err);
-      setError('فشل نشر الإعلان');
+      const msg = err instanceof Error ? err.message : String(err);
+      const stack = err instanceof Error ? (err.stack || '').slice(0, 300) : '';
+      setError(`DEBUG: ${msg} | ${stack}`);
     } finally {
       setIsPublishing(false);
     }
