@@ -1,6 +1,10 @@
 import React from 'react';
-import { categories } from '@/data/categories';
+import { categoryBySlug } from '@/data/categories';
 import { ArrowRight2, ArrowLeft2 } from 'iconsax-react';
+
+// Curated order — intentional, not file-order-dependent.
+// Projects/Handymen/Cleaning are our differentiators (unique to Grab The Deals).
+const FEATURED_SLUGS = ['motors', 'real-estate', 'projects', 'handymen', 'cleaning', 'electronics'] as const;
 
 export interface ExploreCategoryGridProps {
   isArabic: boolean;
@@ -22,7 +26,7 @@ export const ExploreCategoryGrid: React.FC<ExploreCategoryGridProps> = React.mem
       </div>
 
       <div className="grid grid-cols-3 gap-2 px-4 mt-0.5">
-        {categories.slice(0, 6).map((cat) => (
+        {FEATURED_SLUGS.map((slug) => categoryBySlug(slug)).map((cat) => (
           <button key={cat.slug} onClick={() => onCategoryClick(cat.slug)} className="border-none bg-transparent hover:scale-105 transition-all outline-none cursor-pointer w-[85px] flex flex-col items-center mx-auto">
             <div className="w-16 h-16 rounded-full overflow-hidden bg-transparent flex items-center justify-center">
               <img src={cat.asset} alt={isArabic ? cat.nameAr : cat.nameEn} className="w-full h-full object-cover" />
