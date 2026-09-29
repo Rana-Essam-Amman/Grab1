@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { useUI } from '@/hooks/useUI';
 import { categoryBySlug } from '@/data/categories';
 import { findSubcategoryBySlug } from '@/data/subcategories';
-import { locations, locationsAr } from '@/data/locations';
+import { locationsWithOther as locations, locationsArWithOther as locationsAr } from '@/data/locations';
 import { ExploreFilterChipsBar } from './ExploreFilterChipsBar';
 import { ExploreActiveCategoryBanner } from './ExploreActiveCategoryBanner';
 import { ExploreCategoryFilterDrawer } from './ExploreCategoryFilterDrawer';

@@ -2,7 +2,7 @@ import { useUI } from '@/hooks/useUI';
 import { useAuth } from '@/hooks/useAuth';
 import { useListings } from '@/hooks/useListings';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { locations, locationsAr } from '@/data/locations';
+import { locationsWithOther as locations, locationsArWithOther as locationsAr } from '@/data/locations';
 import { Button } from '@/shared/ui/Button';
 import { Avatar } from '@/shared/ui/Avatar';
 import { HeaderDropdownMenu } from './HeaderDropdownMenu';

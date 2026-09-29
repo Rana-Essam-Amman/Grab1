@@ -2,7 +2,7 @@ import { useUI } from '@/hooks/useUI';
 import { useAuth } from '@/hooks/useAuth';
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { countries } from '@/data/countries';
-import { locations, locationsAr } from '@/data/locations';
+import { locationsWithOther as locations, locationsArWithOther as locationsAr } from '@/data/locations';
 import { Lock1, CloseCircle } from 'iconsax-react';
 import { Drawer } from '@/shared/ui/Drawer';
 import { CountrySelectorTabs } from './CountrySelectorTabs';

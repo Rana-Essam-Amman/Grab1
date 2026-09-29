@@ -6,7 +6,7 @@ import { AiReviewHeader } from '../components/AiReviewHeader';
 import { AiReviewBody } from '../components/AiReviewBody';
 import { AiReviewCityDrawer } from '../components/AiReviewCityDrawer';
 import { ExploreLocationFilterDrawer } from '@/shared/components/filters/ExploreLocationFilterDrawer';
-import { locations, locationsAr } from '@/data/locations';
+import { locationsWithOther as locations, locationsArWithOther as locationsAr } from '@/data/locations';
 
 export const AiReviewScreen: React.FC = () => {
   const { isArabic, goBack, activeCurrency, browseCountryCode } = useUI();

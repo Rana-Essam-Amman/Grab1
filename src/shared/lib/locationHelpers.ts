@@ -1,4 +1,4 @@
-import { locations, locationsAr } from '@/data/locations';
+import { locationsWithOther as locations, locationsArWithOther as locationsAr } from '@/data/locations';
 
 export const getCityPair = (cityName: string, countryCode: string): { cityEn: string; cityAr: string } => {
   const code = (countryCode as 'JO' | 'SA' | 'LB' | 'PS' | 'SY') || 'JO';
