@@ -37,7 +37,6 @@ export function buildNewListingPayload({
     views: 1,
     status: 'active',
     attributes: [
-      { key: 'category', label: 'Category', value: postDraft.categorySlug },
       { key: 'city', label: 'City', value: postDraft.city || '' },
     ] as unknown as Listing['attributes'],
   };
