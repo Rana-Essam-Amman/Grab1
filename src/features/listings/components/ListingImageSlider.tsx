@@ -19,7 +19,7 @@ export const ListingImageSlider: React.FC<ListingImageSliderProps> = React.memo(
       <img
         src={images[activeIdx]}
         alt="Listing image"
-        className="w-full h-full object-contain transition-all duration-300"
+        className="w-full h-full object-cover transition-all duration-300"
         onError={(e) => {
           (e.target as HTMLImageElement).src =
             'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="400" height="300" fill="%23E5E7EB"/><text x="200" y="150" font-size="16" text-anchor="middle" fill="%234B5563">Catch</text></svg>';
