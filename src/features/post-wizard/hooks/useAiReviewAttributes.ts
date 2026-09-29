@@ -18,8 +18,11 @@ export function useAiReviewAttributes(
   rawFields: readonly RawField[],
   isArabic: boolean
 ): readonly AttributeWithOptions[] {
-  const brandKey = categorySlug === 'motors' ? 'make' : 'brand';
-  const currentBrand = rawFields.find((a) => a.key === brandKey)?.value || '';
+  const currentBrand =
+    rawFields.find((a) => a.key === 'make')?.value ||
+    rawFields.find((a) => a.key === 'brand')?.value ||
+    rawFields.find((a) => a.key === 'carMake')?.value ||
+    '';
 
   const brandOptions = useMemo(
     () => getBrandOptions(categorySlug, isArabic),
@@ -32,7 +35,7 @@ export function useAiReviewAttributes(
 
   return useMemo(() => {
     return rawFields.map((f) => {
-      if (f.key === 'make' || f.key === 'brand') {
+      if (f.key === 'make' || f.key === 'brand' || f.key === 'carMake') {
         return { ...f, type: 'select' as const, options: brandOptions };
       }
       if (f.key === 'model') {
