@@ -7,7 +7,11 @@ export interface ListingAttributesCardProps {
 }
 
 export const ListingAttributesCard: React.FC<ListingAttributesCardProps> = React.memo(({ attributes, isArabic }) => {
-  if (!attributes || attributes.length === 0) return null;
+  const LEGACY_HIDDEN = new Set(['category', 'city']);
+  const visible = (attributes || []).filter(
+    (a) => !LEGACY_HIDDEN.has((a as { key?: string }).key || '')
+  );
+  if (visible.length === 0) return null;
 
   return (
     <Card variant="default" className="p-4">
@@ -15,7 +19,7 @@ export const ListingAttributesCard: React.FC<ListingAttributesCardProps> = React
         {isArabic ? 'المواصفات الرئيسية' : 'Key Specifications'}
       </h3>
       <div className="grid grid-cols-2 gap-2">
-        {attributes.map((attr, i) => (
+        {visible.map((attr, i) => (
           <div key={i} className="p-2.5 rounded-xl bg-surface border border-border/60">
             <div className="text-[11px] text-ink-muted font-medium">{attr.label}</div>
             <div className="text-xs font-bold text-ink mt-0.5">{attr.value}</div>

@@ -3,7 +3,7 @@ export interface SpecChip {
   readonly value: string;
 }
 
-const REDUNDANT_LABELS = /^(make\s*\/?\s*model|brand|الماركة|الموديل|ماركة|موديل|الماركة\s+و\s+الموديل|الماركة\s*\/\s*الموديل)$/i;
+const REDUNDANT_LABELS = /^(make\s*\/?\s*model|brand|الماركة|الموديل|ماركة|موديل|الماركة\s+و\s+الموديل|الماركة\s*\/\s*الموديل|category|city|القسم|المدينة)$/i;
 
 const appendUnit = (label: string, value: string): string => {
   const l = label.toLowerCase();
