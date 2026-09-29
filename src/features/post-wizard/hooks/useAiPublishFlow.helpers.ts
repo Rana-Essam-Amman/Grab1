@@ -26,7 +26,7 @@ export interface FallbackParams {
 }
 
 export function buildAppliedDraft(params: AIResultParams) {
-  const { generated, match, raw, photos, browseCityAr, categoryForAI, subForAI } = params;
+  const { generated, match, raw, photos, categoryForAI, subForAI } = params;
   const finalCategory = generated.categorySlug || categoryForAI || 'krakeeb';
   const finalSub = generated.subcategorySlug || subForAI;
   return {
@@ -34,7 +34,7 @@ export function buildAppliedDraft(params: AIResultParams) {
     photos,
     categorySlug: finalCategory,
     subcategorySlug: finalSub,
-    city: generated.city || browseCityAr,
+    city: generated.city || '',
     generated: {
       ...generated,
       categorySlug: finalCategory,
@@ -45,7 +45,7 @@ export function buildAppliedDraft(params: AIResultParams) {
 }
 
 export function buildFallbackDraft(params: FallbackParams) {
-  const { raw, photos, isArabic, browseCityAr, browseCountryCode, categorySlug, subcategorySlug, match } = params;
+  const { raw, photos, isArabic, browseCountryCode, categorySlug, subcategorySlug, match } = params;
   const copy = writeListingCopy({ raw, arabic: isArabic, categorySlug, countryCode: browseCountryCode });
   const sub = subcategorySlug || '';
   return {
@@ -53,12 +53,12 @@ export function buildFallbackDraft(params: FallbackParams) {
     photos,
     categorySlug,
     subcategorySlug: sub,
-    city: browseCityAr,
+    city: '',
     generated: {
       title: copy.title,
       description: copy.body,
       price: copy.facts.price || '',
-      city: browseCityAr,
+      city: '',
       categorySlug,
       subcategorySlug: sub,
       categoryMatch: match,

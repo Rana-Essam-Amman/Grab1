@@ -34,7 +34,7 @@ export const ConfirmScreen: React.FC = () => {
         price: gen.price || '0',
         currency: activeCurrency as Listing['currency'],
         countryCode: browseCountryCode as Listing['countryCode'],
-        city: postDraft.city || 'عمّان',
+        city: postDraft.city || '',
         neighborhood: postDraft.neighborhood || '',
         categorySlug: gen.categorySlug || postDraft.categorySlug,
         subcategorySlug: gen.subcategorySlug || postDraft.subcategorySlug,
