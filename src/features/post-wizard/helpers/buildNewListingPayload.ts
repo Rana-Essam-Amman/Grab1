@@ -38,6 +38,9 @@ export function buildNewListingPayload({
     status: 'active',
     attributes: [
       { key: 'city', label: 'City', value: postDraft.city || '' },
+      ...(postDraft.generated?.fields || [])
+        .filter((f) => f.value && String(f.value).trim().length > 0)
+        .map((f) => ({ key: f.key, label: f.label, value: String(f.value) })),
     ] as unknown as Listing['attributes'],
   };
 

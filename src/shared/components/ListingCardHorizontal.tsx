@@ -26,7 +26,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
   handleClick,
   handleImageError,
 }) => {
-  const specs = useMemo(() => pickSpecs(listing.attributes, 3, listing.title), [listing.attributes, listing.title]);
+  const specs = useMemo(() => pickSpecs(listing.attributes, 5, listing.title), [listing.attributes, listing.title]);
 
   return (
     <div

@@ -42,7 +42,7 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
     [sanitizedLoc]
   );
 
-  const specs = useMemo(() => pickSpecs(listing.attributes, 3, listing.title), [listing.attributes, listing.title]);
+  const specs = useMemo(() => pickSpecs(listing.attributes, 5, listing.title), [listing.attributes, listing.title]);
 
   const handleClick = useCallback(() => {
     setSelectedListingId(listing.id);
