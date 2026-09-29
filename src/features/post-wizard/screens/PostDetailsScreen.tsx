@@ -56,6 +56,7 @@ export const PostDetailsScreen: React.FC = () => {
         )}
 
         <Button
+          data-testid="post-publish-btn"
           onClick={handleContinue}
           disabled={!canContinue || isPublishing}
           size="lg"

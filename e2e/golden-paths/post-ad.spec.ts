@@ -269,35 +269,12 @@ test.describe('Golden Path 2 — Post Ad Wizard (Steps 1-6)', () => {
     await expectNoConsoleErrors(consoleErrors);
   });
 
-  test('User can fill details and reach review (Step 5)', async ({ loggedInPage }) => {
+  test('User can fill details and publish directly (Step 5)', async ({ loggedInPage }) => {
     const consoleErrors = setupConsoleErrorListener(loggedInPage);
     await reachDetailsScreen(loggedInPage);
     await fillDetailsForm(loggedInPage);
 
-    const continueToReview = loggedInPage.locator(SELECTORS.postAd.continueToReviewBtn).first();
-    await expect(continueToReview).toBeVisible({ timeout: 5000 });
-    await expect(continueToReview).not.toBeDisabled();
-    await continueToReview.click();
-
-    const reviewHeader = loggedInPage.locator('text=مراجعة الإعلان').or(loggedInPage.locator('text=Review Listing')).first();
-    await expect(reviewHeader).toBeVisible({ timeout: 10000 });
-
-    await expectNoConsoleErrors(consoleErrors);
-  });
-
-  test('User can publish the listing (Step 6)', async ({ loggedInPage }) => {
-    const consoleErrors = setupConsoleErrorListener(loggedInPage);
-    await reachDetailsScreen(loggedInPage);
-    await fillDetailsForm(loggedInPage);
-
-    const continueToReview = loggedInPage.locator(SELECTORS.postAd.continueToReviewBtn).first();
-    await expect(continueToReview).not.toBeDisabled();
-    await continueToReview.click();
-
-    const reviewHeader = loggedInPage.locator('text=مراجعة الإعلان').or(loggedInPage.locator('text=Review Listing')).first();
-    await expect(reviewHeader).toBeVisible({ timeout: 10000 });
-
-    const publishBtn = loggedInPage.locator(SELECTORS.postAd.publishFromReviewBtn).first();
+    const publishBtn = loggedInPage.locator('[data-testid="post-publish-btn"]').first();
     await expect(publishBtn).toBeVisible({ timeout: 5000 });
     await expect(publishBtn).not.toBeDisabled();
     await publishBtn.click();
