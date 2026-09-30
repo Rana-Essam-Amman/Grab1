@@ -3,6 +3,7 @@ import { UserProfile, RegisteredAccount } from '../types';
 
 export interface AuthContextType {
   authStatus: 'initializing' | 'authenticated' | 'unauthenticated';
+  isAnonymous: boolean;
   user: UserProfile | null;
   registered: boolean;
   sessionToken: string | null;
@@ -20,10 +21,11 @@ export interface AuthContextType {
 
 export const useAuth = (): AuthContextType => {
   const store = useAuthStore();
-  const registered = Boolean(store.user && store.sessionToken);
+  const registered = Boolean(store.user && store.sessionToken && !store.isAnonymous);
 
   return {
     authStatus: store.authStatus,
+    isAnonymous: store.isAnonymous,
     user: store.user,
     registered,
     sessionToken: store.sessionToken,

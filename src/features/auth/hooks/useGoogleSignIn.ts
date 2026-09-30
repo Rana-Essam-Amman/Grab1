@@ -1,5 +1,7 @@
 import { useCallback, useState } from 'react';
 import { signInWithGoogle } from '../services/authService';
+import { linkAnonymousToGoogle } from '../services/anonymousSession';
+import { useAuthStore } from '../store/auth.slice';
 
 export interface UseGoogleSignInReturn {
   readonly isLoading: boolean;
@@ -15,7 +17,10 @@ export function useGoogleSignIn(): UseGoogleSignInReturn {
   const signIn = useCallback(async () => {
     setIsLoading(true);
     setError(null);
-    const result = await signInWithGoogle();
+    // If already in an anonymous session, LINK (preserves listings).
+    // Otherwise start a fresh Google sign-in.
+    const isAnon = useAuthStore.getState().isAnonymous;
+    const result = isAnon ? await linkAnonymousToGoogle() : await signInWithGoogle();
     if (result.error) {
       setError(result.error);
       setIsLoading(false);

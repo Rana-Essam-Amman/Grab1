@@ -13,6 +13,7 @@ export const useAuthStore = create<AuthState>()(
 
       return {
         authStatus: initialSession.authStatus,
+        isAnonymous: false,
         user: initialSession.user,
         sessionToken: initialSession.sessionToken,
         registrationPendingUser: null,
