@@ -98,7 +98,7 @@ export const Header: React.FC = () => {
           className="w-[64px] h-[64px] object-cover rounded-full shrink-0 mix-blend-lighten"
         />
         <div
-          className="cursor-pointer select-none flex-1 flex justify-center"
+          className="cursor-pointer select-none flex-1 flex justify-start ps-2"
           onClick={handleLogoClick}
         >
           <div className="flex flex-col justify-center items-center m-0 p-0">
