@@ -5,6 +5,7 @@ import { GuestCountrySelect } from './GuestCountrySelect';
 import { useTranslation } from '@/shared/i18n';
 import { useAuthProviders } from '../hooks/useAuthProviders';
 import { AuthProviderButton } from './AuthProviderButton';
+import { useGoogleSignIn } from '../hooks/useGoogleSignIn';
 
 interface LoginGatewayProps {
   isArabic: boolean;
@@ -23,13 +24,18 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
   const { t } = useTranslation();
   const { providers } = useAuthProviders();
   const [toast, setToast] = useState<string | null>(null);
+  const { isLoading: isGoogleLoading, error: googleError, signIn: signInGoogle } = useGoogleSignIn();
 
   const social = providers.filter((p) => p.id === 'google' || p.id === 'apple' || p.id === 'whatsapp');
 
-  const handleProviderTap = useCallback(() => {
+  const handleProviderTap = useCallback((providerId: string) => {
+    if (providerId === 'google') {
+      void signInGoogle();
+      return;
+    }
     setToast(isArabic ? 'قيد التجهيز — استخدم البريد مؤقتاً' : 'Coming soon — use email for now');
     setTimeout(() => setToast(null), 2200);
-  }, [isArabic]);
+  }, [isArabic, signInGoogle]);
 
   return (
     <div className="p-6 flex flex-col justify-center items-center flex-1 text-center max-w-sm mx-auto w-full">
@@ -48,8 +54,24 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
           </p>
           <div className="flex flex-col gap-3.5 w-full">
             {social.map((p) => (
-              <AuthProviderButton key={p.id} provider={p} isArabic={isArabic} onTap={handleProviderTap} />
+              <AuthProviderButton
+                key={p.id}
+                provider={p}
+                isArabic={isArabic}
+                onTap={() => handleProviderTap(p.id)}
+              />
             ))}
+
+            {isGoogleLoading && (
+              <p className="text-xs text-ink-muted mt-1">
+                {isArabic ? 'جاري التحويل إلى Google...' : 'Redirecting to Google...'}
+              </p>
+            )}
+            {googleError && (
+              <p className="text-xs text-danger font-semibold mt-1 break-words">
+                {googleError}
+              </p>
+            )}
             <div className="flex items-center gap-3 my-2 w-full">
               <div className="flex-1 h-px bg-[#E2E8F0]" />
               <span className="text-xs text-[#64748B] font-medium">{isArabic ? 'أو' : 'or'}</span>
