@@ -92,21 +92,18 @@ export const Header: React.FC = () => {
         >
           <HambergerMenu size={20} variant="Linear" color="#FFFFFF" />
         </Button>
-
+        <img
+          src="/assets/icons/logo.png"
+          alt="FOX Marketplace"
+          className="w-[64px] h-[64px] object-cover rounded-full shrink-0 mix-blend-lighten"
+        />
         <div
           className="cursor-pointer select-none flex-1 flex justify-center"
           onClick={handleLogoClick}
         >
-          <div className="flex items-center justify-center gap-6 m-0 p-0">
-            <img
-              src="/assets/icons/logo.png"
-              alt="FOX Marketplace"
-              className="w-[72px] h-[72px] object-cover rounded-full shrink-0 mix-blend-lighten"
-            />
-            <div className="flex flex-col justify-center items-center m-0 p-0">
-              <h1 className="text-[38px] font-black text-white font-cairo tracking-[4px] leading-[0.95] m-0">FOX</h1>
-              <span className="text-[10px] font-semibold text-white tracking-[7px] uppercase leading-none mt-1 m-0 block">Marketplace</span>
-            </div>
+          <div className="flex flex-col justify-center items-center m-0 p-0">
+            <h1 className="text-[38px] font-black text-white font-cairo tracking-[4px] leading-[0.95] m-0">FOX</h1>
+            <span className="text-[10px] font-semibold text-white tracking-[7px] uppercase leading-none mt-1 m-0 block">Marketplace</span>
           </div>
         </div>
 
