@@ -17,19 +17,29 @@ export const useImageUpload = (): UseImageUploadReturn => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
-    const newImages: string[] = [];
+    const validFiles: File[] = [];
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const validation = validateImageFile(file);
       if (!validation.valid) continue;
-
-      try {
-        const objectUrl = URL.createObjectURL(file);
-        newImages.push(objectUrl);
-      } catch {
-        // ignore
-      }
+      validFiles.push(file);
     }
+
+    // Read as data URLs (base64) — persist in localStorage, survive page reload.
+    const readPromises = validFiles.map(
+      (file) =>
+        new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            const result = ev.target?.result;
+            resolve(typeof result === 'string' ? result : '');
+          };
+          reader.onerror = () => resolve('');
+          reader.readAsDataURL(file);
+        })
+    );
+
+    const newImages = (await Promise.all(readPromises)).filter((url) => url.length > 0);
 
     setSelectedImages((prev) => [...prev, ...newImages].slice(0, 4));
     if (fileInputRef.current) {

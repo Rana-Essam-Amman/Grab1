@@ -28,12 +28,28 @@ export const AiReviewScreen: React.FC = () => {
   const handleFilesSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
-    const urls: string[] = [];
+
+    const readPromises: Promise<string>[] = [];
     for (let i = 0; i < files.length; i++) {
-      try { urls.push(URL.createObjectURL(files[i])); } catch { /* ignore */ }
+      const file = files[i];
+      readPromises.push(
+        new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            const result = ev.target?.result;
+            resolve(typeof result === 'string' ? result : '');
+          };
+          reader.onerror = () => resolve('');
+          reader.readAsDataURL(file);
+        })
+      );
     }
-    addPhotos(urls);
-    if (fileInputRef.current) fileInputRef.current.value = '';
+
+    void Promise.all(readPromises).then((urls) => {
+      const valid = urls.filter((url) => url.length > 0);
+      if (valid.length > 0) addPhotos(valid);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    });
   };
 
   return (
