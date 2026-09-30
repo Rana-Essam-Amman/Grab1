@@ -14,7 +14,7 @@ export interface ExploreFilterChipsBarProps {
 }
 
 export const ExploreFilterChipsBar: React.FC<ExploreFilterChipsBarProps> = React.memo(({
-  isArabic, filterMode, onFilterModeChange, feedLayout, onFeedLayoutChange, listingCount, browseCityAr, browseCityEn,
+  isArabic, filterMode: _filterMode, onFilterModeChange: _onFilterModeChange, feedLayout, onFeedLayoutChange, listingCount: _listingCount, browseCityAr, browseCityEn,
   categoryFilter, activeCategoryTitle, minPriceFilter, maxPriceFilter, activeCurrency, activeNeighborhood, onOpenDrawer,
   onClearCategory, onClearPrice, onClearNeighborhood, activeSearchText, onClearSearch,
   onDarkBackground = false,
@@ -28,13 +28,6 @@ export const ExploreFilterChipsBar: React.FC<ExploreFilterChipsBarProps> = React
     if (minPriceFilter === null && maxPriceFilter !== null) return isArabic ? `-${maxS} ${activeCurrency}` : `<${maxS} ${activeCurrency}`;
     return `${minS}-${maxS} ${activeCurrency}`;
   }, [minPriceFilter, maxPriceFilter, isArabic, activeCurrency]);
-
-  const getChipClass = (isActive: boolean) => 
-    `inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-xs font-medium transition-all duration-200 flex-shrink-0 cursor-pointer select-none ${
-      isActive 
-        ? "bg-accent/10 border-accent/40 text-accent font-semibold shadow-sm" 
-        : "bg-surface border-line text-ink hover:border-line-strong hover:bg-canvas"
-    }`;
 
   return (
     <div className="flex flex-col gap-2 font-cairo">
@@ -86,12 +79,8 @@ export const ExploreFilterChipsBar: React.FC<ExploreFilterChipsBarProps> = React
         )}
       </div>
 
-      {/* Listings Count & Layout Toggle */}
-      <div className="flex items-center justify-between px-4 pb-1">
-        <p className={`text-xs ${onDarkBackground ? 'text-white' : 'text-ink-muted'}`}>
-          {listingCount} {isArabic ? 'إعلان' : 'listings'}
-        </p>
-
+      {/* Layout Toggle */}
+      <div className="flex items-center justify-end px-4 pb-1">
         <button
           type="button"
           onClick={() => onFeedLayoutChange(feedLayout === 'list' ? 'grid' : 'list')}

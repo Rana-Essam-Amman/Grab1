@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Global, Heart, Notification, Location } from 'iconsax-react';
+import { User, Global, Heart, Notification, Location, MessageQuestion } from 'iconsax-react';
 
 interface HeaderDropdownMenuProps {
   isArabic: boolean;
@@ -120,6 +120,17 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
             </span>
             <Notification variant="Bold" size={22} color="#F59E0B" className="shrink-0" />
           </button>
+
+          <a
+            href="mailto:Sufyanyounis83@gmail.com?subject=FOX Marketplace — Feedback"
+            onClick={handleMenuClose}
+            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-[#DDE3EC]/40 active:scale-[0.99] transition-all bg-white border-none cursor-pointer no-underline"
+          >
+            <span className="text-sm font-bold text-[#0F172A]">
+              {isArabic ? 'اقتراح أو تواصل' : 'Send Feedback'}
+            </span>
+            <MessageQuestion variant="Bold" size={22} color="#06B6D4" className="shrink-0" />
+          </a>
         </div>
       </div>
     </>

@@ -33,7 +33,7 @@ export const BottomNav: React.FC = () => {
 
   return (
     <nav 
-      className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] h-[80px] bg-white border-t border-[#E2E8F0] grid grid-cols-5 z-40 px-1"
+      className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] h-[56px] bg-white border-t border-[#E2E8F0] grid grid-cols-5 z-40 px-1"
       dir={isArabic ? 'rtl' : 'ltr'}
     >
       <BottomNavItems
