@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { CloseCircle } from 'iconsax-react';
+import { CloseCircle, Call, Whatsapp, MessageText } from 'iconsax-react';
 import { useImageSwipe } from '../hooks/useImageSwipe';
 
 export interface ImageLightboxProps {
@@ -8,11 +8,16 @@ export interface ImageLightboxProps {
   onChangeIdx: (idx: number) => void;
   onClose: () => void;
   isArabic: boolean;
+  readonly onCall?: () => void;
+  readonly onWhatsApp?: () => void;
+  readonly onStartChat?: () => void;
 }
 
 export const ImageLightbox: React.FC<ImageLightboxProps> = React.memo(({
   images, activeIdx, onChangeIdx, onClose, isArabic,
+  onCall, onWhatsApp, onStartChat,
 }) => {
+  const hasActions = Boolean(onCall || onWhatsApp || onStartChat);
   const { goNext, goPrev, handleTouchStart, handleTouchEnd } =
     useImageSwipe({ images, activeIdx, onChangeIdx });
 
@@ -59,7 +64,7 @@ export const ImageLightbox: React.FC<ImageLightboxProps> = React.memo(({
       <img
         src={images[activeIdx]}
         alt={`Image ${activeIdx + 1}`}
-        className="w-full h-full object-cover select-none"
+        className="w-full h-full object-contain select-none"
         draggable={false}
         onClick={stop}
       />
@@ -77,7 +82,7 @@ export const ImageLightbox: React.FC<ImageLightboxProps> = React.memo(({
             {activeIdx + 1} / {images.length}
           </div>
 
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-white/15 backdrop-blur-sm px-4 py-2 rounded-full" onClick={stop}>
+          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-white/15 backdrop-blur-sm px-4 py-2 rounded-full" onClick={stop}>
             {images.map((_, i) => (
               <button
                 key={i}
@@ -89,6 +94,47 @@ export const ImageLightbox: React.FC<ImageLightboxProps> = React.memo(({
             ))}
           </div>
         </>
+      )}
+
+      {hasActions && (
+        <div
+          className="absolute bottom-0 left-0 right-0 flex items-center gap-2 px-4 py-3 bg-black/40 backdrop-blur-md"
+          onClick={stop}
+        >
+          {onWhatsApp && (
+            <button
+              type="button"
+              onClick={onWhatsApp}
+              aria-label="WhatsApp"
+              className="flex-1 h-12 rounded-xl bg-[#25D366] text-white flex items-center justify-center gap-2 font-bold text-sm active:scale-95 transition-transform cursor-pointer"
+            >
+              <Whatsapp size={20} variant="Bold" color="#FFFFFF" />
+              <span>{isArabic ? 'واتساب' : 'WhatsApp'}</span>
+            </button>
+          )}
+          {onStartChat && (
+            <button
+              type="button"
+              onClick={onStartChat}
+              aria-label={isArabic ? 'دردشة' : 'Chat'}
+              className="flex-1 h-12 rounded-xl bg-white/15 text-white flex items-center justify-center gap-2 font-bold text-sm active:scale-95 transition-transform cursor-pointer border border-white/20"
+            >
+              <MessageText size={20} variant="Bold" color="#FFFFFF" />
+              <span>{isArabic ? 'دردشة' : 'Chat'}</span>
+            </button>
+          )}
+          {onCall && (
+            <button
+              type="button"
+              onClick={onCall}
+              aria-label={isArabic ? 'اتصال' : 'Call'}
+              className="flex-1 h-12 rounded-xl bg-primary text-white flex items-center justify-center gap-2 font-bold text-sm active:scale-95 transition-transform cursor-pointer"
+            >
+              <Call size={20} variant="Bold" color="#FFFFFF" />
+              <span>{isArabic ? 'اتصال' : 'Call'}</span>
+            </button>
+          )}
+        </div>
       )}
     </div>
   );
