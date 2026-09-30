@@ -7,21 +7,9 @@ export function isAnonymousUser(user: User | null | undefined): boolean {
 }
 
 export async function ensureAnonymousSession(): Promise<{ created: boolean; error: string | null }> {
-  // Demo mode (E2E) is not a visitor session — do not auto-create anonymous.
-  if (import.meta.env.VITE_ALLOW_QUICK_DEMO === 'true') {
-    return { created: false, error: null };
-  }
-  try {
-    const { data } = await supabase.auth.getSession();
-    if (data.session) {
-      return { created: false, error: null };
-    }
-    const { error } = await supabase.auth.signInAnonymously();
-    if (error) return { created: false, error: error.message };
-    return { created: true, error: null };
-  } catch (err) {
-    return { created: false, error: err instanceof Error ? err.message : 'Unknown error' };
-  }
+  // Disabled: anonymous sessions had documented Supabase bugs (linkIdentity, USER_UPDATED).
+  // Flow uses classic signInWithOAuth. Visitors browse with no session.
+  return { created: false, error: null };
 }
 
 export async function linkAnonymousToGoogle(): Promise<{ error: string | null }> {

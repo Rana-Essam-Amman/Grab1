@@ -8,6 +8,8 @@ import type { UserProfile } from '@/types';
 
 export function mapSessionToUser(session: Session | null): UserProfile | null {
   if (!session?.user) return null;
+  // Anonymous path kept for backward-compat with any old sessions; new flow
+  // never creates them (ensureAnonymousSession is a no-op).
   if (isAnonymousUser(session.user)) {
     return {
       firstName: 'زائر',
