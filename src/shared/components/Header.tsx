@@ -97,9 +97,16 @@ export const Header: React.FC = () => {
           className="cursor-pointer select-none"
           onClick={handleLogoClick}
         >
-          <div className="flex flex-col items-center justify-center m-0 p-0">
-            <h1 className="text-[32px] font-black text-white font-cairo tracking-[-1px] leading-none m-0">Grab</h1>
-            <span className="text-[10px] font-semibold text-white tracking-[2px] uppercase block mt-0.5 m-0">the deals</span>
+          <div className="flex items-center justify-center gap-2 m-0 p-0">
+            <img
+              src="/assets/icons/logo.png"
+              alt="FOX Market Place"
+              className="w-10 h-10 object-cover rounded-full"
+            />
+            <div className="flex flex-col items-start justify-center m-0 p-0">
+              <h1 className="text-[32px] font-black text-white font-cairo tracking-[-1px] leading-none m-0">FOX</h1>
+              <span className="text-[10px] font-semibold text-white tracking-[2px] uppercase block mt-0.5 m-0">Market Place</span>
+            </div>
           </div>
         </div>
 
