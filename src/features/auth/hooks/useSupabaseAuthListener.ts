@@ -3,6 +3,9 @@ import type { Session } from '@supabase/supabase-js';
 import { useAuthStore } from '../store/auth.slice';
 import { onAuthStateChange, extractGoogleProfile } from '../services/authService';
 import { ensureAnonymousSession, isAnonymousUser } from '../services/anonymousSession';
+import { globalStorage } from '@/shared/lib/marketStorage';
+import { useUIStore } from '@/store/ui.slice';
+import type { ScreenType } from '@/store/ui.slice.types';
 import type { UserProfile } from '@/types';
 
 function mapSessionToUser(session: Session | null): UserProfile | null {
@@ -58,12 +61,27 @@ export function useSupabaseAuthListener(): void {
       if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
         const user = mapSessionToUser(session);
         if (user) {
+          const stillAnon = isAnonymousUser(session.user);
           useAuthStore.setState({
             user,
             sessionToken: session.access_token,
             authStatus: 'authenticated',
-            isAnonymous: isAnonymousUser(session.user),
+            isAnonymous: stillAnon,
           });
+
+          // Resume publish flow after real (non-anonymous) sign-in.
+          if (!stillAnon && event === 'SIGNED_IN') {
+            const pending = globalStorage().get<string>('catch_pending_publish');
+            const screen = globalStorage().get<string>('catch_pending_publish_screen');
+            if (pending === 'true' && screen) {
+              globalStorage().remove('catch_pending_publish');
+              globalStorage().remove('catch_pending_publish_screen');
+              // Defer so auth store state settles before screen mounts.
+              setTimeout(() => {
+                useUIStore.getState().navigateTo(screen as ScreenType);
+              }, 150);
+            }
+          }
         }
       }
     });

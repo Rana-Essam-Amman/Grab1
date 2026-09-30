@@ -59,11 +59,10 @@ export function usePostDetails() {
     };
     updatePostDraft(draftData);
 
-    // Visitors (anonymous session) must sign in before publishing.
-    // Route to LoginGateway (Google/Apple/WhatsApp options first).
-    // Draft stays in postDraft; resumed after sign-in via catch_pending_publish.
+    // Visitors must sign in before publishing; resume after sign-in.
     if (authStatus !== 'authenticated' || isAnonymous) {
       globalStorage().set('catch_pending_publish', 'true');
+      globalStorage().set('catch_pending_publish_screen', 'post-details');
       navigateTo('login');
       return;
     }

@@ -57,6 +57,7 @@ export function useAiReview(): UseAiReviewReturn {
     if (!postDraft) return;
     if (authStatus !== 'authenticated' || isAnonymous) {
       globalStorage().set('catch_pending_publish', 'true');
+      globalStorage().set('catch_pending_publish_screen', 'post-ai-review');
       navigateTo('login');
       return;
     }
