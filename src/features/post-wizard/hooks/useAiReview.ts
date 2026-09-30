@@ -15,7 +15,7 @@ export type { UseAiReviewReturn } from './useAiReview.types';
 export function useAiReview(): UseAiReviewReturn {
   const { postDraft, updatePostDraft } = usePostWizard();
   const { resetPostDraft } = useDraft();
-  const { authStatus, user } = useAuth();
+  const { authStatus, user, isAnonymous } = useAuth();
   const { navigateTo, setActiveTab, browseCountryCode, activeCurrency, isArabic } = useUI();
   const { publishListing } = useListings();
 
@@ -55,7 +55,7 @@ export function useAiReview(): UseAiReviewReturn {
 
   const handlePublish = async () => {
     if (!postDraft) return;
-    if (authStatus !== 'authenticated') {
+    if (authStatus !== 'authenticated' || isAnonymous) {
       globalStorage().set('catch_pending_publish', 'true');
       navigateTo('register');
       return;

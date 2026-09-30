@@ -10,7 +10,7 @@ import { resolvePostDetailsFields, buildGeneratedFields, preparePublish } from '
 export function usePostDetails() {
   const { postDraft, updatePostDraft } = usePostWizard();
   const { resetPostDraft } = useDraft();
-  const { authStatus, user } = useAuth();
+  const { authStatus, user, isAnonymous } = useAuth();
   const { publishListing } = useListings();
   const { isArabic, navigateTo, setActiveTab, browseCountryCode, activeCurrency } = useUI();
 
@@ -59,7 +59,9 @@ export function usePostDetails() {
     };
     updatePostDraft(draftData);
 
-    if (authStatus !== 'authenticated') {
+    // Visitors (anonymous session) must sign in before publishing.
+    // Draft stays in postDraft; resumed after Google sign-in.
+    if (authStatus !== 'authenticated' || isAnonymous) {
       globalStorage().set('catch_pending_publish', 'true');
       navigateTo('register');
       return;
