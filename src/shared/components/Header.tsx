@@ -94,14 +94,14 @@ export const Header: React.FC = () => {
         </Button>
 
         <div
-          className="cursor-pointer select-none translate-x-4"
+          className="cursor-pointer select-none translate-x-12"
           onClick={handleLogoClick}
         >
           <div className="flex items-center justify-center gap-6 m-0 p-0">
             <img
               src="/assets/icons/logo.png"
               alt="FOX Marketplace"
-              className="w-[72px] h-[72px] object-cover rounded-full shrink-0"
+              className="w-[72px] h-[72px] object-cover rounded-full shrink-0 mix-blend-lighten"
             />
             <div className="flex flex-col justify-center items-center m-0 p-0">
               <h1 className="text-[30px] font-black text-white font-cairo tracking-[-1px] leading-[0.95] m-0">FOX</h1>
