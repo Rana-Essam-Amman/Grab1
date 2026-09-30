@@ -63,7 +63,7 @@ export const ExploreScreen: React.FC = () => {
       className={`max-w-[440px] mx-auto w-full flex flex-col gap-5 pt-0 pb-28 px-4 bg-surface ${isArabic ? 'font-cairo' : ''}`} dir={isArabic ? "rtl" : "ltr"}
       style={{ WebkitOverflowScrolling: 'touch' }}
     >
-      <div className="sticky top-[76px] z-20 bg-canvas pt-3 pb-2 -mx-4 px-4">
+      <div className="sticky top-0 z-20 bg-canvas pt-3 pb-2 -mx-4 px-4">
         <SearchBar
           isArabic={isArabic}
           value={searchInput}
