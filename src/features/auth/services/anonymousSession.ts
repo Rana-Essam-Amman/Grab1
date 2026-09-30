@@ -7,6 +7,10 @@ export function isAnonymousUser(user: User | null | undefined): boolean {
 }
 
 export async function ensureAnonymousSession(): Promise<{ created: boolean; error: string | null }> {
+  // Demo mode (E2E) is not a visitor session — do not auto-create anonymous.
+  if (import.meta.env.VITE_ALLOW_QUICK_DEMO === 'true') {
+    return { created: false, error: null };
+  }
   try {
     const { data } = await supabase.auth.getSession();
     if (data.session) {
