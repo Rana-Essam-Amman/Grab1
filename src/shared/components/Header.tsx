@@ -94,7 +94,7 @@ export const Header: React.FC = () => {
         </Button>
 
         <div
-          className="cursor-pointer select-none translate-x-12"
+          className="cursor-pointer select-none flex-1 flex justify-center"
           onClick={handleLogoClick}
         >
           <div className="flex items-center justify-center gap-6 m-0 p-0">
