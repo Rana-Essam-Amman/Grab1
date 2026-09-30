@@ -7,7 +7,7 @@ test.describe('Smoke Test', () => {
     const consoleErrors = setupConsoleErrorListener(appPage);
 
     // Check page title
-    await expect(appPage).toHaveTitle(/Catch|Deals|Grab/i);
+    await expect(appPage).toHaveTitle(/FOX|Marketplace/i);
 
     // Verify root mounting using selectors constant
     await expectVisible(appPage, SELECTORS.app.root, 'Root element should be mounted');

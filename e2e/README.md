@@ -1,6 +1,6 @@
 # Playwright E2E Tests
 
-This directory contains End-to-End (E2E) tests for Grab The Deals built using Playwright.
+This directory contains End-to-End (E2E) tests for FOX Marketplace built using Playwright.
 
 ## Running Tests
 
