@@ -1,5 +1,11 @@
 import { Listing } from '@/types';
 
+export interface PublishResult {
+  readonly success: boolean;
+  readonly remoteId: string | null;
+  readonly error: string | null;
+}
+
 export interface ListingsState {
   listings: Listing[];
   wishlist: string[];
@@ -11,6 +17,7 @@ export interface ListingsState {
   // Actions
   initialize: () => void;
   syncFromSupabase: () => Promise<void>;
+  publishListing: (listing: Listing, activeCountry: string, isArabic?: boolean) => Promise<PublishResult>;
   addListing: (listing: Listing, activeCountry: string, isArabic?: boolean) => void;
   updateListing: (id: string, updates: Partial<Listing>) => void;
   deleteListing: (id: string) => void;
