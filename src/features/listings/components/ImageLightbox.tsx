@@ -59,7 +59,7 @@ export const ImageLightbox: React.FC<ImageLightboxProps> = React.memo(({
       <img
         src={images[activeIdx]}
         alt={`Image ${activeIdx + 1}`}
-        className="w-full h-full object-contain select-none"
+        className="w-full h-full object-cover select-none"
         draggable={false}
         onClick={stop}
       />
