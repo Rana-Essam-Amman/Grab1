@@ -23,6 +23,7 @@ import { RegistryProvider, useRegistry } from '@/shared/registry';
 import { CatalogScreen } from '@/features/dev/screens/CatalogScreen';
 import { Toaster } from 'sonner';
 import { useSupabaseAuthListener } from '@/features/auth/hooks/useSupabaseAuthListener';
+import { useSupabaseListingsSync } from '@/features/listings/hooks/useSupabaseListingsSync';
 
 // Lazy-loaded Screens
 const CategoriesScreen = lazy(() => import('@/features/categories/screens/CategoriesScreen').then((m) => ({ default: m.CategoriesScreen })));
@@ -239,6 +240,7 @@ const MainNavigator: React.FC = () => {
 export default function App() {
   const locale = useUIStore((state) => state.locale);
   useSupabaseAuthListener();
+  useSupabaseListingsSync();
 
   useEffect(() => {
     try {

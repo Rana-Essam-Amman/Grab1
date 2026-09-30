@@ -14,6 +14,7 @@ export const useListingsStore = create<ListingsState>()(
       wishlist: [],
       activeWishlistCountry: 'JO',
       isInitialized: false,
+      isSyncing: false,
       isQuotaExhausted: false,
       ...baseActions,
       addListing: (listing, activeCountry, isArabic) => {

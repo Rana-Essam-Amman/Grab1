@@ -4,6 +4,8 @@ import { validateAdQuotaAvailability as validateAdQuotaAvailabilityHelper } from
 import { globalStorage } from '@/shared/lib/marketStorage';
 import { ListingsState } from './listings.slice.types';
 import { sanitizeListingData, logListingError } from './listings.slice.helpers';
+import { fetchListings } from '../services/listingsService';
+import { seedListings } from '@/data/seedListings';
 
 export const createListingsActions = (
   set: (fn: (state: ListingsState) => void) => void,
@@ -81,6 +83,25 @@ export const createListingsActions = (
   },
 
   refreshListings: () => set((state) => { state.listings = getListingsFromStorage(); }),
+
+  syncFromSupabase: async () => {
+    set((state) => { state.isSyncing = true; });
+    const { data, error } = await fetchListings();
+
+    if (error || !data) {
+      // Network/DB error — keep localStorage data, stop syncing indicator
+      set((state) => { state.isSyncing = false; });
+      return;
+    }
+
+    set((state) => {
+      state.isSyncing = false;
+      // Supabase is source of truth for user-created listings.
+      // Seed listings stay as local-only demo content.
+      state.listings = [...data, ...seedListings];
+      saveListingsToStorage(state.listings);
+    });
+  },
 
   setIsQuotaExhausted: (exhausted: boolean) => set((state) => { state.isQuotaExhausted = exhausted; }),
 

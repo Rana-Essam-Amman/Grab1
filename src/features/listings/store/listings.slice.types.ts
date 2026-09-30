@@ -5,10 +5,12 @@ export interface ListingsState {
   wishlist: string[];
   activeWishlistCountry: string;
   isInitialized: boolean;
+  isSyncing: boolean;
   isQuotaExhausted: boolean;
 
   // Actions
   initialize: () => void;
+  syncFromSupabase: () => Promise<void>;
   addListing: (listing: Listing, activeCountry: string, isArabic?: boolean) => void;
   updateListing: (id: string, updates: Partial<Listing>) => void;
   deleteListing: (id: string) => void;
