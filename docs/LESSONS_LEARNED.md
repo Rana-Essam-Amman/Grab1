@@ -192,6 +192,32 @@ force push without confirming.
 **Severity:** P0 — Security breach
 **Symptom:** idx printed full `github_pat_...` token in command output.
 **Root Cause:** No redaction in verification commands.
-**Prevention:** Rule 45 — every git ls-remote command MUST pipe through
-`sed 's/[A-Za-z0-9_]*@/***@/g'`. Token rotated immediately after discovery.
+
+## Lesson: Fullscreen Overlays (Lightbox) — 2026-09-30
+
+**Symptom:** Listing image cropped in fullscreen lightbox + action buttons (WhatsApp/Chat/Call) not visible.
+
+**Failed attempts (4 in a row):**
+1. `object-cover` on img → crop
+2. `object-contain` via Tailwind → broken on mobile (flex + fixed sizing issue)
+3. Inline styles for img → still broken
+4. Props added to interface but not threaded → silent no-op
+
+**Root cause (architectural, not logical):**
+- `flex + position: fixed` on mobile breaks image dimension calculation
+- Parent stacking context (transform in ListingDetailScreen) blocked z-index overlay
+- Adding prop to interface ≠ passing it through every parent level
+
+**Solution (matches Facebook Marketplace / OpenSooq pattern):**
+- `createPortal(node, document.body)` — bypasses ALL parent stacking contexts
+- `position: absolute; inset: 0; object-fit: contain` via **inline styles** (not Tailwind)
+- Explicit `zIndex: 10` per button (inline)
+- NO `flex` on the fixed container itself
+
+**Debugging order for future (Layered Debug Protocol):**
+1. **Cache** — AI Studio Preview caches aggressively. Test in Incognito before concluding "fix failed."
+2. **Prop threading** — after adding props, `grep` every parent level to verify they're passed.
+3. **Architectural constraint** — mobile browsers break `flex + position: fixed` and unreliable Tailwind `object-fit`. Use inline styles for fullscreen overlays.
+4. **Industry pattern** — study Facebook Marketplace / OpenSooq before inventing a solution.
+5. **Verify publish** — check GitHub commit hash after push; don't trust "successfully pushed" from idx.
 

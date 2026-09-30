@@ -470,6 +470,7 @@ This section defines HOW the Constitution evolves. It transforms mistakes into p
 - **v1.1.8 (2026-09-23)**: Added Rule 43 (Post-Commit Stop Discipline). Triggered by 3 idx retry loops (2026-09-23) burning ~45% of session context.
 - **v1.1.9 (2026-09-25)**: Added Rule 44 (No Force Push) after Bug #009, Rule 45 (Secret Redaction) after Bug #010, Rule 46 (Subcategory-Aware Data), Rule 47 (AI Agent Prompt Protocol). Updated Rule 9 (infra coverage ≥ 60%) and Rule 43 (scope lock discipline).
 - **v1.2 (Planned)**: Rule 36+ for CI-enforced rules (test coverage gate, mutation testing, SLO enforcement). Learning System automation.
+- **v1.3 (2026-09-30)**: Added Rule 48 (Fullscreen Overlays — Portal-based) + Rule 48.1 (Layered Debug Protocol). Triggered by Lightbox session where 4 sequential code fixes failed because root cause was architectural (flex + fixed on mobile). Established the mandatory debug order: cache → prop threading → architectural constraint → industry pattern → publish verification. Details in `docs/LESSONS_LEARNED.md`.
 
 ## Part VIII: Build Discipline
 
@@ -702,3 +703,30 @@ When working on this project:
 3. If a rule seems to conflict with a request, ASK before proceeding.
 4. Provide BEFORE/AFTER evidence for every change.
 5. Never assume — verify with code snippets.
+
+## Part IX: Fullscreen UI Rules
+
+### Rule 48 — Fullscreen Overlays (NON-NEGOTIABLE)
+
+Fullscreen modals, lightboxes, and image viewers MUST follow:
+
+1. **Render via Portal:** `createPortal(node, document.body)` — never render inside the parent tree.
+2. **Container styling:** `position: fixed; inset: 0; z-index: 9999` — inline styles preferred.
+3. **Image styling:** `position: absolute; inset: 0; object-fit: contain` — inline styles, NOT Tailwind.
+4. **No flex on fixed container** — this breaks on mobile.
+5. **Explicit `zIndex: 10`** on all interactive elements inside.
+6. **No Tailwind `object-contain`/`object-cover`** on fullscreen images — mobile Safari/Chrome render inconsistently.
+
+**Rationale:** Verified via Lightbox session (2026-09-30) — 4 code fixes failed because root cause was architectural. See `docs/LESSONS_LEARNED.md` for the full story.
+
+**Related rules:** Rule 41 (Competitor Analysis), Rule 48.1 (below).
+
+### Rule 48.1 — Layered Debug Protocol
+
+When a fix appears to fail despite verified code (tsc pass, eslint pass, CI green), check in this exact order — do NOT guess:
+
+1. **Cache/Environment** — test in Incognito before concluding "fix failed."
+2. **Prop threading** — grep every parent level after adding props to interfaces.
+3. **Architectural constraint** — check mobile quirks (flex+fixed, stacking contexts, Tailwind reliability).
+4. **Industry pattern** — study how competitors solved it (Facebook, OpenSooq, Dubizzle).
+5. **Verify publish** — check GitHub commit hash; don't trust idx's "successfully pushed."

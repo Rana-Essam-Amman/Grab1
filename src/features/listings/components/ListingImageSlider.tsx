@@ -7,6 +7,9 @@ export interface ListingImageSliderProps {
   activeIdx: number;
   onChangeIdx: (idx: number) => void;
   isArabic: boolean;
+  readonly onCall?: () => void;
+  readonly onWhatsApp?: () => void;
+  readonly onStartChat?: () => void;
 }
 
 const FALLBACK_SRC =
@@ -17,6 +20,7 @@ const ARROW_BASE =
 
 export const ListingImageSlider: React.FC<ListingImageSliderProps> = React.memo(({
   images, activeIdx, onChangeIdx, isArabic,
+  onCall, onWhatsApp, onStartChat,
 }) => {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const { goNext, goPrev, handleTouchStart, handleTouchEnd } =
@@ -72,6 +76,9 @@ export const ListingImageSlider: React.FC<ListingImageSliderProps> = React.memo(
         onChangeIdx={onChangeIdx}
         onClose={() => setIsLightboxOpen(false)}
         isArabic={isArabic}
+        onCall={onCall}
+        onWhatsApp={onWhatsApp}
+        onStartChat={onStartChat}
       />
     )}
     </>

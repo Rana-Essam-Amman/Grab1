@@ -39,6 +39,9 @@ export const ListingDetailScreen: React.FC = () => {
           activeIdx={detail.activePhotoIdx}
           onChangeIdx={detail.setActivePhotoIdx}
           isArabic={detail.isArabic}
+          onCall={detail.handleCall}
+          onWhatsApp={detail.handleWhatsApp}
+          onStartChat={detail.handleStartChat}
         />
 
         <div className="p-4 flex flex-col gap-3">
