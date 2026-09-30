@@ -33,7 +33,7 @@ export const useShareItems = (listing: Listing, isArabic: boolean) => {
     [listing.countryCode, listing.currency]
   );
   const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
-  const shareText = `${listing.title} - ${listing.price} ${displayCurrency} ${isArabic ? 'على تطبيق Catch the Deals' : 'on Catch the Deals'}`;
+  const shareText = `${listing.title} - ${listing.price} ${displayCurrency} ${isArabic ? 'على تطبيق FOX Marketplace' : 'on FOX Marketplace'}`;
 
   const handleCopyLink = useCallback(async () => {
     await copyTextToClipboard(shareUrl);

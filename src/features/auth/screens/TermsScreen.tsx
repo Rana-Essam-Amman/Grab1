@@ -23,7 +23,7 @@ export const TermsScreen: React.FC = () => {
       <div className="p-4 flex flex-col gap-4 text-xs text-ink-soft leading-relaxed">
         <div className="flex items-center gap-2 text-primary font-bold text-sm">
           <ShieldTick size={20} variant="Bold" color="#E57E25" />
-          <span>Catch the Deals — Community Standards</span>
+          <span>FOX Marketplace — Community Standards</span>
         </div>
 
         <Card variant="default" padding="md">

@@ -90,7 +90,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({ listing: _listing, onC
             </h4>
             <p className="text-xs text-ink-muted">
               {isArabic
-                ? 'سيقوم فريق إدارة Catch the Deals بمراجعة الإعلان بأسرع وقت.'
+                ? 'سيقوم فريق إدارة FOX Marketplace بمراجعة الإعلان بأسرع وقت.'
                 : 'Our moderation team will review this listing shortly.'}
             </p>
           </div>

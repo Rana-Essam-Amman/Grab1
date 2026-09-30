@@ -20,7 +20,7 @@ const PREFIXES: Record<string, string> = { JO: '962', LB: '961', PS: '970', SY: 
 export function getWhatsAppUrl(p: { countryCode: string; dialNumber: string; listingTitle: string }): string {
   const pfx = PREFIXES[p.countryCode] || '962';
   const digits = p.dialNumber.startsWith('0') ? p.dialNumber.slice(1) : p.dialNumber;
-  return `https://wa.me/${pfx}${digits}?text=${encodeURIComponent(`مرحباً، بخصوص إعلانك "${p.listingTitle}" على تطبيق Catch the Deals.`)}`;
+  return `https://wa.me/${pfx}${digits}?text=${encodeURIComponent(`مرحباً، بخصوص إعلانك "${p.listingTitle}" على تطبيق FOX Marketplace.`)}`;
 }
 
 export function computeListingDerivedData(listing: Listing | null, isArabic: boolean): ListingDerivedData {

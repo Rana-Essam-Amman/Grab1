@@ -62,7 +62,7 @@ export const ProfileScreen: React.FC = () => {
 
     if (typeof navigator !== 'undefined' && 'share' in navigator) {
       try {
-        await navigator.share({ title: 'Catch The Deals', text, url: shareUrl });
+        await navigator.share({ title: 'FOX Marketplace', text, url: shareUrl });
         return;
       } catch {
         // fall through

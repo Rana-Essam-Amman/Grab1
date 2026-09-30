@@ -29,12 +29,12 @@ export const AboutScreen: React.FC = () => {
         </div>
         <Card variant="default" padding="md">
           <h2 className="font-bold text-sm text-ink mb-1.5">
-            {isArabic ? '1. ما هو Grab The Deals' : '1. What is Grab The Deals'}
+            {isArabic ? '1. ما هو FOX Marketplace' : '1. What is FOX Marketplace'}
           </h2>
           <p>
             {isArabic
-              ? 'Grab The Deals هو منصة إعلانات مبوبة ذكية تهدف لتسهيل عمليات البيع والشراء باستخدام تقنيات الذكاء الاصطناعي لتقديم تجربة مستخدم سلسة وآمنة.'
-              : 'Grab The Deals is a smart classifieds platform aimed at facilitating buying and selling operations using AI technologies to provide a smooth and secure user experience.'}
+              ? 'FOX Marketplace هي منصة إعلانات مبوبة ذكية تهدف لتسهيل عمليات البيع والشراء باستخدام تقنيات الذكاء الاصطناعي لتقديم تجربة مستخدم سلسة وآمنة.'
+              : 'FOX Marketplace is a smart classifieds platform aimed at facilitating buying and selling operations using AI technologies to provide a smooth and secure user experience.'}
           </p>
         </Card>
 

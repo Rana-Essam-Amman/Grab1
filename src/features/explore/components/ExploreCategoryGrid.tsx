@@ -3,7 +3,7 @@ import { categoryBySlug } from '@/data/categories';
 import { ArrowRight2, ArrowLeft2 } from 'iconsax-react';
 
 // Curated order — intentional, not file-order-dependent.
-// Projects/Handymen/Cleaning are our differentiators (unique to Grab The Deals).
+// Projects/Handymen/Cleaning are our differentiators (unique to FOX Marketplace).
 const FEATURED_SLUGS = ['motors', 'real-estate', 'projects', 'handymen', 'cleaning', 'electronics'] as const;
 
 export interface ExploreCategoryGridProps {

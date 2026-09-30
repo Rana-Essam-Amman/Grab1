@@ -77,7 +77,7 @@ export const SettingsLegalSection: React.FC<SettingsLegalSectionProps> = ({
         <div className="flex items-center gap-3">
           <ShieldTick size={18} variant="Linear" color="#16A34A" className="text-green-600" />
           <div>
-            <div className="text-sm font-semibold text-ink">Catch the Deals</div>
+            <div className="text-sm font-semibold text-ink">FOX Marketplace</div>
             <div className="text-xs text-ink-muted">Version 1.0.0 (Regional Edition)</div>
           </div>
         </div>
