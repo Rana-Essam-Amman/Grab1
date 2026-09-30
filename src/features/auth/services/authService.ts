@@ -44,11 +44,19 @@ export async function getSession(): Promise<Session | null> {
   }
 }
 
+export type SupabaseAuthEvent =
+  | 'INITIAL_SESSION'
+  | 'SIGNED_IN'
+  | 'SIGNED_OUT'
+  | 'TOKEN_REFRESHED'
+  | 'USER_UPDATED'
+  | 'PASSWORD_RECOVERY';
+
 export function onAuthStateChange(
-  callback: (session: Session | null) => void
+  callback: (event: SupabaseAuthEvent, session: Session | null) => void
 ): { unsubscribe: () => void } {
-  const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-    callback(session);
+  const { data } = supabase.auth.onAuthStateChange((event, session) => {
+    callback(event as SupabaseAuthEvent, session);
   });
   return { unsubscribe: () => data.subscription.unsubscribe() };
 }

@@ -22,6 +22,7 @@ import { Spinner } from '@/shared/ui/Spinner';
 import { RegistryProvider, useRegistry } from '@/shared/registry';
 import { CatalogScreen } from '@/features/dev/screens/CatalogScreen';
 import { Toaster } from 'sonner';
+import { useSupabaseAuthListener } from '@/features/auth/hooks/useSupabaseAuthListener';
 
 // Lazy-loaded Screens
 const CategoriesScreen = lazy(() => import('@/features/categories/screens/CategoriesScreen').then((m) => ({ default: m.CategoriesScreen })));
@@ -237,6 +238,7 @@ const MainNavigator: React.FC = () => {
 
 export default function App() {
   const locale = useUIStore((state) => state.locale);
+  useSupabaseAuthListener();
 
   useEffect(() => {
     try {
