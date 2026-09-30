@@ -31,6 +31,7 @@
     "@radix-ui/react-dialog": "^1.1.23",
     "@radix-ui/react-popover": "^1.1.23",
     "@sentry/react": "^10.74.0",
+    "@supabase/supabase-js": "^2.117.2",
     "@tanstack/react-virtual": "^3.14.13",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
