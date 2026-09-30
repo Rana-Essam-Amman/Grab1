@@ -6,7 +6,7 @@ const mockNavigateTo = vi.fn();
 const mockSetActiveTab = vi.fn();
 const mockUpdatePostDraft = vi.fn();
 const mockResetPostDraft = vi.fn();
-const mockAddListing = vi.fn();
+const mockPublishListing = vi.fn();
 
 let mockAuthStatus = 'authenticated';
 let mockPostDraft = {
@@ -53,7 +53,7 @@ vi.mock('@/hooks/useDraft', () => ({
 
 vi.mock('@/hooks/useListings', () => ({
   useListings: () => ({
-    addListing: mockAddListing,
+    publishListing: mockPublishListing,
   }),
 }));
 
@@ -61,6 +61,7 @@ describe('useAiReview', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockAuthStatus = 'authenticated';
+    mockPublishListing.mockResolvedValue({ success: true, remoteId: 'remote-1', error: null });
     mockPostDraft = {
       photos: ['photo1.jpg'],
       title: 'Test Car',
@@ -103,7 +104,7 @@ describe('useAiReview', () => {
     });
 
     expect(mockNavigateTo).toHaveBeenCalledWith('register');
-    expect(mockAddListing).not.toHaveBeenCalled();
+    expect(mockPublishListing).not.toHaveBeenCalled();
   });
 
   it('handlePublish succeeds and navigates to listing-detail', async () => {
@@ -113,15 +114,17 @@ describe('useAiReview', () => {
       await result.current.handlePublish();
     });
 
-    expect(mockAddListing).toHaveBeenCalledTimes(1);
+    expect(mockPublishListing).toHaveBeenCalledTimes(1);
     expect(mockResetPostDraft).toHaveBeenCalledTimes(1);
     expect(mockSetActiveTab).toHaveBeenCalledWith('my-ads');
     expect(mockNavigateTo).toHaveBeenCalledWith('main');
   });
 
-  it('handlePublish sets error state when addListing throws', async () => {
-    mockAddListing.mockImplementationOnce(() => {
-      throw new Error('Publish error');
+  it('handlePublish sets error state when publishListing fails', async () => {
+    mockPublishListing.mockResolvedValueOnce({
+      success: false,
+      remoteId: null,
+      error: 'Publish error',
     });
 
     const { result } = renderHook(() => useAiReview());
@@ -130,6 +133,7 @@ describe('useAiReview', () => {
       await result.current.handlePublish();
     });
 
-    expect(result.current.error).toBe('فشل نشر الإعلان');
+    expect(result.current.error).toBe('Publish error');
+    expect(mockResetPostDraft).not.toHaveBeenCalled();
   });
 });
