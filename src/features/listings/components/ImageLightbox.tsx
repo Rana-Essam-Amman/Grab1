@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { CloseCircle, Call, Whatsapp, MessageText } from 'iconsax-react';
+import { CloseCircle, Call, Whatsapp, Message } from 'iconsax-react';
 import { useImageSwipe } from '../hooks/useImageSwipe';
 
 export interface ImageLightboxProps {
@@ -47,23 +47,22 @@ export const ImageLightbox: React.FC<ImageLightboxProps> = React.memo(({ images,
         </>
       )}
       {hasActions && (
-        <div onClick={stop} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 10, display: 'flex', gap: 8, padding: '12px 16px', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }}>
+        <div onClick={stop} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 10, display: 'flex', gap: 8, padding: '12px 16px', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)' }}>
+          {onCall && (
+            <button type="button" onClick={onCall} style={{ flex: 1, padding: '12px 8px', borderRadius: 12, background: '#1a2238', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 700, fontSize: 12, border: 'none', cursor: 'pointer' }}>
+              <Call size={16} variant="Linear" color="#FFFFFF" />
+              <span>{isArabic ? 'اتصال' : 'Call'}</span>
+            </button>
+          )}
           {onWhatsApp && (
-            <button type="button" onClick={onWhatsApp} style={{ flex: 1, height: 48, borderRadius: 12, background: '#25D366', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontWeight: 700, fontSize: 14, border: 'none', cursor: 'pointer' }}>
-              <Whatsapp size={20} variant="Bold" color="#FFFFFF" />
-              <span>{isArabic ? 'واتساب' : 'WhatsApp'}</span>
+            <button type="button" onClick={onWhatsApp} aria-label={isArabic ? 'واتساب' : 'WhatsApp'} style={{ padding: '12px 12px', borderRadius: 12, background: '#25D366', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer' }}>
+              <Whatsapp size={16} variant="Linear" color="#FFFFFF" />
             </button>
           )}
           {onStartChat && (
-            <button type="button" onClick={onStartChat} style={{ flex: 1, height: 48, borderRadius: 12, background: 'rgba(255,255,255,0.15)', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontWeight: 700, fontSize: 14, border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer' }}>
-              <MessageText size={20} variant="Bold" color="#FFFFFF" />
+            <button type="button" onClick={onStartChat} style={{ flex: 1, padding: '12px 8px', borderRadius: 12, background: '#1a2238', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 700, fontSize: 12, border: 'none', cursor: 'pointer' }}>
+              <Message size={16} variant="Linear" color="#FFFFFF" />
               <span>{isArabic ? 'دردشة' : 'Chat'}</span>
-            </button>
-          )}
-          {onCall && (
-            <button type="button" onClick={onCall} style={{ flex: 1, height: 48, borderRadius: 12, background: '#E57E25', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontWeight: 700, fontSize: 14, border: 'none', cursor: 'pointer' }}>
-              <Call size={20} variant="Bold" color="#FFFFFF" />
-              <span>{isArabic ? 'اتصال' : 'Call'}</span>
             </button>
           )}
         </div>
