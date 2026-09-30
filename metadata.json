@@ -1,6 +1,6 @@
 {
-  "name": "Grab 1",
-  "description": "Imported from GitHub: Rana-Essam-Amman/project-1",
+  "name": "FOX Marketplace",
+  "description": "AI-powered classifieds marketplace for the Middle East",
   "requestFramePermissions": [
     "microphone",
     "camera"

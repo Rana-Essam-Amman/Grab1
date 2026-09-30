@@ -1,4 +1,4 @@
-# Grab The Deals
+# FOX Marketplace
 
 > AI-powered classifieds marketplace for the Middle East.
 
@@ -6,7 +6,7 @@
 
 | Field | Value |
 |-------|-------|
-| Official Name | Grab The Deals |
+| Official Name | FOX Marketplace |
 | Repo | Grab1 |
 | Default Branch | `main` |
 | GitHub | https://github.com/Rana-Essam-Amman/Grab1 |
@@ -53,7 +53,7 @@ npx playwright test   # E2E
 
 ## 🏛️ Architecture
 
-Grab The Deals uses **Clean Layered Architecture**:
+FOX Marketplace uses **Clean Layered Architecture**:
 
 - **Domain** — Pure TypeScript business rules
 - **Data** — Repository interfaces + Adapters (localStorage today, Supabase next)

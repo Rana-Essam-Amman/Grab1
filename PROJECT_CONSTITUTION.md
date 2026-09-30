@@ -1,4 +1,4 @@
-# PROJECT CONSTITUTION — Grab The Deals
+# PROJECT CONSTITUTION — FOX Marketplace
 
 This is the AUTHORITATIVE rulebook for all development. Any AI agent, developer, or contractor MUST read this file and follow it before making any changes.
 
@@ -458,7 +458,8 @@ This section defines HOW the Constitution evolves. It transforms mistakes into p
 ## Part VII: Constitution Version History
 
 - **v1.0 (2026-09-01)**: Baseline Constitution (Rules 1-15, 20-26). Migrated from Dart/Flutter.
-- **v1.1 (2026-09-16)**: MASTERPIECE EDITION. Rebranded to "Grab The Deals". Filled Rules 16-19 gaps (Velocity, Deletion, Error Loop, Observability). Added Rules 27-31 (Backend, Accessibility, Analytics, Performance, Hardcoded Strings). Introduced Part VI Learning System. Reorganized Enforcement Rules into Part IV. Updated Forbidden Practices. Amended with Part VIII Build Discipline (Rules 32-35: Pre-Creation Checklist, File Placement & Naming, Anti-Duplication, Scaffolding).
+- **v1.2 (2026-09-30)**: Rebranded to "FOX Marketplace". Header redesign with fox mascot, favicon, and app-wide brand update. Home grid curation (Projects/Handymen/Cleaning featured). Direct publish from details screen (removed redundant AI review step).
+- **v1.1 (2026-09-16)**: MASTERPIECE EDITION. Initial rebrand. Filled Rules 16-19 gaps (Velocity, Deletion, Error Loop, Observability). Added Rules 27-31 (Backend, Accessibility, Analytics, Performance, Hardcoded Strings). Introduced Part VI Learning System. Reorganized Enforcement Rules into Part IV. Updated Forbidden Practices. Amended with Part VIII Build Discipline (Rules 32-35: Pre-Creation Checklist, File Placement & Naming, Anti-Duplication, Scaffolding).
 - **v1.1.1 (2026-09-16)**: Added Rule 36 (Evidence-Based Task Completion) after Bug #002 (Idx contradictory reports). Rule emphasizes raw command output as mandatory evidence.
 - **v1.1.2 (2026-09-16)**: Added Rule 37 (Mandatory GitHub Sync).
 - **v1.1.3 (2026-09-16)**: Added Rule 38 (Lockfile Discipline) after Bug #003 (CI failure due to lockfile + node version mismatch).
@@ -568,7 +569,7 @@ If ANY check fails → STOP. Do not create the file.
 The following is the OFFICIAL project tree. Any new file MUST belong to one of these branches:
 
 ```
-grab-the-deals/
+fox-marketplace/
 ├── assets/                  # Static assets
 │   ├── avatars/
 │   ├── categories/
