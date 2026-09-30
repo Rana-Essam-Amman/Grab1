@@ -1,51 +1,8 @@
 import { useEffect } from 'react';
-import type { Session } from '@supabase/supabase-js';
 import { useAuthStore } from '../store/auth.slice';
-import { onAuthStateChange, extractGoogleProfile } from '../services/authService';
+import { onAuthStateChange } from '../services/authService';
 import { ensureAnonymousSession, isAnonymousUser } from '../services/anonymousSession';
-import { globalStorage } from '@/shared/lib/marketStorage';
-import { useUIStore } from '@/store/ui.slice';
-import type { ScreenType } from '@/store/ui.slice.types';
-
-function resumePendingPublishIfAny(): void {
-  const pending = globalStorage().get<string>('catch_pending_publish');
-  const screen = globalStorage().get<string>('catch_pending_publish_screen');
-  if (pending === 'true' && screen) {
-    globalStorage().remove('catch_pending_publish');
-    globalStorage().remove('catch_pending_publish_screen');
-    setTimeout(() => {
-      useUIStore.getState().navigateTo(screen as ScreenType);
-    }, 200);
-  }
-}
-import type { UserProfile } from '@/types';
-
-function mapSessionToUser(session: Session | null): UserProfile | null {
-  if (!session?.user) return null;
-
-  if (isAnonymousUser(session.user)) {
-    return {
-      firstName: 'زائر',
-      lastName: '',
-      email: '',
-      phone: '',
-      countryCode: 'JO',
-    };
-  }
-
-  const profile = extractGoogleProfile(session.user);
-  if (!profile) return null;
-  const countryCode = (session.user.user_metadata?.country_code as string) || 'JO';
-  return {
-    firstName: profile.firstName || 'User',
-    lastName: profile.lastName || '',
-    email: profile.email,
-    phone: '',
-    countryCode,
-    avatar: profile.avatarUrl || undefined,
-    avatarUrl: profile.avatarUrl || undefined,
-  };
-}
+import { mapSessionToUser, resumePendingNavigation } from './authListenerHelpers';
 
 export function useSupabaseAuthListener(): void {
   useEffect(() => {
@@ -62,7 +19,9 @@ export function useSupabaseAuthListener(): void {
         return;
       }
 
-      if (event === 'TOKEN_REFRESHED' && session) {
+      if (!session) return;
+
+      if (event === 'TOKEN_REFRESHED') {
         useAuthStore.setState({
           sessionToken: session.access_token,
           isAnonymous: isAnonymousUser(session.user),
@@ -70,26 +29,24 @@ export function useSupabaseAuthListener(): void {
         return;
       }
 
-      if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'USER_UPDATED') && session) {
+      if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'USER_UPDATED') {
         const user = mapSessionToUser(session);
-        if (user) {
-          const stillAnon = isAnonymousUser(session.user);
-          const wasAnon = useAuthStore.getState().isAnonymous;
-          useAuthStore.setState({
-            user,
-            sessionToken: session.access_token,
-            authStatus: 'authenticated',
-            isAnonymous: stillAnon,
-          });
+        if (!user) return;
 
-          // Resume pending publish when:
-          //  - user is now non-anonymous, AND
-          //  - this session started as anonymous (linkIdentity scenario) OR a fresh sign-in
-          const justLinked = !stillAnon && wasAnon;
-          const freshSignIn = !stillAnon && event === 'SIGNED_IN';
-          if (justLinked || freshSignIn) {
-            resumePendingPublishIfAny();
-          }
+        const stillAnon = isAnonymousUser(session.user);
+        const wasAnon = useAuthStore.getState().isAnonymous;
+
+        useAuthStore.setState({
+          user,
+          sessionToken: session.access_token,
+          authStatus: 'authenticated',
+          isAnonymous: stillAnon,
+        });
+
+        const justLinked = !stillAnon && wasAnon;
+        const freshSignIn = !stillAnon && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION');
+        if (justLinked || freshSignIn) {
+          resumePendingNavigation();
         }
       }
     });
