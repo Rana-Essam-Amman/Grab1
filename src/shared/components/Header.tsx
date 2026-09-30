@@ -101,7 +101,7 @@ export const Header: React.FC = () => {
             <img
               src="/assets/icons/logo.png"
               alt="FOX Market Place"
-              className="w-14 h-14 object-cover rounded-full shrink-0"
+              className="w-16 h-16 object-cover rounded-full shrink-0"
             />
             <div className="flex flex-col justify-center items-start m-0 p-0 leading-none">
               <h1 className="text-[30px] font-black text-white font-cairo tracking-[-1px] leading-[0.95] m-0">FOX</h1>
