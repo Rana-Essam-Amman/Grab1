@@ -57,7 +57,7 @@ export function useAiReview(): UseAiReviewReturn {
     if (!postDraft) return;
     if (authStatus !== 'authenticated' || isAnonymous) {
       globalStorage().set('catch_pending_publish', 'true');
-      navigateTo('register');
+      navigateTo('login');
       return;
     }
     const { title, price, targetMarket, newListing } = buildNewListingPayload({ postDraft, user, browseCountryCode, activeCurrency });

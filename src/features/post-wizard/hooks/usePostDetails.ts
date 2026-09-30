@@ -60,10 +60,11 @@ export function usePostDetails() {
     updatePostDraft(draftData);
 
     // Visitors (anonymous session) must sign in before publishing.
-    // Draft stays in postDraft; resumed after Google sign-in.
+    // Route to LoginGateway (Google/Apple/WhatsApp options first).
+    // Draft stays in postDraft; resumed after sign-in via catch_pending_publish.
     if (authStatus !== 'authenticated' || isAnonymous) {
       globalStorage().set('catch_pending_publish', 'true');
-      navigateTo('register');
+      navigateTo('login');
       return;
     }
 
