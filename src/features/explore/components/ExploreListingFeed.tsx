@@ -21,7 +21,7 @@ export const ExploreListingFeed: React.FC<ExploreListingFeedProps> = ({
 }) => {
   const { isArabic } = useUI();
   const parentRef = useRef<HTMLDivElement | null>(null);
-  const isVirtualized = listings.length >= 20;
+  const isVirtualized = listings.length >= 100;
 
   const rowCount = useMemo(() => (feedLayout === 'grid' ? Math.ceil(listings.length / 2) : listings.length), [listings.length, feedLayout]);
   const estimatedRowHeight = useMemo(() => (feedLayout === 'grid' ? 290 : 130), [feedLayout]);
