@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useImageSwipe } from '../hooks/useImageSwipe';
+import { ImageLightbox } from './ImageLightbox';
 
 export interface ListingImageSliderProps {
   images: string[];
@@ -17,6 +18,7 @@ const ARROW_BASE =
 export const ListingImageSlider: React.FC<ListingImageSliderProps> = React.memo(({
   images, activeIdx, onChangeIdx, isArabic,
 }) => {
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const { goNext, goPrev, handleTouchStart, handleTouchEnd } =
     useImageSwipe({ images, activeIdx, onChangeIdx });
 
@@ -24,6 +26,7 @@ export const ListingImageSlider: React.FC<ListingImageSliderProps> = React.memo(
   const showControls = images.length > 1;
 
   return (
+    <>
     <div
       className="relative w-full aspect-4/3 bg-ink overflow-hidden select-none touch-pan-y"
       onTouchStart={handleTouchStart}
@@ -33,7 +36,8 @@ export const ListingImageSlider: React.FC<ListingImageSliderProps> = React.memo(
         src={images[activeIdx]}
         alt="Listing image"
         draggable={false}
-        className="w-full h-full object-cover transition-all duration-300 pointer-events-none"
+        onClick={() => setIsLightboxOpen(true)}
+        className="w-full h-full object-cover transition-all duration-300 cursor-zoom-in"
         onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_SRC; }}
       />
 
@@ -60,6 +64,17 @@ export const ListingImageSlider: React.FC<ListingImageSliderProps> = React.memo(
         </>
       )}
     </div>
+
+    {isLightboxOpen && (
+      <ImageLightbox
+        images={images}
+        activeIdx={activeIdx}
+        onChangeIdx={onChangeIdx}
+        onClose={() => setIsLightboxOpen(false)}
+        isArabic={isArabic}
+      />
+    )}
+    </>
   );
 });
 
