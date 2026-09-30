@@ -95,7 +95,7 @@ describe('useAiReview', () => {
     });
   });
 
-  it('handlePublish navigates to register when unauthenticated', async () => {
+  it('handlePublish navigates to login when unauthenticated', async () => {
     mockAuthStatus = 'unauthenticated';
     const { result } = renderHook(() => useAiReview());
 
@@ -103,7 +103,7 @@ describe('useAiReview', () => {
       await result.current.handlePublish();
     });
 
-    expect(mockNavigateTo).toHaveBeenCalledWith('register');
+    expect(mockNavigateTo).toHaveBeenCalledWith('login');
     expect(mockPublishListing).not.toHaveBeenCalled();
   });
 
