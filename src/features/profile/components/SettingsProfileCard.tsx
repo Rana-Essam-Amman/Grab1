@@ -43,13 +43,15 @@ export const SettingsProfileCard: React.FC<SettingsProfileCardProps> = ({
           {isArabic ? 'تسجيل' : 'Sign In'}
         </Button>
       ) : (
-        <button
+        <Button
+          variant="secondary"
+          size="sm"
           onClick={handleLogout}
-          className="p-2 rounded-full text-red-600 hover:bg-red-50"
-          title={isArabic ? 'تسجيل الخروج' : 'Log out'}
+          className="h-9 px-3.5 rounded-full text-xs font-bold border border-danger/30 text-danger hover:bg-danger/5 gap-1.5"
         >
-          <Logout size={18} variant="Linear" color="#EF4444" />
-        </button>
+          <Logout size={14} variant="Linear" color="#EF4444" />
+          <span>{isArabic ? 'خروج' : 'Log out'}</span>
+        </Button>
       )}
     </div>
   );
