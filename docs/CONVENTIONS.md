@@ -1,4 +1,4 @@
-# Project Conventions — Grab The Deals
+# Project Conventions — FOX Marketplace
 
 **Source of truth for project-level decisions.**
 
@@ -6,7 +6,7 @@
 
 | Field | Value |
 |-------|-------|
-| Official Name | Grab The Deals |
+| Official Name | FOX Marketplace |
 | Repo Name | `Grab1` |
 | Default Branch | `main` (NEVER `master`) |
 | Remote Name | `new-origin` |

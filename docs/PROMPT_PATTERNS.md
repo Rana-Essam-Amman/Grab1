@@ -1,4 +1,4 @@
-# Prompt Patterns — Grab The Deals
+# Prompt Patterns — FOX Marketplace
 
 **Purpose:** Library of prompt patterns for AI agents on this project.
 **Audience:** Any AI agent working on this codebase.

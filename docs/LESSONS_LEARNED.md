@@ -1,4 +1,4 @@
-# Lessons Learned — Grab The Deals
+# Lessons Learned — FOX Marketplace
 
 **Purpose:** Every bug documented. Institutional memory.
 **Audience:** Any AI agent or developer joining the project.

@@ -1,4 +1,4 @@
-# Session Handoff — Grab The Deals
+# Session Handoff — FOX Marketplace
 
 ## Current State (2026-09-25)
 - HEAD: d406b94 (test(infra): add useListings + useChat + useMonetization hook tests (15 tests))

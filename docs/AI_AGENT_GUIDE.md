@@ -1,4 +1,4 @@
-# AI Agent Guide — Grab The Deals
+# AI Agent Guide — FOX Marketplace
 
 **Purpose:** HOW any AI agent should work on this project.
 **Audience:** Any AI (Idx, Cursor, Grok, Claude) working on this codebase.
@@ -148,7 +148,7 @@ Then continue from "Next task".
 
 ### 9.1 The Mission
 
-**Grab The Deals** aims to become the **leading AI-powered classifieds marketplace in the Middle East (MENA)**.
+**FOX Marketplace** aims to become the **leading AI-powered classifieds marketplace in the Middle East (MENA)**.
 
 We compete against established players:
 - **OpenSooq** (Jordan-based, dominant in Levant)

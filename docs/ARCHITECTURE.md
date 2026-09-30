@@ -1,4 +1,4 @@
-# Architecture — Grab The Deals
+# Architecture — FOX Marketplace
 
 ## Layers
 
