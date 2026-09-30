@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { CloseCircle, Call, Whatsapp, MessageText } from 'iconsax-react';
 import { useImageSwipe } from '../hooks/useImageSwipe';
-
 export interface ImageLightboxProps {
   images: string[];
   activeIdx: number;
@@ -12,15 +11,23 @@ export interface ImageLightboxProps {
   readonly onWhatsApp?: () => void;
   readonly onStartChat?: () => void;
 }
-
+const IMG_STYLE: React.CSSProperties = {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width: '100%',
+  height: '100%',
+  objectFit: 'contain',
+  userSelect: 'none',
+  pointerEvents: 'none',
+};
+const BTN = 'rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white';
 export const ImageLightbox: React.FC<ImageLightboxProps> = React.memo(({
   images, activeIdx, onChangeIdx, onClose, isArabic,
   onCall, onWhatsApp, onStartChat,
 }) => {
-  const hasActions = Boolean(onCall || onWhatsApp || onStartChat);
   const { goNext, goPrev, handleTouchStart, handleTouchEnd } =
     useImageSwipe({ images, activeIdx, onChangeIdx });
-
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -35,16 +42,13 @@ export const ImageLightbox: React.FC<ImageLightboxProps> = React.memo(({
       document.body.style.overflow = prev;
     };
   }, [goNext, goPrev, onClose]);
-
   if (!images || images.length === 0) return null;
-
+  const hasActions = Boolean(onCall || onWhatsApp || onStartChat);
   const stop = (e: React.MouseEvent) => e.stopPropagation();
-  const arrowBtn =
-    'absolute top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center text-white text-2xl font-bold hover:bg-white/25 transition-colors z-10';
 
   return (
     <div
-      className="fixed inset-0 z-[200] bg-black flex items-center justify-center"
+      className="fixed inset-0 z-[200] bg-black"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       onClick={onClose}
@@ -52,84 +56,51 @@ export const ImageLightbox: React.FC<ImageLightboxProps> = React.memo(({
       role="dialog"
       aria-modal="true"
     >
-      <button
-        type="button"
-        onClick={onClose}
-        aria-label={isArabic ? 'إغلاق' : 'Close'}
-        className="absolute top-4 end-4 w-11 h-11 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center hover:bg-white/25 transition-colors z-10"
-      >
+      <img src={images[activeIdx]} alt="" draggable={false} style={IMG_STYLE} />
+      <button type="button" onClick={onClose} aria-label={isArabic ? 'إغلاق' : 'Close'}
+        style={{ position: 'absolute', top: 16, right: 16, zIndex: 20 }}
+        className={`${BTN} w-11 h-11`}>
         <CloseCircle size={24} variant="Bold" color="#FFFFFF" />
       </button>
 
-      <img
-        src={images[activeIdx]}
-        alt={`Image ${activeIdx + 1}`}
-        className="w-full h-full object-contain select-none"
-        draggable={false}
-        onClick={stop}
-      />
-
       {images.length > 1 && (
         <>
-          <button type="button" onClick={(e) => { stop(e); goPrev(); }}
-            aria-label={isArabic ? 'السابق' : 'Previous'}
-            className={`${arrowBtn} start-3`}>‹</button>
-          <button type="button" onClick={(e) => { stop(e); goNext(); }}
-            aria-label={isArabic ? 'التالي' : 'Next'}
-            className={`${arrowBtn} end-3`}>›</button>
-
-          <div className="absolute top-5 start-5 bg-white/15 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full" dir="ltr">
+          <button type="button" aria-label={isArabic ? 'السابق' : 'Previous'}
+            onClick={(e) => { stop(e); goPrev(); }}
+            style={{ position: 'absolute', top: '50%', left: 12, transform: 'translateY(-50%)', zIndex: 20 }}
+            className={`${BTN} w-11 h-11 text-2xl font-bold`}>‹</button>
+          <button type="button" aria-label={isArabic ? 'التالي' : 'Next'}
+            onClick={(e) => { stop(e); goNext(); }}
+            style={{ position: 'absolute', top: '50%', right: 12, transform: 'translateY(-50%)', zIndex: 20 }}
+            className={`${BTN} w-11 h-11 text-2xl font-bold`}>›</button>
+          <div dir="ltr"
+            style={{ position: 'absolute', top: 20, left: 20, zIndex: 20 }}
+            className="bg-white/20 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full">
             {activeIdx + 1} / {images.length}
-          </div>
-
-          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-white/15 backdrop-blur-sm px-4 py-2 rounded-full" onClick={stop}>
-            {images.map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => onChangeIdx(i)}
-                aria-label={`Go to image ${i + 1}`}
-                className={`h-2 rounded-full transition-all cursor-pointer ${i === activeIdx ? 'w-6 bg-white' : 'w-2 bg-white/50'}`}
-              />
-            ))}
           </div>
         </>
       )}
-
       {hasActions && (
-        <div
-          className="absolute bottom-0 left-0 right-0 flex items-center gap-2 px-4 py-3 bg-black/40 backdrop-blur-md"
-          onClick={stop}
-        >
+        <div onClick={stop}
+          style={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 20 }}
+          className="flex items-center gap-2 px-4 py-3 bg-black/60 backdrop-blur-md">
           {onWhatsApp && (
-            <button
-              type="button"
-              onClick={onWhatsApp}
-              aria-label="WhatsApp"
-              className="flex-1 h-12 rounded-xl bg-[#25D366] text-white flex items-center justify-center gap-2 font-bold text-sm active:scale-95 transition-transform cursor-pointer"
-            >
+            <button type="button" onClick={onWhatsApp}
+              className="flex-1 h-12 rounded-xl bg-[#25D366] text-white flex items-center justify-center gap-2 font-bold text-sm">
               <Whatsapp size={20} variant="Bold" color="#FFFFFF" />
               <span>{isArabic ? 'واتساب' : 'WhatsApp'}</span>
             </button>
           )}
           {onStartChat && (
-            <button
-              type="button"
-              onClick={onStartChat}
-              aria-label={isArabic ? 'دردشة' : 'Chat'}
-              className="flex-1 h-12 rounded-xl bg-white/15 text-white flex items-center justify-center gap-2 font-bold text-sm active:scale-95 transition-transform cursor-pointer border border-white/20"
-            >
+            <button type="button" onClick={onStartChat}
+              className="flex-1 h-12 rounded-xl bg-white/15 text-white flex items-center justify-center gap-2 font-bold text-sm border border-white/20">
               <MessageText size={20} variant="Bold" color="#FFFFFF" />
               <span>{isArabic ? 'دردشة' : 'Chat'}</span>
             </button>
           )}
           {onCall && (
-            <button
-              type="button"
-              onClick={onCall}
-              aria-label={isArabic ? 'اتصال' : 'Call'}
-              className="flex-1 h-12 rounded-xl bg-primary text-white flex items-center justify-center gap-2 font-bold text-sm active:scale-95 transition-transform cursor-pointer"
-            >
+            <button type="button" onClick={onCall}
+              className="flex-1 h-12 rounded-xl bg-[#E57E25] text-white flex items-center justify-center gap-2 font-bold text-sm">
               <Call size={20} variant="Bold" color="#FFFFFF" />
               <span>{isArabic ? 'اتصال' : 'Call'}</span>
             </button>
