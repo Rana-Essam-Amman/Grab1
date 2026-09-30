@@ -4,8 +4,9 @@ import { validateAdQuotaAvailability as validateAdQuotaAvailabilityHelper } from
 import { globalStorage } from '@/shared/lib/marketStorage';
 import { ListingsState } from './listings.slice.types';
 import { sanitizeListingData, logListingError } from './listings.slice.helpers';
-import { fetchListings } from '../services/listingsService';
 import { seedListings } from '@/data/seedListings';
+import type { PublishResult } from './listings.slice.types';
+import { performSupabasePublish, performSupabaseSync } from './listings.slice.supabase';
 
 export const createListingsActions = (
   set: (fn: (state: ListingsState) => void) => void,
@@ -86,21 +87,28 @@ export const createListingsActions = (
 
   syncFromSupabase: async () => {
     set((state) => { state.isSyncing = true; });
-    const { data, error } = await fetchListings();
-
-    if (error || !data) {
-      // Network/DB error — keep localStorage data, stop syncing indicator
-      set((state) => { state.isSyncing = false; });
-      return;
-    }
+    const { listings: remoteListings, error } = await performSupabaseSync();
 
     set((state) => {
       state.isSyncing = false;
+      if (error || !remoteListings) return;
       // Supabase is source of truth for user-created listings.
       // Seed listings stay as local-only demo content.
-      state.listings = [...data, ...seedListings];
+      state.listings = [...remoteListings, ...seedListings];
       saveListingsToStorage(state.listings);
     });
+  },
+
+  publishListing: async (listing: Listing, activeCountry: string, isArabic = true): Promise<PublishResult> => {
+    const { remoteListing, error } = await performSupabasePublish(listing, activeCountry, isArabic);
+    if (error || !remoteListing) {
+      return { success: false, remoteId: null, error: error || 'فشل النشر' };
+    }
+    set((state) => {
+      state.listings = [remoteListing, ...state.listings];
+      saveListingsToStorage(state.listings);
+    });
+    return { success: true, remoteId: remoteListing.id, error: null };
   },
 
   setIsQuotaExhausted: (exhausted: boolean) => set((state) => { state.isQuotaExhausted = exhausted; }),

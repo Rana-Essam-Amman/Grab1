@@ -11,7 +11,7 @@ export function usePostDetails() {
   const { postDraft, updatePostDraft } = usePostWizard();
   const { resetPostDraft } = useDraft();
   const { authStatus, user } = useAuth();
-  const { addListing } = useListings();
+  const { publishListing } = useListings();
   const { isArabic, navigateTo, setActiveTab, browseCountryCode, activeCurrency } = useUI();
 
   const [title, setTitle] = useState(postDraft.title || '');
@@ -71,7 +71,11 @@ export function usePostDetails() {
     setIsPublishing(true);
     setError(null);
     try {
-      addListing(prepared.newListing, prepared.targetMarket, isArabic);
+      const result = await publishListing(prepared.newListing, prepared.targetMarket, isArabic);
+      if (!result.success) {
+        setError(result.error || 'فشل نشر الإعلان');
+        return;
+      }
       resetPostDraft();
       setActiveTab('my-ads');
       navigateTo('main');

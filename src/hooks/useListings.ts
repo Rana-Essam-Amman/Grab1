@@ -1,5 +1,4 @@
 import { useListingsStore } from '@/features/listings/store/listings.slice';
-import { Listing } from '../types';
 import { useAuthStore } from '@/features/auth/store/auth.slice';
 import { useUIStore } from '@/store/ui.slice';
 
@@ -38,6 +37,7 @@ export const useListings = () => {
     toggleWishlist: store.toggleWishlist,
     toggleFavorite: store.toggleWishlist,
     addListing: store.addListing,
+    publishListing: store.publishListing,
     updateListing: store.updateListing,
     deleteListing: store.deleteListing,
     getListing,
