@@ -6,6 +6,18 @@ import { ensureAnonymousSession, isAnonymousUser } from '../services/anonymousSe
 import { globalStorage } from '@/shared/lib/marketStorage';
 import { useUIStore } from '@/store/ui.slice';
 import type { ScreenType } from '@/store/ui.slice.types';
+
+function resumePendingPublishIfAny(): void {
+  const pending = globalStorage().get<string>('catch_pending_publish');
+  const screen = globalStorage().get<string>('catch_pending_publish_screen');
+  if (pending === 'true' && screen) {
+    globalStorage().remove('catch_pending_publish');
+    globalStorage().remove('catch_pending_publish_screen');
+    setTimeout(() => {
+      useUIStore.getState().navigateTo(screen as ScreenType);
+    }, 200);
+  }
+}
 import type { UserProfile } from '@/types';
 
 function mapSessionToUser(session: Session | null): UserProfile | null {
@@ -58,10 +70,11 @@ export function useSupabaseAuthListener(): void {
         return;
       }
 
-      if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
+      if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'USER_UPDATED') && session) {
         const user = mapSessionToUser(session);
         if (user) {
           const stillAnon = isAnonymousUser(session.user);
+          const wasAnon = useAuthStore.getState().isAnonymous;
           useAuthStore.setState({
             user,
             sessionToken: session.access_token,
@@ -69,18 +82,13 @@ export function useSupabaseAuthListener(): void {
             isAnonymous: stillAnon,
           });
 
-          // Resume publish flow after real (non-anonymous) sign-in.
-          if (!stillAnon && event === 'SIGNED_IN') {
-            const pending = globalStorage().get<string>('catch_pending_publish');
-            const screen = globalStorage().get<string>('catch_pending_publish_screen');
-            if (pending === 'true' && screen) {
-              globalStorage().remove('catch_pending_publish');
-              globalStorage().remove('catch_pending_publish_screen');
-              // Defer so auth store state settles before screen mounts.
-              setTimeout(() => {
-                useUIStore.getState().navigateTo(screen as ScreenType);
-              }, 150);
-            }
+          // Resume pending publish when:
+          //  - user is now non-anonymous, AND
+          //  - this session started as anonymous (linkIdentity scenario) OR a fresh sign-in
+          const justLinked = !stillAnon && wasAnon;
+          const freshSignIn = !stillAnon && event === 'SIGNED_IN';
+          if (justLinked || freshSignIn) {
+            resumePendingPublishIfAny();
           }
         }
       }
