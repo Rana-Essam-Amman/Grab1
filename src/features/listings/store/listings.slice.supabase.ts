@@ -7,6 +7,7 @@ import { supabase } from '@/shared/lib/supabase';
 export interface SupabasePublishResult {
   readonly remoteListing: Listing | null;
   readonly error: string | null;
+  readonly fallbackToLocal?: boolean;
 }
 
 export async function performSupabasePublish(
@@ -16,7 +17,11 @@ export async function performSupabasePublish(
 ): Promise<SupabasePublishResult> {
   try {
     const { data: userData } = await supabase.auth.getUser();
-    if (!userData.user) return { remoteListing: null, error: 'Not authenticated' };
+    if (!userData.user) {
+      // No Supabase session (demo mode, E2E, offline) → local-only fallback.
+      // Real visitors are blocked at the UI level BEFORE reaching this function.
+      return { remoteListing: null, error: null, fallbackToLocal: true };
+    }
 
     const sanitized = sanitizeListingData(listing, activeCountry, isArabic);
 

@@ -100,10 +100,26 @@ export const createListingsActions = (
   },
 
   publishListing: async (listing: Listing, activeCountry: string, isArabic = true): Promise<PublishResult> => {
-    const { remoteListing, error } = await performSupabasePublish(listing, activeCountry, isArabic);
+    const { remoteListing, error, fallbackToLocal } = await performSupabasePublish(
+      listing,
+      activeCountry,
+      isArabic
+    );
+
+    // No Supabase session (demo/E2E/offline) → save locally, don't block user.
+    if (fallbackToLocal) {
+      const sanitized = sanitizeListingData(listing, activeCountry, isArabic);
+      set((state) => {
+        state.listings = [sanitized, ...state.listings];
+        saveListingsToStorage(state.listings);
+      });
+      return { success: true, remoteId: sanitized.id, error: null };
+    }
+
     if (error || !remoteListing) {
       return { success: false, remoteId: null, error: error || 'فشل النشر' };
     }
+
     set((state) => {
       state.listings = [remoteListing, ...state.listings];
       saveListingsToStorage(state.listings);
