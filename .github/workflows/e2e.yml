@@ -40,6 +40,8 @@ jobs:
         env:
           CI: 'true'
           VITE_ALLOW_QUICK_DEMO: 'true'
+          VITE_SUPABASE_URL: 'https://wmchqotsforwcoxilaeo.supabase.co'
+          VITE_SUPABASE_ANON_KEY: 'sb_publishable_G_g0UzFu8SGDynrUPIF8Qw_TFb3GTTj'
 
       - name: Upload Playwright report
         if: always()
