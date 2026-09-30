@@ -1,6 +1,8 @@
 import type { Listing } from '@/types';
 import { fetchListings, createListing } from '../services/listingsService';
+import { uploadListingImages } from '../services/storageService';
 import { sanitizeListingData } from './listings.slice.helpers';
+import { supabase } from '@/shared/lib/supabase';
 
 export interface SupabasePublishResult {
   readonly remoteListing: Listing | null;
@@ -13,7 +15,26 @@ export async function performSupabasePublish(
   isArabic: boolean
 ): Promise<SupabasePublishResult> {
   try {
+    const { data: userData } = await supabase.auth.getUser();
+    if (!userData.user) return { remoteListing: null, error: 'Not authenticated' };
+
     const sanitized = sanitizeListingData(listing, activeCountry, isArabic);
+
+    // If user picked photos but none uploaded → block publish.
+    const hadPhotos = sanitized.images.length > 0;
+    const { urls: uploadedImages, failedCount } = await uploadListingImages(
+      sanitized.images,
+      userData.user.id
+    );
+    if (hadPhotos && uploadedImages.length === 0) {
+      return { remoteListing: null, error: 'فشل رفع الصور — جرب مرة ثانية' };
+    }
+    if (failedCount > 0) {
+      // Partial failure — publish with what we have, log silently.
+      // eslint-disable-next-line no-console
+      console.warn(`[publish] ${failedCount} image(s) failed to upload`);
+    }
+
     const { data, error } = await createListing({
       title: sanitized.title,
       description: sanitized.description,
@@ -24,7 +45,7 @@ export async function performSupabasePublish(
       neighborhood: sanitized.neighborhood,
       categorySlug: sanitized.categorySlug,
       subcategorySlug: sanitized.subcategorySlug,
-      images: sanitized.images,
+      images: uploadedImages,
       attributes: sanitized.attributes,
       sellerName: sanitized.sellerName,
       sellerPhone: sanitized.sellerPhone,
