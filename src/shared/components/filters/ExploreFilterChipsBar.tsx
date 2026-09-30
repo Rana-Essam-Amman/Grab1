@@ -30,10 +30,8 @@ export const ExploreFilterChipsBar: React.FC<ExploreFilterChipsBarProps> = React
   }, [minPriceFilter, maxPriceFilter, isArabic, activeCurrency]);
 
   return (
-    <div className="flex flex-col gap-2 font-cairo">
-      {/* Scrollable Chips Row */}
-      <div className="flex flex-row items-center gap-2 overflow-x-auto no-scrollbar px-4 pb-2 -mx-4">
-        {/* Area Filter Chip */}
+    <div className="flex flex-row items-center gap-2 px-4 pb-2 -mx-4 font-cairo">
+      <div className="flex-1 flex flex-row items-center gap-2 overflow-x-auto no-scrollbar min-w-0">
         <FilterChip
           isArabic={isArabic}
           isActive={!!activeNeighborhood}
@@ -44,7 +42,6 @@ export const ExploreFilterChipsBar: React.FC<ExploreFilterChipsBarProps> = React
           onDarkBackground={onDarkBackground}
         />
 
-        {/* Category Filter Chip */}
         <FilterChip
           isArabic={isArabic}
           isActive={!!categoryFilter}
@@ -55,7 +52,6 @@ export const ExploreFilterChipsBar: React.FC<ExploreFilterChipsBarProps> = React
           onDarkBackground={onDarkBackground}
         />
 
-        {/* Price Filter Chip */}
         <FilterChip
           isArabic={isArabic}
           isActive={isPriceActive}
@@ -79,21 +75,18 @@ export const ExploreFilterChipsBar: React.FC<ExploreFilterChipsBarProps> = React
         )}
       </div>
 
-      {/* Layout Toggle */}
-      <div className="flex items-center justify-end px-4 pb-1">
-        <button
-          type="button"
-          onClick={() => onFeedLayoutChange(feedLayout === 'list' ? 'grid' : 'list')}
-          className="w-8 h-8 rounded-xl border border-[#E57E25] bg-white hover:bg-[#E57E25]/5 flex items-center justify-center transition-colors cursor-pointer"
-          title={isArabic ? 'تغيير طريقة العرض' : 'Toggle layout'}
-        >
-          {feedLayout === 'list' ? (
-            <Grid1 size={15} variant="Bold" color="#E57E25" />
-          ) : (
-            <RowVertical size={15} variant="Bold" color="#E57E25" />
-          )}
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={() => onFeedLayoutChange(feedLayout === 'list' ? 'grid' : 'list')}
+        className="w-8 h-8 rounded-xl border border-[#E57E25] bg-white hover:bg-[#E57E25]/5 flex items-center justify-center transition-colors cursor-pointer shrink-0"
+        title={isArabic ? 'تغيير طريقة العرض' : 'Toggle layout'}
+      >
+        {feedLayout === 'list' ? (
+          <Grid1 size={15} variant="Bold" color="#E57E25" />
+        ) : (
+          <RowVertical size={15} variant="Bold" color="#E57E25" />
+        )}
+      </button>
     </div>
   );
 });
