@@ -9,6 +9,14 @@ vi.mock('@/hooks/useDraft', () => ({
   useDraft: () => ({ startPostFlow: mockStartPostFlow }),
 }));
 
+vi.mock('@/hooks/useAuth', () => ({
+  useAuth: () => ({
+    authStatus: 'authenticated',
+    isAnonymous: false,
+    user: { firstName: 'Test', lastName: 'User' },
+  }),
+}));
+
 describe('usePostAdEntry', () => {
   beforeEach(() => {
     vi.clearAllMocks();
