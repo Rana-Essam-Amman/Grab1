@@ -1,6 +1,7 @@
 import { AuthState } from './auth.slice.types';
 import { UserProfile, RegisteredAccount } from '@/types';
 import { globalStorage } from '@/shared/lib/marketStorage';
+import { signOut } from '../services/authService';
 
 type SetState = (fn: (state: AuthState) => void) => void;
 type GetState = () => AuthState;
@@ -32,9 +33,14 @@ export const createAuthActions = (set: SetState, get: GetState) => ({
   },
 
   logout: () => {
+    // Fire-and-forget: clears Supabase session + fires SIGNED_OUT event
+    // The useSupabaseAuthListener hook will also react to SIGNED_OUT.
+    void signOut().catch(() => {
+      // Ignore network errors — local logout still proceeds
+    });
+
     globalStorage().remove('catch_user');
     globalStorage().remove('catch_token');
-
     set((state) => {
       state.user = null;
       state.sessionToken = null;
