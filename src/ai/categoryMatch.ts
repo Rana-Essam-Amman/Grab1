@@ -25,7 +25,7 @@ export const textSignals: Record<string, CategoryHint> = {
   كنب: { categorySlug: 'furniture', subcategorySlug: 'living', labelAr: 'أثاث غرف جلوس', labelEn: 'Living Room Furniture' },
   كنبة: { categorySlug: 'furniture', subcategorySlug: 'living', labelAr: 'أثاث غرف جلوس', labelEn: 'Living Room Furniture' },
   طاولة: { categorySlug: 'furniture', subcategorySlug: 'tables', labelAr: 'طاولات وسفرة', labelEn: 'Dining & Tables' },
-  آيفون: { categorySlug: 'mobiles', subcategorySlug: 'phones', labelAr: 'هواتف محمولة', labelEn: 'Mobile Phones' },
+  ايفون: { categorySlug: 'mobiles', subcategorySlug: 'phones', labelAr: 'هواتف محمولة', labelEn: 'Mobile Phones' },
   iphone: { categorySlug: 'mobiles', subcategorySlug: 'phones', labelAr: 'هواتف محمولة', labelEn: 'Mobile Phones' },
   سامسونج: { categorySlug: 'mobiles', subcategorySlug: 'phones', labelAr: 'هواتف محمولة', labelEn: 'Mobile Phones' },
   ساعة: { categorySlug: 'watches', subcategorySlug: 'luxury', labelAr: 'ساعات فاخرة', labelEn: 'Luxury Watches' },
@@ -78,6 +78,22 @@ export function matchCategory({
   }
 
   const silent = mismatchPolicy === MismatchPolicy.silent;
+
+  // If the user has NO preference, trust the hint (no conflict).
+  if (!chosenCategory) {
+    return {
+      chosenCategory,
+      chosenSub,
+      effectiveCategory: hinted.categorySlug,
+      effectiveSub: hinted.subcategorySlug,
+      mismatch: false,
+      suggested: hinted,
+    };
+  }
+
+  // User chose something different from the hint.
+  // - silent mode → trust hint (override user choice)
+  // - confirm mode → trust user choice, surface suggested for UI
   return {
     chosenCategory,
     chosenSub,
