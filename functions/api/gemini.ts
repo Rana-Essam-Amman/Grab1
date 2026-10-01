@@ -10,7 +10,7 @@ interface GeminiContext {
 
 const GOOGLE_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
 const GROQ_BASE = 'https://api.groq.com/openai/v1/chat/completions';
-const GROQ_MODEL = 'llama-3.3-70b-specdec';
+const GROQ_MODEL = 'llama-3.3-70b-versatile';
 
 export async function onRequestPost(context: GeminiContext): Promise<Response> {
   const geminiKey = (context.env as { GEMINI_API_KEY?: string }).GEMINI_API_KEY;
