@@ -102,4 +102,5 @@ export const createUIActions = (
   setIsAiFocused: (isAiFocused: boolean) => set({ isAiFocused }),
   setIsCountrySheetOpen: (isCountrySheetOpen: boolean) => set({ isCountrySheetOpen }),
   setIsSearchFocused: (isSearchFocused: boolean) => set({ isSearchFocused }),
+  setAiFlowPending: (aiFlowPending: boolean) => set({ aiFlowPending }),
 });

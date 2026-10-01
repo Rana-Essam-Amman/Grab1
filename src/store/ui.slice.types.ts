@@ -86,4 +86,6 @@ export interface UIState {
   setIsAiFocused: (focused: boolean) => void;
   setIsCountrySheetOpen: (open: boolean) => void;
   setIsSearchFocused: (focused: boolean) => void;
+  aiFlowPending: boolean;
+  setAiFlowPending: (v: boolean) => void;
 }

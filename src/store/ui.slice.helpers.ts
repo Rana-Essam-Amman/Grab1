@@ -60,6 +60,7 @@ export const getInitialState = () => {
     isAiFocused: false,
     isCountrySheetOpen: false,
     isSearchFocused: false,
+    aiFlowPending: false,
   };
 };
 

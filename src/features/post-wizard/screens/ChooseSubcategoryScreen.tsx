@@ -8,7 +8,7 @@ import { ArrowRight2, ArrowLeft2 } from 'iconsax-react';
 import { PostFlowHeader } from '../components/PostFlowHeader';
 
 export const ChooseSubcategoryScreen: React.FC = () => {
-  const { isArabic, goBack, navigateTo } = useUI();
+  const { isArabic, goBack, navigateTo, aiFlowPending, setAiFlowPending } = useUI();
   const { postDraft, updatePostDraft } = usePostWizard();
   const ChevronIcon = isArabic ? ArrowLeft2 : ArrowRight2;
 
@@ -24,9 +24,14 @@ export const ChooseSubcategoryScreen: React.FC = () => {
   const handleSelectSub = useCallback(
     (subcategorySlug: string) => {
       updatePostDraft({ subcategorySlug });
-      navigateTo('post-photos');
+      if (aiFlowPending) {
+        setAiFlowPending(false);
+        navigateTo('post-ai-capture');
+      } else {
+        navigateTo('post-photos');
+      }
     },
-    [updatePostDraft, navigateTo]
+    [updatePostDraft, navigateTo, aiFlowPending, setAiFlowPending]
   );
 
   return (

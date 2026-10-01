@@ -12,7 +12,7 @@ export interface UsePostAdEntryReturn {
 }
 
 export const usePostAdEntry = (): UsePostAdEntryReturn => {
-  const { isArabic, goBack, navigateTo, setActiveTab } = useUI();
+  const { isArabic, goBack, navigateTo, setActiveTab, setAiFlowPending } = useUI();
   const { startPostFlow } = useDraft();
   const { authStatus, isAnonymous } = useAuth();
 
@@ -33,13 +33,15 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
 
   const handleAI = useCallback(() => {
     startPostFlow();
-    navigateTo('post-ai-capture');
-  }, [startPostFlow, navigateTo]);
+    setAiFlowPending(true);
+    navigateTo('post-category');
+  }, [startPostFlow, setAiFlowPending, navigateTo]);
 
   const handleTraditional = useCallback(() => {
     startPostFlow();
+    setAiFlowPending(false);
     navigateTo('post-category');
-  }, [startPostFlow, navigateTo]);
+  }, [startPostFlow, setAiFlowPending, navigateTo]);
 
   return { isArabic, handleBack, handleAI, handleTraditional };
 };

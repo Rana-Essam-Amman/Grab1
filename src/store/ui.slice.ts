@@ -52,6 +52,7 @@ const uiStorage: StateStorage = {
   },
 };
 
+// UI Store state slice definition
 export const useUIStore = create<UIState>()(
   persist(
     immer((set, get) => ({
