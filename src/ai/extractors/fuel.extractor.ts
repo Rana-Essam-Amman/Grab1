@@ -16,7 +16,12 @@ const NORMALIZED_FUEL: Array<[string, string[]]> = FUEL_ALIASES.map(
 
 export function extractFuel(text: string): string | undefined {
   if (!text) return undefined;
-  const t = normalizeArabic(text).toLowerCase();
+  // Strip negation clauses: "الديزل غير موجود", "بنزين لا يوجد", "X غير متوفر"
+  const cleaned = text.replace(
+    /(\S+)\s+(?:غير\s+موجود|غير\s+متوفر|لا\s+يوجد|ما\s+في|مش\s+موجود)/g,
+    ' '
+  );
+  const t = normalizeArabic(cleaned).toLowerCase();
   for (const [canonical, aliases] of NORMALIZED_FUEL) {
     for (const alias of aliases) {
       if (t.includes(alias)) return canonical;

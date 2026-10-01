@@ -1,5 +1,6 @@
 import { MOTOR_BRANDS } from '@/data/brands/motors';
 import { TECH_BRANDS } from '@/data/brands/tech';
+import { EXTRAS_BRANDS } from '@/data/brands/extras';
 import { normalizeArabic } from '@/data/arabicNormalize';
 
 interface BrandEntry {
@@ -53,17 +54,34 @@ const MOTORS_FLAT = buildFlat(MOTOR_BRANDS as unknown as BrandEntry[]);
 const TECH_FLAT = buildFlat(
   Object.values(TECH_BRANDS).flat() as unknown as BrandEntry[]
 );
+const EXTRAS_FLAT = buildFlat(EXTRAS_BRANDS as unknown as BrandEntry[]);
 
 function findInDict(
   text: string,
   dict: readonly FlatEntry[]
 ): BrandModel | undefined {
   const t = normalizeArabic(text).toLowerCase();
+
+  // Pass 1: prefer MODEL matches (return both make + model)
   for (const entry of dict) {
-    if (entry.normalizedTerm && t.includes(entry.normalizedTerm)) {
+    if (!entry.modelAr) continue;
+    if (!entry.normalizedTerm) continue;
+    if (/^\d+$/.test(entry.normalizedTerm)) continue;
+    if (t.includes(entry.normalizedTerm)) {
       return { make: entry.makeAr, model: entry.modelAr };
     }
   }
+
+  // Pass 2: fall back to BRAND only
+  for (const entry of dict) {
+    if (entry.modelAr) continue;
+    if (!entry.normalizedTerm) continue;
+    if (/^\d+$/.test(entry.normalizedTerm)) continue;
+    if (t.includes(entry.normalizedTerm)) {
+      return { make: entry.makeAr };
+    }
+  }
+
   return undefined;
 }
 
@@ -74,5 +92,9 @@ function findInDict(
  */
 export function extractBrandModel(text: string): BrandModel | undefined {
   if (!text) return undefined;
-  return findInDict(text, MOTORS_FLAT) || findInDict(text, TECH_FLAT);
+  return (
+    findInDict(text, MOTORS_FLAT) ||
+    findInDict(text, TECH_FLAT) ||
+    findInDict(text, EXTRAS_FLAT)
+  );
 }
