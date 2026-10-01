@@ -2,6 +2,7 @@ import { MOTOR_BRANDS } from '@/data/brands/motors';
 import { TECH_BRANDS } from '@/data/brands/tech';
 import { EXTRAS_BRANDS } from '@/data/brands/extras';
 import { normalizeArabic } from '@/data/arabicNormalize';
+import { fuzzyFindCanonical } from '../lib/fuzzyMatch';
 
 interface BrandEntry {
   nameAr: string;
@@ -18,6 +19,8 @@ interface BrandModel {
 // Flatten dictionaries once. Match BOTH model name and brand name.
 // Longer strings first to prevent partial matches.
 interface FlatEntry {
+  term: string;
+  canonical: string;
   normalizedTerm: string;
   makeAr: string;
   modelAr?: string;
@@ -27,19 +30,28 @@ function buildFlat(brands: readonly BrandEntry[]): FlatEntry[] {
   const out: FlatEntry[] = [];
   for (const b of brands) {
     const makeAr = b.nameAr || b.ar || b.en;
+    const normMakeAr = normalizeArabic(makeAr).toLowerCase();
+    const normEn = normalizeArabic(b.en).toLowerCase();
     // brand term
     out.push({
-      normalizedTerm: normalizeArabic(makeAr).toLowerCase(),
+      term: normMakeAr,
+      canonical: makeAr,
+      normalizedTerm: normMakeAr,
       makeAr,
     });
     out.push({
-      normalizedTerm: normalizeArabic(b.en).toLowerCase(),
+      term: normEn,
+      canonical: makeAr,
+      normalizedTerm: normEn,
       makeAr,
     });
     // model terms
     for (const [mAr] of b.models) {
+      const normMAr = normalizeArabic(mAr).toLowerCase();
       out.push({
-        normalizedTerm: normalizeArabic(mAr).toLowerCase(),
+        term: normMAr,
+        canonical: makeAr,
+        normalizedTerm: normMAr,
         makeAr,
         modelAr: mAr,
       });
@@ -92,5 +104,22 @@ function findInDict(
  */
 export function extractBrandModel(text: string): BrandModel | undefined {
   if (!text) return undefined;
-  return findInDict(text, MERGED_FLAT);
+
+  // Fast path: exact substring match (current behaviour).
+  const exact = findInDict(text, MERGED_FLAT);
+  if (exact) return exact;
+
+  // Fuzzy fallback: tolerate 1-2 character Arabic typos (كامرى, هونداى...).
+  const canonical = fuzzyFindCanonical(text, MERGED_FLAT);
+  if (!canonical) return undefined;
+
+  // Resolve back to { make, model } by finding the matched entry.
+  const normHay = normalizeArabic(text).toLowerCase();
+  for (const entry of MERGED_FLAT) {
+    if (entry.makeAr !== canonical) continue;
+    if (entry.modelAr && normHay.includes(entry.normalizedTerm)) {
+      return { make: entry.makeAr, model: entry.modelAr };
+    }
+  }
+  return { make: canonical };
 }

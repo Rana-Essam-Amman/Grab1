@@ -1,4 +1,5 @@
 import { normalizeArabic } from '@/data/arabicNormalize';
+import { fuzzyFindCanonical } from '../lib/fuzzyMatch';
 
 const FUEL_ALIASES: Array<[string, string[]]> = [
   ['هايبرد', ['هايبرد', 'هايبر', 'hybrid', 'هجين']],
@@ -22,10 +23,17 @@ export function extractFuel(text: string): string | undefined {
     ' '
   );
   const t = normalizeArabic(cleaned).toLowerCase();
+
+  // Fast path: exact match.
   for (const [canonical, aliases] of NORMALIZED_FUEL) {
     for (const alias of aliases) {
       if (t.includes(alias)) return canonical;
     }
   }
-  return undefined;
+
+  // Fuzzy fallback.
+  const dict = NORMALIZED_FUEL.flatMap(([canonical, aliases]) =>
+    aliases.map((a) => ({ term: a, canonical }))
+  );
+  return fuzzyFindCanonical(cleaned, dict);
 }

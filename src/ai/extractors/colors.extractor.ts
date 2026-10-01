@@ -1,3 +1,5 @@
+import { fuzzyFindCanonical } from '../lib/fuzzyMatch';
+
 const COLORS: Record<string, string> = {
   'أحمر': 'أحمر',
   'حمراء': 'أحمر',
@@ -89,6 +91,8 @@ const NORMALIZED_COLORS: Array<{ normalized: string; canonical: string; isLatin:
 export function extractColor(text: string): string | undefined {
   if (!text || !text.trim()) return undefined;
   const t = normalizeArabic(text.toLowerCase());
+
+  // Fast path: exact match.
   for (const { normalized, canonical, isLatin } of NORMALIZED_COLORS) {
     if (isLatin) {
       const reg = new RegExp(`\\b${normalized}\\b`, 'i');
@@ -97,5 +101,10 @@ export function extractColor(text: string): string | undefined {
       if (t.includes(normalized)) return canonical;
     }
   }
-  return undefined;
+
+  // Fuzzy fallback: Arabic typos only (skip Latin entries).
+  const arabicDict = NORMALIZED_COLORS
+    .filter((e) => !e.isLatin)
+    .map((e) => ({ term: e.normalized, canonical: e.canonical }));
+  return fuzzyFindCanonical(text, arabicDict);
 }
