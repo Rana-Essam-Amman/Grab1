@@ -3,6 +3,11 @@ import { writeListingCopy } from '@/ai/listingCopyAgent';
 import { buildFieldsFromFacts } from '@/ai/buildFieldsFromFacts';
 import type { CategoryMatch } from '@/ai/categoryMatch';
 
+// TEMP DEBUG — remove before launch
+function tagSource(source: 'ai' | 'local'): string {
+  return source === 'ai' ? '🟢 AI' : '🟠 Local';
+}
+
 export interface AIResultParams {
   readonly generated: GeneratedListing;
   readonly match: CategoryMatch;
@@ -37,6 +42,7 @@ export function buildAppliedDraft(params: AIResultParams) {
     city: generated.city || '',
     generated: {
       ...generated,
+      title: `${tagSource('ai')} ${generated.title || ''}`,
       categorySlug: finalCategory,
       subcategorySlug: finalSub,
       categoryMatch: match,
@@ -55,7 +61,7 @@ export function buildFallbackDraft(params: FallbackParams) {
     subcategorySlug: sub,
     city: '',
     generated: {
-      title: copy.title,
+      title: `${tagSource('local')} ${copy.title || ''}`,
       description: copy.body,
       price: copy.facts.price || '',
       city: '',
