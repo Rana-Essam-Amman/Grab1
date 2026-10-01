@@ -14,6 +14,7 @@ registerAuthGetter(() => useAuthStore.getState().user);
 registerListingsGetterForMonetization(() => useListingsStore.getState().listings);
 
 import { Header, BottomNav, ErrorBoundary } from '@/shared/components';
+import { ErrorBoundaryWithLogging } from '@/shared/components/ErrorBoundaryWithLogging';
 import { TranslationProvider } from '@/shared/i18n';
 import { CountrySheet } from '@/features/markets/components/CountrySheet';
 import { ExploreScreen } from '@/features/explore/screens/ExploreScreen';
@@ -262,7 +263,8 @@ export default function App() {
   }
 
   return (
-    <ErrorBoundary>
+    <ErrorBoundaryWithLogging>
+      <ErrorBoundary>
       <RegistryProvider>
         <>
           <TranslationProvider locale={locale}>
@@ -281,6 +283,7 @@ export default function App() {
           </TranslationProvider>
         </>
       </RegistryProvider>
-    </ErrorBoundary>
+      </ErrorBoundary>
+    </ErrorBoundaryWithLogging>
   );
 }

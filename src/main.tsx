@@ -1,4 +1,5 @@
 import React from 'react';
+import { logError } from '@/shared/lib/errorLogger';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
@@ -62,6 +63,21 @@ try {
 }
 
 initSentry();
+
+window.addEventListener('error', (event) => {
+  void logError({
+    message: event.message || 'Window error',
+    stack: event.error?.stack,
+  });
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+  const reason = event.reason;
+  void logError({
+    message: reason?.message || 'Unhandled rejection',
+    stack: reason?.stack,
+  });
+});
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
