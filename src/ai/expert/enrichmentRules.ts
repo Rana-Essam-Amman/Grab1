@@ -1,4 +1,6 @@
 // RULE-14-EXCEPTION: Static taxonomy
+import { ENRICHMENT_RULES_EXTRA } from './phase3a-expansion';
+
 /**
  * Layer 3 — Facts Enricher
  *
@@ -16,7 +18,7 @@ export interface EnrichmentRule {
   readonly phrase: string;    // marketing benefit phrase in Arabic
 }
 
-export const ENRICHMENT_RULES: readonly EnrichmentRule[] = [
+const BASE_ENRICHMENT_RULES: readonly EnrichmentRule[] = [
   // ═══════════ FUEL ═══════════
   { key: 'fuel', value: 'هايبرد',   phrase: 'اقتصادية جداً في استهلاك الوقود' },
   { key: 'fuel', value: 'كهرباء',   phrase: 'صديقة للبيئة وبدون ضجيج' },
@@ -59,6 +61,11 @@ export const ENRICHMENT_RULES: readonly EnrichmentRule[] = [
   // ═══════════ TRANSMISSION ═══════════
   { key: 'transmission', value: 'أوتوماتيك', phrase: 'قيادة سلسة ومريحة' },
   { key: 'transmission', value: 'عادي',      phrase: 'تحكم كامل وأداء رياضي' },
+];
+
+export const ENRICHMENT_RULES: readonly EnrichmentRule[] = [
+  ...BASE_ENRICHMENT_RULES,
+  ...ENRICHMENT_RULES_EXTRA,
 ];
 
 /**

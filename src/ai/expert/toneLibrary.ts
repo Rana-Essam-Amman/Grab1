@@ -1,4 +1,6 @@
 // RULE-14-EXCEPTION: Static taxonomy
+import { TONE_LIBRARY_EXTRA } from './phase3a-expansion';
+
 /**
  * Layer 4 — Tone Library
  *
@@ -14,7 +16,7 @@ export interface CategoryTone {
   readonly titleHooks: readonly string[]; // appended to title after " — "
 }
 
-export const TONE_LIBRARY: Record<string, CategoryTone> = {
+const BASE_TONE_LIBRARY: Record<string, CategoryTone> = {
   // ═══════════ MOTORS ═══════════
   motors: {
     openings: [
@@ -155,6 +157,11 @@ export const TONE_LIBRARY: Record<string, CategoryTone> = {
     closings: ['متوفر للمعاينة', 'جاهز للتسليم الفوري'],
     titleHooks: ['فرصة مميزة', 'خيار ممتاز', 'بسعر مناسب'],
   },
+};
+
+export const TONE_LIBRARY: Record<string, CategoryTone> = {
+  ...BASE_TONE_LIBRARY,
+  ...TONE_LIBRARY_EXTRA,
 };
 
 /**

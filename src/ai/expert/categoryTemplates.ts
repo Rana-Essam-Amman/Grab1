@@ -1,4 +1,6 @@
 // RULE-14-EXCEPTION: Static taxonomy
+import { CATEGORY_TEMPLATES_EXTRA } from './phase3a-expansion';
+
 /**
  * Layer 5 — Sentence Planner
  *
@@ -39,7 +41,7 @@ export interface CategoryTemplateSet {
   readonly paragraph3: readonly string[];
 }
 
-export const CATEGORY_TEMPLATES: Record<string, CategoryTemplateSet> = {
+const BASE_CATEGORY_TEMPLATES: Record<string, CategoryTemplateSet> = {
   // ═══════════════════════════════════════════════
   // MOTORS (cars)
   // ═══════════════════════════════════════════════
@@ -268,3 +270,9 @@ export const CATEGORY_TEMPLATES: Record<string, CategoryTemplateSet> = {
     ],
   },
 };
+
+export const CATEGORY_TEMPLATES: Record<string, CategoryTemplateSet> = {
+  ...BASE_CATEGORY_TEMPLATES,
+  ...CATEGORY_TEMPLATES_EXTRA,
+};
+
