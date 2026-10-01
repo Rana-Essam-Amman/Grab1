@@ -1,15 +1,11 @@
 /**
  * Central AI gateway configuration — SINGLE SOURCE OF TRUTH.
  *
- * CURRENT (dev/Beta): Direct Gemini call from the client using VITE_GEMINI_API_KEY.
- * The key IS exposed in the client bundle. Acceptable ONLY for internal testing
- * until the backend is live.
+ * PRODUCTION: Requests go to /api/gemini (Cloudflare Pages Function proxy).
+ *   API key lives server-side in Cloudflare env. Zero client exposure.
  *
- * BEFORE PUBLIC LAUNCH:
- *   1. Deploy a Supabase Edge Function: `supabase/functions/ai-proxy`
- *   2. Return the function endpoint from this file
- *   3. Remove VITE_GEMINI_API_KEY from .env.local
- *   4. This file is the ONLY file that needs to change.
+ * DEVELOPMENT (vite dev): Falls back to direct Google call with VITE_GEMINI_API_KEY
+ *   because vite dev doesn't emulate Cloudflare Pages Functions.
  */
 
 export interface AIGatewayRequestConfig {
@@ -30,6 +26,16 @@ export const AI_MODEL_CHAIN = [
 ] as const;
 
 export function getAIGatewayModelConfigs(): AIGatewayModelConfig[] {
+  // Production: proxy through Cloudflare Pages Function (no key in bundle).
+  if (import.meta.env.PROD) {
+    return AI_MODEL_CHAIN.map((model) => ({
+      model,
+      url: `/api/gemini?model=${encodeURIComponent(model)}`,
+      headers: { 'Content-Type': 'application/json' },
+    }));
+  }
+
+  // Development: direct call to Google with local key.
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY as string | undefined;
   if (!apiKey) return [];
 
