@@ -37,13 +37,14 @@ describe('usePostAdEntry', () => {
     expect(useUIStore.getState().currentScreen).toBe('main');
   });
 
-  it('handleAI starts post flow and navigates to AI capture', () => {
+  it('handleAI starts post flow, sets pending AI flow, and navigates to category', () => {
     const { result } = renderHook(() => usePostAdEntry());
     act(() => {
       result.current.handleAI();
     });
     expect(mockStartPostFlow).toHaveBeenCalled();
-    expect(useUIStore.getState().currentScreen).toBe('post-ai-capture');
+    expect(useUIStore.getState().aiFlowPending).toBe(true);
+    expect(useUIStore.getState().currentScreen).toBe('post-category');
   });
 
   it('handleTraditional starts post flow and navigates to category', () => {

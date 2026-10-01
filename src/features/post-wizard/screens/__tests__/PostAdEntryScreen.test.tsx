@@ -7,6 +7,7 @@ const mockGoBack = vi.fn();
 const mockNavigateTo = vi.fn();
 const mockSetActiveTab = vi.fn();
 const mockStartPostFlow = vi.fn();
+const mockSetAiFlowPending = vi.fn();
 
 vi.mock('@/hooks/useUI', () => ({
   useUI: () => ({
@@ -14,6 +15,7 @@ vi.mock('@/hooks/useUI', () => ({
     goBack: mockGoBack,
     navigateTo: mockNavigateTo,
     setActiveTab: mockSetActiveTab,
+    setAiFlowPending: mockSetAiFlowPending,
   }),
 }));
 
@@ -38,11 +40,12 @@ describe('PostAdEntryScreen', () => {
     expect(screen.getByTestId('post-entry-traditional-card')).toBeInTheDocument();
   });
 
-  it('clicking AI card calls startPostFlow and navigates to post-ai-capture', () => {
+  it('clicking AI card calls startPostFlow, sets aiFlowPending, and navigates to post-category', () => {
     render(<PostAdEntryScreen />);
     fireEvent.click(screen.getByTestId('post-entry-ai-card'));
     expect(mockStartPostFlow).toHaveBeenCalledTimes(1);
-    expect(mockNavigateTo).toHaveBeenCalledWith('post-ai-capture');
+    expect(mockSetAiFlowPending).toHaveBeenCalledWith(true);
+    expect(mockNavigateTo).toHaveBeenCalledWith('post-category');
   });
 
   it('clicking Traditional card calls startPostFlow and navigates to post-category', () => {
