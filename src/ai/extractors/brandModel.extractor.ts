@@ -1,7 +1,6 @@
 import { MOTOR_BRANDS } from '@/data/brands/motors';
 import { TECH_BRANDS } from '@/data/brands/tech';
 import { normalizeArabic } from '@/data/arabicNormalize';
-import { Brand } from '@/data/brands/types';
 
 interface BrandEntry {
   nameAr: string;
