@@ -28,8 +28,10 @@ describe('extractFacts — universal (non-car categories)', () => {
 
   it('extracts car fields (backwards compat)', () => {
     const f = extractFacts('كامري 2022 ماشية 50 ألف فحص كامل');
-    expect(f.make).toBe('كامري');
+    expect(f.make).toBe('تويوتا');
+    expect(f.model).toBe('كامري');
     expect(f.year).toBe('2022');
+    expect(f.km).toBe('50000');
     expect(f.inspect).toBe(true);
   });
 });
