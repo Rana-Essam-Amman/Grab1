@@ -12,6 +12,9 @@ import { extractFuel } from './extractors/fuel.extractor';
 import { extractTransmission } from './extractors/transmission.extractor';
 import { extractMileage } from './extractors/mileage.extractor';
 import { extractBrandModel } from './extractors/brandModel.extractor';
+import { extractJobTitle } from './extractors/jobTitle.extractor';
+import { extractExperience } from './extractors/experience.extractor';
+import { extractTrade } from './extractors/trade.extractor';
 
 export function getValueForKey(key: string, facts: ListingFacts, arabic: boolean): string {
   const v = facts[key];
@@ -104,6 +107,8 @@ export function extractFacts(raw: string, countryCode?: string): ListingFacts {
 
   const fuel = extractFuel(text);
   const transmission = extractTransmission(text);
+  const jobTitle = extractJobTitle(text) || extractTrade(text);
+  const experience = extractExperience(text);
 
   return {
     make: finalMake,
@@ -116,6 +121,9 @@ export function extractFacts(raw: string, countryCode?: string): ListingFacts {
     brand: finalMake,
     fuel,
     transmission,
+    jobTitle,
+    serviceType: jobTitle,
+    experience,
   };
 }
 
