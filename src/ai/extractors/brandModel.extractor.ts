@@ -1,6 +1,7 @@
-import motorsData from '@/data/brands/motors';
-import techData from '@/data/brands/tech';
+import { MOTOR_BRANDS } from '@/data/brands/motors';
+import { TECH_BRANDS } from '@/data/brands/tech';
 import { normalizeArabic } from '@/data/arabicNormalize';
+import { Brand } from '@/data/brands/types';
 
 interface BrandEntry {
   nameAr: string;
@@ -47,8 +48,12 @@ function buildFlat(brands: readonly BrandEntry[]): FlatEntry[] {
   return out.sort((a, b) => b.normalizedTerm.length - a.normalizedTerm.length);
 }
 
-const MOTORS_FLAT = buildFlat(motorsData as unknown as BrandEntry[]);
-const TECH_FLAT = buildFlat(techData as unknown as BrandEntry[]);
+const MOTORS_FLAT = buildFlat(MOTOR_BRANDS as unknown as BrandEntry[]);
+
+// TECH_BRANDS is Record<string, Brand[]>
+const TECH_FLAT = buildFlat(
+  Object.values(TECH_BRANDS).flat() as unknown as BrandEntry[]
+);
 
 function findInDict(
   text: string,
