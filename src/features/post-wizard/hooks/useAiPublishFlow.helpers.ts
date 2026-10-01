@@ -40,7 +40,7 @@ export function buildAppliedDraft(params: AIResultParams) {
     city: generated.city || '',
     generated: {
       ...generated,
-      title: `🟢 ${generated.title || ''}`,
+      title: generated.title || '',
       categorySlug: finalCategory,
       subcategorySlug: finalSub,
       categoryMatch: match,
@@ -59,7 +59,7 @@ export function buildFallbackDraft(params: FallbackParams) {
     subcategorySlug: sub,
     city: '',
     generated: {
-      title: `🟠 ${copy.title || ''}`,
+      title: copy.title || '',
       description: copy.body,
       price: copy.facts.price || '',
       city: '',
