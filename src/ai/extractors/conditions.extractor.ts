@@ -1,3 +1,5 @@
+import { normalizeArabic } from '@/data/arabicNormalize';
+
 interface ConditionRule {
   patterns: (string | RegExp)[];
   result: string;
@@ -16,17 +18,15 @@ const CONDITION_RULES: ConditionRule[] = [
 
 export function extractCondition(text: string): string | undefined {
   if (!text || !text.trim()) return undefined;
-  const t = text.toLowerCase();
-
+  const t = normalizeArabic(text).toLowerCase();
   for (const rule of CONDITION_RULES) {
     for (const pat of rule.patterns) {
       if (typeof pat === 'string') {
-        if (t.includes(pat.toLowerCase())) return rule.result;
+        if (t.includes(normalizeArabic(pat).toLowerCase())) return rule.result;
       } else if (pat.test(t)) {
         return rule.result;
       }
     }
   }
-
   return undefined;
 }
