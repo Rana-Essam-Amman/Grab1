@@ -10,7 +10,9 @@ interface GeminiContext {
 const GOOGLE_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
 
 export async function onRequestPost(context: GeminiContext): Promise<Response> {
-  const apiKey = context.env.GEMINI_API_KEY;
+  // Cloudflare Pages Functions access secrets via context.env.
+  // This is the correct way for serverless runtime. `VITE_` prefix is for client-side only.
+  const apiKey = (context.env as { GEMINI_API_KEY?: string }).GEMINI_API_KEY;
   if (!apiKey) {
     return jsonError('Server key not configured', 500);
   }
