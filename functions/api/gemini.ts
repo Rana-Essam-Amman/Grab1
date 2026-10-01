@@ -93,6 +93,7 @@ async function callGroq(geminiBody: string, apiKey: string): Promise<unknown> {
     ],
     response_format: { type: 'json_object' },
     temperature: parsed.generationConfig?.temperature ?? 0.6,
+    reasoning_effort: 'low',
     // Reasoning models (gpt-oss-120b) consume tokens for internal reasoning.
     // Enforce a floor so JSON output always has budget.
     max_tokens: Math.max(parsed.generationConfig?.maxOutputTokens ?? 2048, 1024),

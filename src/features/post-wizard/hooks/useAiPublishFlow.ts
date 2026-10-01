@@ -41,7 +41,7 @@ export const useAiPublishFlow = (setIsAnalyzing: (val: boolean) => void) => {
           countryCode: browseCountryCode,
         });
         const timeoutPromise = new Promise<never>((_, rej) =>
-          setTimeout(() => rej(new Error('Timeout')), 10000)
+          setTimeout(() => rej(new Error('Timeout')), 30000)
         );
         const generated = await Promise.race([aiPromise, timeoutPromise]);
         updatePostDraft(

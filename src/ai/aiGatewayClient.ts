@@ -158,7 +158,7 @@ export async function requestAIGateway(payload: AIGatewayPayload): Promise<Gener
 
   const performRequest = async (): Promise<GeneratedListing> => {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    const timeoutId = setTimeout(() => controller.abort(), 25000);
     try {
       const userText = [
         `User input: ${payload.rawText}`,
