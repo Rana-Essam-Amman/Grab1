@@ -46,8 +46,6 @@ export const useUI = () => {
     setIsCountrySheetOpen: store.setIsCountrySheetOpen,
     isSearchFocused: store.isSearchFocused,
     setIsSearchFocused: store.setIsSearchFocused,
-    aiFlowPending: store.aiFlowPending,
-    setAiFlowPending: store.setAiFlowPending,
   };
 };
 
