@@ -54,6 +54,17 @@ export const AiReviewScreen: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-canvas " dir={isArabic ? 'rtl' : 'ltr'}>
+      {(() => {
+        try {
+          const e = window.localStorage.getItem('fox_ai_error');
+          if (!e) return null;
+          return (
+            <div style={{ background: '#fee', border: '1px solid #f88', color: '#900', padding: '8px 12px', margin: '8px', borderRadius: '8px', fontSize: '12px', direction: 'ltr', textAlign: 'left', fontFamily: 'monospace' }}>
+              <strong>AI ERROR (debug):</strong> {e}
+            </div>
+          );
+        } catch { return null; }
+      })()}
       <AiReviewHeader isArabic={isArabic} onBack={goBack} />
       <AiReviewBody
         isArabic={isArabic}

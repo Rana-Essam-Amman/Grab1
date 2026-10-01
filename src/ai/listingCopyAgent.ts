@@ -230,7 +230,10 @@ export async function generateListing({
       year: localYear || aiResult.year,
       make: localMake || aiResult.make,
     };
-  } catch {
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error('[AI FAIL] generateListing fallback reason:', msg);
+    try { window.localStorage.setItem('fox_ai_error', msg.slice(0, 400)); } catch { /* ignore */ }
     const copy = writeListingCopy({ raw, arabic, categorySlug, countryCode });
     return {
       title: copy.title, description: copy.body, price: copy.facts.price || '',
