@@ -46,7 +46,7 @@ const SLOT_SOURCES: Record<string, string | { tone: string } | { enrich: [string
   rooms:   'rooms',
   floor:   'floor',
   storage: 'storage',
-  jobTitle:'title',
+  jobTitle:'jobTitle',
   exp:     'experience',
 
   // Enrichment slots (derived, not required — if fact missing, slot is optional)
