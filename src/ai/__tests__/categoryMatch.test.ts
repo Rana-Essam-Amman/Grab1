@@ -72,4 +72,40 @@ describe('matchCategory', () => {
     expect(a.effectiveCategory).toBe('real-estate');
     expect(b.effectiveCategory).toBe('real-estate');
   });
+
+  it('matches jobs hint from "مهندس مدني"', () => {
+    const r = matchCategory({ chosenCategory: '', chosenSub: '', note: 'مطلوب مهندس مدني خبرة 3 سنوات' });
+    expect(r.effectiveCategory).toBe('jobs');
+    expect(r.effectiveSub).toBe('vacancies');
+  });
+
+  it('matches pets/cats hint', () => {
+    const r = matchCategory({ chosenCategory: '', chosenSub: '', note: 'قطط شيرازي صغيرة' });
+    expect(r.effectiveCategory).toBe('pets');
+    expect(r.effectiveSub).toBe('cats');
+  });
+
+  it('matches beauty/skin hint', () => {
+    const r = matchCategory({ chosenCategory: '', chosenSub: '', note: 'سيروم فيتامين سي جديد' });
+    expect(r.effectiveCategory).toBe('beauty');
+    expect(r.effectiveSub).toBe('skin');
+  });
+
+  it('matches fashion/women hint', () => {
+    const r = matchCategory({ chosenCategory: '', chosenSub: '', note: 'فستان سهرة أسود' });
+    expect(r.effectiveCategory).toBe('fashion');
+    expect(r.effectiveSub).toBe('women');
+  });
+
+  it('matches electronics/tv hint', () => {
+    const r = matchCategory({ chosenCategory: '', chosenSub: '', note: 'تلفزيون سامسونج 55 بوصة' });
+    expect(r.effectiveCategory).toBe('electronics');
+    expect(r.effectiveSub).toBe('tv');
+  });
+
+  it('matches cleaning hint', () => {
+    const r = matchCategory({ chosenCategory: '', chosenSub: '', note: 'تنظيف منازل وشقق' });
+    expect(r.effectiveCategory).toBe('cleaning');
+    expect(r.effectiveSub).toBe('homes');
+  });
 });
