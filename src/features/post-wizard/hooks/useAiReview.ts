@@ -29,6 +29,9 @@ export function useAiReview(): UseAiReviewReturn {
     postDraft.generated?.fields || [],
     isArabic
   );
+  const aiErrorHint = attributes.length === 0
+    ? (isArabic ? 'لم يتمكن الذكاء الاصطناعي من توليد المواصفات — أعد المحاولة' : 'AI could not generate specs — retry')
+    : null;
 
   const setAttributeValue = (key: string, value: string) => {
     const current = postDraft.generated?.fields || [];
@@ -90,6 +93,6 @@ export function useAiReview(): UseAiReviewReturn {
     title: curT, price: curP, city: curC, description: curD, photos, addPhotos, removePhoto,
     neighborhood, setNeighborhood, setTitle, setPrice, setCity, setDescription,
     attributes, setAttributeValue, handlePublish, isPublishing,
-    hasMissingParams: !curT || !curP || missingRequiredLabels.length > 0, missingRequiredLabels, error,
+    hasMissingParams: !curT || !curP || missingRequiredLabels.length > 0, missingRequiredLabels, error: error || aiErrorHint,
   };
 }

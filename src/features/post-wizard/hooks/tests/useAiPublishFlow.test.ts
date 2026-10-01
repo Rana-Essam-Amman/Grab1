@@ -97,7 +97,7 @@ describe('useAiPublishFlow', () => {
     );
   });
 
-  it('on generateListing failure → fallback via writeListingCopy', async () => {
+  it('on generateListing failure → routes to post-category-pick', async () => {
     mockMatchCategory
       .mockReturnValueOnce({ effectiveCategory: 'motors', effectiveSub: 'cars' })
       .mockReturnValueOnce({ effectiveCategory: 'motors', effectiveSub: 'cars' });
@@ -106,7 +106,6 @@ describe('useAiPublishFlow', () => {
     await act(async () => {
       await result.current.processPublishFlow('something', []);
     });
-    expect(mockWriteListingCopy).toHaveBeenCalled();
-    expect(mockNavigateTo).toHaveBeenCalledWith('post-ai-review');
+    expect(mockNavigateTo).toHaveBeenCalledWith('post-category-pick');
   });
 });

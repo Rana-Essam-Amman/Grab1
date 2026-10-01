@@ -4,7 +4,8 @@ import { useDraft } from '@/hooks/useDraft';
 import { matchCategory } from '@/ai/categoryMatch';
 import { generateListing } from '@/ai/listingCopyAgent';
 import type { ScreenType } from '@/store/ui.slice.types';
-import { buildAppliedDraft, buildFallbackDraft } from './useAiPublishFlow.helpers';
+import { buildAppliedDraft } from './useAiPublishFlow.helpers';
+import { globalStorage } from '@/shared/lib/marketStorage';
 
 export const useAiPublishFlow = (setIsAnalyzing: (val: boolean) => void) => {
   const { isArabic, browseCountryCode, browseCityAr, navigateTo } = useUI();
@@ -57,34 +58,16 @@ export const useAiPublishFlow = (setIsAnalyzing: (val: boolean) => void) => {
         );
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : String(err);
-        console.error('[AI FLOW] Gemini failed, using fallback:', errorMessage);
-        const fallbackMatch = matchCategory({
-          chosenCategory: overrideCategory || '',
-          chosenSub: '',
-          note: raw,
+        console.error('[AI FLOW] Gemini failed:', errorMessage);
+
+        // NO silent fallback. Store the error and route to manual category picker.
+        globalStorage().set('catch_ai_last_error', errorMessage.slice(0, 200));
+        updatePostDraft({
+          noteText: raw,
+          photos: photosToUse,
+          categorySlug: overrideCategory || '',
         });
-        const fallbackCategory = fallbackMatch.effectiveCategory || overrideCategory || '';
-
-        // No category can be determined → hand off to manual picker.
-        if (!fallbackCategory) {
-          updatePostDraft({ noteText: raw, photos: photosToUse, categorySlug: '' });
-          nextScreen = 'post-category-pick';
-          return;
-        }
-
-        updatePostDraft(
-          buildFallbackDraft({
-            raw,
-            photos: photosToUse,
-            isArabic,
-            browseCityAr,
-            browseCountryCode,
-            categorySlug: fallbackCategory,
-            subcategorySlug: fallbackMatch.effectiveSub,
-            match: fallbackMatch,
-            errorMessage,
-          })
-        );
+        nextScreen = 'post-category-pick';
       } finally {
         setIsAnalyzing(false);
         cb?.();
