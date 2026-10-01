@@ -3,15 +3,7 @@ import { writeListingCopy } from '@/ai/listingCopyAgent';
 import { buildFieldsFromFacts } from '@/ai/buildFieldsFromFacts';
 import type { CategoryMatch } from '@/ai/categoryMatch';
 
-// TEMP DEBUG — remove before launch
-function tagSource(source: 'ai' | 'local'): string {
-  return source === 'ai' ? '🟢 AI' : '🟠 Local';
-}
-
-function tagError(err: unknown): string {
-  const msg = err instanceof Error ? err.message : String(err);
-  return `🟠 Local (${msg.slice(0, 80)})`;
-}
+// (removed debug tag helpers — AI status now logged to console only)
 
 export interface AIResultParams {
   readonly generated: GeneratedListing;
@@ -48,7 +40,7 @@ export function buildAppliedDraft(params: AIResultParams) {
     city: generated.city || '',
     generated: {
       ...generated,
-      title: `${tagSource('ai')} ${generated.title || ''}`,
+      title: generated.title || '',
       categorySlug: finalCategory,
       subcategorySlug: finalSub,
       categoryMatch: match,
@@ -67,7 +59,7 @@ export function buildFallbackDraft(params: FallbackParams) {
     subcategorySlug: sub,
     city: '',
     generated: {
-      title: `${params.errorMessage ? tagError(params.errorMessage) : tagSource('local')} ${copy.title || ''}`,
+      title: copy.title || '',
       description: copy.body,
       price: copy.facts.price || '',
       city: '',

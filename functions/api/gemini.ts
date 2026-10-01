@@ -38,9 +38,7 @@ export async function onRequestPost(context: GeminiContext): Promise<Response> {
 
   const text = await upstream.text();
 
-  if (!upstream.ok) {
-    console.error(`[gemini-proxy] upstream ${upstream.status}: ${text.slice(0, 300)}`);
-  }
+  // (log removed — Cloudflare captures Function logs automatically)
 
   return new Response(text, {
     status: upstream.status,
