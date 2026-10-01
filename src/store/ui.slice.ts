@@ -57,6 +57,8 @@ export const useUIStore = create<UIState>()(
     immer((set, get) => ({
       ...getInitialState(),
       ...createUIActions(set, get),
+      aiFlowPending: false,
+      setAiFlowPending: (v: boolean) => set(() => ({ aiFlowPending: v })),
       theme: (globalStorage().get<AppTheme>('grab_theme_v1') as AppTheme) || 'light',
       setTheme: (theme: AppTheme) => {
         globalStorage().set('grab_theme_v1', theme);
