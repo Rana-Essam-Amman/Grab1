@@ -48,13 +48,13 @@ function buildFlat(brands: readonly BrandEntry[]): FlatEntry[] {
   return out.sort((a, b) => b.normalizedTerm.length - a.normalizedTerm.length);
 }
 
-const MOTORS_FLAT = buildFlat(MOTOR_BRANDS as unknown as BrandEntry[]);
-
-// TECH_BRANDS is Record<string, Brand[]>
-const TECH_FLAT = buildFlat(
-  Object.values(TECH_BRANDS).flat() as unknown as BrandEntry[]
-);
-const EXTRAS_FLAT = buildFlat(EXTRAS_BRANDS as unknown as BrandEntry[]);
+// Single merged dictionary. Longest term wins — this prevents short models
+// like "ايفون 13" from shadowing longer ones like "ايفون 13 برو".
+const MERGED_FLAT = buildFlat([
+  ...(MOTOR_BRANDS as unknown as BrandEntry[]),
+  ...(Object.values(TECH_BRANDS).flat() as unknown as BrandEntry[]),
+  ...(EXTRAS_BRANDS as unknown as BrandEntry[]),
+]);
 
 function findInDict(
   text: string,
@@ -92,9 +92,5 @@ function findInDict(
  */
 export function extractBrandModel(text: string): BrandModel | undefined {
   if (!text) return undefined;
-  return (
-    findInDict(text, MOTORS_FLAT) ||
-    findInDict(text, TECH_FLAT) ||
-    findInDict(text, EXTRAS_FLAT)
-  );
+  return findInDict(text, MERGED_FLAT);
 }
