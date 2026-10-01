@@ -1,7 +1,7 @@
 # Session Handoff — FOX Marketplace
 
-## Current State (2026-09-25)
-- HEAD: d406b94 (test(infra): add useListings + useChat + useMonetization hook tests (15 tests))
+## Current State (2026-10-01)
+- HEAD: 69dd805 (feat(monitoring): Supabase-backed error logging (boundary + global handlers))
 - Branch: main | Remote: new-origin
 - Tests: 525 passing | Test files: 65
 - Arch violations: 0 | Circular deps: 0
@@ -9,24 +9,16 @@
 - CI Quality: green | E2E: green
 
 ## Last task
-Hook tests batch 2 (useListings + useChat + useMonetization, 15 tests)
+AI system prompt examples refinement and GitHub remote token update
 
 ## Next task
 Wave 3 — Listing Detail rebuild (v7 system) + Universal Back Arrow audit
 
-## Completed today (2026-09-25)
-- Post flow v7 unification (PostAdEntry, ChooseCategory, ChooseSubcategory,
-  PhotoUpload, LocationPick, PostDetails, AiReview, AiCapture)
-- Extracted PostFlowHeader component (5 screens share it)
-- Subcategory-aware fields for all 17 categories (~90 subcategories, ~350 fields)
-- Brand catalog: 70 cars (18 Chinese) + 76 tech brands with models
-- Combobox (searchable dropdown) for make/model/brand
-- Wave B-Master audit (knip, madge, depcheck, coverage, bundle)
-- Wave B-Radix: removed 10 unused radix packages + cmdk + CommandPalette
-- Wave B-Structural: audited back nav, storage, types, tests coverage
-- Hook tests batch 1 (useUI, useAuth, useDraft — 16 tests)
-- Hook tests batch 2 (useListings, useChat, useMonetization — 15 tests)
-- Bug fixes: useAiReviewAttributes wire, useAiReview Rule 14, bun.lock sync
+## Completed today (2026-10-01)
+- Refined AI prompt examples and category-specific structured field parsing in `src/ai/aiGatewayClient.ts`
+- Authenticated and updated `new-origin` remote repository with user's fine-grained personal access token (PAT)
+- Ran complete build, lint check, architecture audit, and core unit test runs successfully
+
 
 ## Critical Rules (see PROJECT_CONSTITUTION.md for full list)
 - Rule 2: NO hardcoded hex — tokens only (Bug #008 open)

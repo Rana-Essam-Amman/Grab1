@@ -235,6 +235,12 @@ CI Recovery + Rule 43 (2026-09-23)
 - Backfill ERROR_LOG bugs #005–#008
 - Commits 12c30f6, c454b29, 6d7c7b7, f315b93
 
+### AI Prompt Refinement & Remote Token Sync (2026-10-01)
+- Refined AI prompt examples and field extraction rules in `src/ai/aiGatewayClient.ts`
+- Configured and validated remote repository access with the updated fine-grained PAT
+- Verified build and executed architecture audit and core unit tests cleanly
+
+
 
 
 
