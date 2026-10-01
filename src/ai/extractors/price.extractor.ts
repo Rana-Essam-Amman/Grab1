@@ -11,7 +11,7 @@ export function extractPrice(text: string): string | undefined {
 
   // Priority 1: number + unit word
   const withUnit = t.match(
-    /(\d[\d,.]*)\s*(ألف|الف|آلاف|الاف|k|K|مليون|مليونين|M)\b/
+    /(\d[\d,.]*)\s*(ألف|الف|آلاف|الاف|k|K|مليون|مليونين|M)(?![\u0600-\u06FF])/
   );
   if (withUnit) {
     const base = parseFloat(withUnit[1].replace(/,/g, ''));
