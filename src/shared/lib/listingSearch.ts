@@ -1,5 +1,6 @@
 import type { Listing } from '@/types';
 import { normalizeArabic } from '@/data/arabicNormalize';
+import { expandWithSynonyms } from '@/data/arabicSynonyms';
 
 export const parsePrice = (p: unknown): number => Number(String(p).replace(/,/g, '').trim());
 
@@ -43,8 +44,12 @@ export const scoreListing = (item: Listing, q: string): number => {
 
   const rawTokens = query.split(/\s+/).map((t) => normalizeArabic(t)).filter(Boolean);
   const tokens = rawTokens.filter((t) => t.length >= 2 && !SEARCH_STOP_WORDS.has(t));
-  const effectiveTokens = tokens.length > 0 ? tokens : rawTokens.filter((t) => t.length >= 1);
-  if (effectiveTokens.length === 0) return 1;
+  const baseTokens = tokens.length > 0 ? tokens : rawTokens.filter((t) => t.length >= 1);
+
+  if (baseTokens.length === 0) return 1;
+
+  // Expand each token with its synonym group (e.g. سيارة → عربية, car).
+  const effectiveTokens = expandWithSynonyms(baseTokens);
 
   const title = normalizeArabic(item.title || '');
   const desc = normalizeArabic(item.description || '');
