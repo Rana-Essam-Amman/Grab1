@@ -6,6 +6,12 @@ import { extractColor } from './extractors/colors.extractor';
 import { extractCondition } from './extractors/conditions.extractor';
 import { extractSize } from './extractors/sizes.extractor';
 import { extractType } from './extractors/types.extractor';
+import { extractPrice } from './extractors/price.extractor';
+import { extractYear } from './extractors/year.extractor';
+import { extractFuel } from './extractors/fuel.extractor';
+import { extractTransmission } from './extractors/transmission.extractor';
+import { extractMileage } from './extractors/mileage.extractor';
+import { extractBrandModel } from './extractors/brandModel.extractor';
 
 export function getValueForKey(key: string, facts: ListingFacts, arabic: boolean): string {
   const v = facts[key];
@@ -21,7 +27,7 @@ export function extractFacts(raw: string, countryCode?: string): ListingFacts {
   const text = raw.trim();
   let rest = text;
   const yearMatch = rest.match(/\b(20\d{2}|19\d{2})\b/);
-  const year = yearMatch ? yearMatch[1] : undefined;
+  let year = yearMatch ? yearMatch[1] : undefined;
   if (year) rest = rest.replace(year, ' ');
   let km: string | undefined;
   const kmPatterns = [
@@ -82,13 +88,34 @@ export function extractFacts(raw: string, countryCode?: string): ListingFacts {
   if (city && countryCode && !validateRegionalSanity(countryCode, city)) city = undefined;
   const inspect = text.includes('فحص') || text.toLowerCase().includes('inspect');
   const negotiable = text.includes('تفاوض') || text.toLowerCase().includes('negoti');
+  // Authoritative extractors — override any inline parsing above.
+  const authPrice = extractPrice(text);
+  if (authPrice) price = authPrice;
+
+  const authYear = extractYear(text);
+  if (authYear) year = authYear;
+
+  const authMileage = extractMileage(text);
+  if (authMileage) km = authMileage;
+
+  const brandModel = extractBrandModel(text);
+  const finalMake = brandModel?.make || make;
+  const finalModel = brandModel?.model;
+
+  const fuel = extractFuel(text);
+  const transmission = extractTransmission(text);
+
   return {
-    make, year, price, city, km, inspect, negotiable,
+    make: finalMake,
+    model: finalModel,
+    year, price, city, km, inspect, negotiable,
     color: extractColor(text),
     condition: extractCondition(text),
     size: extractSize(text),
     type: extractType(text),
-    brand: make,
+    brand: finalMake,
+    fuel,
+    transmission,
   };
 }
 
@@ -178,8 +205,31 @@ export async function generateListing({
 }: {
   raw: string; categorySlug: string; subcategorySlug: string; arabic: boolean; city?: string; countryCode?: string; images?: string[];
 }): Promise<GeneratedListing> {
+  // LOCAL EXTRACTION — runs always, authoritative.
+  const localFacts = extractFacts(raw, countryCode);
+  const localFields = buildFieldsFromFacts(localFacts, categorySlug, subcategorySlug, arabic);
+
   try {
-    return await requestAIGateway({ rawText: raw, categorySlug, subcategorySlug, arabic, countryCode, city, images });
+    const aiResult = await requestAIGateway({ rawText: raw, categorySlug, subcategorySlug, arabic, countryCode, city, images });
+
+    // MERGE: local facts WIN over AI where local has a non-empty value.
+    const aiFields = aiResult.fields || [];
+    const mergedFields = localFields.map((localField) => {
+      const aiField = aiFields.find((f) => f.key === localField.key);
+      return { ...localField, value: localField.value || aiField?.value || '' };
+    });
+
+    const localPrice = typeof localFacts.price === 'string' ? localFacts.price : '';
+    const localYear  = typeof localFacts.year === 'string' ? localFacts.year : '';
+    const localMake  = typeof localFacts.make === 'string' ? localFacts.make : '';
+
+    return {
+      ...aiResult,
+      fields: mergedFields,
+      price: localPrice || aiResult.price,
+      year: localYear || aiResult.year,
+      make: localMake || aiResult.make,
+    };
   } catch {
     const copy = writeListingCopy({ raw, arabic, categorySlug, countryCode });
     return {
