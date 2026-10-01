@@ -10,7 +10,7 @@ export function extractMileage(text: string): string | undefined {
 
   // "ماشية/العداد/ماشي 80 الف/آلاف/k"
   const labeledUnit = t.match(
-    /(?:ماشية|ماشي|العداد|عداد|قطعت|مشيت|mileage|km)\s*(\d[\d,.]*)\s*(ألف|الف|آلاف|الاف|k|K)?/i
+    /(?:ماشية|ماشي|ممشى|ممشيه|العداد|عداد|قطعت|مشيت|mileage|km)\s*(\d[\d,.]*)\s*(ألف|الف|آلاف|الاف|k|K)?/i
   );
   if (labeledUnit) {
     const base = parseFloat(labeledUnit[1].replace(/,/g, ''));
