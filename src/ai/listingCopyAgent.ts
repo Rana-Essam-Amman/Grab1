@@ -1,6 +1,6 @@
 import { GeneratedListing, ListingCopyResult, ListingFacts, VisionHints } from '../types';
 import { validateRegionalSanity, reconcileLocation } from '../data/locations';
-import { requestAIGateway } from './aiGatewayClient';
+import { composeListing } from './expert';
 import { buildFieldsFromFacts } from './buildFieldsFromFacts';
 import { extractColor } from './extractors/colors.extractor';
 import { extractCondition } from './extractors/conditions.extractor';
@@ -201,45 +201,48 @@ export function writeListingCopy({
 }
 
 export async function generateListing({
-  raw, categorySlug, subcategorySlug, arabic, city, countryCode, images,
+  raw, categorySlug, subcategorySlug, arabic, city, countryCode,
 }: {
   raw: string; categorySlug: string; subcategorySlug: string; arabic: boolean; city?: string; countryCode?: string; images?: string[];
 }): Promise<GeneratedListing> {
-  // LOCAL EXTRACTION — runs always, authoritative.
+  // Layer 1 — Local deterministic extraction (100% accurate).
   const localFacts = extractFacts(raw, countryCode);
   const localFields = buildFieldsFromFacts(localFacts, categorySlug, subcategorySlug, arabic);
 
-  try {
-    const aiResult = await requestAIGateway({ rawText: raw, categorySlug, subcategorySlug, arabic, countryCode, city, images });
+  // Layer 2 — Expert system composes title + description from facts.
+  const composed = composeListing(localFacts, categorySlug);
 
-    // MERGE: local facts WIN over AI where local has a non-empty value.
-    const aiFields = aiResult.fields || [];
-    const mergedFields = localFields.map((localField) => {
-      const aiField = aiFields.find((f) => f.key === localField.key);
-      return { ...localField, value: localField.value || aiField?.value || '' };
-    });
+  const missing: string[] = localFields
+    .filter((f) => f.required && !f.value)
+    .map((f) => f.label);
 
-    const localPrice = typeof localFacts.price === 'string' ? localFacts.price : '';
-    const localYear  = typeof localFacts.year === 'string' ? localFacts.year : '';
-    const localMake  = typeof localFacts.make === 'string' ? localFacts.make : '';
-
+  if (composed) {
     return {
-      ...aiResult,
-      fields: mergedFields,
-      price: localPrice || aiResult.price,
-      year: localYear || aiResult.year,
-      make: localMake || aiResult.make,
-    };
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    console.error('[AI FAIL] generateListing fallback reason:', msg);
-    try { window.localStorage.setItem('fox_ai_error', msg.slice(0, 400)); } catch { /* ignore */ }
-    const copy = writeListingCopy({ raw, arabic, categorySlug, countryCode });
-    return {
-      title: copy.title, description: copy.body, price: copy.facts.price || '',
-      categorySlug, subcategorySlug, city: copy.facts.city || city,
-      year: copy.facts.year, make: copy.facts.make,
-      fields: buildFieldsFromFacts(copy.facts, categorySlug, subcategorySlug, arabic), missing: copy.missing,
+      title: composed.title,
+      description: composed.description,
+      price: typeof localFacts.price === 'string' ? localFacts.price : '',
+      categorySlug,
+      subcategorySlug,
+      city: (typeof localFacts.city === 'string' && localFacts.city) || city || '',
+      year: typeof localFacts.year === 'string' ? localFacts.year : undefined,
+      make: typeof localFacts.make === 'string' ? localFacts.make : undefined,
+      fields: localFields,
+      missing,
     };
   }
+
+  // Last-resort fallback: minimal safe output (no external calls).
+  const copy = writeListingCopy({ raw, arabic, categorySlug, countryCode });
+  return {
+    title: copy.title,
+    description: copy.body,
+    price: copy.facts.price || '',
+    categorySlug,
+    subcategorySlug,
+    city: copy.facts.city || city,
+    year: copy.facts.year,
+    make: copy.facts.make,
+    fields: buildFieldsFromFacts(copy.facts, categorySlug, subcategorySlug, arabic),
+    missing: copy.missing,
+  };
 }
