@@ -5,6 +5,12 @@ import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
 
 export default defineConfig({
+  define: {
+    __BUILD_HASH__: JSON.stringify(
+      (process.env.CF_PAGES_COMMIT_SHA || process.env.GITHUB_SHA || 'dev').slice(0, 7)
+    ),
+    __BUILD_TIME__: JSON.stringify(new Date().toISOString().slice(0, 16)),
+  },
   plugins: [
     react(),
     tailwindcss(),

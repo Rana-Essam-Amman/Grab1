@@ -23,6 +23,7 @@ import { Spinner } from '@/shared/ui/Spinner';
 import { RegistryProvider, useRegistry } from '@/shared/registry';
 import { CatalogScreen } from '@/features/dev/screens/CatalogScreen';
 import { Toaster } from 'sonner';
+import { BuildBadge } from '@/shared/components/BuildBadge';
 import { useSupabaseAuthListener } from '@/features/auth/hooks/useSupabaseAuthListener';
 import { useSupabaseListingsSync } from '@/features/listings/hooks/useSupabaseListingsSync';
 
@@ -279,6 +280,7 @@ export default function App() {
           className: 'font-bold text-sm',
         }}
       />
+      <BuildBadge />
 
           </TranslationProvider>
         </>
