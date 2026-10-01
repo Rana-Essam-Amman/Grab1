@@ -39,7 +39,7 @@ export const COMPUTER_BRANDS: readonly Brand[] = [
   { id: 'huawei', name: 'Huawei', nameAr: 'هواوي', en: 'Huawei', ar: 'هواوي', models: [['MateBook X Pro', 'MateBook X Pro'], ['MateBook D16', 'MateBook D16'], ['MateBook 14', 'MateBook 14']] },
   { id: 'samsung-pc', name: 'Samsung', nameAr: 'سامسونج', en: 'Samsung', ar: 'سامسونج', models: [['Galaxy Book 4 Ultra', 'Galaxy Book 4 Ultra'], ['Galaxy Book 4 Pro', 'Galaxy Book 4 Pro'], ['Galaxy Book 4 360', 'Galaxy Book 4 360']] },
   { id: 'xiaomi-pc', name: 'Xiaomi', nameAr: 'شاومي', en: 'Xiaomi', ar: 'شاومي', models: [['RedmiBook Pro 15', 'RedmiBook Pro 15'], ['Mi Notebook Ultra', 'Mi Notebook Ultra'], ['RedmiBook 14', 'RedmiBook 14']] },
-  { id: 'gigabyte', name: 'Gigabyte', nameAr: 'جيجابايت', en: 'Gigabyte', ar: 'جيجابايت', models: [['Aorus 17', 'Aorus 17'], ['Aero 16', 'Aero 16'], ['G5 KF', 'G5 KF']] },
+  { id: 'gigabyte', name: 'Gigabyte', nameAr: 'جيجا بايت', en: 'Gigabyte', ar: 'جيجا بايت', models: [['Aorus 17', 'Aorus 17'], ['Aero 16', 'Aero 16'], ['G5 KF', 'G5 KF']] },
   { id: 'other', name: 'Other', nameAr: 'أخرى', en: 'Other', ar: 'أخرى', models: [] },
 ];
 
