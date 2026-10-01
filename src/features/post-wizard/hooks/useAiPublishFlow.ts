@@ -55,7 +55,9 @@ export const useAiPublishFlow = (setIsAnalyzing: (val: boolean) => void) => {
             subForAI,
           })
         );
-      } catch {
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        console.error('[AI FLOW] Gemini failed, using fallback:', errorMessage);
         const fallbackMatch = matchCategory({
           chosenCategory: overrideCategory || '',
           chosenSub: '',
@@ -80,6 +82,7 @@ export const useAiPublishFlow = (setIsAnalyzing: (val: boolean) => void) => {
             categorySlug: fallbackCategory,
             subcategorySlug: fallbackMatch.effectiveSub,
             match: fallbackMatch,
+            errorMessage,
           })
         );
       } finally {

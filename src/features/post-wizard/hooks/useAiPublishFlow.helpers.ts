@@ -8,6 +8,11 @@ function tagSource(source: 'ai' | 'local'): string {
   return source === 'ai' ? '🟢 AI' : '🟠 Local';
 }
 
+function tagError(err: unknown): string {
+  const msg = err instanceof Error ? err.message : String(err);
+  return `🟠 Local (${msg.slice(0, 80)})`;
+}
+
 export interface AIResultParams {
   readonly generated: GeneratedListing;
   readonly match: CategoryMatch;
@@ -28,6 +33,7 @@ export interface FallbackParams {
   readonly categorySlug: string;
   readonly subcategorySlug?: string;
   readonly match: CategoryMatch;
+  readonly errorMessage?: string;
 }
 
 export function buildAppliedDraft(params: AIResultParams) {
@@ -61,7 +67,7 @@ export function buildFallbackDraft(params: FallbackParams) {
     subcategorySlug: sub,
     city: '',
     generated: {
-      title: `${tagSource('local')} ${copy.title || ''}`,
+      title: `${params.errorMessage ? tagError(params.errorMessage) : tagSource('local')} ${copy.title || ''}`,
       description: copy.body,
       price: copy.facts.price || '',
       city: '',

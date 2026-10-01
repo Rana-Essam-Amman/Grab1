@@ -31,10 +31,17 @@ export async function onRequestPost(context: GeminiContext): Promise<Response> {
       body,
     });
   } catch (err) {
-    return jsonError(err instanceof Error ? err.message : 'Upstream fetch failed', 502);
+    const msg = err instanceof Error ? err.message : 'Upstream fetch failed';
+    console.error('[gemini-proxy] fetch error:', msg);
+    return jsonError(`Upstream fetch failed: ${msg}`, 502);
   }
 
   const text = await upstream.text();
+
+  if (!upstream.ok) {
+    console.error(`[gemini-proxy] upstream ${upstream.status}: ${text.slice(0, 300)}`);
+  }
+
   return new Response(text, {
     status: upstream.status,
     headers: { 'Content-Type': 'application/json' },
