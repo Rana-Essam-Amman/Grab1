@@ -56,4 +56,20 @@ describe('matchCategory', () => {
     expect(result.effectiveCategory).toBe('motors');
     expect(result.effectiveSub).toBe('cars');
   });
+
+  it('matches madda variant (آيفون) via normalization', () => {
+    const a = matchCategory({ chosenCategory: '', chosenSub: '', note: 'آيفون 15 نظيف' });
+    const b = matchCategory({ chosenCategory: '', chosenSub: '', note: 'ايفون 15 نظيف' });
+    expect(a.effectiveCategory).toBe('mobiles');
+    expect(b.effectiveCategory).toBe('mobiles');
+    expect(a.effectiveSub).toBe('phones');
+    expect(b.effectiveSub).toBe('phones');
+  });
+
+  it('matches yaa/taa-marbuta variants', () => {
+    const a = matchCategory({ chosenCategory: '', chosenSub: '', note: 'شقه للبيع' });
+    const b = matchCategory({ chosenCategory: '', chosenSub: '', note: 'شقة للبيع' });
+    expect(a.effectiveCategory).toBe('real-estate');
+    expect(b.effectiveCategory).toBe('real-estate');
+  });
 });

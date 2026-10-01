@@ -3,6 +3,8 @@ export enum MismatchPolicy {
   confirm = 'confirm',
 }
 
+import { normalizeArabic } from '@/data/arabicNormalize';
+
 export const mismatchPolicy: MismatchPolicy = MismatchPolicy.confirm;
 
 export interface CategoryHint {
@@ -25,7 +27,7 @@ export const textSignals: Record<string, CategoryHint> = {
   كنب: { categorySlug: 'furniture', subcategorySlug: 'living', labelAr: 'أثاث غرف جلوس', labelEn: 'Living Room Furniture' },
   كنبة: { categorySlug: 'furniture', subcategorySlug: 'living', labelAr: 'أثاث غرف جلوس', labelEn: 'Living Room Furniture' },
   طاولة: { categorySlug: 'furniture', subcategorySlug: 'tables', labelAr: 'طاولات وسفرة', labelEn: 'Dining & Tables' },
-  ايفون: { categorySlug: 'mobiles', subcategorySlug: 'phones', labelAr: 'هواتف محمولة', labelEn: 'Mobile Phones' },
+  آيفون: { categorySlug: 'mobiles', subcategorySlug: 'phones', labelAr: 'هواتف محمولة', labelEn: 'Mobile Phones' },
   iphone: { categorySlug: 'mobiles', subcategorySlug: 'phones', labelAr: 'هواتف محمولة', labelEn: 'Mobile Phones' },
   سامسونج: { categorySlug: 'mobiles', subcategorySlug: 'phones', labelAr: 'هواتف محمولة', labelEn: 'Mobile Phones' },
   ساعة: { categorySlug: 'watches', subcategorySlug: 'luxury', labelAr: 'ساعات فاخرة', labelEn: 'Luxury Watches' },
@@ -46,9 +48,11 @@ export interface CategoryMatch {
 }
 
 export function hintFromNote(raw: string): CategoryHint | null {
-  const t = raw.toLowerCase();
+  // Normalize both sides so hamza/yaa/taa-marbuta variants match.
+  // e.g. "آيفون" and "ايفون" both become "ايفون".
+  const t = normalizeArabic(raw);
   for (const [key, val] of Object.entries(textSignals)) {
-    if (t.includes(key.toLowerCase())) {
+    if (t.includes(normalizeArabic(key))) {
       return val;
     }
   }
