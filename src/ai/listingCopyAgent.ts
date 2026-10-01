@@ -24,6 +24,8 @@ import { extractRooms } from './extractors/rooms.extractor';
 import { extractBathrooms } from './extractors/bathrooms.extractor';
 import { extractFloor } from './extractors/floor.extractor';
 import { extractSeats, extractStorage } from './extractors/seatsStorage.extractor';
+import { extractGender } from './extractors/gender.extractor';
+import { extractMaterial } from './extractors/material.extractor';
 
 export function getValueForKey(key: string, facts: ListingFacts, arabic: boolean): string {
   const v = facts[key];
@@ -130,6 +132,8 @@ export function extractFacts(raw: string, countryCode?: string): ListingFacts {
   const floor = extractFloor(text);
   const seats = extractSeats(text);
   const storage = extractStorage(text);
+  const gender = extractGender(text);
+  const material = extractMaterial(text);
 
   // Prefer domain brand over generic brand (watches/beauty).
   const domainBrand = watchBrand || beautyBrand;
@@ -160,6 +164,8 @@ export function extractFacts(raw: string, countryCode?: string): ListingFacts {
     floor,
     seats,
     storage,
+    gender,
+    material,
   };
 }
 

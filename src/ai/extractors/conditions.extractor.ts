@@ -6,6 +6,8 @@ interface ConditionRule {
 }
 
 const CONDITION_RULES: ConditionRule[] = [
+  { patterns: ['استعمال خفيف', 'استخدام خفيف'], result: 'استعمال خفيف' },
+  { patterns: ['بحالة الوكالة', 'وكالة', 'بوكالة'], result: 'بحالة الوكالة' },
   { patterns: ['بالكرتونة', 'بالكيس', 'باكيت', /\bin\s*box\b/i, /\bsealed\b/i], result: 'جديد بالكيس' },
   { patterns: ['بحالة الوكالة', 'وكالة'], result: 'بحالة الوكالة' },
   { patterns: ['بحاجة صيانة', 'خربان', 'خرابة', /\bneeds?\s*repair\b/i, /\bfor\s*parts\b/i], result: 'بحاجة صيانة' },

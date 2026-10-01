@@ -54,6 +54,11 @@ export const JOB_TITLE_PATTERNS: readonly ExtractorPattern[] = [
   { canonical: 'دهان', aliases: ['دهان', 'صباغ', 'بوياجي', 'painter'] },
   { canonical: 'حداد', aliases: ['حداد', 'blacksmith'] },
   { canonical: 'فني تكييف', aliases: ['فني تكييف', 'فني مكيفات', 'ac technician'] },
+  { canonical: 'منظف', aliases: ['منظف', 'عاملة تنظيف', 'عامل نظافة', 'تنظيف منازل', 'تنظيف شقق', 'cleaner'] },
+  { canonical: 'مقهى', aliases: ['مقهى', 'مقهي', 'كافيه', 'كافي شوب', 'cafe', 'coffee shop'] },
+  { canonical: 'مطعم', aliases: ['مطعم', 'مطعم صغير', 'restaurant'] },
+  { canonical: 'بقالة', aliases: ['بقالة', 'بقاله', 'دكان', 'grocery'] },
+  { canonical: 'محل تجاري', aliases: ['محل تجاري', 'محل', 'shop', 'store'] },
 ];
 
 const Y = '(?:50|[1-4][0-9]|[1-9]|0)(?![0-9٠-٩])';
