@@ -15,6 +15,15 @@ import { extractBrandModel } from './extractors/brandModel.extractor';
 import { extractJobTitle } from './extractors/jobTitle.extractor';
 import { extractExperience } from './extractors/experience.extractor';
 import { extractTrade } from './extractors/trade.extractor';
+import { extractWatchBrand } from './extractors/watchBrand.extractor';
+import { extractBeautyBrand } from './extractors/beautyBrand.extractor';
+import { extractPetBreed } from './extractors/petBreed.extractor';
+import { extractKidsAge } from './extractors/kidsAge.extractor';
+import { extractArea } from './extractors/area.extractor';
+import { extractRooms } from './extractors/rooms.extractor';
+import { extractBathrooms } from './extractors/bathrooms.extractor';
+import { extractFloor } from './extractors/floor.extractor';
+import { extractSeats, extractStorage } from './extractors/seatsStorage.extractor';
 
 export function getValueForKey(key: string, facts: ListingFacts, arabic: boolean): string {
   const v = facts[key];
@@ -110,20 +119,47 @@ export function extractFacts(raw: string, countryCode?: string): ListingFacts {
   const jobTitle = extractJobTitle(text) || extractTrade(text);
   const experience = extractExperience(text);
 
+  // Domain-specific extractors
+  const watchBrand = extractWatchBrand(text);
+  const beautyBrand = extractBeautyBrand(text);
+  const petBreed = extractPetBreed(text);
+  const kidsAge = extractKidsAge(text);
+  const area = extractArea(text);
+  const rooms = extractRooms(text);
+  const bathrooms = extractBathrooms(text);
+  const floor = extractFloor(text);
+  const seats = extractSeats(text);
+  const storage = extractStorage(text);
+
+  // Prefer domain brand over generic brand (watches/beauty).
+  const domainBrand = watchBrand || beautyBrand;
+  const effectiveMake = domainBrand || finalMake;
+
   return {
-    make: finalMake,
+    make: effectiveMake,
     model: finalModel,
     year, price, city, km, inspect, negotiable,
     color: extractColor(text),
     condition: extractCondition(text),
     size: extractSize(text),
     type: extractType(text),
-    brand: finalMake,
+    brand: effectiveMake,
     fuel,
     transmission,
     jobTitle,
     serviceType: jobTitle,
     experience,
+    // Domain-specific facts
+    watchBrand,
+    beautyBrand,
+    petBreed,
+    kidsAge,
+    area,
+    rooms,
+    bathrooms,
+    floor,
+    seats,
+    storage,
   };
 }
 
