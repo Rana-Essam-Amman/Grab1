@@ -1,3 +1,4 @@
+import { DIALECT_CONDITIONS } from './data/dialect-conditions.data';
 import { normalizeArabic } from '@/data/arabicNormalize';
 
 interface ConditionRule {
@@ -21,6 +22,8 @@ const CONDITION_RULES: ConditionRule[] = [
 export function extractCondition(text: string): string | undefined {
   if (!text || !text.trim()) return undefined;
   const t = normalizeArabic(text).toLowerCase();
+
+  // Pass 1: legacy CONDITION_RULES (kept for backwards compat)
   for (const rule of CONDITION_RULES) {
     for (const pat of rule.patterns) {
       if (typeof pat === 'string') {
@@ -30,5 +33,13 @@ export function extractCondition(text: string): string | undefined {
       }
     }
   }
+
+  // Pass 2: dialect conditions (Levantine + Gulf)
+  for (const entry of DIALECT_CONDITIONS) {
+    for (const alias of entry.aliases) {
+      if (t.includes(normalizeArabic(alias).toLowerCase())) return entry.canonical;
+    }
+  }
+
   return undefined;
 }
