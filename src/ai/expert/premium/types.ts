@@ -39,5 +39,13 @@ export interface StructuredLayout {
   readonly featuresCount: number;
   readonly introCount: number;
   readonly minDetails: number;
+  // Sub-specific pools (optional).
+  // When subcategorySlug matches a key, engine APPENDS its templates
+  // to the generic pool — increasing variety per subcategory.
+  readonly subTitleFormat?: Readonly<Record<string, readonly PremiumTemplate[]>>;
+  readonly subHooks?: Readonly<Record<string, readonly PremiumTemplate[]>>;
+  readonly subIntroParagraphs?: Readonly<Record<string, readonly PremiumTemplate[]>>;
+  readonly subFeaturesBullets?: Readonly<Record<string, readonly PremiumTemplate[]>>;
+  readonly subCtas?: Readonly<Record<string, readonly PremiumTemplate[]>>;
 }
 

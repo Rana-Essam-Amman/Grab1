@@ -120,3 +120,70 @@ describe('generateFromTemplates — real-estate structured path', () => {
     expect(descs.size).toBeGreaterThanOrEqual(3);
   });
 });
+
+const SUB_MOCK_LAYOUT: StructuredLayout = {
+  titleFormat: [
+    { template: 'GEN {make} {model} {price}', subcategories: [] },
+  ],
+  hooks: [
+    { template: 'Hook GEN {make} {model}.', subcategories: [] },
+  ],
+  introParagraphs: [
+    { template: 'Intro GEN {make} {model}.', subcategories: [] },
+  ],
+  detailsGroups: [
+    { fact: 'make',  variants: [{ template: '• {make}',  subcategories: [] }] },
+    { fact: 'model', variants: [{ template: '• {model}', subcategories: [] }] },
+  ],
+  featuresBullets: [
+    { template: '• feat GEN 1', subcategories: [] },
+    { template: '• feat GEN 2', subcategories: [] },
+  ],
+  ctas: [
+    { template: 'CTA GEN.', subcategories: [] },
+  ],
+  detailsLabel: '🔹 D:',
+  featuresLabel: '🔹 F:',
+  featuresCount: 2,
+  introCount: 1,
+  minDetails: 2,
+  subTitleFormat: {
+    phones: [
+      { template: 'PHONE {make} {model} {price}', subcategories: [] },
+      { template: 'PHONE B {make} {model} {price}', subcategories: [] },
+    ],
+  },
+  subHooks: {
+    phones: [
+      { template: 'PHONE Hook {make} {model}.', subcategories: [] },
+    ],
+  },
+};
+
+describe('structured layout — sub-specific pools (commit G)', () => {
+  const facts = { make: 'Apple', model: 'iPhone15', price: '400' };
+
+  it('sub-specific templates appear when sub matches', () => {
+    const titles = new Set<string>();
+    for (let s = 0; s < 10; s++) {
+      const r = buildStructured(SUB_MOCK_LAYOUT, facts, 'phones', s);
+      if (r.title) titles.add(r.title);
+    }
+    expect([...titles].some((t) => t.startsWith('PHONE'))).toBe(true);
+    expect([...titles].some((t) => t.startsWith('GEN'))).toBe(true);
+  });
+
+  it('sub-specific templates do NOT leak to other subs', () => {
+    for (let s = 0; s < 20; s++) {
+      const r = buildStructured(SUB_MOCK_LAYOUT, facts, 'tablets', s);
+      if (r.title) expect(r.title).not.toContain('PHONE');
+    }
+  });
+
+  it('missing sub pool = behavior unchanged', () => {
+    const r = buildStructured(MOCK_LAYOUT, FULL_FACTS, 'phones', 0);
+    expect(r.title).toBeTruthy();
+    expect(r.body).toBeTruthy();
+  });
+});
+

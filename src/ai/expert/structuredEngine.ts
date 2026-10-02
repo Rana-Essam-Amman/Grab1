@@ -81,35 +81,55 @@ function structuredEligible(
   return matched.length > 0 ? matched : arr;
 }
 
+function mergeSubPool(
+  base: readonly PremiumTemplate[],
+  subPool: Readonly<Record<string, readonly PremiumTemplate[]>> | undefined,
+  subcategorySlug: string
+): readonly PremiumTemplate[] {
+  if (!subcategorySlug || !subPool) return base;
+  const extras = subPool[subcategorySlug];
+  if (!extras || extras.length === 0) return base;
+  return [...base, ...extras];
+}
+
 export function buildStructured(
   layout: StructuredLayout,
   facts: EngineFacts,
   subcategorySlug: string,
   seed: number
 ): { title: string | null; body: string | null } {
-  const title = pickFirstFillable(
+  const titlePool = mergeSubPool(
     structuredEligible(layout.titleFormat, subcategorySlug),
-    facts,
-    seed
+    layout.subTitleFormat,
+    subcategorySlug
   );
-  const hook = pickFirstFillable(
+  const hookPool = mergeSubPool(
     structuredEligible(layout.hooks, subcategorySlug),
-    facts,
-    seed + 7
+    layout.subHooks,
+    subcategorySlug
   );
+  const introPool = mergeSubPool(
+    structuredEligible(layout.introParagraphs, subcategorySlug),
+    layout.subIntroParagraphs,
+    subcategorySlug
+  );
+  const ctaPool = mergeSubPool(
+    structuredEligible(layout.ctas, subcategorySlug),
+    layout.subCtas,
+    subcategorySlug
+  );
+  const featuresPool = mergeSubPool(
+    structuredEligible(layout.featuresBullets, subcategorySlug),
+    layout.subFeaturesBullets,
+    subcategorySlug
+  );
+
+  const title = pickFirstFillable(titlePool, facts, seed);
+  const hook = pickFirstFillable(hookPool, facts, seed + 7);
   if (!hook) return { title, body: null };
 
-  const intro = pickManyFillable(
-    structuredEligible(layout.introParagraphs, subcategorySlug),
-    facts,
-    seed + 29,
-    layout.introCount
-  );
-  const cta = pickFirstFillable(
-    structuredEligible(layout.ctas, subcategorySlug),
-    facts,
-    seed + 101
-  );
+  const intro = pickManyFillable(introPool, facts, seed + 29, layout.introCount);
+  const cta = pickFirstFillable(ctaPool, facts, seed + 101);
   if (!cta) return { title, body: null };
 
   const groups = layout.detailsGroups.map((g) => ({
@@ -120,7 +140,7 @@ export function buildStructured(
   if (details.length < layout.minDetails) return { title, body: null };
 
   const features = pickManyFillable(
-    structuredEligible(layout.featuresBullets, subcategorySlug),
+    featuresPool,
     facts,
     seed + 53,
     layout.featuresCount
