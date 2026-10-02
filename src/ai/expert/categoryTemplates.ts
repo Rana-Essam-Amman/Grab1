@@ -1,5 +1,6 @@
 // RULE-14-EXCEPTION: Static taxonomy
 import { CATEGORY_TEMPLATES_EXTRA } from './phase3a-expansion';
+import { CATEGORY_TEMPLATES_V2 } from './categoryTemplatesV2';
 
 /**
  * Layer 5 — Sentence Planner
@@ -271,8 +272,46 @@ const BASE_CATEGORY_TEMPLATES: Record<string, CategoryTemplateSet> = {
   },
 };
 
-export const CATEGORY_TEMPLATES: Record<string, CategoryTemplateSet> = {
-  ...BASE_CATEGORY_TEMPLATES,
-  ...CATEGORY_TEMPLATES_EXTRA,
-};
+/**
+ * Merge multiple template layers into one set per category.
+ *
+ * Priority order (first wins on duplicate):
+ *   1. BASE   — hand-curated, 6 templates/section per category
+ *   2. EXTRA  — Phase 3A expansion, 6 templates/section per category
+ *   3. V2     — Grok-generated, 12 templates/section per category
+ *
+ * Deduplication ensures no literal string appears twice in the same
+ * section. Order is preserved — BASE templates are tried first by the
+ * engine's deterministic picker.
+ */
+function mergeTemplateLayers(
+  ...layers: ReadonlyArray<CategoryTemplateSet | undefined>
+): CategoryTemplateSet {
+  const valid = layers.filter((s): s is CategoryTemplateSet => Boolean(s));
+  const dedupe = (arr: readonly string[]): readonly string[] =>
+    Array.from(new Set(arr));
+  return {
+    titleTemplates: dedupe(valid.flatMap((s) => s.titleTemplates)),
+    paragraph1: dedupe(valid.flatMap((s) => s.paragraph1)),
+    paragraph2: dedupe(valid.flatMap((s) => s.paragraph2)),
+    paragraph3: dedupe(valid.flatMap((s) => s.paragraph3)),
+  };
+}
+
+const ALL_CATEGORY_KEYS = Array.from(
+  new Set<string>([
+    ...Object.keys(BASE_CATEGORY_TEMPLATES),
+    ...Object.keys(CATEGORY_TEMPLATES_EXTRA),
+    ...Object.keys(CATEGORY_TEMPLATES_V2),
+  ])
+);
+
+export const CATEGORY_TEMPLATES: Record<string, CategoryTemplateSet> = {};
+for (const key of ALL_CATEGORY_KEYS) {
+  CATEGORY_TEMPLATES[key] = mergeTemplateLayers(
+    BASE_CATEGORY_TEMPLATES[key],
+    CATEGORY_TEMPLATES_EXTRA[key],
+    CATEGORY_TEMPLATES_V2[key]
+  );
+}
 
