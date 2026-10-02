@@ -1,7 +1,7 @@
 import { GeneratedListing, ListingCopyResult, ListingFacts, VisionHints } from '../types';
 import { validateRegionalSanity, reconcileLocation } from '../data/locations';
-import { composeListing } from './expert';
 import { buildFieldsFromFacts } from './buildFieldsFromFacts';
+import { realizeListing } from './surface/realizeListing';
 import { extractColor } from './extractors/colors.extractor';
 import { extractCondition } from './extractors/conditions.extractor';
 import { extractSize } from './extractors/sizes.extractor';
@@ -103,26 +103,19 @@ export function extractFacts(raw: string, countryCode?: string): ListingFacts {
   if (city && countryCode && !validateRegionalSanity(countryCode, city)) city = undefined;
   const inspect = text.includes('فحص') || text.toLowerCase().includes('inspect');
   const negotiable = text.includes('تفاوض') || text.toLowerCase().includes('negoti');
-  // Authoritative extractors — override any inline parsing above.
   const authPrice = extractPrice(text);
   if (authPrice) price = authPrice;
-
   const authYear = extractYear(text);
   if (authYear) year = authYear;
-
   const authMileage = extractMileage(text);
   if (authMileage) km = authMileage;
-
   const brandModel = extractBrandModel(text);
   const finalMake = brandModel?.make || make;
   const finalModel = brandModel?.model;
-
   const fuel = extractFuel(text);
   const transmission = extractTransmission(text);
   const jobTitle = extractJobTitle(text) || extractTrade(text);
   const experience = extractExperience(text);
-
-  // Domain-specific extractors
   const watchBrand = extractWatchBrand(text);
   const beautyBrand = extractBeautyBrand(text);
   const petBreed = extractPetBreed(text);
@@ -136,8 +129,6 @@ export function extractFacts(raw: string, countryCode?: string): ListingFacts {
   const sizes = extractSizes(text);
   const gender = extractGender(text);
   const material = extractMaterial(text);
-
-  // Prefer domain brand over generic brand (watches/beauty).
   const domainBrand = watchBrand || beautyBrand;
   const effectiveMake = domainBrand || finalMake;
 
@@ -155,7 +146,6 @@ export function extractFacts(raw: string, countryCode?: string): ListingFacts {
     jobTitle,
     serviceType: jobTitle,
     experience,
-    // Domain-specific facts
     watchBrand,
     beautyBrand,
     petBreed,
@@ -203,10 +193,7 @@ function buildHumanBody({ subject = '', facts, raw, arabic, categorySlug }: {
   subject?: string; facts: ListingFacts; raw: string;
   arabic: boolean; categorySlug: string;
 }): string {
-  const L = arabic
-    ? { contact: 'للتواصل عبر رسائل الإعلان.' }
-    : { contact: 'Contact via in-app messages.' };
-
+  const contact = arabic ? 'للتواصل عبر رسائل الإعلان.' : 'Contact via in-app messages.';
   const lines: string[] = [];
   const cleanRaw = raw.trim();
   const titleSubject = subject.trim();
@@ -214,26 +201,15 @@ function buildHumanBody({ subject = '', facts, raw, arabic, categorySlug }: {
     (cleanRaw === titleSubject ||
      cleanRaw.replace(/\s+/g, ' ') === titleSubject.replace(/\s+/g, ' ') ||
      cleanRaw.length <= titleSubject.length + 5);
-
-  if (cleanRaw && !rawIsTitle) {
-    lines.push(cleanRaw);
-  }
-
-  // Append motor-specific extra facts if any (km, color).
+  if (cleanRaw && !rawIsTitle) lines.push(cleanRaw);
   if (categorySlug === 'motors' && cleanRaw) {
     const extras: string[] = [];
     if (facts.km) extras.push(arabic ? `العداد: ${facts.km} كم` : `Mileage: ${facts.km} km`);
     if (facts.color) extras.push(arabic ? `اللون: ${facts.color}` : `Color: ${facts.color}`);
-    if (extras.length) {
-      lines.push('');
-      lines.push(...extras);
-    }
+    if (extras.length) lines.push('', ...extras);
   }
-
-  // Closing contact line
   if (lines.length > 0) lines.push('');
-  lines.push(L.contact);
-
+  lines.push(contact);
   return lines.join('\n').trim();
 }
 
@@ -256,48 +232,34 @@ export function writeListingCopy({
 
 export async function generateListing({
   raw, categorySlug, subcategorySlug, arabic, city, countryCode,
-  variantSeed = 0, uniqueId = '',
+  uniqueId = '',
 }: {
   raw: string; categorySlug: string; subcategorySlug: string; arabic: boolean; city?: string; countryCode?: string; images?: string[]; variantSeed?: number; uniqueId?: string;
 }): Promise<GeneratedListing> {
-  // Layer 1 — Local deterministic extraction (100% accurate).
   const localFacts = extractFacts(raw, countryCode);
   const localFields = buildFieldsFromFacts(localFacts, categorySlug, subcategorySlug, arabic, raw);
-
-  // Layer 2 — Expert system composes title + description from facts.
-  const composed = composeListing(localFacts, categorySlug, variantSeed, uniqueId, subcategorySlug);
-
   const missing: string[] = localFields
     .filter((f) => f.required && !f.value)
     .map((f) => f.label);
-
-  if (composed) {
-    return {
-      title: composed.title,
-      description: composed.description,
-      price: typeof localFacts.price === 'string' ? localFacts.price : '',
-      categorySlug,
-      subcategorySlug,
-      city: (typeof localFacts.city === 'string' && localFacts.city) || city || '',
-      year: typeof localFacts.year === 'string' ? localFacts.year : undefined,
-      make: typeof localFacts.make === 'string' ? localFacts.make : undefined,
-      fields: localFields,
-      missing,
-    };
-  }
-
-  // Last-resort fallback: minimal safe output (no external calls).
-  const copy = writeListingCopy({ raw, arabic, categorySlug, countryCode });
-  return {
-    title: copy.title,
-    description: copy.body,
-    price: copy.facts.price || '',
+  const surface = realizeListing({
+    raw,
+    facts: localFacts,
     categorySlug,
     subcategorySlug,
-    city: copy.facts.city || city,
-    year: copy.facts.year,
-    make: copy.facts.make,
-    fields: buildFieldsFromFacts(copy.facts, categorySlug, subcategorySlug, arabic, raw),
-    missing: copy.missing,
+    sellerId: uniqueId || 'guest',
+    city,
+  });
+
+  return {
+    title: surface.title,
+    description: surface.description,
+    price: typeof localFacts.price === 'string' && localFacts.price !== localFacts.area ? localFacts.price : '',
+    categorySlug,
+    subcategorySlug,
+    city: (typeof localFacts.city === 'string' && localFacts.city) || city || '',
+    year: typeof localFacts.year === 'string' ? localFacts.year : undefined,
+    make: typeof localFacts.make === 'string' ? localFacts.make : undefined,
+    fields: localFields,
+    missing,
   };
 }

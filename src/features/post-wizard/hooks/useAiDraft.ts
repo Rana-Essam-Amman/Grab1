@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { usePostWizard } from './usePostWizard';
 import { useUI } from '@/hooks/useUI';
+import { useAuth } from '@/hooks/useAuth';
+import { generateListing } from '@/ai/listingCopyAgent';
 
 export interface UseAiDraftReturn {
   prompt: string;
   setPrompt: (p: string) => void;
   isGenerating: boolean;
   handleGenerate: () => Promise<void>;
-  handleManualSubmit: (fields: {title: string, price: string, description: string}) => void;
+  handleManualSubmit: (fields: { title: string; price: string; description: string }) => void;
   error: string | null;
 }
 
@@ -16,49 +18,51 @@ export function useAiDraft(): UseAiDraftReturn {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { postDraft, updatePostDraft } = usePostWizard();
-  const { navigateTo } = useUI();
+  const { navigateTo, browseCountryCode, isArabic } = useUI();
+  const { user } = useAuth();
 
   const handleGenerate = async () => {
+    const raw = prompt.trim();
+    if (!raw) {
+      setError('اكتب وصف السلعة أولاً');
+      return;
+    }
     setIsGenerating(true);
     setError(null);
     try {
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      const city = postDraft.city || 'المدينة';
-      const neighborhood = postDraft.neighborhood || 'الحي';
-      
-      const title = `${postDraft.categorySlug || 'إعلان'} في ${city}`;
-      const price = '500';
-      const description = `إعلان جديد في ${city} - ${neighborhood}. للحصول على مزيد من التفاصيل يرجى التواصل.`;
-      
-      const generated = {
-        title,
-        price,
-        description,
+      const sellerId = user?.email || user?.phone || postDraft.draftId || 'guest';
+      const generated = await generateListing({
+        raw,
         categorySlug: postDraft.categorySlug || '',
         subcategorySlug: postDraft.subcategorySlug || '',
-        city,
-        missing: []
-      };
-
-      updatePostDraft({ title, price, description, generated });
+        arabic: isArabic,
+        city: postDraft.city,
+        countryCode: browseCountryCode,
+        uniqueId: sellerId,
+      });
+      updatePostDraft({
+        title: generated.title,
+        price: generated.price || postDraft.price || '',
+        description: generated.description,
+        city: generated.city || postDraft.city,
+        generated,
+      });
       navigateTo('post-ai-review');
     } catch (err: unknown) {
-      const error = err instanceof Error ? err : new Error(String(err));
-      setError(error.message || 'Error generating draft');
+      const failure = err instanceof Error ? err : new Error(String(err));
+      setError(failure.message || 'تعذر إنشاء الإعلان');
     } finally {
       setIsGenerating(false);
     }
   };
 
-  const handleManualSubmit = (fields: {title: string, price: string, description: string}) => {
+  const handleManualSubmit = (fields: { title: string; price: string; description: string }) => {
     const generated = {
       ...fields,
       categorySlug: postDraft.categorySlug || '',
       subcategorySlug: postDraft.subcategorySlug || '',
       city: postDraft.city || '',
-      missing: []
+      missing: [],
     };
     updatePostDraft({ ...fields, generated });
   };
