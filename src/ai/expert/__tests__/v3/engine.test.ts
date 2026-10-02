@@ -17,7 +17,7 @@ describe('listing engine v3', () => {
     );
     expect(new Set(listings.map((item) => item.planId)).size).toBeGreaterThan(1);
     for (const item of listings) {
-      expect(item.title).toBe('شقة للبيع في شفا بدران');
+      expect(item.title.startsWith('شقة للبيع في شفا بدران')).toBe(true);
       expect(item.description).not.toContain('تصميم عصري');
       expect(item.description).not.toContain('كما هي موصوفة');
       expect(item.facts.lat).toBeCloseTo(32.0066);

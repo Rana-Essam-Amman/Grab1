@@ -1,18 +1,15 @@
-function fnv(input: string): number {
-  let h = 2166136261;
-  for (let i = 0; i < input.length; i++) {
-    h ^= input.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return h >>> 0;
+import { createHash } from 'crypto';
+
+export function sha256(input: string): string {
+  return createHash('sha256').update(input, 'utf8').digest('hex');
 }
 
 export function seedOf(userId: string, draft: string, version: string): number {
-  return fnv(`${userId}|${normalizeDraft(draft)}|${version}`);
+  return Number.parseInt(sha256(`${userId}|${normalizeDraft(draft)}|${version}`).slice(0, 8), 16);
 }
 
 export function advance(seed: number, attempt: number): number {
-  return fnv(`${seed}:${attempt}`);
+  return Number.parseInt(sha256(`${seed}:${attempt}`).slice(0, 8), 16);
 }
 
 export function normalizeDraft(draft: string): string {
