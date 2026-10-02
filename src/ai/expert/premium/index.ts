@@ -1,6 +1,6 @@
 import type { PremiumCategory } from './types';
 import { REAL_ESTATE_PREMIUM } from './real-estate-premium';
-import { MOBILES_PREMIUM } from './mobiles-premium';
+import { MOBILES_PREMIUM } from './mobiles';
 
 export const PREMIUM_TEMPLATES: Record<string, PremiumCategory> = {
   'real-estate': REAL_ESTATE_PREMIUM,
