@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { generate } from '../v3/engine';
-import { resolveLocation } from '../v3/locations';
+import { generate } from '../../v3/engine';
+import { resolveLocation } from '../../v3/locations';
 
 const draft = 'شقة للبيع في شفا بدران مساحه 120م مكونه من 3 نوم و 3 حمامات و بلكونه بسعر 50 الف';
 
