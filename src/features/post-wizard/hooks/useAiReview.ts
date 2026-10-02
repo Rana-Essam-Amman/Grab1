@@ -5,7 +5,9 @@ import { useUI } from '@/hooks/useUI';
 import { useListings } from '@/hooks/useListings';
 import { useDraft } from '@/hooks/useDraft';
 import { buildNewListingPayload } from '../helpers/buildNewListingPayload';
-import { globalStorage } from '@/shared/lib/marketStorage';
+import { marketStorage } from '@/shared/lib/marketStorage';
+import { isValidMarketCode } from '@/data/markets/config';
+import type { MarketCode } from '@/data/markets/types';
 import { MONETIZATION_MATRIX } from '@/data/monetization';
 import { useAiReviewAttributes } from './useAiReviewAttributes';
 import type { UseAiReviewReturn } from './useAiReview.types';
@@ -59,8 +61,11 @@ export function useAiReview(): UseAiReviewReturn {
   const handlePublish = async () => {
     if (!postDraft) return;
     if (authStatus !== 'authenticated' || isAnonymous) {
-      globalStorage().set('catch_pending_publish', 'true');
-      globalStorage().set('catch_pending_publish_screen', 'post-ai-review');
+      if (isValidMarketCode(browseCountryCode)) {
+        const store = marketStorage(browseCountryCode as MarketCode);
+        store.set('pending_publish', 'true');
+        store.set('pending_publish_screen', 'post-ai-review');
+      }
       navigateTo('login');
       return;
     }

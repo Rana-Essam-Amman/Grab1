@@ -2,7 +2,9 @@ import { useCallback, useEffect } from 'react';
 import { useUI } from '@/hooks/useUI';
 import { useDraft } from '@/hooks/useDraft';
 import { useAuth } from '@/hooks/useAuth';
-import { globalStorage } from '@/shared/lib/marketStorage';
+import { marketStorage } from '@/shared/lib/marketStorage';
+import { isValidMarketCode } from '@/data/markets/config';
+import type { MarketCode } from '@/data/markets/types';
 
 export interface UsePostAdEntryReturn {
   isArabic: boolean;
@@ -12,7 +14,7 @@ export interface UsePostAdEntryReturn {
 }
 
 export const usePostAdEntry = (): UsePostAdEntryReturn => {
-  const { isArabic, goBack, navigateTo, setActiveTab, setAiFlowPending } = useUI();
+  const { isArabic, goBack, navigateTo, setActiveTab, setAiFlowPending, browseCountryCode } = useUI();
   const { startPostFlow } = useDraft();
   const { authStatus, isAnonymous } = useAuth();
 
@@ -21,10 +23,12 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
   // routes them back to post-ad-entry.
   useEffect(() => {
     if (authStatus !== 'authenticated' || isAnonymous) {
-      globalStorage().set('catch_pending_post_entry', 'true');
+      if (isValidMarketCode(browseCountryCode)) {
+        marketStorage(browseCountryCode as MarketCode).set('pending_post_entry', 'true');
+      }
       navigateTo('login');
     }
-  }, [authStatus, isAnonymous, navigateTo]);
+  }, [authStatus, isAnonymous, navigateTo, browseCountryCode]);
 
   const handleBack = useCallback(() => {
     setActiveTab('explore');

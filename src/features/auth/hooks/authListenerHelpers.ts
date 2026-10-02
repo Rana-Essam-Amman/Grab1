@@ -1,7 +1,9 @@
 import type { Session } from '@supabase/supabase-js';
 import { extractGoogleProfile } from '../services/authService';
 import { isAnonymousUser } from '../services/anonymousSession';
-import { globalStorage } from '@/shared/lib/marketStorage';
+import { marketStorage } from '@/shared/lib/marketStorage';
+import { isValidMarketCode } from '@/data/markets/config';
+import type { MarketCode } from '@/data/markets/types';
 import { useUIStore } from '@/store/ui.slice';
 import type { ScreenType } from '@/store/ui.slice.types';
 import type { UserProfile } from '@/types';
@@ -34,20 +36,26 @@ export function mapSessionToUser(session: Session | null): UserProfile | null {
 }
 
 export function resumePendingNavigation(): void {
-  const pendingEntry = globalStorage().get<string>('catch_pending_post_entry');
+  // Market is read from the UI store snapshot — the same market the user
+  // was on when the pending flag was written.
+  const market = useUIStore.getState().browseCountryCode;
+  if (!isValidMarketCode(market)) return;
+  const store = marketStorage(market as MarketCode);
+
+  const pendingEntry = store.get<string>('pending_post_entry');
   if (pendingEntry === 'true') {
-    globalStorage().remove('catch_pending_post_entry');
+    store.remove('pending_post_entry');
     setTimeout(() => {
       useUIStore.getState().navigateTo('post-ad-entry');
     }, 200);
     return;
   }
 
-  const pending = globalStorage().get<string>('catch_pending_publish');
-  const screen = globalStorage().get<string>('catch_pending_publish_screen');
+  const pending = store.get<string>('pending_publish');
+  const screen = store.get<string>('pending_publish_screen');
   if (pending === 'true' && screen) {
-    globalStorage().remove('catch_pending_publish');
-    globalStorage().remove('catch_pending_publish_screen');
+    store.remove('pending_publish');
+    store.remove('pending_publish_screen');
     setTimeout(() => {
       useUIStore.getState().navigateTo(screen as ScreenType);
     }, 200);
