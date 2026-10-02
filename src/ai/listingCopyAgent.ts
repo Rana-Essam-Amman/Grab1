@@ -230,6 +230,12 @@ export function writeListingCopy({
   return { title, body, facts, missing };
 }
 
+function placeFromSentence(raw: string): string {
+  const match = raw.match(/في\s+([\u0600-\u06FF]+(?:\s[\u0600-\u06FF]+)?)/);
+  if (!match) return '';
+  return match[1].replace(/مساحه|مساحة|مكونة|مكونه|طابق.*/, '').trim().replace('شفابدران', 'شفا بدران').replace('ابو نصير', 'أبو نصير');
+}
+
 export async function generateListing({
   raw, categorySlug, subcategorySlug, arabic, city, countryCode,
   uniqueId = '',
@@ -253,6 +259,8 @@ export async function generateListing({
   if (!/سعر|دينار|دولار|ريال|شيكل/.test(raw)) {
     localFacts.price = undefined;
   }
+  const spokenPlace = placeFromSentence(raw);
+  if (spokenPlace) localFacts.city = spokenPlace;
   const localFields = buildFieldsFromFacts(localFacts, categorySlug, subcategorySlug, arabic, raw);
   const missing: string[] = localFields
     .filter((f) => f.required && !f.value)
@@ -272,7 +280,7 @@ export async function generateListing({
     price: typeof localFacts.price === 'string' && localFacts.price !== localFacts.area ? localFacts.price : '',
     categorySlug,
     subcategorySlug,
-    city: (typeof localFacts.city === 'string' && localFacts.city) || city || '',
+    city: placeFromSentence(raw) || (typeof localFacts.city === 'string' && localFacts.city) || '',
     year: typeof localFacts.year === 'string' ? localFacts.year : undefined,
     make: typeof localFacts.make === 'string' ? localFacts.make : undefined,
     fields: localFields,
