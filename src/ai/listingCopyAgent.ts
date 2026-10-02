@@ -255,16 +255,17 @@ export function writeListingCopy({
 }
 
 export async function generateListing({
-  raw, categorySlug, subcategorySlug, arabic, city, countryCode, variantSeed = 0,
+  raw, categorySlug, subcategorySlug, arabic, city, countryCode,
+  variantSeed = 0, uniqueId = '',
 }: {
-  raw: string; categorySlug: string; subcategorySlug: string; arabic: boolean; city?: string; countryCode?: string; images?: string[]; variantSeed?: number;
+  raw: string; categorySlug: string; subcategorySlug: string; arabic: boolean; city?: string; countryCode?: string; images?: string[]; variantSeed?: number; uniqueId?: string;
 }): Promise<GeneratedListing> {
   // Layer 1 — Local deterministic extraction (100% accurate).
   const localFacts = extractFacts(raw, countryCode);
   const localFields = buildFieldsFromFacts(localFacts, categorySlug, subcategorySlug, arabic, raw);
 
   // Layer 2 — Expert system composes title + description from facts.
-  const composed = composeListing(localFacts, categorySlug, variantSeed);
+  const composed = composeListing(localFacts, categorySlug, variantSeed, uniqueId);
 
   const missing: string[] = localFields
     .filter((f) => f.required && !f.value)

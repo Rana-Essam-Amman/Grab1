@@ -28,9 +28,10 @@ const CTA_AR = 'للمعاينة والتواصل عبر رسائل الإعلا
 export function composeListing(
   facts: EngineFacts,
   categorySlug: string,
-  variantSeed: number = 0
+  variantSeed: number = 0,
+  uniqueId: string = ''
 ): ComposeResult | null {
-  const generated = generateFromTemplates(facts, categorySlug, variantSeed);
+  const generated = generateFromTemplates(facts, categorySlug, variantSeed, uniqueId);
   if (!generated) return null;
 
   // If paragraph 3 already ends with a CTA-like line, don't add another.
