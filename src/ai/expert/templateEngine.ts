@@ -156,7 +156,8 @@ function pickAndFill(
  */
 export function generateFromTemplates(
   facts: EngineFacts,
-  categorySlug: string
+  categorySlug: string,
+  variantSeed: number = 0
 ): EngineOutput | null {
   const categoryKey = CATEGORY_TEMPLATES[categorySlug] ? categorySlug : 'generic';
   const templates = CATEGORY_TEMPLATES[categoryKey];
@@ -172,7 +173,7 @@ export function generateFromTemplates(
     String(facts.color ?? ''),
     categorySlug,
   ].join('|');
-  const baseSeed = hashFacts(fingerprint);
+  const baseSeed = hashFacts(fingerprint) + variantSeed;
 
   const title = pickAndFill(templates.titleTemplates, facts, categoryKey, baseSeed);
   const paragraph1 = pickAndFill(templates.paragraph1, facts, categoryKey, baseSeed + 17);
