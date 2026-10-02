@@ -26,6 +26,7 @@ import { Toaster } from 'sonner';
 import { OfflineBanner } from '@/shared/ui/OfflineBanner';
 import { BuildBadge } from '@/shared/components/BuildBadge';
 import { useSupabaseAuthListener } from '@/features/auth/hooks/useSupabaseAuthListener';
+import { migrateDraftsToMarket } from '@/shared/lib/migrations/draftsMigration';
 import { useSupabaseListingsSync } from '@/features/listings/hooks/useSupabaseListingsSync';
 
 // Lazy-loaded Screens
@@ -246,6 +247,17 @@ export default function App() {
   useSupabaseListingsSync();
 
   useEffect(() => {
+    // ONE-SHOT MIGRATION: legacy global draft → market-scoped.
+    // Runs before store init. Idempotent; safe on every boot.
+    const userMarket = useAuthStore.getState().user?.countryCode;
+    const fallbackMarket = (useUIStore.getState() as { browseCountryCode?: string }).browseCountryCode;
+    const marketForMigration = userMarket || fallbackMarket || 'JO';
+    try {
+      migrateDraftsToMarket(marketForMigration);
+    } catch (err) {
+      console.error('[Migration] Drafts migration failed:', err);
+    }
+
     try {
       registerListingsGetter(() => useListingsStore.getState().listings);
       useListingsStore.getState().initialize();

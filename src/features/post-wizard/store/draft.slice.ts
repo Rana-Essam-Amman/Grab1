@@ -6,7 +6,11 @@ import type { DraftRepository } from '../data/repositories/DraftRepository';
 import { LocalStorageDraftAdapter } from '../data/adapters/LocalStorageDraftAdapter';
 import type { PostDraftWithMeta } from '../domain';
 
-const draftRepository: DraftRepository = new LocalStorageDraftAdapter();
+// Market is resolved lazily on every call. This ensures the draft store
+// always targets the user's CURRENT market, not the one at construction.
+const draftRepository: DraftRepository = new LocalStorageDraftAdapter(
+  () => getBrowseCountryCode()
+);
 
 export interface DraftState {
   postDraft: PostDraft;
@@ -75,6 +79,7 @@ export const useDraftStore = create<DraftState>()((set, get) => ({
   },
 }));
 
+// Initial rehydrate uses the CURRENT market at boot time.
 draftRepository.getCurrent().then((draft) => {
   if (draft) {
     useDraftStore.setState({

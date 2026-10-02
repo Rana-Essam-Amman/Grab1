@@ -1,8 +1,9 @@
-import { globalStorage } from '@/shared/lib/marketStorage';
+import { globalStorage, marketStorage } from '@/shared/lib/marketStorage';
 import type { DraftRepository } from '../repositories/DraftRepository';
 import type { PostDraftWithMeta } from '../../domain';
-import { readValidated, writeValidated, removeStored } from '@/shared/lib/safeStorage';
 import { z } from 'zod';
+import type { MarketCode } from '@/data/markets/types';
+import { isValidMarketCode } from '@/data/markets/config';
 
 const STORAGE_KEY = 'post_draft_v1';
 
@@ -32,20 +33,32 @@ const DRAFT_SCHEMA = z.object({
 });
 
 /**
- * LocalStorage implementation of DraftRepository.
- * Handles persistence of in-flight ad creation drafts.
- * Swappable with FirestoreDraftAdapter in the future.
+ * Drafts are MARKET-SCOPED. A draft created in JO must never be readable
+ * from LB. The adapter takes a market-resolver function so it can react
+ * to market switches at runtime (rather than snapshot at construction).
  */
 export class LocalStorageDraftAdapter implements DraftRepository {
+  constructor(private readonly resolveMarket: () => string | undefined = () => undefined) {}
+
+  private getStore() {
+    const m = this.resolveMarket();
+    return isValidMarketCode(m) ? marketStorage(m as MarketCode) : globalStorage();
+  }
+
   async getCurrent(): Promise<PostDraftWithMeta | null> {
-    return readValidated(STORAGE_KEY, DRAFT_SCHEMA, null) as PostDraftWithMeta | null;
+    const raw = this.getStore().get<unknown>(STORAGE_KEY);
+    if (raw == null) return null;
+    const parsed = DRAFT_SCHEMA.safeParse(raw);
+    return parsed.success ? (parsed.data as PostDraftWithMeta) : null;
   }
 
   async save(draft: PostDraftWithMeta): Promise<void> {
-    writeValidated(STORAGE_KEY, DRAFT_SCHEMA as z.ZodType<PostDraftWithMeta>, draft);
+    const parsed = DRAFT_SCHEMA.safeParse(draft);
+    if (!parsed.success) return;
+    this.getStore().set(STORAGE_KEY, parsed.data);
   }
 
   async clear(): Promise<void> {
-    removeStored(STORAGE_KEY);
+    this.getStore().remove(STORAGE_KEY);
   }
 }
