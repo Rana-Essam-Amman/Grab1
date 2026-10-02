@@ -5,10 +5,11 @@ import { ChatState, MAX_CHAT_MESSAGES } from './chat.slice.types';
 import { initialConversations } from './chat.slice.helpers';
 import type { ChatRepository } from '../data/repositories/ChatRepository';
 import { LocalStorageChatAdapter } from '../data/adapters/LocalStorageChatAdapter';
+import { getBrowseCountryCode } from '@/shared/store-getters/ui.getter';
 
 export type { ChatState };
 
-const chatRepository: ChatRepository = new LocalStorageChatAdapter();
+const chatRepository: ChatRepository = new LocalStorageChatAdapter(() => getBrowseCountryCode());
 
 export const useChatStore = create<ChatState>()((set, get) => ({
   conversations: initialConversations,

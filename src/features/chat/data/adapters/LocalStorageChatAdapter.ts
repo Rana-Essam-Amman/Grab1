@@ -1,7 +1,9 @@
 import type { Conversation, ChatMessage } from '../../domain';
 import type { ChatRepository } from '../repositories/ChatRepository';
-import { globalStorage } from '@/shared/lib/marketStorage';
+import { globalStorage, marketStorage } from '@/shared/lib/marketStorage';
 import { z } from 'zod';
+import type { MarketCode } from '@/data/markets/types';
+import { isValidMarketCode } from '@/data/markets/config';
 
 const STORAGE_KEY = 'chat_conversations_v1';
 
@@ -24,10 +26,17 @@ const CONVERSATION_SCHEMA = z.object({
 const CONVERSATIONS_ARRAY_SCHEMA = z.array(CONVERSATION_SCHEMA);
 
 /**
- * LocalStorage implementation of ChatRepository.
- * Safe for Sandbox / offline / SSR environments.
+ * Chats are MARKET-SCOPED. A conversation created in JO must never be
+ * readable from LB. Market is resolved lazily on every operation.
  */
 export class LocalStorageChatAdapter implements ChatRepository {
+  constructor(private readonly resolveMarket: () => string | undefined = () => undefined) {}
+
+  private getStore() {
+    const m = this.resolveMarket();
+    return isValidMarketCode(m) ? marketStorage(m as MarketCode) : globalStorage();
+  }
+
   async getAll(): Promise<Conversation[]> {
     return this._read();
   }
@@ -70,7 +79,7 @@ export class LocalStorageChatAdapter implements ChatRepository {
 
   private async _read(): Promise<Conversation[]> {
     try {
-      const parsed = globalStorage().get<unknown>(STORAGE_KEY);
+      const parsed = this.getStore().get<unknown>(STORAGE_KEY);
       const result = CONVERSATIONS_ARRAY_SCHEMA.safeParse(parsed);
       return result.success ? result.data : [];
     } catch {
@@ -79,6 +88,6 @@ export class LocalStorageChatAdapter implements ChatRepository {
   }
 
   private _write(conversations: Conversation[]): void {
-    globalStorage().set(STORAGE_KEY, conversations);
+    this.getStore().set(STORAGE_KEY, conversations);
   }
 }

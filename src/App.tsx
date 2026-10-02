@@ -27,6 +27,7 @@ import { OfflineBanner } from '@/shared/ui/OfflineBanner';
 import { BuildBadge } from '@/shared/components/BuildBadge';
 import { useSupabaseAuthListener } from '@/features/auth/hooks/useSupabaseAuthListener';
 import { migrateDraftsToMarket } from '@/shared/lib/migrations/draftsMigration';
+import { migrateChatsToMarket } from '@/shared/lib/migrations/chatsMigration';
 import { useSupabaseListingsSync } from '@/features/listings/hooks/useSupabaseListingsSync';
 
 // Lazy-loaded Screens
@@ -256,6 +257,11 @@ export default function App() {
       migrateDraftsToMarket(marketForMigration);
     } catch (err) {
       console.error('[Migration] Drafts migration failed:', err);
+    }
+    try {
+      migrateChatsToMarket(marketForMigration);
+    } catch (err) {
+      console.error('[Migration] Chats migration failed:', err);
     }
 
     try {
