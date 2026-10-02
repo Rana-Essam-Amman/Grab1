@@ -7,7 +7,7 @@ export const MOTOR_BRANDS: readonly Brand[] = [
   { id: 'honda', name: 'Honda', nameAr: 'هوندا', en: 'Honda', ar: 'هوندا', models: [['أكورد', 'Accord'], ['سيفيك', 'Civic'], ['سي آر في', 'CR-V'], ['بايلوت', 'Pilot'], ['أوديسي', 'Odyssey']] },
   { id: 'hyundai', name: 'Hyundai', nameAr: 'هيونداي', en: 'Hyundai', ar: 'هيونداي', models: [['النترا', 'Elantra'], ['سوناتا', 'Sonata'], ['توسان', 'Tucson'], ['سانتا في', 'Santa Fe'], ['اكسنت', 'Accent'], ['كونا', 'Kona']] },
   { id: 'kia', name: 'Kia', nameAr: 'كيا', en: 'Kia', ar: 'كيا', models: [['سبورتج', 'Sportage'], ['سيراتو', 'Cerato'], ['اوبتيما', 'Optima'], ['سورينتو', 'Sorento'], ['بيكانتو', 'Picanto'], ['تيلورايد', 'Telluride']] },
-  { id: 'nissan', name: 'Nissan', nameAr: 'نيسان', en: 'Nissan', ar: 'نيسان', models: [['باترول', 'Patrol'], ['التيما', 'Altima'], ['صني', 'Sunny'], ['ماكسيما', 'Maxima'], ['اكس تريل', 'X-Trail'], ['باثفايندر', 'Pathfinder']] },
+  { id: 'nissan', name: 'Nissan', nameAr: 'نيسان', en: 'Nissan', ar: 'نيسان', models: [['باترول', 'Patrol'], ['التيما', 'Altima'], ['صني', 'Sunny'], ['سني', 'Sunny'], ['ماكسيما', 'Maxima'], ['اكس تريل', 'X-Trail'], ['باثفايندر', 'Pathfinder']] },
   { id: 'mercedes', name: 'Mercedes-Benz', nameAr: 'مرسيدس بنز', en: 'Mercedes-Benz', ar: 'مرسيدس بنز', models: [['إي كلاس', 'E-Class'], ['إس كلاس', 'S-Class'], ['سي كلاس', 'C-Class'], ['جي كلاس', 'G-Class'], ['جي إل إي', 'GLE']] },
   { id: 'bmw', name: 'BMW', nameAr: 'بي إم دبليو', en: 'BMW', ar: 'بي إم دبليو', models: [['الفئة 5', '5 Series'], ['الفئة 7', '7 Series'], ['الفئة 3', '3 Series'], ['اكس 5', 'X5'], ['اكس 6', 'X6']] },
   { id: 'audi', name: 'Audi', nameAr: 'أودي', en: 'Audi', ar: 'أودي', models: [['اي 4', 'A4'], ['اي 6', 'A6'], ['اي 8', 'A8'], ['كيو 7', 'Q7'], ['كيو 5', 'Q5']] },

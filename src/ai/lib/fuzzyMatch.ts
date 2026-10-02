@@ -35,6 +35,22 @@ const MIN_FUZZY_LEN = 4;
 const WORD_SPLIT = /[\s،,.;:!?()[\]{}"']+/;
 
 /**
+ * Stopwords: common Arabic tokens that must NEVER fuzzy-match a dict term.
+ * "دينار" (currency) false-matched "ديفندر" (Land Rover Defender model).
+ */
+const STOPWORDS = new Set<string>([
+  // currencies
+  'دينار', 'دولار', 'ريال', 'شيكل', 'درهم', 'ليره', 'ليرة', 'جنيه', 'يورو',
+  // units
+  'متر', 'مترمربع', 'كم', 'كيلو', 'كيلومتر', 'سنه', 'سنة', 'سنوات', 'سنين', 'شهر', 'اشهر', 'أشهر',
+  // prepositions / particles
+  'في', 'من', 'على', 'الى', 'إلى', 'عن', 'مع', 'بسعر', 'سعر', 'السعر', 'الثمن', 'الايجار', 'ايجار',
+  // generic listing words
+  'للبيع', 'للايجار', 'معروض', 'معروضه', 'معروضة', 'متوفر', 'متوفره', 'متوفرة',
+  'جديد', 'جديده', 'جديدة', 'مستعمل', 'مستعمله', 'مستعملة', 'نظيف', 'نظيفه', 'نظيفة',
+]);
+
+/**
  * True if `haystack` contains a word whose normalized Levenshtein distance
  * to `needle` is ≤ threshold. Queries < MIN_FUZZY_LEN rejected.
  * Threshold: len 4-5 → 1 edit; len ≥ 6 → 2 edits.
@@ -51,6 +67,7 @@ export function fuzzyContains(haystack: string, needle: string): boolean {
   const words = normHay.split(WORD_SPLIT);
   for (const w of words) {
     if (!w) continue;
+    if (STOPWORDS.has(w)) continue;
     if (Math.abs(w.length - normNeedle.length) > threshold) continue;
     if (levenshtein(w, normNeedle, threshold) <= threshold) return true;
   }
@@ -74,6 +91,7 @@ export function fuzzyFindCanonical<T extends { term: string; canonical: string }
     if (term.length < MIN_FUZZY_LEN) continue;
     const threshold = term.length >= 6 ? 2 : 1;
     for (const w of words) {
+      if (STOPWORDS.has(w)) continue;
       if (Math.abs(w.length - term.length) > threshold) continue;
       if (levenshtein(w, term, threshold) <= threshold) return entry.canonical;
     }
