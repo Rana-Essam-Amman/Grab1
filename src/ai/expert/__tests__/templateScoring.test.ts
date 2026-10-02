@@ -54,6 +54,22 @@ describe('Template scoring — prefers richer fact usage', () => {
     expect(atLeastOneWithFuel).toBe(true);
   });
 
+  it('produces a listing even when price is missing', () => {
+    const noPrice = {
+      make: 'تويوتا',
+      model: 'كامري',
+      year: '2020',
+      fuel: 'هايبرد',
+      color: 'رمادي',
+    };
+    const out = generateFromTemplates(noPrice, 'motors', 0, 'user-A:draft-1');
+    expect(out, 'should not return null when price missing').not.toBeNull();
+    expect(out!.title).toContain('تويوتا');
+    expect(out!.title).toContain('كامري');
+    expect(out!.paragraph3).toContain('السعر عند التواصل');
+    expect(out!.paragraph3).not.toMatch(/\{price\}/);
+  });
+
   it('handles missing facts gracefully (no crash, no empty slots)', () => {
     const sparse = { make: 'تويوتا', model: 'كامري', price: '15000' };
     const out = generateFromTemplates(sparse, 'generic', 0);

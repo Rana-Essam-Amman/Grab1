@@ -56,7 +56,7 @@ const SLOT_SOURCES: Record<string, string | { tone: string } | { enrich: [string
   condTone:  { enrich: ['condition', 'condition'] },
 };
 
-const OPTIONAL_SLOTS = new Set(['fuelTone', 'colorTone', 'yearTone', 'condTone']);
+const OPTIONAL_SLOTS = new Set(['fuelTone', 'colorTone', 'yearTone', 'condTone', 'price']);
 
 /** Extract all slot names from a template string. */
 function extractSlots(template: string): string[] {
@@ -119,7 +119,11 @@ function fillTemplate(
     const value = resolveSlot(slot, facts, categoryKey, toneSeed);
     if (value === undefined) {
       if (OPTIONAL_SLOTS.has(slot)) {
-        // Strip the optional slot cleanly (remove trailing " و" if any).
+        // Price gets a graceful substitute, not a silent deletion.
+        if (slot === 'price') {
+          out = out.replace(/\{price\}/g, 'السعر عند التواصل');
+          continue;
+        }
         out = out.replace(new RegExp(`\\s*و\\{${slot}\\}`, 'g'), '');
         out = out.replace(new RegExp(`\\{${slot}\\}`, 'g'), '');
         continue;
