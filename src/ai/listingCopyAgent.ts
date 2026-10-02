@@ -135,9 +135,9 @@ export function extractFacts(raw: string, countryCode?: string): ListingFacts {
   const gender = extractGender(text);
   const material = extractMaterial(text);
 
-  // Prefer domain brand over generic brand (watches/beauty).
+  // Prefer motor/tech make if found. Domain brands only fill the gap.
   const domainBrand = watchBrand || beautyBrand;
-  const effectiveMake = domainBrand || finalMake;
+  const effectiveMake = finalMake || domainBrand;
 
   return {
     make: effectiveMake,

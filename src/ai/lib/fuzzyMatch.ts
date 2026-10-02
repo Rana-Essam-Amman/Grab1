@@ -98,7 +98,13 @@ export function fuzzyFindCanonical<T extends { term: string; canonical: string }
     for (const w of words) {
       if (STOPWORDS.has(w)) continue;
       if (Math.abs(w.length - term.length) > threshold) continue;
-      const d = levenshtein(w, term, threshold);
+      // First-letter heuristic: rejects unrelated short words
+      // (e.g., "رمادي" vs "ارماني" — different first letters).
+      if (w[0] !== term[0]) continue;
+      // Normalize final-form yaa: ى → ا for matching.
+      const wNorm = w.replace(/\u0649$/, '\u0627');
+      const tNorm = term.replace(/\u0649$/, '\u0627');
+      const d = levenshtein(wNorm, tNorm, threshold);
       if (d > threshold) continue;
       if (d < bestDist || (d === bestDist && term.length > bestTermLen)) {
         bestDist = d;
