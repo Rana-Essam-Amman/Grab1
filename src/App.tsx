@@ -1,9 +1,8 @@
 import { useUI } from './hooks/useUI';
-import React, { useEffect, lazy, Suspense, useMemo } from 'react';
+import React, { lazy, Suspense, useMemo } from 'react';
 import { useUIStore } from './store/ui.slice';
 import { useAuthStore } from '@/features/auth/store/auth.slice';
 import { useListingsStore } from './features/listings/store/listings.slice';
-import { registerListingsGetter } from '@/features/chat/store/chat.slice.deps';
 import { registerListingsGetterForMonetization } from '@/features/monetization/store/deps';
 import { registerUIGetter } from '@/shared/store-getters/ui.getter';
 import { registerAuthGetter } from '@/shared/store-getters/auth.getter';
@@ -26,9 +25,7 @@ import { Toaster } from 'sonner';
 import { OfflineBanner } from '@/shared/ui/OfflineBanner';
 import { BuildBadge } from '@/shared/components/BuildBadge';
 import { useSupabaseAuthListener } from '@/features/auth/hooks/useSupabaseAuthListener';
-import { migrateDraftsToMarket } from '@/shared/lib/migrations/draftsMigration';
-import { migrateChatsToMarket } from '@/shared/lib/migrations/chatsMigration';
-import { cleanupLegacyPendingFlags } from '@/shared/lib/migrations/pendingFlagsCleanup';
+import { useBootMigrations } from '@/shared/hooks/useBootMigrations';
 import { useSupabaseListingsSync } from '@/features/listings/hooks/useSupabaseListingsSync';
 
 // Lazy-loaded Screens
@@ -248,41 +245,7 @@ export default function App() {
   useSupabaseAuthListener();
   useSupabaseListingsSync();
 
-  useEffect(() => {
-    // ONE-SHOT MIGRATION: legacy global draft → market-scoped.
-    // Runs before store init. Idempotent; safe on every boot.
-    const userMarket = useAuthStore.getState().user?.countryCode;
-    const fallbackMarket = (useUIStore.getState() as { browseCountryCode?: string }).browseCountryCode;
-    const marketForMigration = userMarket || fallbackMarket || 'JO';
-    try {
-      migrateDraftsToMarket(marketForMigration);
-    } catch (err) {
-      console.error('[Migration] Drafts migration failed:', err);
-    }
-    try {
-      migrateChatsToMarket(marketForMigration);
-    } catch (err) {
-      console.error('[Migration] Chats migration failed:', err);
-    }
-    try {
-      cleanupLegacyPendingFlags();
-    } catch (err) {
-      console.error('[Migration] Pending flags cleanup failed:', err);
-    }
-
-    try {
-      registerListingsGetter(() => useListingsStore.getState().listings);
-      useListingsStore.getState().initialize();
-    } catch (error) {
-      console.error('[App] Failed to initialize stores:', error);
-    }
-
-    // Belt-and-suspenders: ensure direction matches persisted state on initial client mount
-    if (locale) {
-      document.documentElement.dir = locale === 'ar' ? 'rtl' : 'ltr';
-      document.documentElement.lang = locale;
-    }
-  }, [locale]);
+  useBootMigrations(locale);
 
   if (new URLSearchParams(window.location.search).has('catalog')) {
     return <CatalogScreen />;

@@ -1,6 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { assertSameMarket, isSameMarket } from '@/data/markets/guards';
-import type { MarketCode } from '@/data/markets/types';
+import { devAssertMarketIsolation } from '../helpers/devAssertMarketIsolation';
 import { useUI } from '@/hooks/useUI';
 import { useListings } from '@/hooks/useListings';
 import { useChat } from '@/hooks/useChat';
@@ -12,32 +11,14 @@ import { Listing } from '@/types';
 import { ScreenType } from '@/store/ui.slice';
 
 export interface UseListingDetailReturn {
-  listing: Listing | null;
-  activeCountry: string;
-  isCountryMismatch: boolean;
-  sanitizedLoc: { city: string; neighborhood: string };
-  locationText: string;
-  mapUrl: string;
-  displayCurrency: string;
-  images: string[];
-  mapQuery: string;
-  formattedPhone: FormattedPhone;
-  activePhotoIdx: number;
-  setActivePhotoIdx: (idx: number) => void;
-  showShare: boolean;
-  setShowShare: (v: boolean) => void;
-  showReport: boolean;
-  setShowReport: (v: boolean) => void;
-  handleStartChat: () => void;
-  handleCall: () => void;
-  handleWhatsApp: () => void;
-  handleDelete: () => void;
-  handleSelectSeller: () => void;
-  isAuthenticated: boolean;
-  isOwner: boolean;
-  isArabic: boolean;
-  goBack: () => void;
-  navigateTo: (screen: ScreenType) => void;
+  listing: Listing | null; activeCountry: string; isCountryMismatch: boolean;
+  sanitizedLoc: { city: string; neighborhood: string }; locationText: string;
+  mapUrl: string; displayCurrency: string; images: string[]; mapQuery: string;
+  formattedPhone: FormattedPhone; activePhotoIdx: number; setActivePhotoIdx: (idx: number) => void;
+  showShare: boolean; setShowShare: (v: boolean) => void; showReport: boolean; setShowReport: (v: boolean) => void;
+  handleStartChat: () => void; handleCall: () => void; handleWhatsApp: () => void;
+  handleDelete: () => void; handleSelectSeller: () => void; isAuthenticated: boolean;
+  isOwner: boolean; isArabic: boolean; goBack: () => void; navigateTo: (screen: ScreenType) => void;
 }
 
 export function useListingDetail(): UseListingDetailReturn {
@@ -56,15 +37,7 @@ export function useListingDetail(): UseListingDetailReturn {
   // MARKET ISOLATION RED LINE — in development, we fail LOUDLY if a
   // cross-market listing slips through the visibility rule. This catches
   // any future regression in canViewListing or the navigation flow.
-  if (import.meta.env.DEV && listing && !isSameMarket(listing.countryCode, activeCountry)) {
-    // Do NOT throw in production; the UI must remain functional.
-    // In dev, this surfaces the leak immediately.
-    try {
-      assertSameMarket(activeCountry as MarketCode, listing.countryCode, 'useListingDetail');
-    } catch (err) {
-      console.error('[MarketIsolation] Cross-market listing reached the detail screen:', err);
-    }
-  }
+  devAssertMarketIsolation(listing, activeCountry);
   const derived = useListingDerivedData(listing, isArabic);
   const isAuthenticated = authStatus === 'authenticated';
   const isOwner = Boolean(user?.phone && listing?.sellerPhone === user.phone);

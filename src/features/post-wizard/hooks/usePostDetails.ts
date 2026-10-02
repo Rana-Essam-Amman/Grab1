@@ -4,9 +4,7 @@ import { useUI } from '@/hooks/useUI';
 import { useAuth } from '@/hooks/useAuth';
 import { useListings } from '@/hooks/useListings';
 import { useDraft } from '@/hooks/useDraft';
-import { marketStorage } from '@/shared/lib/marketStorage';
-import { isValidMarketCode } from '@/data/markets/config';
-import type { MarketCode } from '@/data/markets/types';
+import { setPendingPublish } from '../helpers/pendingPublishFlags';
 import { resolvePostDetailsFields, buildGeneratedFields, preparePublish } from '../helpers/postDetailsHelpers';
 
 export function usePostDetails() {
@@ -63,11 +61,7 @@ export function usePostDetails() {
 
     // Visitors must sign in before publishing; resume after sign-in.
     if (authStatus !== 'authenticated' || isAnonymous) {
-      if (isValidMarketCode(browseCountryCode)) {
-        const store = marketStorage(browseCountryCode as MarketCode);
-        store.set('pending_publish', 'true');
-        store.set('pending_publish_screen', 'post-details');
-      }
+      setPendingPublish(browseCountryCode, 'post-details');
       navigateTo('login');
       return;
     }

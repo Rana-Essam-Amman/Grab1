@@ -4,6 +4,7 @@ import { Icon } from '@iconify/react';
 import { Combobox } from '@/shared/ui/Combobox';
 import { iconFor } from './data/fluentIconMap';
 import { type Confidence } from '@/ai/extractors/confidence';
+import { ConfidenceDot } from './ConfidenceDot';
 
 interface AttributeShape {
   readonly key: string;
@@ -22,12 +23,7 @@ interface AiReviewSpecsChipsProps {
   readonly onAttributeChange: (key: string, value: string) => void;
 }
 
-const INPUT_ATTRS = {
-  autoComplete: 'off' as const,
-  autoCorrect: 'off' as const,
-  autoCapitalize: 'off' as const,
-  spellCheck: false,
-};
+const INPUT_ATTRS = { autoComplete: 'off' as const, autoCorrect: 'off' as const, autoCapitalize: 'off' as const, spellCheck: false };
 
 export const AiReviewSpecsChips: React.FC<AiReviewSpecsChipsProps> = ({
   isArabic, attributes, onAttributeChange,
@@ -117,32 +113,5 @@ export const AiReviewSpecsChips: React.FC<AiReviewSpecsChipsProps> = ({
         );
       })}
     </div>
-  );
-};
-
-interface ConfidenceDotProps {
-  readonly confidence?: 'high' | 'medium' | 'low';
-  readonly isArabic: boolean;
-}
-
-/**
- * Small status dot next to a field label.
- *  🟢 high   — value came from exact match in the raw text
- *  🟡 medium — value was inferred (fuzzy, or not literally present)
- *  (no dot)  — low / missing: no visual noise for empty fields
- */
-const ConfidenceDot: React.FC<ConfidenceDotProps> = ({ confidence, isArabic }) => {
-  if (confidence !== 'high' && confidence !== 'medium') return null;
-  const isHigh = confidence === 'high';
-  const title = isHigh
-    ? (isArabic ? 'مستخرج من النص' : 'Extracted from text')
-    : (isArabic ? 'مُستنتج — يُنصح بالمراجعة' : 'Inferred — review recommended');
-  return (
-    <span
-      role="img"
-      aria-label={title}
-      title={title}
-      className={`inline-block w-1.5 h-1.5 rounded-full shrink-0 ${isHigh ? 'bg-success' : 'bg-warning'}`}
-    />
   );
 };
