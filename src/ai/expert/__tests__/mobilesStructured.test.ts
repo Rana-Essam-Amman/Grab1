@@ -56,4 +56,19 @@ describe('mobiles structured layout', () => {
     expect(out!.description).not.toContain('لا وسيط');
     expect(out!.description).not.toContain('نقل الرقم');
   });
+
+  it('sub pools raise entropy — 20 seeds produce ≥ 15 unique titles (commit H)', () => {
+    const facts = extractFacts('ايفون 15 مستعمل للبيع بسعر 40 دينار لون ذهبي 256 جيجا ضمان سنة نسخة وكيل');
+    const titles = new Set<string>();
+    const descs = new Set<string>();
+    for (let s = 0; s < 20; s++) {
+      const out = composeListing(facts, 'mobiles', s, 'u:1', 'phones');
+      if (out) {
+        titles.add(out.title);
+        descs.add(out.description);
+      }
+    }
+    expect(titles.size).toBeGreaterThanOrEqual(15);
+    expect(descs.size).toBeGreaterThanOrEqual(18);
+  });
 });
