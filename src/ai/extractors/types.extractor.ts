@@ -15,7 +15,7 @@ const SORTED_EXPANDED = TYPE_ALIASES_EXPANDED
 export function extractType(text: string): string | undefined {
   const t = normalizeArabic(text).toLowerCase();
   for (const [alias, canonical] of SORTED_ALIASES) {
-    if (t.includes(alias.toLowerCase())) return canonical;
+    if (t.includes(normalizeArabic(alias).toLowerCase())) return canonical;
   }
   for (const { alias, canonical } of SORTED_EXPANDED) {
     if (t.includes(alias)) return canonical;
