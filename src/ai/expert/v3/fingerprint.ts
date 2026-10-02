@@ -1,6 +1,6 @@
-import { createHash } from 'crypto';
 import { normalize } from './normalize';
+import { sha256 } from './seeded';
 
 export function fingerprint(title: string, description: string): string {
-  return createHash('sha256').update(normalize(`${title}\n${description}`), 'utf8').digest('hex');
+  return sha256(normalize(`${title}\n${description}`));
 }
