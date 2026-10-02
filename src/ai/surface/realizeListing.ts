@@ -5,7 +5,7 @@ import type { ListingFacts } from '../../types';
  * States only extracted facts. Variation is seeded. No paid model.
  */
 
-const PACK_VERSION = '2026.10.1';
+const PACK_VERSION = '2026.10.2';
 
 const CATEGORY_NOUN: Record<string, string> = {
   motors: 'مركبة',
@@ -124,68 +124,65 @@ function explicitPrice(raw: string): boolean {
   return /سعر|دينار|دولار|ريال|شيكل/.test(raw);
 }
 
-function inputAllowsSize(raw: string): boolean {
-  return /مقاس|قياس/.test(raw);
-}
-
-function detailLines(facts: ListingFacts, raw: string): string[] {
-  const lines: string[] = [];
-  if (typeof facts.area === 'string') lines.push(`مساحتها ${facts.area} م².`);
+function factsOf(facts: ListingFacts, raw: string) {
   const beds = typeof facts.rooms === 'string' ? facts.rooms : raw.match(/(\d{1,2})\s*نوم/)?.[1];
-  if (beds) lines.push(`${beds} غرف نوم.`);
-  if (typeof facts.bathrooms === 'string') lines.push(`${facts.bathrooms} حمامات.`);
+  const baths = typeof facts.bathrooms === 'string' ? facts.bathrooms : undefined;
+  const area = typeof facts.area === 'string' ? facts.area : undefined;
   const floor = typeof facts.floor === 'string'
     ? facts.floor
     : (/طابق\s*اول|طابق\s*أول|الطابق\s*الاول|الطابق\s*الأول/.test(raw) ? 'الأول' : '');
-  if (floor) lines.push(`الطابق ${floor}.`);
-  if (/بلكون|شرفة/.test(raw)) lines.push('فيها بلكونة.');
-  if (typeof facts.year === 'string') lines.push(`سنة ${facts.year}.`);
-  if (typeof facts.km === 'string') lines.push(`العداد ${facts.km} كم.`);
-  if (typeof facts.fuel === 'string') lines.push(`الوقود ${facts.fuel}.`);
-  if (typeof facts.transmission === 'string') lines.push(`القير ${facts.transmission}.`);
-  if (typeof facts.storage === 'string') lines.push(`السعة ${facts.storage}.`);
-  if (typeof facts.condition === 'string') lines.push(`الحالة ${facts.condition}.`);
-  if (typeof facts.color === 'string') lines.push(`اللون ${facts.color}.`);
-  if (inputAllowsSize(raw) && typeof facts.size === 'string') lines.push(`المقاس ${facts.size}.`);
-  if (explicitPrice(raw) && typeof facts.price === 'string' && facts.price !== facts.area) {
-    lines.push(`السعر ${facts.price}.`);
-  }
-  return lines;
+  const balcony = /بلكون|شرفة/.test(raw);
+  return { beds, baths, area, floor, balcony };
 }
 
-function compose(seed: number, subject: string, intent: string, place: string, lines: string[]): SurfaceOutput {
+function compose(seed: number, subject: string, intent: string, place: string, facts: ListingFacts, raw: string): SurfaceOutput {
   const placeBit = place ? ` في ${place}` : '';
+  const f = factsOf(facts, raw);
+  const bits = [
+    f.beds ? `${f.beds} نوم` : '',
+    f.baths ? `${f.baths} حمام` : '',
+    f.area ? `${f.area} م²` : '',
+    f.balcony ? 'بلكونة' : '',
+    typeof facts.year === 'string' ? facts.year : '',
+    typeof facts.km === 'string' ? `${facts.km} كم` : '',
+  ].filter(Boolean);
+  const floorBit = f.floor ? ` — الطابق ${f.floor}` : '';
   const titles = [
-    `${subject} ${intent}${placeBit}`,
-    place ? `${subject} ${intent} — ${place}` : `${subject} ${intent}`,
-    `${subject} ${intent}${placeBit}`,
+    `${subject} ${intent}${placeBit}${floorBit}${bits.length ? ` (${bits.join('، ')})` : ''}`,
+    `${subject} ${intent}${placeBit}${f.beds ? `، ${f.beds} غرف نوم` : ''}${f.area ? `، ${f.area} م²` : ''}`,
   ];
   const opens = [
-    `${subject} ${intent}${placeBit}.`,
-    place ? `${subject}${placeBit}، ${intent}.` : `${subject} ${intent}.`,
-    `${intent}: ${subject}${placeBit}.`,
+    `${subject} ${intent}${placeBit}${f.floor ? `، الطابق ${f.floor}` : ''}${f.area ? `، مساحتها ${f.area} م²` : ''}.`,
+    `${subject}${placeBit} ${intent}${f.floor ? `، بالطابق ${f.floor}` : ''}.`,
   ];
+  const bodyBits = [
+    f.beds ? `${f.beds} غرف نوم` : '',
+    f.baths ? `${f.baths} حمامات` : '',
+    f.balcony ? 'بلكونة' : '',
+  ].filter(Boolean);
+  const bodies = [
+    bodyBits.length ? `تتكون من ${bodyBits.join('، ')}.` : '',
+    bodyBits.length ? `فيها ${bodyBits.join('، ')}.` : '',
+  ];
+  const extra = [
+    typeof facts.year === 'string' ? `سنة ${facts.year}.` : '',
+    typeof facts.km === 'string' ? `العداد ${facts.km} كم.` : '',
+    typeof facts.condition === 'string' ? `الحالة ${facts.condition}.` : '',
+    explicitPrice(raw) && typeof facts.price === 'string' ? `السعر ${facts.price}.` : '',
+  ].filter(Boolean);
   const closes = [
     'للتفاصيل والمعاينة يُرجى التواصل.',
     'المعاينة بالتنسيق عبر الإعلان.',
-    'للاستفسار يُرجى التواصل عبر الإعلان.',
   ];
   const title = pick(seed, titles, 1);
-  const open = pick(seed, opens, 3);
-  const close = pick(seed, closes, 5);
-  const ordered = [...lines];
-  const shift = seed % Math.max(ordered.length, 1);
-  const rotated = ordered.slice(shift).concat(ordered.slice(0, shift));
-  const plan = seed % 3;
-  let description = open;
-  if (plan === 0 && rotated.length) {
-    description += `\n\nالتفاصيل:\n${rotated.map((line) => `• ${line}`).join('\n')}`;
-  } else if (plan === 1 && rotated.length) {
-    description += `\n\n${rotated.join(' ')}`;
-  } else if (rotated.length) {
-    description += `\n\n${rotated.slice(0, 3).join(' ')}`;
-  }
-  description += `\n\n${close}`;
+  const description = [
+    pick(seed, opens, 3),
+    '',
+    pick(seed, bodies.filter(Boolean).length ? bodies : [''], 5),
+    extra.join(' '),
+    '',
+    pick(seed, closes, 7),
+  ].filter((line, i, all) => line !== '' || (all[i - 1] && all[i + 1])).join('\n').replace(/\n{3,}/g, '\n\n').trim();
   return { title, description };
 }
 
@@ -193,14 +190,13 @@ export function realizeListing(input: SurfaceInput): SurfaceOutput {
   const subject = subjectOf(input.facts, input.categorySlug, input.subcategorySlug);
   const intent = intentOf(input.raw, input.categorySlug);
   const place = placeOf(input.facts, input.city, input.raw);
-  const lines = detailLines(input.facts, input.raw);
   const seed = hash(`${input.sellerId}|${input.raw.trim()}|${input.categorySlug}|${input.subcategorySlug}|${PACK_VERSION}`);
-  const surface = compose(seed, subject, intent, place, lines);
+  const surface = compose(seed, subject, intent, place, input.facts, input.raw);
   const banned = BANNED.find((phrase) => surface.title.includes(phrase) || surface.description.includes(phrase));
   if (banned) {
     return {
       title: `${subject} ${intent}${place ? ` في ${place}` : ''}`,
-      description: `${subject} ${intent}${place ? ` في ${place}` : ''}.\n\n${lines.join('\n')}\n\nللتواصل عبر الإعلان.`.trim(),
+      description: `${subject} ${intent}${place ? ` في ${place}` : ''}.\n\nللتواصل عبر الإعلان.`,
     };
   }
   return surface;
