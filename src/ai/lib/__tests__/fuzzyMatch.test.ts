@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { levenshtein, fuzzyContains, fuzzyFindCanonical } from '../fuzzyMatch';
+import { levenshtein, fuzzyContains, fuzzyFindCanonical, weightedDistance } from '../fuzzyMatch';
 
 describe('levenshtein', () => {
   it('returns 0 for identical strings', () => {
@@ -54,3 +54,19 @@ describe('fuzzyFindCanonical', () => {
     expect(fuzzyFindCanonical('مازدا 3', dict)).toBeUndefined();
   });
 });
+
+describe('weightedDistance — Arabic pair costs', () => {
+  it('يا substitution costs 0.15', () => {
+    expect(weightedDistance('النترا', 'النترى')).toBeLessThanOrEqual(0.2);
+  });
+  it('كة substitution costs 0.15', () => {
+    expect(weightedDistance('ساعة', 'ساعه')).toBeLessThanOrEqual(0.2);
+  });
+  it('قك substitution costs 0.3', () => {
+    expect(weightedDistance('نايك', 'نايق')).toBeLessThanOrEqual(0.35);
+  });
+  it('one deletion costs 1', () => {
+    expect(weightedDistance('رولكس', 'رولس')).toBeLessThanOrEqual(1.05);
+  });
+});
+
