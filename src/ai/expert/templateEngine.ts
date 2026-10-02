@@ -234,7 +234,13 @@ export function generateFromTemplates(
     const premiumSeed = variantSeed + uniqueSeed;
 
     const pickPremium = (section: readonly PremiumTemplate[], offset: number): string | null => {
-      const eligible = section.filter((t) => t.subcategories.includes(subcategorySlug));
+      // Match exactly; if no exact match, and subcategorySlug is empty, allow all.
+      let eligible = section.filter((t) => t.subcategories.includes(subcategorySlug));
+      if (eligible.length === 0 && !subcategorySlug) {
+        // No sub matched — take the union of all (best-effort). This only runs
+        // when we genuinely don't know the sub.
+        eligible = section.slice();
+      }
       if (eligible.length === 0) return null;
       // Score by fact coverage
       const scored = eligible.map((t) => {

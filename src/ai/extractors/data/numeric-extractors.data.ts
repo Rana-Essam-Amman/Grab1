@@ -7,6 +7,10 @@ export const AREA_PATTERNS: readonly RegExp[] = [
   /(\d{1,4})\s*(?:متر|م)\s*(?:مربع|مربّع)/,
   /(\d{1,4})\s*(?:م2|م²|م٢)/,
   /(\d{1,4})\s*(?:متر)(?!\s*مربع)/,
+  // Standalone "م" — must NOT be followed by "تر" or "ربع" or any Arabic letter.
+  // Matches: "120 م", "120م ", "120 م."
+  // Skips:   "120 متر", "120 مربع"
+  /(\d{1,4})\s*م(?![\u0621-\u064A])/,
   /(\d{1,4})\s*(?:m2|sqm|square\s*meters?)/i,
   /([٠-٩]{1,4})\s*(?:متر\s*مربع|متر|م2|م²|م٢)/,
   /(?:مساحة|المساحة)\s*(\d{1,4})\s*(?:متر|م2|م²|م٢|m2|sqm)?/i,
