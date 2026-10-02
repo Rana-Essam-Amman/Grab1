@@ -242,25 +242,27 @@ export async function generateListing({
 }: {
   raw: string; categorySlug: string; subcategorySlug: string; arabic: boolean; city?: string; countryCode?: string; images?: string[]; variantSeed?: number; uniqueId?: string;
 }): Promise<GeneratedListing> {
-  const localFacts = extractFacts(raw, countryCode);
-  if (!localFacts.rooms) {
+  const extracted = extractFacts(raw, countryCode);
+  const mutable: Record<string, string | boolean | undefined> = { ...extracted };
+  if (!mutable.rooms) {
     const beds = raw.match(/(\d{1,2})\s*نوم/);
-    if (beds) localFacts.rooms = beds[1];
+    if (beds) mutable.rooms = beds[1];
   }
-  if (!localFacts.floor && /طابق\s*اول|طابق\s*أول|الطابق\s*الاول|الطابق\s*الأول/.test(raw)) {
-    localFacts.floor = 'الأول';
+  if (!mutable.floor && /طابق\s*اول|طابق\s*أول|الطابق\s*الاول|الطابق\s*الأول/.test(raw)) {
+    mutable.floor = 'الأول';
   }
-  if (!localFacts.unitType && typeof localFacts.type === 'string') {
-    localFacts.unitType = localFacts.type;
+  if (!mutable.unitType && typeof mutable.type === 'string') {
+    mutable.unitType = mutable.type;
   }
   if (categorySlug === 'real-estate' && !/مقاس|قياس/.test(raw)) {
-    localFacts.size = undefined;
+    mutable.size = undefined;
   }
   if (!/سعر|دينار|دولار|ريال|شيكل/.test(raw)) {
-    localFacts.price = undefined;
+    mutable.price = undefined;
   }
   const spokenPlace = placeFromSentence(raw);
-  if (spokenPlace) localFacts.city = spokenPlace;
+  if (spokenPlace) mutable.city = spokenPlace;
+  const localFacts = mutable as ListingFacts;
   const localFields = buildFieldsFromFacts(localFacts, categorySlug, subcategorySlug, arabic, raw);
   const missing: string[] = localFields
     .filter((f) => f.required && !f.value)
