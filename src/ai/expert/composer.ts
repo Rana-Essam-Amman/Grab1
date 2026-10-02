@@ -35,6 +35,17 @@ export function composeListing(
   const generated = generateFromTemplates(facts, categorySlug, variantSeed, uniqueId, subcategorySlug);
   if (!generated) return null;
 
+  if (generated.structured) {
+    const sections = generated.structured.split('\n\n');
+    const validation = validateListing(
+      generated.title,
+      sections,
+      facts as ValidatorFacts
+    );
+    if (!validation.valid) return null;
+    return { title: generated.title, description: generated.structured };
+  }
+
   // If paragraph 3 already ends with a CTA-like line, don't add another.
   const paragraphs = [generated.paragraph1, generated.paragraph2, generated.paragraph3];
   const last = paragraphs[paragraphs.length - 1];
