@@ -23,6 +23,7 @@ interface AiReviewBodyProps {
     required?: boolean;
     type?: 'text' | 'number' | 'select' | 'textarea';
     options?: readonly string[]; placeholder?: string;
+    confidence?: 'high' | 'medium' | 'low';
   }[];
   readonly onAttributeChange: (key: string, value: string) => void;
   readonly mapQuery: string;

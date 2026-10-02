@@ -3,6 +3,7 @@ import { ArrowDown2 } from 'iconsax-react';
 import { Icon } from '@iconify/react';
 import { Combobox } from '@/shared/ui/Combobox';
 import { iconFor } from './data/fluentIconMap';
+import { type Confidence } from '@/ai/extractors/confidence';
 
 interface AttributeShape {
   readonly key: string;
@@ -12,6 +13,7 @@ interface AttributeShape {
   readonly type?: 'text' | 'number' | 'select' | 'textarea';
   readonly options?: readonly string[];
   readonly placeholder?: string;
+  readonly confidence?: Confidence;
 }
 
 interface AiReviewSpecsChipsProps {
@@ -45,6 +47,7 @@ export const AiReviewSpecsChips: React.FC<AiReviewSpecsChipsProps> = ({
               <div className="flex items-center gap-2">
                 <Icon icon={iconFor(attr.key)} width={20} height={20} />
                 <span className="text-[13px] font-bold text-ink">{attr.label}</span>
+                <ConfidenceDot confidence={attr.confidence} isArabic={isArabic} />
               </div>
               {attr.type === 'select' && attr.options && attr.options.length > 20 ? (
                 <Combobox
@@ -103,8 +106,9 @@ export const AiReviewSpecsChips: React.FC<AiReviewSpecsChipsProps> = ({
               height={22}
               className={filled ? '' : 'opacity-60'}
             />
-            <span className={`text-[11px] font-bold uppercase tracking-wide ${filled ? 'text-ink-muted' : 'text-ink-muted/70'}`}>
+            <span className={`text-[11px] font-bold uppercase tracking-wide inline-flex items-center gap-1.5 ${filled ? 'text-ink-muted' : 'text-ink-muted/70'}`}>
               {attr.label}
+              <ConfidenceDot confidence={attr.confidence} isArabic={isArabic} />
             </span>
             <span className={`text-[14px] truncate w-full ${filled ? 'font-bold text-ink' : 'font-bold text-accent'}`}>
               {filled ? attr.value : (isArabic ? '+ أضف' : '+ Add')}
@@ -113,5 +117,32 @@ export const AiReviewSpecsChips: React.FC<AiReviewSpecsChipsProps> = ({
         );
       })}
     </div>
+  );
+};
+
+interface ConfidenceDotProps {
+  readonly confidence?: 'high' | 'medium' | 'low';
+  readonly isArabic: boolean;
+}
+
+/**
+ * Small status dot next to a field label.
+ *  🟢 high   — value came from exact match in the raw text
+ *  🟡 medium — value was inferred (fuzzy, or not literally present)
+ *  (no dot)  — low / missing: no visual noise for empty fields
+ */
+const ConfidenceDot: React.FC<ConfidenceDotProps> = ({ confidence, isArabic }) => {
+  if (confidence !== 'high' && confidence !== 'medium') return null;
+  const isHigh = confidence === 'high';
+  const title = isHigh
+    ? (isArabic ? 'مستخرج من النص' : 'Extracted from text')
+    : (isArabic ? 'مُستنتج — يُنصح بالمراجعة' : 'Inferred — review recommended');
+  return (
+    <span
+      role="img"
+      aria-label={title}
+      title={title}
+      className={`inline-block w-1.5 h-1.5 rounded-full shrink-0 ${isHigh ? 'bg-success' : 'bg-warning'}`}
+    />
   );
 };
