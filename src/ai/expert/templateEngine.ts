@@ -133,7 +133,16 @@ function fillTemplate(
   return out;
 }
 
-/** Pick the first template (starting from seed offset) that fills cleanly. */
+/**
+ * Pick the template with the HIGHEST fact coverage, tie-broken by seed.
+ *
+ * Rationale: templates that use more available facts produce richer
+ * listings. A template with 5 resolved slots beats one with 3, even if
+ * the 3-slot one appears earlier in the array.
+ *
+ * Variety: among templates with identical top score, seed%N picks one.
+ * If that one fails to fill, we fall through to the next in the same tier.
+ */
 function pickAndFill(
   templates: readonly string[],
   facts: EngineFacts,
@@ -141,10 +150,42 @@ function pickAndFill(
   seed: number
 ): string | null {
   if (templates.length === 0) return null;
-  const start = seed % templates.length;
-  for (let i = 0; i < templates.length; i++) {
-    const t = templates[(start + i) % templates.length];
+
+  // Score each template by how many required slots it can resolve.
+  // Higher score = uses more facts = richer output.
+  interface ScoredTemplate {
+    readonly template: string;
+    readonly score: number;
+  }
+  const scored: ScoredTemplate[] = templates.map((t) => {
+    const slots = extractSlots(t);
+    let score = 0;
+    for (const slot of slots) {
+      const value = resolveSlot(slot, facts, categoryKey, seed);
+      if (value !== undefined) score += 1;
+    }
+    return { template: t, score };
+  });
+
+  const maxScore = Math.max(...scored.map((s) => s.score));
+  if (maxScore === 0) return null;
+
+  // All templates that hit the max score — variety pool.
+  const topTier = scored.filter((s) => s.score === maxScore).map((s) => s.template);
+  if (topTier.length === 0) return null;
+
+  // Deterministic variety within the top tier.
+  const start = seed % topTier.length;
+  for (let i = 0; i < topTier.length; i++) {
+    const t = topTier[(start + i) % topTier.length];
     const filled = fillTemplate(t, facts, categoryKey, seed);
+    if (filled) return filled;
+  }
+
+  // Fallback: if no top-tier template fills cleanly (edge case), try the
+  // next-best score tier. Rarely hit — resolveSlot already validated each.
+  for (const { template } of scored) {
+    const filled = fillTemplate(template, facts, categoryKey, seed);
     if (filled) return filled;
   }
   return null;
