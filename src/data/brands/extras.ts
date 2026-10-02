@@ -36,8 +36,6 @@ export const EXTRAS_BRANDS: readonly ExtraBrand[] = [
     en: 'Apple',
     ar: 'ابل',
     models: [
-      ['ايفون', 'iPhone'],
-      ['ابل', 'Apple'],
       ['ايفون 11', 'iPhone 11'],
       ['ايفون 11 برو', 'iPhone 11 Pro'],
       ['ايفون 11 برو ماكس', 'iPhone 11 Pro Max'],
