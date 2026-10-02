@@ -198,5 +198,15 @@ describe('structured layout — sub-specific pools (commit G)', () => {
     expect(out!.structured).toContain('🔹 تفاصيل الوحدة:');
     expect(out!.structured).not.toMatch(/\{[a-zA-Z_]+\}/);
   });
+
+  it('20 seeds produce ≥12 unique titles WITHOUT price (commit N)', () => {
+    const facts = { area: '150', rooms: '3', bathrooms: '3' };
+    const titles = new Set<string>();
+    for (let s = 0; s < 20; s++) {
+      const out = generateFromTemplates(facts, 'real-estate', s, 'u:nop', 'apartments');
+      if (out) titles.add(out.title);
+    }
+    expect(titles.size).toBeGreaterThanOrEqual(12);
+  });
 });
 
