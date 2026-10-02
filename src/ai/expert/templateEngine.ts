@@ -196,7 +196,9 @@ function pickAndFill(
   if (maxScore === 0) return null;
 
   // All templates that hit the max score — variety pool.
-  const topTier = scored.filter((s) => s.score === maxScore).map((s) => s.template);
+  const topTier = scored
+    .filter((s) => s.score >= maxScore - 1)
+    .map((s) => s.template);
   if (topTier.length === 0) return null;
 
   // Deterministic variety within the top tier.
@@ -247,7 +249,10 @@ export function generateFromTemplates(
       });
       const maxScore = Math.max(...scored.map((s) => s.score));
       if (maxScore === 0) return null;
-      const topTier = scored.filter((s) => s.score === maxScore).map((s) => s.template);
+      // Widen to include templates within 1 point of max.
+      const topTier = scored
+        .filter((s) => s.score >= maxScore - 1)
+        .map((s) => s.template);
       
       const seedVal = premiumSeed + offset;
       const start = Math.abs(seedVal) % topTier.length;
