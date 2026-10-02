@@ -29,9 +29,10 @@ export function composeListing(
   facts: EngineFacts,
   categorySlug: string,
   variantSeed: number = 0,
-  uniqueId: string = ''
+  uniqueId: string = '',
+  subcategorySlug: string = ''
 ): ComposeResult | null {
-  const generated = generateFromTemplates(facts, categorySlug, variantSeed, uniqueId);
+  const generated = generateFromTemplates(facts, categorySlug, variantSeed, uniqueId, subcategorySlug);
   if (!generated) return null;
 
   // If paragraph 3 already ends with a CTA-like line, don't add another.

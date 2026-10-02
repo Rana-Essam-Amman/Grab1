@@ -1,6 +1,8 @@
 import { TONE_LIBRARY, pickTone, hashFacts } from './toneLibrary';
 import { CATEGORY_TEMPLATES } from './categoryTemplates';
 import { findEnrichment } from './enrichmentRules';
+import { PREMIUM_TEMPLATES } from './premium';
+import type { PremiumTemplate } from './premium/types';
 
 /**
  * Layer 5 — Template Engine
@@ -27,7 +29,13 @@ export interface EngineOutput {
 
 // Facts keys that must exist for a template's slots to resolve.
 // Map: slot name -> facts key (or special: TONE_* / ENRICH_*).
-const SLOT_SOURCES: Record<string, string | { tone: string } | { enrich: [string, string] }> = {
+const SLOT_SOURCES: Record<
+  string,
+  | string
+  | { tone: string }
+  | { enrich: [string, string] }
+  | { fact: string; fallback?: string }
+> = {
   // Tone library slots
   open:    { tone: 'openings' },
   hook:    { tone: 'hooks' },
@@ -35,16 +43,19 @@ const SLOT_SOURCES: Record<string, string | { tone: string } | { enrich: [string
 
   // Direct facts
   make:    'make',
-  model:   'model',
+  // model falls back to `type` (furniture and other categories produce type, not model)
+  model:   { fact: 'model', fallback: 'type' },
   year:    'year',
   price:   'price',
   fuel:    'fuel',
   color:   'color',
   trans:   'transmission',
   km:      'km',
-  area:    'area',
+  // area falls back to `city` (jobs/services use location not meters)
+  area:    { fact: 'area', fallback: 'city' },
   rooms:   'rooms',
   floor:   'floor',
+  bathrooms: 'bathrooms',
   storage: 'storage',
   jobTitle:'jobTitle',
   exp:     'experience',
@@ -87,6 +98,16 @@ function resolveSlot(
 
   if (typeof src === 'string') {
     return readFact(facts, src);
+  }
+
+  if ('fact' in src) {
+    const primary = readFact(facts, src.fact);
+    if (primary) return primary;
+    if (src.fallback) {
+      const fb = readFact(facts, src.fallback);
+      if (fb) return fb;
+    }
+    return undefined;
   }
 
   if ('tone' in src) {
@@ -203,8 +224,58 @@ export function generateFromTemplates(
   facts: EngineFacts,
   categorySlug: string,
   variantSeed: number = 0,
-  uniqueId: string = ''
+  uniqueId: string = '',
+  subcategorySlug: string = ''
 ): EngineOutput | null {
+  // Premium tier: subcategory-aware, preferred when it fills cleanly.
+  const premium = PREMIUM_TEMPLATES[categorySlug];
+  if (premium && subcategorySlug) {
+    const uniqueSeed = uniqueId ? hashFacts(uniqueId) : 0;
+    const premiumSeed = variantSeed + uniqueSeed;
+
+    const pickPremium = (section: readonly PremiumTemplate[], offset: number): string | null => {
+      const eligible = section.filter((t) => t.subcategories.includes(subcategorySlug));
+      if (eligible.length === 0) return null;
+      // Score by fact coverage
+      const scored = eligible.map((t) => {
+        const slots = extractSlots(t.template);
+        let score = 0;
+        for (const s of slots) {
+          if (resolveSlot(s, facts, categorySlug, 0) !== undefined) score += 1;
+        }
+        return { template: t.template, score };
+      });
+      const maxScore = Math.max(...scored.map((s) => s.score));
+      if (maxScore === 0) return null;
+      const topTier = scored.filter((s) => s.score === maxScore).map((s) => s.template);
+      
+      const seedVal = premiumSeed + offset;
+      const start = Math.abs(seedVal) % topTier.length;
+      for (let i = 0; i < topTier.length; i++) {
+        const t = topTier[(start + i) % topTier.length];
+        const filled = fillTemplate(t, facts, categorySlug, seedVal);
+        if (filled) return filled;
+      }
+      return null;
+    };
+
+    const pTitle = pickPremium(premium.titleTemplates, 0);
+    const pP1 = pickPremium(premium.paragraph1, 17);
+    const pP2 = pickPremium(premium.paragraph2, 31);
+    const pP3 = pickPremium(premium.paragraph3, 47);
+    if (pTitle && pP1 && pP2 && pP3) {
+      const fp = [String(facts.make ?? ''), String(facts.model ?? ''), categorySlug, subcategorySlug].join('|');
+      return {
+        title: pTitle,
+        paragraph1: pP1,
+        paragraph2: pP2,
+        paragraph3: pP3,
+        seed: hashFacts(fp) + variantSeed + uniqueSeed,
+      };
+    }
+    // else fall through to the generic pool
+  }
+
   const categoryKey = CATEGORY_TEMPLATES[categorySlug] ? categorySlug : 'generic';
   const templates = CATEGORY_TEMPLATES[categoryKey];
   if (!templates) return null;

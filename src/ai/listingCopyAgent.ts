@@ -265,7 +265,7 @@ export async function generateListing({
   const localFields = buildFieldsFromFacts(localFacts, categorySlug, subcategorySlug, arabic, raw);
 
   // Layer 2 — Expert system composes title + description from facts.
-  const composed = composeListing(localFacts, categorySlug, variantSeed, uniqueId);
+  const composed = composeListing(localFacts, categorySlug, variantSeed, uniqueId, subcategorySlug);
 
   const missing: string[] = localFields
     .filter((f) => f.required && !f.value)
