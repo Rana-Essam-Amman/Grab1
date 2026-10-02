@@ -86,6 +86,11 @@ export function fuzzyFindCanonical<T extends { term: string; canonical: string }
   const normHay = normalizeArabic(text).toLowerCase();
   const words = normHay.split(WORD_SPLIT).filter(Boolean);
 
+  // Track the BEST match (lowest distance). Tie-break: longest term wins.
+  let bestDist = Infinity;
+  let bestTermLen = 0;
+  let bestCanonical: string | undefined;
+
   for (const entry of dict) {
     const term = entry.term;
     if (term.length < MIN_FUZZY_LEN) continue;
@@ -93,8 +98,14 @@ export function fuzzyFindCanonical<T extends { term: string; canonical: string }
     for (const w of words) {
       if (STOPWORDS.has(w)) continue;
       if (Math.abs(w.length - term.length) > threshold) continue;
-      if (levenshtein(w, term, threshold) <= threshold) return entry.canonical;
+      const d = levenshtein(w, term, threshold);
+      if (d > threshold) continue;
+      if (d < bestDist || (d === bestDist && term.length > bestTermLen)) {
+        bestDist = d;
+        bestTermLen = term.length;
+        bestCanonical = entry.canonical;
+      }
     }
   }
-  return undefined;
+  return bestCanonical;
 }

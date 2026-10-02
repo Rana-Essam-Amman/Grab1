@@ -1,5 +1,6 @@
 import { WATCH_BRANDS } from './data/domain-extractors.data';
 import { normalizeArabic } from '@/data/arabicNormalize';
+import { fuzzyFindCanonical } from '../lib/fuzzyMatch';
 
 const FLAT: ReadonlyArray<{ term: string; canonical: string }> =
   WATCH_BRANDS
@@ -14,5 +15,6 @@ export function extractWatchBrand(text: string): string | undefined {
   for (const entry of FLAT) {
     if (entry.term && t.includes(entry.term)) return entry.canonical;
   }
-  return undefined;
+  // Fuzzy fallback.
+  return fuzzyFindCanonical(text, FLAT);
 }

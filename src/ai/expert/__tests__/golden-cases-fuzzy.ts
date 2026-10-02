@@ -17,7 +17,7 @@ export interface GoldenCase {
 export const GOLDEN_CASES_FUZZY: readonly GoldenCase[] = [
   { id: 'fuzzy-camry-yaa', input: 'كامرى للبيع 2020 هايبرد بسعر 15 الف دينار', categorySlug: 'motors', expectedFacts: { make: 'تويوتا', model: 'كامري', year: '2020', fuel: 'هايبرد', price: '15000' }, notes: 'كامرى (ى) → كامري' },
   { id: 'fuzzy-hyundai-yaa', input: 'هيونداى النترا 2019 بنزين السعر 11000 دينار', categorySlug: 'motors', expectedFacts: { make: 'هيونداي', model: 'النترا', year: '2019', fuel: 'بنزين', price: '11000' }, notes: 'هيونداى → هيونداي' },
-  { id: 'fuzzy-sunny-yaa', input: 'نيسان صنى 2014 بنزين السعر 5900 دينار', categorySlug: 'motors', expectedFacts: { make: 'نيسان', model: 'سني', year: '2014', fuel: 'بنزين', price: '5900' }, notes: 'صنى → سني' },
+  { id: 'fuzzy-sunny-yaa', input: 'نيسان صنى 2014 بنزين السعر 5900 دينار', categorySlug: 'motors', expectedFacts: { make: 'نيسان', model: 'صني', year: '2014', fuel: 'بنزين', price: '5900' }, notes: 'صنى → صني (canonical)' },
   { id: 'fuzzy-elantra-yaa', input: 'هيونداي النترى 2018 اوتوماتيك السعر 9800 دينار', categorySlug: 'motors', expectedFacts: { make: 'هيونداي', model: 'النترا', year: '2018', price: '9800' }, notes: 'النترى → النترا' },
   { id: 'fuzzy-galaxy-yaa', input: 'سامسونج جالكسى 128 جيجا لون اسود السعر 1400 ريال', categorySlug: 'mobiles', expectedFacts: { make: 'سامسونج', model: 'جالكسي', storage: '128', price: '1400' }, notes: 'جالكسى → جالكسي' },
   { id: 'fuzzy-land-yaa', input: 'ارضى للبيع 500 متر السعر 120 الف دينار', categorySlug: 'real-estate', expectedFacts: { area: '500', price: '120000' }, notes: 'ارضى → أرضي' },
