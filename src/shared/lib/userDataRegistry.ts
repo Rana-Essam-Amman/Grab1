@@ -1,6 +1,29 @@
 /**
- * USER DATA REGISTRY — Single Source of Truth
- * Any user-scoped storage key MUST be declared here.
+ * USER DATA REGISTRY — Single Source of Truth for user-scoped storage.
+ *
+ * ═══════════════════════════════════════════════════════════════════
+ * HOW TO ADD A NEW USER-SCOPED KEY
+ * ═══════════════════════════════════════════════════════════════════
+ *
+ * 1. Decide the scope:
+ *    - If data belongs to a specific market (JO/LB/PS/SY/SA) → USER_MARKET_KEYS
+ *    - If data is device-level and shared across markets (auth, locale,
+ *      theme) → USER_GLOBAL_KEYS or INTENTIONAL_GLOBAL_KEYS
+ *    - If data is legacy but must still be cleaned on account deletion
+ *      → USER_LEGACY_KEYS
+ *
+ * 2. Add the RAW key name (without the `catch_` prefix) to the right array.
+ *    Example: for `catch_JO_wishlist`, add `wishlist` to USER_MARKET_KEYS.
+ *
+ * 3. Read/write the key ONLY via `marketStorage(market).get(key)` for
+ *    market-scoped keys, or `globalStorage().get(key)` for global keys.
+ *    NEVER call `localStorage.setItem` directly outside `storage/`.
+ *
+ * 4. The enforcement test at `__tests__/storage-enforcement.test.ts`
+ *    will FAIL CI if you add a raw storage call without registering the
+ *    key here. That is intentional.
+ *
+ * ═══════════════════════════════════════════════════════════════════
  */
 
 import type { MarketCode } from '@/data/markets/types';
