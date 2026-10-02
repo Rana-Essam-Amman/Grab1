@@ -196,9 +196,7 @@ function pickAndFill(
   if (maxScore === 0) return null;
 
   // All templates that hit the max score — variety pool.
-  const topTier = scored
-    .filter((s) => s.score >= maxScore - 1)
-    .map((s) => s.template);
+  const topTier = scored.filter((s) => s.score === maxScore).map((s) => s.template);
   if (topTier.length === 0) return null;
 
   // Deterministic variety within the top tier.
