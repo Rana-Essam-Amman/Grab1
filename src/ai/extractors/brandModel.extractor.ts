@@ -1,6 +1,7 @@
 import { MOTOR_BRANDS } from '@/data/brands/motors';
 import { TECH_BRANDS } from '@/data/brands/tech';
 import { EXTRAS_BRANDS } from '@/data/brands/extras';
+import { EXTRA_BRANDS } from './data/extra-brands.data';
 import { normalizeArabic } from '@/data/arabicNormalize';
 import { fuzzyFindCanonical } from '../lib/fuzzyMatch';
 
@@ -29,9 +30,10 @@ interface FlatEntry {
 function buildFlat(brands: readonly BrandEntry[]): FlatEntry[] {
   const out: FlatEntry[] = [];
   for (const b of brands) {
-    const makeAr = b.nameAr || b.ar || b.en;
+    const makeAr = b.nameAr || b.ar || (b as unknown as { canonical?: string }).canonical || b.en;
+    if (!makeAr) continue;
     const normMakeAr = normalizeArabic(makeAr).toLowerCase();
-    const normEn = normalizeArabic(b.en).toLowerCase();
+    const normEn = b.en ? normalizeArabic(b.en).toLowerCase() : '';
     // brand term
     out.push({
       term: normMakeAr,
@@ -39,22 +41,38 @@ function buildFlat(brands: readonly BrandEntry[]): FlatEntry[] {
       normalizedTerm: normMakeAr,
       makeAr,
     });
-    out.push({
-      term: normEn,
-      canonical: makeAr,
-      normalizedTerm: normEn,
-      makeAr,
-    });
-    // model terms
-    for (const [mAr] of b.models) {
-      const normMAr = normalizeArabic(mAr).toLowerCase();
+    if (normEn) {
       out.push({
-        term: normMAr,
+        term: normEn,
         canonical: makeAr,
-        normalizedTerm: normMAr,
+        normalizedTerm: normEn,
         makeAr,
-        modelAr: mAr,
       });
+    }
+    const aliases = (b as unknown as { aliases?: readonly string[] }).aliases;
+    if (aliases) {
+      for (const alias of aliases) {
+        const normAlias = normalizeArabic(alias).toLowerCase();
+        out.push({
+          term: normAlias,
+          canonical: makeAr,
+          normalizedTerm: normAlias,
+          makeAr,
+        });
+      }
+    }
+    // model terms
+    if (b.models) {
+      for (const [mAr] of b.models) {
+        const normMAr = normalizeArabic(mAr).toLowerCase();
+        out.push({
+          term: normMAr,
+          canonical: makeAr,
+          normalizedTerm: normMAr,
+          makeAr,
+          modelAr: mAr,
+        });
+      }
     }
   }
   return out.sort((a, b) => b.normalizedTerm.length - a.normalizedTerm.length);
@@ -66,6 +84,7 @@ const MERGED_FLAT = buildFlat([
   ...(MOTOR_BRANDS as unknown as BrandEntry[]),
   ...(Object.values(TECH_BRANDS).flat() as unknown as BrandEntry[]),
   ...(EXTRAS_BRANDS as unknown as BrandEntry[]),
+  ...(EXTRA_BRANDS as unknown as BrandEntry[]),
 ]);
 
 function findInDict(

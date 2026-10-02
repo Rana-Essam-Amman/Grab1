@@ -5,6 +5,7 @@ import { buildFieldsFromFacts } from './buildFieldsFromFacts';
 import { extractColor } from './extractors/colors.extractor';
 import { extractCondition } from './extractors/conditions.extractor';
 import { extractSize } from './extractors/sizes.extractor';
+import { extractSizes } from './extractors/size.extractor';
 import { extractType } from './extractors/types.extractor';
 import { extractPrice } from './extractors/price.extractor';
 import { extractYear } from './extractors/year.extractor';
@@ -132,6 +133,7 @@ export function extractFacts(raw: string, countryCode?: string): ListingFacts {
   const floor = extractFloor(text);
   const seats = extractSeats(text);
   const storage = extractStorage(text);
+  const sizes = extractSizes(text);
   const gender = extractGender(text);
   const material = extractMaterial(text);
 
@@ -164,6 +166,8 @@ export function extractFacts(raw: string, countryCode?: string): ListingFacts {
     floor,
     seats,
     storage,
+    weight: sizes.weight,
+    length: sizes.length,
     gender,
     material,
   };
