@@ -253,15 +253,24 @@ export function generateFromTemplates(
       });
       const maxScore = Math.max(...scored.map((s) => s.score));
       if (maxScore === 0) return null;
-      // Widen to include templates within 1 point of max.
+      // Priority 1: top tier (score >= max - 1). Rotation for variety.
       const topTier = scored
         .filter((s) => s.score >= maxScore - 1)
         .map((s) => s.template);
-      
       const seedVal = premiumSeed + offset;
       const start = Math.abs(seedVal) % topTier.length;
       for (let i = 0; i < topTier.length; i++) {
         const t = topTier[(start + i) % topTier.length];
+        const filled = fillTemplate(t, facts, categorySlug, seedVal);
+        if (filled) return filled;
+      }
+      // Priority 2 fallback: try ALL scored templates in descending score order.
+      // This handles cases where the top tier uses a fact the user omitted
+      // (e.g., rooms) while a lower-tier template would fill cleanly.
+      const sortedAll = [...scored].sort((a, b) => b.score - a.score).map((s) => s.template);
+      const start2 = Math.abs(seedVal) % sortedAll.length;
+      for (let i = 0; i < sortedAll.length; i++) {
+        const t = sortedAll[(start2 + i) % sortedAll.length];
         const filled = fillTemplate(t, facts, categorySlug, seedVal);
         if (filled) return filled;
       }
