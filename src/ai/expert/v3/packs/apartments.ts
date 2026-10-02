@@ -35,14 +35,6 @@ function bathsOf(text: string): string | undefined {
   return undefined;
 }
 
-function usedInTitle(facts: Facts): Set<string> {
-  const used = new Set<string>();
-  if (facts.rooms) used.add('rooms');
-  if (facts.bathrooms) used.add('bathrooms');
-  if (facts.area) used.add('area');
-  return used;
-}
-
 function countOf(value: string | undefined): number {
   if (!value) return 0;
   if (value === 'غرفتين' || value === 'حمامين') return 2;
@@ -118,29 +110,30 @@ export const apartmentsPack: Pack = {
     return `شقة ${facts.intent}${place}${bits.length ? ` — ${bits.join('، ')}` : ''}`;
   },
   opening: (facts, seed) => {
+    const place = facts.place ? `في ${facts.place}` : '';
     const floor = facts.floor ? `في الطابق ${facts.floor}` : '';
+    const where = [place, floor].filter(Boolean).join('، ');
     const leads = ['تقع الشقة', 'تتوزع الشقة', 'تأتي الشقة'];
-    return floor ? `${pick(seed, leads, 1)} ${floor}.` : '';
+    const first = where ? `${pick(seed, leads, 1)} ${where}.` : `${pick(seed, leads, 1)}.`;
+    const bits = [facts.living ? 'غرفة معيشة' : '', facts.balcony ? 'بلكونة' : ''].filter(Boolean);
+    const second = bits.length ? ` تتكون من ${bits.join(' و')}.` : '';
+    return `${first}${second}`;
   },
-  composition: (facts) => {
-    const bits = [
-      facts.living ? 'غرفة معيشة' : '',
-      facts.balcony ? 'بلكونة' : '',
-    ].filter(Boolean);
-    return bits.length ? `فيها ${bits.join(' و')}.` : null;
-  },
+  composition: () => null,
   details: (facts) => {
-    const used = usedInTitle(facts);
     const lines = [
-      !used.has('rooms') && facts.rooms ? bedPhrase(facts.rooms) + '.' : '',
-      !used.has('bathrooms') && facts.bathrooms ? bathPhrase(facts.bathrooms) + '.' : '',
-      !used.has('area') && facts.area ? `المساحة ${facts.area} م².` : '',
+      facts.rooms ? `عدد غرف النوم: ${bedPhrase(facts.rooms)}.` : '',
+      facts.bathrooms ? `عدد الحمامات: ${bathPhrase(facts.bathrooms)}.` : '',
+      facts.area ? `المساحة: ${facts.area} م².` : '',
+      facts.floor ? `الطابق: ${facts.floor}.` : '',
+      facts.living ? 'المعيشة: صالة معيشة.' : '',
+      facts.balcony ? 'الملحقات: بلكونة.' : '',
     ].filter(Boolean);
-    return lines.length ? lines.join('\n') : null;
+    return lines.length ? `🔹 تفاصيل الوحدة:\n${lines.map((line) => `• ${line}`).join('\n')}` : null;
   },
   features: (facts) => {
     const lines = featureLines(facts);
-    return lines.length ? `أبرز المميزات:\n${lines.map((line) => `• ${line}`).join('\n')}` : null;
+    return lines.length ? `🔹 أبرز المميزات:\n${lines.map((line) => `• ${line}`).join('\n')}` : null;
   },
   close: (seed) => pick(seed, CLOSES, 7),
 };
