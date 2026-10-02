@@ -6,6 +6,7 @@ import type { PostDraft } from '@/types';
 interface RegenerateParams {
   readonly postDraft: PostDraft;
   readonly updatePostDraft: (updates: Partial<PostDraft>) => void;
+  readonly userId?: string;
 }
 
 /**
@@ -15,13 +16,15 @@ interface RegenerateParams {
 export function useRegenerateListing({
   postDraft,
   updatePostDraft,
+  userId,
 }: RegenerateParams): () => void {
   return useCallback(() => {
     const raw = postDraft.noteText || '';
     if (!raw.trim()) return;
     const facts = extractFacts(raw, undefined);
     const nextSeed = (postDraft.variantSeed ?? 0) + 1;
-    const composed = composeListing(facts, postDraft.categorySlug, nextSeed);
+    const uniqueId = `${userId ?? 'guest'}:${postDraft.draftId ?? 'unknown'}`;
+    const composed = composeListing(facts, postDraft.categorySlug, nextSeed, uniqueId);
     if (!composed) return;
     updatePostDraft({
       variantSeed: nextSeed,
@@ -33,5 +36,5 @@ export function useRegenerateListing({
           }
         : undefined,
     });
-  }, [postDraft, updatePostDraft]);
+  }, [postDraft, updatePostDraft, userId]);
 }

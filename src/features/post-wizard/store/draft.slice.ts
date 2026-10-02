@@ -2,6 +2,17 @@ import { create } from 'zustand';
 import { PostDraft } from '@/types';
 import { getBrowseCountryCode, getUISnapshot } from '@/shared/store-getters/ui.getter';
 import { DEFAULT_REGIONAL_CAPITALS } from '@/data/locations';
+
+function generateDraftId(): string {
+  try {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+  } catch {
+    // fall through to Math.random
+  }
+  return `d-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
 import type { DraftRepository } from '../data/repositories/DraftRepository';
 import { LocalStorageDraftAdapter } from '../data/adapters/LocalStorageDraftAdapter';
 import type { PostDraftWithMeta } from '../domain';
@@ -62,6 +73,7 @@ export const useDraftStore = create<DraftState>()((set, get) => ({
       site: '',
       noteText: '',
       variantSeed: 0,
+      draftId: generateDraftId(),
     };
     set(() => ({
       postDraft: newDraft,

@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { useUI } from '@/hooks/useUI';
 import { useDraft } from '@/hooks/useDraft';
+import { useAuth } from '@/hooks/useAuth';
 import { matchCategory } from '@/ai/categoryMatch';
 import { generateListing } from '@/ai/listingCopyAgent';
 import type { ScreenType } from '@/store/ui.slice.types';
@@ -9,7 +10,13 @@ import { globalStorage } from '@/shared/lib/marketStorage';
 
 export const useAiPublishFlow = (setIsAnalyzing: (val: boolean) => void) => {
   const { isArabic, browseCountryCode, browseCityAr, navigateTo } = useUI();
-  const { updatePostDraft } = useDraft();
+  const { postDraft, updatePostDraft } = useDraft();
+  const { user } = useAuth();
+
+  const userIdVal = (user as { id?: string })?.id;
+  const userEmail = user?.email;
+  const userPhone = user?.phone;
+  const draftIdVal = postDraft?.draftId;
 
   const processPublishFlow = useCallback(
     async (rawInput: string, images: string[], cb?: () => void, overrideCategory?: string) => {
@@ -32,6 +39,10 @@ export const useAiPublishFlow = (setIsAnalyzing: (val: boolean) => void) => {
       const subForAI = initialMatch.effectiveSub || '';
 
       try {
+        const userId = userIdVal || userEmail || userPhone || 'guest';
+        const draftId = draftIdVal || 'unknown';
+        const uniqueId = `${userId}:${draftId}`;
+
         const aiPromise = generateListing({
           raw,
           categorySlug: categoryForAI,
@@ -39,6 +50,7 @@ export const useAiPublishFlow = (setIsAnalyzing: (val: boolean) => void) => {
           arabic: isArabic,
           city: browseCityAr,
           countryCode: browseCountryCode,
+          uniqueId,
         });
         const timeoutPromise = new Promise<never>((_, rej) =>
           setTimeout(() => rej(new Error('Timeout')), 30000)
@@ -74,7 +86,7 @@ export const useAiPublishFlow = (setIsAnalyzing: (val: boolean) => void) => {
         navigateTo(nextScreen);
       }
     },
-    [isArabic, browseCountryCode, browseCityAr, navigateTo, updatePostDraft, setIsAnalyzing]
+    [isArabic, browseCountryCode, browseCityAr, navigateTo, draftIdVal, updatePostDraft, setIsAnalyzing, userIdVal, userEmail, userPhone]
   );
 
   return { processPublishFlow };

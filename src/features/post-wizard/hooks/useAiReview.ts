@@ -17,27 +17,17 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
   const { authStatus, user, isAnonymous } = useAuth();
   const { navigateTo, setActiveTab, browseCountryCode, activeCurrency, isArabic } = useUI();
   const { publishListing } = useListings();
-
   const [isPublishing, setIsPublishing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const photos = postDraft.photos || [];
   const neighborhood = postDraft.neighborhood || '';
-  const attributes = useAiReviewAttributes(
-    postDraft.categorySlug,
-    postDraft.generated?.fields || [],
-    isArabic
-  );
-  const aiErrorHint = attributes.length === 0
-    ? (isArabic ? 'لم يتمكن الذكاء الاصطناعي من توليد المواصفات — أعد المحاولة' : 'AI could not generate specs — retry')
-    : null;
-
+  const attributes = useAiReviewAttributes(postDraft.categorySlug, postDraft.generated?.fields || [], isArabic);
+  const aiErrorHint = attributes.length === 0 ? (isArabic ? 'لم يتمكن الذكاء الاصطناعي من توليد المواصفات — أعد المحاولة' : 'AI could not generate specs — retry') : null;
   const setAttributeValue = (key: string, value: string) => {
     const current = postDraft.generated?.fields || [];
     const updated = current.map((f) => (f.key === key ? { ...f, value } : f));
     updatePostDraft({ generated: postDraft.generated ? { ...postDraft.generated, fields: updated } : undefined });
   };
-
   const addPhotos = (p: string[]) => updatePostDraft({ photos: [...photos, ...p].slice(0, MONETIZATION_MATRIX.freeLimits.photoLimit) });
   const removePhoto = (i: number) => {
     const url = photos[i];
@@ -45,16 +35,13 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
     updatePostDraft({ photos: photos.filter((_, idx) => idx !== i) });
   };
   const setNeighborhood = (n: string) => updatePostDraft({ neighborhood: n });
-
   const updateField = (key: 'title' | 'price' | 'city' | 'description', value: string) => {
     updatePostDraft({ [key]: value, ...(postDraft.generated ? { generated: { ...postDraft.generated, [key]: value } } : {}) });
   };
-
   const setTitle = (t: string) => updateField('title', t);
   const setPrice = (p: string) => updateField('price', p);
   const setCity = (c: string) => updateField('city', c);
   const setDescription = (d: string) => updateField('description', d);
-
   const handlePublish = async () => {
     if (!postDraft) return;
     if (authStatus !== 'authenticated' || isAnonymous) {
@@ -80,15 +67,16 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
       setError('فشل نشر الإعلان');
     } finally { setIsPublishing(false); }
   };
-
   const curT = postDraft.title || postDraft.generated?.title || '';
   const curP = postDraft.price || postDraft.generated?.price || '';
   const curC = postDraft.city || '';
   const curD = postDraft.description || postDraft.generated?.description || '';
   const missingRequiredLabels = (attributes || []).filter((a) => a.required && !String(a.value || '').trim()).map((a) => a.label);
-
-  const regenerate = useRegenerateListing({ postDraft, updatePostDraft });
-
+  const regenerate = useRegenerateListing({
+    postDraft,
+    updatePostDraft,
+    userId: (user as { id?: string })?.id || user?.email || user?.phone,
+  });
   return {
     title: curT, price: curP, city: curC, description: curD, photos, addPhotos, removePhoto,
     neighborhood, setNeighborhood, setTitle, setPrice, setCity, setDescription,

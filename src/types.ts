@@ -165,4 +165,5 @@ export interface PostDraft {
   description?: string;
   generated?: GeneratedListing;
   readonly variantSeed?: number;
+  readonly draftId?: string;
 }
