@@ -37,4 +37,23 @@ describe('mobiles structured layout', () => {
     const b = composeListing(facts, 'mobiles', 0, 'u:1', 'phones');
     expect(a?.description).toBe(b?.description);
   });
+
+  it('excludes other-subcategory templates from the pool (wildcard bug regression)', () => {
+    // For 'phones' subcategory, template pool MUST NOT include the numbers-only templates.
+    // Regression check for wildcard fallback bug fixed in commit D.
+    const facts = {
+      make: 'Apple',
+      model: 'iPhone 15',
+      color: 'ذهبي',
+      condition: 'مستعمل',
+      price: '400',
+    };
+    const out = composeListing(facts, 'mobiles', 0, 'u:1', 'phones');
+    expect(out).not.toBeNull();
+    // Should NOT contain phrases unique to the numbers subcategory
+    expect(out!.description).not.toContain('رقم مميز للبيع');
+    expect(out!.description).not.toContain('نقل ملكية');
+    expect(out!.description).not.toContain('لا وسيط');
+    expect(out!.description).not.toContain('نقل الرقم');
+  });
 });

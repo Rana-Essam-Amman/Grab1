@@ -69,8 +69,10 @@ function structuredEligible(
   subcategorySlug: string
 ): readonly PremiumTemplate[] {
   if (!subcategorySlug) return arr;
-  const filtered = arr.filter((t) => t.subcategories.includes(subcategorySlug));
-  return filtered.length > 0 ? filtered : arr;
+  const matched = arr.filter(
+    (t) => t.subcategories.length === 0 || t.subcategories.includes(subcategorySlug)
+  );
+  return matched.length > 0 ? matched : arr;
 }
 
 export function buildStructured(
