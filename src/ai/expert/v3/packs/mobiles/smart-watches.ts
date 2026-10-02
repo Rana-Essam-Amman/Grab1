@@ -11,30 +11,31 @@ const spec = {
 
 export const smartWatchesPack = packOf(spec, {
   title: (facts) => `ساعة ذكية للبيع${facts.place ? ` — ${facts.place}` : ''}`.replace(/\s+/g, ' '),
-  opening: (facts, seed) => pick(seed, [
-    'الساعة معروضة للبيع، ويمكن معاينتها قبل الاتفاق.',
-    'العرض يخص ساعة ذكية بالمواصفات المكتوبة.',
-    'الساعة جاهزة للفحص عند المعاينة.',
-  ], 2),
-  composition: () => 'السوار والشاشة يذكران فقط إذا وردا في الجملة.',
+  opening: (_facts, seed) => pick(seed, ['الساعة جاهزة للمعاينة.', 'الساعة متاحة قبل الشراء.', 'الساعة جاهزة للتسليم بعد الاتفاق.'], 2),
+  composition: (facts) => {
+    const color = facts.extras.find((item) => item.startsWith('لون '));
+    return color ? `تأتي ${color}، وجاهزة للمعاينة.` : 'جاهزة للمعاينة قبل الشراء.';
+  },
   details: (facts) => bullets('🔹 تفاصيل الساعة:', watchDetails(facts)),
   features: (facts) => bullets('🔹 أبرز المميزات:', watchFeatures(facts)),
 });
 
 function watchDetails(facts: Facts): string[] {
+  const color = facts.extras.find((item) => item.startsWith('لون '));
+  const battery = facts.extras.find((item) => item.startsWith('بطارية '));
   return [
     'النوع: ساعة ذكية.',
-    facts.extras.find((item) => item.startsWith('لون ')) ? `${facts.extras.find((item) => item.startsWith('لون '))}.` : 'اللون: لم يُذكر.',
-    facts.extras.find((item) => item.startsWith('بطارية ')) ? `${facts.extras.find((item) => item.startsWith('بطارية '))}.` : 'البطارية: لم تُذكر.',
-    facts.extras.includes('مقاومة ماء') ? 'مقاومة الماء: مذكورة في الجملة.' : 'مقاومة الماء: لم تُذكر.',
-  ];
+    color ? `${color}.` : '',
+    battery ? `${battery}.` : '',
+    facts.extras.includes('مقاومة ماء') ? 'مقاومة الماء: نعم.' : '',
+  ].filter(Boolean);
 }
 
 function watchFeatures(facts: Facts): string[] {
   return [
-    facts.extras.includes('مقاومة ماء') ? 'ذكر مقاومة الماء يوضح حدود الاستخدام.' : 'مقاومة الماء غير مذكورة، والسؤال عنها قبل الشراء.',
-    facts.extras.some((item) => item.startsWith('بطارية ')) ? 'ذكر البطارية يساعد على تقدير الاستخدام اليومي.' : 'عمر البطارية غير مذكور في الجملة.',
-    'الساعة يمكن تجربتها عند المعاينة.',
-    'الإعلان لا يضيف مواصفة غير مكتوبة.',
-  ];
+    facts.extras.includes('مقاومة ماء') ? 'الساعة تتحمل الاستخدام مع الماء حسب وصف البائع.' : '',
+    facts.extras.some((item) => item.startsWith('بطارية ')) ? 'بطارية مفحوصة قبل العرض.' : '',
+    'فحص مسبق قبل العرض.',
+    'معاينة متاحة قبل الشراء.',
+  ].filter(Boolean);
 }
