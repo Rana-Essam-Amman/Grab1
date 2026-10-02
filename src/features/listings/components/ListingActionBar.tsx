@@ -44,6 +44,7 @@ export const ListingActionBar: React.FC<ListingActionBarProps> = React.memo(({
             : 'bg-[#25D366] text-white hover:opacity-90 cursor-pointer'
         }`}
         title={isArabic ? 'واتساب' : 'WhatsApp'}
+        aria-label={isArabic ? 'تواصل عبر واتساب' : 'Contact via WhatsApp'}
       >
         <Whatsapp size={16} variant="Linear" />
       </button>
