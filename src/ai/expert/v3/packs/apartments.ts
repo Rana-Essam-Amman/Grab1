@@ -45,14 +45,14 @@ function countOf(value: string | undefined): number {
 function bedPhrase(value: string | undefined): string {
   const count = countOf(value);
   if (count === 1) return 'غرفة نوم واحدة';
-  if (count === 2) return 'غرفتا نوم';
+  if (count === 2) return 'غرفتين نوم';
   return count ? `${count} غرف نوم` : '';
 }
 
 function bathPhrase(value: string | undefined): string {
   const count = countOf(value);
   if (count === 1) return 'حمام واحد';
-  if (count === 2) return 'حمامان';
+  if (count === 2) return 'حمامين';
   return count ? `${count} حمامات` : '';
 }
 

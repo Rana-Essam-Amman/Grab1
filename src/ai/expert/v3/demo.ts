@@ -8,7 +8,7 @@ for (const draft of DRAFTS) {
     console.log(`=== ${userId} ${listing.planId} ${listing.fingerprint.slice(0, 12)} ===`);
     console.log(listing.title);
     console.log(listing.description);
-    console.log(listing.facts.district, listing.facts.lat, listing.facts.lng);
+    console.log(listing.facts.district ?? '');
     console.log('');
   }
 }
