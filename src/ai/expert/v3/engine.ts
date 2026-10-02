@@ -45,7 +45,8 @@ export class ListingEngine {
     const facts = pack.extract(draft);
     const seed = advance(seedOf(userId, draft, VERSION), attempt);
     const planId = (['prose', 'compact', 'minimal'] as const)[seed % 3];
-    const parts = [pack.opening(facts, seed)];
+    const opening = pack.opening(facts, seed);
+    const parts = opening ? [opening] : [];
     if (planId !== 'compact') {
       const line = pack.composition(facts);
       if (line) parts.push(line);
