@@ -27,7 +27,7 @@ export const useAiPublishFlow = (setIsAnalyzing: (val: boolean) => void) => {
 
       const initialMatch = matchCategory({
         chosenCategory: overrideCategory || '',
-        chosenSub: '',
+        chosenSub: postDraft?.subcategorySlug || '',
         note: raw,
       });
 
@@ -86,7 +86,7 @@ export const useAiPublishFlow = (setIsAnalyzing: (val: boolean) => void) => {
         navigateTo(nextScreen);
       }
     },
-    [isArabic, browseCountryCode, browseCityAr, navigateTo, draftIdVal, updatePostDraft, setIsAnalyzing, userIdVal, userEmail, userPhone]
+    [isArabic, browseCountryCode, browseCityAr, navigateTo, draftIdVal, updatePostDraft, setIsAnalyzing, userIdVal, userEmail, userPhone, postDraft?.subcategorySlug]
   );
 
   return { processPublishFlow };
