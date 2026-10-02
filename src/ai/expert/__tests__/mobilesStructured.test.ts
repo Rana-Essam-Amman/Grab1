@@ -71,4 +71,17 @@ describe('mobiles structured layout', () => {
     expect(titles.size).toBeGreaterThanOrEqual(15);
     expect(descs.size).toBeGreaterThanOrEqual(18);
   });
+
+  it('mobiles works WITHOUT price in facts (commit L regression)', () => {
+    const factsNoPrice = {
+      make: 'Apple',
+      model: 'iPhone 15',
+      color: 'ذهبي',
+      condition: 'مستعمل',
+    };
+    const out = composeListing(factsNoPrice, 'mobiles', 0, 'u:nop', 'phones');
+    expect(out).not.toBeNull();
+    expect(out!.description).toContain('🔹 المواصفات:');
+    expect(out!.description).not.toMatch(/\{[a-zA-Z_]+\}/);
+  });
 });

@@ -7,6 +7,16 @@ type GenericPool = Omit<
 
 export const REAL_ESTATE_GENERIC_POOLS: GenericPool = {
   titleFormat: [
+    { template: 'شقة {rooms} غرف و{area} م²', subcategories: [] },
+    { template: 'عقار {area} م² بـ{rooms} غرف', subcategories: [] },
+    { template: 'سكن {rooms} غرف و{bathrooms} حمامات', subcategories: [] },
+    { template: 'وحدة سكنية — {rooms} غرف و{area} م²', subcategories: [] },
+    { template: 'عقار {rooms} غرف على {area} م²', subcategories: [] },
+    { template: 'شقة {rooms} غرف بحالة {condition}', subcategories: [] },
+    { template: 'وحدة {area} م² بـ{rooms} غرف و{bathrooms} حمامات', subcategories: [] },
+    { template: 'عقار {rooms} غرف و{bathrooms} حمامات', subcategories: [] },
+    { template: 'سكن {area} م² — {rooms} غرف', subcategories: [] },
+    { template: 'شقة {rooms} غرف للبيع', subcategories: [] },
     { template: 'شقة {rooms} غرف بسعر {price}', subcategories: [] },
     { template: 'وحدة {rooms} غرف مقابل {price}', subcategories: [] },
     { template: 'عقار {rooms} غرف — {price}', subcategories: [] },
@@ -34,6 +44,12 @@ export const REAL_ESTATE_GENERIC_POOLS: GenericPool = {
     { template: 'عقار {rooms} غرف للمعاينة — {price}', subcategories: [] },
   ],
   hooks: [
+    { template: 'وحدة بـ{rooms} غرف و{area} م².', subcategories: [] },
+    { template: 'عقار بـ{rooms} غرف و{bathrooms} حمامات.', subcategories: [] },
+    { template: 'مساحة {area} م² بـ{rooms} غرف.', subcategories: [] },
+    { template: 'سكن {rooms} غرف بحالة {condition}.', subcategories: [] },
+    { template: 'عقار {area} م² جاهز للمعاينة.', subcategories: [] },
+    { template: 'وحدة {rooms} غرف و{bathrooms} حمامات.', subcategories: [] },
     { template: 'الوحدة معروضة بسعر {price}.', subcategories: [] },
     { template: 'السعر المطلوب {price}.', subcategories: [] },
     { template: 'عقار بـ{rooms} غرف جاهز للمعاينة.', subcategories: [] },

@@ -185,5 +185,18 @@ describe('structured layout — sub-specific pools (commit G)', () => {
     expect(r.title).toBeTruthy();
     expect(r.body).toBeTruthy();
   });
+
+  it('real-estate works WITHOUT price in facts (commit L regression)', () => {
+    const factsNoPrice = {
+      rooms: '3',
+      bathrooms: '3',
+      area: '150',
+    };
+    const out = generateFromTemplates(factsNoPrice, 'real-estate', 0, 'u:nop', 'for-sale');
+    expect(out).not.toBeNull();
+    expect(out!.structured).toBeDefined();
+    expect(out!.structured).toContain('🔹 تفاصيل الوحدة:');
+    expect(out!.structured).not.toMatch(/\{[a-zA-Z_]+\}/);
+  });
 });
 

@@ -7,6 +7,14 @@ type GenericPool = Omit<
 
 export const MOBILES_GENERIC_POOLS: GenericPool = {
 titleFormat: [
+    { template: '{make} {model} — جهاز مفحوص', subcategories: [] },
+    { template: '{make} {model} بحالة {condition}', subcategories: [] },
+    { template: '{make} {model} بلون {color}', subcategories: [] },
+    { template: '{make} {model} بذاكرة {storage}', subcategories: [] },
+    { template: '{make} {model} أصلي وغير مجدّد', subcategories: [] },
+    { template: 'جهاز {make} {model} للمعاينة', subcategories: [] },
+    { template: '{make} {model} جاهز للتسليم', subcategories: [] },
+    { template: '{make} {model} متاح الآن', subcategories: [] },
       { template: "رقم مميز للبيع بسعر {price}", subcategories: ["numbers"] },
       { template: "رقم جوال مقابل {price} مع نقل ملكية", subcategories: ["numbers"] },
       { template: "بيع رقم بسعر {price} وتوثيق النقل", subcategories: ["numbers"] },
