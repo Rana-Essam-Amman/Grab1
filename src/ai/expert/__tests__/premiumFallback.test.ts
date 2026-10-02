@@ -38,10 +38,11 @@ describe('Premium tier fallback', () => {
     expect(out!.title).not.toContain('غرف');
   });
 
-  it('paragraph3 always fills when price is present', () => {
+  it('price appears in output when present (structured OR legacy)', () => {
     const facts = { area: '150', price: '50000' };
     const out = generateFromTemplates(facts, 'real-estate', 0, 'user-A:draft-1', 'for-sale');
     expect(out).not.toBeNull();
-    expect(out!.paragraph3).toContain('50000');
+    const combined = out!.structured ?? out!.paragraph3;
+    expect(combined).toContain('50000');
   });
 });

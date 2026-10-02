@@ -81,17 +81,18 @@ describe('buildStructured — engine unit tests', () => {
   });
 });
 
-describe('generateFromTemplates — no regression', () => {
-  it('real-estate category has no structured field yet (commit A scope)', () => {
+describe('generateFromTemplates — real-estate structured path', () => {
+  it('real-estate produces structured output (commit B)', () => {
     const out = generateFromTemplates(FULL_FACTS, 'real-estate', 0);
     expect(out).not.toBeNull();
-    expect(out!.structured).toBeUndefined();
+    expect(out!.structured).toBeDefined();
+    expect(out!.structured).toContain('🔹 تفاصيل الوحدة:');
   });
 
   it('determinism preserved for same seed + uniqueId', () => {
     const a = generateFromTemplates(FULL_FACTS, 'real-estate', 42, 'u:1', '');
     const b = generateFromTemplates(FULL_FACTS, 'real-estate', 42, 'u:1', '');
     expect(a?.title).toBe(b?.title);
-    expect(a?.paragraph1).toBe(b?.paragraph1);
+    expect(a?.structured).toBe(b?.structured);
   });
 });
