@@ -27,6 +27,7 @@ const defaultDraft: PostDraft = {
   neighborhood: 'خلدا',
   site: '',
   noteText: '',
+  variantSeed: 0,
 };
 
 export const useDraftStore = create<DraftState>()((set, get) => ({
@@ -60,6 +61,7 @@ export const useDraftStore = create<DraftState>()((set, get) => ({
       neighborhood: isArabic ? fallback.neighborhoodAr : fallback.neighborhoodEn,
       site: '',
       noteText: '',
+      variantSeed: 0,
     };
     set(() => ({
       postDraft: newDraft,

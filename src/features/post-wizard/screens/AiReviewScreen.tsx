@@ -14,7 +14,7 @@ export const AiReviewScreen: React.FC = () => {
     title, price, city, neighborhood, description, photos,
     hasMissingParams, missingRequiredLabels, isPublishing, attributes, setAttributeValue,
     setTitle, setPrice, setCity, setNeighborhood, setDescription,
-    addPhotos, removePhoto, handlePublish, error,
+    addPhotos, removePhoto, handlePublish, error, regenerate,
   } = useAiReview();
 
   const mapQuery = [neighborhood, city].filter(Boolean).join(', ') || 'Amman';
@@ -77,6 +77,13 @@ export const AiReviewScreen: React.FC = () => {
         hasMissing={hasMissingParams}
         missingRequiredLabels={missingRequiredLabels}
       />
+      <button
+        type="button"
+        onClick={regenerate}
+        className="mx-4 my-2 py-2 px-3 rounded-xl border border-line bg-surface text-xs font-bold text-ink-soft hover:bg-canvas transition-colors cursor-pointer"
+      >
+        {isArabic ? 'ولّد صيغة جديدة' : 'Generate new phrasing'}
+      </button>
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-24px)] max-w-[440px] z-30 flex flex-col gap-2 pointer-events-none">
         {error && (
           <div className="rounded-xl border border-danger/30 bg-danger/5 px-3 py-2 text-xs text-danger shadow-md pointer-events-auto backdrop-blur-sm bg-white/90">{error}</div>

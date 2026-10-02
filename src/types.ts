@@ -164,4 +164,5 @@ export interface PostDraft {
   price?: string;
   description?: string;
   generated?: GeneratedListing;
+  readonly variantSeed?: number;
 }

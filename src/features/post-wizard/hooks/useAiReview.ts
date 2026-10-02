@@ -9,10 +9,9 @@ import { setPendingPublish } from '../helpers/pendingPublishFlags';
 import { MONETIZATION_MATRIX } from '@/data/monetization';
 import { useAiReviewAttributes } from './useAiReviewAttributes';
 import type { UseAiReviewReturn } from './useAiReview.types';
-
+import { useRegenerateListing } from './useRegenerateListing';
 export type { UseAiReviewReturn } from './useAiReview.types';
-
-export function useAiReview(): UseAiReviewReturn {
+export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => void } {
   const { postDraft, updatePostDraft } = usePostWizard();
   const { resetPostDraft } = useDraft();
   const { authStatus, user, isAnonymous } = useAuth();
@@ -88,10 +87,12 @@ export function useAiReview(): UseAiReviewReturn {
   const curD = postDraft.description || postDraft.generated?.description || '';
   const missingRequiredLabels = (attributes || []).filter((a) => a.required && !String(a.value || '').trim()).map((a) => a.label);
 
+  const regenerate = useRegenerateListing({ postDraft, updatePostDraft });
+
   return {
     title: curT, price: curP, city: curC, description: curD, photos, addPhotos, removePhoto,
     neighborhood, setNeighborhood, setTitle, setPrice, setCity, setDescription,
-    attributes, setAttributeValue, handlePublish, isPublishing,
+    attributes, setAttributeValue, handlePublish, isPublishing, regenerate,
     hasMissingParams: !curT || !curP || missingRequiredLabels.length > 0, missingRequiredLabels, error: error || aiErrorHint,
   };
 }
