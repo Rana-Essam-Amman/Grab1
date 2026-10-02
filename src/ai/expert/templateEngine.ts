@@ -142,7 +142,7 @@ function fillTemplate(
       if (OPTIONAL_SLOTS.has(slot)) {
         // Price gets a graceful substitute, not a silent deletion.
         if (slot === 'price') {
-          out = out.replace(/\{price\}/g, 'عند التواصل');
+          out = out.replace(/\{price\}/g, 'السعر عند التواصل');
           continue;
         }
         out = out.replace(new RegExp(`\\s*و\\{${slot}\\}`, 'g'), '');
@@ -154,6 +154,7 @@ function fillTemplate(
     out = out.replace(new RegExp(`\\{${slot}\\}`, 'g'), value);
   }
   // Cleanup artifacts: double spaces, stray punctuation.
+  out = out.replace(/(السعر|القيمة|المبلغ|الأجرة|التكلفة|المقابل)\s+السعر عند التواصل/g, '$1 عند التواصل');
   out = out.replace(/\s{2,}/g, ' ').replace(/\s+([،.])/g, '$1').trim();
   return out;
 }
