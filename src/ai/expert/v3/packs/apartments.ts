@@ -111,7 +111,7 @@ export const apartmentsPack: Pack = {
   },
   opening: (facts, seed) => {
     const place = facts.place ? `في ${facts.place}` : '';
-    const floor = facts.floor ? `في الطابق ${facts.floor}` : '';
+    const floor = facts.floor ? `الطابق ${facts.floor}` : '';
     const where = [place, floor].filter(Boolean).join('، ');
     const leads = ['تقع الشقة', 'تتوزع الشقة', 'تأتي الشقة'];
     const first = where ? `${pick(seed, leads, 1)} ${where}.` : `${pick(seed, leads, 1)}.`;
@@ -129,7 +129,7 @@ export const apartmentsPack: Pack = {
       facts.living ? 'المعيشة: صالة معيشة.' : '',
       facts.balcony ? 'الملحقات: بلكونة.' : '',
     ].filter(Boolean);
-    return lines.length ? `🔹 تفاصيل الوحدة:\n${lines.map((line) => `• ${line}`).join('\n')}` : null;
+    return lines.length ? `🔹 تفاصيل الشقة:\n${lines.map((line) => `• ${line}`).join('\n')}` : null;
   },
   features: (facts) => {
     const lines = featureLines(facts);
