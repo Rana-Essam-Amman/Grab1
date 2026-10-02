@@ -80,7 +80,9 @@ export const ProfileScreen: React.FC = () => {
     // Fallback: copy link
     try {
       await navigator.clipboard.writeText(shareUrl);
-    } catch {}
+    } catch {
+      // Intentional: quota/parse failures are non-fatal; fall back silently.
+    }
   }, [isArabic]);
 
   return (
