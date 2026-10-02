@@ -1,8 +1,8 @@
-import { makePack } from '../factory';
+import { goodsPack } from '../goods';
 
-export const everydayPack = makePack({
-  id: 'watches-everyday',
+export const everydayWatchPack = goodsPack({
+  id: 'everydayWatchPack',
   noun: 'ساعة',
-  detect: /ساعة يومية|كاسيو/,
-  allowArea: false,
+  detect: /ساعة/,
+  brands: ['كاسيو'],
 });

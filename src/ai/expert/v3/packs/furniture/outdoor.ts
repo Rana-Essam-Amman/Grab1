@@ -1,8 +1,8 @@
-import { makePack } from '../factory';
+import { goodsPack } from '../goods';
 
-export const outdoorPack = makePack({
-  id: 'furniture-outdoor',
+export const outdoorPack = goodsPack({
+  id: 'outdoorPack',
   noun: 'أثاث خارجي',
   detect: /أثاث حديقة|جلسات خارجية/,
-  allowArea: false,
+  brands: [],
 });

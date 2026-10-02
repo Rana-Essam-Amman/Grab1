@@ -1,8 +1,8 @@
-import { makePack } from '../factory';
+import { goodsPack } from '../goods';
 
-export const officePack = makePack({
-  id: 'furniture-office',
-  noun: 'مكتب',
-  detect: /مكتب خشب|كرسي مكتب/,
-  allowArea: false,
+export const officeFurniturePack = goodsPack({
+  id: 'officeFurniturePack',
+  noun: 'أثاث مكتبي',
+  detect: /كرسي مكتب|مكتب خشب/,
+  brands: [],
 });

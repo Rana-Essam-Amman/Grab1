@@ -1,8 +1,8 @@
-import { makePack } from '../factory';
+import { goodsPack } from '../goods';
 
-export const mobileAccPack = makePack({
+export const mobileAccPack = goodsPack({
   id: 'mobileAccPack',
-  noun: 'إكسسوار',
+  noun: 'إكسسوار جوال',
   detect: /كفر|شاحن|سماعة/,
-  allowArea: false,
+  brands: [],
 });

@@ -1,8 +1,8 @@
-import { makePack } from '../factory';
+import { goodsPack } from '../goods';
 
-export const decorPack = makePack({
-  id: 'furniture-decor',
+export const decorPack = goodsPack({
+  id: 'decorPack',
   noun: 'ديكور',
-  detect: /ديكور|تحفة/,
-  allowArea: false,
+  detect: /ديكور/,
+  brands: [],
 });

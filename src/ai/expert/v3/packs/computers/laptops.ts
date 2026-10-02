@@ -1,8 +1,8 @@
-import { makePack } from '../factory';
+import { goodsPack } from '../goods';
 
-export const laptopsPack = makePack({
-  id: 'computers-laptops',
+export const laptopsPack = goodsPack({
+  id: 'laptopsPack',
   noun: 'لابتوب',
-  detect: /لابتوب|لابتوب/,
-  allowArea: false,
+  detect: /لابتوب/,
+  brands: ['أبل','لينوفو','ديل'],
 });

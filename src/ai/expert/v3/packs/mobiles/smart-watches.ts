@@ -1,8 +1,8 @@
-import { makePack } from '../factory';
+import { goodsPack } from '../goods';
 
-export const smartWatchesPack = makePack({
+export const smartWatchesPack = goodsPack({
   id: 'smartWatchesPack',
   noun: 'ساعة ذكية',
-  detect: /ساعة ذكية/,
-  allowArea: false,
+  detect: /ساعة ذكية|ابل ووتش/,
+  brands: ['أبل','سامسونج'],
 });

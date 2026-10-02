@@ -1,8 +1,8 @@
-import { makePack } from '../factory';
+import { goodsPack } from '../goods';
 
-export const bedroomPack = makePack({
-  id: 'furniture-bedroom',
+export const bedroomPack = goodsPack({
+  id: 'bedroomPack',
   noun: 'غرفة نوم',
-  detect: /غرفة نوم|سرير/,
-  allowArea: false,
+  detect: /سرير|غرفة نوم/,
+  brands: [],
 });

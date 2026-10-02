@@ -1,8 +1,8 @@
-import { makePack } from '../factory';
+import { goodsPack } from '../goods';
 
-export const luxuryPack = makePack({
-  id: 'watches-luxury',
+export const luxuryWatchPack = goodsPack({
+  id: 'luxuryWatchPack',
   noun: 'ساعة فاخرة',
   detect: /رولكس|ساعة فاخرة/,
-  allowArea: false,
+  brands: ['رولكس'],
 });

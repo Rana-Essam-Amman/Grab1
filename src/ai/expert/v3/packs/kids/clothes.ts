@@ -1,8 +1,8 @@
-import { makePack } from '../factory';
+import { goodsPack } from '../goods';
 
-export const clothesPack = makePack({
-  id: 'kids-clothes',
+export const kidsClothesPack = goodsPack({
+  id: 'kidsClothesPack',
   noun: 'ملابس أطفال',
   detect: /ملابس أطفال/,
-  allowArea: false,
+  brands: [],
 });

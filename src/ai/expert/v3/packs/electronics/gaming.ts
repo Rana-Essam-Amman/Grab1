@@ -1,8 +1,8 @@
-import { makePack } from '../factory';
+import { goodsPack } from '../goods';
 
-export const gamingPack = makePack({
-  id: 'electronics-gaming',
+export const gamingPack = goodsPack({
+  id: 'gamingPack',
   noun: 'جهاز ألعاب',
   detect: /بلايستيشن|قيمنق/,
-  allowArea: false,
+  brands: [],
 });

@@ -1,8 +1,8 @@
-import { makePack } from '../factory';
+import { goodsPack } from '../goods';
 
-export const livingPack = makePack({
-  id: 'furniture-living',
-  noun: 'كنبة',
+export const livingPack = goodsPack({
+  id: 'livingPack',
+  noun: 'جلسة',
   detect: /كنبة|كنبه|جلسة/,
-  allowArea: false,
+  brands: [],
 });

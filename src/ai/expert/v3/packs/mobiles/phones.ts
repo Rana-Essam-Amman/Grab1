@@ -1,8 +1,8 @@
-import { makePack } from '../factory';
+import { goodsPack } from '../goods';
 
-export const phonesPack = makePack({
+export const phonesPack = goodsPack({
   id: 'phonesPack',
   noun: 'جوال',
-  detect: /ايفون|آيفون|جوال|هاتف/,
-  allowArea: false,
+  detect: /ايفون|آيفون|جوال|هاتف|سامسونج/,
+  brands: ['آيفون','ايفون','سامسونج','Samsung'],
 });

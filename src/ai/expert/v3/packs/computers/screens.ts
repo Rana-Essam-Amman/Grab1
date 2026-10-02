@@ -1,8 +1,8 @@
-import { makePack } from '../factory';
+import { goodsPack } from '../goods';
 
-export const screensPack = makePack({
-  id: 'computers-screens',
+export const screensPack = goodsPack({
+  id: 'screensPack',
   noun: 'شاشة',
   detect: /شاشة/,
-  allowArea: false,
+  brands: [],
 });

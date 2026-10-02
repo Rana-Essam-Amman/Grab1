@@ -263,6 +263,27 @@ export async function generateListing({
   const spokenPlace = placeFromSentence(raw);
   if (spokenPlace) mutable.city = spokenPlace;
   const localFacts = mutable as ListingFacts;
+  try {
+    const { generate } = await import('./expert/v3/engine');
+    const listing = generate({ userId: uniqueId || 'guest', draft: raw });
+    const localFields = buildFieldsFromFacts(localFacts, categorySlug, subcategorySlug, arabic, raw);
+    return {
+      title: listing.title,
+      description: listing.description,
+      price: typeof localFacts.price === 'string' ? localFacts.price : '',
+      categorySlug,
+      subcategorySlug,
+      city: listing.facts.district || spokenPlace || '',
+      year: typeof localFacts.year === 'string' ? localFacts.year : undefined,
+      make: typeof localFacts.make === 'string' ? localFacts.make : undefined,
+      fields: localFields,
+      missing: localFields.filter((field) => field.required && !field.value).map((field) => field.label),
+      lat: listing.facts.lat,
+      lng: listing.facts.lng,
+    };
+  } catch (error) {
+    console.error('[AI FLOW] v3 guard fallback', error instanceof Error ? error.message : error);
+  }
   const localFields = buildFieldsFromFacts(localFacts, categorySlug, subcategorySlug, arabic, raw);
   const missing: string[] = localFields
     .filter((f) => f.required && !f.value)

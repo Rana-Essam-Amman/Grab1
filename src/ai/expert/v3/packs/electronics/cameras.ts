@@ -1,8 +1,8 @@
-import { makePack } from '../factory';
+import { goodsPack } from '../goods';
 
-export const camerasPack = makePack({
-  id: 'electronics-cameras',
+export const camerasPack = goodsPack({
+  id: 'camerasPack',
   noun: 'كاميرا',
   detect: /كاميرا/,
-  allowArea: false,
+  brands: [],
 });

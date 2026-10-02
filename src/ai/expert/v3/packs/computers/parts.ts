@@ -1,8 +1,8 @@
-import { makePack } from '../factory';
+import { goodsPack } from '../goods';
 
-export const partsPack = makePack({
-  id: 'computers-parts',
-  noun: 'قطعة',
+export const pcPartsPack = goodsPack({
+  id: 'pcPartsPack',
+  noun: 'قطعة كمبيوتر',
   detect: /رام|معالج/,
-  allowArea: false,
+  brands: [],
 });

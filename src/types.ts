@@ -95,6 +95,8 @@ export interface GeneratedListing {
   categorySlug: string;
   subcategorySlug: string;
   city?: string;
+  lat?: number;
+  lng?: number;
   year?: string;
   make?: string;
   missing: string[];

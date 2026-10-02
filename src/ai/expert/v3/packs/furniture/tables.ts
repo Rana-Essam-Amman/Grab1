@@ -1,8 +1,8 @@
-import { makePack } from '../factory';
+import { goodsPack } from '../goods';
 
-export const tablesPack = makePack({
-  id: 'furniture-tables',
+export const tablesPack = goodsPack({
+  id: 'tablesPack',
   noun: 'طاولة',
-  detect: /طاولة|طاولات/,
-  allowArea: false,
+  detect: /طاولة/,
+  brands: [],
 });

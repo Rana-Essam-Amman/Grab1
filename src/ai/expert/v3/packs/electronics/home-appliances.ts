@@ -1,8 +1,8 @@
-import { makePack } from '../factory';
+import { goodsPack } from '../goods';
 
-export const home_appliancesPack = makePack({
-  id: 'electronics-home-appliances',
+export const appliancePack = goodsPack({
+  id: 'appliancePack',
   noun: 'جهاز منزلي',
   detect: /غسالة|براد|ثلاجة/,
-  allowArea: false,
+  brands: [],
 });

@@ -1,8 +1,8 @@
-import { makePack } from '../factory';
+import { goodsPack } from '../goods';
 
-export const accessoriesPack = makePack({
-  id: 'computers-accessories',
-  noun: 'إكسسوار',
+export const pcAccPack = goodsPack({
+  id: 'pcAccPack',
+  noun: 'إكسسوار كمبيوتر',
   detect: /ماوس|كيبورد/,
-  allowArea: false,
+  brands: [],
 });

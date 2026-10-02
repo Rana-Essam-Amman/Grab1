@@ -1,8 +1,8 @@
-import { makePack } from '../factory';
+import { goodsPack } from '../goods';
 
-export const womenPack = makePack({
-  id: 'fashion-women',
+export const womenPack = goodsPack({
+  id: 'womenPack',
   noun: 'قطعة نسائية',
   detect: /فستان|عباية/,
-  allowArea: false,
+  brands: [],
 });

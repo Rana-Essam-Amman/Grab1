@@ -1,8 +1,8 @@
-import { makePack } from '../factory';
+import { goodsPack } from '../goods';
 
-export const audioPack = makePack({
-  id: 'electronics-audio',
+export const audioPack = goodsPack({
+  id: 'audioPack',
   noun: 'جهاز صوت',
-  detect: /سماعة|مكبر صوت/,
-  allowArea: false,
+  detect: /سماعة|مكبر/,
+  brands: [],
 });

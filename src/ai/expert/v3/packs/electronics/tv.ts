@@ -1,8 +1,8 @@
-import { makePack } from '../factory';
+import { goodsPack } from '../goods';
 
-export const tvPack = makePack({
-  id: 'electronics-tv',
+export const tvPack = goodsPack({
+  id: 'tvPack',
   noun: 'تلفزيون',
-  detect: /تلفزيون|شاشة تلفاز/,
-  allowArea: false,
+  detect: /تلفزيون|تلفاز/,
+  brands: ['سامسونج','ال جي'],
 });
