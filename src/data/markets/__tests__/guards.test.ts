@@ -25,20 +25,20 @@ describe('Market isolation guards', () => {
 });
 
 describe('Market-scoped storage keys', () => {
-  it('scopedKey builds namespaced key', () => {
-    expect(scopedKey('JO', 'post_draft')).toBe('fox:JO:post_draft');
-    expect(scopedKey('LB', 'post_draft')).toBe('fox:LB:post_draft');
+  it('scopedKey builds namespaced key in marketStorage format', () => {
+    expect(scopedKey('JO', 'post_draft')).toBe('catch_JO_post_draft');
+    expect(scopedKey('LB', 'post_draft')).toBe('catch_LB_post_draft');
   });
 
   it('scopedKey falls back to JO for invalid input', () => {
-    expect(scopedKey(undefined, 'x')).toBe('fox:JO:x');
-    expect(scopedKey('XX', 'x')).toBe('fox:JO:x');
+    expect(scopedKey(undefined, 'x')).toBe('catch_JO_x');
+    expect(scopedKey('XX', 'x')).toBe('catch_JO_x');
   });
 
   it('marketFromKey extracts market correctly', () => {
-    expect(marketFromKey('fox:JO:post_draft')).toBe('JO');
-    expect(marketFromKey('fox:LB:post_draft')).toBe('LB');
-    expect(marketFromKey('fox:XX:post_draft')).toBe(null);
+    expect(marketFromKey('catch_JO_post_draft')).toBe('JO');
+    expect(marketFromKey('catch_LB_post_draft')).toBe('LB');
+    expect(marketFromKey('catch_XX_post_draft')).toBe(null);
     expect(marketFromKey('unscoped')).toBe(null);
   });
 
@@ -49,8 +49,8 @@ describe('Market-scoped storage keys', () => {
   });
 
   it('isScopedKey detects properly scoped keys', () => {
-    expect(isScopedKey('fox:JO:post_draft')).toBe(true);
+    expect(isScopedKey('catch_JO_post_draft')).toBe(true);
     expect(isScopedKey('post_draft')).toBe(false);
-    expect(isScopedKey('fox:XX:post_draft')).toBe(false);
+    expect(isScopedKey('catch_XX_post_draft')).toBe(false);
   });
 });

@@ -10,12 +10,14 @@ import { isValidMarketCode } from './config';
  * market-specific data MUST go through this helper.
  */
 
-const SEPARATOR = ':';
-const PREFIX = 'fox';
+// MUST match marketStorage's PREFIX and separator format exactly.
+// marketStorage.resolveKey('post_draft_v1', 'JO') === 'catch_JO_post_draft_v1'
+const PREFIX = 'catch';
+const SEPARATOR = '_';
 
 /**
- * Build a market-scoped storage key.
- *   scopedKey('JO', 'post_draft') → 'fox:JO:post_draft'
+ * Build a market-scoped storage key in the SAME format marketStorage uses.
+ *   scopedKey('JO', 'post_draft_v1') → 'catch_JO_post_draft_v1'
  */
 export function scopedKey(market: string | undefined | null, key: string): string {
   const m = isValidMarketCode(market) ? market : 'JO';
