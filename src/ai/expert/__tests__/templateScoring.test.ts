@@ -66,7 +66,7 @@ describe('Template scoring — prefers richer fact usage', () => {
     expect(out, 'should not return null when price missing').not.toBeNull();
     expect(out!.title).toContain('تويوتا');
     expect(out!.title).toContain('كامري');
-    expect(out!.paragraph3).toContain('السعر عند التواصل');
+    expect(out!.paragraph3).toContain('عند التواصل');
     expect(out!.paragraph3).not.toMatch(/\{price\}/);
   });
 

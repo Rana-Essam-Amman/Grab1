@@ -142,7 +142,7 @@ function fillTemplate(
       if (OPTIONAL_SLOTS.has(slot)) {
         // Price gets a graceful substitute, not a silent deletion.
         if (slot === 'price') {
-          out = out.replace(/\{price\}/g, 'السعر عند التواصل');
+          out = out.replace(/\{price\}/g, 'عند التواصل');
           continue;
         }
         out = out.replace(new RegExp(`\\s*و\\{${slot}\\}`, 'g'), '');
