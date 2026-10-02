@@ -15,13 +15,19 @@ function fillStructuredTemplate(tpl: string, facts: EngineFacts): string | null 
   return out;
 }
 
+function distributeSeed(seed: number): number {
+  // Fibonacci-style hash: spreads adjacent seeds (0,1,2) far apart.
+  // Determinism preserved: same seed → same output.
+  return Math.abs(Math.imul(seed | 0, 2654435761)) >>> 0;
+}
+
 function pickFirstFillable(
   arr: readonly PremiumTemplate[],
   facts: EngineFacts,
   seed: number
 ): string | null {
   if (arr.length === 0) return null;
-  const start = Math.abs(seed) % arr.length;
+  const start = distributeSeed(seed) % arr.length;
   for (let i = 0; i < arr.length; i++) {
     const t = arr[(start + i) % arr.length];
     const f = fillStructuredTemplate(t.template, facts);
@@ -38,7 +44,7 @@ function pickManyFillable(
 ): string[] {
   if (arr.length === 0 || count <= 0) return [];
   const out: string[] = [];
-  const start = Math.abs(seed) % arr.length;
+  const start = distributeSeed(seed) % arr.length;
   for (let i = 0; i < arr.length && out.length < count; i++) {
     const t = arr[(start + i) % arr.length];
     const f = fillStructuredTemplate(t.template, facts);

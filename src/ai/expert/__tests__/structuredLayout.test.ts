@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { buildStructured, generateFromTemplates } from '../templateEngine';
+import { composeListing } from '../composer';
 import type { StructuredLayout } from '../premium/types';
 
 const MOCK_LAYOUT: StructuredLayout = {
@@ -94,5 +95,28 @@ describe('generateFromTemplates — real-estate structured path', () => {
     const b = generateFromTemplates(FULL_FACTS, 'real-estate', 42, 'u:1', '');
     expect(a?.title).toBe(b?.title);
     expect(a?.structured).toBe(b?.structured);
+  });
+
+  it('adjacent seeds produce distinct outputs (entropy regression)', () => {
+    // Regression for low-entropy bug where seed 0 == seed 1 == seed 2.
+    // Fixed by distributeSeed Fibonacci hash in commit F.
+    const facts = {
+      make: 'Apple',
+      model: 'iPhone 15',
+      color: 'ذهبي',
+      condition: 'مستعمل',
+      price: '400',
+    };
+    const titles = new Set<string>();
+    const descs = new Set<string>();
+    for (let s = 0; s < 5; s++) {
+      const out = composeListing(facts, 'mobiles', s, 'u:1', 'phones');
+      if (out) {
+        titles.add(out.title);
+        descs.add(out.description);
+      }
+    }
+    expect(titles.size).toBeGreaterThanOrEqual(2);
+    expect(descs.size).toBeGreaterThanOrEqual(3);
   });
 });
