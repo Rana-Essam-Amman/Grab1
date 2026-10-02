@@ -1,9 +1,6 @@
 import type { Listing } from './types';
-import { apartmentsPack, type Pack } from './packs/apartments';
-import { housesPack } from './packs/real-estate/houses';
-import { landsPack } from './packs/real-estate/lands';
-import { chaletsPack } from './packs/real-estate/chalets';
-import { commercialPack } from './packs/real-estate/commercial';
+import type { Pack } from './packs/apartments';
+import { allPacks } from './packs/index';
 import { assertGuarded } from './guard';
 import { fingerprint } from './fingerprint';
 import { advance, seedOf } from './seeded';
@@ -72,7 +69,7 @@ export class ListingEngine {
   }
 }
 
-const engine = new ListingEngine([apartmentsPack, housesPack, landsPack, chaletsPack, commercialPack]);
+const engine = new ListingEngine(allPacks);
 
 export function generate(input: { userId: string; draft: string; categorySlug?: string; subcategorySlug?: string }): Listing {
   return engine.generate(input);
