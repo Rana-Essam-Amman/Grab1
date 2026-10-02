@@ -7,6 +7,7 @@ import {
   USER_GLOBAL_KEYS,
   USER_LEGACY_KEYS,
   getAllUserKeysForMarket,
+  isBumpKey,
 } from '@/shared/lib/userDataRegistry';
 
 export function useProfileActions() {
@@ -41,6 +42,18 @@ export function useProfileActions() {
         try { localStorage.removeItem(key); } catch {}
       }
     }
+
+    // Remove bump counters (dynamic keys not enumerable via the registry).
+    try {
+      const toRemove: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && isBumpKey(k)) toRemove.push(k);
+      }
+      for (const k of toRemove) {
+        try { localStorage.removeItem(k); } catch {}
+      }
+    } catch {}
 
     for (const key of USER_LEGACY_KEYS) {
       try { localStorage.removeItem(key); } catch {}

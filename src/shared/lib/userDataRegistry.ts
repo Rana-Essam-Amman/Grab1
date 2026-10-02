@@ -23,6 +23,19 @@ export const USER_GLOBAL_KEYS: readonly string[] = [
   'catch_conversations',
 ] as const;
 
+/**
+ * Keys that are INTENTIONALLY global (never deleted on account deletion,
+ * never market-scoped). These hold device-level preferences, not user data.
+ * Listed here for auditability so future engineers see the complete picture.
+ */
+export const INTENTIONAL_GLOBAL_KEYS: readonly string[] = [
+  'catch_locale',
+  'grab_theme_v1',
+  'catch_migration_drafts_done',
+  'catch_migration_chats_done',
+  'catch_migration_pending_flags_done',
+] as const;
+
 export const USER_MARKET_KEYS: readonly string[] = [
   'post_draft_v1',
   'chat_conversations_v1',
@@ -33,6 +46,8 @@ export const USER_MARKET_KEYS: readonly string[] = [
   'ai_quota_v1',
   'monetization_ai_quota_v1',
   'monetization_promotions_v1',
+  'daily_ai_credits',
+  'daily_ai_date',
 ] as const;
 
 export const USER_LEGACY_KEYS: readonly string[] = [
@@ -44,6 +59,15 @@ export const USER_LEGACY_KEYS: readonly string[] = [
 export function getAllUserKeysForMarket(market: MarketCode): string[] {
   const scoped = USER_MARKET_KEYS.map((k) => scopedKey(market, k));
   return [...USER_GLOBAL_KEYS, ...scoped, ...USER_LEGACY_KEYS];
+}
+
+/**
+ * Any key that starts with the bump prefix is user-scoped and must be
+ * removed on account deletion. Bump keys have the shape:
+ *   catch_<MARKET>_bump_<listingId>_<YYYY-MM-DD>
+ */
+export function isBumpKey(key: string): boolean {
+  return /^catch_[A-Z]{2}_bump_/.test(key);
 }
 
 export function getAllUserKeysEverywhere(): string[] {

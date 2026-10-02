@@ -6,32 +6,41 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { useProfileActions } from '../hooks/useProfileActions';
 import { DeleteAccountModal } from '../components/DeleteAccountModal';
 import { SignOutModal } from '../components/SignOutModal';
-import { globalStorage } from '@/shared/lib/marketStorage';
+import { marketStorage } from '@/shared/lib/marketStorage';
+import { isValidMarketCode } from '@/data/markets/config';
+import type { MarketCode } from '@/data/markets/types';
+import { getBrowseCountryCode } from '@/shared/store-getters/ui.getter';
 import { ProfileHeaderSection } from '../components/ProfileHeaderSection';
 import { ProfileQuotaCard } from '../components/ProfileQuotaCard';
 import { ProfileActiveListings } from '../components/ProfileActiveListings';
 import { ProfileAccountMenu } from '../components/ProfileAccountMenu';
 
+// Credits are MARKET-SCOPED. A shared device with two markets must not
+// share the daily AI quota across them. Also registered for GDPR cleanup.
 const STORAGE_KEY_CREDITS = 'daily_ai_credits';
 const STORAGE_KEY_DATE = 'daily_ai_date';
 
 const getInitialDailyCredits = (): number => {
   try {
+    const market = getBrowseCountryCode();
+    if (!isValidMarketCode(market)) return 5;
+    const store = marketStorage(market as MarketCode);
+
     const today = new Date().toISOString().slice(0, 10);
-    const storedDate = globalStorage().get<string>(STORAGE_KEY_DATE);
-    const storedCredits = globalStorage().get<string | number>(STORAGE_KEY_CREDITS);
+    const storedDate = store.get<string>(STORAGE_KEY_DATE);
+    const storedCredits = store.get<string | number>(STORAGE_KEY_CREDITS);
 
     if (storedDate !== today) {
-      globalStorage().set(STORAGE_KEY_DATE, today);
-      globalStorage().set(STORAGE_KEY_CREDITS, 5);
+      store.set(STORAGE_KEY_DATE, today);
+      store.set(STORAGE_KEY_CREDITS, 5);
       return 5;
     }
     if (storedCredits !== null) {
       const parsed = typeof storedCredits === 'number' ? storedCredits : parseInt(storedCredits, 10);
       return isNaN(parsed) ? 5 : parsed;
     }
-    globalStorage().set(STORAGE_KEY_DATE, today);
-    globalStorage().set(STORAGE_KEY_CREDITS, 5);
+    store.set(STORAGE_KEY_DATE, today);
+    store.set(STORAGE_KEY_CREDITS, 5);
     return 5;
   } catch {
     return 5;
