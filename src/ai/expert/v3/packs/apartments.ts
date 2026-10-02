@@ -35,6 +35,26 @@ function bathsOf(text: string): string | undefined {
   return undefined;
 }
 
+function usedInTitle(facts: Facts): Set<string> {
+  const used = new Set<string>();
+  if (facts.rooms) used.add('rooms');
+  if (facts.bathrooms) used.add('bathrooms');
+  if (facts.area) used.add('area');
+  return used;
+}
+
+function featureLines(facts: Facts): string[] {
+  const lines = [
+    facts.area && Number(facts.area) >= 100 ? `المساحة ${facts.area} م².` : '',
+    facts.balcony ? 'بلكونة ضمن تكوين الشقة.' : '',
+    facts.living ? 'غرفة معيشة ضمن تكوين الشقة.' : '',
+    facts.floor ? `الطابق ${facts.floor}.` : '',
+    facts.rooms && !/^\d+$/.test(facts.rooms) ? `غرف النوم: ${facts.rooms}.` : '',
+    facts.bathrooms && !/^\d+$/.test(facts.bathrooms) ? `الحمامات: ${facts.bathrooms}.` : '',
+  ].filter(Boolean);
+  return lines.slice(0, 4);
+}
+
 function floorOf(text: string): string | undefined {
   if (/طابق\s*اول|طابق\s*أول|الطابق\s*الاول|الطابق\s*الأول/.test(text)) return 'الأول';
   if (/طابق\s*ثاني|الطابق\s*الثاني/.test(text)) return 'الثاني';
@@ -74,18 +94,16 @@ export const apartmentsPack: Pack = {
   title: (facts) => {
     const place = facts.place ? ` في ${facts.place}` : '';
     const bits = [
-      facts.rooms ? `${facts.rooms} نوم` : '',
-      facts.bathrooms ? `${facts.bathrooms} حمام` : '',
+      facts.rooms ? (/غرف/.test(facts.rooms) ? facts.rooms : `${facts.rooms} نوم`) : '',
+      facts.bathrooms ? (/حمام/.test(facts.bathrooms) ? facts.bathrooms : `${facts.bathrooms} حمام`) : '',
       facts.area ? `${facts.area} م²` : '',
     ].filter(Boolean);
     return `شقة ${facts.intent}${place}${bits.length ? ` — ${bits.join('، ')}` : ''}`;
   },
   opening: (facts, seed) => {
     const floor = facts.floor ? `في الطابق ${facts.floor}` : '';
-    const area = facts.area ? `بمساحة ${facts.area} م²` : '';
-    const tail = [floor, area].filter(Boolean).join(' ');
     const leads = ['تقع الشقة', 'تتوزع الشقة', 'تأتي الشقة'];
-    return tail ? `${pick(seed, leads, 1)} ${tail}.` : `${pick(seed, leads, 1)}.`;
+    return floor ? `${pick(seed, leads, 1)} ${floor}.` : `${pick(seed, leads, 1)}.`;
   },
   composition: (facts) => {
     const bits = [
@@ -95,16 +113,19 @@ export const apartmentsPack: Pack = {
     return bits.length ? `فيها ${bits.join(' و')}.` : null;
   },
   details: (facts) => {
+    const used = usedInTitle(facts);
     const lines = [
-      facts.rooms ? `غرف النوم: ${facts.rooms}.` : '',
-      facts.bathrooms ? `الحمامات: ${facts.bathrooms}.` : '',
+      !used.has('rooms') && facts.rooms ? `غرف النوم: ${facts.rooms}.` : '',
+      !used.has('bathrooms') && facts.bathrooms ? `الحمامات: ${facts.bathrooms}.` : '',
       facts.living ? 'المعيشة: غرفة معيشة.' : '',
       facts.balcony ? 'الملحق: بلكونة.' : '',
-      facts.floor ? `الطابق: ${facts.floor}.` : '',
-      facts.area ? `المساحة: ${facts.area} م².` : '',
+      !used.has('area') && facts.area ? `المساحة: ${facts.area} م².` : '',
     ].filter(Boolean);
     return lines.length ? lines.join('\n') : null;
   },
-  features: () => null,
+  features: (facts) => {
+    const lines = featureLines(facts);
+    return lines.length ? `أبرز المميزات:\n${lines.map((line) => `• ${line}`).join('\n')}` : null;
+  },
   close: (seed) => pick(seed, CLOSES, 7),
 };

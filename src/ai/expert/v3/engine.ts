@@ -54,10 +54,8 @@ export class ListingEngine {
       const line = pack.details(facts);
       if (line) parts.push(line);
     }
-    if (planId === 'prose') {
-      const line = pack.features(facts);
-      if (line) parts.push(line);
-    }
+    const features = pack.features(facts);
+    if (features) parts.push(features);
     parts.push(pack.close(seed));
     const title = pack.title(facts);
     const description = parts.join('\n\n');
