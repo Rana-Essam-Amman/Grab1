@@ -11,15 +11,15 @@ describe('Seed variety — cross-user uniqueness', () => {
     price: '15000',
   };
 
-  it('different users with same facts → produces variety within top tier', () => {
+  it('20 different users with same facts → at least 5 unique titles', () => {
     const titles = new Set<string>();
     for (let i = 0; i < 20; i++) {
       const out = generateFromTemplates(facts, 'motors', 0, `user-${i}:draft-1`);
       if (out) titles.add(out.title);
     }
-    // Since there are exactly 3 max-scoring title templates for motors with these facts,
-    // we expect the deterministic variety picker to hit at least 2 of them.
-    expect(titles.size).toBeGreaterThanOrEqual(2);
+    // After Premium integration, motors has 5-7 max-scoring templates.
+    // 20 unique seeds should hit at least 5 distinct top-tier templates.
+    expect(titles.size, `unique: ${titles.size}/20`).toBeGreaterThanOrEqual(5);
   });
 
   it('same user + same draft + same facts → identical output', () => {

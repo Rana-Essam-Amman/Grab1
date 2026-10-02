@@ -1,6 +1,7 @@
 // RULE-14-EXCEPTION: Static taxonomy
 import { CATEGORY_TEMPLATES_EXTRA } from './phase3a-expansion';
 import { CATEGORY_TEMPLATES_V2 } from './categoryTemplatesV2';
+import { MOTORS_PREMIUM } from './premium/motors-premium';
 
 /**
  * Layer 5 — Sentence Planner
@@ -308,8 +309,10 @@ const ALL_CATEGORY_KEYS = Array.from(
 
 export const CATEGORY_TEMPLATES: Record<string, CategoryTemplateSet> = {};
 for (const key of ALL_CATEGORY_KEYS) {
+  const premiumSet = key === 'motors' ? MOTORS_PREMIUM : undefined;
   CATEGORY_TEMPLATES[key] = mergeTemplateLayers(
     BASE_CATEGORY_TEMPLATES[key],
+    premiumSet,
     CATEGORY_TEMPLATES_EXTRA[key],
     CATEGORY_TEMPLATES_V2[key]
   );

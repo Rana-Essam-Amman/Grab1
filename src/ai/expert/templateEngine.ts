@@ -215,8 +215,8 @@ export function generateFromTemplates(
     String(facts.color ?? ''),
     categorySlug,
   ].join('|');
-  const uniqueSeed = uniqueId ? (hashFacts(uniqueId) >>> 2) : 0;
-  const baseSeed = (hashFacts(fingerprint) >>> 2) + variantSeed + uniqueSeed;
+  const uniqueSeed = uniqueId ? hashFacts(uniqueId) : 0;
+  const baseSeed = hashFacts(fingerprint) + variantSeed + uniqueSeed;
 
   const title = pickAndFill(templates.titleTemplates, facts, categoryKey, baseSeed);
   const paragraph1 = pickAndFill(templates.paragraph1, facts, categoryKey, baseSeed + 17);
