@@ -110,46 +110,55 @@ function subjectOf(facts: ListingFacts, categorySlug: string, subcategorySlug: s
 }
 
 function placeOf(facts: ListingFacts, city: string | undefined, raw: string): string {
+  const fromSentence = raw.match(/في\s+([\u0600-\u06FF]+(?:\s[\u0600-\u06FF]+)?)/);
+  if (fromSentence) {
+    const place = fromSentence[1].replace(/مساحه|مساحة|مكونة|مكونه|طابق.*/, '').trim();
+    if (place) return place;
+  }
   if (typeof facts.city === 'string' && facts.city) return facts.city;
   if (city && city !== 'المدينة') return city;
-  const match = raw.match(/في\s+([\u0600-\u06FF]+(?:\s[\u0600-\u06FF]+)?)/);
-  if (!match) return '';
-  const place = match[1].replace(/مساحه|مساحة|مكونة|مكونه|طابق.*/, '').trim();
-  return place;
+  return '';
+}
+
+function explicitPrice(raw: string): boolean {
+  return /سعر|دينار|دولار|ريال|شيكل/.test(raw);
+}
+
+function inputAllowsSize(raw: string): boolean {
+  return /مقاس|قياس/.test(raw);
 }
 
 function detailLines(facts: ListingFacts, raw: string): string[] {
   const lines: string[] = [];
-  const add = (label: string, value: string | undefined) => {
-    if (value) lines.push(`${label}: ${value}.`);
-  };
-  if (typeof facts.area === 'string') add('المساحة', `${facts.area} م²`);
-  if (typeof facts.rooms === 'string') add('غرف النوم', facts.rooms);
-  if (typeof facts.bathrooms === 'string') add('الحمامات', facts.bathrooms);
-  if (typeof facts.floor === 'string') add('الطابق', facts.floor);
-  if (/بلكون|شرفة/.test(raw)) lines.push('بلكونة.');
-  if (typeof facts.year === 'string') add('السنة', facts.year);
-  if (typeof facts.km === 'string') add('العداد', `${facts.km} كم`);
-  if (typeof facts.fuel === 'string') add('الوقود', facts.fuel);
-  if (typeof facts.transmission === 'string') add('القير', facts.transmission);
-  if (typeof facts.storage === 'string') add('السعة', facts.storage);
-  if (typeof facts.condition === 'string') add('الحالة', facts.condition);
-  if (typeof facts.color === 'string') add('اللون', facts.color);
-  if (typeof facts.size === 'string') add('المقاس', facts.size);
-  if (typeof facts.material === 'string') add('الخامة', facts.material);
-  if (typeof facts.seats === 'string') add('المقاعد', facts.seats);
-  if (typeof facts.experience === 'string') add('الخبرة', facts.experience);
-  if (typeof facts.price === 'string' && facts.price !== facts.area) add('السعر', facts.price);
+  if (typeof facts.area === 'string') lines.push(`مساحتها ${facts.area} م².`);
+  const beds = typeof facts.rooms === 'string' ? facts.rooms : raw.match(/(\d{1,2})\s*نوم/)?.[1];
+  if (beds) lines.push(`${beds} غرف نوم.`);
+  if (typeof facts.bathrooms === 'string') lines.push(`${facts.bathrooms} حمامات.`);
+  const floor = typeof facts.floor === 'string'
+    ? facts.floor
+    : (/طابق\s*اول|طابق\s*أول|الطابق\s*الاول|الطابق\s*الأول/.test(raw) ? 'الأول' : '');
+  if (floor) lines.push(`الطابق ${floor}.`);
+  if (/بلكون|شرفة/.test(raw)) lines.push('فيها بلكونة.');
+  if (typeof facts.year === 'string') lines.push(`سنة ${facts.year}.`);
+  if (typeof facts.km === 'string') lines.push(`العداد ${facts.km} كم.`);
+  if (typeof facts.fuel === 'string') lines.push(`الوقود ${facts.fuel}.`);
+  if (typeof facts.transmission === 'string') lines.push(`القير ${facts.transmission}.`);
+  if (typeof facts.storage === 'string') lines.push(`السعة ${facts.storage}.`);
+  if (typeof facts.condition === 'string') lines.push(`الحالة ${facts.condition}.`);
+  if (typeof facts.color === 'string') lines.push(`اللون ${facts.color}.`);
+  if (inputAllowsSize(raw) && typeof facts.size === 'string') lines.push(`المقاس ${facts.size}.`);
+  if (explicitPrice(raw) && typeof facts.price === 'string' && facts.price !== facts.area) {
+    lines.push(`السعر ${facts.price}.`);
+  }
   return lines;
 }
 
 function compose(seed: number, subject: string, intent: string, place: string, lines: string[]): SurfaceOutput {
   const placeBit = place ? ` في ${place}` : '';
-  const hint = lines.slice(0, 2).map((line) => line.replace(/\.$/, '')).join('، ');
   const titles = [
     `${subject} ${intent}${placeBit}`,
     place ? `${subject} ${intent} — ${place}` : `${subject} ${intent}`,
-    hint ? `${subject} ${intent}${placeBit} — ${hint}` : `${subject} ${intent}${placeBit}`,
+    `${subject} ${intent}${placeBit}`,
   ];
   const opens = [
     `${subject} ${intent}${placeBit}.`,
