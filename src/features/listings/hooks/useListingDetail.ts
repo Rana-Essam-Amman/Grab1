@@ -1,4 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
+import { assertSameMarket, isSameMarket } from '@/data/markets/guards';
+import type { MarketCode } from '@/data/markets/types';
 import { useUI } from '@/hooks/useUI';
 import { useListings } from '@/hooks/useListings';
 import { useChat } from '@/hooks/useChat';
@@ -50,6 +52,19 @@ export function useListingDetail(): UseListingDetailReturn {
   const listing = selectedListingId ? getListing(selectedListingId) || null : null;
   const activeCountry = authStatus === 'authenticated' && user?.countryCode && isValidMarket(user.countryCode) ? user.countryCode : browseCountryCode;
   const isCountryMismatch = useMemo(() => Boolean(listing && listing.countryCode !== activeCountry), [listing, activeCountry]);
+
+  // MARKET ISOLATION RED LINE — in development, we fail LOUDLY if a
+  // cross-market listing slips through the visibility rule. This catches
+  // any future regression in canViewListing or the navigation flow.
+  if (import.meta.env.DEV && listing && !isSameMarket(listing.countryCode, activeCountry)) {
+    // Do NOT throw in production; the UI must remain functional.
+    // In dev, this surfaces the leak immediately.
+    try {
+      assertSameMarket(activeCountry as MarketCode, listing.countryCode, 'useListingDetail');
+    } catch (err) {
+      console.error('[MarketIsolation] Cross-market listing reached the detail screen:', err);
+    }
+  }
   const derived = useListingDerivedData(listing, isArabic);
   const isAuthenticated = authStatus === 'authenticated';
   const isOwner = Boolean(user?.phone && listing?.sellerPhone === user.phone);

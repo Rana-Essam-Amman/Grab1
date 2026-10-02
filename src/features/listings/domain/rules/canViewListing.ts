@@ -16,6 +16,8 @@ export function canViewListing(
   listing: Listing,
   activeMarket: MarketCountry,
 ): CanViewResult {
+  // MARKET ISOLATION RED LINE — a listing is visible ONLY to users
+  // in the same market. This is intentional and enforced.
   if (listing.countryCode !== activeMarket) {
     return { allowed: false, reason: 'cross-market' };
   }
