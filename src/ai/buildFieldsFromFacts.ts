@@ -1,5 +1,6 @@
 import { ListingFacts } from '../types';
 import { getFieldsForListing } from '@/data/subcategoryFields';
+import { computeConfidence, type Confidence } from './extractors/confidence';
 
 export interface FieldItem {
   key: string;
@@ -9,6 +10,7 @@ export interface FieldItem {
   type?: 'text' | 'number' | 'select' | 'textarea';
   options?: readonly string[];
   placeholder?: string;
+  confidence?: Confidence;
 }
 
 function getValueForKey(key: string, facts: ListingFacts, arabic: boolean): string {
@@ -32,9 +34,14 @@ export function buildFieldsFromFacts(
   facts: ListingFacts,
   categorySlug: string,
   subcategorySlug: string,
-  arabic: boolean
+  arabic: boolean,
+  raw: string = ''
 ): FieldItem[] {
   const defs = getFieldsForListing(categorySlug, subcategorySlug);
+  const confidenceMap = computeConfidence(
+    raw,
+    facts as Record<string, unknown>
+  );
   return defs.map((def) => ({
     key: def.key,
     label: arabic ? def.labelAr : def.labelEn,
@@ -43,5 +50,6 @@ export function buildFieldsFromFacts(
     type: def.type,
     options: def.options,
     placeholder: def.placeholder,
+    confidence: confidenceMap[def.key],
   }));
 }

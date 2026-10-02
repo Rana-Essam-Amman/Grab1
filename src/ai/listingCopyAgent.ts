@@ -257,7 +257,7 @@ export async function generateListing({
 }): Promise<GeneratedListing> {
   // Layer 1 — Local deterministic extraction (100% accurate).
   const localFacts = extractFacts(raw, countryCode);
-  const localFields = buildFieldsFromFacts(localFacts, categorySlug, subcategorySlug, arabic);
+  const localFields = buildFieldsFromFacts(localFacts, categorySlug, subcategorySlug, arabic, raw);
 
   // Layer 2 — Expert system composes title + description from facts.
   const composed = composeListing(localFacts, categorySlug);
@@ -292,7 +292,7 @@ export async function generateListing({
     city: copy.facts.city || city,
     year: copy.facts.year,
     make: copy.facts.make,
-    fields: buildFieldsFromFacts(copy.facts, categorySlug, subcategorySlug, arabic),
+    fields: buildFieldsFromFacts(copy.facts, categorySlug, subcategorySlug, arabic, raw),
     missing: copy.missing,
   };
 }
