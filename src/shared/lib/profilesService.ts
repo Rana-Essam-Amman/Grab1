@@ -15,6 +15,7 @@ export interface ProfileRecord {
   readonly first_name: string | null;
   readonly last_name: string | null;
   readonly phone: string | null;
+  readonly phone_locked?: boolean | null;
   readonly avatar_url: string | null;
   readonly country_code: string | null;
   readonly created_at?: string;
@@ -25,6 +26,7 @@ export interface ProfileUpdate {
   readonly first_name?: string;
   readonly last_name?: string;
   readonly phone?: string;
+  readonly phone_locked?: boolean;
   readonly avatar_url?: string;
   readonly country_code?: string;
 }
@@ -39,7 +41,7 @@ export async function fetchProfile(userId: string): Promise<ProfileRecord | null
   try {
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, first_name, last_name, phone, avatar_url, country_code, created_at, updated_at')
+      .select('id, first_name, last_name, phone, phone_locked, avatar_url, country_code, created_at, updated_at')
       .eq('id', userId)
       .maybeSingle();
     if (error) {
@@ -68,7 +70,7 @@ export async function upsertProfile(
     const { data, error } = await supabase
       .from('profiles')
       .upsert(payload, { onConflict: 'id' })
-      .select('id, first_name, last_name, phone, avatar_url, country_code, created_at, updated_at')
+      .select('id, first_name, last_name, phone, phone_locked, avatar_url, country_code, created_at, updated_at')
       .maybeSingle();
     if (error) {
       console.warn('[profilesService] upsertProfile error', error.message);
@@ -87,5 +89,5 @@ export async function upsertProfile(
 export async function savePhone(userId: string, phone: string): Promise<ProfileRecord | null> {
   const trimmed = phone.trim();
   if (!trimmed) return null;
-  return upsertProfile(userId, { phone: trimmed });
+  return upsertProfile(userId, { phone: trimmed, phone_locked: true });
 }

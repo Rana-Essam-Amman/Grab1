@@ -1,93 +1,64 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Modal } from '@/shared/ui/Modal';
 import { useUI } from '@/hooks/useUI';
-import { useAuthStore } from '../store/auth.slice';
-import { savePhone } from '@/shared/lib/profilesService';
-import { validatePhone } from '../helpers/phoneValidation';
+import { usePhoneCaptureModal } from '../hooks/usePhoneCaptureModal';
+import { PhoneInputStep } from './PhoneInputStep';
+import { PhoneConfirmStep } from './PhoneConfirmStep';
 
 interface Props {
   readonly open: boolean;
   readonly onSaved: () => void;
+  readonly onClose?: () => void;
 }
 
-export const PhoneCaptureModal: React.FC<Props> = ({ open, onSaved }) => {
+export const PhoneCaptureModal: React.FC<Props> = ({ open, onSaved, onClose }) => {
   const { isArabic, browseCountryCode } = useUI();
-  const user = useAuthStore((s) => s.user);
-  const setUser = useAuthStore((s) => s.setUser);
+  const {
+    step, phone, setPhone, error, setError, saving,
+    handleContinue, handleConfirm, handleClose, handleBack, phonePreview,
+  } = usePhoneCaptureModal({ open, onSaved, onClose });
 
-  const [phone, setPhone] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
+  const title = step === 'input'
+    ? (isArabic ? 'رقم التواصل مطلوب' : 'Phone number required')
+    : (isArabic ? 'تأكيد رقم الهاتف' : 'Confirm phone number');
 
-  const handleSave = async () => {
-    if (!user?.id) {
-      setError(isArabic ? 'يجب تسجيل الدخول أولاً' : 'You must sign in first');
-      return;
-    }
-    const v = validatePhone(phone);
-    if (!v.valid) {
-      setError(v.error);
-      return;
-    }
-
-    setSaving(true);
-    setError(null);
-    try {
-      const result = await savePhone(user.id, v.normalized);
-      if (!result) {
-        setError(isArabic ? 'تعذّر حفظ الرقم، حاول مرة أخرى' : 'Could not save phone, try again');
-        return;
-      }
-      setUser({ ...user, phone: v.normalized });
-      onSaved();
-    } finally {
-      setSaving(false);
-    }
-  };
+  const description = step === 'input'
+    ? (isArabic
+        ? 'لنشر إعلانك، نحتاج رقم هاتف للتواصل معك. سيظهر للمشترين الجادين فقط.'
+        : 'To publish your ad, we need a phone number. It will only be shown to serious buyers.')
+    : (isArabic
+        ? 'يرجى مراجعة رقمك قبل التثبيت.'
+        : 'Please review your number before confirming.');
 
   return (
     <Modal
       open={open}
-      onClose={() => {
-        // Intentionally NOT closable — user must provide phone.
-      }}
-      title={isArabic ? 'رقم التواصل مطلوب' : 'Phone number required'}
-      description={
-        isArabic
-          ? 'لنشر إعلانك، نحتاج رقم هاتف للتواصل معك. سيظهر للمشترين الجادين فقط.'
-          : 'To publish your ad, we need a phone number. It will only be shown to serious buyers.'
-      }
+      onClose={handleClose}
+      title={title}
+      description={description}
       size="sm"
     >
-      <div className="flex flex-col gap-3">
-        <label className="text-xs font-bold text-ink-soft">
-          {isArabic ? `رقم الهاتف (${browseCountryCode})` : `Phone (${browseCountryCode})`}
-        </label>
-        <input
-          type="tel"
-          inputMode="tel"
-          autoComplete="tel"
-          value={phone}
-          onChange={(e) => {
-            setPhone(e.target.value);
-            if (error) setError(null);
-          }}
-          placeholder="+962 7X XXX XXXX"
-          dir="ltr"
-          className="w-full h-11 px-3 rounded-xl border border-line bg-canvas text-ink text-sm font-medium focus:outline-none focus:border-primary"
+      {step === 'input' && (
+        <PhoneInputStep
+          phone={phone}
+          setPhone={setPhone}
+          error={error}
+          isArabic={isArabic}
+          browseCountryCode={browseCountryCode}
+          onContinue={handleContinue}
+          onErrorClear={() => setError(null)}
         />
-        {error && <p className="text-xs font-bold text-danger">{error}</p>}
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={saving || !phone.trim()}
-          className="w-full h-12 rounded-xl bg-primary text-white font-bold text-sm disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-        >
-          {saving
-            ? (isArabic ? 'جاري الحفظ...' : 'Saving...')
-            : (isArabic ? 'حفظ ومتابعة' : 'Save and continue')}
-        </button>
-      </div>
+      )}
+      {step === 'confirm' && (
+        <PhoneConfirmStep
+          phonePreview={phonePreview}
+          error={error}
+          saving={saving}
+          isArabic={isArabic}
+          onBack={handleBack}
+          onConfirm={handleConfirm}
+        />
+      )}
     </Modal>
   );
 };
