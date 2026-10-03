@@ -12,6 +12,7 @@ export interface AttributeWithOptions extends RawField {
   readonly type?: 'text' | 'number' | 'select' | 'textarea';
   readonly options?: readonly string[];
   readonly required?: boolean;
+  readonly custom?: boolean;
 }
 
 export function useAiReviewAttributes(
@@ -28,13 +29,25 @@ export function useAiReviewAttributes(
       return rawFields.map((f) => {
         const sf = schemaMap.get(f.key);
         const mappedType = sf?.type === 'number' ? 'number' : sf?.type === 'select' ? 'select' : 'text';
+        const displayOptions = sf?.options ? sf.options.map((o) => (isArabic ? o.labelAr : o.labelEn)) : [];
+        const isCustom = Boolean(
+          f.value &&
+            f.value.trim() &&
+            sf?.type === 'select' &&
+            sf?.options &&
+            !sf.options.some(
+              (o) => o.value === f.value || o.labelAr === f.value || o.labelEn === f.value
+            )
+        );
+
         return {
           key: f.key,
           label: f.label || (sf ? (isArabic ? sf.labelAr : sf.labelEn) : f.key),
           value: f.value || '',
           type: mappedType,
-          options: sf?.options ? sf.options.map((o) => (isArabic ? o.labelAr : o.labelEn)) : [],
+          options: displayOptions,
           required: sf?.required ?? f.required ?? false,
+          custom: isCustom,
         };
       });
     }
@@ -48,6 +61,7 @@ export function useAiReviewAttributes(
         type: mappedType,
         options: f.options ? f.options.map((o) => (isArabic ? o.labelAr : o.labelEn)) : [],
         required: f.required,
+        custom: false,
       };
     });
   }, [categorySlug, subcategorySlug, rawFields, isArabic]);
