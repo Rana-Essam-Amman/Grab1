@@ -15,7 +15,7 @@ import { findSubcategoryBySlug } from '@/data/subcategories';
 
 export const PhotoUploadScreen: React.FC = () => {
   const { isArabic, goBack } = useUI();
-  const { postDraft } = usePostWizard();
+  const { postDraft, updatePostDraft } = usePostWizard();
   const cat = categories.find((c) => c.slug === postDraft.categorySlug);
   const sub = findSubcategoryBySlug(postDraft.subcategorySlug);
   const { photos, handleFiles, handleRemove, handleUseSample } = usePhotoUpload();
@@ -42,6 +42,13 @@ export const PhotoUploadScreen: React.FC = () => {
     if (photos.length < listingMinPhotos) return;
     saveAndContinue();
   }, [photos.length, saveAndContinue]);
+
+  const handleSetCover = useCallback((index: number) => {
+    const currentPhotos = postDraft.photos || [];
+    if (index === 0) return;
+    const reordered = [currentPhotos[index], ...currentPhotos.filter((_, i) => i !== index)];
+    updatePostDraft({ photos: reordered });
+  }, [postDraft.photos, updatePostDraft]);
 
   const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     (e.target as HTMLImageElement).src =
@@ -75,7 +82,7 @@ export const PhotoUploadScreen: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-3 gap-3">
-            <PhotoPreviewList photos={photos} isArabic={isArabic} onRemove={handleRemove} onImageError={handleImageError} />
+            <PhotoPreviewList photos={photos} isArabic={isArabic} onRemove={handleRemove} onSetCover={handleSetCover} onImageError={handleImageError} />
             <PhotoUploader photoCount={photos.length} isArabic={isArabic} onFiles={handleFiles} />
           </div>
 
