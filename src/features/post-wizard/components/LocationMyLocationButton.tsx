@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { locations, locationsAr } from '@/data/locations';
 import { useGeoLocation } from '../hooks/useGeoLocation';
+import { usePostWizard } from '../hooks/usePostWizard';
 
 interface Props {
   readonly isArabic: boolean;
@@ -17,13 +18,19 @@ function optionCity(country: string, cityEn: string, isArabic: boolean): string 
 }
 
 export const LocationMyLocationButton: React.FC<Props> = ({ isArabic, preferredCountry, onCityChange }) => {
-  const { status, match, error, request, reset } = useGeoLocation(preferredCountry);
+  const { status, match, deviceLat, deviceLng, error, request, reset } = useGeoLocation(preferredCountry);
+  const { updatePostDraft } = usePostWizard();
 
   useEffect(() => {
     if (status !== 'success' || !match) return;
-    onCityChange(optionCity(match.country, match.city, isArabic));
+    const city = optionCity(match.country, match.city, isArabic);
+    onCityChange(city);
+    updatePostDraft({
+      city,
+      ...(deviceLat != null && deviceLng != null ? { latitude: deviceLat, longitude: deviceLng } : {}),
+    });
     reset();
-  }, [status, match, isArabic, onCityChange, reset]);
+  }, [status, match, deviceLat, deviceLng, isArabic, onCityChange, reset, updatePostDraft]);
 
   const label = status === 'loading'
     ? (isArabic ? 'جاري تحديد الموقع...' : 'Locating...')

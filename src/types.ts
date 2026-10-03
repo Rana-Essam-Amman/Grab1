@@ -162,6 +162,8 @@ export interface PostDraft {
   city: string;
   neighborhood: string;
   site: string;
+  latitude?: number;
+  longitude?: number;
   noteText: string;
   title?: string;
   price?: string;
