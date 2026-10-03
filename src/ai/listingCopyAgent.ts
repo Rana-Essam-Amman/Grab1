@@ -242,25 +242,48 @@ export async function generateListing({
 }: {
   raw: string; categorySlug: string; subcategorySlug: string; arabic: boolean; city?: string; countryCode?: string; images?: string[]; variantSeed?: number; uniqueId?: string;
 }): Promise<GeneratedListing> {
-  const localFacts = extractFacts(raw, countryCode);
-  if (!localFacts.rooms) {
+  const extracted = extractFacts(raw, countryCode);
+  const mutable: Record<string, string | boolean | undefined> = { ...extracted };
+  if (!mutable.rooms) {
     const beds = raw.match(/(\d{1,2})\s*نوم/);
-    if (beds) localFacts.rooms = beds[1];
+    if (beds) mutable.rooms = beds[1];
   }
-  if (!localFacts.floor && /طابق\s*اول|طابق\s*أول|الطابق\s*الاول|الطابق\s*الأول/.test(raw)) {
-    localFacts.floor = 'الأول';
+  if (!mutable.floor && /طابق\s*اول|طابق\s*أول|الطابق\s*الاول|الطابق\s*الأول/.test(raw)) {
+    mutable.floor = 'الأول';
   }
-  if (!localFacts.unitType && typeof localFacts.type === 'string') {
-    localFacts.unitType = localFacts.type;
+  if (!mutable.unitType && typeof mutable.type === 'string') {
+    mutable.unitType = mutable.type;
   }
   if (categorySlug === 'real-estate' && !/مقاس|قياس/.test(raw)) {
-    localFacts.size = undefined;
+    mutable.size = undefined;
   }
   if (!/سعر|دينار|دولار|ريال|شيكل/.test(raw)) {
-    localFacts.price = undefined;
+    mutable.price = undefined;
   }
   const spokenPlace = placeFromSentence(raw);
-  if (spokenPlace) localFacts.city = spokenPlace;
+  if (spokenPlace) mutable.city = spokenPlace;
+  const localFacts = mutable as ListingFacts;
+  try {
+    const { generate } = await import('./expert/v3/engine');
+    const listing = generate({ userId: uniqueId || 'guest', draft: raw });
+    const localFields = buildFieldsFromFacts(localFacts, categorySlug, subcategorySlug, arabic, raw);
+    return {
+      title: listing.title,
+      description: listing.description,
+      price: typeof localFacts.price === 'string' ? localFacts.price : '',
+      categorySlug,
+      subcategorySlug,
+      city: listing.facts.district || spokenPlace || '',
+      year: typeof localFacts.year === 'string' ? localFacts.year : undefined,
+      make: typeof localFacts.make === 'string' ? localFacts.make : undefined,
+      fields: localFields,
+      missing: localFields.filter((field) => field.required && !field.value).map((field) => field.label),
+      lat: listing.facts.lat,
+      lng: listing.facts.lng,
+    };
+  } catch (error) {
+    console.error('[AI FLOW] v3 guard fallback', error instanceof Error ? error.message : error);
+  }
   const localFields = buildFieldsFromFacts(localFacts, categorySlug, subcategorySlug, arabic, raw);
   const missing: string[] = localFields
     .filter((f) => f.required && !f.value)

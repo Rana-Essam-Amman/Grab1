@@ -28,6 +28,7 @@
   "dependencies": {
     "@formkit/auto-animate": "^0.10.0",
     "@iconify/react": "^6.0.2",
+    "@noble/hashes": "^2.4.0",
     "@radix-ui/react-dialog": "^1.1.23",
     "@radix-ui/react-popover": "^1.1.23",
     "@sentry/react": "^10.74.0",

@@ -22,6 +22,9 @@ export function buildAppliedDraft(params: AIResultParams) {
     categorySlug: finalCategory,
     subcategorySlug: finalSub,
     city: generated.city || '',
+    neighborhood: generated.city || '',
+    lat: generated.lat,
+    lng: generated.lng,
     generated: {
       ...generated,
       title: generated.title || '',
