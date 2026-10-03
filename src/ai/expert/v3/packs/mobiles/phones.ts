@@ -17,15 +17,11 @@ export const phonesPack = packOf(spec, {
     return `جوال ${brand} للبيع${place}${storage}`.replace(/\s+/g, ' ').trim();
   },
   opening: (facts, seed) => {
-    const brand = facts.subject !== 'جوال' ? facts.subject : 'الجوال';
-    const state = facts.extras.includes('مستعمل') ? 'بحالة مستعملة' : facts.extras.includes('جديد') ? 'بحالة جديدة' : '';
+    const state = facts.extras.includes('مستعمل') ? 'بحالة مستعملة' : facts.extras.includes('جديد') ? 'بحالة جديدة' : 'بحالة جيدة';
     const storage = facts.storage ? `بسعة ${facts.storage} جيجا` : '';
     const body = [state, storage].filter(Boolean).join('، ');
-    return pick(seed, [
-      body ? `${brand} ${body}.` : `${brand} للبيع.`,
-      body ? `${brand} ${body}.` : `${brand}.`,
-      `${brand}${state ? ` ${state}` : ''}.`,
-    ], 1);
+    const line = `الجهاز ${body}، وهو متاح للمعاينة قبل الاتفاق.`;
+    return pick(seed, [line, line, line], 1);
   },
   composition: (facts) => {
     const color = facts.extras.find((item) => item.startsWith('لون '));
@@ -53,7 +49,7 @@ function phoneFeatures(facts: Facts): string[] {
     facts.extras.includes('مستعمل') ? 'الحالة مستعملة ونظيفة.' : facts.extras.includes('جديد') ? 'الجهاز جديد.' : '',
     facts.extras.includes('ضمان') ? 'ضمان ساري حتى انتهاء المدة المعلنة.' : '',
     facts.extras.some((item) => item.startsWith('بطارية ')) ? 'بطارية تكفي يوم عمل كامل.' : '',
-    facts.subject !== 'جوال' ? `جهاز أصلي من ${facts.subject}.` : '',
+    facts.subject === 'سامسونج' || facts.subject === 'أبل' ? `جهاز ${facts.subject} أصلي.` : '',
     'مفحوص قبل العرض.',
   ].filter(Boolean).slice(0, 4);
 }

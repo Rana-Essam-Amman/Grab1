@@ -11,7 +11,7 @@ const spec = {
 
 export const smartWatchesPack = packOf(spec, {
   title: (facts) => `ساعة ذكية للبيع${facts.place ? ` — ${facts.place}` : ''}`.replace(/\s+/g, ' '),
-  opening: (_facts, seed) => pick(seed, ['الساعة للبيع.', 'الساعة معروضة.', 'الساعة ضمن العرض.'], 2),
+  opening: (_facts, seed) => pick(seed, ['الساعة بحالة جيدة، ومتاحة للمعاينة.', 'الجهاز ضمن العرض، ومتاح للمعاينة.', 'الساعة معروضة، ويمكن الاتفاق على الزيارة.'], 2),
   composition: (facts) => {
     const color = facts.extras.find((item) => item.startsWith('لون '));
     return color ? `تأتي ${color}.` : null;

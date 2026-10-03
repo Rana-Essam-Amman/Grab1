@@ -11,7 +11,7 @@ const spec = {
 
 export const mobileAccPack = packOf(spec, {
   title: (facts) => `إكسسوار جوال للبيع${facts.place ? ` — ${facts.place}` : ''}`.replace(/\s+/g, ' '),
-  opening: (_facts, seed) => pick(seed, ['القطعة للبيع.', 'الإكسسوار ضمن العرض.', 'القطعة معروضة.'], 3),
+  opening: (_facts, seed) => pick(seed, ['القطعة بحالة جيدة، ومتاحة للمعاينة.', 'الإكسسوار ضمن العرض، ومتاح للمعاينة.', 'القطعة معروضة، ويمكن الاتفاق على الزيارة.'], 3),
   composition: (facts) => facts.subject !== 'إكسسوار جوال' ? `يناسب ${facts.subject}.` : null,
   details: (facts) => bullets('🔹 تفاصيل الإكسسوار:', accDetails(facts)),
   features: (facts) => bullets('🔹 أبرز المميزات:', accFeatures(facts)),
