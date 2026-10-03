@@ -38,45 +38,25 @@ async function reachDetailsScreen(page: Page) {
 }
 
 async function fillDetailsForm(page: Page) {
-  // Title inline edit
-  const titleCard = page
-    .locator('div.rounded-2xl')
-    .filter({ has: page.locator('h3').filter({ hasText: /Listing Title|عنوان الإعلان/i }) })
-    .first();
-  if ((await titleCard.count()) > 0) {
-    await titleCard.locator('button').first().click();
-    const titleInput = titleCard.locator('input').first();
-    await expect(titleInput).toBeVisible({ timeout: 5000 });
-    await titleInput.fill('تويوتا كامري 2018 بحالة ممتازة');
-    await titleInput.press('Enter');
-    await titleInput.blur().catch(() => {});
-    await page.waitForTimeout(300);
-  } else {
-    const directTitle = page.locator(SELECTORS.postAd.detailsTitleInput).first();
-    if ((await directTitle.count()) > 0) {
-      await directTitle.fill('تويوتا كامري 2018 بحالة ممتازة');
-    }
-  }
+  // Fill title
+  const titleTrigger = page.locator('[data-testid="inline-edit-trigger-title"]').first();
+  await expect(titleTrigger).toBeVisible({ timeout: 5000 });
+  await titleTrigger.click();
+  const titleInput = page.locator('[data-testid="inline-edit-input-title"]').first();
+  await expect(titleInput).toBeVisible({ timeout: 5000 });
+  await titleInput.fill('تويوتا كامري 2018 بحالة ممتازة');
+  await titleInput.press('Enter');
+  await page.waitForTimeout(300);
 
-  // Price inline edit
-  const priceCard = page
-    .locator('div.rounded-2xl')
-    .filter({ has: page.locator('h3').filter({ hasText: /Price|السعر/i }) })
-    .first();
-  if ((await priceCard.count()) > 0) {
-    await priceCard.locator('button').first().click();
-    const priceInput = priceCard.locator('input').first();
-    await expect(priceInput).toBeVisible({ timeout: 5000 });
-    await priceInput.fill('12000');
-    await priceInput.press('Enter');
-    await priceInput.blur().catch(() => {});
-    await page.waitForTimeout(300);
-  } else {
-    const directPrice = page.locator(SELECTORS.postAd.detailsPriceInput).first();
-    if ((await directPrice.count()) > 0) {
-      await directPrice.fill('12000');
-    }
-  }
+  // Fill price
+  const priceTrigger = page.locator('[data-testid="inline-edit-trigger-price"]').first();
+  await expect(priceTrigger).toBeVisible({ timeout: 5000 });
+  await priceTrigger.click();
+  const priceInput = page.locator('[data-testid="inline-edit-input-price"]').first();
+  await expect(priceInput).toBeVisible({ timeout: 5000 });
+  await priceInput.fill('12000');
+  await priceInput.press('Enter');
+  await page.waitForTimeout(300);
 }
 
 test.describe('Golden Path 2 — Post Ad Wizard (Unified Flow)', () => {

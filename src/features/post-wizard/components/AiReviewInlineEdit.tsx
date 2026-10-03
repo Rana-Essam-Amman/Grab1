@@ -50,6 +50,7 @@ export const AiReviewInlineEdit: React.FC<AiReviewInlineEditProps> = ({
         {variant === 'description' ? (
           <textarea
             ref={ref}
+            data-testid={`inline-edit-input-${variant}`}
             value={value}
             onChange={(e) => onChange(e.target.value)}
             onBlur={onStopEdit}
@@ -63,6 +64,7 @@ export const AiReviewInlineEdit: React.FC<AiReviewInlineEditProps> = ({
               ref={ref}
               type="text"
               inputMode="numeric"
+              data-testid={`inline-edit-input-${variant}`}
               value={value}
               onChange={(e) => onChange(e.target.value.replace(/[^0-9]/g, ''))}
               onBlur={onStopEdit}
@@ -79,6 +81,7 @@ export const AiReviewInlineEdit: React.FC<AiReviewInlineEditProps> = ({
           <input
             ref={ref}
             type="text"
+            data-testid={`inline-edit-input-${variant}`}
             value={value}
             onChange={(e) => onChange(e.target.value)}
             onBlur={onStopEdit}
@@ -96,6 +99,7 @@ export const AiReviewInlineEdit: React.FC<AiReviewInlineEditProps> = ({
   return (
     <button
       type="button"
+      data-testid={`inline-edit-trigger-${variant}`}
       onClick={onStartEdit}
       className="block text-start w-full cursor-text hover:opacity-80 transition-opacity"
     >
