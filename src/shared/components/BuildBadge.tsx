@@ -4,6 +4,9 @@ declare const __BUILD_HASH__: string;
 declare const __BUILD_TIME__: string;
 
 export const BuildBadge: React.FC = React.memo(() => {
+  if (import.meta.env.VITE_SHOW_BUILD_BADGE !== 'true') {
+    return null;
+  }
   const hash = typeof __BUILD_HASH__ !== 'undefined' ? __BUILD_HASH__ : 'dev';
   const time = typeof __BUILD_TIME__ !== 'undefined' ? __BUILD_TIME__ : '';
   return (
