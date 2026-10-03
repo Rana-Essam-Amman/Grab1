@@ -15,26 +15,19 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
   field, value, onChange, isArabic,
 }) => {
   const label = isArabic ? field.labelAr : field.labelEn;
-  const isCustom = Boolean(
-    field.allowOther && value && field.options && !field.options.some((opt) => opt.value === value)
-  );
+  const isCustom = Boolean(field.allowOther && value && field.options && !field.options.some((opt) => opt.value === value));
   const [showOther, setShowOther] = useState(isCustom);
   const [customValue, setCustomValue] = useState(isCustom ? value : '');
 
   useEffect(() => {
-    if (isCustom) {
-      setShowOther(true);
-      setCustomValue(value);
-    }
+    if (isCustom) { setShowOther(true); setCustomValue(value); }
   }, [isCustom, value]);
 
   if (field.type === 'boolean') {
     const isChecked = value === 'true' || value === '1' || value === 'yes';
     return (
       <div className="flex items-center justify-between py-2">
-        <label className="text-sm font-semibold text-ink">
-          {label} {field.required && <span className="text-accent">*</span>}
-        </label>
+        <label className="text-sm font-semibold text-ink">{label} {field.required && <span className="text-accent">*</span>}</label>
         <button
           type="button"
           onClick={() => onChange(field.key, isChecked ? 'false' : 'true')}
@@ -46,49 +39,49 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
     );
   }
 
-  if (field.type === 'select' && field.options) {
-    const selectValue = showOther ? OTHER_VALUE : value;
-    const placeholderText = field.placeholderAr && isArabic
-      ? field.placeholderAr
-      : (field.placeholder || (isArabic ? 'اكتب القيمة المطلوبة...' : 'Type value...'));
-
+  if (field.type === 'select' && field.multiSelect && field.options) {
+    const selectedVals = value ? value.split(',').map((s) => s.trim()).filter(Boolean) : [];
+    const toggleOpt = (val: string) => {
+      const next = selectedVals.includes(val) ? selectedVals.filter((v) => v !== val) : [...selectedVals, val];
+      onChange(field.key, next.join(', '));
+    };
     return (
       <div className="flex flex-col gap-1.5 py-1.5">
-        <label className="text-xs font-bold text-ink-soft">
-          {label} {field.required && <span className="text-accent">*</span>}
-        </label>
+        <label className="text-xs font-bold text-ink-soft">{label} {field.required && <span className="text-accent">*</span>}</label>
+        <div className="flex flex-wrap gap-2 pt-1">
+          {field.options.map((opt) => (
+            <button
+              key={opt.value} type="button" onClick={() => toggleOpt(opt.value)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                selectedVals.includes(opt.value) ? 'bg-primary text-white border-primary shadow-sm' : 'bg-canvas text-ink-soft border-line hover:border-ink-muted'
+              }`}
+            >{isArabic ? opt.labelAr : opt.labelEn}</button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (field.type === 'select' && field.options) {
+    const placeholderText = field.placeholderAr && isArabic ? field.placeholderAr : (field.placeholder || (isArabic ? 'اكتب القيمة...' : 'Type value...'));
+    return (
+      <div className="flex flex-col gap-1.5 py-1.5">
+        <label className="text-xs font-bold text-ink-soft">{label} {field.required && <span className="text-accent">*</span>}</label>
         <select
-          value={selectValue}
+          value={showOther ? OTHER_VALUE : value}
           onChange={(e) => {
-            const selected = e.target.value;
-            if (selected === OTHER_VALUE) {
-              setShowOther(true);
-              onChange(field.key, customValue);
-            } else {
-              setShowOther(false);
-              onChange(field.key, selected);
-            }
+            const sel = e.target.value;
+            if (sel === OTHER_VALUE) { setShowOther(true); onChange(field.key, customValue); }
+            else { setShowOther(false); onChange(field.key, sel); }
           }}
           className="w-full h-11 px-3 rounded-xl border border-line bg-canvas text-ink text-sm font-medium focus:outline-none focus:border-primary cursor-pointer"
         >
           <option value="">{isArabic ? '-- اختر --' : '-- Select --'}</option>
-          {field.options.map((opt) => (
-            <option key={opt.value} value={opt.value}>{isArabic ? opt.labelAr : opt.labelEn}</option>
-          ))}
-          {field.allowOther && (
-            <option value={OTHER_VALUE}>{isArabic ? 'أخرى — اكتب يدوياً' : 'Other — type manually'}</option>
-          )}
+          {field.options.map((opt) => (<option key={opt.value} value={opt.value}>{isArabic ? opt.labelAr : opt.labelEn}</option>))}
+          {field.allowOther && (<option value={OTHER_VALUE}>{isArabic ? 'أخرى — اكتب يدوياً' : 'Other — type manually'}</option>)}
         </select>
         {showOther && (
-          <OtherOptionInput
-            value={customValue}
-            onChange={(v) => {
-              setCustomValue(v);
-              onChange(field.key, v);
-            }}
-            placeholder={placeholderText}
-            isArabic={isArabic}
-          />
+          <OtherOptionInput value={customValue} onChange={(v) => { setCustomValue(v); onChange(field.key, v); }} placeholder={placeholderText} isArabic={isArabic} />
         )}
       </div>
     );
@@ -96,13 +89,9 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
 
   return (
     <div className="flex flex-col gap-1.5 py-1.5">
-      <label className="text-xs font-bold text-ink-soft">
-        {label} {field.required && <span className="text-accent">*</span>}
-      </label>
+      <label className="text-xs font-bold text-ink-soft">{label} {field.required && <span className="text-accent">*</span>}</label>
       <input
-        type={field.type === 'number' ? 'number' : 'text'}
-        value={value}
-        placeholder={field.placeholder || ''}
+        type={field.type === 'number' ? 'number' : 'text'} value={value} placeholder={field.placeholder || ''}
         onChange={(e) => onChange(field.key, e.target.value)}
         className="w-full h-11 px-3 rounded-xl border border-line bg-canvas text-ink text-sm font-medium focus:outline-none focus:border-primary"
       />
