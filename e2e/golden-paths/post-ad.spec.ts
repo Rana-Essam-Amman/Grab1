@@ -38,25 +38,16 @@ async function reachDetailsScreen(page: Page) {
 }
 
 async function fillDetailsForm(page: Page) {
-  // Fill title
-  const titleTrigger = page.locator('[data-testid="inline-edit-trigger-title"]').first();
-  await expect(titleTrigger).toBeVisible({ timeout: 5000 });
-  await titleTrigger.click();
-  const titleInput = page.locator('[data-testid="inline-edit-input-title"]').first();
-  await expect(titleInput).toBeVisible({ timeout: 5000 });
-  await titleInput.fill('تويوتا كامري 2018 بحالة ممتازة');
-  await titleInput.press('Enter');
-  await page.waitForTimeout(300);
-
-  // Fill price
-  const priceTrigger = page.locator('[data-testid="inline-edit-trigger-price"]').first();
-  await expect(priceTrigger).toBeVisible({ timeout: 5000 });
-  await priceTrigger.click();
-  const priceInput = page.locator('[data-testid="inline-edit-input-price"]').first();
-  await expect(priceInput).toBeVisible({ timeout: 5000 });
-  await priceInput.fill('12000');
-  await priceInput.press('Enter');
-  await page.waitForTimeout(300);
+  await page.locator('[data-testid="post-details-title-input"]').fill('شقة 3 غرف في عبدون');
+  await page.locator('[data-testid="post-details-price-input"]').fill('50000');
+  await page.locator('[data-testid="post-details-description"]').fill('شقة واسعة بتشطيب حديث');
+  // Fill a dynamic field if required (e.g. bedrooms)
+  const bedrooms = page.locator('[data-testid="post-details-field-bedrooms"]');
+  if ((await bedrooms.count()) > 0) {
+    await bedrooms.fill('3');
+  }
+  // Publish
+  await page.locator('[data-testid="post-details-publish-btn"]').click();
 }
 
 test.describe('Golden Path 2 — Post Ad Wizard (Unified Flow)', () => {
@@ -183,13 +174,6 @@ test.describe('Golden Path 2 — Post Ad Wizard (Unified Flow)', () => {
     await reachDetailsScreen(loggedInPage);
     await fillDetailsForm(loggedInPage);
 
-    const publishBtn = loggedInPage
-      .locator('[data-testid="post-details-publish-btn"], [data-testid="post-publish-btn"]')
-      .first();
-    await expect(publishBtn).toBeVisible({ timeout: 5000 });
-    await expect(publishBtn).not.toBeDisabled({ timeout: 5000 });
-    await publishBtn.click();
-
     const successScreen = loggedInPage
       .locator('[data-testid="publish-success-screen"], #publish-success-screen')
       .first();
@@ -202,13 +186,6 @@ test.describe('Golden Path 2 — Post Ad Wizard (Unified Flow)', () => {
     const consoleErrors = setupConsoleErrorListener(loggedInPage);
     await reachDetailsScreen(loggedInPage);
     await fillDetailsForm(loggedInPage);
-
-    const publishBtn = loggedInPage
-      .locator('[data-testid="post-details-publish-btn"], [data-testid="post-publish-btn"]')
-      .first();
-    await expect(publishBtn).toBeVisible({ timeout: 5000 });
-    await expect(publishBtn).not.toBeDisabled({ timeout: 5000 });
-    await publishBtn.click();
 
     // After publish, expect to be on PublishSuccessScreen
     const successScreen = loggedInPage
