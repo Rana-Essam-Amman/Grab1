@@ -9,22 +9,28 @@ import type { MarketCode } from '@/data/markets/types';
 export interface UsePostAdEntryReturn {
   isArabic: boolean;
   handleBack: () => void;
-  handleAI: () => void;
-  handleTraditional: () => void;
+  startPostFlow: () => void;
 }
 
 export const usePostAdEntry = (): UsePostAdEntryReturn => {
-  const { isArabic, goBack, navigateTo, setActiveTab, setAiFlowPending, browseCountryCode } = useUI();
-  const { startPostFlow } = useDraft();
+  const {
+    isArabic,
+    goBack,
+    navigateTo,
+    setActiveTab,
+    setAiFlowPending,
+    browseCountryCode,
+  } = useUI();
+  const { startPostFlow: draftStartPostFlow } = useDraft();
   const { authStatus, isAnonymous } = useAuth();
 
-  // Guard: only signed-in users can access the post wizard.
-  // Visitors are sent to the unified login gateway. After sign-in, the listener
-  // routes them back to post-ad-entry.
   useEffect(() => {
     if (authStatus !== 'authenticated' || isAnonymous) {
       if (isValidMarketCode(browseCountryCode)) {
-        marketStorage(browseCountryCode as MarketCode).set('pending_post_entry', 'true');
+        marketStorage(browseCountryCode as MarketCode).set(
+          'pending_post_entry',
+          'true'
+        );
       }
       navigateTo('login');
     }
@@ -35,17 +41,11 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
     goBack();
   }, [setActiveTab, goBack]);
 
-  const handleAI = useCallback(() => {
-    startPostFlow();
+  const startPostFlow = useCallback(() => {
+    draftStartPostFlow();
     setAiFlowPending(true);
     navigateTo('post-category');
-  }, [startPostFlow, setAiFlowPending, navigateTo]);
+  }, [draftStartPostFlow, setAiFlowPending, navigateTo]);
 
-  const handleTraditional = useCallback(() => {
-    startPostFlow();
-    setAiFlowPending(false);
-    navigateTo('post-category');
-  }, [startPostFlow, setAiFlowPending, navigateTo]);
-
-  return { isArabic, handleBack, handleAI, handleTraditional };
+  return { isArabic, handleBack, startPostFlow };
 };
