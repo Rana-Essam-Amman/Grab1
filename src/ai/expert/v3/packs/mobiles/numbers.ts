@@ -11,8 +11,8 @@ const spec = {
 
 export const numbersPack = packOf(spec, {
   title: (facts) => `رقم مميز للبيع${facts.priceLabel ? ` — ${facts.priceLabel}` : ''}`.replace(/\s+/g, ' '),
-  opening: (_facts, seed) => pick(seed, ['الرقم جاهز للنقل بعد الاتفاق.', 'النقل يتم بالتنسيق مع البائع.', 'الرقم متاح للبيع.'], 5),
-  composition: () => 'النقل يتم بعد الاتفاق.',
+  opening: (_facts, seed) => pick(seed, ['الرقم للبيع.', 'الرقم ضمن العرض.', 'نقل الرقم بعد الاتفاق.'], 5),
+  composition: () => null,
   details: (facts) => bullets('🔹 تفاصيل الرقم:', ['النوع: رقم مميز.', facts.priceLabel ? `السعر: ${facts.priceLabel}.` : ''].filter(Boolean)),
-  features: (facts) => bullets('🔹 أبرز المميزات:', [facts.priceLabel ? 'السعر واضح قبل التواصل.' : '', 'معاينة متاحة قبل الشراء.'].filter(Boolean)),
+  features: (facts) => bullets('🔹 أبرز المميزات:', [facts.priceLabel ? 'السعر واضح قبل التواصل.' : ''].filter(Boolean)),
 });

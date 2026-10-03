@@ -11,10 +11,10 @@ const spec = {
 
 export const smartWatchesPack = packOf(spec, {
   title: (facts) => `ساعة ذكية للبيع${facts.place ? ` — ${facts.place}` : ''}`.replace(/\s+/g, ' '),
-  opening: (_facts, seed) => pick(seed, ['الساعة جاهزة للمعاينة.', 'الساعة متاحة قبل الشراء.', 'الساعة جاهزة للتسليم بعد الاتفاق.'], 2),
+  opening: (_facts, seed) => pick(seed, ['الساعة للبيع.', 'الساعة معروضة.', 'الساعة ضمن العرض.'], 2),
   composition: (facts) => {
     const color = facts.extras.find((item) => item.startsWith('لون '));
-    return color ? `تأتي ${color}، وجاهزة للمعاينة.` : 'جاهزة للمعاينة قبل الشراء.';
+    return color ? `تأتي ${color}.` : null;
   },
   details: (facts) => bullets('🔹 تفاصيل الساعة:', watchDetails(facts)),
   features: (facts) => bullets('🔹 أبرز المميزات:', watchFeatures(facts)),
@@ -34,8 +34,7 @@ function watchDetails(facts: Facts): string[] {
 function watchFeatures(facts: Facts): string[] {
   return [
     facts.extras.includes('مقاومة ماء') ? 'الساعة تتحمل الاستخدام مع الماء حسب وصف البائع.' : '',
-    facts.extras.some((item) => item.startsWith('بطارية ')) ? 'بطارية مفحوصة قبل العرض.' : '',
-    'فحص مسبق قبل العرض.',
-    'معاينة متاحة قبل الشراء.',
+    facts.extras.some((item) => item.startsWith('بطارية ')) ? 'بطارية تكفي يوماً من الاستخدام.' : '',
+    'مفحوصة قبل العرض.',
   ].filter(Boolean);
 }

@@ -19,16 +19,17 @@ export const phonesPack = packOf(spec, {
   opening: (facts, seed) => {
     const brand = facts.subject !== 'جوال' ? facts.subject : 'الجوال';
     const state = facts.extras.includes('مستعمل') ? 'بحالة مستعملة' : facts.extras.includes('جديد') ? 'بحالة جديدة' : '';
-    const leads = [
-      state ? `${brand} ${state}.` : `${brand} جاهز للمعاينة.`,
-      `${brand} متاح للمعاينة قبل الشراء.`,
-      `${brand} جاهز للتسليم بعد الاتفاق.`,
-    ];
-    return pick(seed, leads, 1);
+    const storage = facts.storage ? `بسعة ${facts.storage} جيجا` : '';
+    const body = [state, storage].filter(Boolean).join('، ');
+    return pick(seed, [
+      body ? `${brand} ${body}.` : `${brand} للبيع.`,
+      body ? `${brand} ${body}.` : `${brand}.`,
+      `${brand}${state ? ` ${state}` : ''}.`,
+    ], 1);
   },
   composition: (facts) => {
     const color = facts.extras.find((item) => item.startsWith('لون '));
-    return color ? `يأتي ب${color}، وجاهز للمعاينة.` : null;
+    return color ? `يأتي ب${color}، وجاهز للاستخدام اليومي.` : null;
   },
   details: (facts) => bullets('🔹 تفاصيل الجوال:', phoneDetails(facts)),
   features: (facts) => bullets('🔹 أبرز المميزات:', phoneFeatures(facts)),
@@ -49,11 +50,10 @@ function phoneDetails(facts: Facts): string[] {
 function phoneFeatures(facts: Facts): string[] {
   return [
     facts.storage ? `${facts.storage} جيجا تكفي للصور والتطبيقات اليومية.` : '',
-    facts.extras.includes('مستعمل') ? 'الجهاز بحالة مستعملة وجاهز للاستخدام.' : facts.extras.includes('جديد') ? 'الجهاز بحالة جديدة وجاهز للاستخدام.' : '',
+    facts.extras.includes('مستعمل') ? 'الحالة مستعملة ونظيفة.' : facts.extras.includes('جديد') ? 'الجهاز جديد.' : '',
     facts.extras.includes('ضمان') ? 'ضمان ساري حتى انتهاء المدة المعلنة.' : '',
-    facts.extras.some((item) => item.startsWith('بطارية ')) ? 'بطارية مفحوصة قبل العرض.' : '',
-    facts.subject !== 'جوال' ? 'جهاز أصلي من ماركة معروفة.' : '',
-    'فحص مسبق قبل العرض.',
-    'معاينة متاحة قبل الشراء.',
+    facts.extras.some((item) => item.startsWith('بطارية ')) ? 'بطارية تكفي يوم عمل كامل.' : '',
+    facts.subject !== 'جوال' ? `جهاز أصلي من ${facts.subject}.` : '',
+    'مفحوص قبل العرض.',
   ].filter(Boolean).slice(0, 4);
 }
