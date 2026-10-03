@@ -90,7 +90,12 @@ export const ChooseCategoryScreen: React.FC = () => {
             
             <div className="divide-y divide-line">
               {subcategories.map(sub => (
-                <button key={sub.slug} onClick={() => handleSubcategorySelect(selectedCategory, sub.slug)} className="w-full px-5 py-4 flex items-center justify-between hover:bg-canvas/20 active:bg-canvas/40 transition-colors">
+                <button
+                  key={sub.slug}
+                  data-testid={`subcategory-${sub.slug}`}
+                  onClick={() => handleSubcategorySelect(selectedCategory, sub.slug)}
+                  className="w-full px-5 py-4 flex items-center justify-between hover:bg-canvas/20 active:bg-canvas/40 transition-colors"
+                >
                   <span className="text-[15px] font-medium text-ink">{isArabic ? sub.nameAr : sub.nameEn}</span>
                   {isArabic ? <ArrowLeft size={18} className="text-ink-muted" /> : <ArrowRight size={18} className="text-ink-muted" />}
                 </button>
