@@ -5,16 +5,22 @@ interface Props {
   photos: string[];
   isArabic: boolean;
   onRemove: (index: number) => void;
+  onSetCover?: (index: number) => void;
   onImageError: (e: React.SyntheticEvent<HTMLImageElement>) => void;
 }
 
-export const PhotoPreviewList: React.FC<Props> = ({ photos, isArabic, onRemove, onImageError }) => {
+export const PhotoPreviewList: React.FC<Props> = ({ photos, isArabic, onRemove, onSetCover, onImageError }) => {
   return (
     <>
       {photos.map((src, idx) => (
         <div
           key={idx}
-          className="aspect-square rounded-2xl bg-canvas relative overflow-hidden border border-line group"
+          onClick={() => {
+            if (idx > 0) onSetCover?.(idx);
+          }}
+          className={`aspect-square rounded-2xl bg-canvas relative overflow-hidden border border-line group ${
+            idx > 0 ? 'cursor-pointer hover:border-accent/60 transition-colors' : ''
+          }`}
         >
           <img
             src={src}
@@ -23,7 +29,10 @@ export const PhotoPreviewList: React.FC<Props> = ({ photos, isArabic, onRemove, 
             onError={onImageError}
           />
           <button
-            onClick={() => onRemove(idx)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemove(idx);
+            }}
             aria-label={isArabic ? 'حذف الصورة' : 'Remove photo'}
             className="absolute top-1.5 end-1.5 w-7 h-7 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black transition-colors"
           >
