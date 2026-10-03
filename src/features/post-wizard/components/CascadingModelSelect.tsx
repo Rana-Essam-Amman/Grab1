@@ -12,10 +12,11 @@ interface Props {
   readonly onModelChange: (v: string) => void;
   readonly isArabic: boolean;
   readonly hideMakeField?: boolean;
+  readonly testId?: string;
 }
 
 export const CascadingModelSelect: React.FC<Props> = ({
-  makeValue, modelValue, onMakeChange, onModelChange, isArabic, hideMakeField,
+  makeValue, modelValue, onMakeChange, onModelChange, isArabic, hideMakeField, testId,
 }) => {
   const isMakeCustom = Boolean(makeValue && !CAR_BRANDS.some((b) => b.slug === makeValue));
   const [showOtherMake, setShowOtherMake] = useState(isMakeCustom || makeValue === 'other');
@@ -35,12 +36,15 @@ export const CascadingModelSelect: React.FC<Props> = ({
     if (isModelCustom) { setShowOtherModel(true); setCustomModel(modelValue); }
   }, [isModelCustom, modelValue]);
 
+  const modelTestId = hideMakeField ? testId : (testId ? `${testId}-model` : undefined);
+
   const renderModelBlock = () => (
     <div className="flex flex-col gap-1.5 py-1.5">
       {!hideMakeField && <label className="text-xs font-bold text-ink-soft">{isArabic ? 'الموديل' : 'Model'} <span className="text-accent">*</span></label>}
       {modelOptions.length > 0 && (hideMakeField || !showOtherMake) ? (
         <>
           <select
+            data-testid={modelTestId}
             value={showOtherModel ? OTHER_VALUE : modelValue}
             onChange={(e) => {
               const v = e.target.value;
@@ -70,6 +74,7 @@ export const CascadingModelSelect: React.FC<Props> = ({
       <div className="flex flex-col gap-1.5 py-1.5">
         <label className="text-xs font-bold text-ink-soft">{isArabic ? 'الماركة' : 'Make'} <span className="text-accent">*</span></label>
         <select
+          data-testid={testId}
           value={showOtherMake ? OTHER_VALUE : makeValue}
           onChange={(e) => {
             const v = e.target.value;

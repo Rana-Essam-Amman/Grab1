@@ -32,6 +32,7 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
         <label className="text-sm font-semibold text-ink">{label} {field.required && <span className="text-accent">*</span>}</label>
         <button
           type="button"
+          data-testid={`field-${field.key}`}
           onClick={() => onChange(field.key, isChecked ? 'false' : 'true')}
           className={`w-12 h-6 rounded-full transition-colors relative p-0.5 cursor-pointer ${isChecked ? 'bg-primary' : 'bg-line'}`}
         >
@@ -47,7 +48,7 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
     return (
       <div className="flex flex-col gap-1.5 py-1.5">
         <label className="text-xs font-bold text-ink-soft">{label} {field.required && <span className="text-accent">*</span>}</label>
-        <CascadingModelSelect makeValue={parentValue} modelValue={value} onMakeChange={() => { /* handled by make field */ }} onModelChange={(v) => onChange(field.key, v)} isArabic={isArabic} hideMakeField />
+        <CascadingModelSelect makeValue={parentValue} modelValue={value} onMakeChange={() => { /* handled by make field */ }} onModelChange={(v) => onChange(field.key, v)} isArabic={isArabic} hideMakeField testId={`field-${field.key}`} />
       </div>
     );
   }
@@ -81,6 +82,7 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
       <div className="flex flex-col gap-1.5 py-1.5">
         <label className="text-xs font-bold text-ink-soft">{label} {field.required && <span className="text-accent">*</span>}</label>
         <select
+          data-testid={`field-${field.key}`}
           value={showOther ? OTHER_VALUE : value}
           onChange={(e) => {
             const sel = e.target.value;
@@ -106,6 +108,7 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
       <input
         type={field.type === 'number' ? 'number' : 'text'} value={value} placeholder={field.placeholder || ''}
         onChange={(e) => onChange(field.key, e.target.value)}
+        data-testid={`field-${field.key}`}
         className="w-full h-11 px-3 rounded-xl border border-line bg-canvas text-ink text-sm font-medium focus:outline-none focus:border-primary"
       />
     </div>

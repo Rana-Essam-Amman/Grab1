@@ -41,6 +41,29 @@ async function fillDetailsForm(page: Page) {
   await page.locator('[data-testid="post-details-title-input"]').fill('شقة 3 غرف في عبدون');
   await page.locator('[data-testid="post-details-price-input"]').fill('50000');
   await page.locator('[data-testid="post-details-description"]').fill('شقة واسعة بتشطيب حديث');
+
+  // Fill required dynamic fields for cars
+  // Brand (select)
+  const makeSelect = page.locator('[data-testid="field-make"]').first();
+  if (await makeSelect.count() > 0) {
+    await makeSelect.selectOption({ index: 1 }); // first non-empty option
+    await page.waitForTimeout(300);
+  }
+
+  // Model (cascading — options appear after make chosen)
+  const modelSelect = page.locator('[data-testid="field-model"]').first();
+  if (await modelSelect.count() > 0) {
+    await modelSelect.selectOption({ index: 1 });
+    await page.waitForTimeout(300);
+  }
+
+  // Year
+  const yearSelect = page.locator('[data-testid="field-year"]').first();
+  if (await yearSelect.count() > 0) {
+    await yearSelect.selectOption({ index: 1 });
+    await page.waitForTimeout(300);
+  }
+
   // Fill a dynamic field if required (e.g. bedrooms)
   const bedrooms = page.locator('[data-testid="post-details-field-bedrooms"]');
   if ((await bedrooms.count()) > 0) {
