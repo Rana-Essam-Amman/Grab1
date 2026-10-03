@@ -15,7 +15,7 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
   const { postDraft, updatePostDraft } = usePostWizard();
   const { resetPostDraft } = useDraft();
   const { authStatus, user, isAnonymous } = useAuth();
-  const { navigateTo, setActiveTab, browseCountryCode, activeCurrency, isArabic } = useUI();
+  const { navigateTo, browseCountryCode, activeCurrency, isArabic } = useUI();
   const { publishListing } = useListings();
   const [isPublishing, setIsPublishing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,8 +60,7 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
         return;
       }
       resetPostDraft();
-      setActiveTab('my-ads');
-      navigateTo('main');
+      navigateTo('post-publish-success');
     } catch (err) {
       console.error('[PUBLISH ERROR]', err);
       setError('فشل نشر الإعلان');

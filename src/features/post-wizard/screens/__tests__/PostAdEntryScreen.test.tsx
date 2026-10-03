@@ -29,29 +29,35 @@ vi.mock('@/hooks/useDraft', () => ({
   }),
 }));
 
+vi.mock('@/hooks/useAuth', () => ({
+  useAuth: () => ({
+    authStatus: 'authenticated',
+    isAnonymous: false,
+  }),
+}));
+
 describe('PostAdEntryScreen', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('renders both option buttons (AI + Traditional)', () => {
+  it('renders a single "Post New Ad" button', () => {
     render(<PostAdEntryScreen />);
-    expect(screen.getByTestId('post-entry-ai-card')).toBeInTheDocument();
-    expect(screen.getByTestId('post-entry-traditional-card')).toBeInTheDocument();
+    const button = document.getElementById('post-ad-entry-start');
+    expect(button).toBeInTheDocument();
   });
 
-  it('clicking AI card calls startPostFlow, sets aiFlowPending, and navigates to post-category', () => {
+  it('does not render AI or Traditional option cards anymore', () => {
     render(<PostAdEntryScreen />);
-    fireEvent.click(screen.getByTestId('post-entry-ai-card'));
-    expect(mockStartPostFlow).toHaveBeenCalledTimes(1);
-    expect(mockSetAiFlowPending).toHaveBeenCalledWith(true);
-    expect(mockNavigateTo).toHaveBeenCalledWith('post-category');
+    expect(screen.queryByTestId('post-entry-ai-card')).toBeNull();
+    expect(screen.queryByTestId('post-entry-traditional-card')).toBeNull();
   });
 
-  it('clicking Traditional card calls startPostFlow and navigates to post-category', () => {
+  it('clicking the button calls startPostFlow and navigates to post-category', () => {
     render(<PostAdEntryScreen />);
-    fireEvent.click(screen.getByTestId('post-entry-traditional-card'));
-    expect(mockStartPostFlow).toHaveBeenCalledTimes(1);
+    const button = document.getElementById('post-ad-entry-start');
+    expect(button).not.toBeNull();
+    fireEvent.click(button!);
     expect(mockNavigateTo).toHaveBeenCalledWith('post-category');
   });
 

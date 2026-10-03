@@ -25,34 +25,30 @@ describe('usePostAdEntry', () => {
       activeTab: 'explore',
       currentScreen: 'main',
       screenHistory: ['main', 'post-ad-entry'],
+      aiFlowPending: false,
     });
   });
 
   it('handleBack sets explore tab and pops history', () => {
     const { result } = renderHook(() => usePostAdEntry());
+
     act(() => {
       result.current.handleBack();
     });
+
     expect(useUIStore.getState().activeTab).toBe('explore');
     expect(useUIStore.getState().currentScreen).toBe('main');
   });
 
-  it('handleAI starts post flow, sets pending AI flow, and navigates to category', () => {
+  it('startPostFlow starts draft, sets AI pending, and navigates', () => {
     const { result } = renderHook(() => usePostAdEntry());
+
     act(() => {
-      result.current.handleAI();
+      result.current.startPostFlow();
     });
+
     expect(mockStartPostFlow).toHaveBeenCalled();
     expect(useUIStore.getState().aiFlowPending).toBe(true);
-    expect(useUIStore.getState().currentScreen).toBe('post-category');
-  });
-
-  it('handleTraditional starts post flow and navigates to category', () => {
-    const { result } = renderHook(() => usePostAdEntry());
-    act(() => {
-      result.current.handleTraditional();
-    });
-    expect(mockStartPostFlow).toHaveBeenCalled();
     expect(useUIStore.getState().currentScreen).toBe('post-category');
   });
 });

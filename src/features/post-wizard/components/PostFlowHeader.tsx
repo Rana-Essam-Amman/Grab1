@@ -3,7 +3,8 @@ import { ArrowLeft, ArrowRight } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 
 interface PostFlowHeaderProps {
-  readonly step: 1 | 2 | 3 | 4 | 5 | 6;
+  readonly step: number;
+  readonly totalSteps?: number;
   readonly titleAr: string;
   readonly titleEn: string;
   readonly subtitleAr?: string;
@@ -14,6 +15,7 @@ interface PostFlowHeaderProps {
 
 export const PostFlowHeader: React.FC<PostFlowHeaderProps> = ({
   step,
+  totalSteps = 6,
   titleAr,
   titleEn,
   subtitleAr,
@@ -36,7 +38,7 @@ export const PostFlowHeader: React.FC<PostFlowHeaderProps> = ({
       </Button>
       <div className="min-w-0">
         <div className="text-xs font-semibold text-white/70 truncate">
-          {isArabic ? `الخطوة ${step} من 6` : `Step ${step} of 6`}
+          {isArabic ? `الخطوة ${step} من ${totalSteps}` : `Step ${step} of ${totalSteps}`}
           {subtitle && <> • {subtitle}</>}
         </div>
         <h2 className="text-lg font-bold text-white truncate">

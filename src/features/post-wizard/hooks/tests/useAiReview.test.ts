@@ -116,8 +116,7 @@ describe('useAiReview', () => {
 
     expect(mockPublishListing).toHaveBeenCalledTimes(1);
     expect(mockResetPostDraft).toHaveBeenCalledTimes(1);
-    expect(mockSetActiveTab).toHaveBeenCalledWith('my-ads');
-    expect(mockNavigateTo).toHaveBeenCalledWith('main');
+    expect(mockNavigateTo).toHaveBeenCalledWith('post-publish-success');
   });
 
   it('handlePublish sets error state when publishListing fails', async () => {

@@ -33,7 +33,8 @@ export type ScreenType =
   | 'wishlist'
   | 'login'
   | 'register'
-  | 'confirm';
+  | 'confirm'
+  | 'post-publish-success';
 
 export type TabType = 'explore' | 'search' | 'post' | 'activity' | 'profile' | 'messages' | 'my-ads' | 'categories';
 
