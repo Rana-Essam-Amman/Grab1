@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import { getBrandOptions, getModelOptions } from '@/data/brands';
+import { getListingFields } from '@/data/listingFields';
 
-interface RawField {
+export interface RawField {
   readonly key: string;
   readonly label: string;
   readonly value: string;
@@ -9,46 +9,71 @@ interface RawField {
 }
 
 export interface AttributeWithOptions extends RawField {
-  readonly type?: 'text' | 'number' | 'select' | 'textarea';
+  readonly type?: 'text' | 'number' | 'select' | 'textarea' | 'boolean' | 'cascading-model';
   readonly options?: readonly string[];
+  readonly required?: boolean;
+  readonly custom?: boolean;
+  readonly dependsOn?: string;
 }
 
 export function useAiReviewAttributes(
   categorySlug: string,
   rawFields: readonly RawField[],
-  isArabic: boolean
-): readonly AttributeWithOptions[] {
-  const currentBrand =
-    rawFields.find((a) => a.key === 'make')?.value ||
-    rawFields.find((a) => a.key === 'brand')?.value ||
-    rawFields.find((a) => a.key === 'carMake')?.value ||
-    '';
-
-  const brandOptions = useMemo(
-    () => getBrandOptions(categorySlug, isArabic),
-    [categorySlug, isArabic]
-  );
-  const modelOptions = useMemo(
-    () => currentBrand ? getModelOptions(categorySlug, currentBrand, isArabic) : [],
-    [categorySlug, currentBrand, isArabic]
-  );
-
+  isArabic: boolean,
+  subcategorySlug?: string
+): readonly (AttributeWithOptions & { type?: 'text' | 'number' | 'select' | 'textarea' })[] {
   return useMemo(() => {
-    return rawFields.map((f) => {
-      if (f.key === 'make' || f.key === 'brand' || f.key === 'carMake') {
-        // Category has brand catalog → dropdown; otherwise → free text
-        return brandOptions.length > 0
-          ? { ...f, type: 'select' as const, options: brandOptions }
-          : { ...f, type: 'text' as const };
-      }
-      if (f.key === 'model') {
-        // Free text when: no brand yet, brand is "أخرى", or brand has no models
-        if (!currentBrand || currentBrand === 'أخرى' || currentBrand === 'Other' || modelOptions.length === 0) {
-          return { ...f, type: 'text' as const };
-        }
-        return { ...f, type: 'select' as const, options: modelOptions };
-      }
-      return f;
+    const schema = getListingFields(categorySlug, subcategorySlug);
+    const schemaMap = new Map(schema.map((f) => [f.key, f]));
+
+    if (rawFields && rawFields.length > 0) {
+      return rawFields.map((f) => {
+        const sf = schemaMap.get(f.key);
+        const mappedType =
+          sf?.type === 'number' ? 'number'
+          : sf?.type === 'select' ? 'select'
+          : sf?.type === 'cascading-model' ? 'cascading-model'
+          : 'text';
+        const displayOptions = sf?.options ? sf.options.map((o) => (isArabic ? o.labelAr : o.labelEn)) : [];
+        const isCustom = Boolean(
+          f.value &&
+            f.value.trim() &&
+            sf?.type === 'select' &&
+            sf?.options &&
+            !sf.options.some(
+              (o) => o.value === f.value || o.labelAr === f.value || o.labelEn === f.value
+            )
+        );
+
+        return {
+          key: f.key,
+          label: f.label || (sf ? (isArabic ? sf.labelAr : sf.labelEn) : f.key),
+          value: f.value || '',
+          type: mappedType,
+          options: displayOptions,
+          required: sf?.required ?? f.required ?? false,
+          custom: isCustom,
+          dependsOn: sf?.dependsOn,
+        };
+      });
+    }
+
+    return schema.map((f) => {
+      const mappedType =
+        f.type === 'number' ? 'number'
+        : f.type === 'select' ? 'select'
+        : f.type === 'cascading-model' ? 'cascading-model'
+        : 'text';
+      return {
+        key: f.key,
+        label: isArabic ? f.labelAr : f.labelEn,
+        value: '',
+        type: mappedType,
+        options: f.options ? f.options.map((o) => (isArabic ? o.labelAr : o.labelEn)) : [],
+        required: f.required,
+        custom: false,
+        dependsOn: f.dependsOn,
+      };
     });
-  }, [rawFields, brandOptions, modelOptions, currentBrand]);
+  }, [categorySlug, subcategorySlug, rawFields, isArabic]) as unknown as readonly (AttributeWithOptions & { type?: 'text' | 'number' | 'select' | 'textarea' })[];
 }

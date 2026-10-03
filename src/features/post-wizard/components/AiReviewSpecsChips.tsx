@@ -15,6 +15,7 @@ interface AttributeShape {
   readonly options?: readonly string[];
   readonly placeholder?: string;
   readonly confidence?: Confidence;
+  readonly custom?: boolean;
 }
 
 interface AiReviewSpecsChipsProps {
@@ -25,10 +26,9 @@ interface AiReviewSpecsChipsProps {
 
 const INPUT_ATTRS = { autoComplete: 'off' as const, autoCorrect: 'off' as const, autoCapitalize: 'off' as const, spellCheck: false };
 
-export const AiReviewSpecsChips: React.FC<AiReviewSpecsChipsProps> = ({
-  isArabic, attributes, onAttributeChange,
-}) => {
+export const AiReviewSpecsChips: React.FC<AiReviewSpecsChipsProps> = ({ isArabic, attributes, onAttributeChange }) => {
   const [editingKey, setEditingKey] = useState<string | null>(null);
+
   if (!attributes || attributes.length === 0) return null;
 
   return (
@@ -36,6 +36,7 @@ export const AiReviewSpecsChips: React.FC<AiReviewSpecsChipsProps> = ({
       {attributes.map((attr) => {
         const filled = Boolean(attr.value && attr.value.trim());
         const isEditing = editingKey === attr.key;
+        const isCustom = filled && (attr.custom ?? Boolean(attr.options?.length && !attr.options.includes(attr.value)));
 
         if (isEditing) {
           return (
@@ -44,6 +45,7 @@ export const AiReviewSpecsChips: React.FC<AiReviewSpecsChipsProps> = ({
                 <Icon icon={iconFor(attr.key)} width={20} height={20} />
                 <span className="text-[13px] font-bold text-ink">{attr.label}</span>
                 <ConfidenceDot confidence={attr.confidence} isArabic={isArabic} />
+                {isCustom && <span className="h-2 w-2 rounded-full bg-accent" title={isArabic ? 'قيمة مخصصة' : 'Custom value'} />}
               </div>
               {attr.type === 'select' && attr.options && attr.options.length > 20 ? (
                 <Combobox
@@ -92,16 +94,14 @@ export const AiReviewSpecsChips: React.FC<AiReviewSpecsChipsProps> = ({
             onClick={() => setEditingKey(attr.key)}
             className={`flex flex-col items-start gap-1.5 rounded-2xl border px-3.5 py-3 transition-all cursor-pointer text-start min-h-[92px] ${
               filled
-                ? 'border-line bg-surface hover:border-accent/60 hover:shadow-sm'
+                ? isCustom ? 'border-accent/50 bg-surface hover:border-accent hover:shadow-sm' : 'border-line bg-surface hover:border-accent/60 hover:shadow-sm'
                 : 'border-line bg-canvas/50 hover:bg-canvas hover:border-line-strong'
             }`}
           >
-            <Icon
-              icon={iconFor(attr.key)}
-              width={22}
-              height={22}
-              className={filled ? '' : 'opacity-60'}
-            />
+            <div className="flex items-center justify-between w-full">
+              <Icon icon={iconFor(attr.key)} width={22} height={22} className={filled ? '' : 'opacity-60'} />
+              {isCustom && <span className="h-2 w-2 rounded-full bg-accent" title={isArabic ? 'قيمة مخصصة' : 'Custom value'} />}
+            </div>
             <span className={`text-[11px] font-bold uppercase tracking-wide inline-flex items-center gap-1.5 ${filled ? 'text-ink-muted' : 'text-ink-muted/70'}`}>
               {attr.label}
               <ConfidenceDot confidence={attr.confidence} isArabic={isArabic} />

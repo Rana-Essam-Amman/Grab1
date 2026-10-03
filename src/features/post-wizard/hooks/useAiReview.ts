@@ -7,6 +7,7 @@ import { useDraft } from '@/hooks/useDraft';
 import { buildNewListingPayload } from '../helpers/buildNewListingPayload';
 import { setPendingPublish } from '../helpers/pendingPublishFlags';
 import { MONETIZATION_MATRIX } from '@/data/monetization';
+import { getListingFields } from '@/data/listingFields';
 import { useAiReviewAttributes } from './useAiReviewAttributes';
 import type { UseAiReviewReturn } from './useAiReview.types';
 import { useRegenerateListing } from './useRegenerateListing';
@@ -22,11 +23,16 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
   const photos = postDraft.photos || [];
   const neighborhood = postDraft.neighborhood || '';
   const attributes = useAiReviewAttributes(postDraft.categorySlug, postDraft.generated?.fields || [], isArabic);
-  const aiErrorHint = attributes.length === 0 ? (isArabic ? 'لم يتمكن الذكاء الاصطناعي من توليد المواصفات — أعد المحاولة' : 'AI could not generate specs — retry') : null;
   const setAttributeValue = (key: string, value: string) => {
-    const current = postDraft.generated?.fields || [];
-    const updated = current.map((f) => (f.key === key ? { ...f, value } : f));
-    updatePostDraft({ generated: postDraft.generated ? { ...postDraft.generated, fields: updated } : undefined });
+    const schema = getListingFields(postDraft.categorySlug, postDraft.subcategorySlug);
+    const current = postDraft.generated?.fields ?? schema.map((f) => ({ key: f.key, label: f.labelAr, value: '' }));
+    const exists = current.some((f) => f.key === key);
+    const updated = exists ? current.map((f) => (f.key === key ? { ...f, value } : f)) : [...current, { key, label: key, value }];
+    const baseGenerated = postDraft.generated ?? {
+      title: postDraft.title || '', description: postDraft.description || '', price: postDraft.price || '',
+      categorySlug: postDraft.categorySlug, subcategorySlug: postDraft.subcategorySlug, missing: [],
+    };
+    updatePostDraft({ generated: { ...baseGenerated, fields: updated } });
   };
   const addPhotos = (p: string[]) => updatePostDraft({ photos: [...photos, ...p].slice(0, MONETIZATION_MATRIX.freeLimits.photoLimit) });
   const removePhoto = (i: number) => {
@@ -61,10 +67,11 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
       }
       resetPostDraft();
       navigateTo('post-publish-success');
-    } catch (err) {
-      console.error('[PUBLISH ERROR]', err);
+    } catch {
       setError('فشل نشر الإعلان');
-    } finally { setIsPublishing(false); }
+    } finally {
+      setIsPublishing(false);
+    }
   };
   const curT = postDraft.title || postDraft.generated?.title || '';
   const curP = postDraft.price || postDraft.generated?.price || '';
@@ -72,14 +79,12 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
   const curD = postDraft.description || postDraft.generated?.description || '';
   const missingRequiredLabels = (attributes || []).filter((a) => a.required && !String(a.value || '').trim()).map((a) => a.label);
   const regenerate = useRegenerateListing({
-    postDraft,
-    updatePostDraft,
-    userId: (user as { id?: string })?.id || user?.email || user?.phone,
+    postDraft, updatePostDraft, userId: (user as { id?: string })?.id || user?.email || user?.phone,
   });
   return {
     title: curT, price: curP, city: curC, description: curD, photos, addPhotos, removePhoto,
     neighborhood, setNeighborhood, setTitle, setPrice, setCity, setDescription,
     attributes, setAttributeValue, handlePublish, isPublishing, regenerate,
-    hasMissingParams: !curT || !curP || missingRequiredLabels.length > 0, missingRequiredLabels, error: error || aiErrorHint,
+    hasMissingParams: !curT || !curP || missingRequiredLabels.length > 0, missingRequiredLabels, error,
   };
 }

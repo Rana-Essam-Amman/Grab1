@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Send2, Location, Image as ImageIcon } from 'iconsax-react';
 import { useUI } from '@/hooks/useUI';
 import { useAiReview } from '../hooks/useAiReview';
 import { usePostWizard } from '../hooks/usePostWizard';
 import { PostFlowHeader } from '../components/PostFlowHeader';
 import { AiReviewCityDrawer } from '../components/AiReviewCityDrawer';
+import { PreviewChips } from '../components/PreviewChips';
 import { categories } from '@/data/categories';
 import { findSubcategoryBySlug } from '@/data/subcategories';
 import { getListingFields } from '@/data/listingFields';
 import { DynamicFieldRenderer } from '../components/DynamicFieldRenderer';
+import { StaticMapPreview } from '../components/StaticMapPreview';
 
 export const PostDetailsScreen: React.FC = () => {
   const { isArabic, goBack, activeCurrency, browseCountryCode } = useUI();
@@ -16,76 +18,72 @@ export const PostDetailsScreen: React.FC = () => {
   const cat = categories.find((c) => c.slug === postDraft.categorySlug);
   const sub = findSubcategoryBySlug(postDraft.subcategorySlug);
   const fields = getListingFields(postDraft.categorySlug, postDraft.subcategorySlug);
-
   const {
     title, price, city, neighborhood, description, photos,
     hasMissingParams, isPublishing, attributes, setAttributeValue,
     setTitle, setPrice, setCity, setDescription,
     handlePublish, error,
   } = useAiReview();
-
   const [isCityDrawerOpen, setIsCityDrawerOpen] = useState(false);
+
   const coverPhoto = photos[0];
   const locationLabel = [neighborhood, city].filter(Boolean).join(', ') || (isArabic ? 'الموقع' : 'Location');
 
+  const allValues = useMemo(() => {
+    const map: Record<string, string> = {};
+    for (const a of attributes) {
+      if (a.value) map[a.key] = a.value;
+    }
+    return map;
+  }, [attributes]);
+
+  const chipItems = useMemo(() => {
+    return attributes
+      .filter((a) => (a.value ?? '').trim().length > 0)
+      .map((a) => {
+        const field = fields.find((f) => f.key === a.key);
+        const knownValues = (field?.options ?? []).map((o) => o.value);
+        const isCustom = field?.type === 'select' && knownValues.length > 0 && !knownValues.includes(a.value);
+        return {
+          key: a.key,
+          label: isArabic ? (field?.labelAr ?? a.label) : (field?.labelEn ?? a.label),
+          value: a.value,
+          isCustom,
+        };
+      });
+  }, [attributes, fields, isArabic]);
+
   return (
-    <div
-      data-testid="post-details-screen"
-      className="flex flex-col min-h-screen bg-canvas pb-32"
-      dir={isArabic ? 'rtl' : 'ltr'}
-    >
-      <PostFlowHeader
-        step={3}
-        totalSteps={3}
-        titleAr="تفاصيل الإعلان"
-        titleEn="Listing Details"
-        isArabic={isArabic}
-        onBack={goBack}
-        categoryAsset={cat?.asset}
-        categoryNameAr={cat?.nameAr}
-        categoryNameEn={cat?.nameEn}
-        subcategoryNameAr={sub?.nameAr}
-        subcategoryNameEn={sub?.nameEn}
-      />
+    <div data-testid="post-details-screen" className="flex flex-col min-h-screen bg-canvas pb-32" dir={isArabic ? 'rtl' : 'ltr'}>
+      <PostFlowHeader step={3} totalSteps={3} titleAr="تفاصيل الإعلان" titleEn="Listing Details" isArabic={isArabic} onBack={goBack} categoryAsset={cat?.asset} categoryNameAr={cat?.nameAr} categoryNameEn={cat?.nameEn} subcategoryNameAr={sub?.nameAr} subcategoryNameEn={sub?.nameEn} />
 
       <div className="p-4 flex flex-col gap-4">
-        <div className="p-3 rounded-2xl border border-line bg-surface flex items-center gap-3 shadow-xs">
-          <div className="w-16 h-16 rounded-xl bg-canvas overflow-hidden shrink-0 border border-line flex items-center justify-center">
-            {coverPhoto ? <img src={coverPhoto} alt="Cover" className="w-full h-full object-cover" /> : <ImageIcon size={24} className="text-ink-muted" />}
-          </div>
-          <div className="min-w-0 flex-1">
-            <h4 className="text-sm font-bold text-ink truncate">{title || (isArabic ? 'عنوان الإعلان' : 'Listing Title')}</h4>
-            <div className="text-xs font-bold text-primary mt-0.5">{price ? `${price} ${activeCurrency}` : (isArabic ? 'السعر غير محدد' : 'Price not set')}</div>
-            <div className="text-[11px] text-ink-muted flex items-center gap-1 mt-1 truncate">
-              <Location size={12} variant="Bold" className="text-accent" />
-              <span>{locationLabel}</span>
+        <div className="p-3 rounded-2xl border border-line bg-surface flex flex-col gap-2 shadow-xs">
+          <div className="flex items-center gap-3">
+            <div className="w-16 h-16 rounded-xl bg-canvas overflow-hidden shrink-0 border border-line flex items-center justify-center">
+              {coverPhoto ? <img src={coverPhoto} alt="Cover" className="w-full h-full object-cover" /> : <ImageIcon size={24} className="text-ink-muted" />}
+            </div>
+            <div className="min-w-0 flex-1">
+              <h4 className="text-sm font-bold text-ink truncate">{title || (isArabic ? 'عنوان الإعلان' : 'Listing Title')}</h4>
+              <div className="text-xs font-bold text-primary mt-0.5">{price ? `${price} ${activeCurrency}` : (isArabic ? 'السعر غير محدد' : 'Price not set')}</div>
+              <div className="text-[11px] text-ink-muted flex items-center gap-1 mt-1 truncate">
+                <Location size={12} variant="Bold" className="text-accent" />
+                <span>{locationLabel}</span>
+              </div>
             </div>
           </div>
+          <PreviewChips items={chipItems} isArabic={isArabic} maxVisible={6} />
         </div>
 
         <div className="rounded-2xl border border-line bg-surface p-4 flex flex-col gap-3">
           <h3 className="text-xs font-bold text-ink-soft uppercase tracking-wider">{isArabic ? 'العنوان والسعر' : 'Title & Price'}</h3>
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-bold text-ink-soft">{isArabic ? 'عنوان الإعلان' : 'Listing Title'}</label>
-            <input
-              data-testid="post-details-title-input"
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder={isArabic ? 'أدخل عنواناً جذاباً...' : 'Enter title...'}
-              className="w-full h-11 px-3 rounded-xl border border-line bg-canvas text-ink text-sm font-medium focus:outline-none focus:border-primary"
-            />
+            <input data-testid="post-details-title-input" type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder={isArabic ? 'أدخل عنواناً جذاباً...' : 'Enter title...'} className="w-full h-11 px-3 rounded-xl border border-line bg-canvas text-ink text-sm font-medium focus:outline-none focus:border-primary" />
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-bold text-ink-soft">{isArabic ? `السعر (${activeCurrency})` : `Price (${activeCurrency})`}</label>
-            <input
-              data-testid="post-details-price-input"
-              type="number"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              placeholder="0"
-              className="w-full h-11 px-3 rounded-xl border border-line bg-canvas text-ink text-sm font-medium focus:outline-none focus:border-primary"
-            />
+            <input data-testid="post-details-price-input" type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="0" className="w-full h-11 px-3 rounded-xl border border-line bg-canvas text-ink text-sm font-medium focus:outline-none focus:border-primary" />
           </div>
         </div>
 
@@ -94,21 +92,14 @@ export const PostDetailsScreen: React.FC = () => {
             <h3 className="text-xs font-bold text-ink-soft uppercase tracking-wider">{isArabic ? 'المواصفات والتفاصيل' : 'Specifications & Details'}</h3>
             {fields.map((field) => {
               const attrVal = attributes.find((a) => a.key === field.key)?.value || '';
-              return <DynamicFieldRenderer key={field.key} field={field} value={attrVal} onChange={setAttributeValue} isArabic={isArabic} />;
+              return <DynamicFieldRenderer key={field.key} field={field} value={attrVal} onChange={setAttributeValue} isArabic={isArabic} allValues={allValues} />;
             })}
           </div>
         )}
 
         <div className="rounded-2xl border border-line bg-surface p-4 flex flex-col gap-3">
           <h3 className="text-xs font-bold text-ink-soft uppercase tracking-wider">{isArabic ? 'الوصف' : 'Description'}</h3>
-          <textarea
-            data-testid="post-details-description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={4}
-            placeholder={isArabic ? 'اكتب تفاصيل إضافية عن السلعة...' : 'Write additional details...'}
-            className="w-full p-3 rounded-xl border border-line bg-canvas text-ink text-sm font-medium focus:outline-none focus:border-primary resize-none"
-          />
+          <textarea data-testid="post-details-description" value={description} onChange={(e) => setDescription(e.target.value)} rows={4} placeholder={isArabic ? 'اكتب تفاصيل إضافية عن السلعة...' : 'Write additional details...'} className="w-full p-3 rounded-xl border border-line bg-canvas text-ink text-sm font-medium focus:outline-none focus:border-primary resize-none" />
         </div>
 
         <div className="rounded-2xl border border-line bg-surface p-4 flex flex-col gap-3">
@@ -117,6 +108,7 @@ export const PostDetailsScreen: React.FC = () => {
             <span className="text-sm font-medium text-ink">{locationLabel}</span>
             <button type="button" onClick={() => setIsCityDrawerOpen(true)} className="text-xs font-bold text-primary hover:underline cursor-pointer">{isArabic ? 'تغيير الموقع' : 'Change Location'}</button>
           </div>
+          <StaticMapPreview city={postDraft.city || ''} neighborhood={postDraft.neighborhood || ''} isArabic={isArabic} />
         </div>
       </div>
 
