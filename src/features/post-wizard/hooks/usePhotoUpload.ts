@@ -1,6 +1,7 @@
 import { useState, useRef, RefObject, useCallback } from 'react';
 import { usePostWizard } from './usePostWizard';
 import { listingMaxPhotos } from '@/data/photoRules';
+import { compressImage } from '../helpers/compressImage';
 
 export interface UsePhotoUploadReturn {
   photos: string[];
@@ -11,18 +12,6 @@ export interface UsePhotoUploadReturn {
   handleUseSample: (category: string) => void;
   clearPhotos: () => void;
 }
-
-const readFileAsDataURL = (file: File): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const result = e.target?.result;
-      if (typeof result === 'string') resolve(result);
-      else reject(new Error('Failed to read file'));
-    };
-    reader.onerror = () => reject(new Error('FileReader error'));
-    reader.readAsDataURL(file);
-  });
 
 export function usePhotoUpload(): UsePhotoUploadReturn {
   const { postDraft, updatePostDraft } = usePostWizard();
@@ -39,7 +28,8 @@ export function usePhotoUpload(): UsePhotoUploadReturn {
 
       setUploading(true);
       try {
-        const newPhotos = await Promise.all(filesToRead.map(readFileAsDataURL));
+        const results = await Promise.all(filesToRead.map(compressImage));
+        const newPhotos = results.map((r) => r.dataUrl);
         const existing = postDraft.photos || [];
         const merged = [...existing, ...newPhotos].slice(0, listingMaxPhotos);
         updatePostDraft({ photos: merged });
