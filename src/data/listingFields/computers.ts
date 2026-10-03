@@ -101,6 +101,35 @@ const COLOR_OPTIONS: ListingFieldOption[] = [
   { value: 'blue', labelAr: 'أزرق', labelEn: 'Blue' },
 ];
 
+const SELLER_TYPE: ListingFieldOption[] = [
+  { value: 'owner', labelAr: 'مالك', labelEn: 'Owner' },
+  { value: 'broker', labelAr: 'وسيط', labelEn: 'Broker' },
+  { value: 'shop', labelAr: 'محل تجاري', labelEn: 'Shop / Store' },
+];
+
+const ASPECT_RATIO: ListingFieldOption[] = [
+  { value: '16_9', labelAr: '16:9 قياسي', labelEn: '16:9 Standard' },
+  { value: '21_9', labelAr: '21:9 Ultrawide', labelEn: '21:9 Ultrawide' },
+  { value: '32_9', labelAr: '32:9 Super Ultrawide', labelEn: '32:9 Super Ultrawide' },
+  { value: '4_3', labelAr: '4:3 قديم', labelEn: '4:3 Legacy' },
+];
+
+const PCIE_GEN: ListingFieldOption[] = [
+  { value: 'pcie_3', labelAr: 'PCIe 3.0', labelEn: 'PCIe 3.0' },
+  { value: 'pcie_4', labelAr: 'PCIe 4.0', labelEn: 'PCIe 4.0' },
+  { value: 'pcie_5', labelAr: 'PCIe 5.0', labelEn: 'PCIe 5.0' },
+  { value: 'sata', labelAr: 'SATA', labelEn: 'SATA' },
+  { value: 'nvme', labelAr: 'NVMe M.2', labelEn: 'NVMe M.2' },
+];
+
+const KEY_SWITCH: ListingFieldOption[] = [
+  { value: 'mechanical_red', labelAr: 'ميكانيكي أحمر (خطي)', labelEn: 'Mechanical Red (Linear)' },
+  { value: 'mechanical_blue', labelAr: 'ميكانيكي أزرق (صوتي)', labelEn: 'Mechanical Blue (Clicky)' },
+  { value: 'mechanical_brown', labelAr: 'ميكانيكي بني (تكتيلي)', labelEn: 'Mechanical Brown (Tactile)' },
+  { value: 'membrane', labelAr: 'غشائي (Membrane)', labelEn: 'Membrane' },
+  { value: 'scissor', labelAr: 'مقصي (Scissor / Laptop)', labelEn: 'Scissor / Laptop' },
+];
+
 export const COMPUTERS_FIELDS: CategoryFieldMap = {
   laptops: [
     { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: true, options: COMPUTER_BRANDS },
@@ -125,6 +154,10 @@ export const COMPUTERS_FIELDS: CategoryFieldMap = {
       { value: 'original', labelAr: 'أصلي بالكامل', labelEn: 'Original' },
       { value: 'refurbished', labelAr: 'مجدد معتمد', labelEn: 'Refurbished' },
     ]},
+    { key: 'touchscreen', labelAr: 'شاشة لمس', labelEn: 'Touchscreen', type: 'boolean', required: false },
+    { key: 'backlitKeyboard', labelAr: 'كيبورد مضيء', labelEn: 'Backlit Keyboard', type: 'boolean', required: false },
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: true, required: false, options: SELLER_TYPE },
+    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
   ],
   desktops: [
     { key: 'brand', labelAr: 'الماركة / التجميع', labelEn: 'Brand / Custom', type: 'select', allowOther: true, required: true, options: COMPUTER_BRANDS },
@@ -145,6 +178,13 @@ export const COMPUTERS_FIELDS: CategoryFieldMap = {
       { value: 'original', labelAr: 'أصلي', labelEn: 'Original' },
       { value: 'custom', labelAr: 'تجميع محلي', labelEn: 'Custom Assembly' },
     ]},
+    { key: 'formFactor', labelAr: 'الشكل الفيزيائي', labelEn: 'Form Factor', type: 'select', allowOther: true, required: false, options: [
+      { value: 'tower', labelAr: 'برج (Tower)', labelEn: 'Tower' },
+      { value: 'mini', labelAr: 'ميني / SFF', labelEn: 'Mini / SFF' },
+      { value: 'aio', labelAr: 'الكل في واحد (AIO)', labelEn: 'All-in-One' },
+    ]},
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: true, required: false, options: SELLER_TYPE },
+    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
   ],
   screens: [
     { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: true, options: [
@@ -191,6 +231,10 @@ export const COMPUTERS_FIELDS: CategoryFieldMap = {
     ]},
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
     { key: 'warranty', labelAr: 'الضمان', labelEn: 'Warranty', type: 'select', allowOther: true, required: false, options: WARRANTY_OPTIONS },
+    { key: 'hdr', labelAr: 'دعم HDR', labelEn: 'HDR Support', type: 'boolean', required: false },
+    { key: 'aspectRatio', labelAr: 'نسبة العرض للارتفاع', labelEn: 'Aspect Ratio', type: 'select', allowOther: true, required: false, options: ASPECT_RATIO },
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: true, required: false, options: SELLER_TYPE },
+    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
   ],
   'parts-pc': [
     { key: 'partType', labelAr: 'نوع القطعة', labelEn: 'Part Type', type: 'select', allowOther: true, required: true, options: [
@@ -211,6 +255,9 @@ export const COMPUTERS_FIELDS: CategoryFieldMap = {
       { value: 'original_box', labelAr: 'أصلي بالكرتونة', labelEn: 'Original with Box' },
       { value: 'without_box', labelAr: 'أصلي بدون كرتونة', labelEn: 'Original without Box' },
     ]},
+    { key: 'interfaceType', labelAr: 'واجهة الاتصال', labelEn: 'Interface', type: 'select', allowOther: true, required: false, options: PCIE_GEN },
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: true, required: false, options: SELLER_TYPE },
+    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
   ],
   'accessories-pc': [
     { key: 'accessoryType', labelAr: 'نوع الملحق', labelEn: 'Accessory Type', type: 'select', allowOther: true, required: true, options: [
@@ -231,5 +278,9 @@ export const COMPUTERS_FIELDS: CategoryFieldMap = {
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
     { key: 'color', labelAr: 'اللون', labelEn: 'Color', type: 'select', allowOther: true, required: false, options: COLOR_OPTIONS },
     { key: 'warranty', labelAr: 'الضمان', labelEn: 'Warranty', type: 'select', allowOther: true, required: false, options: WARRANTY_OPTIONS },
+    { key: 'keySwitch', labelAr: 'نوع السويتش (للكيبورد)', labelEn: 'Key Switch Type', type: 'select', allowOther: true, required: false, options: KEY_SWITCH },
+    { key: 'dpi', labelAr: 'دقة الماوس DPI', labelEn: 'Mouse DPI', type: 'number', required: false, placeholder: '16000', placeholderAr: '16000' },
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: true, required: false, options: SELLER_TYPE },
+    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
   ],
 };

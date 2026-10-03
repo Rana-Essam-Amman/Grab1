@@ -48,6 +48,47 @@ const BENEFITS_OPTIONS: ListingFieldOption[] = [
   { value: 'flexible_hours', labelAr: 'ساعات عمل مرنة', labelEn: 'Flexible Hours' },
 ];
 
+const REMOTE_POLICY: ListingFieldOption[] = [
+  { value: 'onsite', labelAr: 'حضوري 100%', labelEn: 'On-site' },
+  { value: 'hybrid', labelAr: 'هجين (مكتب + بيت)', labelEn: 'Hybrid' },
+  { value: 'fully_remote', labelAr: 'عن بعد 100%', labelEn: 'Fully Remote' },
+];
+
+const APPLICATION_METHOD: ListingFieldOption[] = [
+  { value: 'email', labelAr: 'إيميل', labelEn: 'Email' },
+  { value: 'whatsapp', labelAr: 'واتساب', labelEn: 'WhatsApp' },
+  { value: 'phone', labelAr: 'اتصال هاتفي', labelEn: 'Phone Call' },
+  { value: 'website', labelAr: 'موقع الشركة / رابط تقديم', labelEn: 'Website / Form' },
+  { value: 'in_person', labelAr: 'حضور شخصي', labelEn: 'In Person' },
+];
+
+const EDUCATION_LEVELS: ListingFieldOption[] = [
+  { value: 'none', labelAr: 'غير محدد', labelEn: 'Not Specified' },
+  { value: 'high_school', labelAr: 'ثانوية عامة', labelEn: 'High School' },
+  { value: 'diploma', labelAr: 'دبلوم / كلية مجتمعية', labelEn: 'Diploma' },
+  { value: 'bachelor', labelAr: 'بكالوريوس', labelEn: 'Bachelor' },
+  { value: 'master', labelAr: 'ماجستير', labelEn: 'Master' },
+  { value: 'phd', labelAr: 'دكتوراه', labelEn: 'PhD' },
+];
+
+const WORKING_HOURS: ListingFieldOption[] = [
+  { value: 'standard_8h', labelAr: '8 ساعات / يوم', labelEn: '8 hours/day' },
+  { value: 'six_day', labelAr: '6 أيام أسبوعياً', labelEn: '6 days/week' },
+  { value: 'shifts_12h', labelAr: 'ورديات 12 ساعة', labelEn: '12-hour Shifts' },
+  { value: 'flexible', labelAr: 'ساعات مرنة', labelEn: 'Flexible Hours' },
+];
+
+const CERTIFICATIONS: ListingFieldOption[] = [
+  { value: 'pmp', labelAr: 'PMP', labelEn: 'PMP' },
+  { value: 'cpa', labelAr: 'CPA / محاسب قانوني', labelEn: 'CPA' },
+  { value: 'cfa', labelAr: 'CFA', labelEn: 'CFA' },
+  { value: 'aws', labelAr: 'AWS Certified', labelEn: 'AWS Certified' },
+  { value: 'ccna', labelAr: 'CCNA / Cisco', labelEn: 'CCNA' },
+  { value: 'microsoft', labelAr: 'Microsoft Certified', labelEn: 'Microsoft Certified' },
+  { value: 'google_ads', labelAr: 'Google Ads / Analytics', labelEn: 'Google Ads' },
+  { value: 'hr_cipp', labelAr: 'CIPD / HR Certification', labelEn: 'HR Cert (CIPD)' },
+];
+
 export const JOBS_FIELDS: CategoryFieldMap = {
   vacancies: [
     { key: 'title', labelAr: 'المسمى الوظيفي المطلوب', labelEn: 'Job Title', type: 'text', required: true, placeholder: 'Software Engineer, Sales Executive, Accountant...', placeholderAr: 'مثال: مهندس برمجيات، محاسب عام، موظف مبيعات...' },
@@ -66,6 +107,17 @@ export const JOBS_FIELDS: CategoryFieldMap = {
     { key: 'city', labelAr: 'مكان وموقع العمل (المدينة)', labelEn: 'Job Location / City', type: 'text', required: false, placeholder: 'Amman, Riyadh, Beirut...', placeholderAr: 'مثال: عمان، الرياض، بيروت...' },
     { key: 'languages', labelAr: 'اللغات المطلوبة', labelEn: 'Required Languages', type: 'select', allowOther: true, multiSelect: true, required: false, options: LANGUAGES_OPTIONS },
     { key: 'benefits', labelAr: 'المزايا والبدلات الوظيفية', labelEn: 'Benefits & Perks', type: 'select', allowOther: true, multiSelect: true, required: false, options: BENEFITS_OPTIONS },
+    { key: 'remotePolicy', labelAr: 'سياسة العمل', labelEn: 'Work Policy', type: 'select', allowOther: true, required: false, options: REMOTE_POLICY },
+    { key: 'educationLevel', labelAr: 'المؤهل العلمي المطلوب', labelEn: 'Education Required', type: 'select', allowOther: true, required: false, options: EDUCATION_LEVELS },
+    { key: 'workingHours', labelAr: 'ساعات العمل الأسبوعية', labelEn: 'Working Hours', type: 'select', allowOther: true, required: false, options: WORKING_HOURS },
+    { key: 'numberOfOpenings', labelAr: 'عدد الشواغر المتاحة', labelEn: 'Number of Openings', type: 'number', required: false, placeholder: '1', placeholderAr: '1' },
+    { key: 'applicationMethod', labelAr: 'طريقة التقديم', labelEn: 'How to Apply', type: 'select', allowOther: true, required: false, options: APPLICATION_METHOD },
+    { key: 'applicationContact', labelAr: 'بيانات التواصل / رابط التقديم', labelEn: 'Application Contact / Link', type: 'text', required: false, placeholder: 'hr@company.com / wa.me/9627...', placeholderAr: 'مثال: hr@company.com أو رقم واتساب' },
+    { key: 'deadline', labelAr: 'آخر موعد للتقديم', labelEn: 'Application Deadline', type: 'text', required: false, placeholder: '2026-11-30', placeholderAr: 'مثال: 2026-11-30' },
+    { key: 'sellerType', labelAr: 'الجهة المعلنة', labelEn: 'Posted By', type: 'select', allowOther: true, required: false, options: [
+      { value: 'employer', labelAr: 'صاحب العمل مباشرة', labelEn: 'Direct Employer' },
+      { value: 'recruiter', labelAr: 'شركة توظيف / مستشار', labelEn: 'Recruiter / Agency' },
+    ]},
   ],
   cvs: [
     { key: 'title', labelAr: 'التخصص والمهنة التي تبحث عنها', labelEn: 'Desired Job Title / Specialty', type: 'text', required: true, placeholder: 'Graphic Designer, Civil Engineer, Driver...', placeholderAr: 'مثال: مصمم جرافيك، سائق، مهندس مدني...' },
@@ -87,5 +139,12 @@ export const JOBS_FIELDS: CategoryFieldMap = {
     ]},
     { key: 'expectedSalary', labelAr: 'الراتب المتوقع (شهرياً)', labelEn: 'Expected Monthly Salary', type: 'number', required: false, placeholder: '500', placeholderAr: '500' },
     { key: 'cvUrl', labelAr: 'رابط السيرة الذاتية (Google Drive / LinkedIn / PDF)', labelEn: 'CV / LinkedIn Link', type: 'text', required: false, placeholder: 'https://linkedin.com/in/... or drive link', placeholderAr: 'رابط لينكدإن أو ملف درايف...' },
+    { key: 'educationLevel', labelAr: 'المؤهل العلمي', labelEn: 'Education Level', type: 'select', allowOther: true, required: false, options: EDUCATION_LEVELS },
+    { key: 'certifications', labelAr: 'الشهادات المهنية', labelEn: 'Professional Certifications', type: 'select', multiSelect: true, allowOther: true, required: false, options: CERTIFICATIONS },
+    { key: 'portfolioUrl', labelAr: 'رابط معرض الأعمال / Behance / GitHub', labelEn: 'Portfolio / GitHub Link', type: 'text', required: false, placeholder: 'https://github.com/... / behance.net/...', placeholderAr: 'رابط جيت هاب أو بيهانس أو درايف...' },
+    { key: 'currentLocation', labelAr: 'الموقع الحالي', labelEn: 'Current Location', type: 'text', required: false, placeholder: 'Amman, Jordan', placeholderAr: 'مثال: عمان، الأردن' },
+    { key: 'willingToRelocate', labelAr: 'مستعد للانتقال لمدينة أخرى', labelEn: 'Willing to Relocate', type: 'boolean', required: false },
+    { key: 'references', labelAr: 'قابل لتقديم توصيات عمل', labelEn: 'References Available', type: 'boolean', required: false },
+    { key: 'negotiable', labelAr: 'الراتب المتوقع قابل للتفاوض', labelEn: 'Salary Negotiable', type: 'boolean', required: false },
   ],
 };

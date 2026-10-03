@@ -1,4 +1,30 @@
-import type { CategoryFieldMap } from './types';
+import type { CategoryFieldMap, ListingFieldOption } from './types';
+
+const SELLER_TYPE: ListingFieldOption[] = [
+  { value: 'individual', labelAr: 'فرد', labelEn: 'Individual' },
+  { value: 'business', labelAr: 'شركة / مؤسسة', labelEn: 'Business / Company' },
+  { value: 'freelancer', labelAr: 'مستقل / فريلانسر', labelEn: 'Freelancer' },
+];
+
+const CANCELLATION_POLICY: ListingFieldOption[] = [
+  { value: 'flexible', labelAr: 'إلغاء مجاني', labelEn: 'Free Cancellation' },
+  { value: 'partial_fee', labelAr: 'رسوم جزئية عند الإلغاء', labelEn: 'Partial Fee' },
+  { value: 'no_refund', labelAr: 'بدون استرداد', labelEn: 'No Refund' },
+];
+
+const PAYMENT_TERMS: ListingFieldOption[] = [
+  { value: 'advance_50', labelAr: 'دفعة مقدمة 50%', labelEn: '50% Advance' },
+  { value: 'advance_100', labelAr: 'دفع كامل مقدم', labelEn: 'Full Advance' },
+  { value: 'on_completion', labelAr: 'الدفع عند التسليم', labelEn: 'On Completion' },
+  { value: 'milestone', labelAr: 'دفع على مراحل', labelEn: 'Milestone Payments' },
+];
+
+const TUTOR_DAYS: ListingFieldOption[] = [
+  { value: 'weekdays', labelAr: 'أيام الأسبوع', labelEn: 'Weekdays' },
+  { value: 'weekends', labelAr: 'نهاية الأسبوع', labelEn: 'Weekends' },
+  { value: 'daily', labelAr: 'يومياً', labelEn: 'Daily' },
+  { value: 'flexible', labelAr: 'مرن حسب الطالب', labelEn: 'Flexible' },
+];
 
 export const SERVICES_FIELDS: CategoryFieldMap = {
   delivery: [
@@ -31,6 +57,11 @@ export const SERVICES_FIELDS: CategoryFieldMap = {
     ]},
     { key: 'experienceYears', labelAr: 'سنوات الخبرة والعمل', labelEn: 'Experience (Years)', type: 'number', required: false, placeholder: '5', placeholderAr: '5' },
     { key: 'licensed', labelAr: 'سائق مرخص ومؤسسة رسمية', labelEn: 'Licensed & Registered', type: 'boolean', required: false },
+    { key: 'packingMaterials', labelAr: 'مواد التغليف متوفرة', labelEn: 'Packing Materials Included', type: 'boolean', required: false },
+    { key: 'loadingHelpers', labelAr: 'عمال تحميل وتنزيل', labelEn: 'Loading Helpers', type: 'number', required: false, placeholder: '2', placeholderAr: '2' },
+    { key: 'insuranceIncluded', labelAr: 'تأمين على المنقولات', labelEn: 'Insurance Included', type: 'boolean', required: false },
+    { key: 'sellerType', labelAr: 'نوع المزود', labelEn: 'Provider Type', type: 'select', allowOther: true, required: false, options: SELLER_TYPE },
+    { key: 'negotiable', labelAr: 'السعر قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
   ],
   events: [
     { key: 'eventType', labelAr: 'نوع خدمة الحفلات والمناسبات', labelEn: 'Event Service Type', type: 'select', allowOther: true, required: true, options: [
@@ -50,6 +81,12 @@ export const SERVICES_FIELDS: CategoryFieldMap = {
       { value: '2_3_days', labelAr: 'قبل 2 - 3 أيام', labelEn: '2-3 Days Ahead' },
       { value: 'one_week_plus', labelAr: 'قبل أسبوع فأكثر', labelEn: '1+ Week Ahead' },
     ]},
+    { key: 'menuDetails', labelAr: 'تفاصيل القائمة / البوفيه', labelEn: 'Menu / Catering Details', type: 'text', required: false, placeholder: 'Mixed grill, 3 courses, beverages...', placeholderAr: 'مثال: مشاوي مشكلة، 3 أطباق، مشروبات...' },
+    { key: 'photoPackage', labelAr: 'تشمل حزمة تصوير', labelEn: 'Photography Package Included', type: 'boolean', required: false },
+    { key: 'cancellationPolicy', labelAr: 'سياسة الإلغاء', labelEn: 'Cancellation Policy', type: 'select', allowOther: true, required: false, options: CANCELLATION_POLICY },
+    { key: 'paymentTerms', labelAr: 'شروط الدفع', labelEn: 'Payment Terms', type: 'select', allowOther: true, required: false, options: PAYMENT_TERMS },
+    { key: 'sellerType', labelAr: 'نوع المزود', labelEn: 'Provider Type', type: 'select', allowOther: true, required: false, options: SELLER_TYPE },
+    { key: 'negotiable', labelAr: 'السعر قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
   ],
   design: [
     { key: 'specialty', labelAr: 'مجال التصميم والإبداع', labelEn: 'Design Specialty', type: 'select', allowOther: true, required: true, options: [
@@ -79,6 +116,11 @@ export const SERVICES_FIELDS: CategoryFieldMap = {
       { value: 'monthly_retainer', labelAr: 'اشتراك وراتب شهري لإدارة الحسابات', labelEn: 'Monthly Retainer' },
       { value: 'hourly', labelAr: 'بالساعة', labelEn: 'Hourly Rate' },
     ]},
+    { key: 'paymentTerms', labelAr: 'شروط الدفع', labelEn: 'Payment Terms', type: 'select', allowOther: true, required: false, options: PAYMENT_TERMS },
+    { key: 'sourceFiles', labelAr: 'تسليم الملفات المفتوحة', labelEn: 'Source Files Included', type: 'boolean', required: false },
+    { key: 'commercialRights', labelAr: 'حقوق الاستخدام التجاري', labelEn: 'Commercial Rights Included', type: 'boolean', required: false },
+    { key: 'sellerType', labelAr: 'نوع المزود', labelEn: 'Provider Type', type: 'select', allowOther: true, required: false, options: SELLER_TYPE },
+    { key: 'negotiable', labelAr: 'السعر قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
   ],
   tutor: [
     { key: 'subject', labelAr: 'المادة الدراسية أو التخصص', labelEn: 'Subject', type: 'select', allowOther: true, required: true, options: [
@@ -109,5 +151,17 @@ export const SERVICES_FIELDS: CategoryFieldMap = {
       { value: 'male_teacher', labelAr: 'أستاذ / معلم', labelEn: 'Male Tutor' },
       { value: 'female_teacher', labelAr: 'معلمة / أستاذة', labelEn: 'Female Tutor' },
     ]},
+    { key: 'availableDays', labelAr: 'الأيام المتاحة للتدريس', labelEn: 'Available Days', type: 'select', allowOther: true, required: false, options: TUTOR_DAYS },
+    { key: 'trialSession', labelAr: 'حصة تجريبية متوفرة', labelEn: 'Trial Session Available', type: 'boolean', required: false },
+    { key: 'curriculum', labelAr: 'المنهاج المتبع', labelEn: 'Curriculum', type: 'select', allowOther: true, required: false, options: [
+      { value: 'national', labelAr: 'منهاج وطني', labelEn: 'National Curriculum' },
+      { value: 'british', labelAr: 'منهاج بريطاني (IGCSE)', labelEn: 'British (IGCSE)' },
+      { value: 'american', labelAr: 'منهاج أمريكي (SAT)', labelEn: 'American (SAT)' },
+      { value: 'ib', labelAr: 'منهاج دولي (IB)', labelEn: 'IB' },
+      { value: 'custom', labelAr: 'منهاج مخصص', labelEn: 'Custom' },
+    ]},
+    { key: 'groupSessions', labelAr: 'يدعم الجلسات الجماعية', labelEn: 'Group Sessions Available', type: 'boolean', required: false },
+    { key: 'sellerType', labelAr: 'نوع المزود', labelEn: 'Provider Type', type: 'select', allowOther: true, required: false, options: SELLER_TYPE },
+    { key: 'negotiable', labelAr: 'السعر قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
   ],
 };

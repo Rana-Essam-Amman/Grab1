@@ -56,6 +56,46 @@ const WARRANTY_OPTIONS: ListingFieldOption[] = [
   { value: 'none', labelAr: 'بدون ضمان', labelEn: 'No Warranty' },
 ];
 
+const HDR_OPTIONS: ListingFieldOption[] = [
+  { value: 'hdr10', labelAr: 'HDR10', labelEn: 'HDR10' },
+  { value: 'hdr10_plus', labelAr: 'HDR10+', labelEn: 'HDR10+' },
+  { value: 'dolby_vision', labelAr: 'Dolby Vision', labelEn: 'Dolby Vision' },
+  { value: 'none', labelAr: 'بدون HDR', labelEn: 'No HDR' },
+];
+
+const STREAMING_APPS: ListingFieldOption[] = [
+  { value: 'netflix', labelAr: 'Netflix', labelEn: 'Netflix' },
+  { value: 'youtube', labelAr: 'YouTube', labelEn: 'YouTube' },
+  { value: 'shahid', labelAr: 'شاهد VIP', labelEn: 'Shahid VIP' },
+  { value: 'disney', labelAr: 'Disney+', labelEn: 'Disney+' },
+  { value: 'prime', labelAr: 'Amazon Prime', labelEn: 'Amazon Prime' },
+  { value: 'apple_tv', labelAr: 'Apple TV+', labelEn: 'Apple TV+' },
+  { value: 'osn', labelAr: 'OSN+', labelEn: 'OSN+' },
+];
+
+const GAME_REGION: ListingFieldOption[] = [
+  { value: 'region_free', labelAr: 'Region Free', labelEn: 'Region Free' },
+  { value: 'pal', labelAr: 'PAL (أوروبا)', labelEn: 'PAL (EU)' },
+  { value: 'ntsc', labelAr: 'NTSC (أمريكا/اليابان)', labelEn: 'NTSC (US/JP)' },
+];
+
+const SENSOR_SIZE: ListingFieldOption[] = [
+  { value: 'full_frame', labelAr: 'Full Frame (35mm)', labelEn: 'Full Frame' },
+  { value: 'aps_c', labelAr: 'APS-C', labelEn: 'APS-C' },
+  { value: 'micro_4_3', labelAr: 'Micro 4/3', labelEn: 'Micro 4/3' },
+  { value: '1_inch', labelAr: '1 بوصة', labelEn: '1 inch' },
+];
+
+const CAMERA_KIT_CONTENTS: ListingFieldOption[] = [
+  { value: 'battery', labelAr: 'بطارية إضافية', labelEn: 'Extra Battery' },
+  { value: 'charger', labelAr: 'شاحن', labelEn: 'Charger' },
+  { value: 'bag', labelAr: 'حقيبة كاميرا', labelEn: 'Camera Bag' },
+  { value: 'strap', labelAr: 'حزام رقبة', labelEn: 'Neck Strap' },
+  { value: 'memory', labelAr: 'بطاقة ذاكرة', labelEn: 'Memory Card' },
+  { value: 'tripod', labelAr: 'ترايبود', labelEn: 'Tripod' },
+  { value: 'filters', labelAr: 'فلاتر', labelEn: 'Filters' },
+];
+
 export const ELECTRONICS_FIELDS: CategoryFieldMap = {
   tv: [
     { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: true, options: TV_BRANDS },
@@ -69,6 +109,10 @@ export const ELECTRONICS_FIELDS: CategoryFieldMap = {
       { value: '120hz', labelAr: '120 Hz (مثالي للبلايستيشن)', labelEn: '120 Hz' },
       { value: '144hz_plus', labelAr: '144 Hz+', labelEn: '144 Hz+' },
     ]},
+    { key: 'hdr', labelAr: 'تقنية HDR', labelEn: 'HDR Support', type: 'select', allowOther: true, required: false, options: HDR_OPTIONS },
+    { key: 'streamingApps', labelAr: 'تطبيقات مدمجة', labelEn: 'Built-in Apps', type: 'select', multiSelect: true, allowOther: true, required: false, options: STREAMING_APPS },
+    { key: 'releaseYear', labelAr: 'سنة الإصدار', labelEn: 'Release Year', type: 'number', required: false, placeholder: '2023', placeholderAr: '2023' },
+    { key: 'originalBox', labelAr: 'الكرتونة الأصلية متوفرة', labelEn: 'Original Box', type: 'boolean', required: false },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
     { key: 'age', labelAr: 'مدة الاستخدام (بالسنوات)', labelEn: 'Age (Years)', type: 'number', required: false, placeholder: '1', placeholderAr: '1' },
     { key: 'warranty', labelAr: 'الضمان', labelEn: 'Warranty', type: 'select', allowOther: true, required: false, options: WARRANTY_OPTIONS },
@@ -102,6 +146,13 @@ export const ELECTRONICS_FIELDS: CategoryFieldMap = {
     { key: 'noiseCancelling', labelAr: 'ميزة عزل الضوضاء النشط (ANC)', labelEn: 'Active Noise Cancelling (ANC)', type: 'boolean', required: false },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
     { key: 'batteryLife', labelAr: 'عمر البطارية (ساعات)', labelEn: 'Battery Life (Hours)', type: 'number', required: false, placeholder: '30', placeholderAr: '30' },
+    { key: 'driverSize', labelAr: 'حجم الـ Driver (ملم)', labelEn: 'Driver Size (mm)', type: 'number', required: false, placeholder: '40', placeholderAr: '40' },
+    { key: 'waterResistance', labelAr: 'مقاومة الماء', labelEn: 'Water Resistance', type: 'select', allowOther: true, required: false, options: [
+      { value: 'none', labelAr: 'بدون', labelEn: 'None' },
+      { value: 'ipx4', labelAr: 'IPX4 (رذاذ)', labelEn: 'IPX4' },
+      { value: 'ipx7', labelAr: 'IPX7 (غمر)', labelEn: 'IPX7' },
+      { value: 'ip68', labelAr: 'IP68 (رياضي)', labelEn: 'IP68' },
+    ]},
     { key: 'warranty', labelAr: 'الضمان', labelEn: 'Warranty', type: 'select', allowOther: true, required: false, options: WARRANTY_OPTIONS },
   ],
   gaming: [
@@ -131,6 +182,14 @@ export const ELECTRONICS_FIELDS: CategoryFieldMap = {
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
     { key: 'includesControllers', labelAr: 'عدد أيادي التحكم المرفقة', labelEn: 'Controllers Included', type: 'number', required: false, placeholder: '2', placeholderAr: '2' },
     { key: 'includesGames', labelAr: 'يشمل ألعاب محملة أو أشرطة', labelEn: 'Includes Games', type: 'boolean', required: false },
+    { key: 'gameTitle', labelAr: 'اسم اللعبة (إن كان شريطاً)', labelEn: 'Game Title', type: 'text', required: false, placeholder: 'FIFA 24, Spider-Man 2...', placeholderAr: 'مثال: فيفا 24...' },
+    { key: 'region', labelAr: 'المنطقة / Region', labelEn: 'Region', type: 'select', allowOther: true, required: false, options: GAME_REGION },
+    { key: 'subscription', labelAr: 'اشتراك مفعّل', labelEn: 'Active Subscription', type: 'select', allowOther: true, required: false, options: [
+      { value: 'ps_plus', labelAr: 'PS Plus', labelEn: 'PS Plus' },
+      { value: 'xbox_live', labelAr: 'Xbox Live Gold', labelEn: 'Xbox Live' },
+      { value: 'game_pass', labelAr: 'Game Pass', labelEn: 'Game Pass' },
+      { value: 'none', labelAr: 'بدون', labelEn: 'None' },
+    ]},
     { key: 'warranty', labelAr: 'الضمان', labelEn: 'Warranty', type: 'select', allowOther: true, required: false, options: WARRANTY_OPTIONS },
   ],
   cameras: [
@@ -163,6 +222,13 @@ export const ELECTRONICS_FIELDS: CategoryFieldMap = {
     { key: 'lensIncluded', labelAr: 'مرفق معها عدسة', labelEn: 'Lens Included', type: 'boolean', required: false },
     { key: 'lensDetails', labelAr: 'تفاصيل العدسة (إن وجدت)', labelEn: 'Lens Details', type: 'text', required: false, placeholder: '24-70mm f/2.8 GM...', placeholderAr: 'مثال: 24-70 ملم f/2.8...' },
     { key: 'shutterCount', labelAr: 'عدد الشتر التقريبي (Shutter Count)', labelEn: 'Shutter Count', type: 'number', required: false, placeholder: '5000', placeholderAr: '5000' },
+    { key: 'sensorSize', labelAr: 'حجم المستشعر', labelEn: 'Sensor Size', type: 'select', allowOther: true, required: false, options: SENSOR_SIZE },
+    { key: 'stabilization', labelAr: 'تثبيت الصورة', labelEn: 'Image Stabilization', type: 'select', allowOther: true, required: false, options: [
+      { value: 'ibis', labelAr: 'IBIS (داخلي)', labelEn: 'IBIS (In-body)' },
+      { value: 'ois', labelAr: 'OIS (في العدسة)', labelEn: 'OIS (Lens)' },
+      { value: 'none', labelAr: 'بدون', labelEn: 'None' },
+    ]},
+    { key: 'kitContents', labelAr: 'محتويات العرض', labelEn: 'Kit Contents', type: 'select', multiSelect: true, allowOther: true, required: false, options: CAMERA_KIT_CONTENTS },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
     { key: 'warranty', labelAr: 'الضمان', labelEn: 'Warranty', type: 'select', allowOther: true, required: false, options: WARRANTY_OPTIONS },
   ],
@@ -198,5 +264,7 @@ export const ELECTRONICS_FIELDS: CategoryFieldMap = {
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
     { key: 'warranty', labelAr: 'الضمان', labelEn: 'Warranty', type: 'select', allowOther: true, required: false, options: WARRANTY_OPTIONS },
     { key: 'dimensions', labelAr: 'الأبعاد التقريبية', labelEn: 'Dimensions', type: 'text', required: false, placeholder: 'H x W x D in cm', placeholderAr: 'الارتفاع × العرض × العمق (سم)' },
+    { key: 'capacity', labelAr: 'السعة (لتر / كجم / طن)', labelEn: 'Capacity (L / kg / Ton)', type: 'text', required: false, placeholder: '500L / 8kg / 2 Ton', placeholderAr: 'مثال: 500 لتر، 8 كجم، 2 طن' },
+    { key: 'installationIncluded', labelAr: 'التوصيل والتركيب متوفر', labelEn: 'Installation Available', type: 'boolean', required: false },
   ],
 };

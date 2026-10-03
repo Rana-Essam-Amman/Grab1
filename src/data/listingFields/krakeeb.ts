@@ -1,62 +1,74 @@
 import type { CategoryFieldMap, ListingFieldOption } from './types';
 
-const KRAKEEB_CONDITION_OPTIONS: ListingFieldOption[] = [
-  { value: 'new_surplus', labelAr: 'جديد فائض عن الحاجة', labelEn: 'Brand New Surplus' },
-  { value: 'used_good', labelAr: 'مستعمل بحالة جيدة جداً وشغال', labelEn: 'Used - Good Working' },
-  { value: 'used_fair', labelAr: 'مستعمل بحالة مقبولة', labelEn: 'Used - Fair' },
-  { value: 'for_parts_scrap', labelAr: 'قطع غيار / سكراب وتصليح', labelEn: 'For Parts / Scrap' },
+const CONDITION_OPTIONS: readonly ListingFieldOption[] = [
+  { value: 'new_sealed', labelAr: 'جديد ومغلق (مغلف)', labelEn: 'Brand New Sealed' },
+  { value: 'new_open_box', labelAr: 'جديد علبة مفتوحة', labelEn: 'New Open Box' },
+  { value: 'used_like_new', labelAr: 'مستعمل شبه جديد', labelEn: 'Used Like New' },
+  { value: 'used_good', labelAr: 'مستعمل بحالة جيدة', labelEn: 'Used Good' },
+  { value: 'used_fair', labelAr: 'مستعمل بحالة مقبولة', labelEn: 'Used Fair' },
+  { value: 'for_parts', labelAr: 'للبيع كقطع غيار / سكراب', labelEn: 'For Parts / Scrap' },
+];
+
+const WORKING_CONDITION_OPTIONS: readonly ListingFieldOption[] = [
+  { value: 'fully_working', labelAr: 'شغال تماماً وبكفاءة', labelEn: 'Fully Working' },
+  { value: 'minor_issues', labelAr: 'شغال مع وجود عيوب بسيطة', labelEn: 'Minor Issues' },
+  { value: 'not_working', labelAr: 'غير شغال (بحاجة صيانة)', labelEn: 'Not Working' },
+];
+
+const SELLER_TYPE_OPTIONS: readonly ListingFieldOption[] = [
+  { value: 'owner', labelAr: 'مالك مباشر', labelEn: 'Direct Owner' },
+  { value: 'shop', labelAr: 'محل تجاري', labelEn: 'Shop / Business' },
+  { value: 'reseller', labelAr: 'بائع متجول / وسيط', labelEn: 'Individual Reseller' },
+];
+
+const ERA_OPTIONS: readonly ListingFieldOption[] = [
+  { value: 'pre_1900', labelAr: 'أنتيك قديم جداً (قبل 1900)', labelEn: 'Antique (Pre-1900)' },
+  { value: '1900_1950', labelAr: 'من 1900 إلى 1950', labelEn: '1900 - 1950' },
+  { value: '1950_1990', labelAr: 'فينتج (1950 - 1990)', labelEn: 'Vintage (1950 - 1990)' },
+  { value: '1990_2010', labelAr: 'ريترو كلاسيك (1990 - 2010)', labelEn: 'Retro (1990 - 2010)' },
 ];
 
 export const KRAKEEB_FIELDS: CategoryFieldMap = {
   general: [
-    { key: 'category', labelAr: 'تصنيف الأغراض المعروضة', labelEn: 'Category', type: 'select', allowOther: true, required: true, options: [
-      { value: 'home_appliances_misc', labelAr: 'أجهزة وأدوات منزلية وكهربائية متنوعة', labelEn: 'Household & Misc Appliances' },
-      { value: 'tools_hardware', labelAr: 'عدد يدوية ولوازم ورش ومسامير', labelEn: 'Tools & Hardware' },
-      { value: 'electronics_cables', labelAr: 'إلكترونيات وشواحن ووصلات وكوابل', labelEn: 'Electronics & Cables' },
-      { value: 'furniture_scraps', labelAr: 'قطع أثاث وأرفف وخزائن قديمة', labelEn: 'Furniture Pieces & Shelves' },
-      { value: 'kitchenware', labelAr: 'أواني مطبخ وصحون وكاسات فائضة', labelEn: 'Kitchenware' },
-      { value: 'toys_games_misc', labelAr: 'ألعاب وأغراض أطفال متفرقة', labelEn: 'Misc Toys & Games' },
-      { value: 'storage_boxes', labelAr: 'صناديق تخزين وتنظيم كراكيب', labelEn: 'Storage Boxes & Totes' },
-    ]},
-    { key: 'condition', labelAr: 'الحالة العامة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: KRAKEEB_CONDITION_OPTIONS },
-    { key: 'brand', labelAr: 'الماركة أو الوصف المختصر', labelEn: 'Brand / Description', type: 'text', required: false, placeholder: 'Brand / Brief description...', placeholderAr: 'الماركة أو وصف سريع...' },
-    { key: 'quantity', labelAr: 'عدد القطع في الصفقة / الشروة', labelEn: 'Quantity / Count', type: 'number', required: false, placeholder: '1', placeholderAr: '1' },
-    { key: 'pickupAvailable', labelAr: 'الاستلام من موقع البائع فوراً', labelEn: 'Immediate Pickup Available', type: 'boolean', required: false },
+    { key: 'category', labelAr: 'ما نوع الغرض؟', labelEn: 'What is the item?', type: 'text', required: true, placeholder: 'e.g. Vacuum, Kettle, Tools...', placeholderAr: 'مثال: مكنسة، غلاية، عِدّة...' },
+    { key: 'subcategory', labelAr: 'تفصيل إضافي للغرض', labelEn: 'Subcategory Detail', type: 'text', required: false, placeholder: 'e.g. Wireless, Industrial...', placeholderAr: 'مثال: لاسلكي، صناعي...' },
+    { key: 'condition', labelAr: 'حالة الغرض', labelEn: 'Item Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
+    { key: 'brand', labelAr: 'الماركة (إن وجدت)', labelEn: 'Brand (If any)', type: 'text', required: false, placeholder: 'Brand name...', placeholderAr: 'اسم الماركة...' },
+    { key: 'ageYears', labelAr: 'عمر الغرض (بالسنوات)', labelEn: 'Age (Years)', type: 'number', required: false, placeholder: '0', placeholderAr: '0' },
+    { key: 'quantity', labelAr: 'عدد القطع', labelEn: 'Quantity', type: 'number', required: false, placeholder: '1', placeholderAr: '1' },
+    { key: 'dimensions', labelAr: 'المقاسات / الأبعاد', labelEn: 'Dimensions / Size', type: 'text', required: false, placeholder: 'e.g. 50x30 cm', placeholderAr: 'مثال: 50x30 سم' },
+    { key: 'workingCondition', labelAr: 'حالة التشغيل', labelEn: 'Working Condition', type: 'select', allowOther: true, required: false, options: WORKING_CONDITION_OPTIONS },
+    { key: 'originalBoxIncluded', labelAr: 'الكرتونة الأصلية متوفرة', labelEn: 'Original Box Included', type: 'boolean', required: false },
+    { key: 'pickupNote', labelAr: 'ملاحظات الاستلام', labelEn: 'Pickup Notes', type: 'text', required: false, placeholder: 'Floor level, elevator, location...', placeholderAr: 'الطابق، المصعد، الموقع...' },
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: true, required: false, options: SELLER_TYPE_OPTIONS },
+    { key: 'negotiable', labelAr: 'السعر قابل للتفاوض', labelEn: 'Price Negotiable', type: 'boolean', required: false },
   ],
   vintage: [
-    { key: 'era', labelAr: 'الفترة الزمنية / الحقبة', labelEn: 'Era / Decade', type: 'select', allowOther: true, required: false, options: [
-      { value: 'pre_1950', labelAr: 'قبل عام 1950 (أنتيك وتاريخي)', labelEn: 'Pre-1950 (Antique)' },
-      { value: '1960s_1970s', labelAr: 'الستينات والسبعينات (Vintage 60s/70s)', labelEn: '1960s - 1970s' },
-      { value: '1980s_1990s', labelAr: 'الثمانينات والتسعينات (Retro 80s/90s)', labelEn: '1980s - 1990s' },
-      { value: 'early_2000s', labelAr: 'أوائل الألفين (Y2K Retro)', labelEn: 'Early 2000s' },
-    ]},
-    { key: 'itemType', labelAr: 'نوع الغرض الكلاسيكي', labelEn: 'Item Type', type: 'text', required: true, placeholder: 'Radio, Typewriter, Telephone...', placeholderAr: 'مثال: راديو ترانزستور، آلة كاتبة، تلفون قرص...' },
-    { key: 'material', labelAr: 'المادة المصنعة الأساسية', labelEn: 'Material', type: 'select', allowOther: true, required: false, options: [
-      { value: 'wood_metal', labelAr: 'خشب مع نحاس / حديد', labelEn: 'Wood & Metal' },
-      { value: 'bakelite_plastic', labelAr: 'بلاستيك بيكلايت قديم (Bakelite)', labelEn: 'Bakelite / Vintage Plastic' },
-      { value: 'glass_porcelain', labelAr: 'زجاج ملون وخزف قديم', labelEn: 'Glass / Porcelain' },
-    ]},
-    { key: 'workingCondition', labelAr: 'يعمل وشغال بكفاءة', labelEn: 'Working Condition', type: 'boolean', required: false },
-    { key: 'condition', labelAr: 'الحالة الجمالية', labelEn: 'Aesthetic Condition', type: 'select', allowOther: true, required: true, options: [
-      { value: 'mint_preserved', labelAr: 'مقتنى بحالة نادرة جداً كالجديد', labelEn: 'Mint Preserved' },
-      { value: 'good_patina', labelAr: 'معتق بلمسة الزمن الأصلية', labelEn: 'Good Vintage Patina' },
-      { value: 'display_only', labelAr: 'للعرض والديكور فقط (غير شغال)', labelEn: 'For Display / Decor Only' },
-    ]},
+    { key: 'itemType', labelAr: 'نوع القطعة الكلاسيكية', labelEn: 'Vintage Item Type', type: 'text', required: true, placeholder: 'e.g. Radio, Typewriter, Clock...', placeholderAr: 'مثال: راديو، آلة كاتبة، ساعة...' },
+    { key: 'era', labelAr: 'الحقبة الزمنية', labelEn: 'Era / Decade', type: 'select', allowOther: true, required: false, options: ERA_OPTIONS },
+    { key: 'origin', labelAr: 'بلد المنشأ الأصلي', labelEn: 'Origin Country', type: 'text', required: false, placeholder: 'Germany, UK, USA...', placeholderAr: 'ألمانيا، بريطانيا، أمريكا...' },
+    { key: 'material', labelAr: 'المادة المصنعة', labelEn: 'Material', type: 'text', required: false, placeholder: 'Wood, Brass, Copper...', placeholderAr: 'خشب، نحاس، حديد...' },
+    { key: 'condition', labelAr: 'الحالة الفنية', labelEn: 'Technical Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
+    { key: 'restored', labelAr: 'تم ترميم القطعة؟', labelEn: 'Was it Restored?', type: 'boolean', required: false },
+    { key: 'certified', labelAr: 'يوجد شهادة أصالة؟', labelEn: 'Is it Certified?', type: 'boolean', required: false },
+    { key: 'ageYears', labelAr: 'العمر التقريبي (بالسنوات)', labelEn: 'Approximate Age', type: 'number', required: false, placeholder: '50', placeholderAr: '50' },
+    { key: 'dimensions', labelAr: 'الأبعاد', labelEn: 'Dimensions', type: 'text', required: false, placeholder: 'Height, Width...', placeholderAr: 'الطول، العرض...' },
+    { key: 'story', labelAr: 'تاريخ القطعة / قصتها', labelEn: 'Item Story / History', type: 'text', required: false, placeholder: 'History of this item...', placeholderAr: 'تاريخ أو قصة هذه القطعة...' },
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: true, required: false, options: SELLER_TYPE_OPTIONS },
+    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
   ],
   clearances: [
-    { key: 'clearanceReason', labelAr: 'سبب التصفية والشروة', labelEn: 'Clearance Reason', type: 'select', allowOther: true, required: true, options: [
-      { value: 'store_closing', labelAr: 'تصفية محل تجاري / إغلاق نشاط', labelEn: 'Store Closing / Liquidation' },
-      { value: 'moving_abroad', labelAr: 'تصفية محتويات منزل بداعي السفر', labelEn: 'Relocation / Moving Abroad' },
-      { value: 'overstock', labelAr: 'بواقي مستودعات وستوك فائض (Overstock)', labelEn: 'Warehouse Overstock' },
-      { value: 'damaged_box', labelAr: 'كراتين تالفة وبواقي معارض', labelEn: 'Open Box / Display Clearance' },
-    ]},
-    { key: 'itemType', labelAr: 'نوع البضاعة المعروضة في الشروة', labelEn: 'Clearance Inventory Type', type: 'text', required: true, placeholder: 'Clothes, Electronics, Household...', placeholderAr: 'مثال: ملابس جملة، إلكترونيات، مستلزمات...' },
-    { key: 'condition', labelAr: 'حالة البضاعة', labelEn: 'Lot Condition', type: 'select', allowOther: true, required: true, options: [
-      { value: 'all_new', labelAr: 'جميع القطع جديدة 100%', labelEn: '100% Brand New' },
-      { value: 'mixed_condition', labelAr: 'مختلط (جديد + مستعمل نظيف)', labelEn: 'Mixed Lot' },
-      { value: 'grade_b', labelAr: 'فرز ثاني / عيوب بسيطة', labelEn: 'Grade B / Minor Defects' },
-    ]},
-    { key: 'bulkSale', labelAr: 'البيع كامل الصفقة دفعة واحدة (شروة واحدة)', labelEn: 'Take-All Bulk Sale Only', type: 'boolean', required: false },
-    { key: 'quantity', labelAr: 'العدد الإجمالي للقطع', labelEn: 'Total Units Count', type: 'number', required: false, placeholder: '50', placeholderAr: '50' },
+    { key: 'itemType', labelAr: 'ما الغرض المتصفي؟', labelEn: 'What is being cleared?', type: 'text', required: true, placeholder: 'Clothing lot, household goods...', placeholderAr: 'شروة ملابس، أغراض منزلية...' },
+    { key: 'quantity', labelAr: 'العدد الإجمالي للقطع', labelEn: 'Total Quantity', type: 'number', required: false, placeholder: '10', placeholderAr: '10' },
+    { key: 'bundleAvailable', labelAr: 'البيع كمجموعة واحدة (شروة)', labelEn: 'Bundle / Lot Sale Only', type: 'boolean', required: false },
+    { key: 'bulkPricing', labelAr: 'يتوفر سعر خاص للجملة', labelEn: 'Bulk Pricing Available', type: 'boolean', required: false },
+    { key: 'condition', labelAr: 'حالة البضاعة', labelEn: 'Goods Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
+    { key: 'workingCondition', labelAr: 'حالة التشغيل', labelEn: 'Working Condition', type: 'select', allowOther: true, required: false, options: WORKING_CONDITION_OPTIONS },
+    { key: 'originalPrice', labelAr: 'السعر الأصلي (قبل التصفية)', labelEn: 'Original Price', type: 'number', required: false, placeholder: '0', placeholderAr: '0' },
+    { key: 'clearancePrice', labelAr: 'سعر التصفية (النهائي)', labelEn: 'Clearance Price', type: 'number', required: false, placeholder: '0', placeholderAr: '0' },
+    { key: 'dimensions', labelAr: 'الأبعاد / الوزن الإجمالي', labelEn: 'Dimensions / Total Weight', type: 'text', required: false, placeholder: 'Size or Weight...', placeholderAr: 'الحجم أو الوزن...' },
+    { key: 'pickupOnly', labelAr: 'الاستلام من الموقع فقط (لا يوجد توصيل)', labelEn: 'Pickup Only (No Delivery)', type: 'boolean', required: false },
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: true, required: false, options: SELLER_TYPE_OPTIONS },
+    { key: 'negotiable', labelAr: 'السعر قابل للنقاش', labelEn: 'Price is Negotiable', type: 'boolean', required: false },
   ],
 };
