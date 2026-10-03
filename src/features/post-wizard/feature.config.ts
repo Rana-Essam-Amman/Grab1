@@ -58,5 +58,10 @@ export default defineFeature({
       component: () => import('./screens/CategoryPickScreen').then((m) => ({ default: m.CategoryPickScreen })),
       guard: 'public',
     },
+    'post-publish-success': {
+      name: 'post-publish-success',
+      component: () => import('./screens/PublishSuccessScreen').then((m) => ({ default: m.PublishSuccessScreen })),
+      guard: 'public',
+    },
   },
 });

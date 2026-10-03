@@ -45,6 +45,7 @@ const ChooseSubcategoryScreen = lazy(() => import('@/features/post-wizard/screen
 const PhotoUploadScreen = lazy(() => import('@/features/post-wizard/screens/PhotoUploadScreen').then((m) => ({ default: m.PhotoUploadScreen })));
 const LocationPickScreen = lazy(() => import('@/features/post-wizard/screens/LocationPickScreen').then((m) => ({ default: m.LocationPickScreen })));
 const PostDetailsScreen = lazy(() => import('@/features/post-wizard/screens/PostDetailsScreen').then((m) => ({ default: m.PostDetailsScreen })));
+const PublishSuccessScreen = lazy(() => import('@/features/post-wizard/screens/PublishSuccessScreen').then((m) => ({ default: m.PublishSuccessScreen })));
 const AiDraftScreen = lazy(() => import('@/features/post-wizard/screens/AiDraftScreen').then((m) => ({ default: m.AiDraftScreen })));
 const AiReviewScreen = lazy(() => import('@/features/post-wizard/screens/AiReviewScreen').then((m) => ({ default: m.AiReviewScreen })));
 const PostAdEntryScreen = lazy(() => import('@/features/post-wizard/screens/PostAdEntryScreen').then((m) => ({ default: m.PostAdEntryScreen })));
@@ -167,6 +168,10 @@ const MainNavigator: React.FC = () => {
       case 'post-details': {
         const fromRegistry = renderRegistryScreen('post-details');
         return fromRegistry ?? <PostDetailsScreen />;
+      }
+      case 'post-publish-success': {
+        const fromRegistry = renderRegistryScreen('post-publish-success');
+        return fromRegistry ?? <PublishSuccessScreen />;
       }
       case 'post-ai-draft': {
         const fromRegistry = renderRegistryScreen('post-ai-draft');
