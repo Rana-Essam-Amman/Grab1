@@ -13,7 +13,7 @@ export const tabletsPack = packOf(spec, {
   title: (facts) => `تابلت ${facts.subject !== 'تابلت' ? facts.subject : ''} للبيع${facts.place ? ` — ${facts.place}` : ''}${facts.storage ? `، ${facts.storage} جيجا` : ''}`.replace(/\s+/g, ' ').trim(),
   opening: (facts, seed) => {
     const storage = facts.storage ? `بسعة ${facts.storage} جيجا` : '';
-    const line = storage ? `تابلت ${facts.subject} ${storage}، ومتاح للمعاينة.` : 'التابلت بحالة جيدة، ومتاح للمعاينة.';
+    const line = storage ? `تابلت ${facts.subject} ${storage}، وهو متاح للمعاينة.` : 'التابلت بحالة جيدة، وهو متاح للمعاينة.';
     return pick(seed, [line, line, 'التابلت بحالة جيدة، ومتاح للمعاينة.'], 1);
   },
   composition: (facts) => {
