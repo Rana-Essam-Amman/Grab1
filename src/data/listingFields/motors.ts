@@ -87,6 +87,7 @@ export const MOTORS_FIELDS: CategoryFieldMap = {
     { key: 'trim', labelAr: 'الفئة', labelEn: 'Trim', type: 'text', required: false, placeholder: 'LE, SE, Sport...' },
     { key: 'year', labelAr: 'السنة', labelEn: 'Year', type: 'select', allowOther: true, required: true, options: CAR_YEAR_OPTIONS },
     { key: 'km', labelAr: 'العداد (كم)', labelEn: 'KM', type: 'number', required: false, placeholder: '50000' },
+    { key: 'inspected', labelAr: 'مفحوصة', labelEn: 'Inspected', type: 'boolean', required: false },
     { key: 'transmission', labelAr: 'ناقل الحركة', labelEn: 'Transmission', type: 'select', allowOther: true, required: false, options: TRANSMISSION_OPTIONS },
     { key: 'fuel', labelAr: 'الوقود', labelEn: 'Fuel', type: 'select', allowOther: true, required: false, options: FUEL_OPTIONS },
     { key: 'doors', labelAr: 'الأبواب', labelEn: 'Doors', type: 'select', allowOther: true, required: false, options: DOORS_OPTIONS },
