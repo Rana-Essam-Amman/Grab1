@@ -17,7 +17,7 @@ export const SettingsScreen: React.FC = () => {
   const { isArabic, goBack, navigateTo, setLocale, browseCountry, browseCityAr, browseCityEn, setIsCountrySheetOpen } = useUI();
   const { user, logout, registered } = useAuth();
 
-  const handleLoginCta = useCallback(() => navigateTo('register'), [navigateTo]);
+  const handleLoginCta = useCallback(() => navigateTo('login'), [navigateTo]);
   const handleLanguageToggle = useCallback(() => setLocale(isArabic ? 'en' : 'ar'), [setLocale, isArabic]);
   const handleCountryChange = useCallback(() => setIsCountrySheetOpen(true), [setIsCountrySheetOpen]);
   const handleTermsNav = useCallback(() => navigateTo('terms'), [navigateTo]);
