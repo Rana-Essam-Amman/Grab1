@@ -59,6 +59,82 @@ const SEASON_OPTIONS: ListingFieldOption[] = [
   { value: 'spring_autumn', labelAr: 'ربيعي / خريفي', labelEn: 'Spring / Autumn' },
 ];
 
+const PATTERN: ListingFieldOption[] = [
+  { value: 'solid', labelAr: 'سادة', labelEn: 'Solid' },
+  { value: 'striped', labelAr: 'مخطط', labelEn: 'Striped' },
+  { value: 'polka_dots', labelAr: 'منقّط', labelEn: 'Polka Dots' },
+  { value: 'floral', labelAr: 'زهري / مشجّر', labelEn: 'Floral' },
+  { value: 'geometric', labelAr: 'هندسي', labelEn: 'Geometric' },
+  { value: 'animal_print', labelAr: 'طبعة حيوانية', labelEn: 'Animal Print' },
+];
+
+const SLEEVE_LENGTH: ListingFieldOption[] = [
+  { value: 'sleeveless', labelAr: 'بدون أكمام', labelEn: 'Sleeveless' },
+  { value: 'short', labelAr: 'كم قصير', labelEn: 'Short Sleeve' },
+  { value: 'three_quarter', labelAr: 'كم 3/4', labelEn: '3/4 Sleeve' },
+  { value: 'long', labelAr: 'كم طويل', labelEn: 'Long Sleeve' },
+];
+
+const DRESS_LENGTH: ListingFieldOption[] = [
+  { value: 'mini', labelAr: 'ميني (فوق الركبة)', labelEn: 'Mini' },
+  { value: 'midi', labelAr: 'ميدي (تحت الركبة)', labelEn: 'Midi' },
+  { value: 'maxi', labelAr: 'ماكسي (طويل)', labelEn: 'Maxi' },
+];
+
+const MEN_FIT: ListingFieldOption[] = [
+  { value: 'slim', labelAr: 'سليم', labelEn: 'Slim Fit' },
+  { value: 'regular', labelAr: 'عادي', labelEn: 'Regular Fit' },
+  { value: 'oversized', labelAr: 'واسع (Oversized)', labelEn: 'Oversized' },
+];
+
+const STONE_TYPE: ListingFieldOption[] = [
+  { value: 'diamond', labelAr: 'ألماس', labelEn: 'Diamond' },
+  { value: 'emerald', labelAr: 'زمرد', labelEn: 'Emerald' },
+  { value: 'ruby', labelAr: 'ياقوت', labelEn: 'Ruby' },
+  { value: 'sapphire', labelAr: 'صفير', labelEn: 'Sapphire' },
+  { value: 'pearl', labelAr: 'لؤلؤ طبيعي', labelEn: 'Pearl' },
+  { value: 'zircon', labelAr: 'زركون', labelEn: 'Zircon' },
+  { value: 'no_stone', labelAr: 'بدون حجر', labelEn: 'No Stone' },
+];
+
+const STRAP_TYPE: ListingFieldOption[] = [
+  { value: 'shoulder_strap', labelAr: 'حزام كتف', labelEn: 'Shoulder Strap' },
+  { value: 'crossbody_strap', labelAr: 'حزام كروس', labelEn: 'Crossbody Strap' },
+  { value: 'top_handle', labelAr: 'مقبض يدوي', labelEn: 'Top Handle' },
+  { value: 'chain', labelAr: 'سلسلة معدنية', labelEn: 'Chain' },
+  { value: 'adjustable', labelAr: 'حزام قابل للتعديل', labelEn: 'Adjustable' },
+];
+
+const HEEL_HEIGHT: ListingFieldOption[] = [
+  { value: 'flat', labelAr: 'بدون كعب (Flat)', labelEn: 'Flat' },
+  { value: 'low', labelAr: 'كعب منخفض (1-3 سم)', labelEn: 'Low (1-3cm)' },
+  { value: 'medium', labelAr: 'كعب متوسط (4-7 سم)', labelEn: 'Medium (4-7cm)' },
+  { value: 'high', labelAr: 'كعب عالي (8+ سم)', labelEn: 'High (8+cm)' },
+];
+
+const SHOE_CLOSURE: ListingFieldOption[] = [
+  { value: 'laces', labelAr: 'رباط', labelEn: 'Laces' },
+  { value: 'slip_on', labelAr: 'بدون رباط (Slip-on)', labelEn: 'Slip-on' },
+  { value: 'velcro', labelAr: 'لاصق (Velcro)', labelEn: 'Velcro' },
+  { value: 'zipper', labelAr: 'سحاب', labelEn: 'Zipper' },
+  { value: 'buckle', labelAr: 'إبزيم', labelEn: 'Buckle' },
+];
+
+const PERFUME_NOTES: ListingFieldOption[] = [
+  { value: 'oriental', labelAr: 'شرقي / بخوري', labelEn: 'Oriental' },
+  { value: 'floral', labelAr: 'زهري', labelEn: 'Floral' },
+  { value: 'woody', labelAr: 'خشبي', labelEn: 'Woody' },
+  { value: 'fresh_citrus', labelAr: 'منعش / حمضي', labelEn: 'Fresh / Citrus' },
+  { value: 'aquatic', labelAr: 'بحري (Aquatic)', labelEn: 'Aquatic' },
+  { value: 'gourmand', labelAr: 'حلو / فانيليا (Gourmand)', labelEn: 'Gourmand' },
+];
+
+const SELLER_TYPE: ListingFieldOption[] = [
+  { value: 'owner', labelAr: 'مالك', labelEn: 'Owner' },
+  { value: 'shop', labelAr: 'محل / متجر', labelEn: 'Shop / Store' },
+  { value: 'reseller', labelAr: 'بائع معتمد', labelEn: 'Reseller' },
+];
+
 export const FASHION_FIELDS: CategoryFieldMap = {
   women: [
     { key: 'clothingType', labelAr: 'نوع القطعة', labelEn: 'Type', type: 'select', allowOther: true, required: true, options: [
@@ -87,6 +163,11 @@ export const FASHION_FIELDS: CategoryFieldMap = {
     { key: 'season', labelAr: 'الموسم', labelEn: 'Season', type: 'select', allowOther: true, required: false, options: SEASON_OPTIONS },
     { key: 'tags', labelAr: 'التيكيت والتاغ الأصلي موجود', labelEn: 'Original Tags Attached', type: 'boolean', required: false },
     { key: 'boxIncluded', labelAr: 'الكيس أو العلبة الأصلية متوفرة', labelEn: 'Original Bag / Box Included', type: 'boolean', required: false },
+    { key: 'pattern', labelAr: 'النقشة', labelEn: 'Pattern', type: 'select', allowOther: true, required: false, options: PATTERN },
+    { key: 'sleeveLength', labelAr: 'طول الكم', labelEn: 'Sleeve Length', type: 'select', allowOther: true, required: false, options: SLEEVE_LENGTH },
+    { key: 'dressLength', labelAr: 'طول الفستان / التنورة', labelEn: 'Dress / Skirt Length', type: 'select', allowOther: true, required: false, options: DRESS_LENGTH },
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: true, required: false, options: SELLER_TYPE },
+    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
   ],
   men: [
     { key: 'clothingType', labelAr: 'نوع الملابس', labelEn: 'Type', type: 'select', allowOther: true, required: true, options: [
@@ -112,6 +193,11 @@ export const FASHION_FIELDS: CategoryFieldMap = {
     { key: 'occasion', labelAr: 'المناسبة', labelEn: 'Occasion', type: 'select', allowOther: true, required: false, options: OCCASION_OPTIONS },
     { key: 'season', labelAr: 'الموسم', labelEn: 'Season', type: 'select', allowOther: true, required: false, options: SEASON_OPTIONS },
     { key: 'tags', labelAr: 'التاغ الأصلي متوفر', labelEn: 'Tags Included', type: 'boolean', required: false },
+    { key: 'pattern', labelAr: 'النقشة', labelEn: 'Pattern', type: 'select', allowOther: true, required: false, options: PATTERN },
+    { key: 'fit', labelAr: 'القَصّة', labelEn: 'Fit', type: 'select', allowOther: true, required: false, options: MEN_FIT },
+    { key: 'sleeveLength', labelAr: 'طول الكم', labelEn: 'Sleeve Length', type: 'select', allowOther: true, required: false, options: SLEEVE_LENGTH },
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: true, required: false, options: SELLER_TYPE },
+    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
   ],
   'watches-jewelry': [
     { key: 'itemType', labelAr: 'نوع القطعة', labelEn: 'Item Type', type: 'select', allowOther: true, required: true, options: [
@@ -135,6 +221,9 @@ export const FASHION_FIELDS: CategoryFieldMap = {
     { key: 'brand', labelAr: 'الماركة المصنعة (إن وجدت)', labelEn: 'Brand', type: 'text', required: false, placeholder: 'Cartier, Tiffany & Co, Pandora, Damas...', placeholderAr: 'مثال: داماس، تيفاني، باندورا...' },
     { key: 'certified', labelAr: 'مرفق فاتورة أو شهادة فحص معتمدة', labelEn: 'Certificate / Invoice Included', type: 'boolean', required: false },
     { key: 'boxIncluded', labelAr: 'العلبة الأصلية متوفرة', labelEn: 'Original Box Included', type: 'boolean', required: false },
+    { key: 'stoneType', labelAr: 'نوع الحجر', labelEn: 'Stone Type', type: 'select', allowOther: true, required: false, options: STONE_TYPE },
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: true, required: false, options: SELLER_TYPE },
+    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
   ],
   bags: [
     { key: 'bagType', labelAr: 'نوع الحقيبة', labelEn: 'Bag Type', type: 'select', allowOther: true, required: true, options: [
@@ -157,6 +246,10 @@ export const FASHION_FIELDS: CategoryFieldMap = {
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
     { key: 'dustbagIncluded', labelAr: 'كيس الحماية القماشي متوفر (Dustbag)', labelEn: 'Dustbag Included', type: 'boolean', required: false },
     { key: 'boxIncluded', labelAr: 'العلبة الأصلية والفاتورة متوفرة', labelEn: 'Original Box & Receipt Included', type: 'boolean', required: false },
+    { key: 'strapType', labelAr: 'نوع الحزام', labelEn: 'Strap Type', type: 'select', allowOther: true, required: false, options: STRAP_TYPE },
+    { key: 'dimensions', labelAr: 'الأبعاد (سم)', labelEn: 'Dimensions', type: 'text', required: false, placeholder: '30x20x10 cm', placeholderAr: 'مثال: 30×20×10 سم' },
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: true, required: false, options: SELLER_TYPE },
+    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
   ],
   shoes: [
     { key: 'shoeType', labelAr: 'نوع الحذاء', labelEn: 'Shoe Type', type: 'select', allowOther: true, required: true, options: [
@@ -183,6 +276,10 @@ export const FASHION_FIELDS: CategoryFieldMap = {
     ]},
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
     { key: 'boxIncluded', labelAr: 'الكرتونة الأصلية متوفرة', labelEn: 'Original Box Included', type: 'boolean', required: false },
+    { key: 'heelHeight', labelAr: 'ارتفاع الكعب', labelEn: 'Heel Height', type: 'select', allowOther: true, required: false, options: HEEL_HEIGHT },
+    { key: 'closureType', labelAr: 'طريقة الإغلاق', labelEn: 'Closure Type', type: 'select', allowOther: true, required: false, options: SHOE_CLOSURE },
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: true, required: false, options: SELLER_TYPE },
+    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
   ],
   perfumes: [
     { key: 'brand', labelAr: 'الماركة ودار العطور', labelEn: 'Brand / House', type: 'text', required: true, placeholder: 'Dior, Chanel, Creed, Tom Ford, Arabian Oud...', placeholderAr: 'مثال: ديور، شانيل، توم فورد، العربية للعود...' },
@@ -214,5 +311,14 @@ export const FASHION_FIELDS: CategoryFieldMap = {
       { value: 'tester', labelAr: 'تستر أصلي (Tester)', labelEn: 'Tester' },
     ]},
     { key: 'boxIncluded', labelAr: 'العلبة الأصلية متوفرة', labelEn: 'Original Box Included', type: 'boolean', required: false },
+    { key: 'notes', labelAr: 'العائلة العطرية', labelEn: 'Fragrance Notes', type: 'select', multiSelect: true, allowOther: true, required: false, options: PERFUME_NOTES },
+    { key: 'longevity', labelAr: 'مدة الثبات', labelEn: 'Longevity', type: 'select', allowOther: true, required: false, options: [
+      { value: 'weak', labelAr: 'ضعيف (ساعتين)', labelEn: 'Weak (2 hrs)' },
+      { value: 'moderate', labelAr: 'متوسط (4-6 ساعات)', labelEn: 'Moderate (4-6 hrs)' },
+      { value: 'long', labelAr: 'طويل (8-12 ساعة)', labelEn: 'Long (8-12 hrs)' },
+      { value: 'eternal', labelAr: 'ثبات استثنائي (يوم كامل)', labelEn: 'Exceptional (All Day)' },
+    ]},
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: true, required: false, options: SELLER_TYPE },
+    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
   ],
 };
