@@ -11,6 +11,7 @@ import { getListingFields } from '@/data/listingFields';
 import { useAiReviewAttributes } from './useAiReviewAttributes';
 import type { UseAiReviewReturn } from './useAiReview.types';
 import { useRegenerateListing } from './useRegenerateListing';
+import { getCurrentUser, requirePhoneForPublish } from '@/features/auth/helpers/publishPhoneGuard';
 export type { UseAiReviewReturn } from './useAiReview.types';
 export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => void } {
   const { postDraft, updatePostDraft } = usePostWizard();
@@ -55,7 +56,8 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
       navigateTo('login');
       return;
     }
-    const { title, price, targetMarket, newListing } = buildNewListingPayload({ postDraft, user, browseCountryCode, activeCurrency });
+    if (!requirePhoneForPublish(() => void handlePublish())) return;
+    const { title, price, targetMarket, newListing } = buildNewListingPayload({ postDraft, user: getCurrentUser(), browseCountryCode, activeCurrency });
     if (!title || !price) return;
     setIsPublishing(true);
     setError(null);
