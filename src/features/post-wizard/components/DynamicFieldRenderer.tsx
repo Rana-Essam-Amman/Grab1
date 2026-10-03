@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { ListingField } from '@/data/listingFields';
 import { OtherOptionInput } from './OtherOptionInput';
+import { CascadingModelSelect } from './CascadingModelSelect';
 
 const OTHER_VALUE = '__other__';
 
@@ -9,10 +10,11 @@ interface DynamicFieldRendererProps {
   readonly value: string;
   readonly onChange: (key: string, value: string) => void;
   readonly isArabic: boolean;
+  readonly allValues?: Readonly<Record<string, string>>;
 }
 
 export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
-  field, value, onChange, isArabic,
+  field, value, onChange, isArabic, allValues,
 }) => {
   const label = isArabic ? field.labelAr : field.labelEn;
   const isCustom = Boolean(field.allowOther && value && field.options && !field.options.some((opt) => opt.value === value));
@@ -35,6 +37,17 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
         >
           <div className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform ${isChecked ? (isArabic ? '-translate-x-6' : 'translate-x-6') : 'translate-x-0'}`} />
         </button>
+      </div>
+    );
+  }
+
+  if (field.type === 'cascading-model') {
+    const parentKey = field.dependsOn ?? '';
+    const parentValue = allValues?.[parentKey] ?? '';
+    return (
+      <div className="flex flex-col gap-1.5 py-1.5">
+        <label className="text-xs font-bold text-ink-soft">{label} {field.required && <span className="text-accent">*</span>}</label>
+        <CascadingModelSelect makeValue={parentValue} modelValue={value} onMakeChange={() => { /* handled by make field */ }} onModelChange={(v) => onChange(field.key, v)} isArabic={isArabic} hideMakeField />
       </div>
     );
   }

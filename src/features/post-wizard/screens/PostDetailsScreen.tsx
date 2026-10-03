@@ -29,6 +29,14 @@ export const PostDetailsScreen: React.FC = () => {
   const coverPhoto = photos[0];
   const locationLabel = [neighborhood, city].filter(Boolean).join(', ') || (isArabic ? 'الموقع' : 'Location');
 
+  const allValues = useMemo(() => {
+    const map: Record<string, string> = {};
+    for (const a of attributes) {
+      if (a.value) map[a.key] = a.value;
+    }
+    return map;
+  }, [attributes]);
+
   const chipItems = useMemo(() => {
     return attributes
       .filter((a) => (a.value ?? '').trim().length > 0)
@@ -84,7 +92,7 @@ export const PostDetailsScreen: React.FC = () => {
             <h3 className="text-xs font-bold text-ink-soft uppercase tracking-wider">{isArabic ? 'المواصفات والتفاصيل' : 'Specifications & Details'}</h3>
             {fields.map((field) => {
               const attrVal = attributes.find((a) => a.key === field.key)?.value || '';
-              return <DynamicFieldRenderer key={field.key} field={field} value={attrVal} onChange={setAttributeValue} isArabic={isArabic} />;
+              return <DynamicFieldRenderer key={field.key} field={field} value={attrVal} onChange={setAttributeValue} isArabic={isArabic} allValues={allValues} />;
             })}
           </div>
         )}

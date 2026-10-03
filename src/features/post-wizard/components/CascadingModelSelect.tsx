@@ -11,10 +11,11 @@ interface Props {
   readonly onMakeChange: (v: string) => void;
   readonly onModelChange: (v: string) => void;
   readonly isArabic: boolean;
+  readonly hideMakeField?: boolean;
 }
 
 export const CascadingModelSelect: React.FC<Props> = ({
-  makeValue, modelValue, onMakeChange, onModelChange, isArabic,
+  makeValue, modelValue, onMakeChange, onModelChange, isArabic, hideMakeField,
 }) => {
   const isMakeCustom = Boolean(makeValue && !CAR_BRANDS.some((b) => b.slug === makeValue));
   const [showOtherMake, setShowOtherMake] = useState(isMakeCustom || makeValue === 'other');
@@ -34,12 +35,40 @@ export const CascadingModelSelect: React.FC<Props> = ({
     if (isModelCustom) { setShowOtherModel(true); setCustomModel(modelValue); }
   }, [isModelCustom, modelValue]);
 
+  const renderModelBlock = () => (
+    <div className="flex flex-col gap-1.5 py-1.5">
+      {!hideMakeField && <label className="text-xs font-bold text-ink-soft">{isArabic ? 'الموديل' : 'Model'} <span className="text-accent">*</span></label>}
+      {modelOptions.length > 0 && (hideMakeField || !showOtherMake) ? (
+        <>
+          <select
+            value={showOtherModel ? OTHER_VALUE : modelValue}
+            onChange={(e) => {
+              const v = e.target.value;
+              if (v === OTHER_VALUE) { setShowOtherModel(true); onModelChange(customModel); }
+              else { setShowOtherModel(false); onModelChange(v); }
+            }}
+            className="w-full h-11 px-3 rounded-xl border border-line bg-canvas text-ink text-sm font-medium focus:outline-none focus:border-primary cursor-pointer"
+          >
+            <option value="">{isArabic ? '-- اختر الموديل --' : '-- Select Model --'}</option>
+            {modelOptions.map((m) => (<option key={m.value} value={m.value}>{m.labelAr}</option>))}
+            <option value={OTHER_VALUE}>{isArabic ? 'أخرى — اكتب يدوياً' : 'Other — type manually'}</option>
+          </select>
+          {showOtherModel && (
+            <OtherOptionInput value={customModel} onChange={(v) => { setCustomModel(v); onModelChange(v); }} placeholder={isArabic ? 'اكتب اسم الموديل...' : 'Type model name...'} isArabic={isArabic} />
+          )}
+        </>
+      ) : (
+        <OtherOptionInput value={modelValue} onChange={onModelChange} placeholder={isArabic ? 'اكتب اسم الموديل (مثل: كامري، X5)...' : 'Type model (e.g. Camry, X5)...'} isArabic={isArabic} />
+      )}
+    </div>
+  );
+
+  if (hideMakeField) return renderModelBlock();
+
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-1.5 py-1.5">
-        <label className="text-xs font-bold text-ink-soft">
-          {isArabic ? 'الماركة' : 'Make'} <span className="text-accent">*</span>
-        </label>
+        <label className="text-xs font-bold text-ink-soft">{isArabic ? 'الماركة' : 'Make'} <span className="text-accent">*</span></label>
         <select
           value={showOtherMake ? OTHER_VALUE : makeValue}
           onChange={(e) => {
@@ -55,58 +84,14 @@ export const CascadingModelSelect: React.FC<Props> = ({
           className="w-full h-11 px-3 rounded-xl border border-line bg-canvas text-ink text-sm font-medium focus:outline-none focus:border-primary cursor-pointer"
         >
           <option value="">{isArabic ? '-- اختر الماركة --' : '-- Select Make --'}</option>
-          {CAR_BRANDS.map((b) => (
-            <option key={b.slug} value={b.slug}>{isArabic ? b.nameAr : b.nameEn}</option>
-          ))}
+          {CAR_BRANDS.map((b) => (<option key={b.slug} value={b.slug}>{isArabic ? b.nameAr : b.nameEn}</option>))}
           <option value={OTHER_VALUE}>{isArabic ? 'أخرى — اكتب يدوياً' : 'Other — type manually'}</option>
         </select>
         {showOtherMake && (
-          <OtherOptionInput
-            value={customMake}
-            onChange={(v) => { setCustomMake(v); onMakeChange(v); }}
-            placeholder={isArabic ? 'اكتب اسم الماركة...' : 'Type brand name...'}
-            isArabic={isArabic}
-          />
+          <OtherOptionInput value={customMake} onChange={(v) => { setCustomMake(v); onMakeChange(v); }} placeholder={isArabic ? 'اكتب اسم الماركة...' : 'Type brand name...'} isArabic={isArabic} />
         )}
       </div>
-
-      <div className="flex flex-col gap-1.5 py-1.5">
-        <label className="text-xs font-bold text-ink-soft">
-          {isArabic ? 'الموديل' : 'Model'} <span className="text-accent">*</span>
-        </label>
-        {modelOptions.length > 0 && !showOtherMake ? (
-          <>
-            <select
-              value={showOtherModel ? OTHER_VALUE : modelValue}
-              onChange={(e) => {
-                const v = e.target.value;
-                if (v === OTHER_VALUE) { setShowOtherModel(true); onModelChange(customModel); }
-                else { setShowOtherModel(false); onModelChange(v); }
-              }}
-              className="w-full h-11 px-3 rounded-xl border border-line bg-canvas text-ink text-sm font-medium focus:outline-none focus:border-primary cursor-pointer"
-            >
-              <option value="">{isArabic ? '-- اختر الموديل --' : '-- Select Model --'}</option>
-              {modelOptions.map((m) => (<option key={m.value} value={m.value}>{m.labelAr}</option>))}
-              <option value={OTHER_VALUE}>{isArabic ? 'أخرى — اكتب يدوياً' : 'Other — type manually'}</option>
-            </select>
-            {showOtherModel && (
-              <OtherOptionInput
-                value={customModel}
-                onChange={(v) => { setCustomModel(v); onModelChange(v); }}
-                placeholder={isArabic ? 'اكتب اسم الموديل...' : 'Type model name...'}
-                isArabic={isArabic}
-              />
-            )}
-          </>
-        ) : (
-          <OtherOptionInput
-            value={modelValue}
-            onChange={onModelChange}
-            placeholder={isArabic ? 'اكتب اسم الموديل (مثل: كامري، X5)...' : 'Type model (e.g. Camry, X5)...'}
-            isArabic={isArabic}
-          />
-        )}
-      </div>
+      {renderModelBlock()}
     </div>
   );
 };
