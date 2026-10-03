@@ -23,6 +23,7 @@ import { RegistryProvider, useRegistry } from '@/shared/registry';
 import { CatalogScreen } from '@/features/dev/screens/CatalogScreen';
 import { Toaster } from 'sonner';
 import { OfflineBanner } from '@/shared/ui/OfflineBanner';
+import { GlobalPhoneCaptureMount } from '@/shared/components/GlobalPhoneCaptureMount';
 import { BuildBadge } from '@/shared/components/BuildBadge';
 import { useSupabaseAuthListener } from '@/features/auth/hooks/useSupabaseAuthListener';
 import { useBootMigrations } from '@/shared/hooks/useBootMigrations';
@@ -263,6 +264,7 @@ export default function App() {
         <>
           <TranslationProvider locale={locale}>
             <OfflineBanner />
+            <GlobalPhoneCaptureMount />
             <MainNavigator />
       <Toaster
         position="top-center"

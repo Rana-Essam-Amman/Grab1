@@ -14,6 +14,7 @@ export function mapSessionToUser(session: Session | null): UserProfile | null {
   // never creates them (ensureAnonymousSession is a no-op).
   if (isAnonymousUser(session.user)) {
     return {
+      id: session.user.id,
       firstName: 'زائر',
       lastName: '',
       email: '',
@@ -25,6 +26,7 @@ export function mapSessionToUser(session: Session | null): UserProfile | null {
   if (!profile) return null;
   const countryCode = (session.user.user_metadata?.country_code as string) || 'JO';
   return {
+    id: session.user.id,
     firstName: profile.firstName || 'User',
     lastName: profile.lastName || '',
     email: profile.email,

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useAuthStore } from '../store/auth.slice';
+import { hydrateProfilePhone, useAuthStore } from '../store/auth.slice';
 import { onAuthStateChange } from '../services/authService';
 import { ensureAnonymousSession, isAnonymousUser } from '../services/anonymousSession';
 import { mapSessionToUser, resumePendingNavigation } from './authListenerHelpers';
@@ -42,6 +42,7 @@ export function useSupabaseAuthListener(): void {
           authStatus: 'authenticated',
           isAnonymous: stillAnon,
         });
+        void hydrateProfilePhone();
 
         const justLinked = !stillAnon && wasAnon;
         const freshSignIn = !stillAnon && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION');

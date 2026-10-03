@@ -134,6 +134,7 @@ export interface ListingComment {
 }
 
 export interface UserProfile {
+  id?: string;
   firstName: string;
   lastName: string;
   email: string;

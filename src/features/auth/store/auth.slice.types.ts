@@ -16,5 +16,6 @@ export interface AuthState {
   verifySession: () => Promise<boolean>;
   registerNewUser: (userData: RegisteredAccount) => void;
   updateUser: (updates: Partial<UserProfile>) => void;
+  setUser: (user: UserProfile) => void;
   updateAvatar: (dataUrl: string | null) => void;
 }
