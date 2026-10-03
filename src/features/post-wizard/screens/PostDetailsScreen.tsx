@@ -98,6 +98,7 @@ export const PostDetailsScreen: React.FC = () => {
         )}
         <button
           type="button"
+          id="post-publish-btn"
           data-testid="post-details-publish-btn"
           onClick={handlePublish}
           disabled={hasMissingParams || isPublishing}
