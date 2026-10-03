@@ -15,6 +15,7 @@ export const useAuthStore = create<AuthState>()(
       return {
         authStatus: initialSession.authStatus,
         isAnonymous: false,
+        profileHydrated: false,
         user: initialSession.user,
         sessionToken: initialSession.sessionToken,
         registrationPendingUser: null,
@@ -86,5 +87,7 @@ export async function hydrateProfilePhone(): Promise<void> {
     useAuthStore.getState().updateUser({ phone: profile.phone });
   } catch {
     // network failure must not block sign-in
+  } finally {
+    useAuthStore.setState({ profileHydrated: true });
   }
 }

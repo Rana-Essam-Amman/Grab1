@@ -15,6 +15,7 @@ export function useSupabaseAuthListener(): void {
           sessionToken: null,
           authStatus: 'unauthenticated',
           isAnonymous: false,
+          profileHydrated: false,
         });
         return;
       }
@@ -41,6 +42,7 @@ export function useSupabaseAuthListener(): void {
           sessionToken: session.access_token,
           authStatus: 'authenticated',
           isAnonymous: stillAnon,
+          profileHydrated: false,
         });
         void hydrateProfilePhone();
 

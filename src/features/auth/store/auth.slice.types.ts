@@ -3,6 +3,7 @@ import { UserProfile, RegisteredAccount } from '@/types';
 export interface AuthState {
   authStatus: 'initializing' | 'authenticated' | 'unauthenticated';
   isAnonymous: boolean;
+  profileHydrated: boolean;
   user: UserProfile | null;
   sessionToken: string | null;
   registrationPendingUser: Partial<UserProfile> | null;
