@@ -34,7 +34,9 @@ export const getInitialState = () => {
     if (authData?.state?.authStatus === 'authenticated') {
       hasAuth = true;
     }
-  } catch (e) {}
+  } catch {
+    // ignore storage read errors
+  }
 
   const shouldGoToMain = hasStoredCountry || hasAuth;
   
@@ -73,4 +75,25 @@ export function getSanitizedCurrencyByCountry(countryCode: string): string {
     SY: 'SYP',
   };
   return map[countryCode] || 'JOD';
+}
+
+export async function hydrateCountryFromGeo(): Promise<void> {
+  try {
+    if (globalStorage().get<string>('catch_browse_country')) return;
+    const { detectCountry } = await import('@/shared/lib/geoDetect');
+    const detected = await detectCountry();
+    if (globalStorage().get<string>('catch_browse_country')) return;
+    if (detected.source !== 'ip' && detected.source !== 'timezone' && detected.source !== 'language') return;
+    globalStorage().set('catch_browse_country', detected.country);
+    const capital = DEFAULT_REGIONAL_CAPITALS[detected.country] || DEFAULT_REGIONAL_CAPITALS.JO;
+    const { useUIStore } = await import('./ui.slice');
+    useUIStore.setState({
+      browseCountryCode: detected.country,
+      browseCityEn: capital.cityEn,
+      browseCityAr: capital.cityAr,
+      activeCurrency: getSanitizedCurrencyByCountry(detected.country),
+    });
+  } catch {
+    // detection is best-effort
+  }
 }

@@ -4,7 +4,7 @@ import { persist, createJSONStorage, StateStorage } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { AppTheme } from '@/features/ui/domain';
 import { UIState, ScreenType, TabType } from './ui.slice.types';
-import { getInitialState } from './ui.slice.helpers';
+import { getInitialState, hydrateCountryFromGeo } from './ui.slice.helpers';
 import { createUIActions } from './ui.slice.actions';
 
 export type { ScreenType, TabType };
@@ -43,7 +43,9 @@ const uiStorage: StateStorage = {
           globalStorage().set(name, parsed.state.locale);
           return;
         }
-      } catch (e) {}
+      } catch {
+      // ignore
+    }
     }
     globalStorage().set(name, value);
   },
@@ -82,3 +84,10 @@ export const useUIStore = create<UIState>()(
     }
   )
 );
+
+if (typeof window !== 'undefined') {
+  setTimeout(() => {
+    void hydrateCountryFromGeo();
+  }, 0);
+}
+
