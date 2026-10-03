@@ -14,7 +14,7 @@ export const createListingsActions = (
 ) => ({
   initialize: () => {
     if (get().isInitialized) return;
-    const initialCc = globalStorage().get<string>('browse_country') || 'JO';
+    const initialCc = globalStorage().get<string>('catch_browse_country') || 'JO';
     set((state) => {
       state.listings = getListingsFromStorage();
       state.wishlist = getWishlistForMarket(initialCc);
@@ -57,7 +57,7 @@ export const createListingsActions = (
   },
 
   toggleWishlist: (id: string, countryCode?: string) => {
-    const activeCountry = countryCode || get().activeWishlistCountry || globalStorage().get<string>('browse_country') || 'JO';
+    const activeCountry = countryCode || get().activeWishlistCountry || globalStorage().get<string>('catch_browse_country') || 'JO';
     set((state) => {
       if (activeCountry !== state.activeWishlistCountry) {
         state.activeWishlistCountry = activeCountry;
