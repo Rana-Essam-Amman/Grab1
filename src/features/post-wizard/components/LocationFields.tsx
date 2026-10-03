@@ -2,8 +2,9 @@ import React from 'react';
 import { Input } from '@/shared/ui/Input';
 import { Card } from '@/shared/ui/Card';
 import { Icon } from '@iconify/react';
-import { googleMapsEmbedUrl } from '@/data/mapUrls';
 import { isOtherValue } from '@/data/locations';
+import { StaticMapPreview } from './StaticMapPreview';
+import { usePostWizard } from '../hooks/usePostWizard';
 import { useUI } from '@/hooks/useUI';
 import { LocationMyLocationButton } from './LocationMyLocationButton';
 
@@ -15,6 +16,8 @@ interface Props {
   neighborhoods: string[];
   site: string;
   mapQuery: string;
+  latitude?: number;
+  longitude?: number;
   customCity: string;
   customNeighborhood: string;
   onCityChange: (c: string) => void;
@@ -32,6 +35,8 @@ export const LocationFields: React.FC<Props> = ({
   neighborhoods,
   site,
   mapQuery,
+  latitude,
+  longitude,
   customCity,
   customNeighborhood,
   onCityChange,
@@ -41,6 +46,9 @@ export const LocationFields: React.FC<Props> = ({
   onCustomNeighborhoodChange,
 }) => {
   const { browseCountryCode } = useUI();
+  const { postDraft } = usePostWizard();
+  const pinLat = latitude ?? postDraft.latitude;
+  const pinLng = longitude ?? postDraft.longitude;
   return (
     <div className="flex flex-col gap-4">
       <LocationMyLocationButton isArabic={isArabic} preferredCountry={browseCountryCode} onCityChange={onCityChange} />
@@ -96,9 +104,7 @@ export const LocationFields: React.FC<Props> = ({
           <Icon icon="noto:round-pushpin" width={14} height={14} className="text-primary shrink-0" />
           <span>{mapQuery}</span>
         </div>
-        <div className="w-full h-44 rounded-xl overflow-hidden bg-background">
-          <iframe title="Map Preview" width="100%" height="100%" frameBorder="0" scrolling="no" src={googleMapsEmbedUrl(mapQuery)} className="border-0" />
-        </div>
+        <StaticMapPreview city={selectedCity} neighborhood={selectedNeighborhood} latitude={pinLat} longitude={pinLng} />
       </Card>
     </div>
   );
