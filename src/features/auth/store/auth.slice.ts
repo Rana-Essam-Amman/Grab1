@@ -4,6 +4,7 @@ import { immer } from 'zustand/middleware/immer';
 import { AuthState } from './auth.slice.types';
 import { getInitialSession, getInitialRegisteredUsers } from './auth.slice.helpers';
 import { createAuthActions } from './auth.slice.actions';
+import { fetchProfile } from '@/shared/lib/profilesService';
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -30,6 +31,12 @@ export const useAuthStore = create<AuthState>()(
             if (state.user) {
               state.user = { ...state.user, ...updates };
             }
+          });
+        },
+
+        setUser: (user) => {
+          set((state) => {
+            state.user = user;
           });
         },
 
@@ -67,3 +74,17 @@ export const useAuthStore = create<AuthState>()(
   )
 );
 
+
+export async function hydrateProfilePhone(): Promise<void> {
+  try {
+    const current = useAuthStore.getState().user;
+    if (!current?.id) return;
+    const profile = await fetchProfile(current.id);
+    if (!profile?.phone) return;
+    const latest = useAuthStore.getState().user;
+    if (!latest || latest.id !== current.id) return;
+    useAuthStore.getState().updateUser({ phone: profile.phone });
+  } catch {
+    // network failure must not block sign-in
+  }
+}
