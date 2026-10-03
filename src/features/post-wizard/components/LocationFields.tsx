@@ -4,6 +4,8 @@ import { Card } from '@/shared/ui/Card';
 import { Icon } from '@iconify/react';
 import { googleMapsEmbedUrl } from '@/data/mapUrls';
 import { isOtherValue } from '@/data/locations';
+import { useUI } from '@/hooks/useUI';
+import { LocationMyLocationButton } from './LocationMyLocationButton';
 
 interface Props {
   isArabic: boolean;
@@ -38,8 +40,10 @@ export const LocationFields: React.FC<Props> = ({
   onCustomCityChange,
   onCustomNeighborhoodChange,
 }) => {
+  const { browseCountryCode } = useUI();
   return (
     <div className="flex flex-col gap-4">
+      <LocationMyLocationButton isArabic={isArabic} preferredCountry={browseCountryCode} onCityChange={onCityChange} />
       <div>
         <label className="block text-xs font-bold text-ink mb-1.5">{isArabic ? "المدينة / المحافظة" : "City / Governorate"}</label>
         <select value={selectedCity} onChange={(e) => onCityChange(e.target.value)} className="w-full h-11 px-3.5 rounded-xl bg-surface border border-border text-sm text-ink focus:outline-none focus:border-primary">
