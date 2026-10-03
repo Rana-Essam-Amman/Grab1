@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useAiReview } from '../useAiReview';
 
+const mockPhoneModalOpen = vi.fn();
+
 const mockNavigateTo = vi.fn();
 const mockSetActiveTab = vi.fn();
 const mockUpdatePostDraft = vi.fn();
@@ -34,8 +36,20 @@ vi.mock('@/hooks/useUI', () => ({
 vi.mock('@/hooks/useAuth', () => ({
   useAuth: () => ({
     authStatus: mockAuthStatus,
-    user: { id: 'u1', name: 'John' },
+    user: { id: 'u1', name: 'John', phone: '0791234567' },
   }),
+}));
+
+vi.mock('@/features/auth/store/auth.slice', () => ({
+  useAuthStore: {
+    getState: () => ({ user: { id: 'u1', name: 'John', phone: '0791234567' } }),
+  },
+}));
+
+vi.mock('@/features/auth/store/phoneModal.slice', () => ({
+  usePhoneModalStore: {
+    getState: () => ({ open: mockPhoneModalOpen, close: vi.fn() }),
+  },
 }));
 
 vi.mock('../usePostWizard', () => ({
@@ -60,6 +74,7 @@ vi.mock('@/hooks/useListings', () => ({
 describe('useAiReview', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockPhoneModalOpen.mockClear();
     mockAuthStatus = 'authenticated';
     mockPublishListing.mockResolvedValue({ success: true, remoteId: 'remote-1', error: null });
     mockPostDraft = {

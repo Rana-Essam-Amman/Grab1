@@ -6,11 +6,12 @@ import { useListings } from '@/hooks/useListings';
 import { useDraft } from '@/hooks/useDraft';
 import { setPendingPublish } from '../helpers/pendingPublishFlags';
 import { resolvePostDetailsFields, buildGeneratedFields, preparePublish } from '../helpers/postDetailsHelpers';
+import { getCurrentUser, requirePhoneForPublish } from '@/features/auth/helpers/publishPhoneGuard';
 
 export function usePostDetails() {
   const { postDraft, updatePostDraft } = usePostWizard();
   const { resetPostDraft } = useDraft();
-  const { authStatus, user, isAnonymous } = useAuth();
+  const { authStatus, isAnonymous } = useAuth();
   const { publishListing } = useListings();
   const { isArabic, navigateTo, setActiveTab, browseCountryCode, activeCurrency } = useUI();
 
@@ -65,8 +66,9 @@ export function usePostDetails() {
       navigateTo('login');
       return;
     }
+    if (!requirePhoneForPublish(() => void handleContinue())) return;
 
-    const prepared = preparePublish({ postDraft, draftData, user, browseCountryCode, activeCurrency });
+    const prepared = preparePublish({ postDraft, draftData, user: getCurrentUser(), browseCountryCode, activeCurrency });
     if (!prepared) return;
 
     setIsPublishing(true);
