@@ -10,10 +10,14 @@ import { PhotoPreviewList } from '../components/PhotoPreviewList';
 import { PhotoUploader } from '../components/PhotoUploader';
 import { PostFlowHeader } from '../components/PostFlowHeader';
 import { LocationFields } from '../components/LocationFields';
+import { categories } from '@/data/categories';
+import { findSubcategoryBySlug } from '@/data/subcategories';
 
 export const PhotoUploadScreen: React.FC = () => {
   const { isArabic, goBack } = useUI();
   const { postDraft } = usePostWizard();
+  const cat = categories.find((c) => c.slug === postDraft.categorySlug);
+  const sub = findSubcategoryBySlug(postDraft.subcategorySlug);
   const { photos, handleFiles, handleRemove, handleUseSample } = usePhotoUpload();
   const {
     cities,
@@ -53,6 +57,11 @@ export const PhotoUploadScreen: React.FC = () => {
         titleEn="Photos & Location"
         isArabic={isArabic}
         onBack={goBack}
+        categoryAsset={cat?.asset}
+        categoryNameAr={cat?.nameAr}
+        categoryNameEn={cat?.nameEn}
+        subcategoryNameAr={sub?.nameAr}
+        subcategoryNameEn={sub?.nameEn}
       />
 
       <div className="p-4 flex-1 flex flex-col gap-6">

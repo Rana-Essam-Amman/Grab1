@@ -2,14 +2,20 @@ import React, { useRef, useState } from 'react';
 import { Send2 } from 'iconsax-react';
 import { useUI } from '@/hooks/useUI';
 import { useAiReview } from '../hooks/useAiReview';
+import { usePostWizard } from '../hooks/usePostWizard';
 import { PostFlowHeader } from '../components/PostFlowHeader';
 import { AiReviewBody } from '../components/AiReviewBody';
 import { AiReviewCityDrawer } from '../components/AiReviewCityDrawer';
 import { ExploreLocationFilterDrawer } from '@/shared/components/filters/ExploreLocationFilterDrawer';
 import { locationsWithOther as locations, locationsArWithOther as locationsAr } from '@/data/locations';
+import { categories } from '@/data/categories';
+import { findSubcategoryBySlug } from '@/data/subcategories';
 
 export const PostDetailsScreen: React.FC = () => {
   const { isArabic, goBack, activeCurrency, browseCountryCode } = useUI();
+  const { postDraft } = usePostWizard();
+  const cat = categories.find((c) => c.slug === postDraft.categorySlug);
+  const sub = findSubcategoryBySlug(postDraft.subcategorySlug);
   const {
     title, price, city, neighborhood, description, photos,
     hasMissingParams, missingRequiredLabels, isPublishing, attributes, setAttributeValue,
@@ -27,23 +33,12 @@ export const PostDetailsScreen: React.FC = () => {
   const handleFilesSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
-
-    const readPromises: Promise<string>[] = [];
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      readPromises.push(
-        new Promise<string>((resolve) => {
-          const reader = new FileReader();
-          reader.onload = (ev) => {
-            const result = ev.target?.result;
-            resolve(typeof result === 'string' ? result : '');
-          };
-          reader.onerror = () => resolve('');
-          reader.readAsDataURL(file);
-        })
-      );
-    }
-
+    const readPromises = Array.from(files).map((file) => new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (ev) => resolve(typeof ev.target?.result === 'string' ? ev.target.result : '');
+      reader.onerror = () => resolve('');
+      reader.readAsDataURL(file);
+    }));
     void Promise.all(readPromises).then((urls) => {
       const valid = urls.filter((url) => url.length > 0);
       if (valid.length > 0) addPhotos(valid);
@@ -60,6 +55,11 @@ export const PostDetailsScreen: React.FC = () => {
         titleEn="Listing Details"
         isArabic={isArabic}
         onBack={goBack}
+        categoryAsset={cat?.asset}
+        categoryNameAr={cat?.nameAr}
+        categoryNameEn={cat?.nameEn}
+        subcategoryNameAr={sub?.nameAr}
+        subcategoryNameEn={sub?.nameEn}
       />
       <AiReviewBody
         isArabic={isArabic}
