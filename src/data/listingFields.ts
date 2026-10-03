@@ -1,4 +1,6 @@
 // RULE-14-EXCEPTION: Static taxonomy and listing fields
+import { getBrandOptions } from './brands/carBrands';
+
 export interface ListingFieldOption {
   readonly value: string;
   readonly labelAr: string;
@@ -13,20 +15,28 @@ export interface ListingField {
   readonly required: boolean;
   readonly options?: readonly ListingFieldOption[];
   readonly placeholder?: string;
+  readonly placeholderAr?: string;
+  readonly allowOther?: boolean;
 }
+
+const CURRENT_YEAR = new Date().getFullYear();
+const CAR_YEAR_OPTIONS: ListingFieldOption[] = Array.from({ length: 30 }, (_, i) => {
+  const y = CURRENT_YEAR - i;
+  return { value: String(y), labelAr: String(y), labelEn: String(y) };
+});
 
 export const LISTING_FIELDS: Record<string, Record<string, ListingField[]>> = {
   motors: {
     cars: [
-      { key: 'make', labelAr: 'الماركة', labelEn: 'Make', type: 'text', required: true, placeholder: 'Toyota, BMW...' },
+      { key: 'make', labelAr: 'الماركة', labelEn: 'Make', type: 'select', allowOther: true, required: true, options: getBrandOptions() },
       { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'text', required: true, placeholder: 'Camry, X5...' },
-      { key: 'year', labelAr: 'السنة', labelEn: 'Year', type: 'number', required: true, placeholder: '2022' },
+      { key: 'year', labelAr: 'السنة', labelEn: 'Year', type: 'select', allowOther: true, required: true, options: CAR_YEAR_OPTIONS },
       { key: 'km', labelAr: 'العداد (كم)', labelEn: 'KM', type: 'number', required: false, placeholder: '50000' },
-      { key: 'transmission', labelAr: 'ناقل الحركة', labelEn: 'Transmission', type: 'select', required: true, options: [
+      { key: 'transmission', labelAr: 'ناقل الحركة', labelEn: 'Transmission', type: 'select', allowOther: true, required: true, options: [
         { value: 'auto', labelAr: 'أوتوماتيك', labelEn: 'Automatic' },
         { value: 'manual', labelAr: 'عادي', labelEn: 'Manual' },
       ]},
-      { key: 'fuel', labelAr: 'الوقود', labelEn: 'Fuel', type: 'select', required: true, options: [
+      { key: 'fuel', labelAr: 'الوقود', labelEn: 'Fuel', type: 'select', allowOther: true, required: true, options: [
         { value: 'petrol', labelAr: 'بنزين', labelEn: 'Petrol' },
         { value: 'diesel', labelAr: 'ديزل', labelEn: 'Diesel' },
         { value: 'hybrid', labelAr: 'هايبرد', labelEn: 'Hybrid' },
@@ -44,7 +54,7 @@ export const LISTING_FIELDS: Record<string, Record<string, ListingField[]>> = {
       { key: 'year', labelAr: 'السنة', labelEn: 'Year', type: 'number', required: true, placeholder: '2020' },
     ],
     plates: [
-      { key: 'plateType', labelAr: 'نوع اللوحة', labelEn: 'Plate Type', type: 'select', required: true, options: [
+      { key: 'plateType', labelAr: 'نوع اللوحة', labelEn: 'Plate Type', type: 'select', allowOther: true, required: true, options: [
         { value: 'private', labelAr: 'خصوصي', labelEn: 'Private' },
         { value: 'commercial', labelAr: 'عمومي', labelEn: 'Commercial' },
       ]},
@@ -64,7 +74,7 @@ export const LISTING_FIELDS: Record<string, Record<string, ListingField[]>> = {
   },
   'real-estate': {
     'for-sale': [
-      { key: 'propertyType', labelAr: 'نوع العقار', labelEn: 'Property Type', type: 'select', required: true, options: [
+      { key: 'propertyType', labelAr: 'نوع العقار', labelEn: 'Property Type', type: 'select', allowOther: true, required: true, options: [
         { value: 'apartment', labelAr: 'شقة', labelEn: 'Apartment' },
         { value: 'house', labelAr: 'منزل', labelEn: 'House' },
         { value: 'villa', labelAr: 'فيلا', labelEn: 'Villa' },
@@ -77,12 +87,12 @@ export const LISTING_FIELDS: Record<string, Record<string, ListingField[]>> = {
       { key: 'furnished', labelAr: 'مفروشة', labelEn: 'Furnished', type: 'boolean', required: false },
     ],
     'for-rent': [
-      { key: 'propertyType', labelAr: 'نوع العقار', labelEn: 'Property Type', type: 'select', required: true, options: [
+      { key: 'propertyType', labelAr: 'نوع العقار', labelEn: 'Property Type', type: 'select', allowOther: true, required: true, options: [
         { value: 'apartment', labelAr: 'شقة', labelEn: 'Apartment' },
         { value: 'studio', labelAr: 'استديو', labelEn: 'Studio' },
         { value: 'villa', labelAr: 'فيلا', labelEn: 'Villa' },
       ]},
-      { key: 'rentalPeriod', labelAr: 'فترة الإيجار', labelEn: 'Rental Period', type: 'select', required: true, options: [
+      { key: 'rentalPeriod', labelAr: 'فترة الإيجار', labelEn: 'Rental Period', type: 'select', allowOther: true, required: true, options: [
         { value: 'monthly', labelAr: 'شهري', labelEn: 'Monthly' },
         { value: 'yearly', labelAr: 'سنوي', labelEn: 'Yearly' },
         { value: 'daily', labelAr: 'يومي', labelEn: 'Daily' },
@@ -110,13 +120,13 @@ export const LISTING_FIELDS: Record<string, Record<string, ListingField[]>> = {
   mobiles: {
     phones: [
       { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'text', required: true, placeholder: 'Apple, Samsung...' },
-      { key: 'storage', labelAr: 'السعة التخزينية', labelEn: 'Storage', type: 'select', required: true, options: [
+      { key: 'storage', labelAr: 'السعة التخزينية', labelEn: 'Storage', type: 'select', allowOther: true, required: true, options: [
         { value: '64gb', labelAr: '64 جيجابايت', labelEn: '64 GB' },
         { value: '128gb', labelAr: '128 جيجابايت', labelEn: '128 GB' },
         { value: '256gb', labelAr: '256 جيجابايت', labelEn: '256 GB' },
         { value: '512gb', labelAr: '512 جيجابايت', labelEn: '512 GB' },
       ]},
-      { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', required: true, options: [
+      { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: [
         { value: 'new', labelAr: 'جديد', labelEn: 'New' },
         { value: 'used', labelAr: 'مستعمل', labelEn: 'Used' },
       ]},
@@ -138,7 +148,7 @@ export const LISTING_FIELDS: Record<string, Record<string, ListingField[]>> = {
   watches: {
     luxury: [
       { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'text', required: true, placeholder: 'Rolex, Omega...' },
-      { key: 'gender', labelAr: 'الجنس', labelEn: 'Gender', type: 'select', required: true, options: [
+      { key: 'gender', labelAr: 'الجنس', labelEn: 'Gender', type: 'select', allowOther: true, required: true, options: [
         { value: 'men', labelAr: 'رجالي', labelEn: 'Men' },
         { value: 'women', labelAr: 'نسائي', labelEn: 'Women' },
         { value: 'unisex', labelAr: 'الجنسين', labelEn: 'Unisex' },
@@ -250,7 +260,7 @@ export const LISTING_FIELDS: Record<string, Record<string, ListingField[]>> = {
   jobs: {
     vacancies: [
       { key: 'jobTitle', labelAr: 'المسمى الوظيفي', labelEn: 'Job Title', type: 'text', required: true },
-      { key: 'jobType', labelAr: 'نوع الدوام', labelEn: 'Job Type', type: 'select', required: true, options: [
+      { key: 'jobType', labelAr: 'نوع الدوام', labelEn: 'Job Type', type: 'select', allowOther: true, required: true, options: [
         { value: 'full', labelAr: 'دوام كامل', labelEn: 'Full Time' },
         { value: 'part', labelAr: 'دوام جزئي', labelEn: 'Part Time' },
       ]},

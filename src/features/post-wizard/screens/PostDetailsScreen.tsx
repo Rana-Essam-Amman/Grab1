@@ -9,6 +9,7 @@ import { categories } from '@/data/categories';
 import { findSubcategoryBySlug } from '@/data/subcategories';
 import { getListingFields } from '@/data/listingFields';
 import { DynamicFieldRenderer } from '../components/DynamicFieldRenderer';
+import { StaticMapPreview } from '../components/StaticMapPreview';
 
 export const PostDetailsScreen: React.FC = () => {
   const { isArabic, goBack, activeCurrency, browseCountryCode } = useUI();
@@ -117,6 +118,7 @@ export const PostDetailsScreen: React.FC = () => {
             <span className="text-sm font-medium text-ink">{locationLabel}</span>
             <button type="button" onClick={() => setIsCityDrawerOpen(true)} className="text-xs font-bold text-primary hover:underline cursor-pointer">{isArabic ? 'تغيير الموقع' : 'Change Location'}</button>
           </div>
+          <StaticMapPreview city={postDraft.city || ''} neighborhood={postDraft.neighborhood || ''} isArabic={isArabic} />
         </div>
       </div>
 
