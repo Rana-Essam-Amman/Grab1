@@ -98,7 +98,7 @@ export const PostDetailsScreen: React.FC = () => {
         )}
         <button
           type="button"
-          data-testid="post-publish-btn"
+          data-testid="post-details-publish-btn"
           onClick={handlePublish}
           disabled={hasMissingParams || isPublishing}
           className={`w-full h-14 rounded-2xl text-white font-bold text-base flex items-center justify-center gap-2 shadow-lg shadow-primary/30 active:scale-[0.98] transition-transform disabled:opacity-50 disabled:shadow-none bg-gradient-to-r from-primary to-primary-hover cursor-pointer pointer-events-auto ${!hasMissingParams && !isPublishing ? 'animate-[halo-pulse_2s_ease-in-out_infinite]' : ''}`}

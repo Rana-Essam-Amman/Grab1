@@ -21,6 +21,7 @@ export const PublishSuccessScreen: React.FC = () => {
   return (
     <div
       id="publish-success-screen"
+      data-testid="publish-success-screen"
       className="flex flex-col min-h-screen bg-canvas items-center justify-center p-6 text-center"
       dir={isArabic ? 'rtl' : 'ltr'}
     >
@@ -39,6 +40,7 @@ export const PublishSuccessScreen: React.FC = () => {
 
         <div className="w-full flex flex-col gap-3 animate-[slide-up_250ms_ease-out]">
           <Button
+            data-testid="publish-success-view-btn"
             variant="primary"
             size="lg"
             fullWidth
@@ -48,6 +50,7 @@ export const PublishSuccessScreen: React.FC = () => {
           </Button>
 
           <Button
+            data-testid="publish-success-add-another-btn"
             variant="outline"
             size="lg"
             fullWidth

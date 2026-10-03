@@ -39,17 +39,18 @@ async function reachDetailsScreen(page: Page) {
 
 async function fillDetailsForm(page: Page) {
   // Title inline edit
-  const titleButton = page
-    .locator('text=/Listing Title|عنوان الإعلان/i')
-    .locator('..')
-    .locator('button')
+  const titleCard = page
+    .locator('div.rounded-2xl')
+    .filter({ has: page.locator('h3').filter({ hasText: /Listing Title|عنوان الإعلان/i }) })
     .first();
-  if ((await titleButton.count()) > 0) {
-    await titleButton.click();
-    const titleInput = page.locator('input[type="text"]').first();
+  if ((await titleCard.count()) > 0) {
+    await titleCard.locator('button').first().click();
+    const titleInput = titleCard.locator('input').first();
     await expect(titleInput).toBeVisible({ timeout: 5000 });
     await titleInput.fill('تويوتا كامري 2018 بحالة ممتازة');
     await titleInput.press('Enter');
+    await titleInput.blur().catch(() => {});
+    await page.waitForTimeout(300);
   } else {
     const directTitle = page.locator(SELECTORS.postAd.detailsTitleInput).first();
     if ((await directTitle.count()) > 0) {
@@ -58,17 +59,18 @@ async function fillDetailsForm(page: Page) {
   }
 
   // Price inline edit
-  const priceButton = page
-    .locator('text=/Price|السعر/i')
-    .locator('..')
-    .locator('button')
+  const priceCard = page
+    .locator('div.rounded-2xl')
+    .filter({ has: page.locator('h3').filter({ hasText: /Price|السعر/i }) })
     .first();
-  if ((await priceButton.count()) > 0) {
-    await priceButton.click();
-    const priceInput = page.locator('input[type="text"], input[inputmode="numeric"]').first();
+  if ((await priceCard.count()) > 0) {
+    await priceCard.locator('button').first().click();
+    const priceInput = priceCard.locator('input').first();
     await expect(priceInput).toBeVisible({ timeout: 5000 });
     await priceInput.fill('12000');
     await priceInput.press('Enter');
+    await priceInput.blur().catch(() => {});
+    await page.waitForTimeout(300);
   } else {
     const directPrice = page.locator(SELECTORS.postAd.detailsPriceInput).first();
     if ((await directPrice.count()) > 0) {
@@ -201,14 +203,15 @@ test.describe('Golden Path 2 — Post Ad Wizard (Unified Flow)', () => {
     await reachDetailsScreen(loggedInPage);
     await fillDetailsForm(loggedInPage);
 
-    const publishBtn = loggedInPage.locator('[data-testid="post-publish-btn"]').first();
+    const publishBtn = loggedInPage
+      .locator('[data-testid="post-details-publish-btn"], [data-testid="post-publish-btn"]')
+      .first();
     await expect(publishBtn).toBeVisible({ timeout: 5000 });
-    await expect(publishBtn).not.toBeDisabled();
+    await expect(publishBtn).not.toBeDisabled({ timeout: 5000 });
     await publishBtn.click();
 
     const successScreen = loggedInPage
-      .locator('#publish-success-screen')
-      .or(loggedInPage.locator('text=/تم نشر الإعلان|Listing Published/i'))
+      .locator('[data-testid="publish-success-screen"], #publish-success-screen')
       .first();
     await expect(successScreen).toBeVisible({ timeout: 8000 });
 
@@ -220,13 +223,17 @@ test.describe('Golden Path 2 — Post Ad Wizard (Unified Flow)', () => {
     await reachDetailsScreen(loggedInPage);
     await fillDetailsForm(loggedInPage);
 
-    const publishBtn = loggedInPage.locator('[data-testid="post-publish-btn"]').first();
+    const publishBtn = loggedInPage
+      .locator('[data-testid="post-details-publish-btn"], [data-testid="post-publish-btn"]')
+      .first();
     await expect(publishBtn).toBeVisible({ timeout: 5000 });
-    await expect(publishBtn).not.toBeDisabled();
+    await expect(publishBtn).not.toBeDisabled({ timeout: 5000 });
     await publishBtn.click();
 
     // After publish, expect to be on PublishSuccessScreen
-    const successScreen = loggedInPage.locator('#publish-success-screen').first();
+    const successScreen = loggedInPage
+      .locator('[data-testid="publish-success-screen"], #publish-success-screen')
+      .first();
     await expect(successScreen).toBeVisible({ timeout: 8000 });
 
     // Expect text "تم نشر الإعلان" or "Listing Published"
@@ -235,13 +242,13 @@ test.describe('Golden Path 2 — Post Ad Wizard (Unified Flow)', () => {
 
     // Expect two buttons visible
     const viewListingBtn = loggedInPage
-      .locator('button')
+      .locator('[data-testid="publish-success-view-btn"], button')
       .filter({ hasText: /View Listing|شاهد الإعلان/i })
       .first();
     await expect(viewListingBtn).toBeVisible({ timeout: 5000 });
 
     const postAnotherBtn = loggedInPage
-      .locator('button')
+      .locator('[data-testid="publish-success-add-another-btn"], button')
       .filter({ hasText: /Post Another Ad|أضف إعلان آخر/i })
       .first();
     await expect(postAnotherBtn).toBeVisible({ timeout: 5000 });
