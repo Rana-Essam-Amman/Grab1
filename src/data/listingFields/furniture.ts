@@ -38,6 +38,37 @@ const CONDITION_OPTIONS: ListingFieldOption[] = [
   { value: 'fair', labelAr: 'مستعمل بحاجة تنظيف أو صيانة بسيطة', labelEn: 'Fair' },
 ];
 
+const WARDROBE_SUBTYPE: ListingFieldOption[] = [
+  { value: 'sliding', labelAr: 'أبواب سحابة', labelEn: 'Sliding Doors' },
+  { value: 'hinged', labelAr: 'أبواب مفصليّة', labelEn: 'Hinged Doors' },
+  { value: 'walk_in', labelAr: 'غرفة ملابس Walk-in', labelEn: 'Walk-in Closet' },
+  { value: 'open_shelves', labelAr: 'رفوف مفتوحة', labelEn: 'Open Shelves' },
+];
+
+const CHAIR_SUBTYPE: ListingFieldOption[] = [
+  { value: 'executive', labelAr: 'كرسي مدير تنفيذي', labelEn: 'Executive Chair' },
+  { value: 'staff', labelAr: 'كرسي موظف', labelEn: 'Staff / Task Chair' },
+  { value: 'gaming', labelAr: 'كرسي ألعاب (Gaming)', labelEn: 'Gaming Chair' },
+  { value: 'visitor', labelAr: 'كرسي زائر / انتظار', labelEn: 'Visitor Chair' },
+];
+
+const DECOR_ORIGIN: ListingFieldOption[] = [
+  { value: 'turkish', labelAr: 'تركي', labelEn: 'Turkish' },
+  { value: 'persian', labelAr: 'إيراني', labelEn: 'Persian' },
+  { value: 'chinese', labelAr: 'صيني', labelEn: 'Chinese' },
+  { value: 'handmade', labelAr: 'شغل يدوي / محلي', labelEn: 'Handmade / Local' },
+  { value: 'european', labelAr: 'أوروبي', labelEn: 'European' },
+];
+
+const FURNITURE_FEATURES: ListingFieldOption[] = [
+  { value: 'removable_covers', labelAr: 'أغطية قابلة للفك والغسل', labelEn: 'Removable Covers' },
+  { value: 'pet_friendly', labelAr: 'مناسب للحيوانات الأليفة', labelEn: 'Pet Friendly' },
+  { value: 'waterproof', labelAr: 'قماش مقاوم للماء', labelEn: 'Waterproof Fabric' },
+  { value: 'storage', labelAr: 'يحتوي مساحة تخزين', labelEn: 'Storage Included' },
+  { value: 'reclining', labelAr: 'يحتوي خاصية الاستلقاء (Recliner)', labelEn: 'Reclining' },
+  { value: 'massage', labelAr: 'يحتوي وظيفة مساج', labelEn: 'Massage Function' },
+];
+
 export const FURNITURE_FIELDS: CategoryFieldMap = {
   living: [
     { key: 'itemType', labelAr: 'نوع الأثاث', labelEn: 'Type', type: 'select', allowOther: true, required: true, options: [
@@ -64,6 +95,9 @@ export const FURNITURE_FIELDS: CategoryFieldMap = {
     { key: 'includesChaise', labelAr: 'يشمل شازلونج أو طرف ممتد', labelEn: 'Includes Chaise Lounge', type: 'boolean', required: false },
     { key: 'includesOttoman', labelAr: 'يشمل بف أو مسند أقدام (Ottoman)', labelEn: 'Includes Ottoman', type: 'boolean', required: false },
     { key: 'age', labelAr: 'مدة الاستخدام (سنوات)', labelEn: 'Usage (Years)', type: 'number', required: false, placeholder: '2', placeholderAr: '2' },
+    { key: 'reclining', labelAr: 'قابل للاستلقاء', labelEn: 'Reclining', type: 'boolean', required: false },
+    { key: 'petFriendly', labelAr: 'مناسب للحيوانات الأليفة', labelEn: 'Pet Friendly', type: 'boolean', required: false },
+    { key: 'additionalFeatures', labelAr: 'ميزات إضافية', labelEn: 'Additional Features', type: 'select', multiSelect: true, allowOther: true, required: false, options: FURNITURE_FEATURES },
     { key: 'dimensions', labelAr: 'المقاسات والأبعاد (الطول × العرض)', labelEn: 'Dimensions', type: 'text', required: false, placeholder: '300x200 cm', placeholderAr: 'مثال: 300 × 200 سم' },
   ],
   bedroom: [
@@ -90,6 +124,9 @@ export const FURNITURE_FIELDS: CategoryFieldMap = {
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
     { key: 'brand', labelAr: 'الماركة أو المصنع', labelEn: 'Brand', type: 'text', required: false, placeholder: 'IKEA, Home Centre, Local Carpenter...', placeholderAr: 'مثال: ايكيا، هوم سنتر، منجرة...' },
     { key: 'age', labelAr: 'مدة الاستخدام (سنوات)', labelEn: 'Age (Years)', type: 'number', required: false, placeholder: '1', placeholderAr: '1' },
+    { key: 'wardrobeSubtype', labelAr: 'نوع الخزانة', labelEn: 'Wardrobe Type', type: 'select', allowOther: true, required: false, options: WARDROBE_SUBTYPE },
+    { key: 'underBedStorage', labelAr: 'تخزين أسفل السرير', labelEn: 'Under-Bed Storage', type: 'boolean', required: false },
+    { key: 'additionalFeatures', labelAr: 'ميزات إضافية', labelEn: 'Additional Features', type: 'select', multiSelect: true, allowOther: true, required: false, options: FURNITURE_FEATURES },
   ],
   tables: [
     { key: 'tableType', labelAr: 'نوع الطاولة', labelEn: 'Table Type', type: 'select', allowOther: true, required: true, options: [
@@ -117,6 +154,7 @@ export const FURNITURE_FIELDS: CategoryFieldMap = {
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
     { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'text', required: false, placeholder: 'IKEA, Ashley...', placeholderAr: 'مثال: ايكيا...' },
     { key: 'dimensions', labelAr: 'المقاس (سم)', labelEn: 'Dimensions', type: 'text', required: false, placeholder: '200 x 100 cm', placeholderAr: 'مثال: 200 × 100 سم' },
+    { key: 'extendable', labelAr: 'قابل للتمديد', labelEn: 'Extendable', type: 'boolean', required: false },
   ],
   outdoor: [
     { key: 'itemType', labelAr: 'نوع الأثاث الخارجي', labelEn: 'Outdoor Item Type', type: 'select', allowOther: true, required: true, options: [
@@ -159,6 +197,7 @@ export const FURNITURE_FIELDS: CategoryFieldMap = {
     { key: 'dimensions', labelAr: 'الأبعاد / الحجم (سم أو م²)', labelEn: 'Dimensions', type: 'text', required: false, placeholder: '200x300 cm', placeholderAr: 'مثال: 200 × 300 سم' },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
     { key: 'brand', labelAr: 'الماركة أو المنشأ', labelEn: 'Brand / Origin', type: 'text', required: false, placeholder: 'Turkish, Persian, IKEA...', placeholderAr: 'مثال: تركي، يدوي، ايكيا...' },
+    { key: 'originCountry', labelAr: 'المنشأ', labelEn: 'Origin', type: 'select', allowOther: true, required: false, options: DECOR_ORIGIN },
   ],
   office: [
     { key: 'itemType', labelAr: 'نوع الأثاث المكتبي', labelEn: 'Office Item Type', type: 'select', allowOther: true, required: true, options: [
@@ -174,6 +213,7 @@ export const FURNITURE_FIELDS: CategoryFieldMap = {
     { key: 'adjustable', labelAr: 'قابل لتعديل الارتفاع أو كهربائي (Sit-Stand)', labelEn: 'Adjustable / Standing Desk', type: 'boolean', required: false },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
     { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'text', required: false, placeholder: 'Herman Miller, Steelcase, IKEA...', placeholderAr: 'مثال: هيرمان ميلر، ايكيا...' },
+    { key: 'chairSubtype', labelAr: 'نوع الكرسي', labelEn: 'Chair Type', type: 'select', allowOther: true, required: false, options: CHAIR_SUBTYPE },
     { key: 'dimensions', labelAr: 'الأبعاد (الطول × العرض × الارتفاع)', labelEn: 'Dimensions', type: 'text', required: false, placeholder: '160x80 cm', placeholderAr: 'مثال: 160 × 80 سم' },
   ],
 };
