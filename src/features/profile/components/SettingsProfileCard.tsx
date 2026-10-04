@@ -1,12 +1,14 @@
 import React from 'react';
 import { User, Logout } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
-import type { User as UserType } from '@/features/auth/domain';
+import { getUserDisplayName } from '@/shared/lib/userDisplay';
 
 interface SettingsProfileCardProps {
   registered: boolean | undefined;
   user: { name?: string; phone?: string; firstName?: string; lastName?: string } | null | undefined;
   isArabic: boolean;
+  nickname?: string;
+  onEditNickname?: () => void;
   handleLoginCta: () => void;
   handleLogout: () => void;
 }
@@ -15,6 +17,8 @@ export const SettingsProfileCard: React.FC<SettingsProfileCardProps> = ({
   registered,
   user,
   isArabic,
+  nickname,
+  onEditNickname,
   handleLoginCta,
   handleLogout,
 }) => {
@@ -26,11 +30,22 @@ export const SettingsProfileCard: React.FC<SettingsProfileCardProps> = ({
         </div>
         <div>
           <div className="text-sm font-bold text-ink">
-            {registered ? `${user?.firstName} ${user?.lastName}` : (isArabic ? 'زائر (غير مسجل)' : 'Guest User')}
+            {registered
+              ? getUserDisplayName({ nickname, firstName: user?.firstName }, isArabic)
+              : (isArabic ? 'زائر (غير مسجل)' : 'Guest User')}
           </div>
           <div className="text-xs text-ink-muted">
             {registered ? user?.phone : (isArabic ? 'سجل لتأكيد رقمك ونشر الإعلانات' : 'Register to verify your phone and post ads')}
           </div>
+          {registered && onEditNickname && (
+            <button
+              type="button"
+              onClick={onEditNickname}
+              className="mt-1 text-[11px] font-bold text-primary hover:underline cursor-pointer"
+            >
+              {isArabic ? 'تعديل الاسم المستعار' : 'Edit nickname'}
+            </button>
+          )}
         </div>
       </div>
       {!registered ? (
