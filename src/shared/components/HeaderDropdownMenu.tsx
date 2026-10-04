@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Global, Heart, Notification, Location, MessageQuestion } from 'iconsax-react';
+import { User, Global, Heart, Notification, Location, MessageQuestion, Setting2 } from 'iconsax-react';
 
 interface HeaderDropdownMenuProps {
   isArabic: boolean;
@@ -8,6 +8,7 @@ interface HeaderDropdownMenuProps {
   displayCityEn: string;
   handleMenuClose: () => void;
   handleProfileNav: () => void;
+  handleSettingsNav: () => void;
   handleLanguageToggle: () => void;
   handleWishlistNav: () => void;
   wishlistLength: number;
@@ -19,7 +20,7 @@ interface HeaderDropdownMenuProps {
 
 export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
   isArabic, browseCountry, displayCityAr, displayCityEn,
-  handleMenuClose, handleProfileNav, handleLanguageToggle,
+  handleMenuClose, handleProfileNav, handleSettingsNav, handleLanguageToggle,
   handleWishlistNav, wishlistLength, handleNotificationsNav,
   setIsCountrySheetOpen,
 }) => {
@@ -32,16 +33,14 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
       />
 
       {/* Dropdown panel */}
-      <div
-        className="absolute top-full start-0 w-72 mt-1 z-[100] bg-white rounded-2xl border border-[#E2E8F0] shadow-2xl overflow-hidden font-cairo"
-      >
+      <div className="absolute top-full start-0 w-72 mt-1 z-[100] bg-white rounded-2xl border border-[#E2E8F0] shadow-2xl overflow-hidden">
         <div className="divide-y divide-[#E2E8F0] bg-white flex flex-col">
           <button
             onClick={() => {
               handleMenuClose();
               setIsCountrySheetOpen(true);
             }}
-            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-[#DDE3EC]/40 active:scale-[0.99] transition-all bg-white border-none cursor-pointer"
+            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-[#DDE3EC]/40 active:bg-[#DDE3EC]/60"
           >
             <span className="text-sm font-bold text-[#0F172A]">
               {isArabic ? `الدولة: ${browseCountry.nameAr}` : `Country: ${browseCountry.nameEn}`}
@@ -54,7 +53,7 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
               handleMenuClose();
               setIsCountrySheetOpen(true);
             }}
-            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-[#DDE3EC]/40 active:scale-[0.99] transition-all bg-white border-none cursor-pointer"
+            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-[#DDE3EC]/40 active:bg-[#DDE3EC]/60"
           >
             <span className="text-sm font-bold text-[#0F172A]">
               {isArabic ? displayCityAr : displayCityEn}
@@ -67,12 +66,25 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
               handleProfileNav();
               handleMenuClose();
             }}
-            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-[#DDE3EC]/40 active:scale-[0.99] transition-all bg-white border-none cursor-pointer"
+            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-[#DDE3EC]/40 active:bg-[#DDE3EC]/60"
           >
             <span className="text-sm font-bold text-[#0F172A]">
               {isArabic ? 'الملف الشخصي' : 'My Profile'}
             </span>
-            <User variant="Bold" size={22} color="#8B5CF6" className="shrink-0" />
+            <User variant="Bold" size={22} color="#B85CF6" className="shrink-0" />
+          </button>
+
+          <button
+            onClick={() => {
+              handleSettingsNav();
+              handleMenuClose();
+            }}
+            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-[#DDE3EC]/40 active:bg-[#DDE3EC]/60"
+          >
+            <span className="text-sm font-bold text-[#0F172A]">
+              {isArabic ? 'إعدادات الحساب' : 'Account Settings'}
+            </span>
+            <Setting2 variant="Bold" size={22} color="#64748B" className="shrink-0" />
           </button>
 
           <button
@@ -80,12 +92,12 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
               handleLanguageToggle();
               handleMenuClose();
             }}
-            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-[#DDE3EC]/40 active:scale-[0.99] transition-all bg-white border-none cursor-pointer"
+            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-[#DDE3EC]/40 active:bg-[#DDE3EC]/60"
           >
             <span className="text-sm font-bold text-[#0F172A]">
               {isArabic ? 'English' : 'العربية'}
             </span>
-            <Global variant="Bold" size={22} color="#10B981" className="shrink-0" />
+            <Global variant="Bold" size={22} color="#16A34A" className="shrink-0" />
           </button>
 
           <button
@@ -93,18 +105,16 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
               handleWishlistNav();
               handleMenuClose();
             }}
-            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-[#DDE3EC]/40 active:scale-[0.99] transition-all bg-white border-none cursor-pointer"
+            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-[#DDE3EC]/40 active:bg-[#DDE3EC]/60"
           >
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-bold text-[#0F172A]">
-                {isArabic ? 'المفضلة' : 'Favorites'}
-              </span>
+            <span className="text-sm font-bold text-[#0F172A] flex items-center gap-2">
+              {isArabic ? 'المفضلة' : 'Favorites'}
               {wishlistLength > 0 && (
-                <span className="bg-[#EF4444] text-white rounded-full px-2 py-0.5 text-[10px] font-bold shrink-0">
+                <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-[#EF4444] text-white text-[11px] font-bold">
                   {wishlistLength}
                 </span>
               )}
-            </div>
+            </span>
             <Heart variant="Bold" size={22} color="#EF4444" className="shrink-0" />
           </button>
 
@@ -113,24 +123,25 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
               handleNotificationsNav();
               handleMenuClose();
             }}
-            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-[#DDE3EC]/40 active:scale-[0.99] transition-all bg-white border-none cursor-pointer"
+            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-[#DDE3EC]/40 active:bg-[#DDE3EC]/60"
           >
             <span className="text-sm font-bold text-[#0F172A]">
-              {isArabic ? 'الإشعارات والتنبيهات' : 'Notifications'}
+              {isArabic ? 'الإشعارات والتنبيهات' : 'Notifications & Alerts'}
             </span>
             <Notification variant="Bold" size={22} color="#F59E0B" className="shrink-0" />
           </button>
 
-          <a
-            href="mailto:Sufyanyounis83@gmail.com?subject=FOX Marketplace — Feedback"
-            onClick={handleMenuClose}
-            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-[#DDE3EC]/40 active:scale-[0.99] transition-all bg-white border-none cursor-pointer no-underline"
+          <button
+            onClick={() => {
+              handleMenuClose();
+            }}
+            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-[#DDE3EC]/40 active:bg-[#DDE3EC]/60"
           >
             <span className="text-sm font-bold text-[#0F172A]">
-              {isArabic ? 'اقتراح أو تواصل' : 'Send Feedback'}
+              {isArabic ? 'اقتراح أو تواصل' : 'Suggest or Contact'}
             </span>
-            <MessageQuestion variant="Bold" size={22} color="#06B6D4" className="shrink-0" />
-          </a>
+            <MessageQuestion variant="Bold" size={22} color="#0EA5E9" className="shrink-0" />
+          </button>
         </div>
       </div>
     </>
