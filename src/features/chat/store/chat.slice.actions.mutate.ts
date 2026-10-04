@@ -4,6 +4,7 @@ import {
   sendMessage as sendMessageService,
   softDeleteMessage as softDeleteMessageService,
   deleteConversation as deleteConversationService,
+  markMessagesRead as markMessagesReadService,
 } from '../services/chatService';
 import type { ChatMessage, ConversationView, MarketCode } from '../services/chatService.types';
 import type { PendingMessage } from './chat.slice.types';
@@ -109,10 +110,7 @@ export async function softDeleteMessage(messageId: string): Promise<{ error: str
   return softDeleteMessageService(messageId);
 }
 
-export function applyMessageUpdate(
-  conversationId: string,
-  updated: ChatMessage
-): void {
+export function applyMessageUpdate(conversationId: string, updated: ChatMessage): void {
   useChatStore.setState((s) => {
     const existing = s.messagesByConversation[conversationId] ?? [];
     return {
@@ -143,4 +141,9 @@ export async function deleteConversation(conversationId: string): Promise<{ erro
     };
   });
   return { error: null };
+}
+
+export async function markMessagesRead(conversationId: string): Promise<void> {
+  if (!conversationId) return;
+  await markMessagesReadService(conversationId);
 }

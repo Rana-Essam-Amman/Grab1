@@ -3,6 +3,14 @@ import { useUI } from '@/hooks/useUI';
 import { useChat } from '@/hooks/useChat';
 import { useAuth } from '@/hooks/useAuth';
 import { useListings } from '@/hooks/useListings';
+import {
+  markMessagesRead as markMessagesReadAction,
+} from '../store/chat.slice.actions.mutate';
+import {
+  loadInitialMessages as loadInitialMessagesAction,
+} from '../store/chat.slice.actions.load';
+import { subscribeToMessages } from '../services/chatRealtime';
+import { applyMessageUpdate, reconcileConfirmedMessage } from '../store/chat.slice.actions.mutate';
 import { getFormattedLocalPhone } from '@/shared/lib/phoneFormatting';
 import { ThreadHeader } from '../components/ThreadHeader';
 import { ThreadMessageFlow } from '../components/ThreadMessageFlow';
@@ -13,11 +21,8 @@ export const ThreadScreen: React.FC = () => {
   const { conversations, sendChatMessage } = useChat();
   const { authStatus } = useAuth();
 
-  // Redirect Guest/Visitor instantly
   useEffect(() => {
-    if (authStatus === 'unauthenticated') {
-      navigateTo('login');
-    }
+    if (authStatus === 'unauthenticated') navigateTo('login');
   }, [authStatus, navigateTo]);
 
   const [inputText, setInputText] = useState('');
@@ -38,12 +43,30 @@ export const ThreadScreen: React.FC = () => {
     return getFormattedLocalPhone(thread.sellerPhone, listing?.countryCode);
   }, [thread?.sellerPhone, listing?.countryCode]);
 
-  // Strict anti-spam message limit constraint to save transaction costs
-  const MAX_MESSAGES = 6;
+  const SOFT_LIMIT = 30;
   const isMessageLimitReached = useMemo(
-    () => (thread ? thread.messages.length >= MAX_MESSAGES : false),
+    () => (thread ? thread.messages.length >= SOFT_LIMIT : false),
     [thread]
   );
+
+  useEffect(() => {
+    if (!selectedThreadId || authStatus !== 'authenticated') return;
+    void loadInitialMessagesAction(selectedThreadId);
+    const sub = subscribeToMessages(selectedThreadId, (payload) => {
+      if (payload.eventType === 'INSERT') {
+        reconcileConfirmedMessage(selectedThreadId, payload.message.senderId, payload.message);
+      } else {
+        applyMessageUpdate(selectedThreadId, payload.message);
+      }
+    });
+    return () => sub.unsubscribe();
+  }, [selectedThreadId, authStatus]);
+
+  useEffect(() => {
+    if (!selectedThreadId || authStatus !== 'authenticated') return;
+    if (!thread) return;
+    void markMessagesReadAction(selectedThreadId);
+  }, [selectedThreadId, authStatus, thread]);
 
   const handleSend = useCallback((e: React.FormEvent) => {
     e.preventDefault();
@@ -73,9 +96,7 @@ export const ThreadScreen: React.FC = () => {
       'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"><rect width="40" height="40" fill="%23E5E7EB"/></svg>';
   }, []);
 
-  if (authStatus === 'unauthenticated') {
-    return null;
-  }
+  if (authStatus === 'unauthenticated') return null;
 
   if (!selectedThreadId || !thread) {
     return (
@@ -104,12 +125,11 @@ export const ThreadScreen: React.FC = () => {
         handleImageError={handleImageError}
         dialNumber={formattedPhone.dialNumber}
       />
-
       <ThreadMessageFlow
         messages={thread.messages}
         isArabic={isArabic}
+        isPending={(id) => id.startsWith('pending-')}
       />
-
       <ThreadInputBar
         isMessageLimitReached={isMessageLimitReached}
         isArabic={isArabic}

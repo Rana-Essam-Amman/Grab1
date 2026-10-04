@@ -23,7 +23,6 @@ export async function createOrGetConversation(
       .eq('listing_id', input.listingId)
       .eq('buyer_id', input.buyerId)
       .maybeSingle();
-
     let row: ConversationRow | null = null;
     if (existing) {
       row = existing as ConversationRow;
@@ -41,11 +40,9 @@ export async function createOrGetConversation(
       if (error) return { data: null, error: error.message };
       row = data as ConversationRow;
     }
-
     const conversation = rowToConversation(row);
     const { data: listingMap, error: lErr } = await getListingsByIds([conversation.listingId]);
     if (lErr) return { data: null, error: lErr };
-
     return { data: toViews([conversation], listingMap)[0], error: null };
   } catch (err) {
     return { data: null, error: err instanceof Error ? err.message : 'Unknown error' };
@@ -63,13 +60,10 @@ export async function getConversationsForUser(
       .order('updated_at', { ascending: false })
       .limit(200);
     if (error) return { data: null, error: error.message };
-
     const conversations = (data || []).map((r) => rowToConversation(r as ConversationRow));
     const listingIds = Array.from(new Set(conversations.map((c) => c.listingId)));
-
     const { data: listingMap, error: lErr } = await getListingsByIds(listingIds);
     if (lErr) return { data: null, error: lErr };
-
     return { data: toViews(conversations, listingMap), error: null };
   } catch (err) {
     return { data: null, error: err instanceof Error ? err.message : 'Unknown error' };
@@ -115,9 +109,7 @@ export async function sendMessage(
   }
 }
 
-export async function softDeleteMessage(
-  messageId: string
-): Promise<{ error: string | null }> {
+export async function softDeleteMessage(messageId: string): Promise<{ error: string | null }> {
   try {
     const { error } = await supabase
       .from('messages')
@@ -129,14 +121,18 @@ export async function softDeleteMessage(
   }
 }
 
-export async function deleteConversation(
-  conversationId: string
-): Promise<{ error: string | null }> {
+export async function deleteConversation(conversationId: string): Promise<{ error: string | null }> {
   try {
-    const { error } = await supabase
-      .from('conversations')
-      .delete()
-      .eq('id', conversationId);
+    const { error } = await supabase.from('conversations').delete().eq('id', conversationId);
+    return { error: error ? error.message : null };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
+export async function markMessagesRead(conversationId: string): Promise<{ error: string | null }> {
+  try {
+    const { error } = await supabase.rpc('mark_messages_read', { p_conversation_id: conversationId });
     return { error: error ? error.message : null };
   } catch (err) {
     return { error: err instanceof Error ? err.message : 'Unknown error' };

@@ -16,6 +16,7 @@ export function rowToMessage(row: ChatMessageRow): ChatMessage {
     senderId: row.sender_id,
     text: row.deleted_at ? '' : row.text,
     isDeleted: row.deleted_at !== null,
+    readAt: row.read_at,
     createdAt: row.created_at,
   };
 }
@@ -45,15 +46,9 @@ export async function getListingsByIds(
     const { data, error } = await supabase
       .from('listings')
       .select('id, title, images, seller_phone, country_code')
-      .in('id', ids);
+      .in('id', Array.from(ids));
     if (error) return { data: map, error: error.message };
-    for (const row of (data || []) as Array<{
-      id: string;
-      title: string;
-      images: string[] | null;
-      seller_phone: string | null;
-      country_code: MarketCode;
-    }>) {
+    (data || []).forEach((row: { id: string; title: string; images: string[] | null; seller_phone: string | null; country_code: MarketCode }) => {
       map.set(row.id, {
         id: row.id,
         title: row.title,
@@ -61,7 +56,7 @@ export async function getListingsByIds(
         sellerPhone: row.seller_phone ?? '',
         countryCode: row.country_code,
       });
-    }
+    });
     return { data: map, error: null };
   } catch (err) {
     return { data: map, error: err instanceof Error ? err.message : 'Unknown error' };

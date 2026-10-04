@@ -6,6 +6,7 @@ export interface ChatMessageRow {
   readonly sender_id: string;
   readonly text: string;
   readonly deleted_at: string | null;
+  readonly read_at: string | null;
   readonly created_at: string;
 }
 
@@ -25,6 +26,7 @@ export interface ChatMessage {
   readonly senderId: string;
   readonly text: string;
   readonly isDeleted: boolean;
+  readonly readAt: string | null;
   readonly createdAt: string;
 }
 
