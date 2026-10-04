@@ -1,16 +1,6 @@
 import { supabase } from '@/shared/lib/supabase';
 import type { ChatMessage, ChatMessageRow, Conversation, ConversationRow } from './chatService.types';
-
-function rowToMessage(row: ChatMessageRow): ChatMessage {
-  return {
-    id: row.id,
-    conversationId: row.conversation_id,
-    senderId: row.sender_id,
-    text: row.deleted_at ? '' : row.text,
-    isDeleted: row.deleted_at !== null,
-    createdAt: row.created_at,
-  };
-}
+import { rowToMessage } from './chatService.mappers';
 
 export interface MessageSubscription {
   readonly unsubscribe: () => void;
@@ -18,7 +8,7 @@ export interface MessageSubscription {
 
 /**
  * Subscribe to messages in a conversation. Fires on INSERT and UPDATE
- * (UPDATE carries soft-delete). Returns a handle to unsubscribe.
+ * (UPDATE carries soft-delete / read_at changes). Returns a handle to unsubscribe.
  */
 export function subscribeToMessages(
   conversationId: string,

@@ -28,6 +28,7 @@ function toLegacyMessage(
     text: m.text,
     fromBuyer: m.senderId === currentUserId,
     timestamp: m.createdAt,
+    readAt: m.readAt,
   };
 }
 
