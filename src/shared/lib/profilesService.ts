@@ -14,6 +14,7 @@ export interface ProfileRecord {
   readonly id: string;
   readonly first_name: string | null;
   readonly last_name: string | null;
+  readonly nickname: string | null;
   readonly phone: string | null;
   readonly phone_locked?: boolean | null;
   readonly avatar_url: string | null;
@@ -25,6 +26,7 @@ export interface ProfileRecord {
 export interface ProfileUpdate {
   readonly first_name?: string;
   readonly last_name?: string;
+  readonly nickname?: string;
   readonly phone?: string;
   readonly phone_locked?: boolean;
   readonly avatar_url?: string;
@@ -41,7 +43,7 @@ export async function fetchProfile(userId: string): Promise<ProfileRecord | null
   try {
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, first_name, last_name, phone, phone_locked, avatar_url, country_code, created_at, updated_at')
+      .select('id, first_name, last_name, nickname, phone, phone_locked, avatar_url, country_code, created_at, updated_at')
       .eq('id', userId)
       .maybeSingle();
     if (error) {
@@ -70,7 +72,7 @@ export async function upsertProfile(
     const { data, error } = await supabase
       .from('profiles')
       .upsert(payload, { onConflict: 'id' })
-      .select('id, first_name, last_name, phone, phone_locked, avatar_url, country_code, created_at, updated_at')
+      .select('id, first_name, last_name, nickname, phone, phone_locked, avatar_url, country_code, created_at, updated_at')
       .maybeSingle();
     if (error) {
       console.warn('[profilesService] upsertProfile error', error.message);
@@ -90,4 +92,17 @@ export async function savePhone(userId: string, phone: string): Promise<ProfileR
   const trimmed = phone.trim();
   if (!trimmed) return null;
   return upsertProfile(userId, { phone: trimmed, phone_locked: true });
+}
+
+/**
+ * Convenience: save the user's nickname.
+ * Trims and validates client-side (2–50 chars).
+ */
+export async function saveNickname(
+  userId: string,
+  nickname: string
+): Promise<ProfileRecord | null> {
+  const trimmed = nickname.trim();
+  if (trimmed.length < 2 || trimmed.length > 50) return null;
+  return upsertProfile(userId, { nickname: trimmed });
 }

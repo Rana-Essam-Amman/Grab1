@@ -142,6 +142,7 @@ export interface UserProfile {
   id?: string;
   firstName: string;
   lastName: string;
+  nickname?: string;
   email: string;
   phone: string;
   countryCode: string;
