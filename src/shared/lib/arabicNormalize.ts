@@ -38,9 +38,20 @@ export function findMatchRange(
 ): { start: number; end: number } | null {
   const q = normalizeArabic(query);
   if (!q) return null;
-  // Normalized length matches original length because we only swap 1:1 chars.
-  const o = normalizeArabic(option);
-  const idx = o.indexOf(q);
+  // Build normalized option + index map
+  let norm = '';
+  const map: number[] = []; // map[i] = original index of norm[i]
+  for (let i = 0; i < option.length; i++) {
+    const ch = option[i];
+    const normCh = normalizeArabic(ch);
+    for (const c of normCh) {
+      norm += c;
+      map.push(i);
+    }
+  }
+  const idx = norm.indexOf(q);
   if (idx === -1) return null;
-  return { start: idx, end: idx + q.length };
+  const start = map[idx];
+  const end = map[idx + q.length - 1] + 1;
+  return { start, end };
 }
