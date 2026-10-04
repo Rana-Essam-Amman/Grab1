@@ -24,7 +24,7 @@ export const useListingsStore = create<ListingsState>()(
         baseActions.updateListing(id, updates);
       },
       deleteListing: (id) => {
-        baseActions.deleteListing(id);
+        return baseActions.deleteListing(id);
       },
       toggleWishlist: (id, countryCode) => {
         baseActions.toggleWishlist(id, countryCode);

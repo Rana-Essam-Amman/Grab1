@@ -1,5 +1,6 @@
 import { Listing } from '@/types';
 import { getListingsFromStorage, saveListingsToStorage, getWishlistForMarket, saveWishlistForMarket } from '@/services/listing.service';
+import { deleteListing as deleteListingService } from '@/features/listings/services/listingsService';
 import { validateAdQuotaAvailability as validateAdQuotaAvailabilityHelper } from '@/data/monetization';
 import { globalStorage } from '@/shared/lib/marketStorage';
 import { ListingsState } from './listings.slice.types';
@@ -45,7 +46,11 @@ export const createListingsActions = (
     });
   },
 
-  deleteListing: (id: string) => {
+  deleteListing: async (id: string): Promise<{ success: boolean; error: string | null }> => {
+    const { error } = await deleteListingService(id);
+    if (error) {
+      return { success: false, error };
+    }
     set((state) => {
       state.listings = state.listings.filter((item) => item.id !== id);
       saveListingsToStorage(state.listings);
@@ -54,6 +59,7 @@ export const createListingsActions = (
         saveWishlistForMarket(state.activeWishlistCountry, state.wishlist);
       }
     });
+    return { success: true, error: null };
   },
 
   toggleWishlist: (id: string, countryCode?: string) => {
