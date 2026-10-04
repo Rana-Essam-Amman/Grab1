@@ -1,16 +1,19 @@
 import { useUI } from '@/hooks/useUI';
 import { useChat } from '@/hooks/useChat';
-import React, { useCallback } from 'react';
-import { Conversation } from '@/types';
-import { ArrowRight2, ArrowLeft2 } from 'iconsax-react';
-import { Card } from '@/shared/ui/Card';
+import React, { useCallback, useState } from 'react';
 import { EmptyState } from '@/shared/ui/EmptyState';
+import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { Icon } from '@iconify/react';
+import { ConversationRow } from '../components/ConversationRow';
+import {
+  deleteConversation as deleteConversationAction,
+} from '../store/chat.slice.actions.mutate';
 
 export const MessagesScreen: React.FC = () => {
   const { isArabic, setSelectedThreadId, navigateTo } = useUI();
   const { conversations } = useChat();
-  const ChevronIcon = isArabic ? ArrowLeft2 : ArrowRight2;
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleOpenThread = useCallback((threadId: string) => {
     setSelectedThreadId(threadId);
@@ -21,6 +24,14 @@ export const MessagesScreen: React.FC = () => {
     (e.target as HTMLImageElement).src =
       'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50"><rect width="50" height="50" fill="%23E5E7EB"/></svg>';
   }, []);
+
+  const handleConfirmDelete = useCallback(async () => {
+    if (!pendingDeleteId) return;
+    setIsDeleting(true);
+    await deleteConversationAction(pendingDeleteId);
+    setIsDeleting(false);
+    setPendingDeleteId(null);
+  }, [pendingDeleteId]);
 
   return (
     <div className="flex flex-col pb-24 px-4 pt-3 min-h-[70vh]" dir={isArabic ? 'rtl' : 'ltr'}>
@@ -48,51 +59,35 @@ export const MessagesScreen: React.FC = () => {
         />
       ) : (
         <div className="flex flex-col gap-2.5">
-          {conversations.map((thread: Conversation) => {
-            const lastMsg =
-              thread.messages.length > 0
-                ? thread.messages[thread.messages.length - 1]
-                : null;
-
-            return (
-              <Card
-                key={thread.id}
-                variant="interactive"
-                onClick={() => handleOpenThread(thread.id)}
-                className="p-3.5 flex items-center gap-3.5 group"
-              >
-                <div className="w-12 h-12 rounded-xl bg-background overflow-hidden border border-border shrink-0">
-                  <img
-                    src={thread.imageUrl}
-                    alt={thread.title}
-                    className="w-full h-full object-cover"
-                    onError={handleImageError}
-                  />
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-baseline justify-between mb-1">
-                    <div className="text-sm font-bold text-ink truncate group-hover:text-primary" dir="auto">
-                      {thread.title}
-                    </div>
-                    {lastMsg && (
-                      <span className="text-[10px] text-ink-muted shrink-0 ms-2">
-                        {lastMsg.timestamp}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="text-xs text-ink-muted truncate" dir={lastMsg ? "auto" : undefined}>
-                    {lastMsg ? lastMsg.text : (isArabic ? 'بدء محادثة جديدة' : 'New chat started')}
-                  </div>
-                </div>
-
-                <ChevronIcon size={18} variant="Linear" className="text-ink-muted group-hover:text-primary shrink-0" />
-              </Card>
-            );
-          })}
+          {conversations.map((thread) => (
+            <ConversationRow
+              key={thread.id}
+              thread={thread}
+              isArabic={isArabic}
+              onOpen={handleOpenThread}
+              onLongPress={setPendingDeleteId}
+              onImageError={handleImageError}
+            />
+          ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={pendingDeleteId !== null}
+        onClose={() => !isDeleting && setPendingDeleteId(null)}
+        onConfirm={handleConfirmDelete}
+        isArabic={isArabic}
+        isProcessing={isDeleting}
+        destructive
+        title={isArabic ? 'حذف المحادثة؟' : 'Delete conversation?'}
+        description={
+          isArabic
+            ? 'سيتم حذف المحادثة بالكامل من حسابك ومن حساب الطرف الآخر. لا يمكن التراجع.'
+            : 'This conversation will be permanently removed from your account and the other party’s. This cannot be undone.'
+        }
+        confirmLabel={isArabic ? 'حذف' : 'Delete'}
+        cancelLabel={isArabic ? 'إلغاء' : 'Cancel'}
+      />
     </div>
   );
 };
