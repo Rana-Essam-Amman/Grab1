@@ -16,5 +16,6 @@ export const useChatStore = create<ChatState>(() => ({
   cursorByConversation: {},
   loadingConversations: false,
   loadingByConversation: {},
+  typingByConversation: {},
   error: null,
 }));

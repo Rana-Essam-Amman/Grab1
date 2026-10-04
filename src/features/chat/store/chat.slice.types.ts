@@ -25,5 +25,6 @@ export interface ChatState {
   cursorByConversation: Record<string, string | null>;
   loadingConversations: boolean;
   loadingByConversation: Record<string, boolean>;
+  typingByConversation: Record<string, boolean>;
   error: string | null;
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useUI } from '@/hooks/useUI';
 import { useChat } from '@/hooks/useChat';
 import { useAuth } from '@/hooks/useAuth';
+import { useAuthStore } from '@/features/auth/store/auth.slice';
 import { useListings } from '@/hooks/useListings';
 import {
   markMessagesRead as markMessagesReadAction,
@@ -12,14 +13,17 @@ import {
 import { subscribeToMessages } from '../services/chatRealtime';
 import { applyMessageUpdate, reconcileConfirmedMessage } from '../store/chat.slice.actions.mutate';
 import { getFormattedLocalPhone } from '@/shared/lib/phoneFormatting';
+import { useTypingIndicator } from '../hooks/useTypingIndicator';
 import { ThreadHeader } from '../components/ThreadHeader';
 import { ThreadMessageFlow } from '../components/ThreadMessageFlow';
 import { ThreadInputBar } from '../components/ThreadInputBar';
 
 export const ThreadScreen: React.FC = () => {
   const { isArabic, goBack, selectedThreadId, setSelectedListingId, navigateTo, browseCountryCode } = useUI();
-  const { conversations, sendChatMessage } = useChat();
+  const { conversations, sendChatMessage, isTyping } = useChat();
   const { authStatus } = useAuth();
+  const currentUserId = useAuthStore((s) => s.user?.id ?? null);
+  const { notifyTyping } = useTypingIndicator(selectedThreadId ?? null, currentUserId);
 
   useEffect(() => {
     if (authStatus === 'unauthenticated') navigateTo('login');
@@ -89,7 +93,8 @@ export const ThreadScreen: React.FC = () => {
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setInputText(e.target.value);
-  }, []);
+    if (e.target.value.trim().length > 0) notifyTyping();
+  }, [notifyTyping]);
 
   const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     (e.target as HTMLImageElement).src =
@@ -124,6 +129,7 @@ export const ThreadScreen: React.FC = () => {
         title={thread.title}
         handleImageError={handleImageError}
         dialNumber={formattedPhone.dialNumber}
+        isTyping={selectedThreadId ? isTyping(selectedThreadId) : false}
       />
       <ThreadMessageFlow
         messages={thread.messages}
