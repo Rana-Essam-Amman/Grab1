@@ -18,10 +18,7 @@ export interface OpenConversationInput {
   readonly marketCode: MarketCode;
 }
 
-export async function openConversation(
-  input: OpenConversationInput,
-  activeCountry?: string
-): Promise<ConversationView | null> {
+export async function openConversation(input: OpenConversationInput, activeCountry?: string): Promise<ConversationView | null> {
   if (activeCountry && input.marketCode !== activeCountry) {
     throw new Error('Cross-market chat handshakes are strictly forbidden.');
   }
@@ -30,10 +27,9 @@ export async function openConversation(
     useChatStore.setState({ error: error || 'Failed to open conversation' });
     return null;
   }
-  useChatStore.setState((s) => {
-    const exists = s.conversations.some((c) => c.id === data.id);
-    return { conversations: exists ? s.conversations : [data, ...s.conversations] };
-  });
+  useChatStore.setState((s) => ({
+    conversations: s.conversations.some((c) => c.id === data.id) ? s.conversations : [data, ...s.conversations],
+  }));
   return data;
 }
 
@@ -51,11 +47,7 @@ export async function sendChatMessage(
     return { tempId: null, error: 'MESSAGE_LIMIT_REACHED' };
   }
   const tempId = `pending-${crypto.randomUUID()}`;
-  const pendingObj: PendingMessage = {
-    tempId,
-    text: trimmed,
-    createdAt: new Date().toISOString(),
-  };
+  const pendingObj: PendingMessage = { tempId, text: trimmed, createdAt: new Date().toISOString() };
   useChatStore.setState((s) => ({
     pendingByConversation: {
       ...s.pendingByConversation,
@@ -67,9 +59,7 @@ export async function sendChatMessage(
     useChatStore.setState((s) => ({
       pendingByConversation: {
         ...s.pendingByConversation,
-        [conversationId]: (s.pendingByConversation[conversationId] ?? []).filter(
-          (p) => p.tempId !== tempId
-        ),
+        [conversationId]: (s.pendingByConversation[conversationId] ?? []).filter((p) => p.tempId !== tempId),
       },
       error,
     }));
@@ -78,18 +68,13 @@ export async function sendChatMessage(
   return { tempId, error: null };
 }
 
-export function reconcileConfirmedMessage(
-  conversationId: string,
-  senderId: string,
-  confirmed: ChatMessage
-): void {
+export function reconcileConfirmedMessage(conversationId: string, senderId: string, confirmed: ChatMessage): void {
   useChatStore.setState((s) => {
     const pendingList = s.pendingByConversation[conversationId] ?? [];
     const remaining = senderId
       ? (() => {
           const idx = pendingList.findIndex((p) => p.text === confirmed.text);
-          if (idx === -1) return pendingList;
-          return [...pendingList.slice(0, idx), ...pendingList.slice(idx + 1)];
+          return idx === -1 ? pendingList : [...pendingList.slice(0, idx), ...pendingList.slice(idx + 1)];
         })()
       : pendingList;
     const existing = s.messagesByConversation[conversationId] ?? [];
@@ -98,35 +83,50 @@ export function reconcileConfirmedMessage(
       pendingByConversation: { ...s.pendingByConversation, [conversationId]: remaining },
       messagesByConversation: {
         ...s.messagesByConversation,
-        [conversationId]: [...existing, confirmed].sort((a, b) =>
-          a.createdAt.localeCompare(b.createdAt)
-        ),
+        [conversationId]: [...existing, confirmed].sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
       },
     };
   });
 }
 
-export async function softDeleteMessage(messageId: string): Promise<{ error: string | null }> {
-  return softDeleteMessageService(messageId);
+/**
+ * Soft-delete a message with optimistic update.
+ * Reverts local state on server error.
+ */
+export async function softDeleteMessage(conversationId: string, messageId: string): Promise<{ error: string | null }> {
+  // Optimistic: mark locally as deleted
+  useChatStore.setState((s) => ({
+    messagesByConversation: {
+      ...s.messagesByConversation,
+      [conversationId]: (s.messagesByConversation[conversationId] ?? []).map((m) => (m.id === messageId ? { ...m, isDeleted: true } : m)),
+    },
+  }));
+  const { error } = await softDeleteMessageService(messageId);
+  if (error) {
+    // Revert
+    useChatStore.setState((s) => ({
+      messagesByConversation: {
+        ...s.messagesByConversation,
+        [conversationId]: (s.messagesByConversation[conversationId] ?? []).map((m) => (m.id === messageId ? { ...m, isDeleted: false } : m)),
+      },
+    }));
+  }
+  return { error };
 }
 
 export function applyMessageUpdate(conversationId: string, updated: ChatMessage): void {
-  useChatStore.setState((s) => {
-    const existing = s.messagesByConversation[conversationId] ?? [];
-    return {
-      messagesByConversation: {
-        ...s.messagesByConversation,
-        [conversationId]: existing.map((m) => (m.id === updated.id ? updated : m)),
-      },
-    };
-  });
+  useChatStore.setState((s) => ({
+    messagesByConversation: {
+      ...s.messagesByConversation,
+      [conversationId]: (s.messagesByConversation[conversationId] ?? []).map((m) => (m.id === updated.id ? updated : m)),
+    },
+  }));
 }
 
 export async function deleteConversation(conversationId: string): Promise<{ error: string | null }> {
   const { error } = await deleteConversationService(conversationId);
   if (error) return { error };
   useChatStore.setState((s) => {
-    const nextConvs = s.conversations.filter((c) => c.id !== conversationId);
     const nextMsgs = { ...s.messagesByConversation };
     const nextPending = { ...s.pendingByConversation };
     const nextCursors = { ...s.cursorByConversation };
@@ -134,7 +134,7 @@ export async function deleteConversation(conversationId: string): Promise<{ erro
     delete nextPending[conversationId];
     delete nextCursors[conversationId];
     return {
-      conversations: nextConvs,
+      conversations: s.conversations.filter((c) => c.id !== conversationId),
       messagesByConversation: nextMsgs,
       pendingByConversation: nextPending,
       cursorByConversation: nextCursors,
@@ -144,6 +144,5 @@ export async function deleteConversation(conversationId: string): Promise<{ erro
 }
 
 export async function markMessagesRead(conversationId: string): Promise<void> {
-  if (!conversationId) return;
-  await markMessagesReadService(conversationId);
+  if (conversationId) await markMessagesReadService(conversationId);
 }

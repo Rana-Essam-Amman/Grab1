@@ -5,18 +5,16 @@ import { useAuth } from '@/hooks/useAuth';
 import { useAuthStore } from '@/features/auth/store/auth.slice';
 import { useChatStore } from '@/features/chat/store/chat.slice';
 import { useListings } from '@/hooks/useListings';
-import {
-  markMessagesRead as markMessagesReadAction,
-  applyMessageUpdate,
-  reconcileConfirmedMessage,
-} from '../store/chat.slice.actions.mutate';
+import { markMessagesRead as markMessagesReadAction, applyMessageUpdate, reconcileConfirmedMessage } from '../store/chat.slice.actions.mutate';
 import { loadInitialMessages as loadInitialMessagesAction } from '../store/chat.slice.actions.load';
 import { subscribeToMessages } from '../services/chatRealtime';
 import { getFormattedLocalPhone } from '@/shared/lib/phoneFormatting';
 import { useTypingIndicator } from '../hooks/useTypingIndicator';
+import { useMessageDeleteFlow } from '../hooks/useMessageDeleteFlow';
 import { ThreadHeader } from '../components/ThreadHeader';
 import { ThreadMessageFlow } from '../components/ThreadMessageFlow';
 import { ThreadInputBar } from '../components/ThreadInputBar';
+import { MessageDeleteConfirmDialog } from '../components/MessageDeleteConfirmDialog';
 
 export const ThreadScreen: React.FC = () => {
   const { isArabic, goBack, selectedThreadId, setSelectedListingId, navigateTo, browseCountryCode } = useUI();
@@ -26,6 +24,7 @@ export const ThreadScreen: React.FC = () => {
   const onlineUserIds = useChatStore((s) => s.onlineUserIds);
   const storeConversations = useChatStore((s) => s.conversations);
   const { notifyTyping } = useTypingIndicator(selectedThreadId ?? null, currentUserId);
+  const { pendingDeleteId, isDeleting: isDeletingMessage, onLongPress: onMessageLongPress, onClose: onMessageDeleteClose, onConfirm: onMessageDeleteConfirm } = useMessageDeleteFlow(selectedThreadId ?? null);
 
   useEffect(() => {
     if (authStatus === 'unauthenticated') navigateTo('login');
@@ -33,25 +32,19 @@ export const ThreadScreen: React.FC = () => {
 
   const [inputText, setInputText] = useState('');
   const { getListing } = useListings();
-
   const thread = useMemo(() => conversations.find((c) => c.id === selectedThreadId), [conversations, selectedThreadId]);
   const convView = useMemo(() => storeConversations.find((c) => c.id === selectedThreadId), [storeConversations, selectedThreadId]);
   const listing = useMemo(() => (thread ? getListing(thread.listingId) : undefined), [thread, getListing]);
-
   const isOtherOnline = useMemo(
-    () => !!(convView && currentUserId && onlineUserIds[
-      convView.buyerId === currentUserId ? convView.sellerId : convView.buyerId
-    ]),
+    () => !!(convView && currentUserId && onlineUserIds[convView.buyerId === currentUserId ? convView.sellerId : convView.buyerId]),
     [convView, currentUserId, onlineUserIds]
   );
-
   const formattedPhone = useMemo(() => {
     if (!thread?.sellerPhone) return { dialNumber: '', displayFormatted: '' };
     return getFormattedLocalPhone(thread.sellerPhone, listing?.countryCode);
   }, [thread?.sellerPhone, listing?.countryCode]);
 
-  const SOFT_LIMIT = 30;
-  const isMessageLimitReached = useMemo(() => (thread ? thread.messages.length >= SOFT_LIMIT : false), [thread]);
+  const isMessageLimitReached = useMemo(() => (thread ? thread.messages.length >= 30 : false), [thread]);
 
   useEffect(() => {
     if (!selectedThreadId || authStatus !== 'authenticated') return;
@@ -67,8 +60,7 @@ export const ThreadScreen: React.FC = () => {
   }, [selectedThreadId, authStatus]);
 
   useEffect(() => {
-    if (!selectedThreadId || authStatus !== 'authenticated') return;
-    if (!thread) return;
+    if (!selectedThreadId || authStatus !== 'authenticated' || !thread) return;
     void markMessagesReadAction(selectedThreadId);
   }, [selectedThreadId, authStatus, thread]);
 
@@ -102,7 +94,6 @@ export const ThreadScreen: React.FC = () => {
   }, []);
 
   if (authStatus === 'unauthenticated') return null;
-
   if (!selectedThreadId || !thread) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-surface p-6">
@@ -115,7 +106,7 @@ export const ThreadScreen: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-surface" dir={isArabic ? "rtl" : "ltr"}>
+    <div className="flex flex-col h-screen bg-surface" dir={isArabic ? 'rtl' : 'ltr'}>
       <ThreadHeader
         isArabic={isArabic}
         goBack={goBack}
@@ -131,6 +122,7 @@ export const ThreadScreen: React.FC = () => {
         messages={thread.messages}
         isArabic={isArabic}
         isPending={(id) => id.startsWith('pending-')}
+        onLongPress={onMessageLongPress}
       />
       <ThreadInputBar
         isMessageLimitReached={isMessageLimitReached}
@@ -139,6 +131,13 @@ export const ThreadScreen: React.FC = () => {
         inputText={inputText}
         handleInputChange={handleInputChange}
         handleSend={handleSend}
+      />
+      <MessageDeleteConfirmDialog
+        open={pendingDeleteId !== null}
+        isDeleting={isDeletingMessage}
+        isArabic={isArabic}
+        onClose={onMessageDeleteClose}
+        onConfirm={onMessageDeleteConfirm}
       />
     </div>
   );
