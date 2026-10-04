@@ -6,7 +6,7 @@ export const countries: CountryDef[] = [
     code: 'JO',
     nameEn: 'Jordan',
     nameAr: 'الأردن',
-    flagUrl: 'https://flagcdn.com/w40/jo.png',
+    flagUrl: '/jo.jpg',
     currencies: [
       { code: 'JOD', nameEn: 'Jordanian Dinar', nameAr: 'دينار أردني' },
     ],
@@ -15,7 +15,7 @@ export const countries: CountryDef[] = [
     code: 'LB',
     nameEn: 'Lebanon',
     nameAr: 'لبنان',
-    flagUrl: 'https://flagcdn.com/w40/lb.png',
+    flagUrl: '/lb.jpg',
     currencies: [
       { code: 'USD', nameEn: 'US Dollar', nameAr: 'دولار أمريكي' },
       { code: 'LBP', nameEn: 'Lebanese Pound', nameAr: 'ليرة لبنانية' },
@@ -25,7 +25,7 @@ export const countries: CountryDef[] = [
     code: 'PS',
     nameEn: 'Palestine',
     nameAr: 'فلسطين',
-    flagUrl: 'https://flagcdn.com/w40/ps.png',
+    flagUrl: '/ps.jpg',
     currencies: [
       { code: 'ILS', nameEn: 'Shekel', nameAr: 'شيكل' },
       { code: 'JOD', nameEn: 'Jordanian Dinar', nameAr: 'دينار أردني' },
@@ -36,7 +36,7 @@ export const countries: CountryDef[] = [
     code: 'SY',
     nameEn: 'Syria',
     nameAr: 'سوريا',
-    flagUrl: 'https://flagcdn.com/w40/sy.png',
+    flagUrl: '/sy.jpg',
     currencies: [
       { code: 'SYP', nameEn: 'Syrian Pound', nameAr: 'ليرة سورية' },
       { code: 'USD', nameEn: 'US Dollar', nameAr: 'دولار أمريكي' },
@@ -46,7 +46,7 @@ export const countries: CountryDef[] = [
     code: 'SA',
     nameEn: 'Saudi Arabia',
     nameAr: 'السعودية',
-    flagUrl: 'https://flagcdn.com/w40/sa.png',
+    flagUrl: '/sa.jpg',
     currencies: [
       { code: 'SAR', nameEn: 'Saudi Riyal', nameAr: 'ريال سعودي' },
     ],
