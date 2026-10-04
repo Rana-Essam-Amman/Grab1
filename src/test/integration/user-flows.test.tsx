@@ -91,7 +91,9 @@ describe('Real User Flow Integration Test Suite (Sprint T3 Ultra)', () => {
 
     // Trying to save a listing with missing activeCountry or unverified session throws
     expect(() => {
-      useListingsStore.getState().addListing(createMockListing({ countryCode: '' }), '');
+      // Intentional invalid input — empty countryCode + empty activeCountry 
+      // must throw "Market Isolation Violation". Cast to never for this test.
+      useListingsStore.getState().addListing(createMockListing({ countryCode: '' as never }), '');
     }).toThrow(/Market Isolation Violation/i);
   });
 

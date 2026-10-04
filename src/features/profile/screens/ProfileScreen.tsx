@@ -25,7 +25,6 @@ const getInitialDailyCredits = (): number => {
     const market = getBrowseCountryCode();
     if (!isValidMarketCode(market)) return 5;
     const store = marketStorage(market as MarketCode);
-
     const today = new Date().toISOString().slice(0, 10);
     const storedDate = store.get<string>(STORAGE_KEY_DATE);
     const storedCredits = store.get<string | number>(STORAGE_KEY_CREDITS);
@@ -50,7 +49,7 @@ const getInitialDailyCredits = (): number => {
 export const ProfileScreen: React.FC = () => {
   const { isArabic, browseCountry, browseCityAr, browseCityEn, navigateTo, goBack } = useUI();
   const { t } = useTranslation();
-  const { userListings, listings } = useListings();
+  const { userListings } = useListings();
   const { user } = useAuth();
   const { handleLogout, handleDeleteAccount } = useProfileActions();
 
@@ -58,10 +57,7 @@ export const ProfileScreen: React.FC = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const userAds = useMemo(
-    () => (userListings.length > 0 ? userListings : listings.slice(0, 1)),
-    [userListings, listings]
-  );
+  const userAds = useMemo(() => userListings, [userListings]);
 
   const handleShare = useCallback(async () => {
     const shareUrl = window.location.origin;
@@ -77,6 +73,7 @@ export const ProfileScreen: React.FC = () => {
         // fall through
       }
     }
+
     // Fallback: copy link
     try {
       await navigator.clipboard.writeText(shareUrl);
@@ -128,6 +125,7 @@ export const ProfileScreen: React.FC = () => {
           handleLogout();
         }}
       />
+
       <DeleteAccountModal
         open={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}

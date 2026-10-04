@@ -27,14 +27,25 @@ export interface SupabaseListingRow {
 function rowToListing(row: SupabaseListingRow): Listing {
   const attrs = Array.isArray(row.attributes) ? (row.attributes as Array<{ key?: string; label: string; value: string }>) : [];
   return {
-    id: row.id, title: row.title, description: row.description, price: row.price,
-    currency: row.currency as Listing['currency'], countryCode: row.country_code as Listing['countryCode'],
-    city: row.city, neighborhood: row.neighborhood || '',
-    categorySlug: row.category_slug, subcategorySlug: row.subcategory_slug || '',
-    imageUrl: row.images?.[0] || '', images: row.images || [],
-    sellerPhone: row.seller_phone || '', sellerName: row.seller_name || '',
-    createdAt: row.created_at.split('T')[0], views: row.views,
-    status: row.status as Listing['status'], attributes: attrs as Listing['attributes'],
+    id: row.id,
+    userId: row.user_id,
+    title: row.title,
+    description: row.description,
+    price: row.price,
+    currency: row.currency as Listing['currency'],
+    countryCode: row.country_code as Listing['countryCode'],
+    city: row.city,
+    neighborhood: row.neighborhood || '',
+    categorySlug: row.category_slug,
+    subcategorySlug: row.subcategory_slug || '',
+    imageUrl: row.images?.[0] || '',
+    images: row.images || [],
+    sellerPhone: row.seller_phone || '',
+    sellerName: row.seller_name || '',
+    createdAt: row.created_at.split('T')[0],
+    views: row.views,
+    status: row.status as Listing['status'],
+    attributes: attrs as Listing['attributes'],
   };
 }
 
@@ -53,7 +64,7 @@ export interface CreateListingInput {
   readonly description: string;
   readonly price: string;
   readonly currency: string;
-  readonly countryCode: string;
+  readonly countryCode: "JO" | "LB" | "PS" | "SY" | "SA";
   readonly city: string;
   readonly neighborhood?: string;
   readonly categorySlug: string;
@@ -101,8 +112,7 @@ export async function createListing(
 
 export async function deleteListing(id: string): Promise<{ error: string | null }> {
   try {
-    // 1. Fetch listing images before deleting row
-    const { data: row, error: fetchError } = await supabase
+    const { data: listing, error: fetchError } = await supabase
       .from('listings')
       .select('images')
       .eq('id', id)
@@ -110,13 +120,11 @@ export async function deleteListing(id: string): Promise<{ error: string | null 
 
     if (fetchError) return { error: fetchError.message };
 
-    // 2. Best-effort: remove images from storage. Never blocks DB delete.
-    const images = Array.isArray(row?.images) ? (row.images as string[]) : [];
+    const images = Array.isArray(listing?.images) ? (listing.images as string[]) : [];
     if (images.length > 0) {
       await removeListingImages(images);
     }
 
-    // 3. Delete DB row (priority)
     const { error } = await supabase.from('listings').delete().eq('id', id);
     return { error: error ? error.message : null };
   } catch (err) {
@@ -133,6 +141,7 @@ export async function updateListingStatus(
       .from('listings')
       .update({ status })
       .eq('id', id);
+
     return { error: error ? error.message : null };
   } catch (err) {
     return { error: err instanceof Error ? err.message : 'Unknown error' };

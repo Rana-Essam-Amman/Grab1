@@ -36,11 +36,12 @@ export type ListingStatus = 'active' | 'pending' | 'sold' | 'archived';
 
 export interface Listing {
   id: string;
+  userId?: string;
   title: string;
   description: string;
   price: string;
   currency: 'JOD' | 'SAR' | 'ILS' | 'LBP' | 'SYP' | 'USD';
-  countryCode: string;
+  countryCode: 'JO' | 'LB' | 'PS' | 'SY' | 'SA';
   city: string;
   neighborhood: string;
   categorySlug: string;
@@ -111,6 +112,7 @@ export interface GeneratedListing {
 
 export interface ChatMessage {
   id: string;
+  userId?: string;
   text: string;
   fromBuyer: boolean;
   timestamp: string;
@@ -127,6 +129,7 @@ export type Conversation = {
 
 export interface ListingComment {
   id: string;
+  userId?: string;
   listingId: string;
   authorName: string;
   text: string;

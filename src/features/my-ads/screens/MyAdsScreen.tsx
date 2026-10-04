@@ -2,7 +2,6 @@ import { Listing } from '@/types';
 import { useUI } from '@/hooks/useUI';
 import { useListings } from '@/hooks/useListings';
 import React, { useState, useMemo, useCallback } from 'react';
-import { filterListingsByMarket } from '@/shared/lib/marketGate';
 import { useBumpLimits } from '../hooks/useBumpLimits';
 import { toast } from 'sonner';
 import { usePayment, PaywallModal } from '@/shared/services/payment';
@@ -13,18 +12,14 @@ import { MyAdsContent } from '../components/MyAdsContent';
 
 export const MyAdsScreen: React.FC = () => {
   const { isArabic, browseCountryCode, navigateTo, setSelectedListingId, setActiveTab } = useUI();
-  const { listings, userListings, wishlistListings, deleteListing, updateListing } = useListings();
-
+  const { userListings, wishlistListings, deleteListing, updateListing } = useListings();
   const [activeSubTab, setActiveSubTab] = useState<'my' | 'wishlist'>('my');
   const [promoteTarget, setPromoteTarget] = useState<Listing | null>(null);
   const { purchase, isProcessing } = usePayment();
+
   const pkg = MONETIZATION_MATRIX.packages[browseCountryCode] || MONETIZATION_MATRIX.packages['JO'];
 
-  const displayedMyAds = useMemo(() => {
-    if (userListings.length > 0) return userListings;
-    const marketFiltered = filterListingsByMarket(listings, browseCountryCode);
-    return marketFiltered.slice(0, 2);
-  }, [userListings, listings, browseCountryCode]);
+  const displayedMyAds = useMemo(() => userListings, [userListings]);
 
   const sortedMyAds = useMemo(() => {
     return [...displayedMyAds].sort((a, b) => {
@@ -73,6 +68,7 @@ export const MyAdsScreen: React.FC = () => {
 
   const handlePromoteConfirm = useCallback(async () => {
     if (!promoteTarget) return;
+
     const receipt = await purchase({
       type: 'featured-ad',
       listingId: promoteTarget.id,
@@ -80,6 +76,7 @@ export const MyAdsScreen: React.FC = () => {
       currency: pkg.currency,
       amount: pkg.featuredAdCost,
     });
+
     if (receipt) {
       updateListing(promoteTarget.id, {
         isPremium: true,
@@ -115,6 +112,7 @@ export const MyAdsScreen: React.FC = () => {
         onBump={handleBump}
         onPromote={setPromoteTarget}
       />
+
       <PaywallModal
         open={Boolean(promoteTarget)}
         onClose={() => setPromoteTarget(null)}
