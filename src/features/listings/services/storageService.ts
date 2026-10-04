@@ -1,6 +1,6 @@
 import { supabase } from '@/shared/lib/supabase';
 
-const BUCKET = 'listing-images';
+export const BUCKET = 'listing-images';
 
 async function dataUrlToBlob(dataUrl: string): Promise<Blob> {
   const response = await fetch(dataUrl);
@@ -63,4 +63,39 @@ export async function uploadListingImages(
     }
   }
   return { urls, failedCount };
+}
+
+/**
+ * Extract storage path from a public URL.
+ * Returns null if URL is not from our bucket (e.g. static asset).
+ */
+export function extractStoragePath(url: string): string | null {
+  const marker = `/storage/v1/object/public/${BUCKET}/`;
+  const idx = url.indexOf(marker);
+  if (idx === -1) return null;
+  return url.slice(idx + marker.length);
+}
+
+/**
+ * Remove listing images from storage. Best-effort — never throws.
+ * Returns count of paths attempted.
+ */
+export async function removeListingImages(urls: readonly string[]): Promise<number> {
+  const paths: string[] = [];
+  for (const url of urls) {
+    const path = extractStoragePath(url);
+    if (path) paths.push(path);
+  }
+  if (paths.length === 0) return 0;
+  try {
+    const { error } = await supabase.storage.from(BUCKET).remove(paths);
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.warn('[removeListingImages]', error.message);
+    }
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.warn('[removeListingImages] threw', err);
+  }
+  return paths.length;
 }
