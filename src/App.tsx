@@ -28,6 +28,7 @@ import { BuildBadge } from '@/shared/components/BuildBadge';
 import { useSupabaseAuthListener } from '@/features/auth/hooks/useSupabaseAuthListener';
 import { useBootMigrations } from '@/shared/hooks/useBootMigrations';
 import { useSupabaseListingsSync } from '@/features/listings/hooks/useSupabaseListingsSync';
+import { useSupabaseWishlistSync } from '@/features/listings/hooks/useSupabaseWishlistSync';
 import { useOnlinePresence } from '@/features/chat/hooks/useOnlinePresence';
 
 import { RouterProvider } from '@/shared/router/RouterProvider';
@@ -256,6 +257,7 @@ export default function App() {
   const currentUserId = useAuthStore((s) => s.user?.id ?? null);
   useSupabaseAuthListener();
   useSupabaseListingsSync();
+  useSupabaseWishlistSync();
   useOnlinePresence(currentUserId);
 
   useBootMigrations(locale);
