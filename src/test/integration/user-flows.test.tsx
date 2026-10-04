@@ -4,6 +4,7 @@ import { useAuthStore } from '@/features/auth/store/auth.slice';
 import { useUIStore } from '@/store/ui.slice';
 import { useListingsStore } from '@/features/listings/store/listings.slice';
 import { useChatStore } from '@/features/chat/store/chat.slice';
+import { openConversation } from '@/features/chat/store/chat.slice.actions.mutate';
 import { useDraftStore } from '@/features/post-wizard/store/draft.slice';
 import { createMockListing, createMockDraft, createMockUser } from '@/test/helpers';
 import { DEFAULT_REGIONAL_CAPITALS } from '@/data/locations';
@@ -160,18 +161,13 @@ describe('Real User Flow Integration Test Suite (Sprint T3 Ultra)', () => {
     expect(listings[0].city).toBe('Amman');
   });
 
-  it('Flow 5: Cross-market chat communication is strictly blocked with error', () => {
-    const jordanListing = createMockListing({ countryCode: 'JO', title: 'Jordan Item' });
-    const syriaListing = createMockListing({ countryCode: 'SY', title: 'Syria Item' });
-
-    // Chat on JO listing with JO user -> succeeds
-    const threadId = useChatStore.getState().startOrOpenConversation(jordanListing, 'JO');
-    expect(threadId).toBeDefined();
-
-    // Chat on SY listing with JO user -> throws market boundary violation
-    expect(() => {
-      useChatStore.getState().startOrOpenConversation(syriaListing, 'JO');
-    }).toThrow(/Cross-market chat handshakes are strictly forbidden/i);
+  it('Flow 5: Cross-market chat communication is strictly blocked with error', async () => {
+    await expect(
+      openConversation(
+        { listingId: 'sy-item', buyerId: 'b1', sellerId: 's1', marketCode: 'SY' },
+        'JO'
+      )
+    ).rejects.toThrow(/forbidden/i);
   });
 
   it('Flow 6: Wishlist isolation persists separately per regional country market', () => {

@@ -16,7 +16,7 @@ export interface UseListingDetailReturn {
   mapUrl: string; displayCurrency: string; images: string[]; mapQuery: string;
   formattedPhone: FormattedPhone; activePhotoIdx: number; setActivePhotoIdx: (idx: number) => void;
   showShare: boolean; setShowShare: (v: boolean) => void; showReport: boolean; setShowReport: (v: boolean) => void;
-  handleStartChat: () => void; handleCall: () => void; handleWhatsApp: () => void;
+  handleStartChat: () => void | Promise<void>; handleCall: () => void; handleWhatsApp: () => void;
   handleDelete: () => Promise<void>; handleSelectSeller: () => void; isAuthenticated: boolean;
   isOwner: boolean; isArabic: boolean; goBack: () => void; navigateTo: (screen: ScreenType) => void;
 }
@@ -24,7 +24,7 @@ export interface UseListingDetailReturn {
 export function useListingDetail(): UseListingDetailReturn {
   const { isArabic, goBack, selectedListingId, setSelectedThreadId, setSelectedSellerPhone, navigateTo, browseCountryCode } = useUI();
   const { getListing, deleteListing } = useListings();
-  const { startOrOpenConversation } = useChat();
+  const { openConversation } = useChat();
   const { authStatus, user } = useAuth();
   const [activePhotoIdx, setActivePhotoIdx] = useState(0);
   const [showShare, setShowShare] = useState(false);
@@ -34,9 +34,6 @@ export function useListingDetail(): UseListingDetailReturn {
   const activeCountry = authStatus === 'authenticated' && user?.countryCode && isValidMarket(user.countryCode) ? user.countryCode : browseCountryCode;
   const isCountryMismatch = useMemo(() => Boolean(listing && listing.countryCode !== activeCountry), [listing, activeCountry]);
 
-  // MARKET ISOLATION RED LINE — in development, we fail LOUDLY if a
-  // cross-market listing slips through the visibility rule. This catches
-  // any future regression in canViewListing or the navigation flow.
   devAssertMarketIsolation(listing, activeCountry);
   const derived = useListingDerivedData(listing, isArabic);
   const isAuthenticated = authStatus === 'authenticated';
@@ -48,17 +45,18 @@ export function useListingDetail(): UseListingDetailReturn {
     }
   }, [listing, setSelectedSellerPhone, navigateTo]);
 
-  const handleStartChat = useCallback(() => {
-    if (!listing || isCountryMismatch) return;
-    if (authStatus === 'unauthenticated') { navigateTo('login'); return; }
+  const handleStartChat = useCallback(async () => {
+    if (!listing || isCountryMismatch || authStatus === 'unauthenticated' || !user?.id || !listing.userId || listing.userId === user.id) {
+      if (authStatus === 'unauthenticated') navigateTo('login');
+      return;
+    }
     try {
-      const threadId = startOrOpenConversation(listing);
-      setSelectedThreadId(threadId);
-      navigateTo('thread');
+      const conv = await openConversation({ listingId: listing.id, buyerId: user.id, sellerId: listing.userId, marketCode: listing.countryCode }, activeCountry);
+      if (conv) { setSelectedThreadId(conv.id); navigateTo('thread'); }
     } catch (error) {
       console.error('[Chat] Failed to start conversation:', error);
     }
-  }, [listing, isCountryMismatch, authStatus, navigateTo, startOrOpenConversation, setSelectedThreadId]);
+  }, [listing, isCountryMismatch, authStatus, navigateTo, openConversation, setSelectedThreadId, user, activeCountry]);
 
   const handleCall = useCallback(() => {
     if (!listing || isCountryMismatch) return;
@@ -69,19 +67,17 @@ export function useListingDetail(): UseListingDetailReturn {
   const handleWhatsApp = useCallback(() => {
     if (!listing || isCountryMismatch) return;
     if (authStatus === 'unauthenticated') { navigateTo('login'); return; }
-    const url = getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: derived.formattedPhone.dialNumber, listingTitle: listing.title });
-    window.open(url, '_blank');
+    window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: derived.formattedPhone.dialNumber, listingTitle: listing.title }), '_blank');
   }, [listing, isCountryMismatch, authStatus, navigateTo, derived.formattedPhone.dialNumber]);
 
   const handleDelete = useCallback(async () => {
     if (!listing) return;
-    const result = await deleteListing(listing.id);
-    if (result.success) goBack();
+    if ((await deleteListing(listing.id)).success) goBack();
   }, [listing, deleteListing, goBack]);
 
   return {
-    listing, activeCountry, isCountryMismatch, ...derived, activePhotoIdx, setActivePhotoIdx, 
-    showShare, setShowShare, showReport, setShowReport, handleStartChat, handleCall, 
+    listing, activeCountry, isCountryMismatch, ...derived, activePhotoIdx, setActivePhotoIdx,
+    showShare, setShowShare, showReport, setShowReport, handleStartChat, handleCall,
     handleWhatsApp, handleDelete, handleSelectSeller, isAuthenticated, isOwner, isArabic, goBack, navigateTo,
   };
 }
