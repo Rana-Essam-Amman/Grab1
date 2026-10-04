@@ -51,7 +51,7 @@ export const SELECTORS = {
   },
   chat: {
     messagesTab: 'button:has-text("Messages"), button:has-text("الرسائل")',
-    emptyStateTitle: 'text=لا توجد محادثات, text=No messages yet',
+    emptyStateTitle: 'text=/لا توجد محادثات|No messages yet/',
     threadRow: 'div.cursor-pointer[class*="rounded"]',
     messageInput: 'input[placeholder*="Type"], input[placeholder*="اكتب"]',
     sendButton: 'button[type="submit"]',
