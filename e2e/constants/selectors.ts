@@ -2,7 +2,7 @@ export const SELECTORS = {
   app: {
     root: '#root',
     header: 'header',
-    menuButton: 'button[title="Menu"], button[title="القائمة"]',
+    menuButton: '[data-testid="header-menu-btn"]',
   },
   auth: {
     gateway: {
