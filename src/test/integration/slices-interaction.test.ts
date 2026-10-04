@@ -7,6 +7,14 @@ import { useDraftStore } from '@/features/post-wizard/store/draft.slice';
 import { createMockListing } from '@/test/helpers/mockListing';
 import { globalStorage } from '@/shared/lib/marketStorage';
 
+vi.mock('@/features/listings/services/listingsService', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/features/listings/services/listingsService')>();
+  return {
+    ...actual,
+    deleteListing: vi.fn().mockResolvedValue({ error: null }),
+  };
+});
+
 describe('Slices Interaction Integration', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -94,12 +102,12 @@ describe('Slices Interaction Integration', () => {
     expect(useListingsStore.getState().wishlist).toContain('jo-1');
   });
 
-  it('Scenario 7: Delete Listing Cleans Up', () => {
+  it('Scenario 7: Delete Listing Cleans Up', async () => {
     const id = 'cleanup-1';
     useListingsStore.getState().addListing(createMockListing({ id }), 'JO');
     useListingsStore.getState().toggleWishlist(id, 'JO');
     
-    useListingsStore.getState().deleteListing(id);
+    await useListingsStore.getState().deleteListing(id);
     
     expect(useListingsStore.getState().listings.find(l => l.id === id)).toBeUndefined();
     expect(useListingsStore.getState().wishlist).not.toContain(id);

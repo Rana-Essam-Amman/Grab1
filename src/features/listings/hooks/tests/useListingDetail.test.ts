@@ -43,6 +43,7 @@ describe('useListingDetail', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockDeleteListing.mockResolvedValue({ success: true, error: null });
 
     vi.mocked(useUI).mockReturnValue({
       isArabic: false,
@@ -100,10 +101,10 @@ describe('useListingDetail', () => {
     expect(mockSetSelectedThreadId).not.toHaveBeenCalled();
   });
 
-  it('handleDelete deletes listing and calls goBack', () => {
+  it('handleDelete deletes listing and calls goBack', async () => {
     const { result } = renderHook(() => useListingDetail());
-    act(() => {
-      result.current.handleDelete();
+    await act(async () => {
+      await result.current.handleDelete();
     });
 
     expect(mockDeleteListing).toHaveBeenCalledWith('item-123');

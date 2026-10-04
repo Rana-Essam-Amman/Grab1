@@ -17,7 +17,7 @@ export interface UseListingDetailReturn {
   formattedPhone: FormattedPhone; activePhotoIdx: number; setActivePhotoIdx: (idx: number) => void;
   showShare: boolean; setShowShare: (v: boolean) => void; showReport: boolean; setShowReport: (v: boolean) => void;
   handleStartChat: () => void; handleCall: () => void; handleWhatsApp: () => void;
-  handleDelete: () => void; handleSelectSeller: () => void; isAuthenticated: boolean;
+  handleDelete: () => Promise<void>; handleSelectSeller: () => void; isAuthenticated: boolean;
   isOwner: boolean; isArabic: boolean; goBack: () => void; navigateTo: (screen: ScreenType) => void;
 }
 
@@ -73,10 +73,10 @@ export function useListingDetail(): UseListingDetailReturn {
     window.open(url, '_blank');
   }, [listing, isCountryMismatch, authStatus, navigateTo, derived.formattedPhone.dialNumber]);
 
-  const handleDelete = useCallback(() => {
+  const handleDelete = useCallback(async () => {
     if (!listing) return;
-    deleteListing(listing.id);
-    goBack();
+    const result = await deleteListing(listing.id);
+    if (result.success) goBack();
   }, [listing, deleteListing, goBack]);
 
   return {

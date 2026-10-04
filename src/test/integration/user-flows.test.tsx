@@ -1,5 +1,5 @@
 import React from 'react';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useAuthStore } from '@/features/auth/store/auth.slice';
 import { useUIStore } from '@/store/ui.slice';
 import { useListingsStore } from '@/features/listings/store/listings.slice';
@@ -7,6 +7,14 @@ import { useChatStore } from '@/features/chat/store/chat.slice';
 import { useDraftStore } from '@/features/post-wizard/store/draft.slice';
 import { createMockListing, createMockDraft, createMockUser } from '@/test/helpers';
 import { DEFAULT_REGIONAL_CAPITALS } from '@/data/locations';
+
+vi.mock('@/features/listings/services/listingsService', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/features/listings/services/listingsService')>();
+  return {
+    ...actual,
+    deleteListing: vi.fn().mockResolvedValue({ error: null }),
+  };
+});
 
 describe('Real User Flow Integration Test Suite (Sprint T3 Ultra)', () => {
   beforeEach(() => {
@@ -222,7 +230,7 @@ describe('Real User Flow Integration Test Suite (Sprint T3 Ultra)', () => {
     expect(useUIStore.getState().browseCountryCode).toBe('SA');
   });
 
-  it('Flow 9: Deleting a listing automatically removes it from active wishlist', () => {
+  it('Flow 9: Deleting a listing automatically removes it from active wishlist', async () => {
     const listing = createMockListing({ id: 'target-listing' });
     useListingsStore.getState().addListing(listing, 'JO');
     useListingsStore.getState().toggleWishlist('target-listing', 'JO');
@@ -230,7 +238,7 @@ describe('Real User Flow Integration Test Suite (Sprint T3 Ultra)', () => {
     expect(useListingsStore.getState().wishlist).toContain('target-listing');
 
     // Delete listing
-    useListingsStore.getState().deleteListing('target-listing');
+    await useListingsStore.getState().deleteListing('target-listing');
 
     expect(useListingsStore.getState().listings.find((l) => l.id === 'target-listing')).toBeUndefined();
     expect(useListingsStore.getState().wishlist).not.toContain('target-listing');
