@@ -20,7 +20,7 @@ export interface ListingsState {
   publishListing: (listing: Listing, activeCountry: string, isArabic?: boolean) => Promise<PublishResult>;
   addListing: (listing: Listing, activeCountry: string, isArabic?: boolean) => void;
   updateListing: (id: string, updates: Partial<Listing>) => void;
-  deleteListing: (id: string) => void;
+  deleteListing: (id: string) => Promise<{ success: boolean; error: string | null }>;
   toggleWishlist: (id: string, countryCode?: string) => void;
   clearWishlist: () => void;
   setWishlistForCountry: (country: string) => void;

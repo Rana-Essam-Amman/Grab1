@@ -53,9 +53,14 @@ export const MyAdsScreen: React.FC = () => {
     updateListing(id, { status: 'sold' });
   }, [updateListing]);
 
-  const handleDelete = useCallback((id: string) => {
-    deleteListing(id);
-  }, [deleteListing]);
+  const handleDelete = useCallback(async (id: string) => {
+    const result = await deleteListing(id);
+    if (result.success) {
+      toast.success(isArabic ? 'تم حذف الإعلان' : 'Listing deleted');
+    } else {
+      toast.error(isArabic ? 'فشل حذف الإعلان — حاول مرة أخرى' : 'Failed to delete — try again');
+    }
+  }, [deleteListing, isArabic]);
 
   const handleBump = useCallback((id: string) => {
     if (bump(id)) {
