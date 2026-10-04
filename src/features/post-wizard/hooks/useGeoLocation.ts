@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import { findNearestCity, GeoMatch } from '../helpers/geoMatch';
+import { reverseGeocode } from '../helpers/reverseGeocode';
 
 export type GeoStatus = 'idle' | 'loading' | 'success' | 'denied' | 'unavailable' | 'error';
 
@@ -8,16 +9,21 @@ export interface UseGeoLocationReturn {
   readonly match: GeoMatch | null;
   readonly deviceLat: number | null;
   readonly deviceLng: number | null;
+  readonly neighborhood: string | null;
   readonly error: string | null;
   readonly request: () => void;
   readonly reset: () => void;
 }
 
-export function useGeoLocation(preferredCountry: string): UseGeoLocationReturn {
+export function useGeoLocation(
+  preferredCountry: string,
+  isArabic: boolean
+): UseGeoLocationReturn {
   const [status, setStatus] = useState<GeoStatus>('idle');
   const [match, setMatch] = useState<GeoMatch | null>(null);
   const [deviceLat, setDeviceLat] = useState<number | null>(null);
   const [deviceLng, setDeviceLng] = useState<number | null>(null);
+  const [neighborhood, setNeighborhood] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const reset = useCallback(() => {
@@ -25,6 +31,7 @@ export function useGeoLocation(preferredCountry: string): UseGeoLocationReturn {
     setMatch(null);
     setDeviceLat(null);
     setDeviceLng(null);
+    setNeighborhood(null);
     setError(null);
   }, []);
 
@@ -34,15 +41,15 @@ export function useGeoLocation(preferredCountry: string): UseGeoLocationReturn {
       setError('Geolocation is not available');
       return;
     }
-
     setStatus('loading');
     setError(null);
 
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
+      async (pos) => {
         const { latitude, longitude } = pos.coords;
         setDeviceLat(latitude);
         setDeviceLng(longitude);
+
         const found = findNearestCity(latitude, longitude, preferredCountry);
         if (!found) {
           setStatus('error');
@@ -50,6 +57,10 @@ export function useGeoLocation(preferredCountry: string): UseGeoLocationReturn {
           setMatch(null);
           return;
         }
+
+        const rv = await reverseGeocode(latitude, longitude, isArabic);
+        setNeighborhood(rv.neighborhood);
+
         setMatch(found);
         setStatus('success');
       },
@@ -65,7 +76,9 @@ export function useGeoLocation(preferredCountry: string): UseGeoLocationReturn {
       },
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
     );
-  }, [preferredCountry]);
+  }, [preferredCountry, isArabic]);
 
-  return { status, match, deviceLat, deviceLng, error, request, reset };
+  return {
+    status, match, deviceLat, deviceLng, neighborhood, error, request, reset,
+  };
 }
