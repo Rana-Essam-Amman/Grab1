@@ -6,7 +6,7 @@ import { screenToPath, resolvePath } from './paths';
 /**
  * Two-way sync between the store and the browser URL.
  *
- * Store is source of truth (Phase 1/2b). This hook mirrors the current 
+ * Store is source of truth (Phase 1/2b/2c). This hook mirrors the current 
  * screen + entity IDs to the URL, and restores them from the URL on 
  * mount / back / deep-link.
  *
@@ -19,10 +19,11 @@ export function useUrlSync(): void {
   const currentScreen = useUIStore((s) => s.currentScreen);
   const selectedListingId = useUIStore((s) => s.selectedListingId);
   const selectedSellerPhone = useUIStore((s) => s.selectedSellerPhone);
+  const selectedThreadId = useUIStore((s) => s.selectedThreadId);
 
-  const navigateTo = useUIStore((s) => s.navigateTo);
   const setSelectedListingId = useUIStore((s) => s.setSelectedListingId);
   const setSelectedSellerPhone = useUIStore((s) => s.setSelectedSellerPhone);
+  const setSelectedThreadId = useUIStore((s) => s.setSelectedThreadId);
 
   // Prevent feedback loops between the two effects.
   const lastPathRef = useRef<string | null>(null);
@@ -40,8 +41,15 @@ export function useUrlSync(): void {
     if (match.params.sellerPhone && store.selectedSellerPhone !== match.params.sellerPhone) {
       setSelectedSellerPhone(match.params.sellerPhone);
     }
+    if (match.params.threadId && store.selectedThreadId !== match.params.threadId) {
+      setSelectedThreadId(match.params.threadId);
+    }
+
+    // URL sync is NOT user navigation — reconcile state WITHOUT appending 
+    // to screenHistory. Otherwise popstate (browser back) grows history 
+    // indefinitely.
     if (match.screen !== store.currentScreen) {
-      navigateTo(match.screen);
+      useUIStore.setState({ currentScreen: match.screen });
     }
 
     lastPathRef.current = location.pathname;
@@ -53,11 +61,12 @@ export function useUrlSync(): void {
     const target = screenToPath(currentScreen, {
       listingId: selectedListingId,
       sellerPhone: selectedSellerPhone,
+      threadId: selectedThreadId,
     });
     if (target === location.pathname) return;
     if (lastPathRef.current === target) return;
     lastPathRef.current = target;
     navigate(target, { replace: false });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentScreen, selectedListingId, selectedSellerPhone]);
+  }, [currentScreen, selectedListingId, selectedSellerPhone, selectedThreadId]);
 }

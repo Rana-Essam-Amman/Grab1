@@ -1,13 +1,12 @@
 /**
  * Screen ↔ URL mapping.
  *
- * Phase 2b: entity IDs (listingId, sellerPhone) travel in the URL so 
+ * Phase 2b/2c: entity IDs (listingId, sellerPhone, threadId) travel in the URL so 
  * refresh, share, back, and deep links all restore the correct screen.
- * threadId is reserved for Phase 2c.
  *
  * The store remains the runtime source of truth; useUrlSync keeps the 
  * URL in sync. Callsites keep using navigateTo('screen') after setting 
- * setSelectedListingId / setSelectedSellerPhone.
+ * setSelectedListingId / setSelectedSellerPhone / setSelectedThreadId.
  */
 
 import type { ScreenType } from '@/store/ui.slice.types';
@@ -72,8 +71,9 @@ export function screenToPath(screen: ScreenType, params?: RouteParams): string {
     return params?.sellerPhone ? `/seller/${encodeURIComponent(params.sellerPhone)}` : '/seller';
   }
   if (screen === 'thread') {
-    // Reserved for Phase 2c: will become /messages/:id
-    return '/messages/thread';
+    return params?.threadId
+      ? `/messages/${encodeURIComponent(params.threadId)}`
+      : '/messages/thread';
   }
   return STATIC_SCREEN_TO_PATH[screen] ?? '/';
 }
@@ -105,6 +105,15 @@ export function resolvePath(pathname: string): PathMatch | null {
   if (clean === '/listing') return { screen: 'listing-detail', params: {} };
   if (clean === '/seller') return { screen: 'seller-profile', params: {} };
   if (clean === '/messages/thread') return { screen: 'thread', params: {} };
+
+  // Dynamic: /messages/:id (must come AFTER the /messages/thread check)
+  const threadMatch = clean.match(/^\/messages\/([^/]+)$/);
+  if (threadMatch) {
+    return {
+      screen: 'thread',
+      params: { threadId: decodeURIComponent(threadMatch[1]) },
+    };
+  }
 
   // Static
   const screen = STATIC_PATH_TO_SCREEN[clean];
