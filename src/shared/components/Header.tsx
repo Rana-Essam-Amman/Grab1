@@ -7,6 +7,7 @@ import { Button } from '@/shared/ui/Button';
 import { Avatar } from '@/shared/ui/Avatar';
 import { HeaderDropdownMenu } from './HeaderDropdownMenu';
 import { CountryFlag } from './CountryFlag';
+import { getUserAvatar } from '@/shared/lib/userDisplay';
 
 const DEFAULT_CAPITALS: Record<string, { en: string; ar: string; cityEn?: string; cityAr?: string }> = {
   JO: { en: 'Amman', ar: 'عمّان', cityEn: 'Amman', cityAr: 'عمّان' },
@@ -90,7 +91,7 @@ export const Header: React.FC = () => {
           aria-label={isArabic ? 'القائمة والحساب' : 'Menu & Account'}
         >
           <Avatar
-            src={user?.avatar || user?.avatarUrl || '/assets/avatars/guest.jpg'}
+            src={getUserAvatar(user)}
             fallback={user?.firstName?.charAt(0)?.toUpperCase() || 'U'}
             size="sm"
             className="w-full h-full border-none ring-2 ring-white/30"

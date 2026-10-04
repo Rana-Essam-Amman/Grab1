@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight } from 'iconsax-react';
 import { Icon } from '@iconify/react';
 import { Button } from '@/shared/ui/Button';
 import { Avatar } from '@/shared/ui/Avatar';
+import { getUserAvatar } from '@/shared/lib/userDisplay';
 
 interface ProfileHeaderSectionProps {
   isArabic: boolean;
@@ -44,7 +45,7 @@ export const ProfileHeaderSection: React.FC<ProfileHeaderSectionProps> = ({
       {/* Profile Header Card */}
       <div className="bg-surface rounded-2xl border border-border p-4 flex items-center gap-3.5 shadow-2xs">
         <Avatar
-          src={user?.avatar || user?.avatarUrl}
+          src={getUserAvatar(user)}
           fallback={user?.firstName?.charAt(0) || 'U'}
           size="lg"
           className="text-primary bg-background border border-border shrink-0"
