@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { locations, locationsAr } from '@/data/locations';
 import { useGeoLocation } from '../hooks/useGeoLocation';
 import { usePostWizard } from '../hooks/usePostWizard';
+import { matchNeighborhood } from '../helpers/reverseGeocode';
 
 interface Props {
   readonly isArabic: boolean;
@@ -17,25 +18,45 @@ function optionCity(country: string, cityEn: string, isArabic: boolean): string 
   return index >= 0 && ar[index] ? ar[index] : cityEn;
 }
 
-export const LocationMyLocationButton: React.FC<Props> = ({ isArabic, preferredCountry, onCityChange }) => {
-  const { status, match, deviceLat, deviceLng, error, request, reset } = useGeoLocation(preferredCountry);
+export const LocationMyLocationButton: React.FC<Props> = ({
+  isArabic,
+  preferredCountry,
+  onCityChange,
+}) => {
+  const {
+    status, match, deviceLat, deviceLng, neighborhood, error, request, reset,
+  } = useGeoLocation(preferredCountry, isArabic);
   const { updatePostDraft } = usePostWizard();
 
   useEffect(() => {
     if (status !== 'success' || !match) return;
+
     const city = optionCity(match.country, match.city, isArabic);
     onCityChange(city);
+
+    const list = isArabic
+      ? locationsAr[match.country]?.[match.city] || []
+      : locations[match.country]?.[match.city] || [];
+    const matched = matchNeighborhood(neighborhood, list);
+
     updatePostDraft({
       city,
-      neighborhood: '',
-      ...(deviceLat != null && deviceLng != null ? { latitude: deviceLat, longitude: deviceLng } : {}),
+      neighborhood: matched ?? '',
+      ...(deviceLat != null && deviceLng != null
+        ? { latitude: deviceLat, longitude: deviceLng }
+        : {}),
     });
-    reset();
-  }, [status, match, deviceLat, deviceLng, isArabic, onCityChange, reset, updatePostDraft]);
 
-  const label = status === 'loading'
-    ? (isArabic ? 'جاري تحديد الموقع...' : 'Locating...')
-    : (isArabic ? 'استخدم موقعي الحالي' : 'Use my location');
+    reset();
+  }, [
+    status, match, deviceLat, deviceLng, neighborhood,
+    isArabic, onCityChange, reset, updatePostDraft,
+  ]);
+
+  const label =
+    status === 'loading'
+      ? (isArabic ? 'جاري تحديد الموقع...' : 'Locating...')
+      : (isArabic ? 'استخدم موقعي الحالي' : 'Use my location');
 
   return (
     <div className="flex flex-col gap-1">
