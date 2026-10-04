@@ -131,17 +131,16 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
             <Notification variant="Bold" size={22} color="#F59E0B" className="shrink-0" />
           </button>
 
-          <button
-            onClick={() => {
-              handleMenuClose();
-            }}
-            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-[#DDE3EC]/40 active:bg-[#DDE3EC]/60"
+          <a
+            href="mailto:support@grabbthedeals.com?subject=FOX%20Marketplace%20%E2%80%94%20Feedback"
+            onClick={handleMenuClose}
+            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-[#DDE3EC]/40 active:scale-[0.99] transition-all bg-white border-none cursor-pointer no-underline"
           >
             <span className="text-sm font-bold text-[#0F172A]">
-              {isArabic ? 'اقتراح أو تواصل' : 'Suggest or Contact'}
+              {isArabic ? 'اقتراح أو تواصل' : 'Send Feedback'}
             </span>
-            <MessageQuestion variant="Bold" size={22} color="#0EA5E9" className="shrink-0" />
-          </button>
+            <MessageQuestion variant="Bold" size={22} color="#06B6D4" className="shrink-0" />
+          </a>
         </div>
       </div>
     </>
