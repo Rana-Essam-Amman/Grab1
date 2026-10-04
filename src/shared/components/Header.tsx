@@ -7,6 +7,7 @@ import { Button } from '@/shared/ui/Button';
 import { Avatar } from '@/shared/ui/Avatar';
 import { HeaderDropdownMenu } from './HeaderDropdownMenu';
 import { HambergerMenu } from 'iconsax-react';
+import { CountryFlag } from './CountryFlag';
 
 const DEFAULT_CAPITALS: Record<string, { en: string; ar: string; cityEn?: string; cityAr?: string }> = {
   JO: { en: 'Amman', ar: 'عمّان', cityEn: 'Amman', cityAr: 'عمّان' },
@@ -82,6 +83,7 @@ export const Header: React.FC = () => {
   return (
     <header className="relative z-30 px-4 pt-2 pb-2 bg-brand border-b border-white/20">
       <div className="flex items-center justify-between">
+        <CountryFlag code={countryCode} />
         <Button
           variant="ghost"
           size="icon"
