@@ -2,37 +2,20 @@ import { supabase } from '@/shared/lib/supabase';
 import type {
   ChatMessage,
   ChatMessageRow,
-  Conversation,
   ConversationRow,
+  ConversationView,
   CreateConversationInput,
 } from './chatService.types';
-
-function rowToMessage(row: ChatMessageRow): ChatMessage {
-  return {
-    id: row.id,
-    conversationId: row.conversation_id,
-    senderId: row.sender_id,
-    text: row.deleted_at ? '' : row.text,
-    isDeleted: row.deleted_at !== null,
-    createdAt: row.created_at,
-  };
-}
-
-function rowToConversation(row: ConversationRow): Conversation {
-  return {
-    id: row.id,
-    listingId: row.listing_id,
-    buyerId: row.buyer_id,
-    sellerId: row.seller_id,
-    marketCode: row.market_code,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-  };
-}
+import {
+  rowToMessage,
+  rowToConversation,
+  getListingsByIds,
+  toViews,
+} from './chatService.mappers';
 
 export async function createOrGetConversation(
   input: CreateConversationInput
-): Promise<{ data: Conversation | null; error: string | null }> {
+): Promise<{ data: ConversationView | null; error: string | null }> {
   try {
     const { data: existing } = await supabase
       .from('conversations')
@@ -40,21 +23,30 @@ export async function createOrGetConversation(
       .eq('listing_id', input.listingId)
       .eq('buyer_id', input.buyerId)
       .maybeSingle();
+
+    let row: ConversationRow | null = null;
     if (existing) {
-      return { data: rowToConversation(existing as ConversationRow), error: null };
+      row = existing as ConversationRow;
+    } else {
+      const { data, error } = await supabase
+        .from('conversations')
+        .insert({
+          listing_id: input.listingId,
+          buyer_id: input.buyerId,
+          seller_id: input.sellerId,
+          market_code: input.marketCode,
+        })
+        .select('*')
+        .single();
+      if (error) return { data: null, error: error.message };
+      row = data as ConversationRow;
     }
-    const { data, error } = await supabase
-      .from('conversations')
-      .insert({
-        listing_id: input.listingId,
-        buyer_id: input.buyerId,
-        seller_id: input.sellerId,
-        market_code: input.marketCode,
-      })
-      .select('*')
-      .single();
-    if (error) return { data: null, error: error.message };
-    return { data: rowToConversation(data as ConversationRow), error: null };
+
+    const conversation = rowToConversation(row);
+    const { data: listingMap, error: lErr } = await getListingsByIds([conversation.listingId]);
+    if (lErr) return { data: null, error: lErr };
+
+    return { data: toViews([conversation], listingMap)[0], error: null };
   } catch (err) {
     return { data: null, error: err instanceof Error ? err.message : 'Unknown error' };
   }
@@ -62,7 +54,7 @@ export async function createOrGetConversation(
 
 export async function getConversationsForUser(
   userId: string
-): Promise<{ data: Conversation[] | null; error: string | null }> {
+): Promise<{ data: ConversationView[] | null; error: string | null }> {
   try {
     const { data, error } = await supabase
       .from('conversations')
@@ -71,7 +63,14 @@ export async function getConversationsForUser(
       .order('updated_at', { ascending: false })
       .limit(200);
     if (error) return { data: null, error: error.message };
-    return { data: (data || []).map((r) => rowToConversation(r as ConversationRow)), error: null };
+
+    const conversations = (data || []).map((r) => rowToConversation(r as ConversationRow));
+    const listingIds = Array.from(new Set(conversations.map((c) => c.listingId)));
+
+    const { data: listingMap, error: lErr } = await getListingsByIds(listingIds);
+    if (lErr) return { data: null, error: lErr };
+
+    return { data: toViews(conversations, listingMap), error: null };
   } catch (err) {
     return { data: null, error: err instanceof Error ? err.message : 'Unknown error' };
   }
