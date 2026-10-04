@@ -76,15 +76,30 @@ export const useAuthStore = create<AuthState>()(
 );
 
 
-export async function hydrateProfilePhone(): Promise<void> {
+/**
+ * Fetch the user's Supabase profile after sign-in and hydrate local 
+ * state with fields that are not present in the OAuth session 
+ * (phone, nickname).
+ *
+ * Runs once per auth event. Idempotent.
+ * Uses `finally` so profileHydrated flips true even on failure.
+ */
+export async function hydrateProfile(): Promise<void> {
   try {
     const current = useAuthStore.getState().user;
     if (!current?.id) return;
     const profile = await fetchProfile(current.id);
-    if (!profile?.phone) return;
+    if (!profile) return;
     const latest = useAuthStore.getState().user;
     if (!latest || latest.id !== current.id) return;
-    useAuthStore.getState().updateUser({ phone: profile.phone });
+
+    const patch: { phone?: string; nickname?: string } = {};
+    if (profile.phone) patch.phone = profile.phone;
+    if (profile.nickname) patch.nickname = profile.nickname;
+
+    if (Object.keys(patch).length > 0) {
+      useAuthStore.getState().updateUser(patch);
+    }
   } catch {
     // network failure must not block sign-in
   } finally {

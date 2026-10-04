@@ -23,3 +23,28 @@ interface AvatarSource {
 export function getUserAvatar(user: AvatarSource | null | undefined): string {
   return user?.avatar || user?.avatarUrl || DEFAULT_AVATAR;
 }
+
+interface DisplayNameSource {
+  readonly nickname?: string;
+  readonly firstName?: string;
+}
+
+/**
+ * Resolve the display name for a user.
+ *
+ * Priority: nickname → firstName → locale-generic fallback.
+ * Sentinels ('User', 'زائر') from the auth listener are ignored so we 
+ * don't show them as real names.
+ */
+export function getUserDisplayName(
+  user: DisplayNameSource | null | undefined,
+  isArabic = true
+): string {
+  const nick = user?.nickname?.trim();
+  if (nick) return nick;
+
+  const first = user?.firstName?.trim();
+  if (first && first !== 'User' && first !== 'زائر') return first;
+
+  return isArabic ? 'مستخدم FOX' : 'FOX User';
+}
