@@ -132,7 +132,7 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
           </button>
 
           <a
-            href="mailto:support@grabbthedeals.com?subject=FOX%20Marketplace%20%E2%80%94%20Feedback"
+            href="mailto:Sufyanyounis83@gmail.com?subject=FOX%20Marketplace%20%E2%80%94%20Feedback"
             onClick={handleMenuClose}
             className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-[#DDE3EC]/40 active:scale-[0.99] transition-all bg-white border-none cursor-pointer no-underline"
           >
