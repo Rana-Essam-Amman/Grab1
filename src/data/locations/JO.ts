@@ -20,12 +20,16 @@ export const JO_EN: CountryLocations = {
   Irbid: [
     'Irbid City', 'University Street', 'Al Hoson', 'Hakama', 'Ramtha', 'Al Mazar Al Shamali',
     'Bani Kinanah', 'Koura', 'Taybeh', 'Wasatiyah', 'Bushra', 'Aydoun', 'Kufr Youba', 'Beit Ras',
-    'Al Nuaymeh', 'Hakama Al Jadeedah', 'Al Sheikh Khalil', 'Al Hay Al Sharqi', 'Al Hay Al Gharbi',
-    'Al Hay Al Janoubi'
+    'Al Nuaymeh', 'Al Sheikh Khalil', 'Al Hay Al Sharqi', 'Al Hay Al Gharbi', 'Al Hay Al Janoubi',
+    'Al Hay Al Shamali', 'Al Hay Al Wasat', 'Al Barha', 'Dahiyat Al Hussein', 'Al Rawda',
+    'Al Share\' Al Thani', 'Al Manshiyah', 'Kufr Asad', 'Samma', 'Malka', 'Al Taybeh City',
+    'Al Hashmiyah', 'Al Share\' Al Thalatheen', 'Dahiyat Al Rasheed', 'Mukhayyam Irbid', 'Aydoun Al Shamaliyah'
   ],
   Zarqa: [
     'Zarqa Downtown', 'New Zarqa', 'Russeifa', 'Hashemiyah', 'Azraq', 'Birayn', 'Dhlail', 'Sukhna',
-    'Al Hallabat', 'Al Qadisiya', 'Al Hussein', 'Al Wadi', 'Al Ameer Mohammed', 'Jabal Al Abyad'
+    'Al Hallabat', 'Al Qadisiya', 'Al Hussein', 'Al Wadi', 'Al Ameer Mohammed', 'Jabal Al Abyad',
+    'Al Zawahreh', 'Al Hashmiyah', 'Awajan', 'Al Batrawi', 'Al Rusaifa', 'Al Rusaifa Al Jadeedah',
+    'Hay Al Jundi', 'Hay Al Thawra', 'Jabal Tarek', 'Dahiyat Al Madinah'
   ],
   Balqa: [
     'Salt', 'Fuheis', 'Mahis', 'Ain Al Basha', 'Deir Alla', 'South Shouna', 'Al Arda', 'Al Rama',
@@ -83,11 +87,15 @@ export const JO_AR: CountryLocations = {
   'إربد': [
     'مدينة إربد', 'شارع الجامعة', 'الحصن', 'حكما', 'الرمثا', 'المزار الشمالي', 'بني كنانة',
     'الكورة', 'الطيبة', 'الوسطية', 'بشرى', 'ايدون', 'كفريوبا', 'بيت راس', 'النعيمة',
-    'حكما الجديدة', 'الشيخ خليل', 'الحي الشرقي', 'الحي الغربي', 'الحي الجنوبي'
+    'الشيخ خليل', 'الحي الشرقي', 'الحي الغربي', 'الحي الجنوبي', 'الحي الشمالي', 'الحي الوسط',
+    'البارحة', 'ضاحية الحسين', 'الروضة', 'الشارع الثاني', 'المنشية', 'كفر أسد', 'صما',
+    'ملكا', 'مدينة الطيبة', 'الهاشمية', 'الشارع الثلاثين', 'ضاحية الرشيد', 'مخيم إربد', 'أيدون الشمالية'
   ],
   'الزرقاء': [
     'وسط الزرقاء', 'الزرقاء الجديدة', 'الرصيفة', 'الهاشمية', 'الأزرق', 'بيرين', 'الضليل',
-    'السخنة', 'الحلابات', 'القادسية', 'الحسين', 'الوادي', 'الأمير محمد', 'جبل الأبيض'
+    'السخنة', 'الحلابات', 'القادسية', 'الحسين', 'الوادي', 'الأمير محمد', 'جبل الأبيض',
+    'الزواهرة', 'الهاشمية', 'عوجان', 'البتراوي', 'الرصيفة', 'الرصيفة الجديدة',
+    'حي الجندي', 'حي الثورة', 'جبل طارق', 'ضاحية المدينة'
   ],
   'البلقاء': [
     'السلط', 'الفحيص', 'ماحص', 'عين الباشا', 'دير علا', 'الشونة الجنوبية', 'العارضة', 'الرامة',
