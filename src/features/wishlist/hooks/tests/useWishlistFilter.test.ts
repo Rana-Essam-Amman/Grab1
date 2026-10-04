@@ -5,7 +5,7 @@ import { useListingsStore } from '@/features/listings/store/listings.slice';
 import { saveWishlistForMarket } from '@/services/listing.service';
 import { Listing } from '@/types';
 
-const makeListing = (id: string, categorySlug: string, countryCode = 'JO'): Listing => ({
+const makeListing = (id: string, categorySlug: string, countryCode: Listing['countryCode'] = 'JO'): Listing => ({
   id,
   title: `Listing ${id}`,
   description: 'Test description',

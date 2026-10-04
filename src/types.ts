@@ -41,7 +41,7 @@ export interface Listing {
   description: string;
   price: string;
   currency: 'JOD' | 'SAR' | 'ILS' | 'LBP' | 'SYP' | 'USD';
-  countryCode: string;
+  countryCode: 'JO' | 'LB' | 'PS' | 'SY' | 'SA';
   city: string;
   neighborhood: string;
   categorySlug: string;
