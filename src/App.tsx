@@ -30,8 +30,7 @@ import { useBootMigrations } from '@/shared/hooks/useBootMigrations';
 import { useSupabaseListingsSync } from '@/features/listings/hooks/useSupabaseListingsSync';
 import { useOnlinePresence } from '@/features/chat/hooks/useOnlinePresence';
 
-// eslint-disable-next-line no-restricted-imports
-import { BrowserRouter } from 'react-router-dom';
+import { RouterProvider } from '@/shared/router/RouterProvider';
 import { useUrlSync } from '@/shared/router/useUrlSync';
 
 // Lazy-loaded Screens
@@ -266,7 +265,7 @@ export default function App() {
   }
 
   return (
-    <BrowserRouter>
+    <RouterProvider>
       <ErrorBoundaryWithLogging>
         <ErrorBoundary>
         <RegistryProvider>
@@ -292,6 +291,6 @@ export default function App() {
         </RegistryProvider>
         </ErrorBoundary>
       </ErrorBoundaryWithLogging>
-    </BrowserRouter>
+    </RouterProvider>
   );
 }

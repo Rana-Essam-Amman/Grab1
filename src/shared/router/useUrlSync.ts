@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-// eslint-disable-next-line no-restricted-imports
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useUIStore } from '@/store/ui.slice';
 import { screenToPath, pathToScreen } from './paths';

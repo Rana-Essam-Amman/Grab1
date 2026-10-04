@@ -20,15 +20,12 @@ export default tseslint.config(
       }],
       'no-empty-function': ['error', { allow: ['arrowFunctions'] }],
       '@typescript-eslint/no-empty-function': ['error', { allow: ['arrowFunctions'] }],
-
-      // LEGACY — downgraded to WARNINGS (to be fixed in Sprint R7.0i)
-      '@typescript-eslint/no-unused-vars': 'warn',
+      // LEGACY — downgraded to WARNINGS (to be fixed in Sprint R7.0i)      '@typescript-eslint/no-unused-vars': 'warn',
       '@typescript-eslint/no-explicit-any': 'warn',
       'react-hooks/exhaustive-deps': 'warn',
       'react-hooks/rules-of-hooks': 'error',   // keep this as error — it's safety critical
       'no-empty-pattern': 'warn',
       'prefer-const': 'warn',
-      
       // Disable rules that create noise without safety benefit
       'no-empty': 'warn',
       'no-undef': 'off',  // TypeScript handles this
@@ -42,6 +39,12 @@ export default tseslint.config(
     rules: {
       'react-hooks/rules-of-hooks': 'off',
       'no-empty-pattern': 'off',
+    },
+  },
+  {
+    files: ['src/shared/router/**/*.ts', 'src/shared/router/**/*.tsx'],
+    rules: {
+      'no-restricted-imports': ['off'],
     },
   }
 );
