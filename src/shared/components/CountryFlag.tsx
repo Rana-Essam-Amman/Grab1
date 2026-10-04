@@ -32,10 +32,10 @@ const FLAG_SRC: Record<MarketCode, string> = {
 export const CountryFlag: React.FC<Props> = ({ code }) => {
   return (
     <div
-      className="absolute top-1/2 -translate-y-1/2 end-4 z-10 pointer-events-none"
+      className="absolute top-1/2 -translate-y-1/2 end-8 z-10 pointer-events-none"
       aria-hidden="true"
     >
-      <div className="w-10 h-10 rounded-full overflow-hidden ring-1 ring-white/20 shadow-[0_0_12px_rgba(255,255,255,0.15)] bg-white/5">
+      <div className="w-12 h-12 rounded-full overflow-hidden ring-1 ring-white/20 shadow-[0_0_14px_rgba(255,255,255,0.15)] bg-white/5">
         <img
           src={FLAG_SRC[code]}
           alt=""
