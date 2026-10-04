@@ -24,6 +24,8 @@ export interface ListingsState {
   toggleWishlist: (id: string, countryCode?: string) => void;
   clearWishlist: () => void;
   setWishlistForCountry: (country: string) => void;
+  loadWishlistFromSupabase: (userId: string, marketCode: string) => Promise<void>;
+  migrateLegacyWishlistIfNeeded: (userId: string) => Promise<void>;
   refreshListings: () => void;
   setIsQuotaExhausted: (exhausted: boolean) => void;
   validateAdQuotaAvailability: (categorySlug: string, userId?: string, countryCode?: string, isVip?: boolean) => boolean;

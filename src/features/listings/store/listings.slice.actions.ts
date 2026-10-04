@@ -8,6 +8,7 @@ import { sanitizeListingData, logListingError } from './listings.slice.helpers';
 import { seedListings } from '@/data/seedListings';
 import type { PublishResult } from './listings.slice.types';
 import { performSupabasePublish, performSupabaseSync } from './listings.slice.supabase';
+import { createWishlistActions } from './listings.slice.wishlist';
 
 export const createListingsActions = (
   set: (fn: (state: ListingsState) => void) => void,
@@ -62,32 +63,7 @@ export const createListingsActions = (
     return { success: true, error: null };
   },
 
-  toggleWishlist: (id: string, countryCode?: string) => {
-    const activeCountry = countryCode || get().activeWishlistCountry || globalStorage().get<string>('catch_browse_country') || 'JO';
-    set((state) => {
-      if (activeCountry !== state.activeWishlistCountry) {
-        state.activeWishlistCountry = activeCountry;
-        state.wishlist = getWishlistForMarket(activeCountry);
-      }
-      const next = state.wishlist.includes(id) ? state.wishlist.filter((x) => x !== id) : [...state.wishlist, id];
-      state.wishlist = next;
-      saveWishlistForMarket(activeCountry, next);
-    });
-  },
-
-  clearWishlist: () => {
-    set((state) => {
-      state.wishlist = [];
-      saveWishlistForMarket(get().activeWishlistCountry, []);
-    });
-  },
-
-  setWishlistForCountry: (country: string) => {
-    set((state) => {
-      state.activeWishlistCountry = country;
-      state.wishlist = getWishlistForMarket(country);
-    });
-  },
+  ...createWishlistActions(set, get),
 
   refreshListings: () => set((state) => { state.listings = getListingsFromStorage(); }),
 
