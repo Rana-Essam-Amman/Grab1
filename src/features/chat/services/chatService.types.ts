@@ -44,3 +44,17 @@ export interface CreateConversationInput {
   readonly sellerId: string;
   readonly marketCode: MarketCode;
 }
+
+/** Listing snapshot for enriched conversation views. */
+export interface ListingSnapshot {
+  readonly id: string;
+  readonly title: string;
+  readonly imageUrl: string;
+  readonly sellerPhone: string;
+  readonly countryCode: MarketCode;
+}
+
+/** Conversation + joined listing data for UI rendering. */
+export interface ConversationView extends Conversation {
+  readonly listing: ListingSnapshot | null;
+}
