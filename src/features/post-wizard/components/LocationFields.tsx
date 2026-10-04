@@ -7,6 +7,7 @@ import { StaticMapPreview } from './StaticMapPreview';
 import { usePostWizard } from '../hooks/usePostWizard';
 import { useUI } from '@/hooks/useUI';
 import { LocationMyLocationButton } from './LocationMyLocationButton';
+import { SearchableDropdown } from '@/shared/ui/SearchableDropdown';
 
 interface Props {
   isArabic: boolean;
@@ -65,10 +66,13 @@ export const LocationFields: React.FC<Props> = ({
       {neighborhoods.length > 0 && (
         <div>
           <label className="block text-xs font-bold text-ink mb-1.5">{isArabic ? "المنطقة / الحي" : "Neighborhood / Area"}</label>
-          <select value={selectedNeighborhood} onChange={(e) => onNeighborhoodChange(e.target.value)} className="w-full h-11 px-3.5 rounded-xl bg-surface border border-border text-sm text-ink focus:outline-none focus:border-primary">
-            <option value="" disabled>{isArabic ? 'اختر الحي' : 'Select neighborhood'}</option>
-            {neighborhoods.map((hood) => <option key={hood} value={hood}>{hood}</option>)}
-          </select>
+          <SearchableDropdown
+            options={neighborhoods}
+            value={selectedNeighborhood}
+            onChange={onNeighborhoodChange}
+            placeholder={isArabic ? 'ابحث عن حي...' : 'Search neighborhood...'}
+            isArabic={isArabic}
+          />
 
           {!selectedNeighborhood && (
             <p className="text-xs font-bold text-danger px-1 mt-1">
