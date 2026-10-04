@@ -1,25 +1,31 @@
-import { Conversation } from '@/types';
+import type { ChatMessage } from '../services/chatService.types';
+import type { PendingMessage } from './chat.slice.types';
 
-export const initialConversations: Conversation[] = [
-  {
-    id: 'thread-1',
-    listingId: 'jo-1',
-    title: 'Rolex Submariner Date 41mm',
-    imageUrl: '/assets/listings/watch.jpg',
-    sellerPhone: '+962791234567',
-    messages: [
-      {
-        id: 'm-1',
-        text: 'مرحبا، الساعة بعدها متوفرة؟ وفي مجال للمعاينة بعبدون؟',
-        fromBuyer: true,
-        timestamp: '10:30 AM',
-      },
-      {
-        id: 'm-2',
-        text: 'أهلاً بك، نعم متوفرة وأهلاً وسهلاً بالمعاينة بأي وقت.',
-        fromBuyer: false,
-        timestamp: '10:35 AM',
-      },
-    ],
-  },
-];
+/**
+ * Format an ISO timestamp for display. Arabic locale uses 12h.
+ * Returns HH:MM in the browser's timezone.
+ */
+export function formatTime(iso: string, isArabic = true): string {
+  try {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    return d.toLocaleTimeString(isArabic ? 'ar-JO' : 'en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch {
+    return '';
+  }
+}
+
+/** Merge confirmed messages + pending into a single ascending-sorted list. */
+export function mergeMessages(
+  confirmed: readonly ChatMessage[],
+  pending: readonly PendingMessage[]
+): Array<ChatMessage | PendingMessage> {
+  return [...confirmed, ...pending].sort((a, b) => {
+    const aT = 'createdAt' in a ? a.createdAt : '';
+    const bT = 'createdAt' in b ? b.createdAt : '';
+    return aT.localeCompare(bT);
+  });
+}

@@ -14,6 +14,7 @@ vi.mock('@/hooks/useAuth');
 
 const mockListing: Listing = {
   id: 'item-123',
+  userId: 'seller-u1',
   title: 'Test Listing',
   description: 'Test description',
   price: '100',
@@ -39,7 +40,7 @@ describe('useListingDetail', () => {
   const mockSetSelectedSellerPhone = vi.fn();
   const mockGetListing = vi.fn();
   const mockDeleteListing = vi.fn();
-  const mockStartOrOpenConversation = vi.fn();
+  const mockOpenConversation = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -61,7 +62,7 @@ describe('useListingDetail', () => {
     } as unknown as ReturnType<typeof useListings>);
 
     vi.mocked(useChat).mockReturnValue({
-      startOrOpenConversation: mockStartOrOpenConversation,
+      openConversation: mockOpenConversation,
     } as unknown as ReturnType<typeof useChat>);
 
     vi.mocked(useAuth).mockReturnValue({
@@ -85,19 +86,19 @@ describe('useListingDetail', () => {
     expect(result.current.listing).toBeNull();
   });
 
-  it('handleStartChat with unauthenticated user navigates to login and starts no chat', () => {
+  it('handleStartChat with unauthenticated user navigates to login and starts no chat', async () => {
     vi.mocked(useAuth).mockReturnValue({
       authStatus: 'unauthenticated',
       user: null,
     } as unknown as ReturnType<typeof useAuth>);
 
     const { result } = renderHook(() => useListingDetail());
-    act(() => {
-      result.current.handleStartChat();
+    await act(async () => {
+      await result.current.handleStartChat();
     });
 
     expect(mockNavigateTo).toHaveBeenCalledWith('login');
-    expect(mockStartOrOpenConversation).not.toHaveBeenCalled();
+    expect(mockOpenConversation).not.toHaveBeenCalled();
     expect(mockSetSelectedThreadId).not.toHaveBeenCalled();
   });
 
@@ -120,20 +121,23 @@ describe('useListingDetail', () => {
     expect(mockNavigateTo).toHaveBeenCalledWith('seller-profile');
   });
 
-  it('handleStartChat with authenticated user starts conversation and navigates to thread', () => {
-    mockStartOrOpenConversation.mockReturnValue('thread-123');
+  it('handleStartChat with authenticated user starts conversation and navigates to thread', async () => {
+    mockOpenConversation.mockResolvedValue({ id: 'thread-123' });
 
     const { result } = renderHook(() => useListingDetail());
-    act(() => {
-      result.current.handleStartChat();
+    await act(async () => {
+      await result.current.handleStartChat();
     });
 
-    expect(mockStartOrOpenConversation).toHaveBeenCalledWith(mockListing);
+    expect(mockOpenConversation).toHaveBeenCalledWith(
+      { listingId: 'item-123', buyerId: 'u1', sellerId: 'seller-u1', marketCode: 'JO' },
+      'JO'
+    );
     expect(mockSetSelectedThreadId).toHaveBeenCalledWith('thread-123');
     expect(mockNavigateTo).toHaveBeenCalledWith('thread');
   });
 
-  it('handleStartChat is a no-op when isCountryMismatch is true', () => {
+  it('handleStartChat is a no-op when isCountryMismatch is true', async () => {
     vi.mocked(useAuth).mockReturnValue({
       authStatus: 'authenticated',
       user: { id: 'u1', phone: '0799999999', countryCode: 'SA' },
@@ -142,11 +146,11 @@ describe('useListingDetail', () => {
     const { result } = renderHook(() => useListingDetail());
     expect(result.current.isCountryMismatch).toBe(true);
 
-    act(() => {
-      result.current.handleStartChat();
+    await act(async () => {
+      await result.current.handleStartChat();
     });
 
-    expect(mockStartOrOpenConversation).not.toHaveBeenCalled();
+    expect(mockOpenConversation).not.toHaveBeenCalled();
     expect(mockNavigateTo).not.toHaveBeenCalled();
   });
 

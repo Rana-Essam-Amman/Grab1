@@ -51,10 +51,10 @@ export const SELECTORS = {
   },
   chat: {
     messagesTab: 'button:has-text("Messages"), button:has-text("الرسائل")',
-    seedThread: 'div.cursor-pointer:has-text("Rolex Submariner")',
+    emptyStateTitle: 'text=/لا توجد محادثات|No messages yet/',
+    threadRow: 'div.cursor-pointer[class*="rounded"]',
     messageInput: 'input[placeholder*="Type"], input[placeholder*="اكتب"]',
     sendButton: 'button[type="submit"]',
-    paywallBanner: 'div.bg-amber-50',
     listingChatBtn: 'button:has-text("Chat"), button:has-text("دردشة")',
   },
   wishlist: {

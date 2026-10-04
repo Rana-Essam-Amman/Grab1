@@ -13,9 +13,9 @@ describe('useChat', () => {
     expect(result.current.conversations).toEqual([]);
   });
 
-  it('exposes startOrOpenConversation and sendChatMessage functions', () => {
+  it('exposes openConversation and sendChatMessage functions', () => {
     const { result } = renderHook(() => useChat());
-    expect(typeof result.current.startOrOpenConversation).toBe('function');
+    expect(typeof result.current.openConversation).toBe('function');
     expect(typeof result.current.sendChatMessage).toBe('function');
   });
 
@@ -33,20 +33,9 @@ describe('useChat', () => {
     }).not.toThrow();
   });
 
-  it('startOrOpenConversation returns an id or object (callable)', () => {
+  it('openConversation is an async function', () => {
     const { result } = renderHook(() => useChat());
-    let returned: unknown = 'NOT_CALLED';
-    const mockListing = {
-      id: 'listing-1',
-      title: 'Test Listing',
-      imageUrl: '/test.jpg',
-      sellerPhone: '123456',
-      countryCode: 'JO',
-    } as never;
-    act(() => {
-      returned = result.current.startOrOpenConversation(mockListing, 'JO');
-    });
-    expect(returned).not.toBe('NOT_CALLED');
-    expect(typeof returned).toBe('string');
+    expect(typeof result.current.openConversation).toBe('function');
+    expect(result.current.openConversation.constructor.name).toBe('AsyncFunction');
   });
 });

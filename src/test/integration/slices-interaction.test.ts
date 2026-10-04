@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useAuthStore } from '@/features/auth/store/auth.slice';
 import { useListingsStore } from '@/features/listings/store/listings.slice';
-import { useChatStore } from '@/features/chat/store/chat.slice';
+import { openConversation } from '@/features/chat/store/chat.slice.actions.mutate';
 import { useUIStore } from '@/store/ui.slice';
 import { useDraftStore } from '@/features/post-wizard/store/draft.slice';
 import { createMockListing } from '@/test/helpers/mockListing';
@@ -22,7 +22,6 @@ describe('Slices Interaction Integration', () => {
     // Reset all stores without wiping actions
     useAuthStore.setState({ authStatus: 'unauthenticated', user: null, sessionToken: null });
     useListingsStore.setState({ listings: [], wishlist: [], activeWishlistCountry: 'JO', isInitialized: true });
-    useChatStore.setState({ conversations: [] });
     useUIStore.setState({ browseCountryCode: 'JO', activeCurrency: 'JOD', locale: 'ar', screenHistory: ['main'] });
     useDraftStore.setState({ postDraft: { categorySlug: 'motors', subcategorySlug: 'cars', photos: [], city: 'عمّان', neighborhood: 'خلدا', site: '', noteText: '' } });
   });
@@ -65,11 +64,15 @@ describe('Slices Interaction Integration', () => {
     expect(stored?.some((l) => l.id === 'user-pub-1')).toBe(true);
   });
 
-  it('Scenario 4: Cross-Market Chat Blocked', () => {
+  it('Scenario 4: Cross-Market Chat Blocked', async () => {
     useAuthStore.getState().loginDirectly('jo@user.com', '791', 'JO');
-    const listingSY = createMockListing({ id: 'sy-item', countryCode: 'SY' });
-    
-    expect(() => useChatStore.getState().startOrOpenConversation(listingSY, 'JO')).toThrow(/forbidden/);
+        
+    await expect(
+      openConversation(
+        { listingId: 'sy-item', buyerId: 'b1', sellerId: 's1', marketCode: 'SY' },
+        'JO'
+      )
+    ).rejects.toThrow(/forbidden/i);
   });
 
   it('Scenario 5: Guest Can Publish to Different Market', () => {
