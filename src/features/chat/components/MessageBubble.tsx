@@ -6,7 +6,6 @@ interface MessageBubbleProps {
   readonly msg: ChatMessage;
   readonly isArabic: boolean;
   readonly pending: boolean;
-  readonly canDelete: boolean;
   readonly onLongPress: (id: string) => void;
 }
 
@@ -20,11 +19,14 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   msg,
   isArabic,
   pending,
-  canDelete,
   onLongPress,
 }) => {
+  // Own, not deleted, not pending
+  const canLongPress = msg.fromBuyer && !msg.isDeleted && !pending;
   const handlers = useLongPress({
-    onLongPress: () => canDelete && !msg.isDeleted && onLongPress(msg.id),
+    onLongPress: () => {
+      if (canLongPress) onLongPress(msg.id);
+    },
   });
 
   const read = !!msg.readAt;
