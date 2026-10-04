@@ -26,5 +26,6 @@ export interface ChatState {
   loadingConversations: boolean;
   loadingByConversation: Record<string, boolean>;
   typingByConversation: Record<string, boolean>;
+  onlineUserIds: Record<string, boolean>;
   error: string | null;
 }

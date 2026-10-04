@@ -28,6 +28,7 @@ import { BuildBadge } from '@/shared/components/BuildBadge';
 import { useSupabaseAuthListener } from '@/features/auth/hooks/useSupabaseAuthListener';
 import { useBootMigrations } from '@/shared/hooks/useBootMigrations';
 import { useSupabaseListingsSync } from '@/features/listings/hooks/useSupabaseListingsSync';
+import { useOnlinePresence } from '@/features/chat/hooks/useOnlinePresence';
 
 // Lazy-loaded Screens
 const CategoriesScreen = lazy(() => import('@/features/categories/screens/CategoriesScreen').then((m) => ({ default: m.CategoriesScreen })));
@@ -248,8 +249,10 @@ const MainNavigator: React.FC = () => {
 
 export default function App() {
   const locale = useUIStore((state) => state.locale);
+  const currentUserId = useAuthStore((s) => s.user?.id ?? null);
   useSupabaseAuthListener();
   useSupabaseListingsSync();
+  useOnlinePresence(currentUserId);
 
   useBootMigrations(locale);
 

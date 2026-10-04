@@ -18,12 +18,7 @@ export function subscribeToMessages(
     .channel(`messages:${conversationId}`)
     .on(
       'postgres_changes',
-      {
-        event: '*',
-        schema: 'public',
-        table: 'messages',
-        filter: `conversation_id=eq.${conversationId}`,
-      },
+      { event: '*', schema: 'public', table: 'messages', filter: `conversation_id=eq.${conversationId}` },
       (payload) => {
         const row = (payload.new || payload.old) as ChatMessageRow;
         if (!row?.id) return;
@@ -35,11 +30,7 @@ export function subscribeToMessages(
     )
     .subscribe();
 
-  return {
-    unsubscribe: () => {
-      supabase.removeChannel(channel);
-    },
-  };
+  return { unsubscribe: () => { supabase.removeChannel(channel); } };
 }
 
 export interface ConversationSubscription {
@@ -55,38 +46,29 @@ export function subscribeToUserConversations(
 ): ConversationSubscription {
   const channel = supabase
     .channel(`user-conversations:${userId}`)
-    .on(
-      'postgres_changes',
-      { event: '*', schema: 'public', table: 'conversations' },
-      (payload) => {
-        const row = payload.new as ConversationRow | null;
-        if (payload.eventType === 'DELETE') {
-          onChange({ eventType: 'DELETE', conversation: null });
-          return;
-        }
-        if (!row || !row.id) return;
-        if (row.buyer_id !== userId && row.seller_id !== userId) return;
-        onChange({
-          eventType: payload.eventType === 'UPDATE' ? 'UPDATE' : 'INSERT',
-          conversation: {
-            id: row.id,
-            listingId: row.listing_id,
-            buyerId: row.buyer_id,
-            sellerId: row.seller_id,
-            marketCode: row.market_code,
-            createdAt: row.created_at,
-            updatedAt: row.updated_at,
-          },
-        });
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'conversations' }, (payload) => {
+      const row = payload.new as ConversationRow | null;
+      if (payload.eventType === 'DELETE') {
+        onChange({ eventType: 'DELETE', conversation: null });
+        return;
       }
-    )
+      if (!row || !row.id || (row.buyer_id !== userId && row.seller_id !== userId)) return;
+      onChange({
+        eventType: payload.eventType === 'UPDATE' ? 'UPDATE' : 'INSERT',
+        conversation: {
+          id: row.id,
+          listingId: row.listing_id,
+          buyerId: row.buyer_id,
+          sellerId: row.seller_id,
+          marketCode: row.market_code,
+          createdAt: row.created_at,
+          updatedAt: row.updated_at,
+        },
+      });
+    })
     .subscribe();
 
-  return {
-    unsubscribe: () => {
-      supabase.removeChannel(channel);
-    },
-  };
+  return { unsubscribe: () => { supabase.removeChannel(channel); } };
 }
 
 export interface TypingSubscription {
@@ -105,15 +87,11 @@ export function subscribeToTyping(
 ): TypingSubscription {
   const channel = supabase
     .channel(`typing:${conversationId}`, { config: { broadcast: { self: false } } })
-    .on(
-      'broadcast',
-      { event: 'typing' },
-      (payload: { payload?: { userId?: string } }) => {
-        const senderId = payload?.payload?.userId;
-        if (!senderId || senderId === currentUserId) return;
-        onTyping();
-      }
-    )
+    .on('broadcast', { event: 'typing' }, (payload: { payload?: { userId?: string } }) => {
+      const senderId = payload?.payload?.userId;
+      if (!senderId || senderId === currentUserId) return;
+      onTyping();
+    })
     .subscribe();
 
   const sendTyping = () => {
@@ -125,10 +103,45 @@ export function subscribeToTyping(
   };
 
   return {
-    unsubscribe: () => {
-      supabase.removeChannel(channel);
-    },
+    unsubscribe: () => { supabase.removeChannel(channel); },
     sendTyping,
   };
 }
+
+export interface PresenceSubscription {
+  readonly unsubscribe: () => void;
+}
+
+/**
+ * Subscribe to global online presence. Tracks current user and 
+ * delivers the list of online user ids on every sync event.
+ *
+ * Ephemeral — Supabase handles untrack on disconnect/tab close.
+ */
+export function subscribeToPresence(
+  userId: string,
+  onChange: (onlineUserIds: string[]) => void
+): PresenceSubscription {
+  const channel = supabase.channel('presence:online', {
+    config: { presence: { key: userId } },
+  });
+
+  channel
+    .on('presence', { event: 'sync' }, () => {
+      const state = channel.presenceState();
+      onChange(Object.keys(state));
+    })
+    .subscribe((status) => {
+      if (status === 'SUBSCRIBED') {
+        void channel.track({
+          user_id: userId,
+          online_at: new Date().toISOString(),
+        });
+      }
+    });
+
+  return { unsubscribe: () => { supabase.removeChannel(channel); } };
+}
+
+
 
