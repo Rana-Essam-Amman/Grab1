@@ -117,6 +117,7 @@ export interface ChatMessage {
   fromBuyer: boolean;
   timestamp: string;
   readAt?: string | null;
+  isDeleted?: boolean;
 }
 
 import type { Conversation as DomainConversation } from '@/features/chat/domain/entities/Conversation';
