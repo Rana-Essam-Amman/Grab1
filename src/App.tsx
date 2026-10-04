@@ -30,6 +30,9 @@ import { useBootMigrations } from '@/shared/hooks/useBootMigrations';
 import { useSupabaseListingsSync } from '@/features/listings/hooks/useSupabaseListingsSync';
 import { useOnlinePresence } from '@/features/chat/hooks/useOnlinePresence';
 
+import { RouterProvider } from '@/shared/router/RouterProvider';
+import { useUrlSync } from '@/shared/router/useUrlSync';
+
 // Lazy-loaded Screens
 const CategoriesScreen = lazy(() => import('@/features/categories/screens/CategoriesScreen').then((m) => ({ default: m.CategoriesScreen })));
 const MyAdsScreen = lazy(() => import('@/features/my-ads/screens/MyAdsScreen').then((m) => ({ default: m.MyAdsScreen })));
@@ -89,6 +92,7 @@ const ScreenLoader: React.FC = () => (
 
 const MainNavigator: React.FC = () => {
   const { currentScreen, activeTab } = useUI();
+  useUrlSync();
   const { screens: registryScreens } = useRegistry();
 
   const registryLazyComponents = useMemo(() => {
@@ -261,30 +265,32 @@ export default function App() {
   }
 
   return (
-    <ErrorBoundaryWithLogging>
-      <ErrorBoundary>
-      <RegistryProvider>
-        <>
-          <TranslationProvider locale={locale}>
-            <OfflineBanner />
-            <GlobalPhoneCaptureMount />
-            <MainNavigator />
-      <Toaster
-        position="top-center"
-        theme="light"
-        richColors
-        closeButton
-        duration={2500}
-        toastOptions={{
-          className: 'font-bold text-sm',
-        }}
-      />
-      <BuildBadge />
+    <RouterProvider>
+      <ErrorBoundaryWithLogging>
+        <ErrorBoundary>
+        <RegistryProvider>
+          <>
+            <TranslationProvider locale={locale}>
+              <OfflineBanner />
+              <GlobalPhoneCaptureMount />
+              <MainNavigator />
+        <Toaster
+          position="top-center"
+          theme="light"
+          richColors
+          closeButton
+          duration={2500}
+          toastOptions={{
+            className: 'font-bold text-sm',
+          }}
+        />
+        <BuildBadge />
 
-          </TranslationProvider>
-        </>
-      </RegistryProvider>
-      </ErrorBoundary>
-    </ErrorBoundaryWithLogging>
+            </TranslationProvider>
+          </>
+        </RegistryProvider>
+        </ErrorBoundary>
+      </ErrorBoundaryWithLogging>
+    </RouterProvider>
   );
 }
