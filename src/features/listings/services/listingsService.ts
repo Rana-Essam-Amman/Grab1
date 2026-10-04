@@ -33,7 +33,7 @@ function rowToListing(row: SupabaseListingRow): Listing {
     description: row.description,
     price: row.price,
     currency: row.currency as Listing['currency'],
-    countryCode: row.country_code as any,
+    countryCode: row.country_code as Listing['countryCode'],
     city: row.city,
     neighborhood: row.neighborhood || '',
     categorySlug: row.category_slug,
