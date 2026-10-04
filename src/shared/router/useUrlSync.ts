@@ -1,49 +1,63 @@
 import { useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useUIStore } from '@/store/ui.slice';
-import { screenToPath, pathToScreen } from './paths';
+import { screenToPath, resolvePath } from './paths';
 
 /**
- * Two-way sync between the store's currentScreen and the browser URL.
+ * Two-way sync between the store and the browser URL.
  *
- * Store is source of truth (Phase 1). This hook keeps the URL mirrored 
- * so refresh, share, and back-button all work.
+ * Store is source of truth (Phase 1/2b). This hook mirrors the current 
+ * screen + entity IDs to the URL, and restores them from the URL on 
+ * mount / back / deep-link.
  *
- * MUST be mounted exactly once, inside a <BrowserRouter>, before any 
- * screen renders.
+ * MUST be mounted exactly once, inside <RouterProvider>.
  */
 export function useUrlSync(): void {
   const navigate = useNavigate();
   const location = useLocation();
 
   const currentScreen = useUIStore((s) => s.currentScreen);
-  const navigateTo = useUIStore((s) => s.navigateTo);
+  const selectedListingId = useUIStore((s) => s.selectedListingId);
+  const selectedSellerPhone = useUIStore((s) => s.selectedSellerPhone);
 
-  // Avoid feedback loop: track the last path we pushed vs what we 
-  // observed from location.
+  const navigateTo = useUIStore((s) => s.navigateTo);
+  const setSelectedListingId = useUIStore((s) => s.setSelectedListingId);
+  const setSelectedSellerPhone = useUIStore((s) => s.setSelectedSellerPhone);
+
+  // Prevent feedback loops between the two effects.
   const lastPathRef = useRef<string | null>(null);
 
   // --- URL → Store ---------------------------------------------------
-  // On first mount: hydrate store from URL.
   useEffect(() => {
-    const fromUrl = pathToScreen(location.pathname);
-    if (!fromUrl) return;
-    const currentStore = useUIStore.getState().currentScreen;
-    if (fromUrl !== currentStore) {
-      navigateTo(fromUrl);
+    const match = resolvePath(location.pathname);
+    if (!match) return;
+
+    const store = useUIStore.getState();
+
+    if (match.params.listingId && store.selectedListingId !== match.params.listingId) {
+      setSelectedListingId(match.params.listingId);
     }
+    if (match.params.sellerPhone && store.selectedSellerPhone !== match.params.sellerPhone) {
+      setSelectedSellerPhone(match.params.sellerPhone);
+    }
+    if (match.screen !== store.currentScreen) {
+      navigateTo(match.screen);
+    }
+
     lastPathRef.current = location.pathname;
-    // Run once on mount + on popstate (location changes)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   // --- Store → URL ---------------------------------------------------
   useEffect(() => {
-    const target = screenToPath(currentScreen);
+    const target = screenToPath(currentScreen, {
+      listingId: selectedListingId,
+      sellerPhone: selectedSellerPhone,
+    });
     if (target === location.pathname) return;
     if (lastPathRef.current === target) return;
     lastPathRef.current = target;
     navigate(target, { replace: false });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentScreen]);
+  }, [currentScreen, selectedListingId, selectedSellerPhone]);
 }
