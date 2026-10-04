@@ -65,6 +65,40 @@ describe('paths — dynamic /seller/:phone', () => {
   });
 });
 
+describe('paths — dynamic /messages/:id', () => {
+  it('screenToPath includes encoded id', () => {
+    expect(screenToPath('thread', { threadId: 'conv-1' }))
+      .toBe('/messages/conv-1');
+  });
+
+  it('screenToPath without id falls back to legacy /messages/thread', () => {
+    expect(screenToPath('thread')).toBe('/messages/thread');
+    expect(screenToPath('thread', { threadId: null })).toBe('/messages/thread');
+  });
+
+  it('resolvePath extracts threadId', () => {
+    const match = resolvePath('/messages/conv-abc-123');
+    expect(match?.screen).toBe('thread');
+    expect(match?.params.threadId).toBe('conv-abc-123');
+  });
+
+  it('legacy /messages/thread does NOT match as an id', () => {
+    const match = resolvePath('/messages/thread');
+    expect(match?.screen).toBe('thread');
+    expect(match?.params.threadId).toBeUndefined();
+  });
+
+  it('/messages alone is the messages list, not a thread', () => {
+    const match = resolvePath('/messages');
+    expect(match?.screen).toBe('messages');
+    expect(match?.params.threadId).toBeUndefined();
+  });
+
+  it('rejects multi-segment ids', () => {
+    expect(resolvePath('/messages/a/b')).toBeNull();
+  });
+});
+
 describe('paths — edge cases', () => {
   it('returns null for unknown paths', () => {
     expect(resolvePath('/this-does-not-exist')).toBeNull();
