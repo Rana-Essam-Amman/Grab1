@@ -5,12 +5,10 @@ import {
   softDeleteMessage as softDeleteMessageService,
   deleteConversation as deleteConversationService,
 } from '../services/chatService';
-import type {
-  ChatMessage,
-  ConversationView,
-  MarketCode,
-} from '../services/chatService.types';
+import type { ChatMessage, ConversationView, MarketCode } from '../services/chatService.types';
 import type { PendingMessage } from './chat.slice.types';
+
+export const SOFT_MESSAGE_LIMIT = 30;
 
 export interface OpenConversationInput {
   readonly listingId: string;
@@ -45,21 +43,24 @@ export async function sendChatMessage(
 ): Promise<{ tempId: string | null; error: string | null }> {
   const trimmed = text.trim();
   if (!trimmed) return { tempId: null, error: 'Empty message' };
-
+  const st = useChatStore.getState();
+  const cMsgs = st.messagesByConversation[conversationId] ?? [];
+  const pMsgs = st.pendingByConversation[conversationId] ?? [];
+  if (cMsgs.length + pMsgs.length >= SOFT_MESSAGE_LIMIT) {
+    return { tempId: null, error: 'MESSAGE_LIMIT_REACHED' };
+  }
   const tempId = `pending-${crypto.randomUUID()}`;
-  const pending: PendingMessage = {
+  const pendingObj: PendingMessage = {
     tempId,
     text: trimmed,
     createdAt: new Date().toISOString(),
   };
-
   useChatStore.setState((s) => ({
     pendingByConversation: {
       ...s.pendingByConversation,
-      [conversationId]: [...(s.pendingByConversation[conversationId] ?? []), pending],
+      [conversationId]: [...(s.pendingByConversation[conversationId] ?? []), pendingObj],
     },
   }));
-
   const { error } = await sendMessageService(conversationId, senderId, trimmed);
   if (error) {
     useChatStore.setState((s) => ({
@@ -82,18 +83,16 @@ export function reconcileConfirmedMessage(
   confirmed: ChatMessage
 ): void {
   useChatStore.setState((s) => {
-    const pending = s.pendingByConversation[conversationId] ?? [];
+    const pendingList = s.pendingByConversation[conversationId] ?? [];
     const remaining = senderId
       ? (() => {
-          const idx = pending.findIndex((p) => p.text === confirmed.text);
-          if (idx === -1) return pending;
-          return [...pending.slice(0, idx), ...pending.slice(idx + 1)];
+          const idx = pendingList.findIndex((p) => p.text === confirmed.text);
+          if (idx === -1) return pendingList;
+          return [...pendingList.slice(0, idx), ...pendingList.slice(idx + 1)];
         })()
-      : pending;
-
+      : pendingList;
     const existing = s.messagesByConversation[conversationId] ?? [];
     if (existing.some((m) => m.id === confirmed.id)) return s;
-
     return {
       pendingByConversation: { ...s.pendingByConversation, [conversationId]: remaining },
       messagesByConversation: {
