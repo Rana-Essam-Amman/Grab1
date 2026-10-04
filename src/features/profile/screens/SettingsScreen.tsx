@@ -1,6 +1,6 @@
 import { useUI } from '@/hooks/useUI';
 import { useAuth } from '@/hooks/useAuth';
-import React, { useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Button } from '@/shared/ui/Button';
 import {
   ArrowLeft,
@@ -12,10 +12,26 @@ import {
 } from 'iconsax-react';
 import { SettingsProfileCard } from '../components/SettingsProfileCard';
 import { SettingsLegalSection } from '../components/SettingsLegalSection';
+import { EditNicknameModal } from '../components/EditNicknameModal';
+import { useAuthStore } from '@/features/auth/store/auth.slice';
 
 export const SettingsScreen: React.FC = () => {
   const { isArabic, goBack, navigateTo, setLocale, browseCountry, browseCityAr, browseCityEn, setIsCountrySheetOpen } = useUI();
   const { user, logout, registered } = useAuth();
+
+  const [showNicknameModal, setShowNicknameModal] = useState(false);
+  const authUserId = useAuthStore((s) => s.user?.id ?? null);
+  const updateUser = useAuthStore((s) => s.updateUser);
+
+  const handleOpenNickname = useCallback(() => setShowNicknameModal(true), []);
+  const handleCloseNickname = useCallback(() => setShowNicknameModal(false), []);
+  const handleNicknameSaved = useCallback(
+    (nickname: string) => {
+      updateUser({ nickname });
+      setShowNicknameModal(false);
+    },
+    [updateUser]
+  );
 
   const handleLoginCta = useCallback(() => navigateTo('login'), [navigateTo]);
   const handleLanguageToggle = useCallback(() => setLocale(isArabic ? 'en' : 'ar'), [setLocale, isArabic]);
@@ -46,6 +62,8 @@ export const SettingsScreen: React.FC = () => {
           registered={registered}
           user={user}
           isArabic={isArabic}
+          nickname={user?.nickname}
+          onEditNickname={handleOpenNickname}
           handleLoginCta={handleLoginCta}
           handleLogout={handleLogout}
         />
@@ -106,6 +124,16 @@ export const SettingsScreen: React.FC = () => {
           onAbout={handleAboutNav}
         />
       </div>
+
+      <EditNicknameModal
+        open={showNicknameModal}
+        isArabic={isArabic}
+        userId={authUserId}
+        currentNickname={user?.nickname ?? null}
+        initialFallback={user?.firstName ?? ''}
+        onClose={handleCloseNickname}
+        onSaved={handleNicknameSaved}
+      />
     </div>
   );
 };
