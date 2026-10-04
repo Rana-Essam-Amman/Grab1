@@ -88,3 +88,47 @@ export function subscribeToUserConversations(
     },
   };
 }
+
+export interface TypingSubscription {
+  readonly unsubscribe: () => void;
+  readonly sendTyping: () => void;
+}
+
+/**
+ * Subscribe to typing events on a conversation. Ephemeral Broadcast 
+ * channel — no DB. Fires onTyping when the OTHER user is typing.
+ */
+export function subscribeToTyping(
+  conversationId: string,
+  currentUserId: string,
+  onTyping: () => void
+): TypingSubscription {
+  const channel = supabase
+    .channel(`typing:${conversationId}`, { config: { broadcast: { self: false } } })
+    .on(
+      'broadcast',
+      { event: 'typing' },
+      (payload: { payload?: { userId?: string } }) => {
+        const senderId = payload?.payload?.userId;
+        if (!senderId || senderId === currentUserId) return;
+        onTyping();
+      }
+    )
+    .subscribe();
+
+  const sendTyping = () => {
+    void channel.send({
+      type: 'broadcast',
+      event: 'typing',
+      payload: { userId: currentUserId },
+    });
+  };
+
+  return {
+    unsubscribe: () => {
+      supabase.removeChannel(channel);
+    },
+    sendTyping,
+  };
+}
+

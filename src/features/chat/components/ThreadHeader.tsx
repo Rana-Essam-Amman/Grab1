@@ -10,6 +10,7 @@ interface ThreadHeaderProps {
   title: string;
   handleImageError: (e: React.SyntheticEvent<HTMLImageElement>) => void;
   dialNumber?: string;
+  readonly isTyping?: boolean;
 }
 
 export const ThreadHeader: React.FC<ThreadHeaderProps> = ({
@@ -20,6 +21,7 @@ export const ThreadHeader: React.FC<ThreadHeaderProps> = ({
   title,
   handleImageError,
   dialNumber,
+  isTyping,
 }) => {
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
 
@@ -36,7 +38,9 @@ export const ThreadHeader: React.FC<ThreadHeaderProps> = ({
          <div className="min-w-0">
            <div className="text-xs font-bold text-white truncate">{title}</div>
            <div className="text-[11px] text-white/80 font-bold">
-             {isArabic ? 'عرض تفاصيل الإعلان ←' : 'View Listing →'}
+             {isTyping
+               ? (isArabic ? 'يكتب الآن...' : 'typing...')
+               : (isArabic ? 'عرض تفاصيل الإعلان ←' : 'View Listing →')}
            </div>
          </div>
        </div>

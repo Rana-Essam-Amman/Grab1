@@ -51,6 +51,7 @@ export const useChat = () => {
   const conversations = useChatStore((s) => s.conversations);
   const messagesByConversation = useChatStore((s) => s.messagesByConversation);
   const pendingByConversation = useChatStore((s) => s.pendingByConversation);
+  const typingByConversation = useChatStore((s) => s.typingByConversation);
   const currentUserId = useAuthStore((s) => s.user?.id ?? null);
 
   const legacyConversations: LegacyConversation[] = conversations.map((c) => {
@@ -64,6 +65,7 @@ export const useChat = () => {
 
   return {
     conversations: legacyConversations,
+    isTyping: (conversationId: string) => typingByConversation[conversationId] === true,
     openConversation,
     sendChatMessage: (conversationId: string, text: string, _country?: string) => {
       if (!currentUserId) return;
