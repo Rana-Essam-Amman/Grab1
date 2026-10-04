@@ -6,7 +6,6 @@ import { locationsWithOther as locations, locationsArWithOther as locationsAr } 
 import { Button } from '@/shared/ui/Button';
 import { Avatar } from '@/shared/ui/Avatar';
 import { HeaderDropdownMenu } from './HeaderDropdownMenu';
-import { HambergerMenu } from 'iconsax-react';
 import { CountryFlag } from './CountryFlag';
 
 const DEFAULT_CAPITALS: Record<string, { en: string; ar: string; cityEn?: string; cityAr?: string }> = {
@@ -21,21 +20,19 @@ export const Header: React.FC = () => {
   const { isArabic, setLocale, browseCountry, browseCityEn, browseCityAr, activeCurrency, setActiveCurrency, setBrowseLocation, navigateTo, setIsCountrySheetOpen } = useUI();
   const { user, authStatus } = useAuth();
   const { wishlist } = useListings();
-
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   const countryCode = (browseCountry?.code || 'JO') as 'JO' | 'LB' | 'PS' | 'SY' | 'SA';
   const defaultCap = DEFAULT_CAPITALS[countryCode] || DEFAULT_CAPITALS.JO;
 
   const handleMenuToggle = useCallback(() => setIsMenuOpen((prev) => !prev), []);
   const handleMenuClose = useCallback(() => setIsMenuOpen(false), []);
   const handleLogoClick = useCallback(() => navigateTo('main'), [navigateTo]);
-  const handleProfileClick = useCallback(() => {
-    navigateTo('settings');
-    setIsMenuOpen(false);
-  }, [navigateTo]);
   const handleProfileNav = useCallback(() => {
     navigateTo('profile');
+    setIsMenuOpen(false);
+  }, [navigateTo]);
+  const handleSettingsNav = useCallback(() => {
+    navigateTo('settings');
     setIsMenuOpen(false);
   }, [navigateTo]);
   const handleLanguageToggle = useCallback(() => {
@@ -82,40 +79,15 @@ export const Header: React.FC = () => {
 
   return (
     <header className="relative z-30 px-4 pt-2 pb-2 bg-brand border-b border-white/20">
-      <div className="flex items-center justify-between">
-        <CountryFlag code={countryCode} />
+      <div className="flex items-center justify-between gap-2">
         <Button
           variant="ghost"
           size="icon"
           onClick={handleMenuToggle}
-          className="w-9 h-9 rounded-full border border-white/20 bg-white/10 hover:bg-white/20 hover:scale-105 active:scale-95 flex items-center justify-center p-0"
-          title={isArabic ? 'القائمة' : 'Menu'}
-          aria-label={isArabic ? 'القائمة' : 'Menu'}
-        >
-          <HambergerMenu size={20} variant="Linear" color="#FFFFFF" />
-        </Button>
-        <img
-          src="/assets/icons/logo.png"
-          alt="FOX Marketplace"
-          className="w-[56px] h-[56px] object-cover rounded-full shrink-0 mix-blend-lighten"
-        />
-        <div
-          className="cursor-pointer select-none flex-1 flex justify-start ps-2"
-          onClick={handleLogoClick}
-        >
-          <div className="flex flex-col justify-center items-center m-0 p-0">
-            <h1 className="text-[34px] font-black text-white font-cairo tracking-[4px] leading-[0.95] m-0">FOX</h1>
-            <span className="text-[10px] font-semibold text-white tracking-[7px] uppercase leading-none mt-1 m-0 block">Marketplace</span>
-          </div>
-        </div>
-
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleProfileClick}
-          className="w-9 h-9 rounded-full border border-white/20 overflow-hidden shadow-xs hover:ring-2 hover:ring-white/30 transition-all flex items-center justify-center bg-white/10 p-0"
-          title={isArabic ? 'الإعدادات والحساب' : 'Settings & Account'}
-          data-testid="header-profile-btn"
+          className="w-10 h-10 rounded-full border border-white/20 overflow-hidden shadow-xs hover:ring-2 hover:ring-white/30 transition-all flex items-center justify-center bg-white/10 p-0 shrink-0"
+          title={isArabic ? 'القائمة والحساب' : 'Menu & Account'}
+          data-testid="header-menu-btn"
+          aria-label={isArabic ? 'القائمة والحساب' : 'Menu & Account'}
         >
           <Avatar
             src={user?.avatar || user?.avatarUrl || '/assets/avatars/guest.jpg'}
@@ -124,6 +96,25 @@ export const Header: React.FC = () => {
             className="w-full h-full border-none ring-2 ring-white/30"
           />
         </Button>
+
+        <div
+          className="cursor-pointer select-none flex-1 flex justify-center items-center gap-2"
+          onClick={handleLogoClick}
+        >
+          <img
+            src="/assets/icons/logo.png"
+            alt="FOX Marketplace"
+            className="w-[56px] h-[56px] object-cover rounded-full shrink-0 mix-blend-lighten"
+          />
+          <div className="flex flex-col justify-center items-center m-0 p-0">
+            <h1 className="text-[34px] font-black text-white font-cairo tracking-[4px] leading-[0.95] m-0">FOX</h1>
+            <span className="text-[10px] font-semibold text-white tracking-[7px] uppercase leading-none mt-1 m-0 block">Marketplace</span>
+          </div>
+        </div>
+
+        <div className="w-10 h-10 shrink-0" aria-hidden="true" />
+
+        <CountryFlag code={countryCode} />
       </div>
 
       {isMenuOpen && (
@@ -134,6 +125,7 @@ export const Header: React.FC = () => {
           displayCityEn={displayCityEn}
           handleMenuClose={handleMenuClose}
           handleProfileNav={handleProfileNav}
+          handleSettingsNav={handleSettingsNav}
           handleLanguageToggle={handleLanguageToggle}
           handleWishlistNav={handleWishlistNav}
           wishlistLength={wishlist.length}
