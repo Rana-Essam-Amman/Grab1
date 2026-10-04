@@ -11,6 +11,7 @@ interface ThreadHeaderProps {
   handleImageError: (e: React.SyntheticEvent<HTMLImageElement>) => void;
   dialNumber?: string;
   readonly isTyping?: boolean;
+  readonly isOtherOnline?: boolean;
 }
 
 export const ThreadHeader: React.FC<ThreadHeaderProps> = ({
@@ -22,6 +23,7 @@ export const ThreadHeader: React.FC<ThreadHeaderProps> = ({
   handleImageError,
   dialNumber,
   isTyping,
+  isOtherOnline,
 }) => {
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
 
@@ -32,8 +34,11 @@ export const ThreadHeader: React.FC<ThreadHeaderProps> = ({
          <BackIcon size={18} variant="Linear" color="#FFFFFF" />
        </Button>
        <div onClick={handleViewListing} className="flex items-center gap-2 cursor-pointer min-w-0">
-         <div className="w-9 h-9 rounded-lg overflow-hidden bg-white/15 border border-white/20 shrink-0">
+         <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-white/15 border border-white/20 shrink-0">
            <img src={imageUrl} alt={title} className="w-full h-full object-cover" onError={handleImageError} />
+           {isOtherOnline && (
+             <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-green-500 ring-2 ring-[#1a2238]" />
+           )}
          </div>
          <div className="min-w-0">
            <div className="text-xs font-bold text-white truncate">{title}</div>

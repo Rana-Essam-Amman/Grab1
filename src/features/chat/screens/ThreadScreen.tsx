@@ -3,15 +3,15 @@ import { useUI } from '@/hooks/useUI';
 import { useChat } from '@/hooks/useChat';
 import { useAuth } from '@/hooks/useAuth';
 import { useAuthStore } from '@/features/auth/store/auth.slice';
+import { useChatStore } from '@/features/chat/store/chat.slice';
 import { useListings } from '@/hooks/useListings';
 import {
   markMessagesRead as markMessagesReadAction,
+  applyMessageUpdate,
+  reconcileConfirmedMessage,
 } from '../store/chat.slice.actions.mutate';
-import {
-  loadInitialMessages as loadInitialMessagesAction,
-} from '../store/chat.slice.actions.load';
+import { loadInitialMessages as loadInitialMessagesAction } from '../store/chat.slice.actions.load';
 import { subscribeToMessages } from '../services/chatRealtime';
-import { applyMessageUpdate, reconcileConfirmedMessage } from '../store/chat.slice.actions.mutate';
 import { getFormattedLocalPhone } from '@/shared/lib/phoneFormatting';
 import { useTypingIndicator } from '../hooks/useTypingIndicator';
 import { ThreadHeader } from '../components/ThreadHeader';
@@ -23,6 +23,8 @@ export const ThreadScreen: React.FC = () => {
   const { conversations, sendChatMessage, isTyping } = useChat();
   const { authStatus } = useAuth();
   const currentUserId = useAuthStore((s) => s.user?.id ?? null);
+  const onlineUserIds = useChatStore((s) => s.onlineUserIds);
+  const storeConversations = useChatStore((s) => s.conversations);
   const { notifyTyping } = useTypingIndicator(selectedThreadId ?? null, currentUserId);
 
   useEffect(() => {
@@ -32,14 +34,15 @@ export const ThreadScreen: React.FC = () => {
   const [inputText, setInputText] = useState('');
   const { getListing } = useListings();
 
-  const thread = useMemo(
-    () => conversations.find((c) => c.id === selectedThreadId),
-    [conversations, selectedThreadId]
-  );
+  const thread = useMemo(() => conversations.find((c) => c.id === selectedThreadId), [conversations, selectedThreadId]);
+  const convView = useMemo(() => storeConversations.find((c) => c.id === selectedThreadId), [storeConversations, selectedThreadId]);
+  const listing = useMemo(() => (thread ? getListing(thread.listingId) : undefined), [thread, getListing]);
 
-  const listing = useMemo(
-    () => (thread ? getListing(thread.listingId) : undefined),
-    [thread, getListing]
+  const isOtherOnline = useMemo(
+    () => !!(convView && currentUserId && onlineUserIds[
+      convView.buyerId === currentUserId ? convView.sellerId : convView.buyerId
+    ]),
+    [convView, currentUserId, onlineUserIds]
   );
 
   const formattedPhone = useMemo(() => {
@@ -48,10 +51,7 @@ export const ThreadScreen: React.FC = () => {
   }, [thread?.sellerPhone, listing?.countryCode]);
 
   const SOFT_LIMIT = 30;
-  const isMessageLimitReached = useMemo(
-    () => (thread ? thread.messages.length >= SOFT_LIMIT : false),
-    [thread]
-  );
+  const isMessageLimitReached = useMemo(() => (thread ? thread.messages.length >= SOFT_LIMIT : false), [thread]);
 
   useEffect(() => {
     if (!selectedThreadId || authStatus !== 'authenticated') return;
@@ -106,13 +106,8 @@ export const ThreadScreen: React.FC = () => {
   if (!selectedThreadId || !thread) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-surface p-6">
-        <p className="text-ink-soft text-center">
-          {isArabic ? 'المحادثة غير متوفرة' : 'Conversation not available'}
-        </p>
-        <button
-          onClick={() => navigateTo('messages')}
-          className="px-6 py-3 rounded-xl bg-brand text-white font-medium"
-        >
+        <p className="text-ink-soft text-center">{isArabic ? 'المحادثة غير متوفرة' : 'Conversation not available'}</p>
+        <button onClick={() => navigateTo('messages')} className="px-6 py-3 rounded-xl bg-brand text-white font-medium">
           {isArabic ? 'العودة للرسائل' : 'Back to Messages'}
         </button>
       </div>
@@ -130,6 +125,7 @@ export const ThreadScreen: React.FC = () => {
         handleImageError={handleImageError}
         dialNumber={formattedPhone.dialNumber}
         isTyping={selectedThreadId ? isTyping(selectedThreadId) : false}
+        isOtherOnline={isOtherOnline}
       />
       <ThreadMessageFlow
         messages={thread.messages}

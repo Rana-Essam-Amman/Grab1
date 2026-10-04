@@ -17,5 +17,6 @@ export const useChatStore = create<ChatState>(() => ({
   loadingConversations: false,
   loadingByConversation: {},
   typingByConversation: {},
+  onlineUserIds: {},
   error: null,
 }));
