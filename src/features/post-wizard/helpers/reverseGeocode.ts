@@ -2,11 +2,11 @@
  * Reverse geocoding via Nominatim (OpenStreetMap).
  *
  * Free, no API key. Usage policy: 1 request/second.
- * Browsers send Referer automatically; that is sufficient for low volume.
+ * Returns MULTIPLE neighborhood candidates (suburb, neighbourhood, ...).
  */
 
 export interface ReverseGeocodeResult {
-  readonly neighborhood: string | null;
+  readonly candidates: readonly string[];
 }
 
 export async function reverseGeocode(
@@ -22,42 +22,46 @@ export async function reverseGeocode(
       `&zoom=16&addressdetails=1&accept-language=${lang}`;
 
     const res = await fetch(url, { headers: { Accept: 'application/json' } });
-    if (!res.ok) return { neighborhood: null };
+    if (!res.ok) return { candidates: [] };
 
     const data = (await res.json()) as { address?: Record<string, string> };
     const addr = data.address || {};
-    const raw =
-      addr.suburb ||
-      addr.neighbourhood ||
-      addr.quarter ||
-      addr.village ||
-      addr.hamlet ||
-      null;
+    const candidates = [
+      addr.suburb,
+      addr.neighbourhood,
+      addr.quarter,
+      addr.village,
+      addr.hamlet,
+    ].filter((s): s is string => typeof s === 'string' && s.length > 0);
 
-    return { neighborhood: typeof raw === 'string' ? raw : null };
+    return { candidates };
   } catch {
-    return { neighborhood: null };
+    return { candidates: [] };
   }
 }
 
 /** Normalize Arabic/Latin text for fuzzy comparison. */
 export function normalizeText(s: string): string {
   return s
-    .replace(/[\u064B-\u065F\u0670]/g, '') // tashkeel
-    .replace(/[\u0623\u0625\u0622\u0671]/g, '\u0627') // alef variants
-    .replace(/\u0629/g, '\u0647') // taa marbuta
-    .replace(/\u0649/g, '\u064A') // alef maqsura
+    .replace(/^منطقة\s+/u, '')
+    .replace(/[\u064B-\u065F\u0670]/g, '')
+    .replace(/[\u0623\u0625\u0622\u0671]/g, '\u0627')
+    .replace(/\u0629/g, '\u0647')
+    .replace(/\u0649/g, '\u064A')
     .replace(/\s+/g, ' ')
     .trim()
     .toLowerCase();
 }
 
-/** Match raw Nominatim value against a curated list (fuzzy). */
+/** Match first candidate that exists in curated list (fuzzy). */
 export function matchNeighborhood(
-  raw: string | null,
+  candidates: readonly string[],
   list: readonly string[]
 ): string | null {
-  if (!raw) return null;
-  const target = normalizeText(raw);
-  return list.find((n) => normalizeText(n) === target) ?? null;
+  for (const raw of candidates) {
+    const target = normalizeText(raw);
+    const found = list.find((n) => normalizeText(n) === target);
+    if (found) return found;
+  }
+  return null;
 }

@@ -9,7 +9,7 @@ export interface UseGeoLocationReturn {
   readonly match: GeoMatch | null;
   readonly deviceLat: number | null;
   readonly deviceLng: number | null;
-  readonly neighborhood: string | null;
+  readonly candidates: readonly string[];
   readonly error: string | null;
   readonly request: () => void;
   readonly reset: () => void;
@@ -23,7 +23,7 @@ export function useGeoLocation(
   const [match, setMatch] = useState<GeoMatch | null>(null);
   const [deviceLat, setDeviceLat] = useState<number | null>(null);
   const [deviceLng, setDeviceLng] = useState<number | null>(null);
-  const [neighborhood, setNeighborhood] = useState<string | null>(null);
+  const [candidates, setCandidates] = useState<readonly string[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const reset = useCallback(() => {
@@ -31,7 +31,7 @@ export function useGeoLocation(
     setMatch(null);
     setDeviceLat(null);
     setDeviceLng(null);
-    setNeighborhood(null);
+    setCandidates([]);
     setError(null);
   }, []);
 
@@ -59,7 +59,7 @@ export function useGeoLocation(
         }
 
         const rv = await reverseGeocode(latitude, longitude, isArabic);
-        setNeighborhood(rv.neighborhood);
+        setCandidates(rv.candidates);
 
         setMatch(found);
         setStatus('success');
@@ -79,6 +79,6 @@ export function useGeoLocation(
   }, [preferredCountry, isArabic]);
 
   return {
-    status, match, deviceLat, deviceLng, neighborhood, error, request, reset,
+    status, match, deviceLat, deviceLng, candidates, error, request, reset,
   };
 }

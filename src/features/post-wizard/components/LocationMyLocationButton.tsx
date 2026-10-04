@@ -8,6 +8,7 @@ interface Props {
   readonly isArabic: boolean;
   readonly preferredCountry: string;
   readonly onCityChange: (city: string) => void;
+  readonly onNeighborhoodChange: (n: string) => void;
 }
 
 function optionCity(country: string, cityEn: string, isArabic: boolean): string {
@@ -22,9 +23,10 @@ export const LocationMyLocationButton: React.FC<Props> = ({
   isArabic,
   preferredCountry,
   onCityChange,
+  onNeighborhoodChange,
 }) => {
   const {
-    status, match, deviceLat, deviceLng, neighborhood, error, request, reset,
+    status, match, deviceLat, deviceLng, candidates, error, request, reset,
   } = useGeoLocation(preferredCountry, isArabic);
   const { updatePostDraft } = usePostWizard();
 
@@ -32,16 +34,17 @@ export const LocationMyLocationButton: React.FC<Props> = ({
     if (status !== 'success' || !match) return;
 
     const city = optionCity(match.country, match.city, isArabic);
-    onCityChange(city);
-
     const list = isArabic
       ? locationsAr[match.country]?.[match.city] || []
       : locations[match.country]?.[match.city] || [];
-    const matched = matchNeighborhood(neighborhood, list);
+    const matched = matchNeighborhood(candidates, list) ?? '';
+
+    onCityChange(city);
+    onNeighborhoodChange(matched);
 
     updatePostDraft({
       city,
-      neighborhood: matched ?? '',
+      neighborhood: matched,
       ...(deviceLat != null && deviceLng != null
         ? { latitude: deviceLat, longitude: deviceLng }
         : {}),
@@ -49,8 +52,8 @@ export const LocationMyLocationButton: React.FC<Props> = ({
 
     reset();
   }, [
-    status, match, deviceLat, deviceLng, neighborhood,
-    isArabic, onCityChange, reset, updatePostDraft,
+    status, match, deviceLat, deviceLng, candidates,
+    isArabic, onCityChange, onNeighborhoodChange, reset, updatePostDraft,
   ]);
 
   const label =
