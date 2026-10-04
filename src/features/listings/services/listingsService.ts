@@ -1,5 +1,6 @@
 import type { Listing } from '@/types';
 import { supabase } from '@/shared/lib/supabase';
+import { removeListingImages } from './storageService';
 
 export interface SupabaseListingRow {
   readonly id: string;
@@ -24,37 +25,22 @@ export interface SupabaseListingRow {
 }
 
 function rowToListing(row: SupabaseListingRow): Listing {
-  const attrs = Array.isArray(row.attributes)
-    ? (row.attributes as Array<{ key?: string; label: string; value: string }>)
-    : [];
+  const attrs = Array.isArray(row.attributes) ? (row.attributes as Array<{ key?: string; label: string; value: string }>) : [];
   return {
-    id: row.id,
-    title: row.title,
-    description: row.description,
-    price: row.price,
-    currency: row.currency as Listing['currency'],
-    countryCode: row.country_code as Listing['countryCode'],
-    city: row.city,
-    neighborhood: row.neighborhood || '',
-    categorySlug: row.category_slug,
-    subcategorySlug: row.subcategory_slug || '',
-    imageUrl: row.images?.[0] || '',
-    images: row.images || [],
-    sellerPhone: row.seller_phone || '',
-    sellerName: row.seller_name || '',
-    createdAt: row.created_at.split('T')[0],
-    views: row.views,
-    status: row.status as Listing['status'],
-    attributes: attrs as Listing['attributes'],
+    id: row.id, title: row.title, description: row.description, price: row.price,
+    currency: row.currency as Listing['currency'], countryCode: row.country_code as Listing['countryCode'],
+    city: row.city, neighborhood: row.neighborhood || '',
+    categorySlug: row.category_slug, subcategorySlug: row.subcategory_slug || '',
+    imageUrl: row.images?.[0] || '', images: row.images || [],
+    sellerPhone: row.seller_phone || '', sellerName: row.seller_name || '',
+    createdAt: row.created_at.split('T')[0], views: row.views,
+    status: row.status as Listing['status'], attributes: attrs as Listing['attributes'],
   };
 }
 
 export async function fetchListings(): Promise<{ data: Listing[] | null; error: string | null }> {
   try {
-    const { data, error } = await supabase
-      .from('listings')
-      .select('*')
-      .order('created_at', { ascending: false });
+    const { data, error } = await supabase.from('listings').select('*').order('created_at', { ascending: false });
     if (error) return { data: null, error: error.message };
     return { data: (data || []).map(rowToListing), error: null };
   } catch (err) {
@@ -115,6 +101,22 @@ export async function createListing(
 
 export async function deleteListing(id: string): Promise<{ error: string | null }> {
   try {
+    // 1. Fetch listing images before deleting row
+    const { data: row, error: fetchError } = await supabase
+      .from('listings')
+      .select('images')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (fetchError) return { error: fetchError.message };
+
+    // 2. Best-effort: remove images from storage. Never blocks DB delete.
+    const images = Array.isArray(row?.images) ? (row.images as string[]) : [];
+    if (images.length > 0) {
+      await removeListingImages(images);
+    }
+
+    // 3. Delete DB row (priority)
     const { error } = await supabase.from('listings').delete().eq('id', id);
     return { error: error ? error.message : null };
   } catch (err) {
