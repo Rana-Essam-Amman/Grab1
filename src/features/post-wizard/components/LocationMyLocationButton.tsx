@@ -27,6 +27,7 @@ export const LocationMyLocationButton: React.FC<Props> = ({ isArabic, preferredC
     onCityChange(city);
     updatePostDraft({
       city,
+      neighborhood: '',
       ...(deviceLat != null && deviceLng != null ? { latitude: deviceLat, longitude: deviceLng } : {}),
     });
     reset();

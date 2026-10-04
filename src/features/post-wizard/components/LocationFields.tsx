@@ -73,8 +73,15 @@ export const LocationFields: React.FC<Props> = ({
         <div>
           <label className="block text-xs font-bold text-ink mb-1.5">{isArabic ? "المنطقة / الحي" : "Neighborhood / Area"}</label>
           <select value={selectedNeighborhood} onChange={(e) => onNeighborhoodChange(e.target.value)} className="w-full h-11 px-3.5 rounded-xl bg-surface border border-border text-sm text-ink focus:outline-none focus:border-primary">
+            <option value="" disabled>{isArabic ? 'اختر الحي' : 'Select neighborhood'}</option>
             {neighborhoods.map((hood) => <option key={hood} value={hood}>{hood}</option>)}
           </select>
+
+          {!selectedNeighborhood && (
+            <p className="text-xs font-bold text-danger px-1 mt-1">
+              {isArabic ? 'الرجاء اختيار الحي' : 'Please select a neighborhood'}
+            </p>
+          )}
 
           {/* end of neighborhood select */}
           {isOtherValue(selectedNeighborhood) && (
