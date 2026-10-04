@@ -8,22 +8,30 @@ export const useListings = () => {
   const uiStore = useUIStore();
 
   const wishlistListings = store.listings.filter((l) => store.wishlist.includes(l.id));
+
   const isWishlisted = (id: string) => store.wishlist.includes(id);
 
   const getListing = (id: string) => {
     return store.listings.find((l) => l.id === id);
   };
 
-  const getUserListings = (userPhone?: string, userCountryCode?: string) => {
-    if (!userPhone) return [];
+  const getUserListings = (
+    user: { id?: string; phone?: string } | null,
+    userCountryCode?: string
+  ) => {
+    if (!user) return [];
     return store.listings.filter((l) => {
-      const matchPhone = l.sellerPhone === userPhone;
-      const matchCountry = userCountryCode ? l.countryCode === userCountryCode : true;
-      return matchPhone && matchCountry;
+      const matchUser = user.id ? l.userId === user.id : false;
+      const matchLegacy =
+        !l.userId && !!user.phone && l.sellerPhone === user.phone;
+      const matchCountry = userCountryCode
+        ? l.countryCode === userCountryCode
+        : true;
+      return (matchUser || matchLegacy) && matchCountry;
     });
   };
 
-  const userListings = getUserListings(authStore.user?.phone, authStore.user?.countryCode || uiStore.browseCountryCode);
+  const userListings = getUserListings(authStore.user, authStore.user?.countryCode || uiStore.browseCountryCode);
 
   return {
     listings: store.listings,
@@ -79,4 +87,3 @@ export const useListingsActions = () => {
 };
 
 export const useListingActions = useListingsActions;
-

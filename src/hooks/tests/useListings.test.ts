@@ -7,6 +7,7 @@ import { useUIStore } from '@/store/ui.slice';
 
 const makeListing = (id: string, overrides: Record<string, unknown> = {}) => ({
   id,
+  userId: 'user-1',
   title: `Listing ${id}`,
   description: 'Test',
   price: '1000',
@@ -65,9 +66,27 @@ describe('useListings', () => {
     expect(result.current.getListing('nope')).toBeUndefined();
   });
 
-  it('userListings returns [] when no user phone', () => {
+  it('userListings returns [] when no user', () => {
     useListingsStore.setState({ listings: [makeListing('jo-1')] as never });
     const { result } = renderHook(() => useListings());
     expect(result.current.userListings).toEqual([]);
+  });
+
+  it('userListings returns listings owned by current user via userId', () => {
+    useListingsStore.setState({
+      listings: [
+        makeListing('jo-1', { userId: 'user-1' }),
+        makeListing('jo-2', { userId: 'user-2' }),
+      ] as never,
+    });
+    useAuthStore.setState({
+      authStatus: 'authenticated',
+      user: { id: 'user-1', firstName: 'Test', lastName: 'User', email: 't@t.com', phone: '791234567', countryCode: 'JO' } as any,
+      sessionToken: 'fake',
+    });
+    useUIStore.setState({ browseCountryCode: 'JO' });
+    const { result } = renderHook(() => useListings());
+    expect(result.current.userListings).toHaveLength(1);
+    expect(result.current.userListings[0].id).toBe('jo-1');
   });
 });
