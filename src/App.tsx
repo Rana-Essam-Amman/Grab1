@@ -32,6 +32,7 @@ import { useSupabaseWishlistSync } from '@/features/listings/hooks/useSupabaseWi
 import { useOnlinePresence } from '@/features/chat/hooks/useOnlinePresence';
 
 import { RouterProvider } from '@/shared/router/RouterProvider';
+import { useScrollToTop } from '@/shared/router/useScrollToTop';
 import { useUrlSync } from '@/shared/router/useUrlSync';
 
 // Lazy-loaded Screens
@@ -94,6 +95,7 @@ const ScreenLoader: React.FC = () => (
 const MainNavigator: React.FC = () => {
   const { currentScreen, activeTab } = useUI();
   useUrlSync();
+  useScrollToTop();
   const { screens: registryScreens } = useRegistry();
 
   const registryLazyComponents = useMemo(() => {

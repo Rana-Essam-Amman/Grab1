@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useUIStore } from '@/store/ui.slice';
 import { screenToPath, resolvePath } from './paths';
@@ -29,7 +29,10 @@ export function useUrlSync(): void {
   const lastPathRef = useRef<string | null>(null);
 
   // --- URL → Store ---------------------------------------------------
-  useEffect(() => {
+  // useLayoutEffect so this runs BEFORE the browser paints. Without it, 
+  // refresh on /listing/:id briefly flashes Home before the listing 
+  // mounts (documented fix: React docs + SO).
+  useLayoutEffect(() => {
     const match = resolvePath(location.pathname);
     if (!match) return;
 
