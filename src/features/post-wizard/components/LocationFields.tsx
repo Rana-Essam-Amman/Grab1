@@ -51,7 +51,7 @@ export const LocationFields: React.FC<Props> = ({
   const pinLng = longitude ?? postDraft.longitude;
   return (
     <div className="flex flex-col gap-4">
-      <LocationMyLocationButton isArabic={isArabic} preferredCountry={browseCountryCode} onCityChange={onCityChange} />
+      <LocationMyLocationButton isArabic={isArabic} preferredCountry={browseCountryCode} onCityChange={onCityChange} onNeighborhoodChange={onNeighborhoodChange} />
       <div>
         <label className="block text-xs font-bold text-ink mb-1.5">{isArabic ? "المدينة / المحافظة" : "City / Governorate"}</label>
         <select value={selectedCity} onChange={(e) => onCityChange(e.target.value)} className="w-full h-11 px-3.5 rounded-xl bg-surface border border-border text-sm text-ink focus:outline-none focus:border-primary">
@@ -59,14 +59,7 @@ export const LocationFields: React.FC<Props> = ({
         </select>
       </div>
       {isOtherValue(selectedCity) && (
-        <Input
-          label={isArabic ? "اكتب اسم المدينة" : "Type city name"}
-          type="text"
-          value={customCity}
-          onChange={(e) => onCustomCityChange(e.target.value)}
-          placeholder={isArabic ? "مثال: الطفيلة" : "e.g., Tafilah"}
-          className="h-11"
-        />
+        <Input label={isArabic ? "اكتب اسم المدينة" : "Type city name"} type="text" value={customCity} onChange={(e) => onCustomCityChange(e.target.value)} placeholder={isArabic ? "مثال: الطفيلة" : "e.g., Tafilah"} className="h-11" />
       )}
 
       {neighborhoods.length > 0 && (
@@ -85,14 +78,7 @@ export const LocationFields: React.FC<Props> = ({
 
           {/* end of neighborhood select */}
           {isOtherValue(selectedNeighborhood) && (
-            <Input
-              label={isArabic ? "اكتب اسم المنطقة" : "Type neighborhood name"}
-              type="text"
-              value={customNeighborhood}
-              onChange={(e) => onCustomNeighborhoodChange(e.target.value)}
-              placeholder={isArabic ? "مثال: الرابية الجديدة" : "e.g., New Rabieh"}
-              className="h-11"
-            />
+            <Input label={isArabic ? "اكتب اسم المنطقة" : "Type neighborhood name"} type="text" value={customNeighborhood} onChange={(e) => onCustomNeighborhoodChange(e.target.value)} placeholder={isArabic ? "مثال: الرابية الجديدة" : "e.g., New Rabieh"} className="h-11" />
           )}
         </div>
       )}
