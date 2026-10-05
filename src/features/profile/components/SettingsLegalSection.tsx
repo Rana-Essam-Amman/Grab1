@@ -35,7 +35,7 @@ export const SettingsLegalSection: React.FC<SettingsLegalSectionProps> = ({
 
       <div onClick={onSafety} className={rowClass}>
         <div className="flex items-center gap-3">
-          <ShieldTick size={18} variant="Linear" color="#16A34A" className="text-green-600" />
+          <ShieldTick size={18} variant="Linear" color="currentColor" className="text-success" />
           <div className="text-sm font-semibold text-ink">
             {isArabic ? 'الأمان' : 'Safety'}
           </div>
@@ -75,7 +75,7 @@ export const SettingsLegalSection: React.FC<SettingsLegalSectionProps> = ({
 
       <div className="p-3.5 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <ShieldTick size={18} variant="Linear" color="#16A34A" className="text-green-600" />
+          <ShieldTick size={18} variant="Linear" color="currentColor" className="text-success" />
           <div>
             <div className="text-sm font-semibold text-ink">FOX Marketplace</div>
             <div className="text-xs text-ink-muted">Version 1.0.0 (Regional Edition)</div>

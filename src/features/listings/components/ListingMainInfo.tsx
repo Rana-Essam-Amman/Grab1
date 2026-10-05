@@ -33,9 +33,9 @@ export const ListingMainInfo: React.FC<ListingMainInfoProps> = React.memo(({
         </span>
       </div>
       <div className="flex items-center gap-2 text-xs mt-2.5 flex-wrap">
-        <div className="flex items-center gap-1 bg-[#E57E25]/10 px-2.5 py-1 rounded-lg border border-[#E57E25]/30">
+        <div className="flex items-center gap-1 bg-accent/10 px-2.5 py-1 rounded-lg border border-accent/30">
           <Icon icon="noto:round-pushpin" width={13} height={13} className="shrink-0" />
-          <span className="font-semibold text-[#0F172A]" dir="auto">{locationText}</span>
+          <span className="font-semibold text-ink" dir="auto">{locationText}</span>
         </div>
         {specs.length > 0 && <ListingSpecsRow specs={specs} />}
       </div>

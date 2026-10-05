@@ -27,7 +27,7 @@ export const ProfileHeaderSection: React.FC<ProfileHeaderSectionProps> = ({
   return (
     <>
       {/* Top Bar Header */}
-      <div className="-mx-4 px-4 py-4 bg-[#1a2238] border-b border-white/10 flex items-center gap-3 sticky top-0 z-20">
+      <div className="-mx-4 px-4 py-4 bg-brand border-b border-white/10 flex items-center gap-3 sticky top-0 z-20">
         <Button
           variant="ghost"
           size="icon"

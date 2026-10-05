@@ -20,17 +20,17 @@ export const ListingActionsBar: React.FC<ListingActionsBarProps> = ({
 
   return (
     <div className="relative z-10 flex items-stretch divide-x divide-line border-t border-line bg-surface">
-      <button type="button" onClick={(e) => { e.stopPropagation(); onEdit(); }} className={`${cell} text-blue-600 hover:bg-blue-50`}>
-        <Edit size={16} variant="Linear" color="#2563EB" />
+      <button type="button" onClick={(e) => { e.stopPropagation(); onEdit(); }} className={`${cell} text-info hover:bg-info/10`}>
+        <Edit size={16} variant="Linear" color="currentColor" />
         <span>{isArabic ? 'تعديل' : 'Edit'}</span>
       </button>
       {status !== 'sold' && (
         <button
           type="button"
           onClick={(e) => { e.stopPropagation(); onPromote(); }}
-          className={`${cell} text-amber-700 hover:bg-amber-50`}
+          className={`${cell} text-warning hover:bg-warning/10`}
         >
-          <Crown size={16} variant="Bold" color="#D97706" />
+          <Crown size={16} variant="Bold" color="currentColor" />
           <span>{isArabic ? 'تمييز' : 'Promote'}</span>
         </button>
       )}
@@ -39,20 +39,20 @@ export const ListingActionsBar: React.FC<ListingActionsBarProps> = ({
           type="button"
           onClick={(e) => { e.stopPropagation(); onBump(); }}
           disabled={bumpDisabled}
-          className={`${cell} ${bumpDisabled ? 'text-ink-muted cursor-not-allowed' : 'text-amber-700 hover:bg-amber-50'}`}
+          className={`${cell} ${bumpDisabled ? 'text-ink-muted cursor-not-allowed' : 'text-warning hover:bg-warning/10'}`}
         >
-          <ArrowUp2 size={16} variant="Linear" color={bumpDisabled ? '#94A3B8' : '#D97706'} />
+          <ArrowUp2 size={16} variant="Linear" color="currentColor" />
           <span>{isArabic ? 'رفع' : 'Bump'}</span>
         </button>
       )}
       {!isSold && (
-        <button type="button" onClick={(e) => { e.stopPropagation(); onMarkSold(); }} className={`${cell} text-green-700 hover:bg-green-50`}>
-          <TickCircle size={16} variant="Linear" color="#16A34A" />
+        <button type="button" onClick={(e) => { e.stopPropagation(); onMarkSold(); }} className={`${cell} text-success hover:bg-success/10`}>
+          <TickCircle size={16} variant="Linear" color="currentColor" />
           <span>{isArabic ? 'تم البيع' : 'Sold'}</span>
         </button>
       )}
-      <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(); }} className={`${cell} text-red-600 hover:bg-red-50`}>
-        <Trash size={16} variant="Linear" color="#DC2626" />
+      <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(); }} className={`${cell} text-danger hover:bg-danger/10`}>
+        <Trash size={16} variant="Linear" color="currentColor" />
         <span>{isArabic ? 'حذف' : 'Delete'}</span>
       </button>
     </div>

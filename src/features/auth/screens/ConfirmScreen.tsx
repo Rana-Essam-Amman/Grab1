@@ -76,7 +76,7 @@ export const ConfirmScreen: React.FC = () => {
       {/* Top Bar */}
       <div className="px-4 py-4 border-b border-border flex items-center gap-3 bg-surface sticky top-0 z-20">
         <Button variant="ghost" size="icon" onClick={goBack}>
-          <BackIcon size={18} variant="Linear" color="#0F172A" />
+          <BackIcon size={18} variant="Linear" color="currentColor" className="text-ink" />
         </Button>
         <h1 className="text-base font-bold text-ink">
           {isArabic ? 'تأكيد رمز التحقق' : 'Confirm Verification Code'}
