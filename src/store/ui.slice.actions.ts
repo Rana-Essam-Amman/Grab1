@@ -27,16 +27,25 @@ export const createUIActions = (
       screenHistory: [...state.screenHistory, screen],
     })),
 
-  goBack: () =>
+  goBack: () => {
+    // Post-refresh: Zustand's screenHistory was reset to ['main'], so 
+    // there is nothing in-app to pop. Fall back to the browser's own 
+    // back button — the browser still holds the real navigation history 
+    // after F5, and React Router will pick up the popstate and re-sync 
+    // the URL → store.
+    if (get().screenHistory.length <= 1) {
+      window.history.back();
+      return;
+    }
     set((state: UIState) => {
-      if (state.screenHistory.length <= 1) return state;
       const newHistory = [...state.screenHistory];
       newHistory.pop();
       return {
         screenHistory: newHistory,
         currentScreen: newHistory[newHistory.length - 1],
       };
-    }),
+    });
+  },
 
   setActiveTab: (tab: TabType) => set({ activeTab: tab, currentScreen: 'main' }),
 
