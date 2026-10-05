@@ -7,9 +7,14 @@ interface Props {
 }
 
 // ─── ADJUST HERE ───────────────────────────────────────────────
-// Flag display size in px (width = height, circular crop).
-// Common values: 56 (small), 64 (current), 72, 80 (large).
-const FLAG_SIZE_PX = 64;
+// Flag display size in px.
+//   64 = small   |  80 = medium (current)  |  96 = large
+const FLAG_SIZE_PX = 80;
+
+// Tilt angle in degrees — gives the "waving" feel.
+//   Negative = counter-clockwise  |  Positive = clockwise
+//   Try: -8, -10, -12
+const FLAG_ROTATE_DEG = -10;
 
 // Distance from the flag to the nearest edge of the header.
 //   end-2 = 8px   end-3 = 12px   end-4 = 16px   end-8 = 32px
@@ -26,11 +31,11 @@ const FLAG_SRC: Record<MarketCode, string> = {
 
 /**
  * Country flag indicator.
- * Renders a circular crop of a JPEG flag with a navy background that
- * matches the header — the flag visually melts into the header.
+ * Circular crop, tilted slightly so it "waves" into the navy header.
  *
- * To resize → change FLAG_SIZE_PX.
- * To move → change FLAG_END_CLASS.
+ * To resize  → FLAG_SIZE_PX
+ * To tilt    → FLAG_ROTATE_DEG
+ * To move    → FLAG_END_CLASS
  */
 export const CountryFlag: React.FC<Props> = ({ code }) => {
   return (
@@ -40,7 +45,11 @@ export const CountryFlag: React.FC<Props> = ({ code }) => {
     >
       <div
         className="rounded-full overflow-hidden"
-        style={{ width: FLAG_SIZE_PX, height: FLAG_SIZE_PX }}
+        style={{
+          width: FLAG_SIZE_PX,
+          height: FLAG_SIZE_PX,
+          transform: `rotate(${FLAG_ROTATE_DEG}deg)`,
+        }}
       >
         <img
           src={FLAG_SRC[code]}
