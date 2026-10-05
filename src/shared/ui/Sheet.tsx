@@ -121,7 +121,7 @@ export const Sheet = forwardRef<HTMLDivElement, SheetProps>(
                       aria-label="Close"
                       className="p-1.5 rounded-full text-ink-muted hover:text-ink hover:bg-background/60 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary"
                     >
-                      <CloseCircle variant="Linear" size={18} color="#94A3B8" />
+                      <CloseCircle variant="Linear" size={18} color="currentColor" className="text-ink-muted" />
                     </button>
                   )}
                 </div>
