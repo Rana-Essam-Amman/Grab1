@@ -28,7 +28,7 @@ const FLAG_SRC: Record<MarketCode, string> = {
  * Flag visual:
  *   - JPG from public/ root (compressed later)
  *   - 56px circular crop with subtle ring + soft glow
- *   - 12° clockwise tilt → look-up angle
+ *   - 20° counter-clockwise tilt — clearly visible
  */
 export const CountryFlag: React.FC<Props> = ({ code }) => {
   return (
@@ -36,7 +36,7 @@ export const CountryFlag: React.FC<Props> = ({ code }) => {
       className="absolute top-1/2 -translate-y-1/2 end-8 z-10 pointer-events-none"
       aria-hidden="true"
     >
-      <div className="w-14 h-14 rotate-12 rounded-full overflow-hidden ring-1 ring-white/25 shadow-[0_0_18px_rgba(255,255,255,0.20)] bg-white/5">
+      <div className="w-14 h-14 -rotate-20 rounded-full overflow-hidden ring-1 ring-white/25 shadow-[0_0_18px_rgba(255,255,255,0.20)] bg-white/5">
         <img
           src={FLAG_SRC[code]}
           alt=""
