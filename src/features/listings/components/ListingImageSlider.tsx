@@ -32,7 +32,7 @@ export const ListingImageSlider: React.FC<ListingImageSliderProps> = React.memo(
   return (
     <>
     <div
-      className="relative w-full aspect-4/3 bg-ink overflow-hidden select-none touch-pan-y"
+      className="relative w-full aspect-[4/3] bg-ink overflow-hidden select-none touch-pan-y"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
