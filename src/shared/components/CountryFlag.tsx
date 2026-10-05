@@ -17,17 +17,17 @@ const FLAG_END_CLASS = 'end-3';
 // ──────────────────────────────────────────────────────────────
 
 const FLAG_SRC: Record<MarketCode, string> = {
-  JO: '/jo.jpg',
-  SA: '/sa.jpg',
-  LB: '/lb.jpg',
-  PS: '/ps.jpg',
-  SY: '/sy.jpg',
+  JO: '/flags/jo.jpg',
+  SA: '/flags/sa.jpg',
+  LB: '/flags/lb.jpg',
+  PS: '/flags/ps.jpg',
+  SY: '/flags/sy.jpg',
 };
 
 /**
  * Country flag indicator.
- * Renders a plain circular crop of the JPG with no ring/glow so it
- * visually melts into the navy header background.
+ * Renders a circular crop of a JPEG flag with a navy background that
+ * matches the header — the flag visually melts into the header.
  *
  * To resize → change FLAG_SIZE_PX.
  * To move → change FLAG_END_CLASS.
