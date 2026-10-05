@@ -26,8 +26,8 @@ export const PublishSuccessScreen: React.FC = () => {
       dir={isArabic ? 'rtl' : 'ltr'}
     >
       <div className="flex flex-col items-center max-w-sm w-full mx-auto">
-        <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mb-6 animate-[scale-in_400ms_cubic-bezier(0.16,1,0.3,1)]">
-          <TickCircle size={44} variant="Bold" color="#10B981" />
+        <div className="w-20 h-20 rounded-full bg-success/15 text-success flex items-center justify-center mb-6 animate-[scale-in_400ms_cubic-bezier(0.16,1,0.3,1)]">
+          <TickCircle size={44} variant="Bold" color="currentColor" />
         </div>
 
         <h1 className="text-2xl font-bold text-ink mb-2 animate-[fade-in_300ms_ease-out]">

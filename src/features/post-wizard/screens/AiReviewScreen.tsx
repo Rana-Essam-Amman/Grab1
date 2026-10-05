@@ -86,7 +86,7 @@ export const AiReviewScreen: React.FC = () => {
       </button>
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-24px)] max-w-[440px] z-30 flex flex-col gap-2 pointer-events-none">
         {error && (
-          <div className="rounded-xl border border-danger/30 bg-danger/5 px-3 py-2 text-xs text-danger shadow-md pointer-events-auto backdrop-blur-sm bg-white/90">{error}</div>
+          <div className="rounded-xl border border-danger/30 bg-danger/5 px-3 py-2 text-xs text-danger shadow-md pointer-events-auto backdrop-blur-sm">{error}</div>
         )}
         <button
           type="button"

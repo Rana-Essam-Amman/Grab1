@@ -41,12 +41,12 @@ export const AiReviewCityDrawer: React.FC<AiReviewCityDrawerProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="w-10 h-10 rounded-full bg-[#1a2238] text-white flex items-center justify-center shadow-md active:scale-95"
+            className="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center shadow-md active:scale-95"
           >
             <CloseCircle size={18} variant="Bold" color="#FFFFFF" />
           </button>
         </div>
-        <h2 className="text-lg font-bold text-[#0F172A] px-1">
+        <h2 className="text-lg font-bold text-ink px-1">
           {isArabic ? 'اختر المدينة' : 'Select city'}
         </h2>
         <CountrySheetCities

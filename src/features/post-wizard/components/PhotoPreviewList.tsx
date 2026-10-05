@@ -39,7 +39,7 @@ export const PhotoPreviewList: React.FC<Props> = ({ photos, isArabic, onRemove, 
             <Trash size={13} variant="Linear" color="#FFFFFF" />
           </button>
           {idx === 0 && (
-            <div className="absolute bottom-1 start-1 bg-[#E57E25] text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md shadow-sm">
+            <div className="absolute bottom-1 start-1 bg-accent text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md shadow-sm">
               {isArabic ? 'الرئيسية' : 'Cover'}
             </div>
           )}
