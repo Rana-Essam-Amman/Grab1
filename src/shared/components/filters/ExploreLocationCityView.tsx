@@ -29,8 +29,8 @@ export const ExploreLocationCityView: React.FC<ExploreLocationCityViewProps> = (
             onClick={() => handleCityTap(cityName)}
             className={`h-14 rounded-full flex items-center justify-between px-4 gap-2 transition-all active:scale-[0.98] ${
               isSelected
-                ? 'bg-[#1a2238] text-white font-bold'
-                : 'bg-[#DDE3EC] text-[#0F172A] font-bold'
+                ? 'bg-brand text-white font-bold'
+                : 'bg-surface-sunken text-ink font-bold'
             }`}
           >
             <span className="text-sm truncate flex-1 text-start">{cityName}</span>
@@ -38,14 +38,14 @@ export const ExploreLocationCityView: React.FC<ExploreLocationCityViewProps> = (
               {hasNeighs && (
                 <div 
                   onClick={(e) => { e.stopPropagation(); setSelectedCityForNeighs(cityName); }}
-                  className={`w-6 h-6 flex items-center justify-center rounded-full hover:bg-black/5 cursor-pointer ${isSelected ? 'text-[#E57E25]' : 'text-[#64748B]'}`}
+                  className={`w-6 h-6 flex items-center justify-center rounded-full hover:bg-black/5 cursor-pointer ${isSelected ? 'text-accent' : 'text-ink-muted'}`}
                   title={isArabic ? 'الأحياء' : 'Neighborhoods'}
                 >
                   <span className="text-sm">›</span>
                 </div>
               )}
               {isSelected ? (
-                <TickCircle size={16} variant="Bold" color="#E57E25" className="shrink-0" />
+                <TickCircle size={16} variant="Bold" color="currentColor" className="text-accent shrink-0" />
               ) : (
                 <Icon icon="noto:round-pushpin" width={14} height={14} className="shrink-0" />
               )}

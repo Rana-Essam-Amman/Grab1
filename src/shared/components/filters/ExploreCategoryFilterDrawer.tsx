@@ -28,9 +28,9 @@ export const ExploreCategoryFilterDrawer: React.FC<ExploreCategoryFilterDrawerPr
           <button
             onClick={onClose}
             aria-label="Close"
-            className="w-10 h-10 rounded-full bg-[#1a2238] text-white flex items-center justify-center shadow-md active:scale-95"
+            className="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center shadow-md active:scale-95"
           >
-            <CloseCircle size={18} variant="Bold" color="#FFFFFF" />
+            <CloseCircle size={18} variant="Bold" color="currentColor" />
           </button>
         </div>
 
@@ -42,16 +42,16 @@ export const ExploreCategoryFilterDrawer: React.FC<ExploreCategoryFilterDrawerPr
             onClick={() => handleSelect(null)}
             className={`w-full h-14 rounded-full flex items-center justify-between px-4 font-bold transition-all active:scale-[0.98] ${
               !activeCategory 
-                ? 'bg-[#1a2238] text-white' 
-                : 'bg-[#DDE3EC] text-[#0F172A]'
+                ? 'bg-brand text-white' 
+                : 'bg-surface-sunken text-ink'
             }`}
           >
             <div className="flex items-center gap-2">
               <span className="text-sm">{isArabic ? 'جميع الأقسام' : 'All Categories'}</span>
             </div>
             {!activeCategory && (
-              <span className="w-6 h-6 rounded-full bg-[#E57E25] flex items-center justify-center">
-                <TickCircle size={14} variant="Bold" color="#FFFFFF" />
+              <span className="w-6 h-6 rounded-full bg-accent flex items-center justify-center">
+                <TickCircle size={14} variant="Bold" color="currentColor" className="text-white" />
               </span>
             )}
           </button>
@@ -67,13 +67,13 @@ export const ExploreCategoryFilterDrawer: React.FC<ExploreCategoryFilterDrawerPr
                   onClick={() => handleSelect(cat.slug)}
                   className={`h-16 rounded-full flex items-center justify-between px-4 gap-2 transition-all active:scale-[0.98] ${
                     isSelected 
-                      ? 'bg-[#1a2238] text-white font-bold' 
-                      : 'bg-[#DDE3EC] text-[#0F172A] font-bold'
+                      ? 'bg-brand text-white font-bold' 
+                      : 'bg-surface-sunken text-ink font-bold'
                   }`}
                 >
                   <span className="text-sm truncate flex-1 text-start">{isArabic ? cat.nameAr : cat.nameEn}</span>
                   {isSelected ? (
-                    <TickCircle size={16} variant="Bold" color="#E57E25" className="shrink-0" />
+                    <TickCircle size={16} variant="Bold" color="currentColor" className="text-accent shrink-0" />
                   ) : (
                     <img
                       src={cat.asset}

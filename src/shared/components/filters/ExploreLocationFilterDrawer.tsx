@@ -76,9 +76,9 @@ export const ExploreLocationFilterDrawer: React.FC<ExploreLocationFilterDrawerPr
           <button
             onClick={onClose}
             aria-label="Close"
-            className="w-10 h-10 rounded-full bg-[#1a2238] text-white flex items-center justify-center shadow-md active:scale-95"
+            className="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center shadow-md active:scale-95"
           >
-            <CloseCircle size={18} variant="Bold" color="#FFFFFF" />
+            <CloseCircle size={18} variant="Bold" color="currentColor" />
           </button>
         </div>
 

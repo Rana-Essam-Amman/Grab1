@@ -59,9 +59,9 @@ export const ExplorePriceFilterDrawer: React.FC<ExplorePriceFilterDrawerProps> =
           <button
             onClick={onClose}
             aria-label="Close"
-            className="w-10 h-10 rounded-full bg-[#1a2238] text-white flex items-center justify-center shadow-md active:scale-95"
+            className="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center shadow-md active:scale-95"
           >
-            <CloseCircle size={18} variant="Bold" color="#FFFFFF" />
+            <CloseCircle size={18} variant="Bold" color="currentColor" />
           </button>
         </div>
 
@@ -89,14 +89,14 @@ export const ExplorePriceFilterDrawer: React.FC<ExplorePriceFilterDrawerProps> =
             <button 
               type="button" 
               onClick={handleApply} 
-              className="w-full h-14 rounded-full bg-[#1a2238] text-white font-bold active:scale-[0.98] transition-all"
+              className="w-full h-14 rounded-full bg-brand text-white font-bold active:scale-[0.98] transition-all"
             >
               {isArabic ? 'تطبيق' : 'Apply'}
             </button>
             <button 
               type="button" 
               onClick={handleClear} 
-              className="w-full h-12 rounded-full bg-[#DDE3EC] text-[#0F172A] font-bold active:scale-[0.98] transition-all"
+              className="w-full h-12 rounded-full bg-surface-sunken text-ink font-bold active:scale-[0.98] transition-all"
             >
               {isArabic ? 'مسح الفلتر' : 'Clear Filter'}
             </button>

@@ -21,7 +21,7 @@ export const ExplorePriceQuickPresets: React.FC<ExplorePriceQuickPresetsProps> =
 
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-xs font-bold text-[#64748B]">{isArabic ? 'خيارات شائعة للسعر' : 'Popular Price Ranges'}</span>
+      <span className="text-xs font-bold text-ink-muted">{isArabic ? 'خيارات شائعة للسعر' : 'Popular Price Ranges'}</span>
       <div className="grid grid-cols-2 gap-2">
         {rangePresets.map((preset, idx) => {
           const pMin = minInput.trim() ? parseFloat(minInput) : null;
@@ -34,12 +34,12 @@ export const ExplorePriceQuickPresets: React.FC<ExplorePriceQuickPresetsProps> =
               onClick={() => { setMinInput(preset.min?.toString() ?? ''); setMaxInput(preset.max?.toString() ?? ''); }} 
               className={`h-10 px-4 rounded-full text-sm font-bold flex items-center justify-between transition-all active:scale-[0.98] ${
                 isSelected 
-                  ? 'bg-[#1a2238] text-white' 
-                  : 'bg-[#DDE3EC] text-[#0F172A]'
+                  ? 'bg-brand text-white' 
+                  : 'bg-surface-sunken text-ink'
               }`}
             >
               <span className="truncate">{preset.label}</span>
-              {isSelected && <TickCircle size={14} variant="Bold" color="#E57E25" className="shrink-0" />}
+              {isSelected && <TickCircle size={14} variant="Bold" color="currentColor" className="text-accent shrink-0" />}
             </button>
           );
         })}

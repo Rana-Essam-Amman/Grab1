@@ -23,7 +23,7 @@ export const ExploreActiveCategoryBanner: React.FC<ExploreActiveCategoryBannerPr
       </div>
       <button type="button" onClick={onClearCategory} className="text-xs font-bold text-ink-soft hover:text-danger flex items-center gap-1 cursor-pointer">
         <span>{isArabic ? 'إلغاء التصفية' : 'Clear filter'}</span>
-        <Add size={14} variant="Linear" color="#64748B" className="rotate-45" />
+        <Add size={14} variant="Linear" color="currentColor" className="text-ink-muted rotate-45" />
       </button>
     </div>
   );
