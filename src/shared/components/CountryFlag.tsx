@@ -21,13 +21,13 @@ const FLAG_SRC: Record<MarketCode, string> = {
  * elements (FOX wordmark, avatar, menu).
  *
  * To adjust horizontal position, change ONE token: `end-N`.
- *   end-4  → 16px from the LEFT edge (RTL)   [current]
+ *   end-8  → 32px from the LEFT edge (RTL)   [current]
+ *   end-10 → 40px from the LEFT edge
  *   end-6  → 24px from the LEFT edge
- *   end-2  → 8px from the LEFT edge
  *
  * Flag visual:
  *   - JPG from public/ root (compressed later)
- *   - 40px circular crop with subtle ring + soft glow
+ *   - 56px circular crop with subtle ring + soft glow
  */
 export const CountryFlag: React.FC<Props> = ({ code }) => {
   return (
@@ -35,7 +35,7 @@ export const CountryFlag: React.FC<Props> = ({ code }) => {
       className="absolute top-1/2 -translate-y-1/2 end-8 z-10 pointer-events-none"
       aria-hidden="true"
     >
-      <div className="w-12 h-12 rounded-full overflow-hidden ring-1 ring-white/20 shadow-[0_0_14px_rgba(255,255,255,0.15)] bg-white/5">
+      <div className="w-14 h-14 rounded-full overflow-hidden ring-1 ring-white/25 shadow-[0_0_18px_rgba(255,255,255,0.20)] bg-white/5">
         <img
           src={FLAG_SRC[code]}
           alt=""
