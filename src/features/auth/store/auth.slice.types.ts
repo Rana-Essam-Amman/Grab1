@@ -6,6 +6,7 @@ export interface AuthState {
   profileHydrated: boolean;
   user: UserProfile | null;
   sessionToken: string | null;
+  feedLayout: 'list' | 'grid';
   registrationPendingUser: Partial<UserProfile> | null;
   registeredUsers: RegisteredAccount[];
 
@@ -19,4 +20,5 @@ export interface AuthState {
   updateUser: (updates: Partial<UserProfile>) => void;
   setUser: (user: UserProfile) => void;
   updateAvatar: (dataUrl: string | null) => void;
+  setFeedLayout: (layout: 'list' | 'grid') => void;
 }

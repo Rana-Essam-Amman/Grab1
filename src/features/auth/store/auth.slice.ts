@@ -18,6 +18,7 @@ export const useAuthStore = create<AuthState>()(
         profileHydrated: false,
         user: initialSession.user,
         sessionToken: initialSession.sessionToken,
+        feedLayout: 'list',
         registrationPendingUser: null,
         registeredUsers: initialUsers,
 
@@ -68,6 +69,7 @@ export const useAuthStore = create<AuthState>()(
       partialize: (state) => ({
         user: state.user,
         sessionToken: state.sessionToken,
+        feedLayout: state.feedLayout,
         authStatus: state.authStatus,
         registeredUsers: state.registeredUsers,
       }),
@@ -99,6 +101,11 @@ export async function hydrateProfile(): Promise<void> {
 
     if (Object.keys(patch).length > 0) {
       useAuthStore.getState().updateUser(patch);
+    }
+
+    // Feed layout preference (Supabase = source of truth)
+    if (profile.feed_layout === 'list' || profile.feed_layout === 'grid') {
+      useAuthStore.setState({ feedLayout: profile.feed_layout });
     }
   } catch {
     // network failure must not block sign-in

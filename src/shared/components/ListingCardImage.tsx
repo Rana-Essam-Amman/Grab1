@@ -15,7 +15,7 @@ export interface ListingCardImageProps {
 export const ListingCardImage: React.FC<ListingCardImageProps> = ({
   imageUrl, title, isPremium, listingId, isArabic, onImageError,
 }) => (
-  <div className="w-full aspect-[4/3] bg-background relative overflow-hidden">
+  <div className="w-full aspect-square bg-background relative overflow-hidden">
     <img
       src={imageUrl}
       alt={title}
