@@ -10,7 +10,7 @@ interface Props {
 
 export const PhotoUploader: React.FC<Props> = ({ photoCount, isArabic, onFiles }) => {
   return photoCount < listingMaxPhotos ? (
-    <label className="aspect-square rounded-2xl border-2 border-dashed border-line hover:border-[#E57E25]/60 bg-canvas flex flex-col items-center justify-center gap-1 cursor-pointer transition-colors">
+    <label className="aspect-square rounded-2xl border-2 border-dashed border-line hover:border-accent/60 bg-canvas flex flex-col items-center justify-center gap-1 cursor-pointer transition-colors">
       <input
         type="file"
         accept="image/*"
