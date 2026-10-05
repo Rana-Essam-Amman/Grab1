@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Global, Heart, Notification, Location, MessageQuestion, Setting2 } from 'iconsax-react';
+import { User, Global, Heart, Notification, MessageQuestion, Setting2 } from 'iconsax-react';
 
 interface HeaderDropdownMenuProps {
   isArabic: boolean;
@@ -19,10 +19,14 @@ interface HeaderDropdownMenuProps {
 }
 
 export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
-  isArabic, browseCountry, displayCityAr, displayCityEn,
-  handleMenuClose, handleProfileNav, handleSettingsNav, handleLanguageToggle,
-  handleWishlistNav, wishlistLength, handleNotificationsNav,
-  setIsCountrySheetOpen,
+  isArabic,
+  handleMenuClose,
+  handleProfileNav,
+  handleSettingsNav,
+  handleLanguageToggle,
+  handleWishlistNav,
+  wishlistLength,
+  handleNotificationsNav,
 }) => {
   return (
     <>
@@ -35,32 +39,6 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
       {/* Dropdown panel */}
       <div className="absolute top-full start-0 w-72 mt-1 z-[100] bg-surface rounded-2xl border border-border shadow-2xl overflow-hidden">
         <div className="divide-y divide-border bg-surface flex flex-col">
-          <button
-            onClick={() => {
-              handleMenuClose();
-              setIsCountrySheetOpen(true);
-            }}
-            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-canvas/40 active:bg-canvas/60"
-          >
-            <span className="text-sm font-bold text-ink">
-              {isArabic ? `الدولة: ${browseCountry.nameAr}` : `Country: ${browseCountry.nameEn}`}
-            </span>
-            <Global variant="Bold" size={22} color="#3B82F6" className="shrink-0" />
-          </button>
-
-          <button
-            onClick={() => {
-              handleMenuClose();
-              setIsCountrySheetOpen(true);
-            }}
-            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-canvas/40 active:bg-canvas/60"
-          >
-            <span className="text-sm font-bold text-ink">
-              {isArabic ? displayCityAr : displayCityEn}
-            </span>
-            <Location variant="Bold" size={22} color="#E57E25" className="shrink-0" />
-          </button>
-
           <button
             onClick={() => {
               handleProfileNav();
