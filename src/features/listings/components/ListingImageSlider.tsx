@@ -32,7 +32,7 @@ export const ListingImageSlider: React.FC<ListingImageSliderProps> = React.memo(
   return (
     <>
     <div
-      className="relative w-full aspect-[4/3] bg-ink overflow-hidden select-none touch-pan-y"
+      className="relative w-full aspect-[4/3] bg-background overflow-hidden select-none touch-pan-y"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
@@ -41,7 +41,7 @@ export const ListingImageSlider: React.FC<ListingImageSliderProps> = React.memo(
         alt="Listing image"
         draggable={false}
         onClick={() => setIsLightboxOpen(true)}
-        className="w-full h-full object-cover transition-all duration-300 cursor-zoom-in"
+        className="w-full h-full object-contain transition-all duration-300 cursor-zoom-in"
         onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_SRC; }}
       />
 
