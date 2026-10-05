@@ -17,7 +17,7 @@ export const SELECTORS = {
       passwordInput: 'input[type="password"]',
       countrySelector: 'select',
       submitButton: 'button[type="submit"]',
-      errorBanner: 'div.bg-red-50',
+      errorBanner: '[data-testid="register-error-banner"]',
       step2Header: 'h2:has-text("Check your Email"), h2:has-text("تحقق من بريدك")',
       activateBtn: 'button:has-text("Verify Link & Activate Account"), button:has-text("تأكيد الرابط وتفعيل الحساب الآن")',
     },

@@ -27,7 +27,7 @@ export const AuthTopBar: React.FC<AuthTopBarProps> = ({
   };
 
   return (
-    <div className="px-4 py-4 bg-[#1a2238] border-b border-white/10 flex items-center justify-between sticky top-0 z-20">
+    <div className="px-4 py-4 bg-brand border-b border-white/10 flex items-center justify-between sticky top-0 z-20">
       <div className="flex items-center gap-3">
         <Button
           variant="ghost"
@@ -36,7 +36,7 @@ export const AuthTopBar: React.FC<AuthTopBarProps> = ({
           aria-label="Back"
           className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center p-0 cursor-pointer"
         >
-          <BackIcon size={18} variant="Linear" color="#FFFFFF" />
+          <BackIcon size={18} variant="Linear" color="currentColor" className="text-white" />
         </Button>
         <h1 className="text-base font-bold text-white">{getTitle()}</h1>
       </div>

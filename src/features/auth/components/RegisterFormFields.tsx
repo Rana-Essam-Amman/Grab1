@@ -39,8 +39,8 @@ export const RegisterFormFields: React.FC<RegisterFormFieldsProps> = ({
         <Input label={isArabic ? 'تأكيد كلمة المرور *' : 'Confirm Password *'} type={showConfirmPassword ? 'text' : 'password'} value={confirmPassword} onChange={onConfirmPasswordChange} placeholder="••••••••" icon={<Lock1 size={16} variant="Linear" color="#E57E25" />} rightIcon={<button type="button" onClick={onToggleShowConfirmPassword} className="text-ink-muted hover:text-ink cursor-pointer focus:outline-none">{showConfirmPassword ? <EyeSlash size={16} variant="Linear" color="#94A3B8" /> : <Eye size={16} variant="Linear" color="#94A3B8" />}</button>} size="lg" className="text-sm md:text-base" required />
       </div>
       {error && (
-        <div className="p-3 rounded-lg bg-red-50 text-xs font-bold text-red-500 border border-red-100 flex items-start gap-2">
-          <InfoCircle size={14} variant="Linear" color="#EF4444" className="shrink-0 mt-0.5" />
+        <div data-testid="register-error-banner" className="p-3 rounded-lg bg-danger/10 text-xs font-bold text-danger border border-danger/20 flex items-start gap-2">
+          <InfoCircle size={14} variant="Linear" color="currentColor" className="shrink-0 mt-0.5" />
           <span>{error}</span>
         </div>
       )}

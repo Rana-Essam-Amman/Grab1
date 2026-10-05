@@ -18,7 +18,7 @@ export const LoginHeader: React.FC<LoginHeaderProps> = ({ isArabic, error }) => 
       </div>
       
       {error && (
-        <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold">
+        <div className="p-3.5 rounded-xl bg-danger/10 border border-danger/30 text-danger text-xs font-semibold">
           {error}
         </div>
       )}

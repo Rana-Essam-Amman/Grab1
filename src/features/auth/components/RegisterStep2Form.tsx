@@ -57,18 +57,18 @@ export const RegisterStep2Form: React.FC<RegisterStep2FormProps> = (props) => {
         <Badge
           variant="success"
           size="md"
-          icon={<TickCircle size={14} variant="Bold" color="#10B981" />}
-          className="bg-green-50 text-green-700 border border-green-100 mx-auto font-bold py-1.5 px-3 rounded-lg"
+          icon={<TickCircle size={14} variant="Bold" color="currentColor" />}
+          className="bg-success/10 text-success border border-success/20 mx-auto font-bold py-1.5 px-3 rounded-lg"
         >
           {isArabic ? 'تم إرسال رابط التفعيل بنجاح' : 'Activation link sent successfully'}
         </Badge>
         
         {secureToken && (
-          <div className="bg-amber-50 text-amber-800 border border-amber-200 p-3.5 rounded-xl text-xs font-bold text-center mt-2 max-w-[320px] mx-auto">
-            <span className="block text-[10px] text-amber-600 uppercase tracking-wider mb-1">
+          <div className="bg-warning/15 text-ink border border-warning/40 p-3.5 rounded-xl text-xs font-bold text-center mt-2 max-w-[320px] mx-auto">
+            <span className="block text-[10px] text-ink-muted uppercase tracking-wider mb-1">
               {isArabic ? '🔑 رمز التفعيل التجريبي (Demo Token)' : '🔑 Demo Verification Token'}
             </span>
-            <span className="text-base font-mono font-extrabold select-all tracking-widest bg-white/70 px-3 py-1 rounded-lg border border-amber-100 shadow-sm block w-fit mx-auto mt-1">
+            <span className="text-base font-mono font-extrabold select-all tracking-widest bg-surface px-3 py-1 rounded-lg border border-warning/20 shadow-sm block w-fit mx-auto mt-1">
               {secureToken}
             </span>
             <span className="block text-[10px] opacity-85 font-normal mt-1.5">

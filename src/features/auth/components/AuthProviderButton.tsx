@@ -32,7 +32,7 @@ export const AuthProviderButton: React.FC<AuthProviderButtonProps> = ({
     <button
       type="button"
       onClick={() => onTap(provider.id)}
-      className="w-full h-12 rounded-2xl bg-white border border-[#E2E8F0] hover:border-[#1a2238] active:scale-[0.99] transition flex items-center justify-center gap-2.5 text-[15px] font-medium text-[#0F172A] cursor-pointer"
+      className="w-full h-12 rounded-2xl bg-surface border border-border hover:border-brand active:scale-[0.99] transition flex items-center justify-center gap-2.5 text-[15px] font-medium text-ink cursor-pointer"
     >
       {renderIcon(provider.id)}
       <span>{label}</span>
