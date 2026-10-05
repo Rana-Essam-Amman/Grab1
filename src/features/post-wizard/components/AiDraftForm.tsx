@@ -33,7 +33,7 @@ export const AiDraftForm: React.FC<Props> = ({
     <div className="flex flex-col gap-4">
       <div className={`relative bg-surface rounded-3xl p-4 border transition-all duration-300 shadow-sm ${isListening ? 'border-primary ring-4 ring-primary/15 shadow-md' : 'border-border'}`}>
         {isListening && (
-          <div className="flex items-center gap-2 mb-2 px-3 py-1 rounded-full bg-amber-50 text-primary text-xs font-bold border border-amber-200 animate-pulse w-max">
+          <div className="flex items-center gap-2 mb-2 px-3 py-1 rounded-full bg-warning/15 text-primary text-xs font-bold border border-warning/40 animate-pulse w-max">
             <span className="w-2 h-2 rounded-full bg-primary animate-ping" />
             <span>{isArabic ? 'جاري الاستماع والمعالجة...' : 'Listening & Processing...'}</span>
           </div>

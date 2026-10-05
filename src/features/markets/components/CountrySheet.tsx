@@ -69,14 +69,14 @@ export const CountrySheet: React.FC = () => {
           <button
             onClick={() => setIsCountrySheetOpen(false)}
             aria-label="Close"
-            className="w-10 h-10 rounded-full bg-[#1a2238] text-white flex items-center justify-center shadow-md active:scale-95"
+            className="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center shadow-md active:scale-95"
           >
             <CloseCircle size={18} variant="Bold" color="#FFFFFF" />
           </button>
         </div>
 
         {isAuthenticated && (
-          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#DC2626]/5 text-[#DC2626] rounded-xl text-[10px] font-bold self-start border border-[#DC2626]/10">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-danger/10 text-danger rounded-xl text-[10px] font-bold self-start border border-danger/20">
             <Lock1 size={12} variant="Linear" />
             <span>{isArabic ? 'تم قفل المتجر على دولتك المسجلة' : 'Store locked to your country'}</span>
           </div>

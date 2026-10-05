@@ -21,7 +21,7 @@ export const EmptyState = forwardRef<HTMLDivElement, EmptyStateProps>(
         {...props}
       >
         <div className="mb-4 text-ink-muted flex items-center justify-center">
-          {icon ? icon : <DirectInbox variant="Linear" size={48} color="#94A3B8" />}
+          {icon ? icon : <DirectInbox variant="Linear" size={48} color="currentColor" className="text-ink-muted" />}
         </div>
         <h3 className="text-base font-bold text-ink leading-snug">
           {title}
@@ -60,7 +60,7 @@ export const EmptyStateNoResults = forwardRef<
     return (
       <EmptyState
         ref={ref}
-        icon={icon || <GlobalSearch variant="Linear" size={48} color="#94A3B8" />}
+        icon={icon || <GlobalSearch variant="Linear" size={48} color="currentColor" className="text-ink-muted" />}
         title={title}
         description={description}
         {...props}

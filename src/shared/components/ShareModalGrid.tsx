@@ -25,7 +25,7 @@ export const ShareModalGrid: React.FC<ShareModalGridProps> = ({
             >
               {item.icon}
             </div>
-            <span className="text-xs font-bold text-[#0F172A] group-hover:text-[#E57E25] transition-colors truncate max-w-full">
+            <span className="text-xs font-bold text-ink group-hover:text-accent transition-colors truncate max-w-full">
               {item.name}
             </span>
           </button>
@@ -33,7 +33,7 @@ export const ShareModalGrid: React.FC<ShareModalGridProps> = ({
       </div>
 
       {toastMessage && (
-        <div className="mt-3 p-3 bg-[#1a2238] text-white rounded-2xl flex items-center justify-center gap-2 text-sm font-bold shadow-lg">
+        <div className="mt-3 p-3 bg-brand text-white rounded-2xl flex items-center justify-center gap-2 text-sm font-bold shadow-lg">
           <Magicpen variant="Bold" size={16} color="#E57E25" />
           <span>{toastMessage}</span>
         </div>

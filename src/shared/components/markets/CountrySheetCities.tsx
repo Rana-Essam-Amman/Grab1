@@ -37,15 +37,15 @@ export const CountrySheetCities: React.FC<CountrySheetCitiesProps> = ({
             onClick={() => handleCitySelect(idx)}
             className={`h-14 rounded-full flex items-center justify-between px-4 gap-2 transition-all active:scale-[0.98] ${
               isCurrent
-                ? 'bg-[#1a2238] text-white font-bold'
-                : 'bg-[#DDE3EC] text-[#0F172A] font-bold'
+                ? 'bg-brand text-white font-bold'
+                : 'bg-surface-sunken text-ink font-bold'
             }`}
           >
             <span className="text-sm truncate flex-1 text-start">
               {isArabic ? cityAr : cityEn}
             </span>
             {isCurrent ? (
-              <TickCircle size={16} variant="Bold" color="#E57E25" className="shrink-0" />
+              <TickCircle size={16} variant="Bold" color="currentColor" className="text-accent shrink-0" />
             ) : (
               <Icon icon="noto:round-pushpin" width={14} height={14} className="shrink-0" />
             )}
