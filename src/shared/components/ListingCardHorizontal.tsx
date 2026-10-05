@@ -34,7 +34,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
       className={`${premiumClasses} rounded-2xl p-3 border flex gap-3 cursor-pointer hover:border-primary/60 transition-all shadow-xs`}
       dir={isArabic ? 'rtl' : 'ltr'}
     >
-      <div className="w-24 h-24 rounded-xl overflow-hidden bg-background relative shrink-0">
+      <div className="w-24 self-stretch rounded-xl overflow-hidden bg-background relative shrink-0">
         <img
           src={listing.imageUrl}
           alt={listing.title}
@@ -55,7 +55,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
       </div>
       <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
         <div>
-          <div className="text-[15px] font-bold text-ink truncate" dir="auto">{listing.title}</div>
+          <div className="text-[15px] font-bold text-ink line-clamp-2" dir="auto">{listing.title}</div>
           <div className="flex items-center gap-1 text-xs text-ink-soft font-medium mt-1 mb-2">
             <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
             <span className="truncate" dir="auto">{locationText}</span>
