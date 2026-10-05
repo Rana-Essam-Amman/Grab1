@@ -46,7 +46,7 @@ export const SearchResultsScreen: React.FC = () => {
       {/* Search Header (Sticky) */}
       <div className="p-4 pb-2.5 bg-brand border-b border-white/10 flex flex-col gap-2 sticky top-0 z-30">
         <div className="flex items-center gap-3">
-          <button onClick={handleBack} aria-label="Back" className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center shrink-0 cursor-pointer">
+          <button onClick={handleBack} aria-label="Back" className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 flex items-center justify-center shrink-0 cursor-pointer">
             <BackIcon size={18} variant="Linear" color="#FFFFFF" />
           </button>
 

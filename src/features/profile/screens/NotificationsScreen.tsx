@@ -64,7 +64,7 @@ export const NotificationsScreen: React.FC = () => {
     <div className="flex flex-col min-h-screen bg-surface pb-12" dir={isArabic ? 'rtl' : 'ltr'}>
       {/* Top Header */}
       <div className="px-4 py-3 bg-brand border-b border-white/10 flex items-center justify-between sticky top-0 z-20">
-        <Button variant="ghost" size="icon" onClick={goBack} aria-label="Back" className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center p-0">
+        <Button variant="ghost" size="icon" onClick={goBack} aria-label="Back" className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 flex items-center justify-center p-0">
           {isArabic ? <ArrowRight size={18} variant="Linear" color="#FFFFFF" /> : <ArrowLeft size={18} variant="Linear" color="#FFFFFF" />}
         </Button>
         <h1 className="text-base font-bold text-white">{isArabic ? 'الإشعارات والتنبيهات' : 'Notifications'}</h1>

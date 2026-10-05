@@ -40,7 +40,7 @@ export const AiReviewPhotoHero: React.FC<AiReviewPhotoHeroProps> = ({
             <button
               type="button"
               onClick={onAddPhotos}
-              className="flex items-center gap-1.5 rounded-full bg-white/95 backdrop-blur px-3 py-1.5 shadow-sm hover:bg-white transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 rounded-full bg-surface/95 backdrop-blur px-3 py-1.5 shadow-sm hover:bg-surface transition-colors cursor-pointer"
             >
               <Add size={12} variant="Bold" color="#1a2238" />
               <span className="text-[11px] font-bold text-ink">
@@ -50,7 +50,7 @@ export const AiReviewPhotoHero: React.FC<AiReviewPhotoHeroProps> = ({
             <button
               type="button"
               onClick={() => onRemovePhoto(activeIdx)}
-              className="w-8 h-8 rounded-full bg-white/95 backdrop-blur flex items-center justify-center shadow-sm hover:bg-white transition-colors cursor-pointer"
+              className="w-8 h-8 rounded-full bg-surface/95 backdrop-blur flex items-center justify-center shadow-sm hover:bg-surface transition-colors cursor-pointer"
               aria-label="Remove photo"
             >
               <Trash size={14} variant="Bold" color="#EF4444" />
@@ -67,7 +67,7 @@ export const AiReviewPhotoHero: React.FC<AiReviewPhotoHeroProps> = ({
               type="button"
               onClick={() => setActiveIdx(i)}
               className={`h-1.5 rounded-full transition-all duration-300 ${
-                i === activeIdx ? 'w-5 bg-white' : 'w-1.5 bg-white/50'
+                i === activeIdx ? 'w-5 bg-surface' : 'w-1.5 bg-surface/50'
               }`}
               aria-label={`Photo ${i + 1}`}
             />

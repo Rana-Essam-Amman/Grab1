@@ -25,7 +25,7 @@ export const SettingsLegalSection: React.FC<SettingsLegalSectionProps> = ({
 
       <div onClick={onTerms} className={rowClass}>
         <div className="flex items-center gap-3">
-          <DocumentText size={18} variant="Linear" color="#E57E25" className="text-primary" />
+          <DocumentText size={18} variant="Linear" color="currentColor" className="text-primary" />
           <div className="text-sm font-semibold text-ink">
             {isArabic ? 'شروط الخدمة وسياسة الخصوصية' : 'Terms of Service & Privacy Policy'}
           </div>
@@ -45,7 +45,7 @@ export const SettingsLegalSection: React.FC<SettingsLegalSectionProps> = ({
 
       <div onClick={onSupport} className={rowClass}>
         <div className="flex items-center gap-3">
-          <Call size={18} variant="Linear" color="#E57E25" className="text-primary" />
+          <Call size={18} variant="Linear" color="currentColor" className="text-primary" />
           <div className="text-sm font-semibold text-ink">
             {isArabic ? 'الدعم والمساعدة' : 'Support'}
           </div>
@@ -55,7 +55,7 @@ export const SettingsLegalSection: React.FC<SettingsLegalSectionProps> = ({
 
       <div onClick={onPrivacy} className={rowClass}>
         <div className="flex items-center gap-3">
-          <DocumentText size={18} variant="Linear" color="#E57E25" className="text-primary" />
+          <DocumentText size={18} variant="Linear" color="currentColor" className="text-primary" />
           <div className="text-sm font-semibold text-ink">
             {isArabic ? 'سياسة الخصوصية' : 'Privacy Policy'}
           </div>
@@ -65,7 +65,7 @@ export const SettingsLegalSection: React.FC<SettingsLegalSectionProps> = ({
 
       <div onClick={onAbout} className={rowClass}>
         <div className="flex items-center gap-3">
-          <InfoCircle size={18} variant="Linear" color="#E57E25" className="text-primary" />
+          <InfoCircle size={18} variant="Linear" color="currentColor" className="text-primary" />
           <div className="text-sm font-semibold text-ink">
             {isArabic ? 'حول التطبيق' : 'About'}
           </div>

@@ -39,7 +39,7 @@ export const ListingLocationCard: React.FC<ListingLocationCardProps> = React.mem
       />
     </div>
     <div className="text-[11px] text-ink-muted font-medium flex items-center gap-1">
-      <Location size={12} variant="Linear" color="#DC2626" className="text-danger" />
+      <Location size={12} variant="Linear" color="currentColor" className="text-danger" />
       <span dir="auto">{locationText}</span>
     </div>
   </Card>

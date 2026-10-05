@@ -25,7 +25,7 @@ export const TrustSignal: React.FC<TrustSignalProps> = ({
       </span>
       <span className="text-line-strong">·</span>
       <span className="flex items-center gap-1">
-        <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" />
+        <span className="w-1.5 h-1.5 rounded-full bg-success" />
         <span>
           {isArabic
             ? `${countDisplay} إعلان نشط اليوم`

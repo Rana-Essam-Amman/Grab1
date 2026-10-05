@@ -34,7 +34,7 @@ export const AuthTopBar: React.FC<AuthTopBarProps> = ({
           size="icon"
           onClick={onBack}
           aria-label="Back"
-          className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center p-0 cursor-pointer"
+          className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 flex items-center justify-center p-0 cursor-pointer"
         >
           <BackIcon size={18} variant="Linear" color="currentColor" className="text-white" />
         </Button>

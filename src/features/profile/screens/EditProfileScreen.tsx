@@ -40,7 +40,7 @@ export const EditProfileScreen: React.FC = () => {
     <div className="flex flex-col min-h-screen bg-background pb-16 font-cairo relative" dir={isArabic ? 'rtl' : 'ltr'}>
       {/* Top Bar */}
       <div className="px-4 py-4 bg-brand border-b border-white/10 flex items-center gap-3 sticky top-0 z-20">
-        <button onClick={goBack} aria-label="Back" className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center cursor-pointer">
+        <button onClick={goBack} aria-label="Back" className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 flex items-center justify-center cursor-pointer">
           <BackIcon size={18} variant="Linear" color="#FFFFFF" />
         </button>
         <h1 className="text-lg font-bold text-white">{isArabic ? 'تعديل الملف الشخصي' : 'Edit Profile'}</h1>

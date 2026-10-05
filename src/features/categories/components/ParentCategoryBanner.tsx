@@ -45,10 +45,10 @@ export const ParentCategoryBanner: React.FC<ParentCategoryBannerProps> = ({
       <button
         type="button"
         onClick={handleSelectAllParentCategory}
-        className="w-full bg-ink text-white rounded-2xl p-4 flex items-center justify-between hover:bg-neutral-900 active:scale-[0.99] transition-all shadow-sm group cursor-pointer"
+        className="w-full bg-ink text-white rounded-2xl p-4 flex items-center justify-between hover:bg-brand-strong active:scale-[0.99] transition-all shadow-sm group cursor-pointer"
       >
         <div className="flex items-center gap-2.5">
-          <Magicpen size={18} variant="Linear" color="#E57E25" className="text-accent" />
+          <Magicpen size={18} variant="Linear" color="currentColor" className="text-accent" />
           <span className="font-cairo font-bold text-sm text-white">
             {t('categories.viewAllInParent')}
           </span>

@@ -32,7 +32,7 @@ export const ProfileHeaderSection: React.FC<ProfileHeaderSectionProps> = ({
           variant="ghost"
           size="icon"
           onClick={goBack}
-          className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 shrink-0 flex items-center justify-center p-0 cursor-pointer"
+          className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 shrink-0 flex items-center justify-center p-0 cursor-pointer"
           aria-label={isArabic ? 'رجوع' : 'Back'}
         >
           {isArabic ? <ArrowRight size={18} variant="Linear" color="#FFFFFF" /> : <ArrowLeft size={18} variant="Linear" color="#FFFFFF" />}

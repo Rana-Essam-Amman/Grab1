@@ -21,8 +21,8 @@ export const FilterChip: React.FC<FilterChipProps> = React.memo(({
   const chipClass = onDarkBackground
     ? `inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-xs font-medium transition-all duration-200 flex-shrink-0 cursor-pointer select-none ${
         isActive
-          ? "bg-white/15 border-white/50 text-white font-semibold"
-          : "bg-transparent border-white/30 text-white hover:bg-white/10 hover:border-white/50"
+          ? "bg-surface/15 border-white/50 text-white font-semibold"
+          : "bg-transparent border-white/30 text-white hover:bg-surface/10 hover:border-white/50"
       }`
     : `inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-xs font-medium transition-all duration-200 flex-shrink-0 cursor-pointer select-none ${
         isActive

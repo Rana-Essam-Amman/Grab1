@@ -30,7 +30,7 @@ export const SellerProfileScreen: React.FC = () => {
           type="button"
           onClick={goBack}
           aria-label={isArabic ? 'العودة' : 'Go back'}
-          className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center shrink-0 cursor-pointer transition-colors"
+          className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 flex items-center justify-center shrink-0 cursor-pointer transition-colors"
         >
           <BackIcon size={18} variant="Linear" color="#FFFFFF" />
         </button>
