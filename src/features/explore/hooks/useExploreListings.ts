@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback, Dispatch, SetStateAction } from 'react';
 import { useUI } from '@/hooks/useUI';
 import { useListings } from '@/hooks/useListings';
+import { useAuth } from '@/hooks/useAuth';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
 import { EXPLORE_CONFIG } from '@/config/explore.config';
 import { UseExploreListingsReturn } from './useExploreListings.types';
@@ -16,7 +17,14 @@ export function useExploreListings(): UseExploreListingsReturn {
   const { listings } = useListings();
 
   const [userFilterMode, setUserFilterMode] = useState<'city' | 'all' | null>(null);
-  const [feedLayout, setFeedLayout] = useState<'list' | 'grid'>('grid');
+  const { feedLayout, setFeedLayout: setFeedLayoutStore } = useAuth();
+  const setFeedLayout = useCallback<Dispatch<SetStateAction<'list' | 'grid'>>>(
+    (action) => {
+      const next = typeof action === 'function' ? action(feedLayout) : action;
+      setFeedLayoutStore(next);
+    },
+    [feedLayout, setFeedLayoutStore]
+  );
   const [voidedNotice, setVoidedNotice] = useState<string | null>(null);
 
   const activeSearchText = searchQuery;

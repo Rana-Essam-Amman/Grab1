@@ -19,6 +19,7 @@ export interface ProfileRecord {
   readonly phone_locked?: boolean | null;
   readonly avatar_url: string | null;
   readonly country_code: string | null;
+  readonly feed_layout?: 'list' | 'grid' | null;
   readonly created_at?: string;
   readonly updated_at?: string;
 }
@@ -31,6 +32,7 @@ export interface ProfileUpdate {
   readonly phone_locked?: boolean;
   readonly avatar_url?: string;
   readonly country_code?: string;
+  readonly feed_layout?: 'list' | 'grid';
 }
 
 /**
@@ -43,7 +45,7 @@ export async function fetchProfile(userId: string): Promise<ProfileRecord | null
   try {
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, first_name, last_name, nickname, phone, phone_locked, avatar_url, country_code, created_at, updated_at')
+      .select('id, first_name, last_name, nickname, phone, phone_locked, avatar_url, country_code, feed_layout, created_at, updated_at')
       .eq('id', userId)
       .maybeSingle();
     if (error) {
@@ -72,7 +74,7 @@ export async function upsertProfile(
     const { data, error } = await supabase
       .from('profiles')
       .upsert(payload, { onConflict: 'id' })
-      .select('id, first_name, last_name, nickname, phone, phone_locked, avatar_url, country_code, created_at, updated_at')
+      .select('id, first_name, last_name, nickname, phone, phone_locked, avatar_url, country_code, feed_layout, created_at, updated_at')
       .maybeSingle();
     if (error) {
       console.warn('[profilesService] upsertProfile error', error.message);
@@ -105,4 +107,15 @@ export async function saveNickname(
   const trimmed = nickname.trim();
   if (trimmed.length < 2 || trimmed.length > 50) return null;
   return upsertProfile(userId, { nickname: trimmed });
+}
+
+/**
+ * Convenience: save the user's feed layout preference.
+ * Persisted to Supabase → available across devices.
+ */
+export async function saveFeedLayout(
+  userId: string,
+  layout: 'list' | 'grid'
+): Promise<ProfileRecord | null> {
+  return upsertProfile(userId, { feed_layout: layout });
 }

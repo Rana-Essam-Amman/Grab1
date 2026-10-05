@@ -17,6 +17,8 @@ export interface AuthContextType {
   registerNewUser: (userData: RegisteredAccount) => void;
   updateUser: (updates: Partial<UserProfile>) => void;
   updateAvatar: (dataUrl: string | null) => void;
+  feedLayout: 'list' | 'grid';
+  setFeedLayout: (layout: 'list' | 'grid') => void;
 }
 
 export const useAuth = (): AuthContextType => {
@@ -39,6 +41,8 @@ export const useAuth = (): AuthContextType => {
     registerNewUser: store.registerNewUser,
     updateUser: store.updateUser,
     updateAvatar: store.updateAvatar,
+    feedLayout: store.feedLayout,
+    setFeedLayout: store.setFeedLayout,
   };
 };
 

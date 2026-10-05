@@ -2,6 +2,7 @@ import { AuthState } from './auth.slice.types';
 import { UserProfile, RegisteredAccount } from '@/types';
 import { globalStorage } from '@/shared/lib/marketStorage';
 import { signOut } from '../services/authService';
+import { saveFeedLayout } from '@/shared/lib/profilesService';
 
 type SetState = (fn: (state: AuthState) => void) => void;
 type GetState = () => AuthState;
@@ -92,6 +93,20 @@ export const createAuthActions = (set: SetState, get: GetState) => ({
 
     if (newUser.status === 'active') {
       get().loginDirectly(newUser.email, newUser.phone, newUser.countryCode, newUser.firstName);
+    }
+  },
+
+  setFeedLayout: (layout: 'list' | 'grid') => {
+    // Optimistic local update
+    set((state) => {
+      state.feedLayout = layout;
+    });
+    // Persist to Supabase (source of truth). Fire-and-forget.
+    const userId = get().user?.id;
+    if (userId) {
+      void saveFeedLayout(userId, layout).catch(() => {
+        // non-fatal — local state already updated
+      });
     }
   },
 });
