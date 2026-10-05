@@ -5,14 +5,11 @@ import { useListings } from '@/hooks/useListings';
 import { categories } from '@/data/categories';
 import { subcategoriesByCategory } from '@/data/subcategories';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
-import { ArrowRight2, ArrowLeft2 } from 'iconsax-react';
 
 export const CategoriesScreen: React.FC = () => {
   const { isArabic, navigateTo, setSelectedParentCategory, browseCountryCode } = useUI();
   const { t } = useTranslation();
   const { listings } = useListings();
-
-  const ChevronIcon = isArabic ? ArrowLeft2 : ArrowRight2;
 
   const handleSelectPrimaryCategory = useCallback((catSlug: string) => {
     setSelectedParentCategory(catSlug);
@@ -55,49 +52,34 @@ export const CategoriesScreen: React.FC = () => {
         </p>
       </div>
 
-      <div className="flex flex-col gap-2.5">
+      <div className="grid grid-cols-2 gap-3">
         {categories.map((cat) => {
           const subs = subcategoriesByCategory(cat.slug);
           const catCount = categoryCounts[cat.slug] || 0;
-
           return (
             <button
               key={cat.slug}
               type="button"
+              data-testid={`category-card-${cat.slug}`}
               onClick={() => handleSelectPrimaryCategory(cat.slug)}
-              className="w-full bg-surface rounded-2xl border border-border p-3.5 flex items-center justify-between hover:border-primary hover:bg-surface active:scale-[0.99] transition-all shadow-2xs group cursor-pointer text-start"
+              className="p-4 flex flex-col items-center text-center gap-3 rounded-2xl bg-surface border border-border hover:border-accent/50 hover:shadow-md active:scale-[0.97] transition-all group cursor-pointer"
             >
-              <div className="flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-xl bg-background flex items-center justify-center overflow-hidden border border-border shrink-0 group-hover:scale-105 transition-transform">
-                  <img
-                    src={cat.asset}
-                    alt={cat.nameEn}
-                    className="w-full h-full object-cover"
-                    onError={handleImageError}
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <h3 className="text-sm font-bold text-ink font-cairo group-hover:text-primary transition-colors">
-                    {isArabic ? cat.nameAr : cat.nameEn}
-                  </h3>
-                  <span className="text-[11px] text-ink-muted font-medium font-cairo">
-                    {subs.length} {isArabic ? 'تصنيفات فرعية' : 'subcategories'}
-                    {catCount > 0 ? ` • ${catCount} ${t('categories.listingsCount')}` : ''}
-                  </span>
-                </div>
+              <div className="w-24 h-24 rounded-full bg-canvas overflow-hidden border border-border flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <img
+                  src={cat.asset}
+                  alt={cat.nameEn}
+                  className="w-full h-full object-cover"
+                  onError={handleImageError}
+                />
               </div>
-
-              <div className="flex items-center gap-2 shrink-0">
-                <span className="text-xs font-bold text-primary font-cairo opacity-0 group-hover:opacity-100 transition-opacity hidden sm:inline">
-                  {isArabic ? 'تصفح' : 'Explore'}
+              <div className="flex flex-col items-center gap-0.5 min-w-0 w-full">
+                <h3 className="text-[15px] font-bold text-ink font-cairo group-hover:text-accent transition-colors line-clamp-1 w-full">
+                  {isArabic ? cat.nameAr : cat.nameEn}
+                </h3>
+                <span className="text-[11px] text-ink-muted font-medium font-cairo">
+                  {subs.length} {isArabic ? 'تصنيف' : 'subs'}
+                  {catCount > 0 ? ` • ${catCount} ${t('categories.listingsCount')}` : ''}
                 </span>
-                <div className="w-8 h-8 rounded-full bg-surface flex items-center justify-center group-hover:bg-background transition-colors">
-                  <ChevronIcon
-                    size={16}
-                    variant="Linear"
-                    className="text-ink-muted group-hover:text-primary transition-transform group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5"
-                  />
-                </div>
               </div>
             </button>
           );
