@@ -44,8 +44,8 @@ const uiStorage: StateStorage = {
           return;
         }
       } catch {
-      // ignore
-    }
+        // ignore
+      }
     }
     globalStorage().set(name, value);
   },
@@ -54,15 +54,48 @@ const uiStorage: StateStorage = {
   },
 };
 
+// -------------------------------------------------------------------
+// Theme — resolve + apply
+// -------------------------------------------------------------------
+
+/** Resolve 'auto' against the OS preference. Returns 'light' or 'dark'. */
+function resolveTheme(theme: AppTheme): 'light' | 'dark' {
+  if (theme === 'auto') {
+    if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    return 'light';
+  }
+  return theme;
+}
+
+/** Apply a theme choice to <html data-theme="...">. */
+function applyTheme(theme: AppTheme): void {
+  if (typeof document === 'undefined') return;
+  document.documentElement.dataset.theme = resolveTheme(theme);
+}
+
+/** Read the persisted theme choice from localStorage. Default: 'auto'. */
+function getStoredTheme(): AppTheme {
+  try {
+    const raw = globalStorage().get<string>('grab_theme_v1');
+    if (raw === 'light' || raw === 'dark' || raw === 'auto') return raw;
+  } catch {
+    // fall through
+  }
+  return 'auto';
+}
+
 // UI Store state slice definition
 export const useUIStore = create<UIState>()(
   persist(
     immer((set, get) => ({
       ...getInitialState(),
       ...createUIActions(set, get),
-      theme: (globalStorage().get<AppTheme>('grab_theme_v1') as AppTheme) || 'light',
+      theme: getStoredTheme(),
       setTheme: (theme: AppTheme) => {
         globalStorage().set('grab_theme_v1', theme);
+        applyTheme(theme);
         set((state) => {
           state.theme = theme;
         });
@@ -79,15 +112,31 @@ export const useUIStore = create<UIState>()(
           const locale = state.locale || 'ar';
           document.documentElement.dir = locale === 'ar' ? 'rtl' : 'ltr';
           document.documentElement.lang = locale;
+          applyTheme(state.theme);
         }
       },
     }
   )
 );
 
+// Apply theme on store creation (before any React render).
+applyTheme(useUIStore.getState().theme);
+
+// Re-apply when the OS theme changes — only matters when the user picked 'auto'.
+if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+  try {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      if (useUIStore.getState().theme === 'auto') {
+        applyTheme('auto');
+      }
+    });
+  } catch {
+    // older Safari or unsupported — no-op
+  }
+}
+
 if (typeof window !== 'undefined') {
   setTimeout(() => {
     void hydrateCountryFromGeo();
   }, 0);
-}
-
+      }
