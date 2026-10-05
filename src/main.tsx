@@ -20,6 +20,24 @@ try {
   document.documentElement.lang = locale;
 } catch {}
 
+// Apply theme BEFORE React mounts — prevents flash of light theme on load.
+// Reads the same key that ui.slice.ts persists ('grab_theme_v1').
+try {
+  const storedTheme = localStorage.getItem('grab_theme_v1');
+  const choice =
+    storedTheme === 'light' || storedTheme === 'dark' || storedTheme === 'auto'
+      ? storedTheme
+      : 'auto';
+  const effective =
+    choice === 'auto'
+      ? (typeof window.matchMedia === 'function' &&
+         window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light')
+      : choice;
+  document.documentElement.dataset.theme = effective;
+} catch {}
+
 window.addEventListener('error', (e) => {
   try {
     localStorage.setItem('catch_crash_last', JSON.stringify({
