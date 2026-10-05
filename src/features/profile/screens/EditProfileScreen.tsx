@@ -39,7 +39,7 @@ export const EditProfileScreen: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-background pb-16 font-cairo relative" dir={isArabic ? 'rtl' : 'ltr'}>
       {/* Top Bar */}
-      <div className="px-4 py-4 bg-[#1a2238] border-b border-white/10 flex items-center gap-3 sticky top-0 z-20">
+      <div className="px-4 py-4 bg-brand border-b border-white/10 flex items-center gap-3 sticky top-0 z-20">
         <button onClick={goBack} aria-label="Back" className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center cursor-pointer">
           <BackIcon size={18} variant="Linear" color="#FFFFFF" />
         </button>
@@ -118,7 +118,7 @@ export const EditProfileScreen: React.FC = () => {
       {/* Visual Toast Notification Overlay */}
       {toastMessage && (
         <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-ink text-surface px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-lg z-50 text-sm font-bold animate-in fade-in slide-in-from-bottom-4 duration-300">
-          <TickCircle size={16} variant="Linear" color="#E57E25" className="text-primary" />
+          <TickCircle size={16} variant="Linear" color="currentColor" className="text-primary" />
           <span>{toastMessage}</span>
         </div>
       )}

@@ -25,7 +25,7 @@ export const SellerProfileScreen: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-background pb-16" dir={isArabic ? 'rtl' : 'ltr'}>
-      <div className="px-4 py-4 bg-[#1a2238] border-b border-white/10 flex items-center gap-3 sticky top-0 z-20">
+      <div className="px-4 py-4 bg-brand border-b border-white/10 flex items-center gap-3 sticky top-0 z-20">
         <button
           type="button"
           onClick={goBack}
@@ -49,7 +49,7 @@ export const SellerProfileScreen: React.FC = () => {
           <div>
             <div className="flex items-center gap-1.5">
               <h2 className="text-base font-bold text-ink">{sellerName}</h2>
-              <TickCircle size={15} variant="Linear" color="#16A34A" className="text-success" />
+              <TickCircle size={15} variant="Linear" color="currentColor" className="text-success" />
             </div>
             <div className="text-xs text-ink-muted mt-0.5">{selectedSellerPhone}</div>
           </div>

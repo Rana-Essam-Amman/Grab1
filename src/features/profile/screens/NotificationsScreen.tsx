@@ -63,7 +63,7 @@ export const NotificationsScreen: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-surface pb-12" dir={isArabic ? 'rtl' : 'ltr'}>
       {/* Top Header */}
-      <div className="px-4 py-3 bg-[#1a2238] border-b border-white/10 flex items-center justify-between sticky top-0 z-20">
+      <div className="px-4 py-3 bg-brand border-b border-white/10 flex items-center justify-between sticky top-0 z-20">
         <Button variant="ghost" size="icon" onClick={goBack} aria-label="Back" className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center p-0">
           {isArabic ? <ArrowRight size={18} variant="Linear" color="#FFFFFF" /> : <ArrowLeft size={18} variant="Linear" color="#FFFFFF" />}
         </Button>
@@ -101,8 +101,8 @@ export const NotificationsScreen: React.FC = () => {
             >
               <div
                 className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                  n.type === 'price' ? 'bg-amber-100 text-amber-700' :
-                  n.type === 'message' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'
+                  n.type === 'price' ? 'bg-warning/15 text-ink' :
+                  n.type === 'message' ? 'bg-info/15 text-info' : 'bg-success/15 text-success'
                 }`}
               >
                 {n.type === 'price' ? <Tag size={18} variant="Linear" /> :

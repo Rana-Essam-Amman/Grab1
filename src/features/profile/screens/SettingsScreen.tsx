@@ -50,7 +50,7 @@ export const SettingsScreen: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-surface pb-16" dir={isArabic ? 'rtl' : 'ltr'}>
       {/* Top Bar */}
-      <div className="px-4 py-4 bg-[#1a2238] border-b border-white/10 flex items-center gap-3 sticky top-0 z-20">
+      <div className="px-4 py-4 bg-brand border-b border-white/10 flex items-center gap-3 sticky top-0 z-20">
         <Button variant="ghost" size="icon" onClick={goBack} aria-label="Back" className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center p-0">
           <BackIcon size={18} variant="Linear" color="#FFFFFF" />
         </Button>
@@ -84,7 +84,7 @@ export const SettingsScreen: React.FC = () => {
             className="p-3.5 flex items-center justify-between cursor-pointer hover:bg-surface border-b border-border/60 transition-colors"
           >
             <div className="flex items-center gap-3">
-              <Global size={18} variant="Linear" color="#E57E25" className="text-primary" />
+              <Global size={18} variant="Linear" color="currentColor" className="text-primary" />
               <div>
                 <div className="text-sm font-semibold text-ink">
                   {isArabic ? 'لغة التطبيق' : 'App Language'}
@@ -105,7 +105,7 @@ export const SettingsScreen: React.FC = () => {
             className="p-3.5 flex items-center justify-between cursor-pointer hover:bg-surface transition-colors"
           >
             <div className="flex items-center gap-3">
-              <Location size={18} variant="Linear" color="#E57E25" className="text-primary" />
+              <Location size={18} variant="Linear" color="currentColor" className="text-primary" />
               <div>
                 <div className="text-sm font-semibold text-ink">
                   {isArabic ? 'الدولة والمدينة الحالية' : 'Active Region & City'}

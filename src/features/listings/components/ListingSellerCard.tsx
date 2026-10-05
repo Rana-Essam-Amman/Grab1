@@ -16,10 +16,10 @@ export const ListingSellerCard: React.FC<ListingSellerCardProps> = React.memo(({
     <Card
       variant="default"
       onClick={onClick}
-      className="p-3.5 flex items-center justify-between bg-white border border-[#E2E8F0] rounded-2xl shadow-sm hover:shadow-md hover:border-[#E57E25]/40 cursor-pointer active:scale-[0.99] transition-all"
+      className="p-3.5 flex items-center justify-between bg-surface border border-border rounded-2xl shadow-sm hover:shadow-md hover:border-accent/40 cursor-pointer active:scale-[0.99] transition-all"
     >
       <div className="flex items-center gap-3">
-        <div className="w-11 h-11 rounded-full bg-[#E57E25]/10 flex items-center justify-center font-black text-lg text-[#E57E25] border border-[#E57E25]/30 shrink-0">
+        <div className="w-11 h-11 rounded-full bg-accent/10 flex items-center justify-center font-black text-lg text-accent border border-accent/30 shrink-0">
           {sellerName ? sellerName.charAt(0) : '?'}
         </div>
         <div className="flex flex-col min-w-0">
@@ -29,7 +29,7 @@ export const ListingSellerCard: React.FC<ListingSellerCardProps> = React.memo(({
           </div>
         </div>
       </div>
-      <ChevronIcon size={18} variant="Bold" color="#1a2238" className="shrink-0" />
+      <ChevronIcon size={18} variant="Bold" color="currentColor" className="text-ink shrink-0" />
     </Card>
   );
 });

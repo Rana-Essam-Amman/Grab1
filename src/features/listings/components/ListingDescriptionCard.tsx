@@ -20,7 +20,7 @@ export const ListingDescriptionCard: React.FC<ListingDescriptionCardProps> = Rea
       return parts.map((part, index) => {
         if (part.match(/^(?:(?:\+|00)?\d{1,3}[\s-]*)?(?:\d[\s-]*){7,11}\d$/)) {
           return (
-            <span key={index} onClick={(e) => { e.stopPropagation(); onNavigateToLogin(); }} className="bg-amber-100 text-primary border border-amber-200 px-1.5 py-0.5 rounded-md font-bold cursor-pointer hover:bg-amber-200 transition-colors inline-flex items-center gap-1 select-none mx-1 text-xs" title={isArabic ? 'سجل دخول لرؤية الرقم' : 'Sign in to show number'}>
+            <span key={index} onClick={(e) => { e.stopPropagation(); onNavigateToLogin(); }} className="bg-warning/15 text-primary border border-warning/40 px-1.5 py-0.5 rounded-md font-bold cursor-pointer hover:bg-warning/25 transition-colors inline-flex items-center gap-1 select-none mx-1 text-xs" title={isArabic ? 'سجل دخول لرؤية الرقم' : 'Sign in to show number'}>
               <Lock1 size={11} variant="Linear" />
               <span>{isArabic ? '[رقم مخفي - اضغط لرؤيته]' : '[Hidden Number - Click to Show]'}</span>
             </span>

@@ -45,7 +45,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
           <div className="absolute top-1.5 start-1.5 z-10">
             <Badge variant="warning" size="sm" className="flex items-center gap-1">
               <span>{isArabic ? 'مُميز' : 'Featured'}</span>
-              <Crown size={12} variant="Bold" color="#E57E25" />
+              <Crown size={12} variant="Bold" color="currentColor" className="text-accent" />
             </Badge>
           </div>
         )}

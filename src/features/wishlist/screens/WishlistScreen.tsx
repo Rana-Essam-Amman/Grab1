@@ -87,7 +87,7 @@ export const WishlistScreen: React.FC = () => {
 
       {showToast && (
         <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-ink text-white px-4 py-2.5 rounded-full text-xs font-semibold shadow-xl z-50 flex items-center gap-2 animate-fade-in transition-all">
-          <Heart size={14} variant="Bold" color="#EF4444" className="animate-pulse" />
+          <Heart size={14} variant="Bold" color="currentColor" className="text-danger animate-pulse" />
           <span>{toastMessage}</span>
         </div>
       )}
@@ -110,7 +110,7 @@ export const WishlistScreen: React.FC = () => {
               variant="primary"
               size="sm"
               onClick={handleConfirmClear}
-              className="bg-red-600 text-white hover:bg-red-700"
+              className="bg-danger text-white hover:bg-danger/90"
             >
               {isArabic ? 'تأكيد المسح' : 'Confirm Clear'}
             </Button>
