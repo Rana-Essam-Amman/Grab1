@@ -19,7 +19,7 @@ export const ListingCardImage: React.FC<ListingCardImageProps> = ({
     <img
       src={imageUrl}
       alt={title}
-      className="w-full h-full object-cover object-center group-hover:scale-103 transition-transform duration-300"
+      className="w-full h-full object-contain object-center transition-transform duration-300"
       onError={onImageError}
     />
     {isPremium && (
