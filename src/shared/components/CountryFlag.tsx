@@ -8,12 +8,10 @@ interface Props {
 
 // ─── ADJUST HERE ───────────────────────────────────────────────
 // Flag display size in px.
-//   64 = small   |  80 = medium (current)  |  96 = large
-const FLAG_SIZE_PX = 80;
+//   80 = medium   |  96 = large (current)  |  112 = XL
+const FLAG_SIZE_PX = 96;
 
-// Tilt angle in degrees — gives the "waving" feel.
-//   Negative = counter-clockwise  |  Positive = clockwise
-//   Try: -8, -10, -12
+// Resting tilt angle (degrees). Negative = counter-clockwise.
 const FLAG_ROTATE_DEG = -10;
 
 // Distance from the flag to the nearest edge of the header.
@@ -29,36 +27,52 @@ const FLAG_SRC: Record<MarketCode, string> = {
   SY: '/flags/sy.jpg',
 };
 
+// Subtle wave: oscillates ±4° around the resting tilt.
+const WAVE_KEYFRAMES = `
+@keyframes flagWave {
+  0%   { transform: rotate(-10deg); }
+  25%  { transform: rotate(-14deg); }
+  50%  { transform: rotate(-10deg); }
+  75%  { transform: rotate(-6deg); }
+  100% { transform: rotate(-10deg); }
+}
+`;
+
 /**
  * Country flag indicator.
- * Circular crop, tilted slightly so it "waves" into the navy header.
+ * Circular crop, gently waving into the navy header.
  *
  * To resize  → FLAG_SIZE_PX
- * To tilt    → FLAG_ROTATE_DEG
+ * To tilt    → FLAG_ROTATE_DEG (and the keyframes if you want a different sweep)
  * To move    → FLAG_END_CLASS
  */
 export const CountryFlag: React.FC<Props> = ({ code }) => {
   return (
-    <div
-      className={`absolute top-1/2 -translate-y-1/2 ${FLAG_END_CLASS} z-10 pointer-events-none`}
-      aria-hidden="true"
-    >
+    <>
+      <style>{WAVE_KEYFRAMES}</style>
       <div
-        className="rounded-full overflow-hidden"
-        style={{
-          width: FLAG_SIZE_PX,
-          height: FLAG_SIZE_PX,
-          transform: `rotate(${FLAG_ROTATE_DEG}deg)`,
-        }}
+        className={`absolute top-1/2 -translate-y-1/2 ${FLAG_END_CLASS} z-10 pointer-events-none`}
+        aria-hidden="true"
       >
-        <img
-          src={FLAG_SRC[code]}
-          alt=""
-          className="w-full h-full object-cover"
-          loading="eager"
-          draggable={false}
-        />
+        <div
+          className="rounded-full overflow-hidden"
+          style={{
+            width: FLAG_SIZE_PX,
+            height: FLAG_SIZE_PX,
+            transform: `rotate(${FLAG_ROTATE_DEG}deg)`,
+            animation: 'flagWave 3.5s ease-in-out infinite',
+            transformOrigin: 'center center',
+          }}
+        >
+          <img
+            src={FLAG_SRC[code]}
+            alt=""
+            className="w-full h-full object-cover"
+            loading="eager"
+            draggable={false}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
