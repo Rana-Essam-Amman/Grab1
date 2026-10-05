@@ -4,10 +4,17 @@
  * ===================================================== */
 
 [data-theme="dark"] {
-  /* BRAND */
-  --color-brand: oklch(0.65 0.15 250);
-  --color-brand-soft: oklch(0.75 0.12 250);
-  --color-brand-strong: oklch(0.55 0.18 250);
+  /* BRAND — stays NAVY in both modes so the header and the bottom nav
+     keep the dark-blue identity. Primary (below) is decoupled and
+     becomes light-blue for text/buttons on dark surfaces. */
+  --color-brand: oklch(0.22 0.06 250);
+  --color-brand-soft: oklch(0.32 0.05 250);
+  --color-brand-strong: oklch(0.15 0.07 250);
+
+  /* PRIMARY — light blue for text/buttons on dark surfaces.
+     Overrides the light-mode value set in @theme (index.css). */
+  --color-primary: oklch(0.65 0.15 250);
+  --color-primary-hover: oklch(0.75 0.12 250);
 
   --color-accent: oklch(0.78 0.18 45);
   --color-accent-soft: oklch(0.90 0.09 45);
