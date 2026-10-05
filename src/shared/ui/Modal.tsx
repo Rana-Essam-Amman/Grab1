@@ -4,7 +4,7 @@ import { CloseCircle } from 'iconsax-react';
 import { cn } from '../lib/cn';
 
 export const modalVariants = cva(
-  'relative w-full bg-white text-[#0F172A] rounded-2xl shadow-2xl border border-[#E2E8F0] flex flex-col overflow-hidden max-h-[90vh] z-50 transform transition-all duration-200 ease-out',
+  'relative w-full bg-surface text-ink rounded-2xl shadow-2xl border border-border flex flex-col overflow-hidden max-h-[90vh] z-50 transform transition-all duration-200 ease-out',
   {
     variants: {
       size: {
@@ -98,14 +98,14 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="absolute top-4 end-4 w-8 h-8 flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] rounded-full transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary z-10"
+            className="absolute top-4 end-4 w-8 h-8 flex items-center justify-center text-ink-muted hover:text-ink hover:bg-canvas rounded-full transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary z-10"
           >
             <CloseCircle variant="Bold" size={18} color="currentColor" />
           </button>
 
           {/* Header */}
           {(title || description) && (
-            <div className="p-5 pb-3 pe-12 border-b border-[#E2E8F0]">
+            <div className="p-5 pb-3 pe-12 border-b border-border">
               {title && (
                 <h2
                   id={titleId}
@@ -130,7 +130,7 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(
 
           {/* Footer */}
           {footer && (
-            <div className="p-4 bg-[#F8FAFC] border-t border-[#E2E8F0] flex items-center justify-end gap-2">
+            <div className="p-4 bg-canvas border-t border-border flex items-center justify-end gap-2">
               {footer}
             </div>
           )}

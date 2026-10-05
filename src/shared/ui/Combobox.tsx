@@ -61,7 +61,7 @@ export const Combobox: React.FC<ComboboxProps> = ({
         <Popover.Content
           sideOffset={4}
           align="start"
-          className="z-50 w-[var(--radix-popover-trigger-width)] max-h-72 rounded-xl bg-white border border-line shadow-lg overflow-hidden"
+          className="z-50 w-[var(--radix-popover-trigger-width)] max-h-72 rounded-xl bg-surface border border-line shadow-lg overflow-hidden"
         >
           <div className="p-2 border-b border-line">
             <div className="flex items-center gap-2 px-2.5 h-9 rounded-lg bg-canvas">
