@@ -80,9 +80,9 @@ export const ChooseCategoryScreen: React.FC = () => {
             <span>{isArabic ? 'العودة للأقسام' : 'Back to categories'}</span>
           </button>
           
-          <div className="bg-white rounded-3xl border border-line overflow-hidden">
+          <div className="bg-surface rounded-3xl border border-line overflow-hidden">
             <div className="p-4 bg-canvas/30 border-b border-line flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-white border border-line flex items-center justify-center overflow-hidden">
+              <div className="w-10 h-10 rounded-xl bg-surface border border-line flex items-center justify-center overflow-hidden">
                 <img src={categories.find(c => c.slug === selectedCategory)?.asset} className="w-full h-full object-cover" onError={handleImageError} />
               </div>
               <span className="font-bold text-ink">{isArabic ? categories.find(c => c.slug === selectedCategory)?.nameAr : categories.find(c => c.slug === selectedCategory)?.nameEn}</span>
@@ -106,7 +106,7 @@ export const ChooseCategoryScreen: React.FC = () => {
       ) : (
         <div className="px-4 pb-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
           {visible.map((cat) => (
-            <button key={cat.slug} type="button" data-testid={`category-card-${cat.slug}`} onClick={() => handleCategorySelect(cat.slug)} className="p-3.5 flex flex-col items-center text-center gap-2.5 transition-all group active:scale-[0.97] cursor-pointer rounded-2xl bg-white border border-line hover:border-accent/50 hover:shadow-md">
+            <button key={cat.slug} type="button" data-testid={`category-card-${cat.slug}`} onClick={() => handleCategorySelect(cat.slug)} className="p-3.5 flex flex-col items-center text-center gap-2.5 transition-all group active:scale-[0.97] cursor-pointer rounded-2xl bg-surface border border-line hover:border-accent/50 hover:shadow-md">
               <div className="w-16 h-16 rounded-2xl bg-canvas overflow-hidden border border-line group-hover:scale-105 transition-transform flex items-center justify-center">
                 <img src={cat.asset} alt={cat.nameEn} className="w-full h-full object-cover" onError={handleImageError} />
               </div>
