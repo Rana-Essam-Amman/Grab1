@@ -28,6 +28,12 @@ export function useUrlSync(): void {
   // Prevent feedback loops between the two effects.
   const lastPathRef = useRef<string | null>(null);
 
+  // Skip the very first Store→URL run, so we don't overwrite the URL with 
+  // the default 'main' before URL→Store has hydrated the store. Without 
+  // this, refresh on /listing/:id navigates back to / because the store 
+  // still says 'main' for one tick.
+  const hydratedRef = useRef(false);
+
   // --- URL → Store ---------------------------------------------------
   // useLayoutEffect so this runs BEFORE the browser paints. Without it, 
   // refresh on /listing/:id briefly flashes Home before the listing 
@@ -56,11 +62,14 @@ export function useUrlSync(): void {
     }
 
     lastPathRef.current = location.pathname;
+    hydratedRef.current = true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   // --- Store → URL ---------------------------------------------------
   useEffect(() => {
+    if (!hydratedRef.current) return;
+
     const target = screenToPath(currentScreen, {
       listingId: selectedListingId,
       sellerPhone: selectedSellerPhone,
@@ -72,4 +81,4 @@ export function useUrlSync(): void {
     navigate(target, { replace: false });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentScreen, selectedListingId, selectedSellerPhone, selectedThreadId]);
-}
+                      }
