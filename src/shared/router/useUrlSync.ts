@@ -2,71 +2,24 @@ import { useEffect, useLayoutEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useUIStore } from '@/store/ui.slice';
 import { screenToPath, resolvePath } from './paths';
+import { tabToPath, pathToTab } from './tabPaths';
+import { hydrateStoreFromUrl } from './hydrateStoreFromUrl';
 
 /**
  * Two-way sync between the store and the browser URL.
  *
- * Store is source of truth. URL mirrors it so refresh, share, back, and 
- * deep links all work — including the bottom-nav tabs (categories / 
- * messages / my-ads), which used to share the path '/' and therefore 
+ * Store is source of truth. URL mirrors it so refresh, share, back, and
+ * deep links all work — including the bottom-nav tabs (categories /
+ * messages / my-ads), which used to share the path '/' and therefore
  * lost their identity on refresh.
  *
  * MUST be mounted exactly once, inside <RouterProvider>.
  */
 
-// Bottom-nav tabs are rendered inside `currentScreen === 'main'` but 
-// need distinct URLs so refresh/back/deep-link all work.
-type TabSlug = 'categories' | 'messages' | 'my-ads';
-
-function tabToPath(tab: string | undefined): string {
-  switch (tab) {
-    case 'categories': return '/categories';
-    case 'messages': return '/messages';
-    case 'my-ads': return '/my-ads';
-    default: return '/';
-  }
-}
-
-function pathToTab(pathname: string): TabSlug | null {
-  const clean = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
-  if (clean === '/categories') return 'categories';
-  if (clean === '/messages') return 'messages';
-  if (clean === '/my-ads') return 'my-ads';
-  return null;
-}
-
-// Module-scope: hydrate the store from the current URL BEFORE React 
+// Module-scope: hydrate the store from the current URL BEFORE React
 // renders. Eliminates the race condition that caused "refresh goes Home".
 if (typeof window !== 'undefined') {
-  const path = window.location.pathname;
-  const initialTab = pathToTab(path);
-  const store = useUIStore.getState();
-
-  if (initialTab) {
-    if (store.currentScreen !== 'main' || store.activeTab !== initialTab) {
-      useUIStore.setState({ currentScreen: 'main', activeTab: initialTab });
-    }
-  } else {
-    const initialMatch = resolvePath(path);
-    if (initialMatch) {
-      const nextListingId = initialMatch.params.listingId ?? null;
-      const nextSellerPhone = initialMatch.params.sellerPhone ?? null;
-      const nextThreadId = initialMatch.params.threadId ?? null;
-      if (
-        store.currentScreen !== initialMatch.screen ||
-        store.selectedListingId !== nextListingId ||
-        store.selectedSellerPhone !== nextSellerPhone ||
-        store.selectedThreadId !== nextThreadId
-      ) {
-        useUIStore.setState({
-          currentScreen: initialMatch.screen,
-          selectedListingId: nextListingId,
-          selectedSellerPhone: nextSellerPhone,
-          selectedThreadId: nextThreadId,
-        });
-      }
-    }
-  }
+  hydrateStoreFromUrl(window.location.pathname);
 }
 
 export function useUrlSync(): void {
@@ -90,7 +43,6 @@ export function useUrlSync(): void {
     const store = useUIStore.getState();
     const tab = pathToTab(location.pathname);
 
-    // Bottom-nav tab URLs
     if (tab) {
       if (store.currentScreen !== 'main' || store.activeTab !== tab) {
         useUIStore.setState({ currentScreen: 'main', activeTab: tab });
@@ -120,7 +72,6 @@ export function useUrlSync(): void {
       useUIStore.setState({ currentScreen: match.screen });
     }
 
-    // Clear stale entity ids when navigating away from a screen that used them.
     if (!nextListingId && store.selectedListingId) {
       useUIStore.setState({ selectedListingId: null });
     }
@@ -152,6 +103,7 @@ export function useUrlSync(): void {
 
     if (target === location.pathname) return;
     if (lastPathRef.current === target) return;
+
     lastPathRef.current = target;
     navigate(target, { replace: false });
     // eslint-disable-next-line react-hooks/exhaustive-deps
