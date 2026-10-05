@@ -1,5 +1,5 @@
 export type AppLocale = 'ar' | 'en';
-export type AppTheme = 'light' | 'dark';
+export type AppTheme = 'light' | 'dark' | 'auto';
 export type BottomTab = 'explore' | 'categories' | 'post' | 'chat' | 'profile';
 
 export interface UiState {
