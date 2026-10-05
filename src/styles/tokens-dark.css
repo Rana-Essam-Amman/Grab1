@@ -10,6 +10,7 @@
   --color-brand: oklch(0.22 0.06 250);
   --color-brand-soft: oklch(0.32 0.05 250);
   --color-brand-strong: oklch(0.15 0.07 250);
+  --color-nav: oklch(0.22 0.06 250);  /* BottomNav stays navy in dark */
 
   /* PRIMARY — light blue for text/buttons on dark surfaces.
      Overrides the light-mode value set in @theme (index.css). */

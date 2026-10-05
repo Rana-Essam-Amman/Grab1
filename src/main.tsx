@@ -27,7 +27,7 @@ try {
   const choice =
     storedTheme === 'light' || storedTheme === 'dark' || storedTheme === 'auto'
       ? storedTheme
-      : 'auto';
+      : 'light';
   const effective =
     choice === 'auto'
       ? (typeof window.matchMedia === 'function' &&
