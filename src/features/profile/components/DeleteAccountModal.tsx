@@ -24,7 +24,7 @@ export const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
     >
       <div className="flex flex-col items-center text-center gap-4 py-3" dir={isArabic ? 'rtl' : 'ltr'}>
         <div className="w-16 h-16 rounded-full bg-danger/10 flex items-center justify-center text-danger shrink-0 animate-pulse">
-          <Warning2 size={48} variant="Bold" color="#EF4444" />
+          <Warning2 size={48} variant="Bold" color="currentColor" />
         </div>
         
         <div className="flex flex-col gap-2">

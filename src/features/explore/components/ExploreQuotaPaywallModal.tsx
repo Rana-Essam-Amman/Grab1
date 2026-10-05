@@ -25,7 +25,7 @@ export const ExploreQuotaPaywallModal: React.FC<ExploreQuotaPaywallModalProps> =
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-bold">
-            <MagicStar size={20} variant="Bold" color="#E57E25" />
+            <MagicStar size={20} variant="Bold" color="currentColor" />
           </div>
           <div>
             <h3 className="text-base font-extrabold text-ink">

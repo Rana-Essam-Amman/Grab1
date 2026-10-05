@@ -31,12 +31,12 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
   const displayExpires = isArabic ? expiresLabelAr : expiresLabel;
 
   return (
-    <Modal open={open} onClose={onClose} size="md" className="max-w-[400px] rounded-3xl bg-white [&>button:first-child]:hidden">
+    <Modal open={open} onClose={onClose} size="md" className="max-w-[400px] rounded-3xl bg-surface [&>button:first-child]:hidden">
       <div dir={isArabic ? 'rtl' : 'ltr'} className="flex flex-col gap-4">
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2.5">
             <div className="w-10 h-10 rounded-full bg-accent/15 flex items-center justify-center shrink-0">
-              <Lock size={18} variant="Bold" color="#E57E25" />
+              <Lock size={18} variant="Bold" color="currentColor" />
             </div>
             <div>
               <h3 className="text-base font-bold text-ink">{displayTitle}</h3>
@@ -70,11 +70,11 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
 
         <div className="flex flex-col gap-2 text-[11px] text-ink-muted">
           <div className="flex items-center gap-2">
-            <TickCircle size={14} variant="Bold" color="#16A34A" />
+            <TickCircle size={14} variant="Bold" color="currentColor" />
             <span>{isArabic ? 'دفع آمن عبر App Store / Google Play' : 'Secure payment via App Store / Google Play'}</span>
           </div>
           <div className="flex items-center gap-2">
-            <Card size={14} variant="Linear" color="#64748B" />
+            <Card size={14} variant="Linear" color="currentColor" />
             <span>{isArabic ? 'يمكنك الإلغاء من إعدادات المتجر' : 'Cancel anytime from store settings'}</span>
           </div>
         </div>

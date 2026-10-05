@@ -61,12 +61,12 @@ export const ReportModal: React.FC<ReportModalProps> = ({ listing: _listing, onC
       open={true}
       onClose={onClose}
       size="md"
-      className="max-w-[440px] rounded-3xl border border-[#E2E8F0] p-5 bg-white [&>button:first-child]:hidden"
+      className="max-w-[440px] rounded-3xl border border-border p-5 bg-surface [&>button:first-child]:hidden"
     >
       <div dir={isArabic ? 'rtl' : 'ltr'}>
         <div className="flex items-center justify-between pb-3 border-b border-border">
           <div className="flex items-center gap-2 text-danger">
-            <Danger variant="Bold" size={18} color="#EF4444" />
+            <Danger variant="Bold" size={18} color="currentColor" className="text-danger" />
             <h3 className="text-base font-bold text-ink">
               {isArabic ? 'الإبلاغ عن الإعلان' : 'Report Listing'}
             </h3>
@@ -78,13 +78,13 @@ export const ReportModal: React.FC<ReportModalProps> = ({ listing: _listing, onC
             className="w-8 h-8 rounded-full bg-background text-ink-soft hover:bg-border transition-colors cursor-pointer"
             aria-label={isArabic ? 'إغلاق' : 'Close'}
           >
-            <CloseCircle variant="Linear" size={16} color="#94A3B8" />
+            <CloseCircle variant="Linear" size={16} color="currentColor" />
           </Button>
         </div>
 
         {submitted ? (
           <div className="py-8 flex flex-col items-center justify-center text-center gap-2">
-            <TickCircle variant="Bold" size={40} color="#10B981" />
+            <TickCircle variant="Bold" size={40} color="currentColor" className="text-success" />
             <h4 className="font-bold text-ink">
               {isArabic ? 'شكراً لك، تم استلام بلاغك' : 'Thank you, report submitted'}
             </h4>
@@ -96,7 +96,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({ listing: _listing, onC
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="pt-3 flex flex-col gap-3">
-            <p className="text-sm text-[#334155]">
+            <p className="text-sm text-ink-soft">
               {isArabic
                 ? 'يرجى تحديد سبب الإبلاغ لمساعدتنا في حماية مجتمع المستخدمين:'
                 : 'Please choose why you are reporting this listing:'}
@@ -114,7 +114,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({ listing: _listing, onC
               onChange={handleDetailsChange}
               placeholder={isArabic ? 'تفاصيل إضافية (اختياري)...' : 'Additional details (optional)...'}
               rows={2}
-              className="w-full p-3 rounded-xl border border-[#E2E8F0] bg-white text-sm text-[#0F172A] outline-none focus:border-[#E57E25]"
+              className="w-full p-3 rounded-xl border border-border bg-surface text-sm text-ink outline-none focus:border-accent"
             />
             <Button
               type="submit"
