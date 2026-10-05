@@ -6,7 +6,7 @@ export const countries: CountryDef[] = [
     code: 'JO',
     nameEn: 'Jordan',
     nameAr: 'الأردن',
-    flagUrl: '/jo.jpg',
+    flagUrl: '/flags/jo.jpg',
     currencies: [
       { code: 'JOD', nameEn: 'Jordanian Dinar', nameAr: 'دينار أردني' },
     ],
@@ -15,7 +15,7 @@ export const countries: CountryDef[] = [
     code: 'LB',
     nameEn: 'Lebanon',
     nameAr: 'لبنان',
-    flagUrl: '/lb.jpg',
+    flagUrl: '/flags/lb.jpg',
     currencies: [
       { code: 'USD', nameEn: 'US Dollar', nameAr: 'دولار أمريكي' },
       { code: 'LBP', nameEn: 'Lebanese Pound', nameAr: 'ليرة لبنانية' },
@@ -25,7 +25,7 @@ export const countries: CountryDef[] = [
     code: 'PS',
     nameEn: 'Palestine',
     nameAr: 'فلسطين',
-    flagUrl: '/ps.jpg',
+    flagUrl: '/flags/ps.jpg',
     currencies: [
       { code: 'ILS', nameEn: 'Shekel', nameAr: 'شيكل' },
       { code: 'JOD', nameEn: 'Jordanian Dinar', nameAr: 'دينار أردني' },
@@ -36,7 +36,7 @@ export const countries: CountryDef[] = [
     code: 'SY',
     nameEn: 'Syria',
     nameAr: 'سوريا',
-    flagUrl: '/sy.jpg',
+    flagUrl: '/flags/sy.jpg',
     currencies: [
       { code: 'SYP', nameEn: 'Syrian Pound', nameAr: 'ليرة سورية' },
       { code: 'USD', nameEn: 'US Dollar', nameAr: 'دولار أمريكي' },
@@ -46,7 +46,7 @@ export const countries: CountryDef[] = [
     code: 'SA',
     nameEn: 'Saudi Arabia',
     nameAr: 'السعودية',
-    flagUrl: '/sa.jpg',
+    flagUrl: '/flags/sa.jpg',
     currencies: [
       { code: 'SAR', nameEn: 'Saudi Riyal', nameAr: 'ريال سعودي' },
     ],
