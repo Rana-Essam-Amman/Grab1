@@ -8,6 +8,7 @@
   --color-brand: oklch(0.22 0.06 250);
   --color-brand-soft: oklch(0.32 0.05 250);
   --color-brand-strong: oklch(0.15 0.07 250);
+  --color-nav: oklch(1 0 0);  /* BottomNav surface — follows theme */
 
   --color-accent: oklch(0.70 0.19 45);
   --color-accent-soft: oklch(0.88 0.10 45);

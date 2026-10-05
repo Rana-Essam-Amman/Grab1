@@ -75,7 +75,7 @@ function applyTheme(theme: AppTheme): void {
   document.documentElement.dataset.theme = resolveTheme(theme);
 }
 
-/** Read the persisted theme choice from localStorage. Default: 'auto'. */
+/** Read the persisted theme choice from localStorage. Default: 'light'. */
 function getStoredTheme(): AppTheme {
   try {
     const raw = globalStorage().get<string>('grab_theme_v1');
@@ -83,7 +83,7 @@ function getStoredTheme(): AppTheme {
   } catch {
     // fall through
   }
-  return 'auto';
+  return 'light';
 }
 
 // UI Store state slice definition
