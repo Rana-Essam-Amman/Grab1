@@ -24,7 +24,7 @@ export const SignOutModal: React.FC<SignOutModalProps> = ({
     >
       <div className="flex flex-col items-center text-center gap-4 py-3" dir={isArabic ? 'rtl' : 'ltr'}>
         <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
-          <Logout size={26} variant="Bold" color="#E57E25" />
+          <Logout size={26} variant="Bold" color="currentColor" />
         </div>
 
         <p className="text-sm font-bold text-ink leading-relaxed font-cairo">

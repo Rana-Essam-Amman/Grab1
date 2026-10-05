@@ -20,7 +20,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ listing, onClose }) => {
       open={true}
       onClose={onClose}
       size="md"
-      className="max-w-[440px] rounded-3xl border border-[#E2E8F0] p-5 bg-white [&>button:first-child]:hidden"
+      className="max-w-[440px] rounded-3xl border border-border p-5 bg-surface [&>button:first-child]:hidden"
     >
       <div dir={isArabic ? 'rtl' : 'ltr'}>
         <div className="w-10 h-1 rounded-full bg-border mx-auto mb-4 sm:hidden" />
