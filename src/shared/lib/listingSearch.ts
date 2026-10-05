@@ -1,6 +1,7 @@
 import type { Listing } from '@/types';
 import { normalizeArabic } from '@/data/arabicNormalize';
 import { expandWithSynonyms } from '@/data/arabicSynonyms';
+import { phoneticKey } from './phoneticKey';
 
 export const parsePrice = (p: unknown): number => Number(String(p).replace(/,/g, '').trim());
 
@@ -53,6 +54,8 @@ export const scoreListing = (item: Listing, q: string): number => {
 
   const title = normalizeArabic(item.title || '');
   const desc = normalizeArabic(item.description || '');
+  const titlePhon = phoneticKey(item.title || '');
+  const descPhon = phoneticKey(item.description || '');
   const catSlug = normalizeArabic(item.categorySlug || '');
   const subSlug = normalizeArabic(item.subcategorySlug || '');
 
@@ -80,6 +83,17 @@ export const scoreListing = (item: Listing, q: string): number => {
     if (catSlug.includes(t) || subSlug.includes(t)) tokenScore += 8;
     if (desc.includes(t)) tokenScore += 5;
     if (other.includes(t)) tokenScore += 3;
+
+    // Cross-script phonetic fallback (only fires when direct match failed)
+    if (tokenScore === 0) {
+      const tKey = phoneticKey(t);
+      if (tKey.length >= 2) {
+        if (titlePhon.includes(tKey)) tokenScore += 6;
+        else if (descPhon.includes(tKey)) tokenScore += 4;
+        else if (phoneticKey(other).includes(tKey)) tokenScore += 2;
+      }
+    }
+
     if (tokenScore === 0) return 0;
     score += tokenScore;
   }
