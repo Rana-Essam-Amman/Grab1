@@ -12,6 +12,7 @@ import {
 } from 'iconsax-react';
 import { SettingsProfileCard } from '../components/SettingsProfileCard';
 import { SettingsLegalSection } from '../components/SettingsLegalSection';
+import { SettingsThemeSection } from '../components/SettingsThemeSection';
 import { EditNicknameModal } from '../components/EditNicknameModal';
 import { useAuthStore } from '@/features/auth/store/auth.slice';
 
@@ -67,6 +68,9 @@ export const SettingsScreen: React.FC = () => {
           handleLoginCta={handleLoginCta}
           handleLogout={handleLogout}
         />
+
+        {/* Theme Section */}
+        <SettingsThemeSection isArabic={isArabic} />
 
         {/* Preferences Section */}
         <div className="bg-surface rounded-2xl border border-border overflow-hidden shadow-xs">
