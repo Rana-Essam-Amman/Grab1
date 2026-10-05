@@ -125,4 +125,3 @@ export const EditProfileScreen: React.FC = () => {
     </div>
   );
 };
-export default EditProfileScreen;
