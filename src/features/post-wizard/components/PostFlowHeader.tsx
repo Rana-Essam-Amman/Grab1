@@ -40,7 +40,7 @@ export const PostFlowHeader: React.FC<PostFlowHeaderProps> = ({
   const breadcrumb = [categoryName, subcategoryName].filter(Boolean).join(' › ');
 
   return (
-    <div className="px-4 py-4 border-b border-white/10 flex items-center gap-3 bg-[#1a2238] sticky top-0 z-20">
+    <div className="px-4 py-4 border-b border-white/10 flex items-center gap-3 bg-brand sticky top-0 z-20">
       <Button
         variant="ghost"
         size="icon"

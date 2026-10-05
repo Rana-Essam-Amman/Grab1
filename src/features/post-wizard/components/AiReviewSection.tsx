@@ -39,8 +39,8 @@ export const AiReviewSection: React.FC<AiReviewSectionProps> = ({
         </div>
         <div className="w-9 h-9 rounded-full bg-surface border border-line flex items-center justify-center shrink-0 transition-transform duration-300">
           {open
-            ? <ArrowUp2 size={14} variant="Bold" color="#1a2238" />
-            : <ArrowDown2 size={14} variant="Bold" color="#1a2238" />}
+            ? <ArrowUp2 size={14} variant="Bold" color="currentColor" className="text-ink" />
+            : <ArrowDown2 size={14} variant="Bold" color="currentColor" className="text-ink" />}
         </div>
       </button>
       {open && (

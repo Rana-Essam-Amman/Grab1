@@ -53,12 +53,12 @@ export const ChooseSubcategoryScreen: React.FC = () => {
             type="button"
             data-testid={`subcategory-card-${sub.slug}`}
             onClick={() => handleSelectSub(sub.slug)}
-            className="w-full p-4 flex items-center justify-between text-start transition-all group active:scale-[0.99] cursor-pointer rounded-2xl bg-white border border-line hover:border-[#E57E25]/50 hover:shadow-sm"
+            className="w-full p-4 flex items-center justify-between text-start transition-all group active:scale-[0.99] cursor-pointer rounded-2xl bg-surface border border-line hover:border-accent/50 hover:shadow-sm"
           >
-            <span className="text-[14px] font-bold text-ink group-hover:text-[#E57E25] transition-colors">
+            <span className="text-[14px] font-bold text-ink group-hover:text-accent transition-colors">
               {isArabic ? sub.nameAr : sub.nameEn}
             </span>
-            <span className="w-7 h-7 rounded-full bg-canvas border border-line flex items-center justify-center group-hover:bg-[#E57E25] group-hover:border-[#E57E25] transition-colors shrink-0">
+            <span className="w-7 h-7 rounded-full bg-canvas border border-line flex items-center justify-center group-hover:bg-accent group-hover:border-accent transition-colors shrink-0">
               <ChevronIcon size={14} variant="Bold" className="text-ink-muted group-hover:text-white transition-colors" />
             </span>
           </button>

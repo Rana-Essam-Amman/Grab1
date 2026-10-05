@@ -94,7 +94,7 @@ export const AiCaptureScreen: React.FC = () => {
               <Microphone2 size={16} variant="Linear" className={isRecording ? 'animate-bounce' : ''} />
               <span>{isRecording ? (isArabic ? 'إيقاف التسجيل' : 'Stop Recording') : !isSupported ? (isArabic ? 'قيد التجهيز' : 'Coming soon') : (isArabic ? 'تحدث لوصف السلعة' : 'Speak to describe')}</span>
             </Button>
-            {errorMsg && <p className="text-[#DC2626] text-xs">{errorMsg}</p>}
+            {errorMsg && <p className="text-danger text-xs">{errorMsg}</p>}
           </div>
         </div>
       </div>
