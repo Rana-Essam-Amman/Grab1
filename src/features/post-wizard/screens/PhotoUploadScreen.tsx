@@ -74,8 +74,8 @@ export const PhotoUploadScreen: React.FC = () => {
       <div className="p-4 flex-1 flex flex-col gap-6">
         {/* Section 1: Photos */}
         <section className="flex flex-col gap-4">
-          <div className="p-3.5 rounded-2xl bg-orange-50 border border-orange-100 flex items-start gap-2.5">
-            <Warning2 size={16} variant="Bold" className="shrink-0 mt-0.5 text-orange-500" />
+          <div className="p-3.5 rounded-2xl bg-warning/10 border border-warning/20 flex items-start gap-2.5">
+            <Warning2 size={16} variant="Bold" className="shrink-0 mt-0.5 text-warning" />
             <div className="text-[12px] font-medium text-ink leading-relaxed">
               {isArabic ? 'يجب إضافة صورة واحدة على الأقل. الصور الواضحة تضاعف سرعة بيع السلعة.' : 'Add at least 1 photo. Clear photos increase buyer interest.'}
             </div>
@@ -137,4 +137,3 @@ export const PhotoUploadScreen: React.FC = () => {
     </div>
   );
 };
-
