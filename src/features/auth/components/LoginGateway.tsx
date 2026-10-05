@@ -44,7 +44,7 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
       ) : (
         <>
           <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
-            <ShieldTick size={32} variant="Bold" color="#E57E25" />
+            <ShieldTick size={32} variant="Bold" color="currentColor" />
           </div>
           <h2 className="text-xl font-bold text-ink mb-2">{t('auth.loginTitle')}</h2>
           <p className="text-xs text-ink-muted leading-relaxed max-w-[280px] mb-8">
@@ -73,9 +73,9 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
               </p>
             )}
             <div className="flex items-center gap-3 my-2 w-full">
-              <div className="flex-1 h-px bg-[#E2E8F0]" />
-              <span className="text-xs text-[#64748B] font-medium">{isArabic ? 'أو' : 'or'}</span>
-              <div className="flex-1 h-px bg-[#E2E8F0]" />
+              <div className="flex-1 h-px bg-line" />
+              <span className="text-xs text-ink-muted font-medium">{isArabic ? 'أو' : 'or'}</span>
+              <div className="flex-1 h-px bg-line" />
             </div>
             <Button onClick={onGoToRegister} type="button" variant="primary" size="lg" fullWidth>
               {t('auth.createAccount')}
@@ -84,7 +84,7 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
               {t('auth.haveAccount')}
             </Button>
             <Button onClick={onToggleGuestCountrySelect} type="button" variant="secondary" size="lg" fullWidth className="bg-background hover:bg-border text-ink-soft">
-              <Global size={16} variant="Linear" color="#64748B" />
+              <Global size={16} variant="Linear" color="currentColor" />
               <span>{t('auth.browseAsGuest')}</span>
             </Button>
             {(!import.meta.env.PROD || import.meta.env.VITE_ALLOW_QUICK_DEMO === 'true') && (
@@ -94,7 +94,7 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
             )}
           </div>
           {toast && (
-            <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-[#1a2238] text-white text-xs rounded-xl px-4 py-2.5 shadow-lg z-50 animate-fadeIn">
+            <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-brand text-white text-xs rounded-xl px-4 py-2.5 shadow-lg z-50 animate-fadeIn">
               {toast}
             </div>
           )}
