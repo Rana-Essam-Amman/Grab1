@@ -1,6 +1,6 @@
 import type { Listing } from '@/types';
 import { fetchListings, createListing } from '../services/listingsService';
-import { uploadListingImages } from '../services/storageService';
+import { uploadListingImages, removeListingImages } from '../services/storageService';
 import { sanitizeListingData } from './listings.slice.helpers';
 import { supabase } from '@/shared/lib/supabase';
 
@@ -36,7 +36,6 @@ export async function performSupabasePublish(
     }
     if (failedCount > 0) {
       // Partial failure — publish with what we have, log silently.
-      // eslint-disable-next-line no-console
       console.warn(`[publish] ${failedCount} image(s) failed to upload`);
     }
 
@@ -55,7 +54,13 @@ export async function performSupabasePublish(
       sellerName: sanitized.sellerName,
       sellerPhone: sanitized.sellerPhone,
     });
-    if (error || !data) return { remoteListing: null, error: error || 'فشل النشر' };
+    if (error || !data) {
+      // Roll back uploaded images — the listing was never persisted.
+      if (uploadedImages.length > 0) {
+        await removeListingImages(uploadedImages);
+      }
+      return { remoteListing: null, error: error || 'فشل النشر' };
+    }
     return { remoteListing: data, error: null };
   } catch (err) {
     return { remoteListing: null, error: err instanceof Error ? err.message : 'خطأ غير معروف' };
