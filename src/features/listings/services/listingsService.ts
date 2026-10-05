@@ -22,6 +22,8 @@ export interface SupabaseListingRow {
   readonly seller_phone: string | null;
   readonly created_at: string;
   readonly updated_at: string;
+  readonly bumps_today?: number | null;
+  readonly bumps_reset_date?: string | null;
 }
 
 function rowToListing(row: SupabaseListingRow): Listing {
@@ -45,6 +47,8 @@ function rowToListing(row: SupabaseListingRow): Listing {
     createdAt: row.created_at.split('T')[0],
     views: row.views,
     status: row.status as Listing['status'],
+    bumpsToday: row.bumps_today ?? 0,
+    bumpsResetDate: row.bumps_reset_date ?? undefined,
     attributes: attrs as Listing['attributes'],
   };
 }
@@ -145,5 +149,20 @@ export async function updateListingStatus(
     return { error: error ? error.message : null };
   } catch (err) {
     return { error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
+/**
+ * Increment the server-side daily bump counter for a listing.
+ * Server validates ownership via auth.uid(). Returns the new count,
+ * or null if the RPC failed (unauthenticated, not owned, network).
+ */
+export async function bumpListing(listingId: string): Promise<number | null> {
+  try {
+    const { data, error } = await supabase.rpc('bump_listing', { p_listing_id: listingId });
+    if (error) return null;
+    return typeof data === 'number' ? data : null;
+  } catch {
+    return null;
   }
 }

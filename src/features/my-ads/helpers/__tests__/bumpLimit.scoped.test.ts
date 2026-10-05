@@ -1,51 +1,66 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { getBumpCount, recordBump, canBump } from '../bumpLimit';
+import { describe, it, expect } from 'vitest';
+import { getBumpCount, canBump, BUMP_DAILY_LIMIT } from '../bumpLimit';
+import type { Listing } from '@/types';
 
-// Mock UI getter for market
-let mockedMarket = 'JO';
-vi.mock('@/shared/store-getters/ui.getter', () => ({
-  getBrowseCountryCode: () => mockedMarket,
-}));
+const today = new Date().toISOString().slice(0, 10);
+const yesterday = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10);
 
-describe('bumpLimit — market-scoped', () => {
-  beforeEach(() => {
-    localStorage.clear();
-    mockedMarket = 'JO';
+function stub(bumpsToday?: number, bumpsResetDate?: string): Listing {
+  return {
+    id: 'listing-1',
+    userId: 'u1',
+    title: '',
+    description: '',
+    price: '0',
+    currency: 'JOD',
+    countryCode: 'JO',
+    city: '',
+    neighborhood: '',
+    categorySlug: '',
+    subcategorySlug: '',
+    imageUrl: '',
+    images: [],
+    sellerPhone: '',
+    sellerName: '',
+    createdAt: today,
+    views: 0,
+    attributes: [],
+    bumpsToday,
+    bumpsResetDate,
+  };
+}
+
+describe('bumpLimit helpers (server-backed)', () => {
+  it('BUMP_DAILY_LIMIT is 3', () => {
+    expect(BUMP_DAILY_LIMIT).toBe(3);
   });
 
-  it('recordBump writes to a market-scoped key', () => {
-    mockedMarket = 'JO';
-    recordBump('listing-1');
-
-    // The exact key shape is catch_JO_bump_listing-1_<date>
-    const keys = Object.keys(localStorage).filter((k) => k.includes('bump_listing-1'));
-    expect(keys.length).toBeGreaterThan(0);
-    expect(keys[0]).toMatch(/^catch_JO_bump_listing-1_/);
+  it('returns 0 when no bumps_reset_date is set', () => {
+    expect(getBumpCount(stub())).toBe(0);
+    expect(getBumpCount(stub(2))).toBe(0);
   });
 
-  it('JO and LB bumps are isolated', () => {
-    mockedMarket = 'JO';
-    recordBump('listing-1');
-    recordBump('listing-1');
-    expect(getBumpCount('listing-1')).toBe(2);
-
-    mockedMarket = 'LB';
-    expect(getBumpCount('listing-1')).toBe(0);
-    recordBump('listing-1');
-    expect(getBumpCount('listing-1')).toBe(1);
-
-    mockedMarket = 'JO';
-    expect(getBumpCount('listing-1')).toBe(2);
+  it('returns 0 when bumps_reset_date is yesterday (stale)', () => {
+    expect(getBumpCount(stub(2, yesterday))).toBe(0);
   });
 
-  it('respects daily limit per market', () => {
-    mockedMarket = 'SA';
-    while (canBump('listing-9')) {
-      recordBump('listing-9');
-    }
-    expect(canBump('listing-9')).toBe(false);
+  it('returns stored count when reset date is today', () => {
+    expect(getBumpCount(stub(0, today))).toBe(0);
+    expect(getBumpCount(stub(1, today))).toBe(1);
+    expect(getBumpCount(stub(3, today))).toBe(3);
+  });
 
-    mockedMarket = 'PS';
-    expect(canBump('listing-9')).toBe(true);
+  it('canBump is true below the daily limit', () => {
+    expect(canBump(stub(0, today))).toBe(true);
+    expect(canBump(stub(2, today))).toBe(true);
+  });
+
+  it('canBump is false at or above the daily limit', () => {
+    expect(canBump(stub(3, today))).toBe(false);
+    expect(canBump(stub(99, today))).toBe(false);
+  });
+
+  it('canBump is true when reset date is stale regardless of prior count', () => {
+    expect(canBump(stub(3, yesterday))).toBe(true);
   });
 });

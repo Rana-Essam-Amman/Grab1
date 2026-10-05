@@ -57,6 +57,8 @@ export interface Listing {
   status?: ListingStatus;
   lastBumpedAt?: string;
   isAutoBumpActive?: boolean;
+  bumpsToday?: number;
+  bumpsResetDate?: string;
   sourceLocale?: 'ar' | 'en';
   titleEn?: string;
   descriptionEn?: string;
