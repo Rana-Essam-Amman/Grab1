@@ -1,6 +1,8 @@
 import type { Listing } from '@/types';
 import { normalizeArabic } from '@/data/arabicNormalize';
 import { expandWithSynonyms } from '@/data/arabicSynonyms';
+import { phoneticKey } from './phoneticKey';
+import { stemArabic, stemText } from './arabicStemmer';
 
 export const parsePrice = (p: unknown): number => Number(String(p).replace(/,/g, '').trim());
 
@@ -53,6 +55,8 @@ export const scoreListing = (item: Listing, q: string): number => {
 
   const title = normalizeArabic(item.title || '');
   const desc = normalizeArabic(item.description || '');
+  const titlePhon = phoneticKey(item.title || '');
+  const descPhon = phoneticKey(item.description || '');
   const catSlug = normalizeArabic(item.categorySlug || '');
   const subSlug = normalizeArabic(item.subcategorySlug || '');
 
@@ -73,13 +77,31 @@ export const scoreListing = (item: Listing, q: string): number => {
   );
   const other = normalizeArabic(otherStrings.join(' '));
 
+  const otherPhon = phoneticKey(other);
+  const titleStem = stemText(title);
+  const descStem = stemText(desc);
+  const otherStem = stemText(other);
+
   let score = 0;
   for (const t of effectiveTokens) {
     let tokenScore = 0;
-    if (title.includes(t)) tokenScore += 10;
+    const tStem = stemArabic(t);
+
+    if (title.includes(t) || (tStem.length >= 2 && titleStem.includes(tStem))) tokenScore += 10;
     if (catSlug.includes(t) || subSlug.includes(t)) tokenScore += 8;
-    if (desc.includes(t)) tokenScore += 5;
-    if (other.includes(t)) tokenScore += 3;
+    if (desc.includes(t) || (tStem.length >= 2 && descStem.includes(tStem))) tokenScore += 5;
+    if (other.includes(t) || (tStem.length >= 2 && otherStem.includes(tStem))) tokenScore += 3;
+
+    // Cross-script phonetic fallback (only fires when direct match failed)
+    if (tokenScore === 0) {
+      const tKey = phoneticKey(t);
+      if (tKey.length >= 2) {
+        if (titlePhon.includes(tKey)) tokenScore += 6;
+        else if (descPhon.includes(tKey)) tokenScore += 4;
+        else if (otherPhon.includes(tKey)) tokenScore += 2;
+      }
+    }
+
     if (tokenScore === 0) return 0;
     score += tokenScore;
   }
