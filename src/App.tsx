@@ -71,27 +71,6 @@ const ScreenLoader: React.FC = () => (
   </div>
 );
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const MainNavigator: React.FC = () => {
   const { currentScreen, activeTab } = useUI();
   useUrlSync();
@@ -250,9 +229,6 @@ const MainNavigator: React.FC = () => {
     </div>
   );
 };
-
-
-
 
 export default function App() {
   const locale = useUIStore((state) => state.locale);
