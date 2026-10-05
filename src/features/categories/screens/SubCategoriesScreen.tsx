@@ -83,7 +83,7 @@ export const SubCategoriesScreen: React.FC = () => {
       }`}
     >
       {/* Top Header Navigation Bar */}
-      <div className="sticky top-0 z-30 bg-[#1a2238] border-b border-white/10 px-4 py-3 flex items-center justify-between">
+      <div className="sticky top-0 z-30 bg-brand border-b border-white/10 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button type="button" onClick={goBack} aria-label="Back" className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center cursor-pointer active:scale-95">
             <BackIcon size={18} variant="Linear" color="#FFFFFF" />
