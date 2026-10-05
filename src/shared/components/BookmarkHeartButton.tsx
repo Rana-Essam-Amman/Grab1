@@ -51,8 +51,8 @@ export const BookmarkHeartButton: React.FC<BookmarkHeartButtonProps> = ({
       onClick={handleClick}
       className={`relative flex items-center justify-center rounded-full backdrop-blur-md transition-all duration-200 z-10 ${
         isSaved
-          ? 'bg-white shadow-md ring-1 ring-red-500/20'
-          : 'bg-white/90 hover:bg-white shadow-xs'
+          ? 'bg-surface shadow-md ring-1 ring-danger/20'
+          : 'bg-surface/90 hover:bg-surface shadow-xs'
       } ${buttonDimensions} ${className}`}
       aria-label={
         isSaved

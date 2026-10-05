@@ -15,7 +15,7 @@ export interface ListingDetailHeaderProps {
 export const ListingDetailHeader: React.FC<ListingDetailHeaderProps> = React.memo(({ isArabic, onBack, onShare, onReport, onDelete, isOwner, listingId }) => {
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
   return (
-    <div className="px-4 py-3 bg-[#1a2238] border-b border-white/10 sticky top-0 z-30 flex items-center justify-between">
+    <div className="px-4 py-3 bg-brand border-b border-white/10 sticky top-0 z-30 flex items-center justify-between">
       <button onClick={onBack} className="w-9 h-9 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center transition-colors cursor-pointer" aria-label={isArabic ? 'رجوع' : 'Back'}>
         <BackIcon size={18} variant="Bold" color="#FFFFFF" />
       </button>

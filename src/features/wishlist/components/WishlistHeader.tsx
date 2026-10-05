@@ -22,7 +22,7 @@ export const WishlistHeader: React.FC<WishlistHeaderProps> = ({
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
 
   return (
-   <div className="p-3 bg-[#1a2238] border-b border-white/10 flex items-center justify-between sticky top-0 z-20">
+   <div className="p-3 bg-brand border-b border-white/10 flex items-center justify-between sticky top-0 z-20">
      <div className="flex items-center gap-2 min-w-0">
        <Button variant="ghost" size="icon" onClick={goBack} aria-label="Back" className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 shrink-0 p-0">
          <BackIcon size={18} variant="Linear" color="#FFFFFF" />

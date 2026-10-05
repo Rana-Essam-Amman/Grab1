@@ -21,7 +21,7 @@ export const ListingSpecsRow: React.FC<ListingSpecsRowProps> = ({ specs, compact
       {specs.map((s, i) => (
         <span
           key={`${s.label}-${i}`}
-          className={`inline-flex items-center gap-1 rounded-full bg-[#E57E25]/10 border border-[#E57E25]/20 truncate ${
+          className={`inline-flex items-center gap-1 rounded-full bg-accent/10 border border-accent/20 truncate ${
             compact ? 'px-1.5 py-0.5' : 'px-2 py-1'
           }`}
         >
