@@ -32,7 +32,7 @@ export const ListingSpecsRow: React.FC<ListingSpecsRowProps> = ({ specs, compact
             className="shrink-0"
           />
           <span
-            className={`font-bold text-[#1a2238] truncate ${
+            className={`font-bold text-ink truncate ${
               compact ? 'text-[10px] max-w-[70px]' : 'text-[11px] max-w-[100px]'
             }`}
           >
