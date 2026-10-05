@@ -20,10 +20,10 @@ export const PostAdEntryScreen: React.FC = () => {
           variant="ghost"
           size="icon"
           onClick={handleBack}
-          className="w-10 h-10 rounded-full bg-white/15 text-white hover:bg-white/25 cursor-pointer flex items-center justify-center p-0"
+          className="w-10 h-10 rounded-full bg-surface/15 text-white hover:bg-surface/25 cursor-pointer flex items-center justify-center p-0"
           aria-label={isArabic ? 'رجوع' : 'Back'}
         >
-          <BackIcon size={18} variant="Linear" color="#FFFFFF" className="text-white" />
+          <BackIcon size={18} variant="Linear" color="currentColor" className="text-white" />
         </Button>
         <h2 className="text-lg font-bold text-white">
           {isArabic ? 'نشر إعلان' : 'Post Ad'}

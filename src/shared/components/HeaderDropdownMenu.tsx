@@ -110,7 +110,7 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
             <span className="text-sm font-bold text-ink flex items-center gap-2">
               {isArabic ? 'المفضلة' : 'Favorites'}
               {wishlistLength > 0 && (
-                <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-[#EF4444] text-white text-[11px] font-bold">
+                <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-danger text-white text-[11px] font-bold">
                   {wishlistLength}
                 </span>
               )}

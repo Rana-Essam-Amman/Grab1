@@ -85,7 +85,7 @@ export const SubCategoriesScreen: React.FC = () => {
       {/* Top Header Navigation Bar */}
       <div className="sticky top-0 z-30 bg-brand border-b border-white/10 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button type="button" onClick={goBack} aria-label="Back" className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center cursor-pointer active:scale-95">
+          <button type="button" onClick={goBack} aria-label="Back" className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 flex items-center justify-center cursor-pointer active:scale-95">
             <BackIcon size={18} variant="Linear" color="#FFFFFF" />
           </button>
           <div className="flex flex-col">
@@ -97,7 +97,7 @@ export const SubCategoriesScreen: React.FC = () => {
             </span>
           </div>
         </div>
-        <div className="w-10 h-10 rounded-xl bg-white/15 overflow-hidden shrink-0 flex items-center justify-center">
+        <div className="w-10 h-10 rounded-xl bg-surface/15 overflow-hidden shrink-0 flex items-center justify-center">
           <img src={parentCategory.asset} alt={parentCategory.nameEn} className="w-full h-full object-cover" onError={handleImageError} />
         </div>
       </div>

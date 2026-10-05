@@ -35,7 +35,7 @@ export const CategoryPickScreen: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-surface pb-12" dir={isArabic ? 'rtl' : 'ltr'}>
       <div className="px-4 py-4 border-b border-white/10 flex items-center gap-3 bg-brand sticky top-0 z-20">
-        <Button variant="ghost" size="icon" onClick={goBack} className="w-10 h-10 rounded-full bg-white/15 text-white" disabled={isAnalyzing}>
+        <Button variant="ghost" size="icon" onClick={goBack} className="w-10 h-10 rounded-full bg-surface/15 text-white" disabled={isAnalyzing}>
           <BackIcon size={18} variant="Linear" color="#FFFFFF" />
         </Button>
         <div>

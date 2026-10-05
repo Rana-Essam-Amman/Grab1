@@ -17,7 +17,7 @@ export const OfflineBanner: React.FC = () => {
     <div
       role="status"
       aria-live="polite"
-      className="fixed top-0 left-0 right-0 z-[100] bg-amber-500 text-white text-center text-xs font-bold py-1.5 px-3 shadow-md"
+      className="fixed top-0 left-0 right-0 z-[100] bg-warning text-white text-center text-xs font-bold py-1.5 px-3 shadow-md"
       dir={isArabic ? 'rtl' : 'ltr'}
     >
       {isArabic

@@ -18,13 +18,13 @@ export const AiReviewHeader: React.FC<Props> = ({ isArabic, onBack }) => {
   if (draftTitle) {
     if (draftTitle.startsWith('🟢 AI')) {
       sourceBadge = (
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold border border-emerald-500/30">
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-success/20 text-success text-[10px] font-bold border border-success/30">
           🟢 AI Source
         </span>
       );
     } else if (draftTitle.startsWith('🟠 Local')) {
       sourceBadge = (
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-[10px] font-bold border border-amber-500/30">
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning/20 text-warning text-[10px] font-bold border border-warning/30">
           🟠 Local Fallback
         </span>
       );
@@ -33,11 +33,11 @@ export const AiReviewHeader: React.FC<Props> = ({ isArabic, onBack }) => {
 
   return (
     <div className="px-4 py-4 border-b border-white/10 flex items-center gap-3 bg-brand sticky top-0 z-20">
-      <Button variant="ghost" size="icon" onClick={onBack} className="w-10 h-10 rounded-full bg-white/15 text-white hover:bg-white/25 cursor-pointer flex items-center justify-center p-0"><BackIcon size={18} variant="Linear" color="#FFFFFF" className="text-white" /></Button>
+      <Button variant="ghost" size="icon" onClick={onBack} className="w-10 h-10 rounded-full bg-surface/15 text-white hover:bg-surface/25 cursor-pointer flex items-center justify-center p-0"><BackIcon size={18} variant="Linear" color="currentColor" className="text-white" /></Button>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           {sourceBadge || (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/15 text-white text-[10px] font-bold">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface/15 text-white text-[10px] font-bold">
               <MagicStar size={11} variant="Bold" color="#FFFFFF" />
               {isArabic ? 'AI' : 'AI'}
             </span>

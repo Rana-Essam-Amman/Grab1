@@ -41,7 +41,7 @@ export const ListingActionBar: React.FC<ListingActionBarProps> = React.memo(({
         className={`py-3 px-3 rounded-xl flex items-center justify-center gap-1 font-bold text-xs shadow-xs transition-colors ${
           isCountryMismatch
             ? 'bg-border text-ink-muted cursor-not-allowed'
-            : 'bg-[#25D366] text-white hover:opacity-90 cursor-pointer'
+            : 'bg-success text-white hover:opacity-90 cursor-pointer'
         }`}
         title={isArabic ? 'واتساب' : 'WhatsApp'}
         aria-label={isArabic ? 'تواصل عبر واتساب' : 'Contact via WhatsApp'}

@@ -51,7 +51,7 @@ export const SettingsScreen: React.FC = () => {
     <div className="flex flex-col min-h-screen bg-surface pb-16" dir={isArabic ? 'rtl' : 'ltr'}>
       {/* Top Bar */}
       <div className="px-4 py-4 bg-brand border-b border-white/10 flex items-center gap-3 sticky top-0 z-20">
-        <Button variant="ghost" size="icon" onClick={goBack} aria-label="Back" className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center p-0">
+        <Button variant="ghost" size="icon" onClick={goBack} aria-label="Back" className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 flex items-center justify-center p-0">
           <BackIcon size={18} variant="Linear" color="#FFFFFF" />
         </Button>
         <h1 className="text-lg font-bold text-white">{isArabic ? 'الإعدادات والحساب' : 'Settings & Account'}</h1>

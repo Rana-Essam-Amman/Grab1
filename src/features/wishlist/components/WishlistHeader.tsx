@@ -24,13 +24,13 @@ export const WishlistHeader: React.FC<WishlistHeaderProps> = ({
   return (
    <div className="p-3 bg-brand border-b border-white/10 flex items-center justify-between sticky top-0 z-20">
      <div className="flex items-center gap-2 min-w-0">
-       <Button variant="ghost" size="icon" onClick={goBack} aria-label="Back" className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 shrink-0 p-0">
+       <Button variant="ghost" size="icon" onClick={goBack} aria-label="Back" className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 shrink-0 p-0">
          <BackIcon size={18} variant="Linear" color="#FFFFFF" />
        </Button>
        <div className="min-w-0">
          <h1 className="text-base font-bold text-white flex items-center gap-1.5">
            <span>{title}</span>
-           <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/20 text-white font-bold">{totalCount}</span>
+           <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-surface/20 text-white font-bold">{totalCount}</span>
          </h1>
          <p className="text-[11px] text-white/70 truncate">
            {isArabic ? 'الإعلانات التي قمت بحفظها للمراجعة لاحقاً' : 'Listings you saved to track and review'}
