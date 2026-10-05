@@ -78,13 +78,13 @@ export const ExploreFilterChipsBar: React.FC<ExploreFilterChipsBarProps> = React
       <button
         type="button"
         onClick={() => onFeedLayoutChange(feedLayout === 'list' ? 'grid' : 'list')}
-        className="w-8 h-8 rounded-xl border border-[#E57E25] bg-white hover:bg-[#E57E25]/5 flex items-center justify-center transition-colors cursor-pointer shrink-0"
+        className="w-8 h-8 rounded-xl border border-accent bg-surface hover:bg-accent/5 flex items-center justify-center transition-colors cursor-pointer shrink-0"
         title={isArabic ? 'تغيير طريقة العرض' : 'Toggle layout'}
       >
         {feedLayout === 'list' ? (
-          <Grid1 size={15} variant="Bold" color="#E57E25" />
+          <Grid1 size={15} variant="Bold" color="currentColor" className="text-accent" />
         ) : (
-          <RowVertical size={15} variant="Bold" color="#E57E25" />
+          <RowVertical size={15} variant="Bold" color="currentColor" className="text-accent" />
         )}
       </button>
     </div>
