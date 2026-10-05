@@ -23,7 +23,7 @@ export const ThreadInputBar: React.FC<ThreadInputBarProps> = ({
   if (isMessageLimitReached) {
     return (
       <div className="p-4 bg-surface border-t border-border flex flex-col gap-3 animate-in fade-in slide-in-from-bottom duration-300">
-        <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-center text-xs text-primary font-bold leading-relaxed">
+        <div className="p-3.5 rounded-2xl bg-warning/15 border border-warning/40 text-center text-xs text-primary font-bold leading-relaxed">
           {isArabic
             ? 'لقد وصلت للحد الأقصى من الرسائل، يرجى الاتصال بالبائع فوراً لإتمام الاتفاق'
             : 'You have reached the maximum allowed messages. Please call the seller directly to finalize the deal.'}
@@ -65,8 +65,8 @@ export const ThreadInputBar: React.FC<ThreadInputBarProps> = ({
         disabled={!inputText.trim()}
         className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
           inputText.trim()
-            ? 'bg-[#E57E25] hover:bg-[#d97706] text-white shadow-md active:scale-95'
-            : 'bg-[#E2E8F0] cursor-not-allowed'
+            ? 'bg-accent hover:bg-accent/90 text-white shadow-md active:scale-95'
+            : 'bg-surface-sunken cursor-not-allowed'
         }`}
       >
         <Send2
