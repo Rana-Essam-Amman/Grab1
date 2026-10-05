@@ -16,7 +16,7 @@ export function useExploreListings(): UseExploreListingsReturn {
   const { listings } = useListings();
 
   const [userFilterMode, setUserFilterMode] = useState<'city' | 'all' | null>(null);
-  const [feedLayout, setFeedLayout] = useState<'list' | 'grid'>('list');
+  const [feedLayout, setFeedLayout] = useState<'list' | 'grid'>('grid');
   const [voidedNotice, setVoidedNotice] = useState<string | null>(null);
 
   const activeSearchText = searchQuery;
