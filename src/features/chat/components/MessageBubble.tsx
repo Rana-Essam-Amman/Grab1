@@ -11,7 +11,7 @@ interface MessageBubbleProps {
 
 const TickIcon: React.FC<{ pending: boolean; read: boolean }> = ({ pending, read }) => {
   if (pending) return <span className="text-ink-muted">✓</span>;
-  if (read) return <span className="text-[#E57E25] font-bold">✓✓</span>;
+  if (read) return <span className="text-accent font-bold">✓✓</span>;
   return <span className="text-ink-muted">✓✓</span>;
 };
 
