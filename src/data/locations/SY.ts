@@ -13,11 +13,6 @@ export const SY_EN: CountryLocations = {
     'Al-Sabil', 'Bab al-Nasr', 'Bab al-Hadid', 'Qal\'at al-Sharif', 'Al-Izaa', 'Al-Mogambo',
     'Al-Hamdaniyah New', 'Al-Furqan'
   ],
-  Homs: [
-    'Al-Waer', 'Al-Khalidiyah', 'Bab al-Sebaa', 'Al-Hamidiyah', 'Al-Inshaat', 'Al-Ghouta',
-    'Al-Zahra', 'Al-Sabil', 'Al-Nuzha', 'Akrama', 'Al-Adawiyah', 'Al-Qusour', 'Jouret al-Shayyah',
-    'Bab Hood', 'Al-Muhajireen'
-  ],
   Hama: [
     'Al-Hader', 'Al-Madina', 'Al-Qusour', 'Al-Hamidiyah', 'Al-Salhiya', 'Al-Shari\'a',
     'Al-Jarajimeh', 'Bab Qibli', 'Al-Saboun', 'Al-Murabet', 'Kafr Buhum', 'Al-Hamra',
@@ -56,6 +51,24 @@ export const SY_EN: CountryLocations = {
     'Al-Quds', 'Al-Zahra', 'Al-Wusta', 'Al-Sharqiyah', 'Al-Gharbiyah', 'Al-Tayaran',
     'Al-Ghuwairan', 'Tayy'
   ],
+  'Rif Dimashq': [
+    'Douma', 'Harasta', 'Darayya', 'Moadamiyah', 'Sahnaya', 'Jaramana',
+    'Kafr Batna', 'Saqba', 'Hamouria', 'Misraba', 'Beit Saham', 'Deir al-Asafir',
+    'Zabadani', 'Madaya', 'Qatana', 'Al-Tal'
+  ],
+  'As-Suwayda': [
+    'As-Suwayda', 'Salkhad', 'Shahba', 'Qanawat', 'Al-Mazraa', 'Ariqah',
+    'Al-Ghariyah', 'Umm al-Zaytun', 'Al-Mushannaf', 'Al-Qurayya'
+  ],
+  Quneitra: [
+    'Madinat al-Baath', 'Khan Arnabah', 'Al-Quneitra', 'Hader',
+    'Jubata al-Khashab', 'Buqata', 'Masade', 'Al-Hurriyah'
+  ],
+  Homs: [
+    'Al-Waer', 'Al-Khalidiyah', 'Bab al-Sebaa', 'Al-Hamidiyah', 'Al-Inshaat', 'Al-Ghouta',
+    'Al-Zahra', 'Al-Sabil', 'Al-Nuzha', 'Akrama', 'Al-Adawiyah', 'Al-Qusour', 'Jouret al-Shayyah',
+    'Bab Hood', 'Al-Muhajireen', 'Al-Bayada', 'Al-Zahra Al-Jadidah', 'Wadi al-Nasara'
+  ],
   Other: ['Other']
 };
 
@@ -70,10 +83,6 @@ export const SY_AR: CountryLocations = {
     'الجديدة', 'الفردوس', 'السليمانية', 'العزيزية', 'الأشرفية', 'باب الفرج', 'الجميلية',
     'الشعار', 'الزهراء', 'الحمدانية', 'الميدان', 'المشارقة', 'السبيل', 'باب النصر',
     'باب الحديد', 'قلعة الشريف', 'الإذاعة', 'الموكامبو', 'الحمدانية الجديدة', 'الفرقان'
-  ],
-  'حمص': [
-    'الوعر', 'الخالدية', 'باب السباع', 'الحميدية', 'الإنشاءات', 'الغوطة', 'الزهراء',
-    'السبيل', 'النزهة', 'عكرمة', 'العدوية', 'القصور', 'جورة الشياح', 'باب هود', 'المهاجرين'
   ],
   'حماة': [
     'الحاضر', 'المدينة', 'القصور', 'الحميدية', 'الصالحية', 'الشريعة', 'الجراجمة',
@@ -109,6 +118,24 @@ export const SY_AR: CountryLocations = {
   ],
   'القامشلي': [
     'القدس', 'الزهراء', 'الوسطى', 'الشرقية', 'الغربية', 'الطياران', 'غويران', 'طي'
+  ],
+  'ريف دمشق': [
+    'دوما', 'حرستا', 'داريا', 'معضمية الشام', 'صحنايا', 'جرمانا',
+    'كفر بطنا', 'سقبا', 'حمورية', 'مسرابا', 'بيت سحم', 'دير العصافير',
+    'الزبداني', 'مضايا', 'قطنا', 'التل'
+  ],
+  'السويداء': [
+    'السويداء', 'صلخد', 'شهبا', 'قنوات', 'المزرعة', 'عريقة',
+    'الغارية', 'أم الزيتون', 'المشنف', 'القريا'
+  ],
+  'القنيطرة': [
+    'مدينة البعث', 'خان أرنبة', 'القنيطرة', 'حضر',
+    'جبا الخشب', 'بقعاتا', 'مسعدة', 'الحرية'
+  ],
+  'حمص': [
+    'الوعر', 'الخالدية', 'باب السباع', 'الحميدية', 'الإنشاءات', 'الغوطة',
+    'الزهراء', 'السبيل', 'النزهة', 'عكرمة', 'العدوية', 'القصور', 'جورة الشياح',
+    'باب هود', 'المهاجرين', 'البياضة', 'الزهراء الجديدة', 'وادي النصارى'
   ],
   'أخرى': ['أخرى']
 };

@@ -46,6 +46,19 @@ export const LB_EN: CountryLocations = {
     'Fanar', 'Roumieh', 'Mansourieh', 'Beit Mery', 'Broummana', 'Bikfaya', 'Dhour Choueir',
     'Bsalim'
   ],
+  Akkar: [
+    'Halba', 'Qoubaiyat', 'Bireh', 'Akkar al-Atiqa', 'Chadra', 'Kneisset',
+    'Hrar', 'Rahbeh', 'Beino', 'Andqet', 'Aidamoun', 'Fnaidek', 'Bzal', 'Abboudieh'
+  ],
+  'Baalbek-Hermel': [
+    'Baalbek', 'Hermel', 'Al-Qaa', 'Labweh', 'Yammouneh', 'Chmistar', 'Boudai',
+    'Temnin el-Fawqa', 'Temnin el-Tahta', 'Jebaa', 'Brital', 'Nabi Chit',
+    'Ain Bourday', 'Al-Fakiha', 'Kfar Zabad', 'Chaat', 'Hosh al-Sayyed Ali'
+  ],
+  'Bint Jbeil': [
+    'Bint Jbeil', 'Ainata', 'Aitaroun', 'Yaroun', 'Maroun al-Ras',
+    'Tibnin', 'Beit Yahoun', 'Kafra', 'Yater', 'Hanin', 'Srobbine', 'Rmeish'
+  ],
   Other: ['Other']
 };
 
@@ -92,6 +105,19 @@ export const LB_AR: CountryLocations = {
   'المتن': [
     'أنطلياس', 'الجديدة', 'البوشرية', 'الدكوانة', 'الزلقا', 'جل الديب', 'سن الفيل',
     'الفنار', 'رومية', 'المنصورية', 'بيت مري', 'برمانا', 'بكفيا', 'ضهور الشوير', 'بصاليم'
+  ],
+  'عكار': [
+    'حلبا', 'القبيات', 'البيرة', 'عكار العتيقة', 'شدرا', 'كنيسة',
+    'هرر', 'رحبة', 'بينو', 'عندقت', 'عيدمون', 'فنيدق', 'بزال', 'العبودية'
+  ],
+  'بعلبك-الهرمل': [
+    'بعلبك', 'الهرمل', 'القاع', 'اللبوة', 'اليامونية', 'شمستار', 'بوداي',
+    'تمنين الفوقا', 'تمنين التحتا', 'جبعا', 'بريتال', 'النبي شيت',
+    'عين بورضاي', 'الفاكهة', 'كفر زبد', 'شعت', 'حوش السيد علي'
+  ],
+  'بنت جبيل': [
+    'بنت جبيل', 'عيناتا', 'عيترون', 'يارون', 'مارون الراس',
+    'تبنين', 'بيت ياحون', 'كفرا', 'ياتر', 'حنين', 'صربين', 'رميش'
   ],
   'أخرى': ['أخرى']
 };
