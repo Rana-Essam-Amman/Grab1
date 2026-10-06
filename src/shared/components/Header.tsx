@@ -115,11 +115,7 @@ export const Header: React.FC = () => {
 
         <div className="w-10 h-10 shrink-0" aria-hidden="true" />
 
-        <CountryFlag
-          code={countryCode}
-          onClick={() => setIsCountrySheetOpen(true)}
-          ariaLabel={isArabic ? 'تغيير السوق' : 'Change market'}
-        />
+        <CountryFlag code={countryCode} />
       </div>
 
       {isMenuOpen && (
