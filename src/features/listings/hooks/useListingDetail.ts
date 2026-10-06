@@ -43,6 +43,7 @@ export function useListingDetail(): UseListingDetailReturn {
   const derived = useListingDerivedData(listing, isArabic);
   const isAuthenticated = authStatus === 'authenticated';
   const isOwner = Boolean(user?.phone && listing?.sellerPhone === user.phone);
+
   const handleSelectSeller = useCallback(() => {
     if (listing?.sellerPhone) { setSelectedSellerPhone(listing.sellerPhone); navigateTo('seller-profile'); }
   }, [listing, setSelectedSellerPhone, navigateTo]);
@@ -60,22 +61,19 @@ export function useListingDetail(): UseListingDetailReturn {
 
   const handleCall = useCallback(() => {
     if (!listing) return;
-    if (authStatus === 'unauthenticated') { navigateTo('login'); return; }
     window.location.href = `tel:${derived.formattedPhone.dialNumber}`;
-  }, [listing, authStatus, navigateTo, derived.formattedPhone.dialNumber]);
+  }, [listing, derived.formattedPhone.dialNumber]);
 
   const handleWhatsApp = useCallback(() => {
     if (!listing) return;
-    if (authStatus === 'unauthenticated') { navigateTo('login'); return; }
     window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: derived.formattedPhone.dialNumber, listingTitle: listing.title }), '_blank');
-  }, [listing, authStatus, navigateTo, derived.formattedPhone.dialNumber]);
+  }, [listing, derived.formattedPhone.dialNumber]);
 
   const handleWhatsAppClick = useCallback(() => {
     if (!listing) return;
-    if (authStatus === 'unauthenticated') { navigateTo('login'); return; }
-    if (!listing.sellerPhone) { navigateTo('login'); return; }
+    if (!listing.sellerPhone) return;
     setShowWhatsAppSheet(true);
-  }, [listing, authStatus, navigateTo]);
+  }, [listing]);
 
   const handleWhatsAppIntent = useCallback((intent: WhatsAppIntent) => {
     if (!listing) return;

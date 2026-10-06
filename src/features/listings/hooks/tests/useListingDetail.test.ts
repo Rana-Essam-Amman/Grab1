@@ -45,7 +45,6 @@ describe('useListingDetail', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockDeleteListing.mockResolvedValue({ success: true, error: null });
-
     vi.mocked(useUI).mockReturnValue({
       isArabic: false,
       goBack: mockGoBack,
@@ -55,16 +54,13 @@ describe('useListingDetail', () => {
       navigateTo: mockNavigateTo,
       browseCountryCode: 'JO',
     } as unknown as ReturnType<typeof useUI>);
-
     vi.mocked(useListings).mockReturnValue({
       getListing: mockGetListing.mockImplementation((id: string) => (id === 'item-123' ? mockListing : null)),
       deleteListing: mockDeleteListing,
     } as unknown as ReturnType<typeof useListings>);
-
     vi.mocked(useChat).mockReturnValue({
       openConversation: mockOpenConversation,
     } as unknown as ReturnType<typeof useChat>);
-
     vi.mocked(useAuth).mockReturnValue({
       authStatus: 'authenticated',
       user: { id: 'u1', phone: '0799999999', countryCode: 'JO' },
@@ -81,7 +77,6 @@ describe('useListingDetail', () => {
       navigateTo: mockNavigateTo,
       browseCountryCode: 'JO',
     } as unknown as ReturnType<typeof useUI>);
-
     const { result } = renderHook(() => useListingDetail());
     expect(result.current.listing).toBeNull();
   });
@@ -91,12 +86,10 @@ describe('useListingDetail', () => {
       authStatus: 'unauthenticated',
       user: null,
     } as unknown as ReturnType<typeof useAuth>);
-
     const { result } = renderHook(() => useListingDetail());
     await act(async () => {
       await result.current.handleStartChat();
     });
-
     expect(mockNavigateTo).toHaveBeenCalledWith('login');
     expect(mockOpenConversation).not.toHaveBeenCalled();
     expect(mockSetSelectedThreadId).not.toHaveBeenCalled();
@@ -107,7 +100,6 @@ describe('useListingDetail', () => {
     await act(async () => {
       await result.current.handleDelete();
     });
-
     expect(mockDeleteListing).toHaveBeenCalledWith('item-123');
     expect(mockGoBack).toHaveBeenCalledTimes(1);
   });
@@ -123,12 +115,10 @@ describe('useListingDetail', () => {
 
   it('handleStartChat with authenticated user starts conversation and navigates to thread', async () => {
     mockOpenConversation.mockResolvedValue({ id: 'thread-123' });
-
     const { result } = renderHook(() => useListingDetail());
     await act(async () => {
       await result.current.handleStartChat();
     });
-
     expect(mockOpenConversation).toHaveBeenCalledWith(
       { listingId: 'item-123', buyerId: 'u1', sellerId: 'seller-u1', marketCode: 'JO' },
       'JO'
@@ -137,27 +127,22 @@ describe('useListingDetail', () => {
     expect(mockNavigateTo).toHaveBeenCalledWith('thread');
   });
 
-  it('handleCall with unauthenticated user navigates to login', () => {
+  it('handleCall with unauthenticated user sets window.location.href to tel: link', () => {
     vi.mocked(useAuth).mockReturnValue({
       authStatus: 'unauthenticated',
       user: null,
     } as unknown as ReturnType<typeof useAuth>);
-
     const originalLocation = window.location;
     const mockLocation = { href: '' };
     Object.defineProperty(window, 'location', {
       writable: true,
       value: mockLocation,
     });
-
     const { result } = renderHook(() => useListingDetail());
     act(() => {
       result.current.handleCall();
     });
-
-    expect(mockNavigateTo).toHaveBeenCalledWith('login');
-    expect(mockLocation.href).toBe('');
-
+    expect(mockLocation.href).toBe('tel:+962791234567');
     Object.defineProperty(window, 'location', {
       writable: true,
       value: originalLocation,
@@ -171,28 +156,40 @@ describe('useListingDetail', () => {
       writable: true,
       value: mockLocation,
     });
-
     const { result } = renderHook(() => useListingDetail());
     act(() => {
       result.current.handleCall();
     });
-
     expect(mockLocation.href).toBe('tel:+962791234567');
-
     Object.defineProperty(window, 'location', {
       writable: true,
       value: originalLocation,
     });
   });
 
-  it('handleWhatsApp with authenticated user opens WhatsApp URL', () => {
+  it('handleWhatsApp with unauthenticated user opens WhatsApp URL', () => {
+    vi.mocked(useAuth).mockReturnValue({
+      authStatus: 'unauthenticated',
+      user: null,
+    } as unknown as ReturnType<typeof useAuth>);
     const spyOpen = vi.spyOn(window, 'open').mockImplementation(() => null);
-
     const { result } = renderHook(() => useListingDetail());
     act(() => {
       result.current.handleWhatsApp();
     });
+    expect(spyOpen).toHaveBeenCalled();
+    const urlCalled = spyOpen.mock.calls[0][0] as string;
+    expect(urlCalled).toContain('wa.me');
+    expect(urlCalled).toContain('791234567');
+    spyOpen.mockRestore();
+  });
 
+  it('handleWhatsApp with authenticated user opens WhatsApp URL', () => {
+    const spyOpen = vi.spyOn(window, 'open').mockImplementation(() => null);
+    const { result } = renderHook(() => useListingDetail());
+    act(() => {
+      result.current.handleWhatsApp();
+    });
     expect(spyOpen).toHaveBeenCalled();
     const urlCalled = spyOpen.mock.calls[0][0] as string;
     expect(urlCalled).toContain('wa.me');
@@ -205,7 +202,6 @@ describe('useListingDetail', () => {
       authStatus: 'authenticated',
       user: { id: 'u1', phone: '0791234567', countryCode: 'JO' },
     } as unknown as ReturnType<typeof useAuth>);
-
     const { result } = renderHook(() => useListingDetail());
     expect(result.current.isOwner).toBe(true);
   });
