@@ -111,7 +111,8 @@ describe('Real User Flow Integration Test Suite (Sprint T3 Ultra)', () => {
     expect(useUIStore.getState().activeCurrency).toBe('SYP');
   });
 
-  it('Flow 3: Authenticated user is strictly locked to their home country market', () => {
+  it('Flow 3: Authenticated user browses freely across markets', () => {
+    // New design: browse is free across markets for authenticated users.
     useAuthStore.setState({
       authStatus: 'authenticated',
       user: createMockUser({ countryCode: 'JO' }),
@@ -121,10 +122,10 @@ describe('Real User Flow Integration Test Suite (Sprint T3 Ultra)', () => {
     // Try switching to Saudi Arabia
     useUIStore.getState().setBrowseLocation('SA', 'Riyadh', 'الرياض');
 
-    // Must be locked to Jordan
+    // Reflects last explicit setBrowseLocation
     const uiState = useUIStore.getState();
-    expect(uiState.browseCountryCode).toBe('JO');
-    expect(uiState.activeCurrency).toBe('JOD');
+    expect(uiState.browseCountryCode).toBe('SA');
+    expect(uiState.activeCurrency).toBe('SAR');
   });
 
   it('Flow 4: Publish listing flow adds verified listing to home market', () => {
