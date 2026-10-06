@@ -53,6 +53,31 @@ export const PS_EN: CountryLocations = {
     'Tubas Downtown', 'Tayasir', 'Al-Aqaba', 'Tammun', 'Aqqaba', 'Ein al-Beida',
     'Wadi al-Far\'a'
   ],
+  'North Gaza': [
+    'Jabalia', 'Jabalia Camp', 'Beit Lahia', 'Beit Hanoun', 'Izbet Beit Hanoun',
+    'Al-Atatra', 'Al-Siafa', 'Um al-Nasser', 'Al-Nada', 'Sheikh Zayed',
+    'Al-Balad', 'Al-Salateen', 'Al-Maslakh', 'Al-Zaytoun'
+  ],
+  Gaza: [
+    'Rimal', 'Shujaiya', 'Zeitoun', 'Sabra', 'Tal al-Hawa', 'Sheikh Radwan',
+    'Sheikh Ijlin', 'Al-Nasser', 'Al-Nafaq', 'Al-Daraj', 'Al-Tuffah', 'Al-Sahaba',
+    'Shati Camp', 'Old City', 'Al-Remal Al-Janoubi', 'Al-Shati', 'Al-Mukhabarat',
+    'Al-Saraya', 'Al-Amal', 'Al-Salam'
+  ],
+  'Deir al-Balah': [
+    'Deir al-Balah', 'Nuseirat', 'Bureij', 'Maghazi', 'Zawaida', 'Wadi al-Salqa',
+    'Al-Musaddar', 'Al-Nuseirat Camp', 'Al-Bureij Camp',
+    'Al-Maghazi Camp', 'Wadi Gaza'
+  ],
+  'Khan Younis': [
+    'Khan Younis', 'Bani Suheila', 'Abasan al-Kabira', 'Abasan al-Saghira',
+    'Khuzaa', 'Al-Qarara', 'Al-Fukhari', 'Maen', 'Al-Satar al-Gharbi',
+    'Al-Satar al-Sharqi', 'Al-Amal', 'Al-Manara'
+  ],
+  Rafah: [
+    'Rafah', 'Tal al-Sultan', 'Shaboura', 'Yibna Camp', 'Al-Junaina', 'Al-Salam',
+    'Al-Brazil', 'Al-Zuhour', 'Al-Nasr', 'Al-Awda', 'Khaled bin Walid'
+  ],
   Other: ['Other']
 };
 
@@ -102,6 +127,30 @@ export const PS_AR: CountryLocations = {
   ],
   'طوباس': [
     'وسط طوباس', 'تياسير', 'العقبة', 'طمون', 'عقابا', 'عين البيضاء', 'وادي الفارعة'
+  ],
+  'شمال غزة': [
+    'جباليا', 'مخيم جباليا', 'بيت لاهيا', 'بيت حانون', 'عزبة بيت حانون',
+    'العطاطرة', 'السيفا', 'أم النصر', 'الندى', 'الشيخ زايد',
+    'البلد', 'السلاطين', 'المسلخ', 'الزيتون'
+  ],
+  'غزة': [
+    'الرمال', 'الشجاعية', 'الزيتون', 'الصبرة', 'تل الهوا', 'الشيخ رضوان',
+    'الشيخ عجلين', 'النصر', 'النفق', 'الدرج', 'التفاح', 'الصحابة',
+    'مخيم الشاطئ', 'البلدة القديمة', 'الرمال الجنوبي', 'الشاطئ', 'المخابرات',
+    'السرايا', 'الأمل', 'السلام'
+  ],
+  'دير البلح': [
+    'دير البلح', 'النصيرات', 'البريج', 'المغازي', 'الزوايدة', 'وادي السلقا',
+    'المصدر', 'مخيم النصيرات', 'مخيم البريج', 'مخيم المغازي', 'وادي غزة'
+  ],
+  'خان يونس': [
+    'خان يونس', 'بني سهيلا', 'عبسان الكبيرة', 'عبسان الصغيرة',
+    'خزاعة', 'القرارة', 'الفخاري', 'معن', 'الساتر الغربي',
+    'الساتر الشرقي', 'الأمل', 'المنارة'
+  ],
+  'رفح': [
+    'رفح', 'تل السلطان', 'شابورة', 'مخيم يبنا', 'الجنينة', 'السلام',
+    'البرازيل', 'الزهور', 'النصر', 'العودة', 'خالد بن الوليد'
   ],
   'أخرى': ['أخرى']
 };
