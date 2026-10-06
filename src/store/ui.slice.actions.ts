@@ -50,24 +50,13 @@ export const createUIActions = (
   setActiveTab: (tab: TabType) => set({ activeTab: tab, currentScreen: 'main' }),
 
   setBrowseLocation: (countryCode: MarketCode, cityEn: string, cityAr: string) => {
-    const { authStatus, user } = useAuthStore.getState();
-    let finalCountry = countryCode;
+    const finalCountry = countryCode;
     let finalCityEn = cityEn;
     let finalCityAr = cityAr;
 
-    // Market Lock: Authenticated users are restricted to their home market
-    if (authStatus === 'authenticated' && user?.countryCode) {
-      if (countryCode !== user.countryCode) {
-        finalCountry = user.countryCode as MarketCode;
-        const capital = DEFAULT_REGIONAL_CAPITALS[finalCountry];
-        finalCityEn = capital.cityEn;
-        finalCityAr = capital.cityAr;
-      }
-    }
-
     // Default to regional capital if city is missing or invalid
     if (!finalCityEn || !finalCityAr || !validateRegionalSanity(finalCountry, finalCityEn)) {
-      const capital = DEFAULT_REGIONAL_CAPITALS[finalCountry as keyof typeof DEFAULT_REGIONAL_CAPITALS] || DEFAULT_REGIONAL_CAPITALS.JO;
+      const capital = DEFAULT_REGIONAL_CAPITALS[finalCountry] || DEFAULT_REGIONAL_CAPITALS.JO;
       finalCityEn = capital.cityEn;
       finalCityAr = capital.cityAr;
     }
@@ -81,13 +70,13 @@ export const createUIActions = (
       activeCurrency,
       neighborhoodFilter: null,
     });
+
     globalStorage().set('catch_browse_country', finalCountry);
   },
 
   setActiveCurrency: (currency: string) => {
     const { browseCountryCode } = get();
-    const { authStatus, user } = useAuthStore.getState();
-    const effectiveCountry = (authStatus === 'authenticated' && user?.countryCode) ? user.countryCode : browseCountryCode;
+    const effectiveCountry = browseCountryCode;
     
     // Simple validation: if currency is empty or invalid, fallback to country default
     if (!currency || currency === 'INVALID') {
@@ -112,4 +101,30 @@ export const createUIActions = (
   setIsCountrySheetOpen: (isCountrySheetOpen: boolean) => set({ isCountrySheetOpen }),
   setIsSearchFocused: (isSearchFocused: boolean) => set({ isSearchFocused }),
   setAiFlowPending: (aiFlowPending: boolean) => set({ aiFlowPending }),
+  setGeoCountryCode: (countryCode: MarketCode) => {
+    set({ geoCountryCode: countryCode });
+  },
+  setBrowseMarketOverride: async (market: MarketCode) => {
+    const { authStatus, user } = useAuthStore.getState();
+    if (authStatus !== 'authenticated' || !user?.id) return;
+
+    const capital = DEFAULT_REGIONAL_CAPITALS[market] || DEFAULT_REGIONAL_CAPITALS.JO;
+
+    set({
+      browseCountryCode: market,
+      browseCityEn: capital.cityEn,
+      browseCityAr: capital.cityAr,
+      activeCurrency: getSanitizedCurrencyByCountry(market),
+      neighborhoodFilter: null,
+    });
+    globalStorage().set('catch_browse_country', market);
+
+    // Fire-and-forget Supabase persist
+    try {
+      const { saveBrowseMarket } = await import('@/shared/lib/profilesService');
+      await saveBrowseMarket(user.id, market);
+    } catch {
+      // non-fatal
+    }
+  },
 });

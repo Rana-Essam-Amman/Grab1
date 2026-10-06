@@ -47,6 +47,7 @@ export const getInitialState = () => {
     screenHistory: (shouldGoToMain ? ['main'] : ['login']) as ScreenType[],
     currentScreen: 'main' as ScreenType,
     browseCountryCode: initialBrowseCountryCode,
+    geoCountryCode: 'JO' as MarketCode,
     browseCityEn: initialCapital.cityEn,
     browseCityAr: initialCapital.cityAr,
     activeCurrency: getSanitizedCurrencyByCountry(initialBrowseCountryCode),
@@ -79,20 +80,26 @@ export function getSanitizedCurrencyByCountry(countryCode: string): string {
 
 export async function hydrateCountryFromGeo(): Promise<void> {
   try {
-    if (globalStorage().get<string>('catch_browse_country')) return;
     const { detectCountry } = await import('@/shared/lib/geoDetect');
     const detected = await detectCountry();
-    if (globalStorage().get<string>('catch_browse_country')) return;
     if (detected.source !== 'ip' && detected.source !== 'timezone' && detected.source !== 'language') return;
-    globalStorage().set('catch_browse_country', detected.country);
-    const capital = DEFAULT_REGIONAL_CAPITALS[detected.country] || DEFAULT_REGIONAL_CAPITALS.JO;
+
     const { useUIStore } = await import('./ui.slice');
+
+    // Always record the geo-detected country for the market resolution logic.
+    useUIStore.setState({ geoCountryCode: detected.country });
+
+    // Only override browseCountryCode when the user hasn't chosen one before.
+    if (globalStorage().get<string>('catch_browse_country')) return;
+
+    const capital = DEFAULT_REGIONAL_CAPITALS[detected.country] || DEFAULT_REGIONAL_CAPITALS.JO;
     useUIStore.setState({
       browseCountryCode: detected.country,
       browseCityEn: capital.cityEn,
       browseCityAr: capital.cityAr,
       activeCurrency: getSanitizedCurrencyByCountry(detected.country),
     });
+    globalStorage().set('catch_browse_country', detected.country);
   } catch {
     // detection is best-effort
   }

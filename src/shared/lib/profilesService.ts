@@ -20,6 +20,7 @@ export interface ProfileRecord {
   readonly avatar_url: string | null;
   readonly country_code: string | null;
   readonly feed_layout?: 'list' | 'grid' | null;
+  readonly browse_market?: 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | null;
   readonly rating_avg?: number | null;
   readonly rating_count?: number | null;
   readonly created_at?: string;
@@ -35,6 +36,7 @@ export interface ProfileUpdate {
   readonly avatar_url?: string;
   readonly country_code?: string;
   readonly feed_layout?: 'list' | 'grid';
+  readonly browse_market?: 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | null;
 }
 
 /**
@@ -47,7 +49,7 @@ export async function fetchProfile(userId: string): Promise<ProfileRecord | null
   try {
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, first_name, last_name, nickname, phone, phone_locked, avatar_url, country_code, feed_layout, rating_avg, rating_count, created_at, updated_at')
+      .select('id, first_name, last_name, nickname, phone, phone_locked, avatar_url, country_code, feed_layout, browse_market, rating_avg, rating_count, created_at, updated_at')
       .eq('id', userId)
       .maybeSingle();
     if (error) {
@@ -76,7 +78,7 @@ export async function upsertProfile(
     const { data, error } = await supabase
       .from('profiles')
       .upsert(payload, { onConflict: 'id' })
-      .select('id, first_name, last_name, nickname, phone, phone_locked, avatar_url, country_code, feed_layout, rating_avg, rating_count, created_at, updated_at')
+      .select('id, first_name, last_name, nickname, phone, phone_locked, avatar_url, country_code, feed_layout, browse_market, rating_avg, rating_count, created_at, updated_at')
       .maybeSingle();
     if (error) {
       console.warn('[profilesService] upsertProfile error', error.message);
@@ -120,4 +122,15 @@ export async function saveFeedLayout(
   layout: 'list' | 'grid'
 ): Promise<ProfileRecord | null> {
   return upsertProfile(userId, { feed_layout: layout });
+}
+
+/**
+ * Convenience: save the user's browse market override.
+ * Pass null to clear the override (user is back home).
+ */
+export async function saveBrowseMarket(
+  userId: string,
+  market: 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | null
+): Promise<ProfileRecord | null> {
+  return upsertProfile(userId, { browse_market: market });
 }
