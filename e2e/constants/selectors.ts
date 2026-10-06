@@ -52,7 +52,7 @@ export const SELECTORS = {
   chat: {
     messagesTab: 'button:has-text("Messages"), button:has-text("الرسائل")',
     emptyStateTitle: 'text=/لا توجد محادثات|No messages yet/',
-    threadRow: 'div.cursor-pointer[class*="rounded"]',
+    threadRow: '[data-testid="conversation-row"]',
     messageInput: 'input[placeholder*="Type"], input[placeholder*="اكتب"]',
     sendButton: 'button[type="submit"]',
     listingChatBtn: 'button:has-text("Chat"), button:has-text("دردشة")',

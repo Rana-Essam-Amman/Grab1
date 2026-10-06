@@ -29,6 +29,7 @@ import { useSupabaseAuthListener } from '@/features/auth/hooks/useSupabaseAuthLi
 import { useBootMigrations } from '@/shared/hooks/useBootMigrations';
 import { useSupabaseListingsSync } from '@/features/listings/hooks/useSupabaseListingsSync';
 import { useSupabaseWishlistSync } from '@/features/listings/hooks/useSupabaseWishlistSync';
+import { useSupabaseChatSync } from '@/features/chat/hooks/useSupabaseChatSync';
 import { useOnlinePresence } from '@/features/chat/hooks/useOnlinePresence';
 
 import { RouterProvider } from '@/shared/router/RouterProvider';
@@ -236,6 +237,7 @@ export default function App() {
   useSupabaseAuthListener();
   useSupabaseListingsSync();
   useSupabaseWishlistSync();
+  useSupabaseChatSync();
   useOnlinePresence(currentUserId);
 
   useBootMigrations(locale);

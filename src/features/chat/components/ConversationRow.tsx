@@ -35,6 +35,7 @@ export const ConversationRow: React.FC<ConversationRowProps> = ({
 
   return (
     <Card
+      data-testid="conversation-row"
       variant="interactive"
       onClick={() => onOpen(thread.id)}
       onTouchStart={handlers.onTouchStart}
