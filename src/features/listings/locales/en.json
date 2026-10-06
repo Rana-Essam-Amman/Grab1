@@ -6,5 +6,10 @@
   "callSeller": "Call Seller",
   "viewProfile": "View Profile",
   "views": "views",
-  "postedOn": "Posted on"
+  "postedOn": "Posted on",
+  "verifiedNumber": "Verified number",
+  "premiumListing": "Premium listing",
+  "whatsappSheetTitle": "Contact via WhatsApp",
+  "writeYourOwn": "Write your own",
+  "opensWhatsAppReady": "Opens WhatsApp with your message ready"
 }

@@ -17,10 +17,18 @@ export interface ListingDerivedData {
 
 const PREFIXES: Record<string, string> = { JO: '962', LB: '961', PS: '970', SY: '963', SA: '966' };
 
-export function getWhatsAppUrl(p: { countryCode: string; dialNumber: string; listingTitle: string }): string {
+export function getWhatsAppUrl(p: {
+  countryCode: string;
+  dialNumber: string;
+  listingTitle: string;
+  customMessage?: string;
+}): string {
   const pfx = PREFIXES[p.countryCode] || '962';
   const digits = p.dialNumber.startsWith('0') ? p.dialNumber.slice(1) : p.dialNumber;
-  return `https://wa.me/${pfx}${digits}?text=${encodeURIComponent(`مرحباً، بخصوص إعلانك "${p.listingTitle}" على تطبيق FOX Marketplace.`)}`;
+  const message = p.customMessage
+    ? p.customMessage
+    : `مرحباً، بخصوص إعلانك "${p.listingTitle}" على تطبيق FOX Marketplace.`;
+  return `https://wa.me/${pfx}${digits}?text=${encodeURIComponent(message)}`;
 }
 
 export function computeListingDerivedData(listing: Listing | null, isArabic: boolean): ListingDerivedData {

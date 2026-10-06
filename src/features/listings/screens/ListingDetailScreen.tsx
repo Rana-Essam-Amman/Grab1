@@ -9,6 +9,7 @@ import { ListingAttributesCard } from '../components/ListingAttributesCard';
 import { ListingDescriptionCard } from '../components/ListingDescriptionCard';
 import { ListingLocationCard } from '../components/ListingLocationCard';
 import { ListingActionBar } from '../components/ListingActionBar';
+import { WhatsAppIntentSheet } from '../components/WhatsAppIntentSheet';
 import { ListingNotFound } from '../components/ListingNotFound';
 import { ShareModal, ReportModal, ErrorBoundary } from '@/shared/components';
 
@@ -80,15 +81,30 @@ export const ListingDetailScreen: React.FC = () => {
 
         <ListingActionBar
           isArabic={detail.isArabic}
+          countryCode={detail.listing.countryCode}
           onCall={detail.handleCall}
-          onWhatsApp={detail.handleWhatsApp}
+          onWhatsAppClick={detail.handleWhatsAppClick}
           onStartChat={detail.handleStartChat}
           isCountryMismatch={detail.isCountryMismatch}
           isAuthenticated={detail.isAuthenticated}
+          hasPhone={Boolean(detail.listing.sellerPhone)}
         />
 
         {detail.showShare && <ShareModal listing={detail.listing} onClose={() => detail.setShowShare(false)} />}
         {detail.showReport && <ReportModal listing={detail.listing} onClose={() => detail.setShowReport(false)} />}
+        {detail.showWhatsAppSheet && detail.listing && (
+          <WhatsAppIntentSheet
+            open={detail.showWhatsAppSheet}
+            listing={detail.listing}
+            isArabic={detail.isArabic}
+            onClose={() => detail.setShowWhatsAppSheet(false)}
+            onPick={detail.handleWhatsAppIntent}
+            onWriteOwn={() => {
+              detail.setShowWhatsAppSheet(false);
+              detail.handleWhatsApp();
+            }}
+          />
+        )}
       </div>
     </ErrorBoundary>
   );
