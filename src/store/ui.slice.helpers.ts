@@ -39,6 +39,7 @@ export const getInitialState = () => {
   const locale = (globalStorage().get<string>('locale') as 'en' | 'ar') || 'ar';
   const hasStoredCountry = !!globalStorage().get<MarketCode>('catch_browse_country');
   let hasAuth = false;
+
   try {
     const authData = globalStorage().get<AuthStored>('catch_auth') || {};
     if (authData?.state?.authStatus === 'authenticated') {
@@ -47,6 +48,7 @@ export const getInitialState = () => {
   } catch {
     // ignore storage read errors
   }
+
   const shouldGoToMain = hasStoredCountry || hasAuth;
 
   return {
@@ -74,6 +76,7 @@ export const getInitialState = () => {
     isCountrySheetOpen: false,
     isSearchFocused: false,
     aiFlowPending: false,
+    geoUnsupported: false,
   };
 };
 
@@ -93,21 +96,24 @@ export async function hydrateCountryFromGeo(): Promise<void> {
     const { detectCountry } = await import('@/shared/lib/geoDetect');
     const detected = await detectCountry();
     if (detected.source !== 'ip' && detected.source !== 'timezone' && detected.source !== 'language') return;
-    const { useUIStore } = await import('./ui.slice');
 
+    const { useUIStore } = await import('./ui.slice');
     // Always record the geo-detected country for the market resolution logic.
     useUIStore.setState({ geoCountryCode: detected.country });
+    useUIStore.setState({ geoUnsupported: !detected.isSupported });
 
     // Only override browseCountryCode when the user hasn't chosen one before.
     if (globalStorage().get<string>('catch_browse_country')) return;
 
     const capital = DEFAULT_REGIONAL_CAPITALS[detected.country] || DEFAULT_REGIONAL_CAPITALS.JO;
+
     useUIStore.setState({
       browseCountryCode: detected.country,
       browseCityEn: capital.cityEn,
       browseCityAr: capital.cityAr,
       activeCurrency: getSanitizedCurrencyByCountry(detected.country),
     });
+
     globalStorage().set('catch_browse_country', detected.country);
   } catch {
     // detection is best-effort

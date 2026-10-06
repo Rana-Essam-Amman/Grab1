@@ -52,6 +52,7 @@ export const createUIActions = (
     }
 
     const activeCurrency = getSanitizedCurrencyByCountry(finalCountry);
+
     set({
       browseCountryCode: finalCountry,
       browseCityEn: finalCityEn,
@@ -59,6 +60,7 @@ export const createUIActions = (
       activeCurrency,
       neighborhoodFilter: null,
     });
+
     globalStorage().set('catch_browse_country', finalCountry);
   },
 
@@ -91,6 +93,7 @@ export const createUIActions = (
     if (authStatus !== 'authenticated' || !user?.id) return;
 
     const capital = DEFAULT_REGIONAL_CAPITALS[market] || DEFAULT_REGIONAL_CAPITALS.JO;
+
     set({
       browseCountryCode: market,
       browseCityEn: capital.cityEn,
@@ -98,6 +101,7 @@ export const createUIActions = (
       activeCurrency: getSanitizedCurrencyByCountry(market),
       neighborhoodFilter: null,
     });
+
     globalStorage().set('catch_browse_country', market);
 
     try {
@@ -125,4 +129,6 @@ export const createUIActions = (
     globalStorage().remove('catch_browse_market_override');
     set({ browseMarketOverride: null });
   },
+
+  setGeoUnsupported: (v: boolean) => set({ geoUnsupported: v }),
 });
