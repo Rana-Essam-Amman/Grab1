@@ -22,6 +22,7 @@ export const CITY_COORDS: Record<string, Record<string, CityCoords>> = {
     Tafilah: { lat: 30.8375, lng: 35.6042 },
     Mafraq: { lat: 32.3429, lng: 36.208 },
     Aqaba: { lat: 29.5321, lng: 35.0063 },
+    Ramtha: { lat: 32.5592, lng: 36.0069 },
   },
   SA: {
     Riyadh: { lat: 24.7136, lng: 46.6753 },
@@ -45,6 +46,8 @@ export const CITY_COORDS: Record<string, Record<string, CityCoords>> = {
     Baabda: { lat: 33.8339, lng: 35.5442 },
     Nabatieh: { lat: 33.3789, lng: 35.4839 },
     Tyre: { lat: 33.2705, lng: 35.2038 },
+    Jbeil: { lat: 34.1211, lng: 35.6478 },
+    Metn: { lat: 33.8872, lng: 35.5653 },
   },
   PS: {
     Jerusalem: { lat: 31.7683, lng: 35.2137 },
@@ -55,6 +58,10 @@ export const CITY_COORDS: Record<string, Record<string, CityCoords>> = {
     Jenin: { lat: 32.4607, lng: 35.3 },
     Tulkarm: { lat: 32.3104, lng: 35.0286 },
     Qalqilya: { lat: 32.1897, lng: 34.9706 },
+    'Al-Bireh': { lat: 31.9101, lng: 35.2158 },
+    Jericho: { lat: 31.8667, lng: 35.4500 },
+    Salfit: { lat: 32.0833, lng: 35.1833 },
+    Tubas: { lat: 32.3211, lng: 35.3686 },
   },
   SY: {
     Damascus: { lat: 33.5138, lng: 36.2765 },
@@ -65,5 +72,9 @@ export const CITY_COORDS: Record<string, Record<string, CityCoords>> = {
     Tartus: { lat: 34.889, lng: 35.8866 },
     'Deir ez-Zor': { lat: 35.3359, lng: 40.1408 },
     Raqqa: { lat: 35.9594, lng: 39.0025 },
+    Daraa: { lat: 32.6189, lng: 36.1021 },
+    Hasakah: { lat: 36.5024, lng: 40.7477 },
+    Idlib: { lat: 35.9306, lng: 36.6339 },
+    Qamishli: { lat: 37.0537, lng: 41.2295 },
   },
 };
