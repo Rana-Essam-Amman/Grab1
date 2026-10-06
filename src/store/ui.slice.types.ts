@@ -61,9 +61,11 @@ export interface UIState {
   browseMarketOverride: MarketCode | null;
   setBrowseMarketOverrideLocal: (market: MarketCode) => void;
   clearBrowseMarketOverride: () => void;
+
   // Geo-detected country (raw signal, not user choice). Not persisted.
   geoCountryCode: MarketCode;
   setGeoCountryCode: (countryCode: MarketCode) => void;
+
   browseCityEn: string;
   browseCityAr: string;
   activeCurrency: string;
@@ -103,4 +105,8 @@ export interface UIState {
   setIsSearchFocused: (focused: boolean) => void;
   aiFlowPending: boolean;
   setAiFlowPending: (v: boolean) => void;
+
+  /** True when geo detection landed outside the 5 supported markets. */
+  geoUnsupported: boolean;
+  setGeoUnsupported: (v: boolean) => void;
 }

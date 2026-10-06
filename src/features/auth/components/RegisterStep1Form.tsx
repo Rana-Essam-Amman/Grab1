@@ -4,6 +4,7 @@ import { CountrySelector } from './CountrySelector';
 import { useRegisterStep1 } from '../hooks/useRegisterStep1';
 import { RegisterFormFields } from './RegisterFormFields';
 import { MarketCode } from '@/shared/lib/marketGate';
+import { useUI } from '@/hooks/useUI';
 
 interface RegisterStep1FormProps {
   onSwitchToLogin: () => void;
@@ -16,6 +17,7 @@ export const RegisterStep1Form: React.FC<RegisterStep1FormProps> = ({
   onStageCredentials,
   onToast,
 }) => {
+  const { geoUnsupported } = useUI() as ReturnType<typeof useUI> & { geoUnsupported: boolean };
   const {
     isArabic, selectedCountry, firstName, phone, email, password, confirmPassword,
     showPassword, showConfirmPassword, error, handleCountryChange,
@@ -36,13 +38,22 @@ export const RegisterStep1Form: React.FC<RegisterStep1FormProps> = ({
       </div>
 
       <form onSubmit={handleRegisterUnified} className="flex flex-col gap-5">
+        {geoUnsupported && (
+          <div
+            role="status"
+            className="p-3 rounded-xl bg-accent/10 border border-accent/30 text-xs text-ink font-bold leading-relaxed"
+          >
+            {isArabic
+              ? 'FOX يخدم حالياً 5 أسواق: الأردن، السعودية، لبنان، فلسطين، سوريا. اختر السوق الذي يهمك أدناه — سيكون "بيتك" للنشر والتواصل.'
+              : 'FOX currently serves 5 markets: Jordan, Saudi Arabia, Lebanon, Palestine, Syria. Pick the one that matters to you below — it will be your "home" for posting and chatting.'}
+          </div>
+        )}
         <CountrySelector
           selectedCountry={selectedCountry}
           onCountryChange={handleCountryChange}
           isArabic={isArabic}
           label={isArabic ? 'سوق الدولة الحالي *' : 'Market Country *'}
         />
-
         <RegisterFormFields
           isArabic={isArabic} firstName={firstName} phone={phone} email={email}
           password={password} confirmPassword={confirmPassword} showPassword={showPassword}
@@ -53,12 +64,10 @@ export const RegisterStep1Form: React.FC<RegisterStep1FormProps> = ({
           onToggleShowPassword={handleToggleShowPassword}
           onToggleShowConfirmPassword={handleToggleShowConfirmPassword}
         />
-
         <Button type="submit" variant="primary" size="lg" fullWidth className="mt-2">
           <span>{isArabic ? 'المتابعة' : 'Continue'}</span>
         </Button>
       </form>
-
       <Button
         type="button"
         variant="link"

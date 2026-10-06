@@ -14,6 +14,8 @@ export type GeoSource = 'storage' | 'ip' | 'timezone' | 'language' | 'fallback';
 export interface GeoResult {
   readonly country: MarketCode;
   readonly source: GeoSource;
+  /** True when the detected country is one of the 5 supported markets. */
+  readonly isSupported: boolean;
 }
 
 const SUPPORTED: readonly MarketCode[] = ['JO', 'SA', 'LB', 'PS', 'SY'];
@@ -83,13 +85,13 @@ async function fromIp(): Promise<MarketCode | null> {
  */
 export async function detectCountry(): Promise<GeoResult> {
   const ip = await fromIp();
-  if (ip) return { country: ip, source: 'ip' };
+  if (ip) return { country: ip, source: 'ip', isSupported: true };
 
   const tz = fromTimezone();
-  if (tz) return { country: tz, source: 'timezone' };
+  if (tz) return { country: tz, source: 'timezone', isSupported: true };
 
   const lang = fromLanguage();
-  if (lang) return { country: lang, source: 'language' };
+  if (lang) return { country: lang, source: 'language', isSupported: true };
 
-  return { country: 'JO', source: 'fallback' };
+  return { country: 'JO', source: 'fallback', isSupported: false };
 }
