@@ -11,5 +11,11 @@
   "premiumListing": "Premium listing",
   "whatsappSheetTitle": "Contact via WhatsApp",
   "writeYourOwn": "Write your own",
-  "opensWhatsAppReady": "Opens WhatsApp with your message ready"
+  "opensWhatsAppReady": "Opens WhatsApp with your message ready",
+  "rateSeller": "Rate seller",
+  "reviewsSection": "Reviews",
+  "noRatingsYet": "No ratings yet",
+  "howWasExperience": "How was your experience with",
+  "addCommentOptional": "Add a comment (optional)...",
+  "submitReview": "Submit review"
 }

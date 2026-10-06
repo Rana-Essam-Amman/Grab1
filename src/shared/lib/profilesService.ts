@@ -20,6 +20,8 @@ export interface ProfileRecord {
   readonly avatar_url: string | null;
   readonly country_code: string | null;
   readonly feed_layout?: 'list' | 'grid' | null;
+  readonly rating_avg?: number | null;
+  readonly rating_count?: number | null;
   readonly created_at?: string;
   readonly updated_at?: string;
 }
@@ -45,7 +47,7 @@ export async function fetchProfile(userId: string): Promise<ProfileRecord | null
   try {
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, first_name, last_name, nickname, phone, phone_locked, avatar_url, country_code, feed_layout, created_at, updated_at')
+      .select('id, first_name, last_name, nickname, phone, phone_locked, avatar_url, country_code, feed_layout, rating_avg, rating_count, created_at, updated_at')
       .eq('id', userId)
       .maybeSingle();
     if (error) {
@@ -74,7 +76,7 @@ export async function upsertProfile(
     const { data, error } = await supabase
       .from('profiles')
       .upsert(payload, { onConflict: 'id' })
-      .select('id, first_name, last_name, nickname, phone, phone_locked, avatar_url, country_code, feed_layout, created_at, updated_at')
+      .select('id, first_name, last_name, nickname, phone, phone_locked, avatar_url, country_code, feed_layout, rating_avg, rating_count, created_at, updated_at')
       .maybeSingle();
     if (error) {
       console.warn('[profilesService] upsertProfile error', error.message);
