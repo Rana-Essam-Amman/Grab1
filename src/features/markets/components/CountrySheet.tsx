@@ -3,10 +3,11 @@ import { useAuth } from '@/hooks/useAuth';
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { countries } from '@/data/countries';
 import { locationsWithOther as locations, locationsArWithOther as locationsAr } from '@/data/locations';
-import { Lock1, CloseCircle } from 'iconsax-react';
+import { CloseCircle } from 'iconsax-react';
 import { Drawer } from '@/shared/ui/Drawer';
 import { CountrySelectorTabs } from './CountrySelectorTabs';
 import { CountrySheetCities } from '@/shared/components/markets/CountrySheetCities';
+import { saveBrowseMarket } from '@/shared/lib/profilesService';
 
 export const CountrySheet: React.FC = () => {
   const { isArabic, isCountrySheetOpen, setIsCountrySheetOpen, browseCountryCode, browseCityEn, browseCityAr, setBrowseLocation } = useUI();
@@ -22,12 +23,8 @@ export const CountrySheet: React.FC = () => {
     }
   }, [isCountrySheetOpen, browseCountryCode]);
 
-  const filteredCountries = useMemo(() => {
-    if (isAuthenticated && user?.countryCode) {
-      return countries.filter(c => c.code === user.countryCode);
-    }
-    return countries;
-  }, [isAuthenticated, user?.countryCode]);
+  // Markets are open to all — no filtering.
+  const filteredCountries = countries;
 
   const citiesEn = useMemo(
     () => Object.keys(locations[selectedCountry] || {}),
@@ -40,9 +37,8 @@ export const CountrySheet: React.FC = () => {
   );
 
   const handleCountryChange = useCallback((code: string) => {
-    if (isAuthenticated && user?.countryCode && code !== user.countryCode) return;
     setSelectedCountry(code as 'JO' | 'LB' | 'PS' | 'SY' | 'SA');
-  }, [isAuthenticated, user?.countryCode]);
+  }, []);
 
   const handleCitySelect = useCallback(
     (index: number) => {
@@ -51,9 +47,16 @@ export const CountrySheet: React.FC = () => {
       const cityAr = citiesAr[index] || cityEn;
       if (!cityEn) return;
       setBrowseLocation(country, cityEn, cityAr);
+
+      // Persist the market choice to Supabase for signed-in users.
+      if (isAuthenticated && user?.id) {
+        const override = user.countryCode === country ? null : country;
+        void saveBrowseMarket(user.id, override).catch(() => {});
+      }
+
       setIsCountrySheetOpen(false);
     },
-    [citiesEn, citiesAr, selectedCountry, setBrowseLocation, setIsCountrySheetOpen]
+    [citiesEn, citiesAr, selectedCountry, setBrowseLocation, setIsCountrySheetOpen, isAuthenticated, user]
   );
 
   return (
@@ -75,12 +78,7 @@ export const CountrySheet: React.FC = () => {
           </button>
         </div>
 
-        {isAuthenticated && (
-          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-danger/10 text-danger rounded-xl text-[10px] font-bold self-start border border-danger/20">
-            <Lock1 size={12} variant="Linear" />
-            <span>{isArabic ? 'تم قفل المتجر على دولتك المسجلة' : 'Store locked to your country'}</span>
-          </div>
-        )}
+
 
         {/* Country tabs — small pills row */}
         <CountrySelectorTabs

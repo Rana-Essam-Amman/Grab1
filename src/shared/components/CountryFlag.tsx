@@ -4,6 +4,8 @@ type MarketCode = 'JO' | 'SA' | 'LB' | 'PS' | 'SY';
 
 interface Props {
   readonly code: MarketCode;
+  readonly onClick?: () => void;
+  readonly ariaLabel?: string;
 }
 
 // ─── ADJUST HERE ───────────────────────────────────────────────
@@ -37,11 +39,30 @@ const FLAG_SRC: Record<MarketCode, string> = {
  * To tilt    → FLAG_ROTATE_DEG
  * To move    → FLAG_END_CLASS
  */
-export const CountryFlag: React.FC<Props> = ({ code }) => {
+export const CountryFlag: React.FC<Props> = ({ code, onClick, ariaLabel }) => {
+  const interactive = Boolean(onClick);
   return (
     <div
-      className={`absolute top-1/2 -translate-y-1/2 ${FLAG_END_CLASS} z-10 pointer-events-none`}
-      aria-hidden="true"
+      className={`absolute top-1/2 -translate-y-1/2 ${FLAG_END_CLASS} z-10 ${
+        interactive
+          ? 'pointer-events-auto cursor-pointer active:scale-95 transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-full'
+          : 'pointer-events-none'
+      }`}
+      aria-hidden={interactive ? undefined : true}
+      role={interactive ? 'button' : undefined}
+      tabIndex={interactive ? 0 : undefined}
+      aria-label={interactive ? (ariaLabel || 'Change market') : undefined}
+      onClick={onClick}
+      onKeyDown={
+        interactive
+          ? (e: React.KeyboardEvent<HTMLDivElement>) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onClick?.();
+              }
+            }
+          : undefined
+      }
     >
       <div
         className="rounded-full overflow-hidden"
