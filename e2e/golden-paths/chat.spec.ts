@@ -3,27 +3,28 @@ import { SELECTORS } from '../constants/selectors';
 import { setupConsoleErrorListener, expectNoConsoleErrors } from '../helpers/assertions';
 
 test.describe('Chat Golden Path', () => {
-  test('User can open Messages tab and see conversations list', async ({ chatReadyPage }) => {
+  test('Messages tab shows the mocked conversation', async ({ chatReadyPage }) => {
     const consoleErrors = setupConsoleErrorListener(chatReadyPage);
 
     const messagesTab = chatReadyPage.locator(SELECTORS.chat.messagesTab).first();
     await messagesTab.click();
 
-    await expect(chatReadyPage.locator('body')).toContainText(/E2E Test Listing|Messages|الرسائل/, {
-      timeout: 5000,
-    });
+    // Strict: the actual mocked listing title must render in a row.
+    const row = chatReadyPage.locator(SELECTORS.chat.threadRow).first();
+    await expect(row).toBeVisible({ timeout: 5000 });
+    await expect(row).toContainText('E2E Test Listing', { timeout: 5000 });
 
     await expectNoConsoleErrors(consoleErrors);
   });
 
-  test('User can open thread and see message input', async ({ chatReadyPage }) => {
+  test('User can open the thread and see the input', async ({ chatReadyPage }) => {
     const consoleErrors = setupConsoleErrorListener(chatReadyPage);
 
-    const messagesTab = chatReadyPage.locator(SELECTORS.chat.messagesTab).first();
-    await messagesTab.click();
+    await chatReadyPage.locator(SELECTORS.chat.messagesTab).first().click();
 
-    const threadRow = chatReadyPage.locator(SELECTORS.chat.threadRow).first();
-    await threadRow.click();
+    const row = chatReadyPage.locator(SELECTORS.chat.threadRow).first();
+    await expect(row).toBeVisible({ timeout: 5000 });
+    await row.click();
 
     const input = chatReadyPage.locator(SELECTORS.chat.messageInput).first();
     await expect(input).toBeVisible({ timeout: 5000 });
@@ -34,18 +35,17 @@ test.describe('Chat Golden Path', () => {
   test('Sending a message keeps the input usable', async ({ chatReadyPage }) => {
     const consoleErrors = setupConsoleErrorListener(chatReadyPage);
 
-    const messagesTab = chatReadyPage.locator(SELECTORS.chat.messagesTab).first();
-    await messagesTab.click();
+    await chatReadyPage.locator(SELECTORS.chat.messagesTab).first().click();
 
-    const threadRow = chatReadyPage.locator(SELECTORS.chat.threadRow).first();
-    await threadRow.click();
+    const row = chatReadyPage.locator(SELECTORS.chat.threadRow).first();
+    await expect(row).toBeVisible({ timeout: 5000 });
+    await row.click();
 
     const input = chatReadyPage.locator(SELECTORS.chat.messageInput).first();
     await expect(input).toBeVisible({ timeout: 5000 });
 
     await input.fill('Hello from E2E');
-    const send = chatReadyPage.locator(SELECTORS.chat.sendButton).first();
-    await send.click();
+    await chatReadyPage.locator(SELECTORS.chat.sendButton).first().click();
 
     await expect(input).toBeVisible({ timeout: 5000 });
 
