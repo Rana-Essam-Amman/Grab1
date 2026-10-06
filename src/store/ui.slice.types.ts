@@ -43,9 +43,11 @@ export interface UIState {
   locale: 'en' | 'ar';
   isArabic: boolean;
   setLocale: (locale: 'en' | 'ar') => void;
+
   // Theme
   theme: AppTheme;
   setTheme: (theme: AppTheme) => void;
+
   // Navigation
   activeTab: TabType;
   currentScreen: ScreenType;
@@ -53,8 +55,12 @@ export interface UIState {
   navigateTo: (screen: ScreenType) => void;
   goBack: () => void;
   setActiveTab: (tab: TabType) => void;
+
   // Browse context
   browseCountryCode: MarketCode;
+  browseMarketOverride: MarketCode | null;
+  setBrowseMarketOverrideLocal: (market: MarketCode) => void;
+  clearBrowseMarketOverride: () => void;
   // Geo-detected country (raw signal, not user choice). Not persisted.
   geoCountryCode: MarketCode;
   setGeoCountryCode: (countryCode: MarketCode) => void;
@@ -65,6 +71,7 @@ export interface UIState {
   // Explicit user override; persists to Supabase (signed-in users only).
   setBrowseMarketOverride: (market: MarketCode) => Promise<void>;
   setActiveCurrency: (currency: string) => void;
+
   // Search & Filters
   searchQuery: string;
   categoryFilter: string | null;
@@ -78,6 +85,7 @@ export interface UIState {
   setMinPriceFilter: (price: number | null) => void;
   setMaxPriceFilter: (price: number | null) => void;
   setNeighborhoodFilter: (neighborhood: string | null) => void;
+
   // Selected entities
   selectedListingId: string | null;
   selectedThreadId: string | null;
@@ -85,6 +93,7 @@ export interface UIState {
   setSelectedListingId: (id: string | null) => void;
   setSelectedThreadId: (id: string | null) => void;
   setSelectedSellerPhone: (phone: string | null) => void;
+
   // UI Toggles
   isAiFocused: boolean;
   isCountrySheetOpen: boolean;

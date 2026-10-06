@@ -1,10 +1,8 @@
 import { useUIStore } from '@/store/ui.slice';
 import { countryByCode } from '../data/countries';
 
-
 export const useUI = () => {
   const store = useUIStore();
-
   return {
     locale: store.locale,
     isArabic: store.isArabic,
@@ -34,6 +32,9 @@ export const useUI = () => {
     neighborhoodFilter: store.neighborhoodFilter,
     setNeighborhoodFilter: store.setNeighborhoodFilter,
     browseCountryCode: store.browseCountryCode,
+    browseMarketOverride: store.browseMarketOverride,
+    setBrowseMarketOverrideLocal: store.setBrowseMarketOverrideLocal,
+    clearBrowseMarketOverride: store.clearBrowseMarketOverride,
     browseCountry: countryByCode(store.browseCountryCode),
     browseCityEn: store.browseCityEn,
     browseCityAr: store.browseCityAr,
@@ -55,7 +56,6 @@ export const useLocale = () => {
   const locale = useUIStore((s) => s.locale);
   const isArabic = useUIStore((s) => s.isArabic);
   const setLocale = useUIStore((s) => s.setLocale);
-
   return { locale, isArabic, setLocale };
 };
 
@@ -64,7 +64,5 @@ export const useNavigation = () => {
   const activeTab = useUIStore((s) => s.activeTab);
   const navigateTo = useUIStore((s) => s.navigateTo);
   const goBack = useUIStore((s) => s.goBack);
-
   return { currentScreen, activeTab, navigateTo, goBack };
 };
-
