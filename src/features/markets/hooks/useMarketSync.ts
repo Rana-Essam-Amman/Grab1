@@ -23,8 +23,10 @@ export function useMarketSync(): void {
   );
 
   useEffect(() => {
+    // Guests manage their own market (picked on login screen). No auto-sync.
+    if (authStatus !== 'authenticated') return;
     if (browseCountry === decision.market) return;
     const cap = DEFAULT_REGIONAL_CAPITALS[decision.market];
     if (cap) setBrowseLocation(decision.market, cap.cityEn, cap.cityAr);
-  }, [browseCountry, decision.market, setBrowseLocation]);
+  }, [authStatus, browseCountry, decision.market, setBrowseLocation]);
 }
