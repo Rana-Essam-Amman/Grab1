@@ -13,20 +13,19 @@ export interface ListingActionBarProps {
   hasPhone: boolean;
 }
 
-const CALL_MARKETS = new Set(['JO', 'SA']);
 
-export const ListingActionBar: React.FC<ListingActionBarProps> = React.memo(({
-  isArabic,
-  countryCode,
-  onCall,
-  onWhatsAppClick,
-  onStartChat,
-  isCountryMismatch,
-  hasPhone,
-}) => {
+
+export const ListingActionBar: React.FC<ListingActionBarProps> = React.memo((props) => {
+  const {
+    isArabic,
+    onCall,
+    onWhatsAppClick,
+    onStartChat,
+    hasPhone,
+  } = props;
   const { t } = useTranslation();
-  const showCall = CALL_MARKETS.has(countryCode);
-  const disabled = isCountryMismatch;
+  const showCall = true;
+  const disabled = false;
 
   const waLabel = isArabic ? 'واتساب' : 'WhatsApp';
   const waDisabled = disabled || !hasPhone;
