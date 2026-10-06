@@ -7,7 +7,6 @@ import { registerListingsGetterForMonetization } from '@/features/monetization/s
 import { registerUIGetter } from '@/shared/store-getters/ui.getter';
 import { registerAuthGetter } from '@/shared/store-getters/auth.getter';
 
-// Register cross-store getters ONCE at module load
 registerUIGetter(() => useUIStore.getState());
 registerAuthGetter(() => useAuthStore.getState().user);
 registerListingsGetterForMonetization(() => useListingsStore.getState().listings);
@@ -18,7 +17,6 @@ import { TranslationProvider } from '@/shared/i18n';
 import { CountrySheet } from '@/features/markets/components/CountrySheet';
 import { ExploreScreen } from '@/features/explore/screens/ExploreScreen';
 import { Spinner } from '@/shared/ui/Spinner';
-
 import { RegistryProvider, useRegistry } from '@/shared/registry';
 import { CatalogScreen } from '@/features/dev/screens/CatalogScreen';
 import { Toaster } from 'sonner';
@@ -30,13 +28,14 @@ import { useBootMigrations } from '@/shared/hooks/useBootMigrations';
 import { useSupabaseListingsSync } from '@/features/listings/hooks/useSupabaseListingsSync';
 import { useSupabaseWishlistSync } from '@/features/listings/hooks/useSupabaseWishlistSync';
 import { useSupabaseChatSync } from '@/features/chat/hooks/useSupabaseChatSync';
+import { useMarketSync } from '@/features/markets/hooks/useMarketSync';
+import { MarketContextBanner } from '@/features/markets/components/MarketContextBanner';
+import { MARKETS, isValidMarketCode } from '@/data/markets/config';
 import { useOnlinePresence } from '@/features/chat/hooks/useOnlinePresence';
-
 import { RouterProvider } from '@/shared/router/RouterProvider';
 import { useScrollToTop } from '@/shared/router/useScrollToTop';
 import { useUrlSync } from '@/shared/router/useUrlSync';
 
-// Lazy-loaded Screens
 const CategoriesScreen = lazy(() => import('@/features/categories/screens/CategoriesScreen').then((m) => ({ default: m.CategoriesScreen })));
 const MyAdsScreen = lazy(() => import('@/features/my-ads/screens/MyAdsScreen').then((m) => ({ default: m.MyAdsScreen })));
 const MessagesScreen = lazy(() => import('@/features/chat/screens/MessagesScreen').then((m) => ({ default: m.MessagesScreen })));
@@ -73,10 +72,41 @@ const ScreenLoader: React.FC = () => (
 );
 
 const MainNavigator: React.FC = () => {
-  const { currentScreen, activeTab } = useUI();
+  const { currentScreen, activeTab, isArabic } = useUI();
   useUrlSync();
   useScrollToTop();
   const { screens: registryScreens } = useRegistry();
+
+  const authStatus = useAuthStore((s) => s.authStatus);
+  const userCountry = useAuthStore((s) => s.user?.countryCode ?? null);
+  const storedBrowseMarket = useAuthStore((s) => s.user?.browseMarket ?? null);
+  const geoCountryCode = useUIStore((s) => s.geoCountryCode);
+
+  const [bannerDismissed, setBannerDismissed] = React.useState(false);
+
+  const showMarketBanner = authStatus === 'authenticated' &&
+    Boolean(userCountry && geoCountryCode && userCountry !== geoCountryCode && !storedBrowseMarket);
+
+  const dismissKey = `catch_market_banner_dismissed_${geoCountryCode ?? ''}`;
+
+  React.useEffect(() => {
+    if (geoCountryCode) setBannerDismissed(localStorage.getItem(dismissKey) === '1');
+  }, [dismissKey, geoCountryCode]);
+
+  const handleExploreMarket = () => {
+    if (geoCountryCode && isValidMarketCode(geoCountryCode)) {
+      void useUIStore.getState().setBrowseMarketOverride(geoCountryCode);
+    }
+    if (geoCountryCode) localStorage.setItem(dismissKey, '1');
+    setBannerDismissed(true);
+  };
+
+  const handleDismissMarket = () => {
+    if (geoCountryCode) localStorage.setItem(dismissKey, '1');
+    setBannerDismissed(true);
+  };
+
+  const awayMarketConfig = geoCountryCode && isValidMarketCode(geoCountryCode) ? MARKETS[geoCountryCode] : null;
 
   const registryLazyComponents = useMemo(() => {
     const cache = new Map<string, React.LazyExoticComponent<React.ComponentType<Record<string, unknown>>>>();
@@ -88,128 +118,47 @@ const MainNavigator: React.FC = () => {
 
   const renderRegistryScreen = (screenName: string) => {
     const LazyComponent = registryLazyComponents.get(screenName);
-    if (!LazyComponent) return null;
-    return <LazyComponent />;
+    return LazyComponent ? <LazyComponent /> : null;
   };
+
+  const r = (name: string, Component: React.ComponentType) => renderRegistryScreen(name) ?? <Component />;
 
   const renderScreen = () => {
     switch (currentScreen) {
-      case 'login': {
-        const fromRegistry = renderRegistryScreen('login');
-        return fromRegistry ?? <LoginScreen />;
-      }
-      case 'notifications': {
-        const fromRegistry = renderRegistryScreen('notifications');
-        return fromRegistry ?? <NotificationsScreen />;
-      }
-      case 'wishlist': {
-        const fromRegistry = renderRegistryScreen('wishlist');
-        return fromRegistry ?? <WishlistScreen />;
-      }
-      case 'listing-detail': {
-        const fromRegistry = renderRegistryScreen('listing-detail');
-        return fromRegistry ?? <ListingDetailScreen />;
-      }
-      case 'seller-profile': {
-        const fromRegistry = renderRegistryScreen('seller-profile');
-        return fromRegistry ?? <SellerProfileScreen />;
-      }
-      case 'search-results': {
-        const fromRegistry = renderRegistryScreen('search-results');
-        return fromRegistry ?? <SearchResultsScreen />;
-      }
-      case 'settings': {
-        const fromRegistry = renderRegistryScreen('settings');
-        return fromRegistry ?? <SettingsScreen />;
-      }
-      case 'register': {
-        const fromRegistry = renderRegistryScreen('register');
-        return fromRegistry ?? <RegisterScreen />;
-      }
-      case 'confirm': {
-        const fromRegistry = renderRegistryScreen('confirm');
-        return fromRegistry ?? <ConfirmScreen />;
-      }
-      case 'terms': {
-        const fromRegistry = renderRegistryScreen('terms');
-        return fromRegistry ?? <TermsScreen />;
-      }
-      case 'thread': {
-        const fromRegistry = renderRegistryScreen('thread');
-        return fromRegistry ?? <ThreadScreen />;
-      }
-      case 'post-category': {
-        const fromRegistry = renderRegistryScreen('post-category');
-        return fromRegistry ?? <ChooseCategoryScreen />;
-      }
-      case 'post-subcategory': {
-        const fromRegistry = renderRegistryScreen('post-subcategory');
-        return fromRegistry ?? <ChooseSubcategoryScreen />;
-      }
-      case 'post-photos': {
-        const fromRegistry = renderRegistryScreen('post-photos');
-        return fromRegistry ?? <PhotoUploadScreen />;
-      }
-      case 'post-location': {
-        const fromRegistry = renderRegistryScreen('post-location');
-        return fromRegistry ?? <LocationPickScreen />;
-      }
-      case 'post-details': {
-        const fromRegistry = renderRegistryScreen('post-details');
-        return fromRegistry ?? <PostDetailsScreen />;
-      }
-      case 'post-publish-success': {
-        const fromRegistry = renderRegistryScreen('post-publish-success');
-        return fromRegistry ?? <PublishSuccessScreen />;
-      }
-      case 'post-ai-draft': {
-        const fromRegistry = renderRegistryScreen('post-ai-draft');
-        return fromRegistry ?? <AiDraftScreen />;
-      }
-      case 'post-ai-review': {
-        const fromRegistry = renderRegistryScreen('post-ai-review');
-        return fromRegistry ?? <AiReviewScreen />;
-      }
-      case 'post-ad-entry': {
-        const fromRegistry = renderRegistryScreen('post-ad-entry');
-        return fromRegistry ?? <PostAdEntryScreen />;
-      }
-      case 'post-ai-capture': {
-        const fromRegistry = renderRegistryScreen('post-ai-capture');
-        return fromRegistry ?? <AiCaptureScreen />;
-      }
-      case 'post-category-pick': {
-        const fromRegistry = renderRegistryScreen('post-category-pick');
-        return fromRegistry ?? <CategoryPickScreen />;
-      }
-      case 'sub-categories': {
-        const fromRegistry = renderRegistryScreen('sub-categories');
-        return fromRegistry ?? <SubCategoriesScreen />;
-      }
-      case 'edit-profile': {
-        const fromRegistry = renderRegistryScreen('edit-profile');
-        return fromRegistry ?? <EditProfileScreen />;
-      }
-      case 'profile': {
-        const fromRegistry = renderRegistryScreen('profile');
-        return fromRegistry ?? <ProfileScreen />;
-      }
+      case 'login': return r('login', LoginScreen);
+      case 'notifications': return r('notifications', NotificationsScreen);
+      case 'wishlist': return r('wishlist', WishlistScreen);
+      case 'listing-detail': return r('listing-detail', ListingDetailScreen);
+      case 'seller-profile': return r('seller-profile', SellerProfileScreen);
+      case 'search-results': return r('search-results', SearchResultsScreen);
+      case 'settings': return r('settings', SettingsScreen);
+      case 'register': return r('register', RegisterScreen);
+      case 'confirm': return r('confirm', ConfirmScreen);
+      case 'terms': return r('terms', TermsScreen);
+      case 'thread': return r('thread', ThreadScreen);
+      case 'post-category': return r('post-category', ChooseCategoryScreen);
+      case 'post-subcategory': return r('post-subcategory', ChooseSubcategoryScreen);
+      case 'post-photos': return r('post-photos', PhotoUploadScreen);
+      case 'post-location': return r('post-location', LocationPickScreen);
+      case 'post-details': return r('post-details', PostDetailsScreen);
+      case 'post-publish-success': return r('post-publish-success', PublishSuccessScreen);
+      case 'post-ai-draft': return r('post-ai-draft', AiDraftScreen);
+      case 'post-ai-review': return r('post-ai-review', AiReviewScreen);
+      case 'post-ad-entry': return r('post-ad-entry', PostAdEntryScreen);
+      case 'post-ai-capture': return r('post-ai-capture', AiCaptureScreen);
+      case 'post-category-pick': return r('post-category-pick', CategoryPickScreen);
+      case 'sub-categories': return r('sub-categories', SubCategoriesScreen);
+      case 'edit-profile': return r('edit-profile', EditProfileScreen);
+      case 'profile': return r('profile', ProfileScreen);
       case 'main':
         switch (activeTab) {
-          case 'categories':
-            return <CategoriesScreen />;
-          case 'messages':
-            return <MessagesScreen />;
-          case 'my-ads':
-            return <MyAdsScreen />;
+          case 'categories': return <CategoriesScreen />;
+          case 'messages': return <MessagesScreen />;
+          case 'my-ads': return <MyAdsScreen />;
           case 'explore':
-          default:
-            return <ExploreScreen />;
+          default: return <ExploreScreen />;
         }
-      default: {
-        const fromRegistry = renderRegistryScreen(currentScreen);
-        return fromRegistry ?? null;
-      }
+      default: return renderRegistryScreen(currentScreen);
     }
   };
 
@@ -217,6 +166,15 @@ const MainNavigator: React.FC = () => {
     <div className="min-h-screen bg-canvas flex justify-center selection:bg-brand selection:text-white">
       <div className="w-full max-w-[440px] min-h-screen bg-canvas flex flex-col shadow-2xl relative">
         {currentScreen === 'main' && <Header />}
+        {currentScreen === 'main' && showMarketBanner && !bannerDismissed && awayMarketConfig && (
+          <MarketContextBanner
+            isArabic={isArabic}
+            awayCountryLabelAr={awayMarketConfig.nameAr}
+            awayCountryLabelEn={awayMarketConfig.nameEn}
+            onExplore={handleExploreMarket}
+            onDismiss={handleDismissMarket}
+          />
+        )}
         <main className="flex-1 flex flex-col">
           <Suspense fallback={<ScreenLoader />}>
             <div key={currentScreen} className="screen-enter">
@@ -238,8 +196,8 @@ export default function App() {
   useSupabaseListingsSync();
   useSupabaseWishlistSync();
   useSupabaseChatSync();
+  useMarketSync();
   useOnlinePresence(currentUserId);
-
   useBootMigrations(locale);
 
   if (new URLSearchParams(window.location.search).has('catalog')) {
@@ -250,27 +208,15 @@ export default function App() {
     <RouterProvider>
       <ErrorBoundaryWithLogging>
         <ErrorBoundary>
-        <RegistryProvider>
-          <>
+          <RegistryProvider>
             <TranslationProvider locale={locale}>
               <OfflineBanner />
               <GlobalPhoneCaptureMount />
               <MainNavigator />
-        <Toaster
-          position="top-center"
-          theme="light"
-          richColors
-          closeButton
-          duration={2500}
-          toastOptions={{
-            className: 'font-bold text-sm',
-          }}
-        />
-        <BuildBadge />
-
+              <Toaster position="top-center" theme="light" richColors closeButton duration={2500} toastOptions={{ className: 'font-bold text-sm' }} />
+              <BuildBadge />
             </TranslationProvider>
-          </>
-        </RegistryProvider>
+          </RegistryProvider>
         </ErrorBoundary>
       </ErrorBoundaryWithLogging>
     </RouterProvider>

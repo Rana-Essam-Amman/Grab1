@@ -35,7 +35,8 @@ export function useListingDetail(): UseListingDetailReturn {
   const [showWhatsAppSheet, setShowWhatsAppSheet] = useState(false);
 
   const listing = selectedListingId ? getListing(selectedListingId) || null : null;
-  const activeCountry = authStatus === 'authenticated' && user?.countryCode && isValidMarket(user.countryCode) ? user.countryCode : browseCountryCode;
+  // Browse market is the source of truth (already resolved by useMarketSync).
+  const activeCountry = isValidMarket(browseCountryCode) ? browseCountryCode : 'JO';
   const isCountryMismatch = useMemo(() => Boolean(listing && listing.countryCode !== activeCountry), [listing, activeCountry]);
 
   devAssertMarketIsolation(listing, activeCountry);
@@ -47,7 +48,7 @@ export function useListingDetail(): UseListingDetailReturn {
   }, [listing, setSelectedSellerPhone, navigateTo]);
 
   const handleStartChat = useCallback(async () => {
-    if (!listing || isCountryMismatch || authStatus === 'unauthenticated' || !user?.id || !listing.userId || listing.userId === user.id) {
+    if (!listing || authStatus === 'unauthenticated' || !user?.id || !listing.userId || listing.userId === user.id) {
       if (authStatus === 'unauthenticated') navigateTo('login');
       return;
     }
@@ -55,26 +56,26 @@ export function useListingDetail(): UseListingDetailReturn {
       const conv = await openConversation({ listingId: listing.id, buyerId: user.id, sellerId: listing.userId, marketCode: listing.countryCode }, activeCountry);
       if (conv) { setSelectedThreadId(conv.id); navigateTo('thread'); }
     } catch (error) { console.error('[Chat] Failed:', error); }
-  }, [listing, isCountryMismatch, authStatus, navigateTo, openConversation, setSelectedThreadId, user, activeCountry]);
+  }, [listing, authStatus, navigateTo, openConversation, setSelectedThreadId, user, activeCountry]);
 
   const handleCall = useCallback(() => {
-    if (!listing || isCountryMismatch) return;
+    if (!listing) return;
     if (authStatus === 'unauthenticated') { navigateTo('login'); return; }
     window.location.href = `tel:${derived.formattedPhone.dialNumber}`;
-  }, [listing, isCountryMismatch, authStatus, navigateTo, derived.formattedPhone.dialNumber]);
+  }, [listing, authStatus, navigateTo, derived.formattedPhone.dialNumber]);
 
   const handleWhatsApp = useCallback(() => {
-    if (!listing || isCountryMismatch) return;
+    if (!listing) return;
     if (authStatus === 'unauthenticated') { navigateTo('login'); return; }
     window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: derived.formattedPhone.dialNumber, listingTitle: listing.title }), '_blank');
-  }, [listing, isCountryMismatch, authStatus, navigateTo, derived.formattedPhone.dialNumber]);
+  }, [listing, authStatus, navigateTo, derived.formattedPhone.dialNumber]);
 
   const handleWhatsAppClick = useCallback(() => {
-    if (!listing || isCountryMismatch) return;
+    if (!listing) return;
     if (authStatus === 'unauthenticated') { navigateTo('login'); return; }
     if (!listing.sellerPhone) { navigateTo('login'); return; }
     setShowWhatsAppSheet(true);
-  }, [listing, isCountryMismatch, authStatus, navigateTo]);
+  }, [listing, authStatus, navigateTo]);
 
   const handleWhatsAppIntent = useCallback((intent: WhatsAppIntent) => {
     if (!listing) return;
