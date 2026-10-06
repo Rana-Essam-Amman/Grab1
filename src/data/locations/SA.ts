@@ -51,6 +51,32 @@ export const SA_EN: CountryLocations = {
   'Khamis Mushait': [
     'Al Numas', 'Al Wasitah', 'Al Musalla', 'Al Rawdah', 'Al Nahda', 'Al Salam', 'Al Aziziyah', 'Al Qadisiya'
   ],
+  'Ha\'il': [
+    'Al-Naqrah', 'Al-Mintaqah Al-Sharqiyah', 'Al-Zahra', 'Al-Salam', 'Al-Wasitah',
+    'Al-Maghawat', 'Al-Naqrah Al-Sharqiyah', 'Al-Naqrah Al-Gharbiyah', 'Al-Rawdah',
+    'Al-Aziziyah', 'Al-Jama\'ah', 'Al-Shifa'
+  ],
+  Jizan: [
+    'Al-Madina', 'Al-Shati', 'Al-Rawdah', 'Al-Salam', 'Al-Safa', 'Al-Marwah',
+    'Al-Nahda', 'Al-Andalus', 'Al-Aziziyah', 'Al-Jabal', 'Al-Manhal', 'Al-Faisaliyah',
+    'Corniche', 'Al-Qadisiyah', 'Al-Khazan'
+  ],
+  Najran: [
+    'Al-Faisaliyah', 'Al-Makhrouq', 'Al-Nahda', 'Al-Salam', 'Al-Qabil', 'Al-Jawf',
+    'Al-Shorouq', 'Al-Dhubyani', 'Al-Sawari', 'Al-Hadikah', 'Al-Rawdah', 'Al-Amir Sultan'
+  ],
+  'Al Bahah': [
+    'Al-Madina', 'Al-Zahra', 'Al-Nahda', 'Al-Rawdah', 'Al-Salam', 'Al-Manhal',
+    'Al-Musa', 'Al-Mandaq', 'Al-Qura', 'Al-Aziziyah'
+  ],
+  'Al Jouf': [
+    'Sakaka', 'Al-Madina', 'Al-Aziziyah', 'Al-Rawdah', 'Al-Nahda', 'Al-Faisaliyah',
+    'Al-Salam', 'Al-Zahra', 'Dumat Al-Jandal', 'Al-Qurayyat', 'Al-Jawf Al-Jadid'
+  ],
+  'Northern Borders': [
+    'Arar', 'Al-Madina', 'Al-Nahda', 'Al-Aziziyah', 'Al-Rawdah', 'Al-Salam',
+    'Rafha', 'Al-Uwayqilah', 'Turayf', 'Al-Jawf Road', 'Airport Road'
+  ],
   Other: ['Other']
 };
 
@@ -100,6 +126,32 @@ export const SA_AR: CountryLocations = {
   ],
   'خميس مشيط': [
     'النماص', 'الوسطية', 'المصلى', 'الروضة', 'النهدى', 'السلام', 'العزيزية', 'القادسية'
+  ],
+  'حائل': [
+    'النقرة', 'المنطقة الشرقية', 'الزهراء', 'السلام', 'الواسطة',
+    'المغاوط', 'النقرة الشرقية', 'النقرة الغربية', 'الروضة',
+    'العزيزية', 'الجمعة', 'الشفاء'
+  ],
+  'جيزان': [
+    'المدينة', 'الشاطئ', 'الروضة', 'السلام', 'الصفا', 'المروة',
+    'النهضة', 'الأندلس', 'العزيزية', 'الجبل', 'المنهل', 'الفيصلية',
+    'الكورنيش', 'القادسية', 'الخزان'
+  ],
+  'نجران': [
+    'الفيصلية', 'المخروق', 'النهضة', 'السلام', 'القابل', 'الجوف',
+    'الشروق', 'الذبياني', 'السواري', 'الحديقة', 'الروضة', 'الأمير سلطان'
+  ],
+  'الباحة': [
+    'المدينة', 'الزهراء', 'النهضة', 'الروضة', 'السلام', 'المنهل',
+    'الموسى', 'المندق', 'القرى', 'العزيزية'
+  ],
+  'الجوف': [
+    'سكاكا', 'المدينة', 'العزيزية', 'الروضة', 'النهضة', 'الفيصلية',
+    'السلام', 'الزهراء', 'دومة الجندل', 'القريات', 'الجوف الجديد'
+  ],
+  'الحدود الشمالية': [
+    'عرعر', 'المدينة', 'النهضة', 'العزيزية', 'الروضة', 'السلام',
+    'رفحاء', 'العويقيلة', 'طريف', 'طريق الجوف', 'طريق المطار'
   ],
   'أخرى': ['أخرى']
 };

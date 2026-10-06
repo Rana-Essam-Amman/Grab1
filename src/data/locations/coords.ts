@@ -36,6 +36,12 @@ export const CITY_COORDS: Record<string, Record<string, CityCoords>> = {
     Tabuk: { lat: 28.3838, lng: 36.555 },
     Abha: { lat: 18.2164, lng: 42.5053 },
     'Khamis Mushait': { lat: 18.3, lng: 42.7333 },
+    'Ha\'il': { lat: 27.5219, lng: 41.6961 },
+    Jizan: { lat: 16.8892, lng: 42.5706 },
+    Najran: { lat: 17.4933, lng: 44.1277 },
+    'Al Bahah': { lat: 20.0129, lng: 41.4677 },
+    'Al Jouf': { lat: 29.9697, lng: 40.2064 },
+    'Northern Borders': { lat: 30.9753, lng: 41.0381 },
   },
   LB: {
     Beirut: { lat: 33.8938, lng: 35.5018 },
@@ -48,6 +54,9 @@ export const CITY_COORDS: Record<string, Record<string, CityCoords>> = {
     Tyre: { lat: 33.2705, lng: 35.2038 },
     Jbeil: { lat: 34.1211, lng: 35.6478 },
     Metn: { lat: 33.8872, lng: 35.5653 },
+    Akkar: { lat: 34.5422, lng: 36.0797 },
+    'Baalbek-Hermel': { lat: 34.0058, lng: 36.2181 },
+    'Bint Jbeil': { lat: 33.1206, lng: 35.4336 },
   },
   PS: {
     Jerusalem: { lat: 31.7683, lng: 35.2137 },
@@ -81,5 +90,8 @@ export const CITY_COORDS: Record<string, Record<string, CityCoords>> = {
     Hasakah: { lat: 36.5024, lng: 40.7477 },
     Idlib: { lat: 35.9306, lng: 36.6339 },
     Qamishli: { lat: 37.0537, lng: 41.2295 },
+    'Rif Dimashq': { lat: 33.5138, lng: 36.2765 },
+    'As-Suwayda': { lat: 32.7090, lng: 36.5695 },
+    Quneitra: { lat: 33.1264, lng: 35.8247 },
   },
 };
