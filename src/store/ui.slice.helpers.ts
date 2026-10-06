@@ -3,6 +3,16 @@ import { MarketCode } from '@/shared/lib/marketGate';
 import { DEFAULT_REGIONAL_CAPITALS } from '../data/locations/capitals';
 import { ScreenType } from './ui.slice.types';
 
+const OVERRIDE_KEY = 'catch_browse_market_override';
+
+const getStoredOverride = (): MarketCode | null => {
+  try {
+    const raw = globalStorage().get<string>(OVERRIDE_KEY);
+    if (raw === 'JO' || raw === 'SA' || raw === 'LB' || raw === 'PS' || raw === 'SY') return raw;
+    return null;
+  } catch { return null; }
+};
+
 // Derive initial browse country from storage
 const getStoredCountry = (): MarketCode => {
   try {
@@ -37,9 +47,8 @@ export const getInitialState = () => {
   } catch {
     // ignore storage read errors
   }
-
   const shouldGoToMain = hasStoredCountry || hasAuth;
-  
+
   return {
     locale,
     isArabic: locale === 'ar',
@@ -47,6 +56,7 @@ export const getInitialState = () => {
     screenHistory: (shouldGoToMain ? ['main'] : ['login']) as ScreenType[],
     currentScreen: 'main' as ScreenType,
     browseCountryCode: initialBrowseCountryCode,
+    browseMarketOverride: getStoredOverride(),
     geoCountryCode: 'JO' as MarketCode,
     browseCityEn: initialCapital.cityEn,
     browseCityAr: initialCapital.cityAr,
@@ -83,7 +93,6 @@ export async function hydrateCountryFromGeo(): Promise<void> {
     const { detectCountry } = await import('@/shared/lib/geoDetect');
     const detected = await detectCountry();
     if (detected.source !== 'ip' && detected.source !== 'timezone' && detected.source !== 'language') return;
-
     const { useUIStore } = await import('./ui.slice');
 
     // Always record the geo-detected country for the market resolution logic.

@@ -7,11 +7,7 @@ import { getSanitizedCurrencyByCountry } from './ui.slice.helpers';
 import { UIState, ScreenType, TabType } from './ui.slice.types';
 
 export const createUIActions = (
-  set: (
-    partial:
-      | Partial<UIState>
-      | ((state: UIState) => Partial<UIState> | void)
-  ) => void,
+  set: (partial: Partial<UIState> | ((state: UIState) => Partial<UIState> | void)) => void,
   get: () => UIState,
 ) => ({
   setLocale: (locale: 'en' | 'ar') => {
@@ -28,11 +24,6 @@ export const createUIActions = (
     })),
 
   goBack: () => {
-    // Post-refresh: Zustand's screenHistory was reset to ['main'], so 
-    // there is nothing in-app to pop. Fall back to the browser's own 
-    // back button — the browser still holds the real navigation history 
-    // after F5, and React Router will pick up the popstate and re-sync 
-    // the URL → store.
     if (get().screenHistory.length <= 1) {
       window.history.back();
       return;
@@ -54,7 +45,6 @@ export const createUIActions = (
     let finalCityEn = cityEn;
     let finalCityAr = cityAr;
 
-    // Default to regional capital if city is missing or invalid
     if (!finalCityEn || !finalCityAr || !validateRegionalSanity(finalCountry, finalCityEn)) {
       const capital = DEFAULT_REGIONAL_CAPITALS[finalCountry] || DEFAULT_REGIONAL_CAPITALS.JO;
       finalCityEn = capital.cityEn;
@@ -62,7 +52,6 @@ export const createUIActions = (
     }
 
     const activeCurrency = getSanitizedCurrencyByCountry(finalCountry);
-
     set({
       browseCountryCode: finalCountry,
       browseCityEn: finalCityEn,
@@ -70,15 +59,11 @@ export const createUIActions = (
       activeCurrency,
       neighborhoodFilter: null,
     });
-
     globalStorage().set('catch_browse_country', finalCountry);
   },
 
   setActiveCurrency: (currency: string) => {
-    const { browseCountryCode } = get();
-    const effectiveCountry = browseCountryCode;
-    
-    // Simple validation: if currency is empty or invalid, fallback to country default
+    const effectiveCountry = get().browseCountryCode;
     if (!currency || currency === 'INVALID') {
       set({ activeCurrency: getSanitizedCurrencyByCountry(effectiveCountry) });
     } else {
@@ -92,24 +77,20 @@ export const createUIActions = (
   setMinPriceFilter: (minPriceFilter: number | null) => set({ minPriceFilter }),
   setMaxPriceFilter: (maxPriceFilter: number | null) => set({ maxPriceFilter }),
   setNeighborhoodFilter: (neighborhoodFilter: string | null) => set({ neighborhoodFilter }),
-
   setSelectedListingId: (selectedListingId: string | null) => set({ selectedListingId }),
   setSelectedThreadId: (selectedThreadId: string | null) => set({ selectedThreadId }),
   setSelectedSellerPhone: (selectedSellerPhone: string | null) => set({ selectedSellerPhone }),
-
   setIsAiFocused: (isAiFocused: boolean) => set({ isAiFocused }),
   setIsCountrySheetOpen: (isCountrySheetOpen: boolean) => set({ isCountrySheetOpen }),
   setIsSearchFocused: (isSearchFocused: boolean) => set({ isSearchFocused }),
   setAiFlowPending: (aiFlowPending: boolean) => set({ aiFlowPending }),
-  setGeoCountryCode: (countryCode: MarketCode) => {
-    set({ geoCountryCode: countryCode });
-  },
+  setGeoCountryCode: (countryCode: MarketCode) => set({ geoCountryCode: countryCode }),
+
   setBrowseMarketOverride: async (market: MarketCode) => {
     const { authStatus, user } = useAuthStore.getState();
     if (authStatus !== 'authenticated' || !user?.id) return;
 
     const capital = DEFAULT_REGIONAL_CAPITALS[market] || DEFAULT_REGIONAL_CAPITALS.JO;
-
     set({
       browseCountryCode: market,
       browseCityEn: capital.cityEn,
@@ -119,12 +100,29 @@ export const createUIActions = (
     });
     globalStorage().set('catch_browse_country', market);
 
-    // Fire-and-forget Supabase persist
     try {
       const { saveBrowseMarket } = await import('@/shared/lib/profilesService');
       await saveBrowseMarket(user.id, market);
     } catch {
       // non-fatal
     }
+  },
+
+  setBrowseMarketOverrideLocal: (market: MarketCode) => {
+    const capital = DEFAULT_REGIONAL_CAPITALS[market] || DEFAULT_REGIONAL_CAPITALS.JO;
+    globalStorage().set('catch_browse_market_override', market);
+    set({
+      browseMarketOverride: market,
+      browseCountryCode: market,
+      browseCityEn: capital.cityEn,
+      browseCityAr: capital.cityAr,
+      activeCurrency: getSanitizedCurrencyByCountry(market),
+      neighborhoodFilter: null,
+    });
+  },
+
+  clearBrowseMarketOverride: () => {
+    globalStorage().remove('catch_browse_market_override');
+    set({ browseMarketOverride: null });
   },
 });
