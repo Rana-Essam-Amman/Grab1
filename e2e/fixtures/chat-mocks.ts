@@ -40,6 +40,23 @@ const LISTING_ROW = {
 };
 
 export async function installChatMocks(page: Page): Promise<void> {
+  // Block all Supabase auth endpoints so no SIGNED_IN fires and the
+  // E2E-seeded localStorage user is preserved.
+  await page.route('**/auth/v1/**', async (route) => {
+    if (route.request().method() === 'GET') {
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: 'null',
+      });
+    }
+    return route.fulfill({
+      status: 400,
+      contentType: 'application/json',
+      body: JSON.stringify({ error: 'auth_disabled_for_e2e' }),
+    });
+  });
+
   await page.route('**/rest/v1/conversations*', async (route) => {
     const method = route.request().method();
     if (method === 'GET') {
