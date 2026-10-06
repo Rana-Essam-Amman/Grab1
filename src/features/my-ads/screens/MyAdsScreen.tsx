@@ -57,14 +57,14 @@ export const MyAdsScreen: React.FC = () => {
     }
   }, [deleteListing, isArabic]);
 
-  const handleBump = useCallback((id: string) => {
-    if (bump(id)) {
-      updateListing(id, { lastBumpedAt: new Date().toISOString() });
+  const handleBump = useCallback(async (id: string) => {
+    const ok = await bump(id);
+    if (ok) {
       toast.success(isArabic ? 'تم رفع الإعلان ✓' : 'Ad bumped ✓');
     } else {
       toast.error(isArabic ? 'تجاوزت الحد اليومي (3 مرات)' : 'Daily limit reached (3×)');
     }
-  }, [bump, updateListing, isArabic]);
+  }, [bump, isArabic]);
 
   const handlePromoteConfirm = useCallback(async () => {
     if (!promoteTarget) return;
