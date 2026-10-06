@@ -55,10 +55,15 @@ export interface UIState {
   setActiveTab: (tab: TabType) => void;
   // Browse context
   browseCountryCode: MarketCode;
+  // Geo-detected country (raw signal, not user choice). Not persisted.
+  geoCountryCode: MarketCode;
+  setGeoCountryCode: (countryCode: MarketCode) => void;
   browseCityEn: string;
   browseCityAr: string;
   activeCurrency: string;
   setBrowseLocation: (countryCode: MarketCode, cityEn: string, cityAr: string) => void;
+  // Explicit user override; persists to Supabase (signed-in users only).
+  setBrowseMarketOverride: (market: MarketCode) => Promise<void>;
   setActiveCurrency: (currency: string) => void;
   // Search & Filters
   searchQuery: string;

@@ -119,7 +119,8 @@ describe('useUIStore - Deep Edge Cases & Verification (Sprint T3 Ultra)', () => 
   });
 
   describe('Market Lock & Browse Location Hardening', () => {
-    it('guest with browse SY is forced to JO after authenticated user JO logs in', () => {
+    it('guest can keep browse SY after sign-in if they set it before', () => {
+      // New design: browse is free. Sign-in does not override browse.
       useUIStore.getState().setBrowseLocation('SY', 'Damascus', 'دمشق');
       expect(useUIStore.getState().browseCountryCode).toBe('SY');
 
@@ -137,11 +138,12 @@ describe('useUIStore - Deep Edge Cases & Verification (Sprint T3 Ultra)', () => 
 
       useUIStore.getState().setBrowseLocation('SY', 'Damascus', 'دمشق');
       const state = useUIStore.getState();
-      expect(state.browseCountryCode).toBe('JO');
-      expect(state.activeCurrency).toBe('JOD');
+      expect(state.browseCountryCode).toBe('SY');
+      expect(state.activeCurrency).toBe('SYP');
     });
 
-    it('authenticated user with JO countryCode is forced back when requesting LB', () => {
+    it('authenticated user can switch to LB for browsing', () => {
+      // New design: browse is free. Authenticated user can switch to LB for browsing.
       useAuthStore.setState({
         authStatus: 'authenticated',
         user: {
@@ -157,8 +159,8 @@ describe('useUIStore - Deep Edge Cases & Verification (Sprint T3 Ultra)', () => 
       useUIStore.getState().setBrowseLocation('LB', 'Beirut', 'بيروت');
 
       const state = useUIStore.getState();
-      expect(state.browseCountryCode).toBe('JO');
-      expect(state.activeCurrency).toBe('JOD');
+      expect(state.browseCountryCode).toBe('LB');
+      expect(state.activeCurrency).toBe('LBP');
     });
 
     it('authenticated user with JO countryCode is allowed to update city/neighborhood within JO', () => {
@@ -259,7 +261,10 @@ describe('useUIStore - Deep Edge Cases & Verification (Sprint T3 Ultra)', () => 
       expect(useUIStore.getState().activeCurrency).toBe('JOD');
     });
 
-    it('setActiveCurrency sanitizes based on active user home country if authenticated', () => {
+    it('setActiveCurrency falls back to browse market\'s currency', () => {
+      // New design: browse is free. Fallback uses browse country, not user home country.
+      useUIStore.getState().setBrowseLocation('SY', 'Damascus', 'دمشق');
+
       useAuthStore.setState({
         authStatus: 'authenticated',
         user: {

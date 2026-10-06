@@ -95,9 +95,10 @@ export async function hydrateProfile(): Promise<void> {
     const latest = useAuthStore.getState().user;
     if (!latest || latest.id !== current.id) return;
 
-    const patch: { phone?: string; nickname?: string } = {};
+    const patch: { phone?: string; nickname?: string; browseMarket?: 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | null } = {};
     if (profile.phone) patch.phone = profile.phone;
     if (profile.nickname) patch.nickname = profile.nickname;
+    if (profile.browse_market) patch.browseMarket = profile.browse_market;
 
     if (Object.keys(patch).length > 0) {
       useAuthStore.getState().updateUser(patch);

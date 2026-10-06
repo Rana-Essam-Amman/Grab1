@@ -149,6 +149,7 @@ export interface UserProfile {
   avatarUrl?: string;
   avatar?: string;
   isVipShop?: boolean;
+  browseMarket?: 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | null;
 }
 
 export interface RegisteredAccount {

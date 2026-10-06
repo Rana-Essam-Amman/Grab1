@@ -26,7 +26,8 @@ describe('Slices Interaction Integration', () => {
     useDraftStore.setState({ postDraft: { categorySlug: 'motors', subcategorySlug: 'cars', photos: [], city: 'عمّان', neighborhood: 'خلدا', site: '', noteText: '' } });
   });
 
-  it('Scenario 1: Demo Auth Flow - Market Lock Verification', () => {
+  it('Scenario 1: Demo Auth Flow - Browse stays free after sign-in', () => {
+    // New design: browse is free. Sign-in does NOT reset browse.
     // 1. Guest browsing SY
     useUIStore.getState().setBrowseLocation('SY', 'Damascus', 'دمشق');
     expect(useUIStore.getState().browseCountryCode).toBe('SY');
@@ -37,19 +38,20 @@ describe('Slices Interaction Integration', () => {
     // 3. Attempt to switch back to SY
     useUIStore.getState().setBrowseLocation('SY', 'Damascus', 'دمشق');
     
-    // 4. Assert Lock
-    expect(useUIStore.getState().browseCountryCode).toBe('JO');
-    expect(useUIStore.getState().activeCurrency).toBe('JOD');
+    // 4. Assert Browse remains SY
+    expect(useUIStore.getState().browseCountryCode).toBe('SY');
+    expect(useUIStore.getState().activeCurrency).toBe('SYP');
   });
 
-  it('Scenario 2: Market Lock Enforcement on Login', () => {
+  it('Scenario 2: Browse is free across markets after login', () => {
+    // New design: browse is free across markets after login.
     useAuthStore.getState().loginDirectly('jo@user.com', '791', 'JO');
     
     // Attempt to set browse location to SA
     useUIStore.getState().setBrowseLocation('SA', 'Riyadh', 'الرياض');
     
-    expect(useUIStore.getState().browseCountryCode).toBe('JO');
-    expect(useUIStore.getState().activeCurrency).toBe('JOD');
+    expect(useUIStore.getState().browseCountryCode).toBe('SA');
+    expect(useUIStore.getState().activeCurrency).toBe('SAR');
   });
 
   it('Scenario 3: Publish Listing Flow Persistence', () => {
