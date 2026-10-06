@@ -11,5 +11,11 @@
   "premiumListing": "إعلان مميز",
   "whatsappSheetTitle": "تواصل عبر واتساب",
   "writeYourOwn": "اكتب رسالتك",
-  "opensWhatsAppReady": "سيفتح واتساب برسالتك الجاهزة"
+  "opensWhatsAppReady": "سيفتح واتساب برسالتك الجاهزة",
+  "rateSeller": "قيّم البائع",
+  "reviewsSection": "التقييمات",
+  "noRatingsYet": "لا توجد تقييمات بعد",
+  "howWasExperience": "كيف كانت تجربتك مع",
+  "addCommentOptional": "أضف تعليقاً (اختياري)...",
+  "submitReview": "إرسال التقييم"
 }
