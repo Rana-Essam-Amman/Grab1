@@ -62,6 +62,11 @@ export const CITY_COORDS: Record<string, Record<string, CityCoords>> = {
     Jericho: { lat: 31.8667, lng: 35.4500 },
     Salfit: { lat: 32.0833, lng: 35.1833 },
     Tubas: { lat: 32.3211, lng: 35.3686 },
+    'North Gaza': { lat: 31.5333, lng: 34.5000 },
+    Gaza: { lat: 31.5017, lng: 34.4668 },
+    'Deir al-Balah': { lat: 31.4183, lng: 34.3511 },
+    'Khan Younis': { lat: 31.3469, lng: 34.3028 },
+    Rafah: { lat: 31.2870, lng: 34.2569 },
   },
   SY: {
     Damascus: { lat: 33.5138, lng: 36.2765 },
