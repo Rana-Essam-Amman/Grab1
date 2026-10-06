@@ -3,6 +3,29 @@ import { hydrateProfile, useAuthStore } from '../store/auth.slice';
 import { onAuthStateChange } from '../services/authService';
 import { ensureAnonymousSession, isAnonymousUser } from '../services/anonymousSession';
 import { mapSessionToUser, resumePendingNavigation } from './authListenerHelpers';
+import { useUIStore } from '@/store/ui.slice';
+import { useListingsStore } from '@/features/listings/store/listings.slice';
+import { toast } from 'sonner';
+
+function resumePendingWishlist(): void {
+  const ui = useUIStore.getState();
+  const pendingId = ui.pendingWishlistId;
+  if (!pendingId) return;
+
+  const listingsStore = useListingsStore.getState();
+  const listing = listingsStore.listings.find((l) => l.id === pendingId);
+
+  if (listing) {
+    listingsStore.toggleWishlist(listing.id, listing.countryCode);
+    toast.success(
+      ui.isArabic
+        ? 'تم حفظ الإعلان في المفضلة ✓'
+        : 'Saved to favorites ✓'
+    );
+  }
+
+  ui.setPendingWishlistId(null);
+}
 
 export function useSupabaseAuthListener(): void {
   useEffect(() => {
@@ -50,6 +73,7 @@ export function useSupabaseAuthListener(): void {
         const freshSignIn = !stillAnon && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION');
         if (justLinked || freshSignIn) {
           resumePendingNavigation();
+          resumePendingWishlist();
         }
       }
     });

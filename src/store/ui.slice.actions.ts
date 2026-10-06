@@ -131,4 +131,13 @@ export const createUIActions = (
   },
 
   setGeoUnsupported: (v: boolean) => set({ geoUnsupported: v }),
+
+  setPendingWishlistId: (id: string | null) => {
+    if (id) {
+      globalStorage().set('catch_pending_wishlist', id);
+    } else {
+      globalStorage().remove('catch_pending_wishlist');
+    }
+    set({ pendingWishlistId: id });
+  },
 });

@@ -19,7 +19,7 @@ export const BookmarkHeartButton: React.FC<BookmarkHeartButtonProps> = ({
   showLabel = false,
 }) => {
   const { isWishlisted, toggleWishlist } = useListings();
-  const { isArabic, navigateTo } = useUI();
+  const { isArabic, navigateTo, setPendingWishlistId } = useUI();
   const { authStatus } = useAuth();
   const isSaved = isWishlisted(listingId);
 
@@ -27,6 +27,7 @@ export const BookmarkHeartButton: React.FC<BookmarkHeartButtonProps> = ({
     e.stopPropagation();
     e.preventDefault();
     if (authStatus === 'unauthenticated') {
+      setPendingWishlistId(listingId);
       navigateTo('login');
       return;
     }
