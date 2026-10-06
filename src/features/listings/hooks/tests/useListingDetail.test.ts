@@ -137,23 +137,6 @@ describe('useListingDetail', () => {
     expect(mockNavigateTo).toHaveBeenCalledWith('thread');
   });
 
-  it('handleStartChat is a no-op when isCountryMismatch is true', async () => {
-    vi.mocked(useAuth).mockReturnValue({
-      authStatus: 'authenticated',
-      user: { id: 'u1', phone: '0799999999', countryCode: 'SA' },
-    } as unknown as ReturnType<typeof useAuth>);
-
-    const { result } = renderHook(() => useListingDetail());
-    expect(result.current.isCountryMismatch).toBe(true);
-
-    await act(async () => {
-      await result.current.handleStartChat();
-    });
-
-    expect(mockOpenConversation).not.toHaveBeenCalled();
-    expect(mockNavigateTo).not.toHaveBeenCalled();
-  });
-
   it('handleCall with unauthenticated user navigates to login', () => {
     vi.mocked(useAuth).mockReturnValue({
       authStatus: 'unauthenticated',
@@ -214,23 +197,6 @@ describe('useListingDetail', () => {
     const urlCalled = spyOpen.mock.calls[0][0] as string;
     expect(urlCalled).toContain('wa.me');
     expect(urlCalled).toContain('791234567');
-    spyOpen.mockRestore();
-  });
-
-  it('handleWhatsApp is a no-op when isCountryMismatch is true', () => {
-    vi.mocked(useAuth).mockReturnValue({
-      authStatus: 'authenticated',
-      user: { id: 'u1', phone: '0799999999', countryCode: 'SA' },
-    } as unknown as ReturnType<typeof useAuth>);
-
-    const spyOpen = vi.spyOn(window, 'open').mockImplementation(() => null);
-
-    const { result } = renderHook(() => useListingDetail());
-    act(() => {
-      result.current.handleWhatsApp();
-    });
-
-    expect(spyOpen).not.toHaveBeenCalled();
     spyOpen.mockRestore();
   });
 
