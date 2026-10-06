@@ -35,6 +35,7 @@ import { useOnlinePresence } from '@/features/chat/hooks/useOnlinePresence';
 import { RouterProvider } from '@/shared/router/RouterProvider';
 import { useScrollToTop } from '@/shared/router/useScrollToTop';
 import { useUrlSync } from '@/shared/router/useUrlSync';
+import { globalStorage } from '@/shared/lib/marketStorage';
 
 const CategoriesScreen = lazy(() => import('@/features/categories/screens/CategoriesScreen').then((m) => ({ default: m.CategoriesScreen })));
 const MyAdsScreen = lazy(() => import('@/features/my-ads/screens/MyAdsScreen').then((m) => ({ default: m.MyAdsScreen })));
@@ -90,19 +91,19 @@ const MainNavigator: React.FC = () => {
   const dismissKey = `catch_market_banner_dismissed_${geoCountryCode ?? ''}`;
 
   React.useEffect(() => {
-    if (geoCountryCode) setBannerDismissed(localStorage.getItem(dismissKey) === '1');
+    if (geoCountryCode) setBannerDismissed(globalStorage().get<string>(dismissKey) === '1');
   }, [dismissKey, geoCountryCode]);
 
   const handleExploreMarket = () => {
     if (geoCountryCode && isValidMarketCode(geoCountryCode)) {
       void useUIStore.getState().setBrowseMarketOverride(geoCountryCode);
     }
-    if (geoCountryCode) localStorage.setItem(dismissKey, '1');
+    if (geoCountryCode) globalStorage().set(dismissKey, '1');
     setBannerDismissed(true);
   };
 
   const handleDismissMarket = () => {
-    if (geoCountryCode) localStorage.setItem(dismissKey, '1');
+    if (geoCountryCode) globalStorage().set(dismissKey, '1');
     setBannerDismissed(true);
   };
 
