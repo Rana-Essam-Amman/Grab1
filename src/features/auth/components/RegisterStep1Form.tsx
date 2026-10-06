@@ -17,7 +17,7 @@ export const RegisterStep1Form: React.FC<RegisterStep1FormProps> = ({
   onStageCredentials,
   onToast,
 }) => {
-  const { geoUnsupported } = useUI() as ReturnType<typeof useUI> & { geoUnsupported: boolean };
+  const { geoUnsupported } = useUI();
   const {
     isArabic, selectedCountry, firstName, phone, email, password, confirmPassword,
     showPassword, showConfirmPassword, error, handleCountryChange,
