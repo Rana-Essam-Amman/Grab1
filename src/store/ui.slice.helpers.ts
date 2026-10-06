@@ -4,12 +4,19 @@ import { DEFAULT_REGIONAL_CAPITALS } from '../data/locations/capitals';
 import { ScreenType } from './ui.slice.types';
 
 const OVERRIDE_KEY = 'catch_browse_market_override';
+const PENDING_WISHLIST_KEY = 'catch_pending_wishlist';
 
 const getStoredOverride = (): MarketCode | null => {
   try {
     const raw = globalStorage().get<string>(OVERRIDE_KEY);
     if (raw === 'JO' || raw === 'SA' || raw === 'LB' || raw === 'PS' || raw === 'SY') return raw;
     return null;
+  } catch { return null; }
+};
+
+const getStoredPendingWishlist = (): string | null => {
+  try {
+    return globalStorage().get<string>(PENDING_WISHLIST_KEY) || null;
   } catch { return null; }
 };
 
@@ -77,6 +84,7 @@ export const getInitialState = () => {
     isSearchFocused: false,
     aiFlowPending: false,
     geoUnsupported: false,
+    pendingWishlistId: getStoredPendingWishlist(),
   };
 };
 

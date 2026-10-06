@@ -37,6 +37,8 @@ export const useUI = () => {
     clearBrowseMarketOverride: store.clearBrowseMarketOverride,
     geoUnsupported: store.geoUnsupported,
     setGeoUnsupported: store.setGeoUnsupported,
+    pendingWishlistId: store.pendingWishlistId,
+    setPendingWishlistId: store.setPendingWishlistId,
     browseCountry: countryByCode(store.browseCountryCode),
     browseCityEn: store.browseCityEn,
     browseCityAr: store.browseCityAr,

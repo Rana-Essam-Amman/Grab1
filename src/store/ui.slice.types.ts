@@ -105,6 +105,8 @@ export interface UIState {
   setIsSearchFocused: (focused: boolean) => void;
   aiFlowPending: boolean;
   setAiFlowPending: (v: boolean) => void;
+  pendingWishlistId: string | null;
+  setPendingWishlistId: (id: string | null) => void;
 
   /** True when geo detection landed outside the 5 supported markets. */
   geoUnsupported: boolean;
