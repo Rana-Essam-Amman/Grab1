@@ -61,7 +61,7 @@ export const SY_EN: CountryLocations = {
     'Al-Ghariyah', 'Umm al-Zaytun', 'Al-Mushannaf', 'Al-Qurayya'
   ],
   Quneitra: [
-    'Madinat al-Baath', 'Khan Arnabah', 'Al-Quneitra', 'Al-Baath City', 'Hader',
+    'Madinat al-Baath', 'Khan Arnabah', 'Al-Quneitra', 'Hader',
     'Jubata al-Khashab', 'Buqata', 'Masade', 'Al-Hurriyah'
   ],
   Homs: [
@@ -129,7 +129,7 @@ export const SY_AR: CountryLocations = {
     'الغارية', 'أم الزيتون', 'المشنف', 'القريا'
   ],
   'القنيطرة': [
-    'مدينة البعث', 'خان أرنبة', 'القنيطرة', 'مدينة البعث', 'حضر',
+    'مدينة البعث', 'خان أرنبة', 'القنيطرة', 'حضر',
     'جبا الخشب', 'بقعاتا', 'مسعدة', 'الحرية'
   ],
   'حمص': [
