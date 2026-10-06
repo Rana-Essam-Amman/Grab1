@@ -66,17 +66,17 @@ export const PS_EN: CountryLocations = {
   ],
   'Deir al-Balah': [
     'Deir al-Balah', 'Nuseirat', 'Bureij', 'Maghazi', 'Zawaida', 'Wadi al-Salqa',
-    'Al-Musaddar', 'Al-Masdar', 'Al-Nuseirat Camp', 'Al-Bureij Camp',
+    'Al-Musaddar', 'Al-Nuseirat Camp', 'Al-Bureij Camp',
     'Al-Maghazi Camp', 'Wadi Gaza'
   ],
   'Khan Younis': [
     'Khan Younis', 'Bani Suheila', 'Abasan al-Kabira', 'Abasan al-Saghira',
-    'Khuzaa', 'Qarara', 'Al-Fukhari', 'Al-Qarara', 'Maen', 'Al-Satar al-Gharbi',
+    'Khuzaa', 'Al-Qarara', 'Al-Fukhari', 'Maen', 'Al-Satar al-Gharbi',
     'Al-Satar al-Sharqi', 'Al-Amal', 'Al-Manara'
   ],
   Rafah: [
     'Rafah', 'Tal al-Sultan', 'Shaboura', 'Yibna Camp', 'Al-Junaina', 'Al-Salam',
-    'Al-Brazil', 'Al-Zuhour', 'Al-Nasr', 'Al-Awda', 'Al-Barazil', 'Khaled bin Walid'
+    'Al-Brazil', 'Al-Zuhour', 'Al-Nasr', 'Al-Awda', 'Khaled bin Walid'
   ],
   Other: ['Other']
 };
@@ -141,16 +141,16 @@ export const PS_AR: CountryLocations = {
   ],
   'دير البلح': [
     'دير البلح', 'النصيرات', 'البريج', 'المغازي', 'الزوايدة', 'وادي السلقا',
-    'المصدر', 'المصدر', 'مخيم النصيرات', 'مخيم البريج', 'مخيم المغازي', 'وادي غزة'
+    'المصدر', 'مخيم النصيرات', 'مخيم البريج', 'مخيم المغازي', 'وادي غزة'
   ],
   'خان يونس': [
     'خان يونس', 'بني سهيلا', 'عبسان الكبيرة', 'عبسان الصغيرة',
-    'خزاعة', 'القرارة', 'الفخاري', 'القرارة', 'معن', 'الساتر الغربي',
+    'خزاعة', 'القرارة', 'الفخاري', 'معن', 'الساتر الغربي',
     'الساتر الشرقي', 'الأمل', 'المنارة'
   ],
   'رفح': [
     'رفح', 'تل السلطان', 'شابورة', 'مخيم يبنا', 'الجنينة', 'السلام',
-    'البرازيل', 'الزهور', 'النصر', 'العودة', 'البرازيل', 'خالد بن الوليد'
+    'البرازيل', 'الزهور', 'النصر', 'العودة', 'خالد بن الوليد'
   ],
   'أخرى': ['أخرى']
 };
