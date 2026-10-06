@@ -37,7 +37,7 @@ export const ListingActionBar: React.FC<ListingActionBarProps> = React.memo((pro
         className={`w-14 h-14 rounded-full flex items-center justify-center shrink-0 shadow-md transition-all ${
           waDisabled
             ? 'bg-border text-ink-muted cursor-not-allowed'
-            : 'bg-[#25D366] text-white hover:opacity-90 active:scale-[0.95] cursor-pointer'
+            : 'bg-whatsapp text-white hover:bg-whatsapp-hover active:scale-[0.95] cursor-pointer'
         }`}
         aria-label={isArabic ? 'تواصل عبر واتساب' : 'Contact via WhatsApp'}
         title={isArabic ? 'واتساب' : 'WhatsApp'}
