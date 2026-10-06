@@ -22,7 +22,6 @@ interface HeaderDropdownMenuProps {
 }
 
 export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
-  isArabic,
   handleMenuClose,
   handleProfileNav,
   handleSettingsNav,
@@ -32,9 +31,8 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
   handleNotificationsNav,
   setIsCountrySheetOpen,
 }) => {
-  const { browseCountryCode } = useUI();
+  const { browseCountryCode, isArabic } = useUI();
   const market = MARKETS[browseCountryCode as MarketCode];
-
   return (
     <>
       {/* Backdrop covers entire screen to handle outside click closing */}
@@ -42,14 +40,16 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
         className="fixed inset-0 z-[99] cursor-pointer"
         onClick={handleMenuClose}
       />
-
       {/* Dropdown panel */}
       <div className="absolute top-full start-0 w-72 mt-1 z-[100] bg-surface rounded-2xl border border-border shadow-2xl overflow-hidden">
         <div className="divide-y divide-border bg-surface flex flex-col">
           <button
             type="button"
-            onClick={() => { setIsCountrySheetOpen(true); handleMenuClose(); }}
-            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-canvas/40 active:bg-canvas/60"
+            onClick={() => {
+              setIsCountrySheetOpen(true);
+              handleMenuClose();
+            }}
+            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-canvas/40 active:bg-canvas/60 border-b border-border"
           >
             <span className="text-sm font-bold text-ink flex items-center gap-2">
               <img
@@ -61,7 +61,6 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
             </span>
             <Global variant="Bold" size={22} color="#0EA5E9" className="shrink-0" />
           </button>
-
           <button
             onClick={() => { handleProfileNav(); handleMenuClose(); }}
             className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-canvas/40 active:bg-canvas/60"
@@ -71,7 +70,6 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
             </span>
             <User variant="Bold" size={22} color="#B85CF6" className="shrink-0" />
           </button>
-
           <button
             onClick={() => { handleSettingsNav(); handleMenuClose(); }}
             className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-canvas/40 active:bg-canvas/60"
@@ -81,7 +79,6 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
             </span>
             <Setting2 variant="Bold" size={22} color="#64748B" className="shrink-0" />
           </button>
-
           <button
             onClick={() => { handleLanguageToggle(); handleMenuClose(); }}
             className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-canvas/40 active:bg-canvas/60"
@@ -91,7 +88,6 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
             </span>
             <Global variant="Bold" size={22} color="#16A34A" className="shrink-0" />
           </button>
-
           <button
             onClick={() => { handleWishlistNav(); handleMenuClose(); }}
             className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-canvas/40 active:bg-canvas/60"
@@ -106,7 +102,6 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
             </span>
             <Heart variant="Bold" size={22} color="#EF4444" className="shrink-0" />
           </button>
-
           <button
             onClick={() => { handleNotificationsNav(); handleMenuClose(); }}
             className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-canvas/40 active:bg-canvas/60"
@@ -116,7 +111,6 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
             </span>
             <Notification variant="Bold" size={22} color="#F59E0B" className="shrink-0" />
           </button>
-
           <a
             href="mailto:Sufyanyounis83@gmail.com?subject=FOX%20Marketplace%20%E2%80%94%20Feedback"
             onClick={handleMenuClose}
