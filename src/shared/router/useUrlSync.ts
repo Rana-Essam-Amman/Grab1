@@ -5,6 +5,7 @@ import { screenToPath, resolvePath } from './paths';
 import { buildListingPath } from './listingPaths';
 import { useListingsStore } from '@/features/listings/store/listings.slice';
 import { tabToPath, pathToTab } from './tabPaths';
+import { buildCategoryPath } from './categoryPaths';
 import { hydrateStoreFromUrl } from './hydrateStoreFromUrl';
 
 /**
@@ -34,6 +35,8 @@ export function useUrlSync(): void {
   const selectedSellerPhone = useUIStore((s) => s.selectedSellerPhone);
   const selectedThreadId = useUIStore((s) => s.selectedThreadId);
   const listings = useListingsStore((s) => s.listings);
+  const categoryFilter = useUIStore((s) => s.categoryFilter);
+  const browseCountryCode = useUIStore((s) => s.browseCountryCode);
 
   const setSelectedListingId = useUIStore((s) => s.setSelectedListingId);
   const setSelectedSellerPhone = useUIStore((s) => s.setSelectedSellerPhone);
@@ -95,7 +98,12 @@ export function useUrlSync(): void {
     let target: string;
 
     if (latest.currentScreen === 'main') {
-      target = tabToPath(latest.activeTab);
+      // Category pages take priority: /{market}/{category}
+      if (latest.activeTab === 'explore' && latest.categoryFilter) {
+        target = buildCategoryPath(latest.browseCountryCode, latest.categoryFilter);
+      } else {
+        target = tabToPath(latest.activeTab);
+      }
     } else if (latest.currentScreen === 'listing-detail' && latest.selectedListingId) {
       // Skip write if current URL already resolves to this listing.
       // Prevents: SEO URL → legacy URL → SEO URL flicker while data loads.
@@ -126,5 +134,5 @@ export function useUrlSync(): void {
     lastPathRef.current = target;
     navigate(target, { replace: false });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentScreen, activeTab, selectedListingId, selectedSellerPhone, selectedThreadId, listings]);
+  }, [currentScreen, activeTab, selectedListingId, selectedSellerPhone, selectedThreadId, listings, categoryFilter, browseCountryCode]);
 }
