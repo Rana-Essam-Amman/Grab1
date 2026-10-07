@@ -19,6 +19,11 @@ export interface ListingImageSliderProps {
   readonly onStartChat?: () => void;
 }
 
+// Clamp extreme ratios so the frame never becomes too tall or too wide.
+const MIN_RATIO = 3 / 4;
+const MAX_RATIO = 16 / 9;
+const DEFAULT_RATIO = 4 / 3;
+
 export const ListingImageSlider: React.FC<ListingImageSliderProps> = React.memo(({
   images,
   title,
@@ -32,6 +37,7 @@ export const ListingImageSlider: React.FC<ListingImageSliderProps> = React.memo(
   onStartChat,
 }) => {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [ratio, setRatio] = useState<number>(DEFAULT_RATIO);
   const { goNext, goPrev, handleTouchStart, handleTouchEnd } = useImageSwipe({ images, activeIdx, onChangeIdx });
 
   if (!images || images.length === 0) {
@@ -42,27 +48,28 @@ export const ListingImageSlider: React.FC<ListingImageSliderProps> = React.memo(
     );
   }
 
+  const handleLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    if (!img.naturalWidth || !img.naturalHeight) return;
+    const natural = img.naturalWidth / img.naturalHeight;
+    const clamped = Math.max(MIN_RATIO, Math.min(MAX_RATIO, natural));
+    setRatio(clamped);
+  };
+
   return (
     <>
       <div
-        className="relative w-full aspect-[4/3] bg-black overflow-hidden select-none touch-pan-y"
+        className="relative w-full bg-black overflow-hidden select-none touch-pan-y transition-[aspect-ratio] duration-300"
+        style={{ aspectRatio: `${ratio}` }}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Blurred backdrop — same image, fills the frame, creates a full-bleed feel */}
         <img
-          src={images[activeIdx]}
-          alt=""
-          aria-hidden="true"
-          draggable={false}
-          className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-60 pointer-events-none"
-        />
-
-        {/* Main image — fully visible, no crop */}
-        <img
+          key={images[activeIdx]}
           src={images[activeIdx]}
           alt={`${title || 'Listing'} - ${activeIdx + 1}`}
-          className="relative w-full h-full object-contain z-10 transition-all duration-300 cursor-zoom-in"
+          onLoad={handleLoad}
+          className="w-full h-full object-cover object-center cursor-zoom-in"
           onClick={() => setIsLightboxOpen(true)}
         />
 
