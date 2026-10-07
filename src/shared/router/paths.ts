@@ -11,12 +11,15 @@
 
 import type { ScreenType } from '@/store/ui.slice.types';
 import { parseListingPath } from './listingPaths';
+import { parseCategoryPath } from './categoryPaths';
 
 /** Entity IDs that may travel in a URL. Null means "not set". */
 export interface RouteParams {
   readonly listingId?: string | null;
   readonly sellerPhone?: string | null;
   readonly threadId?: string | null;
+  readonly market?: string | null;
+  readonly category?: string | null;
 }
 
 /** Result of resolving a URL back to a screen + its params. */
@@ -83,6 +86,14 @@ export function screenToPath(screen: ScreenType, params?: RouteParams): string {
 export function resolvePath(pathname: string): PathMatch | null {
   // Strip trailing slash (except root)
   const clean = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
+
+  const cat = parseCategoryPath(clean);
+  if (cat) {
+    return {
+      screen: 'main',
+      params: { market: cat.market, category: cat.category },
+    };
+  }
 
   const seoListing = parseListingPath(clean);
   if (seoListing) {

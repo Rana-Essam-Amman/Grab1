@@ -1,4 +1,6 @@
 import { useUIStore } from '@/store/ui.slice';
+import type { MarketCode } from '@/shared/lib/marketGate';
+import { globalStorage } from '@/shared/lib/marketStorage';
 import { resolvePath } from './paths';
 import { pathToTab } from './tabPaths';
 
@@ -20,6 +22,26 @@ export function hydrateStoreFromUrl(path: string): void {
 
   const initialMatch = resolvePath(path);
   if (!initialMatch) return;
+
+  const market = initialMatch.params.market ?? null;
+  const category = initialMatch.params.category ?? null;
+
+  if (market && market !== store.browseCountryCode) {
+    useUIStore.setState({
+      browseCountryCode: market as MarketCode,
+      browseMarketOverride: market as MarketCode,
+    });
+    try {
+      globalStorage().set('catch_browse_market_override', market);
+    } catch { /* ignore */ }
+  }
+
+  if (category) {
+    useUIStore.setState({
+      categoryFilter: category,
+      activeTab: 'explore',
+    });
+  }
 
   const nextListingId = initialMatch.params.listingId ?? null;
   const nextSellerPhone = initialMatch.params.sellerPhone ?? null;
