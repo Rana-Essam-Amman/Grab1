@@ -1,4 +1,4 @@
-import { fetchListingById } from './_shared/supabaseRest';
+import { fetchListingById, type Env } from './_shared/supabaseRest';
 import { escapeHtml, buildTitle, buildDescription, buildJsonLd } from './_shared/listingMeta';
 
 const MARKETS = ['jo', 'sa', 'lb', 'ps', 'sy'];
@@ -15,7 +15,7 @@ function parseSeoPath(pathname: string): string | null {
   return id;
 }
 
-export const onRequest: PagesFunction = async (context) => {
+export const onRequest: PagesFunction<Env> = async (context) => {
   const response = await context.next();
   const url = new URL(context.request.url);
 
@@ -25,7 +25,7 @@ export const onRequest: PagesFunction = async (context) => {
   const contentType = response.headers.get('content-type') || '';
   if (!contentType.includes('text/html')) return response;
 
-  const listing = await fetchListingById(id, context.env as unknown as Record<string, string>);
+  const listing = await fetchListingById(id, context.env);
   if (!listing) return response;
 
   const title = escapeHtml(buildTitle(listing));
