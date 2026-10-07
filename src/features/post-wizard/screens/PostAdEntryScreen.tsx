@@ -62,6 +62,7 @@ export const PostAdEntryScreen: React.FC = () => {
             onClick={handleBack}
             size="lg"
             className="w-full mt-8"
+            aria-label={isArabic ? 'رجوع إلى السوق' : 'Back to market'}
           >
             {isArabic ? 'رجوع' : 'Back'}
           </Button>

@@ -9,13 +9,18 @@ const mockSetActiveTab = vi.fn();
 const mockStartPostFlow = vi.fn();
 const mockSetAiFlowPending = vi.fn();
 
+let mockBrowseCountryCode: string | undefined = 'JO';
+let mockUserCountryCode: string | undefined = 'JO';
+let mockIsArabic = false;
+
 vi.mock('@/hooks/useUI', () => ({
   useUI: () => ({
-    isArabic: false,
+    get isArabic() { return mockIsArabic; },
     goBack: mockGoBack,
     navigateTo: mockNavigateTo,
     setActiveTab: mockSetActiveTab,
     setAiFlowPending: mockSetAiFlowPending,
+    get browseCountryCode() { return mockBrowseCountryCode; },
   }),
 }));
 
@@ -24,24 +29,30 @@ vi.mock('@hookrouter', () => ({
 }));
 
 vi.mock('@/hooks/useDraft', () => ({
-  useDraft: () => ({
-    startPostFlow: mockStartPostFlow,
-  }),
+  useDraft: () => ({ startPostFlow: mockStartPostFlow }),
 }));
 
 vi.mock('@/hooks/useAuth', () => ({
   useAuth: () => ({
     authStatus: 'authenticated',
     isAnonymous: false,
+    get user() {
+      return mockUserCountryCode === undefined
+        ? null
+        : { countryCode: mockUserCountryCode };
+    },
   }),
 }));
 
 describe('PostAdEntryScreen', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockBrowseCountryCode = 'JO';
+    mockUserCountryCode = 'JO';
+    mockIsArabic = false;
   });
 
-  it('renders a single "Post New Ad" button', () => {
+  it('renders a single "Post New Ad" button when markets match', () => {
     render(<PostAdEntryScreen />);
     const button = document.getElementById('post-ad-entry-start');
     expect(button).toBeInTheDocument();
@@ -63,9 +74,20 @@ describe('PostAdEntryScreen', () => {
 
   it('back button calls setActiveTab explore and goBack', () => {
     render(<PostAdEntryScreen />);
-    const backBtn = screen.getByRole('button', { name: /back/i });
-    fireEvent.click(backBtn);
+    const backBtn = document.getElementById('post-ad-entry-back-btn');
+    expect(backBtn).not.toBeNull();
+    fireEvent.click(backBtn!);
     expect(mockSetActiveTab).toHaveBeenCalledWith('explore');
     expect(mockGoBack).toHaveBeenCalledTimes(1);
+  });
+
+  it('blocks posting when browse market differs from user market', () => {
+    mockUserCountryCode = 'JO';
+    mockBrowseCountryCode = 'LB';
+    mockIsArabic = true;
+    render(<PostAdEntryScreen />);
+    expect(document.getElementById('post-ad-entry-start')).toBeNull();
+    expect(document.getElementById('post-ad-blocked-title')).toBeInTheDocument();
+    expect(document.getElementById('post-ad-blocked-title')?.textContent).toContain('الأردن');
   });
 });
