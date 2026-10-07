@@ -1,5 +1,6 @@
 import { fetchListingById, type Env } from './_shared/supabaseRest';
-import { escapeHtml, buildTitle, buildDescription, buildJsonLd } from './_shared/listingMeta';
+import { escapeHtml, buildTitle, buildDescription } from './_shared/listingMeta';
+import { buildJsonLd } from './_shared/listingJsonLd';
 import { fetchActiveListingsByMarket } from './_shared/supabaseListings';
 import {
   buildListingLoc,

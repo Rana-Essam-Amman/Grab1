@@ -17,6 +17,7 @@ export interface ListingRow {
   readonly status: string;
   readonly seller_name: string | null;
   readonly created_at: string;
+  readonly attributes: unknown;
 }
 
 export function pickEnv(env: Env): { url: string; key: string } | null {
