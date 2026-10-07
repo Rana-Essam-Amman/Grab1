@@ -16,20 +16,28 @@ const FLAG_SRC: Record<MarketCode, string> = {
 };
 
 export const CountrySheet: React.FC = () => {
-  const { isArabic, isCountrySheetOpen, setIsCountrySheetOpen, browseCountryCode, setBrowseMarketOverrideLocal } = useUI();
-  const { user, authStatus } = useAuth();
+  const {
+    isArabic,
+    isCountrySheetOpen,
+    setIsCountrySheetOpen,
+    browseCountryCode,
+    setBrowseMarketOverrideLocal,
+  } = useUI();
+  const { user, authStatus, updateUser } = useAuth();
   const isAuthenticated = authStatus === 'authenticated';
 
-  const handleMarketSelect = useCallback((market: MarketCode) => {
-    setBrowseMarketOverrideLocal(market);
-
-    if (isAuthenticated && user?.id) {
-      const override = user.countryCode === market ? null : market;
-      void saveBrowseMarket(user.id, override).catch(() => {});
-    }
-
-    setIsCountrySheetOpen(false);
-  }, [setBrowseMarketOverrideLocal, setIsCountrySheetOpen, isAuthenticated, user]);
+  const handleMarketSelect = useCallback(
+    (market: MarketCode) => {
+      const override = user?.countryCode === market ? null : market;
+      setBrowseMarketOverrideLocal(market);
+      if (isAuthenticated && user?.id) {
+        updateUser({ browseMarket: override });
+        void saveBrowseMarket(user.id, override).catch(() => {});
+      }
+      setIsCountrySheetOpen(false);
+    },
+    [setBrowseMarketOverrideLocal, setIsCountrySheetOpen, isAuthenticated, user, updateUser]
+  );
 
   return (
     <Drawer
@@ -83,13 +91,22 @@ export const CountrySheet: React.FC = () => {
                     <span className="text-sm font-bold truncate">
                       {isArabic ? market.nameAr : market.nameEn}
                     </span>
-                    <span className={`text-[10px] ${isCurrent ? 'text-white/70' : 'text-ink-muted'}`}>
+                    <span
+                      className={`text-[10px] ${
+                        isCurrent ? 'text-white/70' : 'text-ink-muted'
+                      }`}
+                    >
                       {isArabic ? market.nameEn : market.nameAr}
                     </span>
                   </span>
                 </span>
                 {isCurrent && (
-                  <TickCircle size={20} variant="Bold" color="currentColor" className="text-accent shrink-0" />
+                  <TickCircle
+                    size={20}
+                    variant="Bold"
+                    color="currentColor"
+                    className="text-accent shrink-0"
+                  />
                 )}
               </button>
             );
