@@ -4,6 +4,7 @@ import { useUI } from '@/hooks/useUI';
 import { useChat } from '@/hooks/useChat';
 import { EmptyState } from '@/shared/ui/EmptyState';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
+import { ALL_MARKET_CODES } from '@/data/markets/config';
 import { ConversationRow } from '../components/ConversationRow';
 import { ChatMarketTabs } from '../components/ChatMarketTabs';
 import type { MarketCode } from '@/shared/lib/marketGate';
@@ -15,7 +16,7 @@ export const MessagesScreen: React.FC = () => {
   const { isArabic, setSelectedThreadId, navigateTo } = useUI();
   const { conversations } = useChat();
 
-  const [activeMarket, setActiveMarket] = useState<MarketCode>('JO');
+  const [activeMarket, setActiveMarket] = useState<MarketCode | null>(null);
 
   const marketCounts = useMemo(() => {
     const out: Record<MarketCode, number> = { JO: 0, SA: 0, LB: 0, PS: 0, SY: 0 };
@@ -26,12 +27,16 @@ export const MessagesScreen: React.FC = () => {
     return out;
   }, [conversations]);
 
+  // Default to the first market that has conversations; fall back to JO.
+  const resolvedMarket: MarketCode = activeMarket
+    ?? (ALL_MARKET_CODES.find((code) => marketCounts[code] > 0) ?? 'JO');
+
   const filteredConversations = useMemo(
     () =>
       conversations.filter(
-        (c) => (c as { marketCode?: MarketCode }).marketCode === activeMarket
+        (c) => (c as { marketCode?: MarketCode }).marketCode === resolvedMarket
       ),
-    [conversations, activeMarket]
+    [conversations, resolvedMarket]
   );
 
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
@@ -70,7 +75,7 @@ export const MessagesScreen: React.FC = () => {
 
       <ChatMarketTabs
         isArabic={isArabic}
-        activeMarket={activeMarket}
+        activeMarket={resolvedMarket}
         counts={marketCounts}
         onSelect={setActiveMarket}
       />
