@@ -21,7 +21,13 @@ export function toOptimizedImageUrl(
   if (!url) return url;
 
   const match = url.match(SUPABASE_OBJECT_RE);
-  if (!match) return url;
+  if (!match) {
+    // Local assets: prefer WebP when we have one.
+    if (url.startsWith('/assets/listings/') && /\.(jpe?g|png)$/i.test(url)) {
+      return url.replace(/\.(jpe?g|png)$/i, '.webp');
+    }
+    return url;
+  }
 
   const [, bucket, path] = match;
   const originMatch = url.match(/^(https?:\/\/[^/]+)/);
