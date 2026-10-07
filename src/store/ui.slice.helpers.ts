@@ -29,7 +29,12 @@ const getStoredCountry = (): MarketCode => {
   }
 };
 
-const initialBrowseCountryCode = getStoredCountry();
+// Prefer the user's explicit market override (persisted synchronously on
+// every CountrySheet selection). Without this, the initial render uses
+// the base country from `catch_browse_country`, causing a visible flag
+// flicker on refresh until useMarketSync resolves to the override async.
+const initialOverride = getStoredOverride();
+const initialBrowseCountryCode = initialOverride ?? getStoredCountry();
 const initialCapital = DEFAULT_REGIONAL_CAPITALS[initialBrowseCountryCode] || DEFAULT_REGIONAL_CAPITALS.JO;
 
 interface AuthStored {
@@ -46,7 +51,6 @@ export const getInitialState = () => {
   const locale = (globalStorage().get<string>('locale') as 'en' | 'ar') || 'ar';
   const hasStoredCountry = !!globalStorage().get<MarketCode>('catch_browse_country');
   let hasAuth = false;
-
   try {
     const authData = globalStorage().get<AuthStored>('catch_auth') || {};
     if (authData?.state?.authStatus === 'authenticated') {
@@ -55,7 +59,6 @@ export const getInitialState = () => {
   } catch {
     // ignore storage read errors
   }
-
   const shouldGoToMain = hasStoredCountry || hasAuth;
 
   return {
@@ -114,14 +117,12 @@ export async function hydrateCountryFromGeo(): Promise<void> {
     if (globalStorage().get<string>('catch_browse_country')) return;
 
     const capital = DEFAULT_REGIONAL_CAPITALS[detected.country] || DEFAULT_REGIONAL_CAPITALS.JO;
-
     useUIStore.setState({
       browseCountryCode: detected.country,
       browseCityEn: capital.cityEn,
       browseCityAr: capital.cityAr,
       activeCurrency: getSanitizedCurrencyByCountry(detected.country),
     });
-
     globalStorage().set('catch_browse_country', detected.country);
   } catch {
     // detection is best-effort
