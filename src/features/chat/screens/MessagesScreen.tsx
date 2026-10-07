@@ -1,10 +1,12 @@
+import React, { useCallback, useMemo, useState } from 'react';
+import { Icon } from '@iconify/react';
 import { useUI } from '@/hooks/useUI';
 import { useChat } from '@/hooks/useChat';
-import React, { useCallback, useState } from 'react';
 import { EmptyState } from '@/shared/ui/EmptyState';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
-import { Icon } from '@iconify/react';
 import { ConversationRow } from '../components/ConversationRow';
+import { ChatMarketTabs } from '../components/ChatMarketTabs';
+import type { MarketCode } from '@/shared/lib/marketGate';
 import {
   deleteConversation as deleteConversationAction,
 } from '../store/chat.slice.actions.mutate';
@@ -12,6 +14,26 @@ import {
 export const MessagesScreen: React.FC = () => {
   const { isArabic, setSelectedThreadId, navigateTo } = useUI();
   const { conversations } = useChat();
+
+  const [activeMarket, setActiveMarket] = useState<MarketCode>('JO');
+
+  const marketCounts = useMemo(() => {
+    const out: Record<MarketCode, number> = { JO: 0, SA: 0, LB: 0, PS: 0, SY: 0 };
+    for (const c of conversations) {
+      const code = (c as { marketCode?: MarketCode }).marketCode;
+      if (code && code in out) out[code] += 1;
+    }
+    return out;
+  }, [conversations]);
+
+  const filteredConversations = useMemo(
+    () =>
+      conversations.filter(
+        (c) => (c as { marketCode?: MarketCode }).marketCode === activeMarket
+      ),
+    [conversations, activeMarket]
+  );
+
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -46,7 +68,14 @@ export const MessagesScreen: React.FC = () => {
         </p>
       </div>
 
-      {conversations.length === 0 ? (
+      <ChatMarketTabs
+        isArabic={isArabic}
+        activeMarket={activeMarket}
+        counts={marketCounts}
+        onSelect={setActiveMarket}
+      />
+
+      {filteredConversations.length === 0 ? (
         <EmptyState
           icon={<Icon icon="fluent-emoji:speech-balloon" width={48} height={48} />}
           title={isArabic ? 'لا توجد محادثات بعد' : 'No messages yet'}
@@ -59,7 +88,7 @@ export const MessagesScreen: React.FC = () => {
         />
       ) : (
         <div className="flex flex-col gap-2.5">
-          {conversations.map((thread) => (
+          {filteredConversations.map((thread) => (
             <ConversationRow
               key={thread.id}
               thread={thread}

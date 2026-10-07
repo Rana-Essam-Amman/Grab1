@@ -1,19 +1,30 @@
-import React from 'react';
+import React, { useCallback } from 'react';
+import { Heart } from 'iconsax-react';
+import { Icon } from '@iconify/react';
 import { useUI } from '@/hooks/useUI';
 import { useTranslation } from '@/shared/i18n';
 import { Button } from '@/shared/ui/Button';
 import { Modal } from '@/shared/ui/Modal';
-import { Heart } from 'iconsax-react';
+import { EmptyState } from '@/shared/ui/EmptyState';
 import { useWishlistFilter } from '../hooks/useWishlistFilter';
 import { WishlistHeader } from '../components/WishlistHeader';
-import { EmptyState } from '@/shared/ui/EmptyState';
-import { Icon } from '@iconify/react';
 import { WishlistControls } from '../components/WishlistControls';
 import { WishlistItemsList } from '../components/WishlistItemsList';
+import { WishlistMarketTabs } from '../components/WishlistMarketTabs';
+import { useWishlistCounts } from '../hooks/useWishlistCounts';
+import type { MarketCode } from '@/shared/lib/marketGate';
 
 export const WishlistScreen: React.FC = () => {
-  const { isArabic, goBack, navigateTo, browseCountryCode, setActiveTab } = useUI();
+  const {
+    isArabic,
+    goBack,
+    navigateTo,
+    browseCountryCode,
+    setActiveTab,
+    setBrowseMarketOverrideLocal,
+  } = useUI();
   const { t } = useTranslation();
+
   const {
     countryWishlistListings,
     availableCategories,
@@ -32,6 +43,16 @@ export const WishlistScreen: React.FC = () => {
     handleRemoveItem,
   } = useWishlistFilter(browseCountryCode, isArabic, setActiveTab, navigateTo);
 
+  const wishlistCounts = useWishlistCounts();
+
+  const handleMarketSelect = useCallback(
+    (market: MarketCode) => {
+      if (market === browseCountryCode) return;
+      setBrowseMarketOverrideLocal(market);
+    },
+    [browseCountryCode, setBrowseMarketOverrideLocal]
+  );
+
   return (
     <div className="flex flex-col min-h-screen bg-surface pb-24" dir={isArabic ? 'rtl' : 'ltr'}>
       <WishlistHeader
@@ -41,6 +62,12 @@ export const WishlistScreen: React.FC = () => {
         title={t('wishlist.title')}
         clearAllText={t('wishlist.clearAll')}
         onClearClick={handleClearClick}
+      />
+      <WishlistMarketTabs
+        isArabic={isArabic}
+        activeMarket={browseCountryCode}
+        counts={wishlistCounts}
+        onSelect={handleMarketSelect}
       />
 
       {countryWishlistListings.length === 0 ? (
@@ -74,7 +101,6 @@ export const WishlistScreen: React.FC = () => {
             onSelectCategory={handleCategorySelect}
             onChangeLayout={handleLayoutChange}
           />
-
           <WishlistItemsList
             isArabic={isArabic}
             filteredListings={filteredListings}
