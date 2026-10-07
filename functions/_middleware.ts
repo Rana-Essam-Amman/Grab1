@@ -1,7 +1,19 @@
 import { fetchListingById, type Env } from './_shared/supabaseRest';
 import { escapeHtml, buildTitle, buildDescription, buildJsonLd } from './_shared/listingMeta';
+import { fetchActiveListingsByMarket } from './_shared/supabaseListings';
+import {
+  buildListingLoc,
+  buildUrlset,
+  buildSitemapIndex,
+  type SitemapUrl,
+} from './_shared/sitemapHelpers';
 
 const MARKETS = ['jo', 'sa', 'lb', 'ps', 'sy'];
+const XML_HEADERS = {
+  'content-type': 'application/xml; charset=utf-8',
+  'cache-control': 'public, max-age=3600',
+} as const;
+const SITEMAP_MARKET_RE = /^\/sitemap-(jo|sa|lb|ps|sy)\.xml$/;
 
 function parseSeoPath(pathname: string): string | null {
   const parts = pathname.split('/').filter(Boolean);
@@ -17,8 +29,28 @@ function parseSeoPath(pathname: string): string | null {
 }
 
 export const onRequest: PagesFunction<Env> = async (context) => {
-  const response = await context.next();
   const url = new URL(context.request.url);
+
+  // Sitemap index
+  if (url.pathname === '/sitemap.xml') {
+    return new Response(buildSitemapIndex(url.origin, MARKETS), {
+      headers: XML_HEADERS,
+    });
+  }
+
+  // Per-market sitemap
+  const sm = url.pathname.match(SITEMAP_MARKET_RE);
+  if (sm) {
+    const market = sm[1];
+    const rows = await fetchActiveListingsByMarket(market, context.env);
+    const urls: SitemapUrl[] = rows.map((row) => ({
+      loc: buildListingLoc(url.origin, market, row.category_slug, row.title, row.id),
+      lastmod: row.updated_at,
+    }));
+    return new Response(buildUrlset(urls), { headers: XML_HEADERS });
+  }
+
+  const response = await context.next();
 
   const id = parseSeoPath(url.pathname);
   if (!id) return response;

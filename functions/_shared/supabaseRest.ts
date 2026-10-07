@@ -19,7 +19,7 @@ export interface ListingRow {
   readonly created_at: string;
 }
 
-function pickEnv(env: Env): { url: string; key: string } | null {
+export function pickEnv(env: Env): { url: string; key: string } | null {
   const url = env.SUPABASE_URL || env.VITE_SUPABASE_URL;
   const key = env.SUPABASE_ANON_KEY || env.VITE_SUPABASE_ANON_KEY;
   if (!url || !key) return null;
