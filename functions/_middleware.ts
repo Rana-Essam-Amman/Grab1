@@ -1,5 +1,6 @@
 import { fetchListingById, type Env } from './_shared/supabaseRest';
-import { escapeHtml, buildTitle, buildDescription, buildJsonLd } from './_shared/listingMeta';
+import { escapeHtml, buildTitle, buildDescription } from './_shared/listingMeta';
+import { buildJsonLd } from './_shared/listingJsonLd';
 import { fetchActiveListingsByMarket } from './_shared/supabaseListings';
 import {
   buildListingLoc,
@@ -83,7 +84,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
             (ogImage ? `<meta property="og:image" content="${escapeHtml(ogImage)}">` : '') +
             `<meta name="twitter:card" content="summary_large_image">` +
             `<link rel="canonical" href="${escapeHtml(url.origin + url.pathname)}">` +
-            `<script type="application/ld+json">${buildJsonLd(listing, url.origin)}</script>`,
+            `${buildJsonLd(listing, url.origin)}`,
             { html: true }
           );
         },
