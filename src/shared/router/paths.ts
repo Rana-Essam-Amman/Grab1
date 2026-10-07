@@ -10,6 +10,7 @@
  */
 
 import type { ScreenType } from '@/store/ui.slice.types';
+import { parseListingPath } from './listingPaths';
 
 /** Entity IDs that may travel in a URL. Null means "not set". */
 export interface RouteParams {
@@ -82,6 +83,14 @@ export function screenToPath(screen: ScreenType, params?: RouteParams): string {
 export function resolvePath(pathname: string): PathMatch | null {
   // Strip trailing slash (except root)
   const clean = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
+
+  const seoListing = parseListingPath(clean);
+  if (seoListing) {
+    return {
+      screen: 'listing-detail',
+      params: { listingId: seoListing.id },
+    };
+  }
 
   // Dynamic: /listing/:id
   const listingMatch = clean.match(/^\/listing\/([^/]+)$/);

@@ -2,6 +2,8 @@ import { useEffect, useLayoutEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useUIStore } from '@/store/ui.slice';
 import { screenToPath, resolvePath } from './paths';
+import { buildListingPath } from './listingPaths';
+import { useListingsStore } from '@/features/listings/store/listings.slice';
 import { tabToPath, pathToTab } from './tabPaths';
 import { hydrateStoreFromUrl } from './hydrateStoreFromUrl';
 
@@ -31,6 +33,7 @@ export function useUrlSync(): void {
   const selectedListingId = useUIStore((s) => s.selectedListingId);
   const selectedSellerPhone = useUIStore((s) => s.selectedSellerPhone);
   const selectedThreadId = useUIStore((s) => s.selectedThreadId);
+  const listings = useListingsStore((s) => s.listings);
 
   const setSelectedListingId = useUIStore((s) => s.setSelectedListingId);
   const setSelectedSellerPhone = useUIStore((s) => s.setSelectedSellerPhone);
@@ -93,6 +96,22 @@ export function useUrlSync(): void {
 
     if (latest.currentScreen === 'main') {
       target = tabToPath(latest.activeTab);
+    } else if (latest.currentScreen === 'listing-detail' && latest.selectedListingId) {
+      // Skip write if current URL already resolves to this listing.
+      // Prevents: SEO URL → legacy URL → SEO URL flicker while data loads.
+      const current = resolvePath(window.location.pathname);
+      if (current?.screen === 'listing-detail' && current.params.listingId === latest.selectedListingId) {
+        return;
+      }
+      const listing = useListingsStore.getState().listings.find((item) => item.id === latest.selectedListingId);
+      target = listing
+        ? buildListingPath({
+            id: listing.id,
+            title: listing.title,
+            countryCode: listing.countryCode,
+            categorySlug: listing.categorySlug,
+          })
+        : `/listing/${latest.selectedListingId}`;
     } else {
       target = screenToPath(latest.currentScreen, {
         listingId: latest.selectedListingId,
@@ -107,5 +126,5 @@ export function useUrlSync(): void {
     lastPathRef.current = target;
     navigate(target, { replace: false });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentScreen, activeTab, selectedListingId, selectedSellerPhone, selectedThreadId]);
+  }, [currentScreen, activeTab, selectedListingId, selectedSellerPhone, selectedThreadId, listings]);
 }
