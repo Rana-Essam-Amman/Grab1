@@ -5,6 +5,7 @@ import { BookmarkHeartButton } from '@/shared/components/BookmarkHeartButton';
 import { ImageLightbox } from './ImageLightbox';
 import { ListingImageNav } from './ListingImageNav';
 import { useImageSwipe } from '../hooks/useImageSwipe';
+import { toOptimizedImageUrl } from '@/shared/lib/optimizedImage';
 
 export interface ListingImageSliderProps {
   readonly images: string[];
@@ -66,13 +67,15 @@ export const ListingImageSlider: React.FC<ListingImageSliderProps> = React.memo(
       >
         <img
           key={images[activeIdx]}
-          src={images[activeIdx]}
+          src={toOptimizedImageUrl(images[activeIdx], { width: 1200, quality: 82 })}
           alt={`${title || 'Listing'} - ${activeIdx + 1}`}
           onLoad={handleLoad}
+          loading={activeIdx === 0 ? 'eager' : 'lazy'}
+          decoding="async"
+          {...(activeIdx === 0 ? { fetchPriority: 'high' as const } : {})}
           className="w-full h-full object-cover object-center cursor-zoom-in"
           onClick={() => setIsLightboxOpen(true)}
         />
-
         {isPremium && (
           <div className="absolute top-3 start-3 z-20">
             <Badge variant="warning" size="md" className="flex items-center gap-1 shadow-sm">
@@ -81,13 +84,11 @@ export const ListingImageSlider: React.FC<ListingImageSliderProps> = React.memo(
             </Badge>
           </div>
         )}
-
         {listingId && (
           <div className="absolute top-3 end-3 z-20">
             <BookmarkHeartButton listingId={listingId} size="lg" />
           </div>
         )}
-
         <ListingImageNav
           count={images.length}
           activeIdx={activeIdx}

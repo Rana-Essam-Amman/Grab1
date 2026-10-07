@@ -2,6 +2,7 @@ import React from 'react';
 import { Crown } from 'iconsax-react';
 import { Badge } from '@/shared/ui/Badge';
 import { BookmarkHeartButton } from './BookmarkHeartButton';
+import { toOptimizedImageUrl } from '@/shared/lib/optimizedImage';
 
 export interface ListingCardImageProps {
   readonly imageUrl: string;
@@ -17,8 +18,10 @@ export const ListingCardImage: React.FC<ListingCardImageProps> = ({
 }) => (
   <div className="w-full aspect-square bg-background relative overflow-hidden">
     <img
-      src={imageUrl}
+      src={toOptimizedImageUrl(imageUrl, { width: 600, quality: 75 })}
       alt={title}
+      loading="lazy"
+      decoding="async"
       className="w-full h-full object-cover object-center transition-transform duration-300"
       onError={onImageError}
     />

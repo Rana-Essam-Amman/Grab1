@@ -2,6 +2,7 @@ import React from 'react';
 import { Eye } from 'iconsax-react';
 import type { Listing } from '@/types';
 import { Icon } from '@iconify/react';
+import { toOptimizedImageUrl } from '@/shared/lib/optimizedImage';
 
 interface TrendingSectionProps {
   listings: Listing[];
@@ -35,8 +36,10 @@ export const TrendingSection: React.FC<TrendingSectionProps> = ({
           >
             <div className="relative h-28 w-full">
               <img
-                src={listing.imageUrl}
+                src={toOptimizedImageUrl(listing.imageUrl, { width: 400, quality: 75 })}
                 alt={listing.title}
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src =
