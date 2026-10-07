@@ -2,6 +2,7 @@ import React from 'react';
 import type { Listing } from '@/types';
 import { MagicStar } from 'iconsax-react';
 import { Icon } from '@iconify/react';
+import { toOptimizedImageUrl } from '@/shared/lib/optimizedImage';
 
 interface FeaturedDealCardProps {
   listing: Listing;
@@ -22,8 +23,13 @@ export const FeaturedDealCard: React.FC<FeaturedDealCardProps> = ({
     >
       <div className="relative h-44 w-full">
         <img
-          src={listing.imageUrl}
+          src={toOptimizedImageUrl(listing.images?.[0] || listing.imageUrl || '', { width: 880, quality: 78 })}
           alt={listing.title}
+          width={880}
+          height={660}
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
           className="w-full h-full object-cover"
           onError={(e) => {
             (e.target as HTMLImageElement).src =
@@ -31,12 +37,10 @@ export const FeaturedDealCard: React.FC<FeaturedDealCardProps> = ({
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-
         <div className="absolute top-3 right-3 px-3 py-1.5 rounded-full bg-accent text-ink-inverse text-xs font-bold flex items-center gap-1 shadow-md">
           <MagicStar size={14} variant="Bold" color="#E57E25" />
           <span>{isArabic ? 'صفقة مميزة' : 'Featured'}</span>
         </div>
-
         <div className="absolute bottom-0 left-0 right-0 p-4">
           <h3 className="text-white font-bold text-base leading-tight line-clamp-2 mb-2">
             {listing.title}
