@@ -25,8 +25,6 @@ export const FeaturedDealCard: React.FC<FeaturedDealCardProps> = ({
         <img
           src={toOptimizedImageUrl(listing.images?.[0] || listing.imageUrl || '', { width: 880, quality: 78 })}
           alt={listing.title}
-          width={880}
-          height={660}
           loading="eager"
           decoding="async"
           fetchPriority="high"
