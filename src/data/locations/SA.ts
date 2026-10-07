@@ -77,6 +77,40 @@ export const SA_EN: CountryLocations = {
     'Arar', 'Al-Madina', 'Al-Nahda', 'Al-Aziziyah', 'Al-Rawdah', 'Al-Salam',
     'Rafha', 'Al-Uwayqilah', 'Turayf', 'Al-Jawf Road', 'Airport Road'
   ],
+  'Al Ahsa': [
+    'Al Hofuf', 'Al Mubarraz', 'Al Qarah', 'Al Shubaily', 'Al Fadliyah', 'Al Salmaniyah',
+    'Al Naseem', 'Al Khalidiyah', 'Al Aziziyah', 'Al Malaz', 'Al Aqrabiyah', 'Al Rashidiyah',
+    'Al Munizilah', 'Al Yahya', 'Al Suwaifliyah'
+  ],
+  Jubail: [
+    'Al Fanateer', 'Al Balad', 'Al Jalmudah', 'Al Huwailat', 'Al Shati', 'Al Dana',
+    'Al Nakhil', 'Al Jazeera', 'Al Safwa', 'Al Murjan', 'Al Hejaz', 'Al Musallamiyah',
+    'Al Faisaliyah', 'Al Deffi'
+  ],
+  Qatif: [
+    'Al Qatif', 'Saihat', 'Safwa', 'Tarout', 'Awamiyah', 'Al Jish', 'Al Qudaih',
+    'Al Bahari', 'Al Khawalid', 'Al Amamrah', 'Al Malahah', 'Al Rabia', 'Umm Al Hamam',
+    'Al Shwika', 'Al Jaroudiyah'
+  ],
+  'Al Kharj': [
+    'Al Yamamah', 'Al Aziziyah', 'Al Khalidiyah', 'Al Faisaliyah', 'Al Nasim', 'Al Rawdah',
+    'Al Nahda', 'Al Sulaimaniyah', 'Al Manar', 'Al Wadi', 'Al Salam', 'Al Andalus',
+    'Al Zahra', 'Al Qadisiyah', 'Al Rakah'
+  ],
+  'Hafar Al-Batin': [
+    'Al Aziziyah', 'Al Muhammadiyah', 'Al Khalediyah', 'Al Faisaliyah', 'Al Salam',
+    'Al Nasim', 'Al Rawdah', 'Al Nahda', 'Al Wadi', 'Al Andalus', 'Al Yarmouk',
+    'Al Manar', 'Al Zahra', 'Al Rakah', 'Al Qadisiyah'
+  ],
+  Yanbu: [
+    'Yanbu Al Bahr', 'Yanbu Al Sinaiyah', 'Al Sharm', 'Al Nawras', 'Al Rayhan', 'Al Bustan',
+    'Al Waha', 'Al Murjan', 'Al Nakheel', 'Al Faisaliyah', 'Al Aziziyah', 'Al Khalidiyah',
+    'Al Rawdah', 'Al Nahda', 'Corniche'
+  ],
+  Dhahran: [
+    'Al Dammam Road', 'Al Quds', 'Al Salam', 'Al Aziziyah', 'Al Faisaliyah', 'Al Rakah',
+    'Al Manar', 'Al Jamiah', 'Al Athir', 'Aramco Camp', 'Al Khalidiyah', 'Al Nuzha'
+  ],
   Other: ['Other']
 };
 
@@ -152,6 +186,34 @@ export const SA_AR: CountryLocations = {
   'الحدود الشمالية': [
     'عرعر', 'المدينة', 'النهضة', 'العزيزية', 'الروضة', 'السلام',
     'رفحاء', 'العويقيلة', 'طريف', 'طريق الجوف', 'طريق المطار'
+  ],
+  'الأحساء': [
+    'الهفوف', 'المبرز', 'القارة', 'الشبيلي', 'الفاضلية', 'السلمانية', 'النسيم', 'الخالدية',
+    'العزيزية', 'الملز', 'العقربية', 'الراشدية', 'المنيزلة', 'اليحيى', 'السويفلية'
+  ],
+  'الجبيل': [
+    'الفناتير', 'البلد', 'الجلمودة', 'الحويلات', 'الشاطئ', 'الدانة', 'النخيل', 'الجزيرة',
+    'الصفوة', 'المرجان', 'الحجاز', 'المسلمية', 'الفيصلية', 'الضفي'
+  ],
+  'القطيف': [
+    'القطيف', 'سيهات', 'صفوى', 'تاروت', 'العوامية', 'الجش', 'القديح', 'البحاري', 'الخوالد',
+    'العامرة', 'الملاحة', 'الربيعية', 'أم الحمام', 'الشويكة', 'الجارودية'
+  ],
+  'الخرج': [
+    'اليمامة', 'العزيزية', 'الخالدية', 'الفيصلية', 'النسيم', 'الروضة', 'النهضة',
+    'السليمانية', 'المنار', 'الوادي', 'السلام', 'الأندلس', 'الزهراء', 'القادسية', 'الراكة'
+  ],
+  'حفر الباطن': [
+    'العزيزية', 'المحمدية', 'الخالدية', 'الفيصلية', 'السلام', 'النسيم', 'الروضة', 'النهضة',
+    'الوادي', 'الأندلس', 'اليرموك', 'المنار', 'الزهراء', 'الراكة', 'القادسية'
+  ],
+  'ينبع': [
+    'ينبع البحر', 'ينبع الصناعية', 'الشرم', 'النورس', 'الريحان', 'البستان', 'الواحة',
+    'المرجان', 'النخيل', 'الفيصلية', 'العزيزية', 'الخالدية', 'الروضة', 'النهضة', 'الكورنيش'
+  ],
+  'الظهران': [
+    'طريق الدمام', 'القدس', 'السلام', 'العزيزية', 'الفيصلية', 'الراكة', 'المنار',
+    'الجامعة', 'الأثير', 'معسكر أرامكو', 'الخالدية', 'النزهة'
   ],
   'أخرى': ['أخرى']
 };

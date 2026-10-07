@@ -42,6 +42,13 @@ export const CITY_COORDS: Record<string, Record<string, CityCoords>> = {
     'Al Bahah': { lat: 20.0129, lng: 41.4677 },
     'Al Jouf': { lat: 29.9697, lng: 40.2064 },
     'Northern Borders': { lat: 30.9753, lng: 41.0381 },
+    'Al Ahsa': { lat: 25.3833, lng: 49.5833 },
+    Jubail: { lat: 27.0045, lng: 49.6469 },
+    Qatif: { lat: 26.5196, lng: 50.0115 },
+    'Al Kharj': { lat: 24.1482, lng: 47.3050 },
+    'Hafar Al-Batin': { lat: 28.4328, lng: 45.9708 },
+    Yanbu: { lat: 24.0895, lng: 38.0618 },
+    Dhahran: { lat: 26.2361, lng: 50.0393 },
   },
   LB: {
     Beirut: { lat: 33.8938, lng: 35.5018 },
