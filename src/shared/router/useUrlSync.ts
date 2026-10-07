@@ -97,8 +97,12 @@ export function useUrlSync(): void {
     if (latest.currentScreen === 'main') {
       target = tabToPath(latest.activeTab);
     } else if (latest.currentScreen === 'listing-detail' && latest.selectedListingId) {
-      // Prefer SEO URL when we have the listing data.
-      // Fallback to legacy `/listing/{id}` if the listing is not loaded yet.
+      // Skip write if current URL already resolves to this listing.
+      // Prevents: SEO URL → legacy URL → SEO URL flicker while data loads.
+      const current = resolvePath(window.location.pathname);
+      if (current?.screen === 'listing-detail' && current.params.listingId === latest.selectedListingId) {
+        return;
+      }
       const listing = useListingsStore.getState().listings.find((item) => item.id === latest.selectedListingId);
       target = listing
         ? buildListingPath({
