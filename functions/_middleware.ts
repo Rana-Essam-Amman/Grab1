@@ -20,14 +20,19 @@ import {
 
 const MARKETS = ['jo', 'sa', 'lb', 'ps', 'sy'];
 const CATEGORY_SLUGS = Object.keys(CATEGORY_META);
+
 const XML_HEADERS = {
   'content-type': 'application/xml; charset=utf-8',
   'cache-control': 'public, max-age=3600',
 } as const;
-const SITEMAP_MARKET_RE = /^\/sitemap-(jo|sa|lb|ps|sy)\.xml$/;
-const LEGACY_LISTING_RE = /^\/listing\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i;
 
-function parseCategoryUrl(pathname: string): { market: string; category: string } | null {
+const SITEMAP_MARKET_RE = /^\/sitemap-(jo|sa|lb|ps|sy)\.xml$/;
+const LEGACY_LISTING_RE =
+  /^\/listing\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i;
+
+function parseCategoryUrl(
+  pathname: string
+): { market: string; category: string } | null {
   const parts = pathname.split('/').filter(Boolean);
   if (parts.length !== 2) return null;
   const market = parts[0].toUpperCase();
@@ -38,14 +43,16 @@ function parseCategoryUrl(pathname: string): { market: string; category: string 
 }
 
 function parseSeoPath(pathname: string): string | null {
-
   const parts = pathname.split('/').filter(Boolean);
   if (parts.length !== 3) return null;
   if (!MARKETS.includes(parts[0].toLowerCase())) return null;
+
   const tail = parts[2];
   const UUID_LENGTH = 36;
-  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const UUID_RE =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   if (tail.length < UUID_LENGTH + 2) return null;
+
   const id = tail.slice(-UUID_LENGTH);
   if (!UUID_RE.test(id)) return null;
   return id;
@@ -65,18 +72,30 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   const sm = url.pathname.match(SITEMAP_MARKET_RE);
   if (sm) {
     const market = sm[1];
+    const now = new Date().toISOString().split('T')[0];
     const rows = await fetchActiveListingsByMarket(market, context.env);
-    const urls: SitemapUrl[] = rows.map((row) => ({
+    const categoryUrls: SitemapUrl[] = CATEGORY_SLUGS.map((slug) => ({
+      loc: `${url.origin}/${market}/${slug}`,
+      lastmod: now,
+    }));
+    const listingUrls: SitemapUrl[] = rows.map((row) => ({
       loc: buildListingLoc(url.origin, market, row.category_slug, row.title, row.id),
       lastmod: row.updated_at,
     }));
-    return new Response(buildUrlset(urls), { headers: XML_HEADERS });
+    return new Response(buildUrlset([...categoryUrls, ...listingUrls]), {
+      headers: XML_HEADERS,
+    });
   }
 
   // Category page — 2 segments /{market}/{category}
   const cat = parseCategoryUrl(url.pathname);
   if (cat) {
-    const rows = await fetchListingsByMarketCategory(cat.market, cat.category, context.env, 50);
+    const rows = await fetchListingsByMarketCategory(
+      cat.market,
+      cat.category,
+      context.env,
+      50
+    );
     const title = categoryTitle(cat.market, cat.category);
     const description = categoryDescription(cat.market, cat.category);
     const canonical = `${url.origin}/${cat.market.toLowerCase()}/${cat.category}`;
@@ -87,9 +106,24 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'FOX Marketplace', item: url.origin },
-        { '@type': 'ListItem', position: 2, name: marketEn, item: `${url.origin}/${cat.market.toLowerCase()}/` },
-        { '@type': 'ListItem', position: 3, name: catMeta.nameEn, item: canonical },
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'FOX Marketplace',
+          item: url.origin,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: marketEn,
+          item: `${url.origin}/${cat.market.toLowerCase()}/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: catMeta.nameEn,
+          item: canonical,
+        },
       ],
     };
 
@@ -106,7 +140,13 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         itemListElement: rows.slice(0, 50).map((row, i) => ({
           '@type': 'ListItem',
           position: i + 1,
-          url: buildListingLoc(url.origin, cat.market, cat.category, row.title, row.id),
+          url: buildListingLoc(
+            url.origin,
+            cat.market,
+            cat.category,
+            row.title,
+            row.id
+          ),
           name: row.title,
         })),
       },
@@ -118,18 +158,22 @@ export const onRequest: PagesFunction<Env> = async (context) => {
 
     try {
       return new HTMLRewriter()
-        .on('title', { element(el) { el.setInnerContent(title); } })
+        .on('title', {
+          element(el) {
+            el.setInnerContent(title);
+          },
+        })
         .on('head', {
           element(el) {
             el.append(
               `<meta name="description" content="${description}">` +
-              `<meta property="og:title" content="${title}">` +
-              `<meta property="og:description" content="${description}">` +
-              `<meta property="og:type" content="website">` +
-              `<meta property="og:url" content="${canonical}">` +
-              `<link rel="canonical" href="${canonical}">` +
-              `<script type="application/ld+json">${JSON.stringify(itemList)}</script>` +
-              `<script type="application/ld+json">${JSON.stringify(breadcrumb)}</script>`,
+                `<meta property="og:title" content="${title}">` +
+                `<meta property="og:description" content="${description}">` +
+                `<meta property="og:type" content="website">` +
+                `<meta property="og:url" content="${canonical}">` +
+                `<link rel="canonical" href="${canonical}">` +
+                `<script type="application/ld+json">${JSON.stringify(itemList)}</script>` +
+                `<script type="application/ld+json">${JSON.stringify(breadcrumb)}</script>`,
               { html: true }
             );
           },
@@ -153,7 +197,6 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   }
 
   const response = await context.next();
-
   const id = parseSeoPath(url.pathname);
   if (!id) return response;
 
@@ -165,7 +208,8 @@ export const onRequest: PagesFunction<Env> = async (context) => {
 
   const title = escapeHtml(buildTitle(listing));
   const description = escapeHtml(buildDescription(listing));
-  const ogImage = listing.images && listing.images.length > 0 ? listing.images[0] : '';
+  const ogImage =
+    listing.images && listing.images.length > 0 ? listing.images[0] : '';
 
   try {
     return new HTMLRewriter()
@@ -178,14 +222,16 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         element(el) {
           el.append(
             `<meta name="description" content="${description}">` +
-            `<meta property="og:title" content="${title}">` +
-            `<meta property="og:description" content="${description}">` +
-            `<meta property="og:type" content="product">` +
-            `<meta property="og:url" content="${escapeHtml(url.toString())}">` +
-            (ogImage ? `<meta property="og:image" content="${escapeHtml(ogImage)}">` : '') +
-            `<meta name="twitter:card" content="summary_large_image">` +
-            `<link rel="canonical" href="${escapeHtml(url.origin + url.pathname)}">` +
-            `${buildJsonLd(listing, url.origin)}`,
+              `<meta property="og:title" content="${title}">` +
+              `<meta property="og:description" content="${description}">` +
+              `<meta property="og:type" content="product">` +
+              `<meta property="og:url" content="${escapeHtml(url.toString())}">` +
+              (ogImage
+                ? `<meta property="og:image" content="${escapeHtml(ogImage)}">`
+                : '') +
+              `<meta name="twitter:card" content="summary_large_image">` +
+              `<link rel="canonical" href="${escapeHtml(url.origin + url.pathname)}">` +
+              `${buildJsonLd(listing, url.origin)}`,
             { html: true }
           );
         },
