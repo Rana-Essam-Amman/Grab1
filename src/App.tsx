@@ -80,7 +80,7 @@ const MainNavigator: React.FC = () => {
 
   const authStatus = useAuthStore((s) => s.authStatus);
   const userCountry = useAuthStore((s) => s.user?.countryCode ?? null);
-  const storedBrowseMarket = useAuthStore((s) => s.user?.browseMarket ?? null);
+  const storedBrowseMarket = useUIStore((s) => s.browseMarketOverride);
   const geoCountryCode = useUIStore((s) => s.geoCountryCode);
 
   const [bannerDismissed, setBannerDismissed] = React.useState(false);
@@ -145,7 +145,6 @@ const MainNavigator: React.FC = () => {
       case 'post-publish-success': return r('post-publish-success', PublishSuccessScreen);
       case 'post-ai-draft': return r('post-ai-draft', AiDraftScreen);
       case 'post-ai-review': return r('post-ai-review', AiReviewScreen);
-      case 'post-ad-entry': return r('post-ad-entry', PostAdEntryScreen);
       case 'post-ai-capture': return r('post-ai-capture', AiCaptureScreen);
       case 'post-category-pick': return r('post-category-pick', CategoryPickScreen);
       case 'sub-categories': return r('sub-categories', SubCategoriesScreen);
@@ -222,4 +221,4 @@ export default function App() {
       </ErrorBoundaryWithLogging>
     </RouterProvider>
   );
-}
+  }
