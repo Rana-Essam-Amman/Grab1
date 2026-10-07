@@ -20,7 +20,9 @@ vi.mock('@/hooks/useUI', () => ({
     navigateTo: mockNavigateTo,
     setActiveTab: mockSetActiveTab,
     setAiFlowPending: mockSetAiFlowPending,
-    get browseCountryCode() { return mockBrowseCountryCode; },
+    get browseCountryCode() {
+      return mockBrowseCountryCode;
+    },
   }),
 }));
 
@@ -29,7 +31,9 @@ vi.mock('@hookrouter', () => ({
 }));
 
 vi.mock('@/hooks/useDraft', () => ({
-  useDraft: () => ({ startPostFlow: mockStartPostFlow }),
+  useDraft: () => ({
+    startPostFlow: mockStartPostFlow,
+  }),
 }));
 
 vi.mock('@/hooks/useAuth', () => ({
@@ -74,9 +78,8 @@ describe('PostAdEntryScreen', () => {
 
   it('back button calls setActiveTab explore and goBack', () => {
     render(<PostAdEntryScreen />);
-    const backBtn = document.getElementById('post-ad-entry-back-btn');
-    expect(backBtn).not.toBeNull();
-    fireEvent.click(backBtn!);
+    const backBtn = screen.getByRole('button', { name: /back/i });
+    fireEvent.click(backBtn);
     expect(mockSetActiveTab).toHaveBeenCalledWith('explore');
     expect(mockGoBack).toHaveBeenCalledTimes(1);
   });

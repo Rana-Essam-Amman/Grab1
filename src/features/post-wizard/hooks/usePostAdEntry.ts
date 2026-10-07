@@ -7,9 +7,11 @@ import { isValidMarketCode } from '@/data/markets/config';
 import type { MarketCode } from '@/data/markets/types';
 
 export interface UsePostAdEntryReturn {
-  isArabic: boolean;
-  handleBack: () => void;
-  startPostFlow: () => void;
+  readonly isArabic: boolean;
+  readonly handleBack: () => void;
+  readonly startPostFlow: () => void;
+  readonly canPostInMarket: boolean;
+  readonly myMarket: MarketCode | null;
 }
 
 export const usePostAdEntry = (): UsePostAdEntryReturn => {
@@ -22,7 +24,7 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
     browseCountryCode,
   } = useUI();
   const { startPostFlow: draftStartPostFlow } = useDraft();
-  const { authStatus, isAnonymous } = useAuth();
+  const { authStatus, isAnonymous, user } = useAuth();
 
   useEffect(() => {
     if (authStatus !== 'authenticated' || isAnonymous) {
@@ -36,16 +38,39 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
     }
   }, [authStatus, isAnonymous, navigateTo, browseCountryCode]);
 
+  const myMarket: MarketCode | null =
+    user && typeof user.countryCode === 'string' && isValidMarketCode(user.countryCode)
+      ? (user.countryCode as MarketCode)
+      : null;
+
+  const currentBrowseMarket: MarketCode | null = isValidMarketCode(browseCountryCode)
+    ? (browseCountryCode as MarketCode)
+    : null;
+
+  const canPostInMarket =
+    authStatus === 'authenticated' &&
+    !isAnonymous &&
+    myMarket !== null &&
+    currentBrowseMarket !== null &&
+    myMarket === currentBrowseMarket;
+
   const handleBack = useCallback(() => {
     setActiveTab('explore');
     goBack();
   }, [setActiveTab, goBack]);
 
   const startPostFlow = useCallback(() => {
+    if (!canPostInMarket) return;
     draftStartPostFlow();
     setAiFlowPending(true);
     navigateTo('post-category');
-  }, [draftStartPostFlow, setAiFlowPending, navigateTo]);
+  }, [canPostInMarket, draftStartPostFlow, setAiFlowPending, navigateTo]);
 
-  return { isArabic, handleBack, startPostFlow };
+  return {
+    isArabic,
+    handleBack,
+    startPostFlow,
+    canPostInMarket,
+    myMarket,
+  };
 };
