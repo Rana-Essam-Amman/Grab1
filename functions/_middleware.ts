@@ -8,10 +8,11 @@ function parseSeoPath(pathname: string): string | null {
   if (parts.length !== 3) return null;
   if (!MARKETS.includes(parts[0].toLowerCase())) return null;
   const tail = parts[2];
-  const dashIdx = tail.lastIndexOf('-');
-  if (dashIdx < 1) return null;
-  const id = tail.slice(dashIdx + 1);
-  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) return null;
+  const UUID_LENGTH = 36;
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (tail.length < UUID_LENGTH + 2) return null;
+  const id = tail.slice(-UUID_LENGTH);
+  if (!UUID_RE.test(id)) return null;
   return id;
 }
 
