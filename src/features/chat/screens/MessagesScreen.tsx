@@ -21,8 +21,8 @@ export const MessagesScreen: React.FC = () => {
   const marketCounts = useMemo(() => {
     const out: Record<MarketCode, number> = { JO: 0, SA: 0, LB: 0, PS: 0, SY: 0 };
     for (const c of conversations) {
-      const code = (c as { marketCode?: MarketCode }).marketCode;
-      if (code && code in out) out[code] += 1;
+      const code = (c as { marketCode?: MarketCode }).marketCode ?? 'JO';
+      if (code in out) out[code] += 1;
     }
     return out;
   }, [conversations]);
@@ -34,7 +34,7 @@ export const MessagesScreen: React.FC = () => {
   const filteredConversations = useMemo(
     () =>
       conversations.filter(
-        (c) => (c as { marketCode?: MarketCode }).marketCode === resolvedMarket
+        (c) => ((c as { marketCode?: MarketCode }).marketCode ?? 'JO') === resolvedMarket
       ),
     [conversations, resolvedMarket]
   );
