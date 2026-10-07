@@ -13,10 +13,12 @@ export function slugify(input: string): string {
     .replace(/[^\p{L}\p{N}\s-]/gu, '')
     .trim()
     .toLowerCase();
+
   const slug = cleaned
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '');
+
   if (!slug) return 'listing';
   if (slug.length <= MAX_SLUG_LENGTH) return slug;
   return slug.slice(0, MAX_SLUG_LENGTH).replace(/-$/, '');
@@ -70,19 +72,3 @@ export function buildSitemapIndex(
     .join('');
   return `<?xml version="1.0" encoding="UTF-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${body}</sitemapindex>`;
 }
-
-export function buildCategoryUrlset(
-  origin: string,
-  market: string,
-  categorySlugs: readonly string[]
-): string {
-  const now = new Date().toISOString().split('T')[0];
-  const body = categorySlugs
-    .map(
-      (slug) =>
-        `<url><loc>${xmlEscape(`${origin}/${market.toLowerCase()}/${slug}`)}</loc><lastmod>${now}</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>`
-    )
-    .join('');
-  return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${body}</urlset>`;
-}
-
