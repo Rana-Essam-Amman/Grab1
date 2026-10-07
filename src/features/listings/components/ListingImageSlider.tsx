@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { ArrowLeft2, ArrowRight2, Crown } from 'iconsax-react';
+import { Crown } from 'iconsax-react';
 import { Badge } from '@/shared/ui/Badge';
 import { BookmarkHeartButton } from '@/shared/components/BookmarkHeartButton';
 import { ImageLightbox } from './ImageLightbox';
+import { ListingImageNav } from './ListingImageNav';
 import { useImageSwipe } from '../hooks/useImageSwipe';
 
 export interface ListingImageSliderProps {
@@ -80,38 +81,14 @@ export const ListingImageSlider: React.FC<ListingImageSliderProps> = React.memo(
           </div>
         )}
 
-        {images.length > 1 && (
-          <>
-            <button
-              type="button"
-              aria-label={isArabic ? 'الصورة السابقة' : 'Previous image'}
-              onClick={goPrev}
-              className={`absolute top-1/2 -translate-y-1/2 ${isArabic ? 'right-3' : 'left-3'} w-9 h-9 rounded-full bg-black/50 backdrop-blur-xs text-white flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer z-20`}
-            >
-              {isArabic ? <ArrowRight2 size={20} /> : <ArrowLeft2 size={20} />}
-            </button>
-            <button
-              type="button"
-              aria-label={isArabic ? 'الصورة التالية' : 'Next image'}
-              onClick={goNext}
-              className={`absolute top-1/2 -translate-y-1/2 ${isArabic ? 'left-3' : 'right-3'} w-9 h-9 rounded-full bg-black/50 backdrop-blur-xs text-white flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer z-20`}
-            >
-              {isArabic ? <ArrowLeft2 size={20} /> : <ArrowRight2 size={20} />}
-            </button>
-
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-black/50 backdrop-blur-xs px-3 py-1 rounded-full z-20">
-              {images.map((_, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  aria-label={`Go to image ${i + 1}`}
-                  onClick={() => onChangeIdx(i)}
-                  className={`h-2 rounded-full transition-all cursor-pointer ${i === activeIdx ? 'w-5 bg-white' : 'w-2 bg-white/50'}`}
-                />
-              ))}
-            </div>
-          </>
-        )}
+        <ListingImageNav
+          count={images.length}
+          activeIdx={activeIdx}
+          isArabic={isArabic}
+          onPrev={goPrev}
+          onNext={goNext}
+          onSelect={onChangeIdx}
+        />
       </div>
 
       {isLightboxOpen && (
