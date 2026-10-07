@@ -13,6 +13,7 @@ export interface ListingRow {
   readonly currency: string;
   readonly country_code: string;
   readonly city: string;
+  readonly category_slug: string;
   readonly images: string[] | null;
   readonly status: string;
   readonly seller_name: string | null;
