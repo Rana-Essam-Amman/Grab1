@@ -12,13 +12,14 @@
     "health:git": "node scripts/git-health-check.mjs",
     "audit:all": "npm run audit:arch && npm run health:git",
     "audit:deps": "depcruise --config .dependency-cruiser.js src/",
+    "typecheck:functions": "tsc -p functions/tsconfig.json",
     "feature:new": "node scripts/new-feature.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "preview": "vite preview",
     "prepare": "husky",
-    "pre-commit:verify": "npx tsc --noEmit && npm run lint && npx vitest run --run && npm run audit:arch"
+    "pre-commit:verify": "npx tsc --noEmit && npm run typecheck:functions && npm run lint && npx vitest run --run && npm run audit:arch"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -51,6 +52,7 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261007.1",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.63.0",
     "@tailwindcss/vite": "^4.0.9",
