@@ -1,5 +1,5 @@
 import type { ListingRow } from './supabaseRest';
-import { buildListingLoc } from './sitemapHelpers';
+import { buildListingLoc, slugify } from './sitemapHelpers';
 
 const MARKET_EN: Record<string, string> = {
   JO: 'Jordan',
@@ -111,4 +111,8 @@ export function buildJsonLd(row: ListingRow, origin: string): string {
 
   return `<script type="application/ld+json">${JSON.stringify(product)}</script>` +
          `<script type="application/ld+json">${JSON.stringify(breadcrumb)}</script>`;
+}
+
+export function buildListingPathFromRow(row: ListingRow): string {
+  return `/${row.country_code.toLowerCase()}/${row.category_slug ?? 'other'}/${slugify(row.title)}-${row.id}`;
 }
