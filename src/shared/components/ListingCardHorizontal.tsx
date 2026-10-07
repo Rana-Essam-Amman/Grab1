@@ -6,6 +6,7 @@ import { Icon } from '@iconify/react';
 import { Badge } from '@/shared/ui/Badge';
 import { pickSpecs } from '@/features/listings/helpers/pickSpecs';
 import { ListingSpecsRow } from './ListingSpecsRow';
+import { toOptimizedImageUrl } from '@/shared/lib/optimizedImage';
 
 interface ListingCardHorizontalProps {
   listing: Listing;
@@ -36,8 +37,10 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
     >
       <div className="w-32 self-stretch rounded-xl overflow-hidden bg-background relative shrink-0">
         <img
-          src={listing.imageUrl}
+          src={toOptimizedImageUrl(listing.imageUrl, { width: 320, quality: 75 })}
           alt={listing.title}
+          loading="lazy"
+          decoding="async"
           className="w-full h-full object-cover"
           onError={handleImageError}
         />
@@ -53,6 +56,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
           <BookmarkHeartButton listingId={listing.id} size="sm" />
         </div>
       </div>
+
       <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
         <div>
           <div className="text-[15px] font-bold text-ink line-clamp-2" dir="auto">{listing.title}</div>

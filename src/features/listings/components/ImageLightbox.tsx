@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { CloseCircle, Call, Whatsapp, Message } from 'iconsax-react';
 import { useImageSwipe } from '../hooks/useImageSwipe';
+import { toOptimizedImageUrl } from '@/shared/lib/optimizedImage';
 
 export interface ImageLightboxProps {
   images: string[];
@@ -35,7 +36,14 @@ export const ImageLightbox: React.FC<ImageLightboxProps> = React.memo(({ images,
   const stop = (e: React.MouseEvent) => e.stopPropagation();
   const content = (
     <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: '#000000' }} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} onClick={onClose} dir={isArabic ? 'rtl' : 'ltr'} role="dialog" aria-modal="true">
-      <img src={images[activeIdx]} alt="" draggable={false} style={IMG_STYLE} />
+      <img
+        src={toOptimizedImageUrl(images[activeIdx], { width: 1400, quality: 85 })}
+        alt=""
+        draggable={false}
+        loading="eager"
+        decoding="async"
+        style={IMG_STYLE}
+      />
       <button type="button" onClick={onClose} aria-label={isArabic ? 'إغلاق' : 'Close'} style={{ ...BTN_STYLE, top: 16, right: 16, width: 44, height: 44, borderRadius: 22 }}>
         <CloseCircle size={24} variant="Bold" color="#FFFFFF" />
       </button>
