@@ -1,4 +1,5 @@
 import type { ListingRow } from './supabaseRest';
+import { buildListingLoc } from './sitemapHelpers';
 
 const MARKET_EN: Record<string, string> = {
   JO: 'Jordan',
@@ -67,7 +68,13 @@ export function buildJsonLd(row: ListingRow, origin: string): string {
 
   const marketEn = MARKET_EN[row.country_code] ?? row.country_code;
   const catEn = CATEGORY_EN[row.category_slug ?? ''] ?? 'Listings';
-  const canonicalUrl = `${origin}/${row.country_code.toLowerCase()}/${row.category_slug ?? 'other'}/${row.id}`;
+  const canonicalUrl = buildListingLoc(
+    origin,
+    row.country_code,
+    row.category_slug ?? 'other',
+    row.title,
+    row.id
+  );
 
   const product: Record<string, unknown> = {
     '@context': 'https://schema.org',
