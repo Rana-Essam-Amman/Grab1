@@ -106,7 +106,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         itemListElement: rows.slice(0, 50).map((row, i) => ({
           '@type': 'ListItem',
           position: i + 1,
-          url: `${url.origin}/${cat.market.toLowerCase()}/${cat.category}/${row.id}`,
+          url: buildListingLoc(url.origin, cat.market, cat.category, row.title, row.id),
           name: row.title,
         })),
       },
