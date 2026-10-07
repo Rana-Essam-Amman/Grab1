@@ -1,5 +1,4 @@
 import { useUIStore } from '@/store/ui.slice';
-import type { MarketCode } from '@/shared/lib/marketGate';
 import { globalStorage } from '@/shared/lib/marketStorage';
 import { resolvePath } from './paths';
 import { pathToTab } from './tabPaths';
@@ -28,8 +27,8 @@ export function hydrateStoreFromUrl(path: string): void {
 
   if (market && market !== store.browseCountryCode) {
     useUIStore.setState({
-      browseCountryCode: market as MarketCode,
-      browseMarketOverride: market as MarketCode,
+      browseCountryCode: market,
+      browseMarketOverride: market,
     });
     try {
       globalStorage().set('catch_browse_market_override', market);

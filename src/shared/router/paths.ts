@@ -10,6 +10,7 @@
  */
 
 import type { ScreenType } from '@/store/ui.slice.types';
+import type { MarketCode } from '@/shared/lib/marketGate';
 import { parseListingPath } from './listingPaths';
 import { parseCategoryPath } from './categoryPaths';
 
@@ -18,7 +19,7 @@ export interface RouteParams {
   readonly listingId?: string | null;
   readonly sellerPhone?: string | null;
   readonly threadId?: string | null;
-  readonly market?: string | null;
+  readonly market?: MarketCode | null;
   readonly category?: string | null;
 }
 
