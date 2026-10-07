@@ -43,6 +43,39 @@
         font-family: 'Geist', system-ui, sans-serif;
       }
     </style>
+      <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "FOX Marketplace",
+        "url": "https://fox-marketplaces.pages.dev",
+        "inLanguage": ["ar", "en"],
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://fox-marketplaces.pages.dev/search?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "FOX Marketplace",
+        "url": "https://fox-marketplaces.pages.dev",
+        "logo": "https://fox-marketplaces.pages.dev/assets/icons/logo.png",
+        "areaServed": [
+          { "@type": "Country", "name": "Jordan" },
+          { "@type": "Country", "name": "Saudi Arabia" },
+          { "@type": "Country", "name": "Lebanon" },
+          { "@type": "Country", "name": "Palestine" },
+          { "@type": "Country", "name": "Syria" }
+        ]
+      }
+    </script>
   </head>
   <body class="bg-[#ebe6db] text-[#4a4845] antialiased">
     <div id="root"></div>
