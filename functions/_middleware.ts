@@ -1,6 +1,6 @@
 import { fetchListingById, type Env } from './_shared/supabaseRest';
 import { escapeHtml, buildTitle, buildDescription } from './_shared/listingMeta';
-import { buildJsonLd } from './_shared/listingJsonLd';
+import { buildJsonLd, buildListingPathFromRow } from './_shared/listingJsonLd';
 import { fetchActiveListingsByMarket } from './_shared/supabaseListings';
 import {
   buildListingLoc,
@@ -15,6 +15,7 @@ const XML_HEADERS = {
   'cache-control': 'public, max-age=3600',
 } as const;
 const SITEMAP_MARKET_RE = /^\/sitemap-(jo|sa|lb|ps|sy)\.xml$/;
+const LEGACY_LISTING_RE = /^\/listing\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i;
 
 function parseSeoPath(pathname: string): string | null {
   const parts = pathname.split('/').filter(Boolean);
@@ -49,6 +50,18 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       lastmod: row.updated_at,
     }));
     return new Response(buildUrlset(urls), { headers: XML_HEADERS });
+  }
+
+  // Legacy /listing/{uuid} → 301 to SEO URL
+  const legacy = url.pathname.match(LEGACY_LISTING_RE);
+  if (legacy) {
+    const legacyId = legacy[1];
+    const row = await fetchListingById(legacyId, context.env);
+    if (row) {
+      const target = `${url.origin}${buildListingPathFromRow(row)}`;
+      return Response.redirect(target, 301);
+    }
+    // Not found → fall through to SPA (renders its own 404)
   }
 
   const response = await context.next();

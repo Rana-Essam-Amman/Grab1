@@ -5,7 +5,7 @@ const MAX_SLUG_LENGTH = 60;
  * Pages Functions bundle separately from the SPA — this duplicate is
  * intentional. If slug rules change, update both.
  */
-function slugify(input: string): string {
+export function slugify(input: string): string {
   if (!input) return 'listing';
   const cleaned = input
     .normalize('NFKD')
