@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, TickCircle, Tag, Message } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { EmptyState } from '@/shared/ui/EmptyState';
 import { Icon } from '@iconify/react';
+import { BrandMark } from '@/shared/components/BrandMark';
 export interface Notification {
   id: string;
   titleEn: string;
@@ -33,12 +34,14 @@ export const NotificationsScreen: React.FC = () => {
         <Button variant="ghost" size="icon" onClick={goBack} aria-label="Back" className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 flex items-center justify-center p-0">
           {isArabic ? <ArrowRight size={18} variant="Linear" color="#FFFFFF" /> : <ArrowLeft size={18} variant="Linear" color="#FFFFFF" />}
         </Button>
-        <h1 className="text-base font-bold text-white">{isArabic ? 'الإشعارات والتنبيهات' : 'Notifications'}</h1>
+        <h1 className="text-base font-bold text-white flex-1 text-center">{isArabic ? 'الإشعارات والتنبيهات' : 'Notifications'}</h1>
         {notifications.length > 0 ? (
-          <button onClick={handleClearAll} className="text-xs font-bold text-white/80 hover:text-white cursor-pointer select-none">
-            {isArabic ? 'مسح الكل' : 'Clear All'}
+          <button onClick={handleClearAll} className="text-xs font-bold text-white/80 hover:text-white cursor-pointer select-none w-10 text-center">
+            {isArabic ? 'مسح' : 'Clear'}
           </button>
-        ) : (<div className="w-10" />)}
+        ) : (
+          <BrandMark isArabic={isArabic} />
+        )}
       </div>
       {/* Content Area */}
       {notifications.length === 0 ? (
