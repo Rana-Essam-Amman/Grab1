@@ -28,6 +28,7 @@ import { useBootMigrations } from '@/shared/hooks/useBootMigrations';
 import { useSupabaseListingsSync } from '@/features/listings/hooks/useSupabaseListingsSync';
 import { useSupabaseWishlistSync } from '@/features/listings/hooks/useSupabaseWishlistSync';
 import { useSupabaseChatSync } from '@/features/chat/hooks/useSupabaseChatSync';
+import { useSupabaseNotificationsSync } from '@/features/notifications/hooks/useSupabaseNotificationsSync';
 import { useMarketSync } from '@/features/markets/hooks/useMarketSync';
 import { MarketContextBanner } from '@/features/markets/components/MarketContextBanner';
 import { MARKETS, isValidMarketCode } from '@/data/markets/config';
@@ -198,6 +199,7 @@ export default function App() {
   useSupabaseListingsSync();
   useSupabaseWishlistSync();
   useSupabaseChatSync();
+  useSupabaseNotificationsSync();
   useMarketSync();
   useOnlinePresence(currentUserId);
   useBootMigrations(locale);
