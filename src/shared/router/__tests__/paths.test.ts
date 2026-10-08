@@ -11,7 +11,7 @@ const ALL_SCREENS: ScreenType[] = [
   'post-ai-draft', 'post-ai-review', 'post-ai-capture',
   'post-publish-success', 'edit-post',
   'login', 'register', 'confirm',
-  'terms', 'privacy', 'support', 'safety', 'about',
+  'terms', 'pricing', 'privacy', 'support', 'safety', 'about',
 ];
 
 describe('paths — static round-trip', () => {

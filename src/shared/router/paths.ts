@@ -57,6 +57,7 @@ const STATIC_SCREEN_TO_PATH: Record<Exclude<ScreenType, 'listing-detail' | 'sell
   'register': '/register',
   'confirm': '/confirm',
   'terms': '/terms',
+  'pricing': '/pricing',
   'privacy': '/privacy',
   'support': '/support',
   'safety': '/safety',
