@@ -1,9 +1,16 @@
 /**
- * Converts a Supabase Storage public URL into an optimized render URL.
- * Adds width/quality/format params so Supabase serves WebP.
- * Falls back to the original URL for any non-Supabase URL.
+ * Image URL helper for card thumbnails.
  *
- * Docs: https://supabase.com/docs/guides/storage/serving/image-transformations
+ * IMPORTANT: The Supabase transform endpoint (/render/image/public/...)
+ * strips EXIF orientation metadata, which causes portrait photos taken on
+ * phones (stored as landscape pixels + EXIF rotate flag) to render rotated
+ * or cropped.
+ *
+ * Therefore: for card thumbnails we use the ORIGINAL URL — EXIF is
+ * preserved, browser auto-rotates correctly. WebP optimization is skipped
+ * for cards (acceptable — thumbnails are 136px, the win is negligible).
+ *
+ * Source: https://stackoverflow.com/questions/77402332/nuxt3-nuxtimg-image-rotate-90-when-i-use-nuxtimg
  */
 export interface OptimizedImageOptions {
   readonly width?: number;
@@ -11,8 +18,7 @@ export interface OptimizedImageOptions {
   readonly format?: 'webp' | 'avif' | 'origin';
 }
 
-const SUPABASE_OBJECT_RE =
-  /\/storage\/v1\/object\/public\/([^/]+)\/(.+)$/;
+const SUPABASE_OBJECT_RE = /\/storage\/v1\/object\/public\/([^/]+)\/(.+)$/;
 
 export function toOptimizedImageUrl(
   url: string,
@@ -20,22 +26,16 @@ export function toOptimizedImageUrl(
 ): string {
   if (!url) return url;
 
-  const match = url.match(SUPABASE_OBJECT_RE);
-  if (!match) {
-    // Local assets: prefer WebP when we have one.
-    if (url.startsWith('/assets/listings/') && /\.(jpe?g|png)$/i.test(url)) {
-      return url.replace(/\.(jpe?g|png)$/i, '.webp');
-    }
+  // Local assets: prefer WebP when we have one.
+  if (url.startsWith('/assets/listings/') && /\.(jpe?g|png)$/i.test(url)) {
+    return url.replace(/\.(jpe?g|png)$/i, '.webp');
+  }
+
+  // Supabase Storage: RETURN ORIGINAL URL — do NOT use transform.
+  // Transform strips EXIF → portrait photos appear rotated/cropped.
+  if (SUPABASE_OBJECT_RE.test(url)) {
     return url;
   }
 
-  const [, bucket, path] = match;
-  const originMatch = url.match(/^(https?:\/\/[^/]+)/);
-  if (!originMatch) return url;
-
-  const width = opts.width ?? 800;
-  const quality = opts.quality ?? 75;
-  const format = opts.format ?? 'webp';
-
-  return `${originMatch[1]}/storage/v1/render/image/public/${bucket}/${path}?width=${width}&quality=${quality}&format=${format}`;
+  return url;
 }
