@@ -28,18 +28,15 @@ export function usePostDetails() {
   const [error, setError] = useState<string | null>(null);
 
   const fields = useMemo(
-    () => resolvePostDetailsFields({
-      categorySlug: postDraft.categorySlug,
-      subcategorySlug: postDraft.subcategorySlug,
-      values,
-      isArabic,
-    }),
+    () => resolvePostDetailsFields({ categorySlug: postDraft.categorySlug, subcategorySlug: postDraft.subcategorySlug, values, isArabic }),
     [postDraft.categorySlug, postDraft.subcategorySlug, values, isArabic]
   );
 
   const setField = useCallback((k: string, v: string) => setValues(p => ({ ...p, [k]: v })), []);
+
   const missing = fields.filter(f => f.required && !(values[f.key] || '').trim()).map(f => isArabic ? f.labelAr : f.labelEn);
-  const canContinue = title.trim().length >= 5 && price.trim().length > 0 && description.trim().length >= 10 && missing.length === 0;
+  const hasLocation = Boolean(postDraft.city?.trim()) && Boolean(postDraft.neighborhood?.trim());
+  const canContinue = title.trim().length >= 5 && price.trim().length > 0 && description.trim().length >= 10 && missing.length === 0 && hasLocation;
 
   const handleContinue = async () => {
     setSubmitAttempted(true);
@@ -66,6 +63,7 @@ export function usePostDetails() {
       navigateTo('login');
       return;
     }
+
     if (!requirePhoneForPublish(() => void handleContinue())) return;
 
     const prepared = preparePublish({ postDraft, draftData, user: getCurrentUser(), browseCountryCode, activeCurrency });

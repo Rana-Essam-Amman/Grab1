@@ -1,4 +1,5 @@
 import type { PostDraft, Listing, UserProfile } from '@/types';
+import { isOtherValue } from '@/data/locations';
 
 export interface BuildListingParams {
   postDraft: PostDraft;
@@ -18,6 +19,14 @@ export function buildNewListingPayload({
   const description = postDraft.description || postDraft.generated?.description || '';
   const targetMarket = user?.countryCode || browseCountryCode;
 
+  const rawCity = (postDraft.city || '').trim();
+  const rawNeighborhood = (postDraft.neighborhood || '').trim();
+  if (!rawCity || !rawNeighborhood || isOtherValue(rawCity) || isOtherValue(rawNeighborhood)) {
+    throw new Error(
+      'buildNewListingPayload: city and neighborhood are required and must not be "Other"'
+    );
+  }
+
   const newListing: Listing = {
     id: `listing-${crypto.randomUUID()}`,
     title,
@@ -25,8 +34,8 @@ export function buildNewListingPayload({
     price,
     currency: activeCurrency as Listing['currency'],
     countryCode: targetMarket as Listing['countryCode'],
-    city: postDraft.city || '',
-    neighborhood: postDraft.neighborhood || '',
+    city: rawCity,
+    neighborhood: rawNeighborhood,
     categorySlug: postDraft.categorySlug,
     subcategorySlug: postDraft.subcategorySlug,
     imageUrl: postDraft.photos?.[0] || '',
@@ -37,7 +46,7 @@ export function buildNewListingPayload({
     views: 1,
     status: 'active',
     attributes: [
-      { key: 'city', label: 'City', value: postDraft.city || '' },
+      { key: 'city', label: 'City', value: rawCity },
       ...(postDraft.generated?.fields || [])
         .filter((f) => f.value && String(f.value).trim().length > 0)
         .map((f) => ({ key: f.key, label: f.label, value: String(f.value) })),
