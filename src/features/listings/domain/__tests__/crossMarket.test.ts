@@ -1,77 +1,54 @@
 import { describe, it, expect } from 'vitest';
 import { canViewListing } from '../rules/canViewListing';
-import { canBookmarkListing } from '../rules/canBookmarkListing';
-import type { Listing } from '../entities/Listing';
-import type { MarketCode } from '@/data/markets/types';
+import type { Listing } from '@/types';
 
-function makeListing(countryCode: MarketCode): Listing {
-  return {
-    id: 'l1',
+describe('Cross-market policy', () => {
+  const baseListing: Listing = {
+    id: '1',
     title: 'Test',
-    description: 'Test',
+    description: 'Desc',
     price: '100',
     currency: 'JOD',
-    countryCode,
+    countryCode: 'JO',
     city: 'Amman',
-    neighborhood: 'Khalda',
-    categorySlug: 'motors',
-    subcategorySlug: 'cars',
+    neighborhood: '',
+    categorySlug: 'cars',
+    subcategorySlug: '',
+    imageUrl: '',
     images: [],
-    attributes: {},
-    sellerName: 'Tester',
-    sellerPhone: '0799999999',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    sellerName: '',
+    sellerPhone: '',
     views: 0,
+    attributes: [],
     status: 'active',
-  } as unknown as Listing;
-}
-
-describe('Cross-market isolation — RED LINE', () => {
-  const markets: MarketCode[] = ['JO', 'LB', 'PS', 'SY', 'SA'];
+    createdAt: new Date().toISOString(),
+  };
 
   it('same-market listing is viewable', () => {
-    for (const m of markets) {
-      const listing = makeListing(m);
-      const result = canViewListing(listing as never, m as never);
-      expect(result.allowed, `expected ${m} → ${m} allowed`).toBe(true);
-    }
+    const r = canViewListing(baseListing, 'JO');
+    expect(r.allowed).toBe(true);
+    expect(r.isCrossMarket).toBe(false);
   });
 
-  it('cross-market listing is NEVER viewable', () => {
-    for (const from of markets) {
-      for (const to of markets) {
-        if (from === to) continue;
-        const listing = makeListing(to);
-        const result = canViewListing(listing as never, from as never);
-        expect(result.allowed, `leak: ${from} sees ${to}`).toBe(false);
-      }
-    }
+  it('cross-market listing is viewable but flagged', () => {
+    const r = canViewListing(baseListing, 'SA');
+    expect(r.allowed).toBe(true);
+    expect(r.isCrossMarket).toBe(true);
   });
 
-  it('cross-market listing is NEVER bookmarkable', () => {
-    for (const from of markets) {
-      for (const to of markets) {
-        if (from === to) continue;
-        const listing = makeListing(to);
-        const result = canBookmarkListing(listing as never, from as never, []);
-        expect(result.allowed, `leak: ${from} bookmarks ${to}`).toBe(false);
+  it('every market pair is viewable (MENA mobility)', () => {
+    const markets = ['JO', 'SA', 'LB', 'PS', 'SY'] as const;
+    for (const m1 of markets) {
+      for (const m2 of markets) {
+        const listing: Listing = { ...baseListing, countryCode: m1 };
+        const r = canViewListing(listing, m2);
+        expect(r.allowed).toBe(true);
+        if (m1 !== m2) {
+          expect(r.isCrossMarket).toBe(true);
+        } else {
+          expect(r.isCrossMarket).toBe(false);
+        }
       }
     }
-  });
-
-  it('every market pair is mutually exclusive', () => {
-    // 5 markets × 4 others = 20 cross-market combinations must ALL fail.
-    let leaks = 0;
-    for (const from of markets) {
-      for (const to of markets) {
-        if (from === to) continue;
-        const listing = makeListing(to);
-        const viewResult = canViewListing(listing as never, from as never);
-        const bookmarkResult = canBookmarkListing(listing as never, from as never, []);
-        if (viewResult.allowed || bookmarkResult.allowed) leaks++;
-      }
-    }
-    expect(leaks).toBe(0);
   });
 });

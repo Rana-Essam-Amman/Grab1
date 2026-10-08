@@ -1,28 +1,45 @@
 import type { Listing } from '@/types';
 import type { MarketCountry } from '@/features/auth/domain';
 
-export type CanViewReason = 'cross-market' | 'listing-archived';
+export type CanViewReason =
+  | 'cross-market'
+  | 'listing-archived'
+  | 'listing-pending';
 
 export interface CanViewResult {
-  allowed: boolean;
-  reason?: CanViewReason;
+  readonly allowed: boolean;
+  readonly reason?: CanViewReason;
+  readonly isCrossMarket: boolean;
 }
 
 /**
- * Market isolation: buyer can only view listings from their active market.
- * Pure function — no side effects.
+ * Market policy for viewing a listing.
+ *
+ * Real policy (matching PR #80/#87 — free browse + contact always enabled):
+ *   - Any market: readable by anyone.
+ *   - Cross-market: allowed, but flagged (banner + no in-app chat).
+ *   - Archived: not shown (should not appear in feeds or direct links).
+ *   - Pending: not shown publicly (moderation in progress).
+ *
+ * Note: in-app chat is market-scoped separately (chat.slice.mutate.ts).
+ * WhatsApp/Call are intentionally open cross-market.
+ *
+ * Currency is derived from listing.countryCode in listingDerivedData.ts,
+ * so a cross-market listing always shows its own market's currency.
  */
 export function canViewListing(
   listing: Listing,
   activeMarket: MarketCountry,
 ): CanViewResult {
-  // MARKET ISOLATION RED LINE — a listing is visible ONLY to users
-  // in the same market. This is intentional and enforced.
-  if (listing.countryCode !== activeMarket) {
-    return { allowed: false, reason: 'cross-market' };
-  }
+  const isCrossMarket = listing.countryCode !== activeMarket;
+
   if (listing.status === 'archived') {
-    return { allowed: false, reason: 'listing-archived' };
+    return { allowed: false, reason: 'listing-archived', isCrossMarket };
   }
-  return { allowed: true };
+
+  if (listing.status === 'pending') {
+    return { allowed: false, reason: 'listing-pending', isCrossMarket };
+  }
+
+  return { allowed: true, isCrossMarket };
 }
