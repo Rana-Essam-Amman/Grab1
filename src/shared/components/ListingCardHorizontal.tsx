@@ -35,7 +35,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
       className={`${premiumClasses} rounded-2xl p-3 border flex gap-3 cursor-pointer hover:border-primary/60 transition-all shadow-xs`}
       dir={isArabic ? 'rtl' : 'ltr'}
     >
-      <div className="w-32 self-stretch rounded-xl overflow-hidden bg-background relative shrink-0">
+      <div className="w-32 aspect-square rounded-xl overflow-hidden bg-background relative shrink-0">
         <img
           src={toOptimizedImageUrl(listing.imageUrl, { width: 320, quality: 75 })}
           alt={listing.title}
