@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Listing } from '@/types';
 import { BookmarkHeartButton } from './BookmarkHeartButton';
 import { Crown } from 'iconsax-react';
@@ -29,19 +29,33 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
 }) => {
   const specs = useMemo(() => pickSpecs(listing.attributes, 5, listing.title), [listing.attributes, listing.title]);
 
+  const knownAspect =
+    listing.imageWidth && listing.imageHeight
+      ? listing.imageWidth / listing.imageHeight
+      : null;
+  const [isWide, setIsWide] = useState(knownAspect !== null ? knownAspect > 1 : false);
+
   return (
     <div
       onClick={handleClick}
       className={`${premiumClasses} rounded-2xl p-3 border flex gap-3 cursor-pointer hover:border-primary/60 transition-all shadow-xs`}
       dir={isArabic ? 'rtl' : 'ltr'}
     >
-      <div className="w-[136px] h-[136px] rounded-xl overflow-hidden bg-canvas relative shrink-0">
+      <div className="w-[136px] h-[136px] rounded-xl overflow-hidden bg-surface relative shrink-0">
         <img
           src={toOptimizedImageUrl(listing.imageUrl, { width: 400, quality: 80 })}
           alt={listing.title}
           loading="lazy"
           decoding="async"
-          className="w-full h-full object-contain"
+          className={`w-full h-full ${isWide ? 'object-cover' : 'object-contain'}`}
+          onLoad={(e) => {
+            if (knownAspect === null) {
+              const img = e.currentTarget;
+              if (img.naturalWidth && img.naturalHeight) {
+                setIsWide(img.naturalWidth > img.naturalHeight);
+              }
+            }
+          }}
           onError={handleImageError}
         />
         {listing.isPremium && (
