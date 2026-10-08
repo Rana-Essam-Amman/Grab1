@@ -24,8 +24,8 @@ export interface MonetizationMatrix {
 
 export const MONETIZATION_MATRIX: MonetizationMatrix = {
   freeLimits: {
-    generalCategoryLimit: 5,
-    premiumCategoryLimit: 2,
+    generalCategoryLimit: 10,
+    premiumCategoryLimit: 3,
     bumpDailyLimit: 3,
     photoLimit: 10,
   },

@@ -26,15 +26,15 @@ describe('Data Layer - Monetization & Regional Quota Rules', () => {
     expect(MONETIZATION_MATRIX.packages.PS.currency).toBe('ILS');
   });
 
-  it('getFreeAdLimitForCategory returns 2 for premium categories and 5 for general categories', () => {
-    expect(getFreeAdLimitForCategory('motors')).toBe(2);
-    expect(getFreeAdLimitForCategory('real-estate')).toBe(2);
-    expect(getFreeAdLimitForCategory('سيارات')).toBe(2);
-    expect(getFreeAdLimitForCategory('عقارات')).toBe(2);
+  it('getFreeAdLimitForCategory returns 3 for premium categories and 10 for general categories', () => {
+    expect(getFreeAdLimitForCategory('motors')).toBe(3);
+    expect(getFreeAdLimitForCategory('real-estate')).toBe(3);
+    expect(getFreeAdLimitForCategory('سيارات')).toBe(3);
+    expect(getFreeAdLimitForCategory('عقارات')).toBe(3);
 
-    expect(getFreeAdLimitForCategory('electronics')).toBe(5);
-    expect(getFreeAdLimitForCategory('fashion')).toBe(5);
-    expect(getFreeAdLimitForCategory('home-appliances')).toBe(5);
+    expect(getFreeAdLimitForCategory('electronics')).toBe(10);
+    expect(getFreeAdLimitForCategory('fashion')).toBe(10);
+    expect(getFreeAdLimitForCategory('home-appliances')).toBe(10);
   });
 
   it('validateAdQuotaAvailability allows user when count is strictly below limit', () => {
@@ -52,11 +52,12 @@ describe('Data Layer - Monetization & Regional Quota Rules', () => {
 
     expect(result.allowed).toBe(true);
     expect(result.activeCount).toBe(2);
-    expect(result.limit).toBe(5);
+    expect(result.limit).toBe(10);
   });
 
   it('validateAdQuotaAvailability blocks user when count reaches free limit', () => {
     const mockListings = [
+      { userId: 'user-1', countryCode: 'JO', categorySlug: 'motors' },
       { userId: 'user-1', countryCode: 'JO', categorySlug: 'motors' },
       { userId: 'user-1', countryCode: 'JO', categorySlug: 'motors' },
     ];
@@ -69,8 +70,8 @@ describe('Data Layer - Monetization & Regional Quota Rules', () => {
     );
 
     expect(result.allowed).toBe(false);
-    expect(result.activeCount).toBe(2);
-    expect(result.limit).toBe(2);
+    expect(result.activeCount).toBe(3);
+    expect(result.limit).toBe(3);
   });
 
   it('validateAdQuotaAvailability provides unlimited bypass gate for VIP merchants', () => {
