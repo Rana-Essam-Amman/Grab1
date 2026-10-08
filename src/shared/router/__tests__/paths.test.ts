@@ -49,9 +49,7 @@ describe('paths — dynamic /listing/:id', () => {
 
 describe('paths — dynamic /seller/:phone', () => {
   it('screenToPath includes encoded phone', () => {
-    // '+' encodes to %2B
-    expect(screenToPath('seller-profile', { sellerPhone: '+962791234567' }))
-      .toBe('/seller/%2B962791234567');
+    expect(screenToPath('seller-profile', { sellerPhone: '+962791234567' })).toBe('/seller/%2B962791234567');
   });
 
   it('resolvePath extracts phone', () => {
@@ -65,11 +63,39 @@ describe('paths — dynamic /seller/:phone', () => {
   });
 });
 
-describe('paths — dynamic /messages/:id', () => {
-  it('screenToPath includes encoded id', () => {
-    expect(screenToPath('thread', { threadId: 'conv-1' }))
-      .toBe('/messages/conv-1');
+describe('paths — dynamic /post-ad/edit/:id', () => {
+  it('screenToPath with listingId produces /post-ad/edit/{id}', () => {
+    expect(screenToPath('edit-post', { listingId: 'abc-123' }))
+      .toBe('/post-ad/edit/abc-123');
   });
+
+  it('screenToPath without listingId falls back to legacy /post-ad/edit', () => {
+    expect(screenToPath('edit-post')).toBe('/post-ad/edit');
+  });
+
+  it('resolvePath parses /post-ad/edit/:id', () => {
+    const match = resolvePath('/post-ad/edit/abc-123');
+    expect(match?.screen).toBe('edit-post');
+    expect(match?.params.listingId).toBe('abc-123');
+  });
+
+  it('resolvePath still matches legacy /post-ad/edit (no id)', () => {
+    const match = resolvePath('/post-ad/edit');
+    expect(match?.screen).toBe('edit-post');
+    expect(match?.params.listingId).toBeUndefined();
+  });
+
+  it('encodes uuid-like listingId correctly (round-trip)', () => {
+    const id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+    const path = screenToPath('edit-post', { listingId: id });
+    expect(path).toBe(`/post-ad/edit/${id}`);
+    const roundTrip = resolvePath(path);
+    expect(roundTrip?.params.listingId).toBe(id);
+  });
+});
+
+describe('paths — dynamic /messages/:id', () => {
+  it('screenToPath includes encoded id', () => { expect(screenToPath('thread', { threadId: 'conv-1' })).toBe('/messages/conv-1'); });
 
   it('screenToPath without id falls back to legacy /messages/thread', () => {
     expect(screenToPath('thread')).toBe('/messages/thread');
@@ -113,7 +139,6 @@ describe('paths — edge cases', () => {
   });
 
   it('rejects multi-segment id segments (no ambiguity)', () => {
-    // /listing/a/b should NOT match — id has no slash
     expect(resolvePath('/listing/a/b')).toBeNull();
   });
 });
