@@ -48,6 +48,8 @@ export interface Listing {
   subcategorySlug: string;
   imageUrl: string;
   images: string[];
+  imageWidth?: number;
+  imageHeight?: number;
   sellerPhone: string;
   sellerName: string;
   createdAt: string;
