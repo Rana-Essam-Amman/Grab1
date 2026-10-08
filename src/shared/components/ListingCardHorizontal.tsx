@@ -35,13 +35,13 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
       className={`${premiumClasses} rounded-2xl p-3 border flex gap-3 cursor-pointer hover:border-primary/60 transition-all shadow-xs`}
       dir={isArabic ? 'rtl' : 'ltr'}
     >
-      <div className="w-32 aspect-[4/3] rounded-xl overflow-hidden bg-black relative shrink-0">
+      <div className="w-32 aspect-[4/3] rounded-xl overflow-hidden bg-surface relative shrink-0">
         <img
           src={toOptimizedImageUrl(listing.imageUrl, { width: 320, quality: 75 })}
           alt={listing.title}
           loading="lazy"
           decoding="async"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain"
           onError={handleImageError}
         />
         {listing.isPremium && (
