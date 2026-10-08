@@ -3,7 +3,6 @@ import {
   fetchNotifications,
   markNotificationRead as serviceMark,
   markAllNotificationsRead as serviceMarkAll,
-  getUnreadNotificationCount,
 } from '../services/notificationsService';
 import type { AppNotification } from '../services/notificationsService.types';
 
@@ -16,7 +15,7 @@ export async function loadNotifications(): Promise<void> {
     useNotificationsStore.setState({ loading: false, error });
     return;
   }
-  const unread = await getUnreadNotificationCount();
+  const unread = data.filter((n) => !n.readAt).length;
   useNotificationsStore.setState({
     notifications: data,
     unreadCount: unread,
