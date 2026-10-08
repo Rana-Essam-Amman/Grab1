@@ -4,6 +4,7 @@ import { Button } from '@/shared/ui/Button';
 import { usePostAdEntry } from '../hooks/usePostAdEntry';
 import { Icon } from '@iconify/react';
 import { MARKETS } from '@/data/markets/config';
+import { BrandMark } from '@/shared/components/BrandMark';
 
 export const PostAdEntryScreen: React.FC = () => {
   const { isArabic, handleBack, startPostFlow, canPostInMarket, myMarket, freeLimit, freeRemaining } = usePostAdEntry();
@@ -24,9 +25,10 @@ export const PostAdEntryScreen: React.FC = () => {
       >
         <BackIcon size={18} variant="Linear" color="currentColor" className="text-white" />
       </Button>
-      <h2 className="text-lg font-bold text-white">
+      <h2 className="text-lg font-bold text-white flex-1">
         {isArabic ? 'نشر إعلان' : 'Post Ad'}
       </h2>
+      <BrandMark isArabic={isArabic} />
     </div>
   );
 
