@@ -9,6 +9,7 @@ import { Avatar } from '@/shared/ui/Avatar';
 import { EmptyState } from '@/shared/ui/EmptyState';
 import { Button } from '@/shared/ui/Button';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
+import { isUuid } from '@/shared/lib/uuid';
 import { fetchProfile, type ProfileRecord } from '@/shared/lib/profilesService';
 import { fetchSellerReviews, submitSellerReview, type SellerReview } from '../services/sellerReviewsService';
 import { SellerRatingBadge } from '../components/SellerRatingBadge';
@@ -20,7 +21,14 @@ export const SellerProfileScreen: React.FC = () => {
   const { listings } = useListings();
   const { user } = useAuth();
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
-  const sellerAds = useMemo(() => filterListingsByMarket(listings, browseCountryCode).filter((l) => l.sellerPhone === selectedSellerPhone), [listings, browseCountryCode, selectedSellerPhone]);
+  const sellerKeyIsUuid = isUuid(selectedSellerPhone);
+  const sellerAds = useMemo(() => {
+    const scoped = filterListingsByMarket(listings, browseCountryCode);
+    if (sellerKeyIsUuid) {
+      return scoped.filter((l) => l.userId === selectedSellerPhone);
+    }
+    return scoped.filter((l) => l.sellerPhone === selectedSellerPhone);
+  }, [listings, browseCountryCode, selectedSellerPhone, sellerKeyIsUuid]);
   const sellerId = sellerAds[0]?.userId ?? null;
   const sampleListingId = sellerAds[0]?.id ?? null;
   const [sellerProfile, setSellerProfile] = useState<ProfileRecord | null>(null);
@@ -67,7 +75,9 @@ export const SellerProfileScreen: React.FC = () => {
                 <h2 className="text-base font-bold text-ink">{sellerName}</h2>
                 <TickCircle size={15} variant="Linear" color="currentColor" className="text-success" />
               </div>
-              <div className="text-xs text-ink-muted mt-0.5">{selectedSellerPhone}</div>
+              {!sellerKeyIsUuid && selectedSellerPhone && (
+                <div className="text-xs text-ink-muted mt-0.5" dir="ltr">{selectedSellerPhone}</div>
+              )}
             </div>
           </div>
           <div className="pt-1 border-t border-border flex items-center justify-between">

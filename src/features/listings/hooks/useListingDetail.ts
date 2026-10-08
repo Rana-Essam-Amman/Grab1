@@ -45,7 +45,13 @@ export function useListingDetail(): UseListingDetailReturn {
     return false;
   }, [user, listing]);
   const handleSelectSeller = useCallback(() => {
-    if (listing?.sellerPhone) { setSelectedSellerPhone(listing.sellerPhone); navigateTo('seller-profile'); }
+    if (!listing) return;
+    // Prefer userId (stable UUID, safe canonical, does not expose phone).
+    // Fallback to phone for legacy listings (pre-userId).
+    const sellerKey = listing.userId || listing.sellerPhone;
+    if (!sellerKey) return;
+    setSelectedSellerPhone(sellerKey);
+    navigateTo('seller-profile');
   }, [listing, setSelectedSellerPhone, navigateTo]);
   const handleStartChat = useCallback(async () => {
     if (!listing || authStatus === 'unauthenticated' || !user?.id || !listing.userId || isOwner) {
