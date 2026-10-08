@@ -7,9 +7,8 @@ export interface NotificationBellButtonProps {
 }
 
 /**
- * Visible bell button with unread badge for the header.
- * Facebook/Instagram pattern: numeric cap at 9+, red, only when > 0.
- * Empty spacer slot in the header was intentionally a placeholder for this.
+ * Bell with unread badge. Uses physical positioning (top/right) flipped for RTL.
+ * Avoids logical `end-*` which may not compile in Tailwind v4.
  */
 export const NotificationBellButton: React.FC<NotificationBellButtonProps> = ({
   isArabic,
@@ -23,12 +22,33 @@ export const NotificationBellButton: React.FC<NotificationBellButtonProps> = ({
       onClick={onPress}
       className="relative w-10 h-10 shrink-0 flex items-center justify-center text-white hover:bg-white/10 rounded-full transition-colors"
       aria-label={isArabic ? 'الإشعارات' : 'Notifications'}
+      data-testid="header-bell"
     >
       <span className="text-xl" aria-hidden="true">🔔</span>
       {unreadCount > 0 && (
         <span
-          className="absolute top-0.5 end-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-danger text-white text-[10px] font-black flex items-center justify-center border-2 border-brand shadow-sm"
-          aria-label={isArabic ? `${unreadCount} غير مقروء` : `${unreadCount} unread`}
+          data-testid="header-bell-badge"
+          data-unread-count={unreadCount}
+          style={{
+            position: 'absolute',
+            top: '-2px',
+            [isArabic ? 'left' : 'right']: '-2px',
+            minWidth: '18px',
+            height: '18px',
+            padding: '0 5px',
+            borderRadius: '9999px',
+            backgroundColor: '#DC2626',
+            color: '#FFFFFF',
+            fontSize: '10px',
+            fontWeight: 900,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            border: '2px solid #0F1E3D',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.25)',
+            zIndex: 20,
+            lineHeight: 1,
+          }}
         >
           {unreadCount > 9 ? '9+' : unreadCount}
         </span>
