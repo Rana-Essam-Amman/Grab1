@@ -54,6 +54,9 @@ export interface Listing {
   views: number;
   attributes: ListingAttribute[];
   isPremium?: boolean;
+  premiumExpiresAt?: string;
+  autoBumpActive?: boolean;
+  autoBumpExpiresAt?: string;
   status?: ListingStatus;
   lastBumpedAt?: string;
   isAutoBumpActive?: boolean;

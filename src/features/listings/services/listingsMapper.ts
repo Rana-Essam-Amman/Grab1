@@ -22,6 +22,10 @@ export interface SupabaseListingRow {
   readonly updated_at: string;
   readonly bumps_today?: number | null;
   readonly bumps_reset_date?: string | null;
+  readonly is_premium?: boolean | null;
+  readonly premium_expires_at?: string | null;
+  readonly auto_bump_active?: boolean | null;
+  readonly auto_bump_expires_at?: string | null;
 }
 
 export function rowToListing(row: SupabaseListingRow): Listing {
@@ -47,6 +51,10 @@ export function rowToListing(row: SupabaseListingRow): Listing {
     createdAt: row.created_at.split('T')[0],
     views: row.views,
     status: row.status as Listing['status'],
+    isPremium: Boolean(row.is_premium) && (!row.premium_expires_at || new Date(row.premium_expires_at) >= new Date()),
+    premiumExpiresAt: row.premium_expires_at ?? undefined,
+    autoBumpActive: row.auto_bump_active ?? false,
+    autoBumpExpiresAt: row.auto_bump_expires_at ?? undefined,
     bumpsToday: row.bumps_today ?? 0,
     bumpsResetDate: row.bumps_reset_date ?? undefined,
     attributes: attrs as Listing['attributes'],
