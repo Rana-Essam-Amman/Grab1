@@ -7,6 +7,7 @@ import { Badge } from '@/shared/ui/Badge';
 import { pickSpecs } from '@/features/listings/helpers/pickSpecs';
 import { ListingSpecsRow } from './ListingSpecsRow';
 import { toOptimizedImageUrl } from '@/shared/lib/optimizedImage';
+import { pickImageFitClass, ratioOf, type ImageFitClass } from '@/shared/lib/imageFit';
 
 interface ListingCardHorizontalProps {
   listing: Listing;
@@ -29,11 +30,22 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
 }) => {
   const specs = useMemo(() => pickSpecs(listing.attributes, 5, listing.title), [listing.attributes, listing.title]);
 
-  const knownAspect =
+  const knownRatio =
     listing.imageWidth && listing.imageHeight
-      ? listing.imageWidth / listing.imageHeight
+      ? ratioOf(listing.imageWidth, listing.imageHeight)
       : null;
-  const [isWide, setIsWide] = useState(knownAspect !== null ? knownAspect > 1 : false);
+
+  const [fitClass, setFitClass] = useState<ImageFitClass>(
+    knownRatio !== null ? pickImageFitClass(knownRatio) : 'object-contain'
+  );
+
+  const handleLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    if (knownRatio !== null) return;
+    const img = e.currentTarget;
+    if (img.naturalWidth && img.naturalHeight) {
+      setFitClass(pickImageFitClass(ratioOf(img.naturalWidth, img.naturalHeight)));
+    }
+  };
 
   return (
     <div
@@ -47,15 +59,8 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
           alt={listing.title}
           loading="lazy"
           decoding="async"
-          className={`w-full h-full ${isWide ? 'object-cover' : 'object-contain'}`}
-          onLoad={(e) => {
-            if (knownAspect === null) {
-              const img = e.currentTarget;
-              if (img.naturalWidth && img.naturalHeight) {
-                setIsWide(img.naturalWidth > img.naturalHeight);
-              }
-            }
-          }}
+          className={`w-full h-full ${fitClass}`}
+          onLoad={handleLoad}
           onError={handleImageError}
         />
         {listing.isPremium && (
