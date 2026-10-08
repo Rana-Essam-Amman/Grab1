@@ -55,6 +55,8 @@ export const useListings = () => {
     hasMore: store.hasMore,
     isLoadingMore: store.isLoadingMore,
     loadMore: store.loadMore,
+    searchFromSupabase: store.searchFromSupabase,
+    activeSearchQuery: store.activeSearchQuery,
   };
 };
 
