@@ -4,10 +4,9 @@ import { LoginGateway } from './LoginGateway';
 import { LoginForm } from './LoginForm';
 import { RegisterStep1Form } from './RegisterStep1Form';
 import { RegisterStep2Form } from './RegisterStep2Form';
-import { ForgotPasswordForm } from './ForgotPasswordForm';
 
 interface LoginScreenBodyProps {
-  step: 'gateway' | 'login' | 'reg-step1' | 'reg-step2' | 'forgot';
+  step: 'gateway' | 'login' | 'reg-step1' | 'reg-step2';
   isArabic: boolean;
   guestCountrySelect: boolean;
   stagedPhone: string;
@@ -18,7 +17,7 @@ interface LoginScreenBodyProps {
   secureToken: string;
   handleSwitchToLogin: () => void;
   handleSwitchToRegister: () => void;
-  handleSwitchToForgot: () => void;
+
   handleQuickDemoAuth: () => void;
   handleSelectBrowseCountry: (code: string, cityEn: string, cityAr: string) => void;
   handleGuestCountryClose: () => void;
@@ -39,7 +38,7 @@ export const LoginScreenBody: React.FC<LoginScreenBodyProps> = ({
   secureToken,
   handleSwitchToLogin,
   handleSwitchToRegister,
-  handleSwitchToForgot,
+
   handleQuickDemoAuth,
   handleSelectBrowseCountry,
   handleGuestCountryClose,
@@ -64,7 +63,7 @@ export const LoginScreenBody: React.FC<LoginScreenBodyProps> = ({
   if (step === 'login') {
     return (
       <div className="p-6 flex flex-col gap-6 flex-1 max-w-sm mx-auto w-full justify-center animate-fadeIn">
-        <LoginForm onSwitchToRegister={handleSwitchToRegister} onSwitchToForgot={handleSwitchToForgot} onToast={setToastMsg} />
+        <LoginForm onSwitchToRegister={handleSwitchToRegister} onToast={setToastMsg} />
       </div>
     );
   }
@@ -95,13 +94,6 @@ export const LoginScreenBody: React.FC<LoginScreenBodyProps> = ({
     );
   }
 
-  if (step === 'forgot') {
-    return (
-      <div className="p-4 flex flex-col gap-5 flex-1 max-w-sm mx-auto w-full justify-center">
-        <ForgotPasswordForm onSwitchToLogin={handleSwitchToLogin} onToast={(msg) => setToastMsg(msg)} />
-      </div>
-    );
-  }
 
   return null;
 };

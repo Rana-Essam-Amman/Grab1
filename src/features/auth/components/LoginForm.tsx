@@ -8,13 +8,13 @@ import { LoginHeader } from './LoginHeader';
 
 export interface LoginFormProps {
   onSwitchToRegister: () => void;
-  onSwitchToForgot: () => void;
+
   onToast: (msg: string) => void;
 }
 
 export const LoginForm: React.FC<LoginFormProps> = ({
   onSwitchToRegister,
-  onSwitchToForgot,
+
   onToast,
 }) => {
   const {
@@ -67,13 +67,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
               <Lock1 size={14} variant="Linear" color="#E57E25" />
               {isArabic ? 'كلمة المرور *' : 'Password *'}
             </label>
-            <button
-              type="button"
-              onClick={onSwitchToForgot}
-              className="text-xs font-bold text-primary hover:underline cursor-pointer"
-            >
-              {isArabic ? 'نسيت كلمة المرور؟' : 'Forgot Password?'}
-            </button>
+            
           </div>
           <div className="relative">
             <Input

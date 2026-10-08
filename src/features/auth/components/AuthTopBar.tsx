@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight } from 'iconsax-react';
 import { useTranslation } from '@/shared/i18n';
 
 interface AuthTopBarProps {
-  step: 'gateway' | 'login' | 'reg-step1' | 'reg-step2' | 'forgot';
+  step: 'gateway' | 'login' | 'reg-step1' | 'reg-step2';
   onBack: () => void;
   isArabic: boolean;
   onToggleLanguage: () => void;
@@ -20,7 +20,7 @@ export const AuthTopBar: React.FC<AuthTopBarProps> = ({
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
 
   const getTitle = () => {
-    if (step === 'forgot') return isArabic ? 'إعادة تعيين كلمة المرور' : 'Reset Password';
+
     if (step.startsWith('reg')) return isArabic ? 'إنشاء حساب جديد' : 'New Registration';
     if (step === 'login') return isArabic ? 'تسجيل الدخول للمنصة' : 'Sign In Account';
     return isArabic ? 'بوابة الدخول والأمان' : 'Security Onboarding Gateway';

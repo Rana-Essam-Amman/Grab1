@@ -16,14 +16,14 @@ export { cleanAndVerifyPhone, getFlagEmoji };
 export type { PhoneVerificationResult };
 
 interface LoginScreenProps {
-  initialStep?: 'gateway' | 'reg-step1' | 'login' | 'forgot';
+  initialStep?: 'gateway' | 'reg-step1' | 'login';
 }
 
 export const LoginScreen: React.FC<LoginScreenProps> = ({ initialStep }) => {
   const { isArabic, setLocale, goBack, navigateTo, setActiveTab, setBrowseLocation } = useUI();
 
   // Unified authentication state machine
-  const [step, setStep] = useState<'gateway' | 'login' | 'reg-step1' | 'reg-step2' | 'forgot'>(() => {
+  const [step, setStep] = useState<'gateway' | 'login' | 'reg-step1' | 'reg-step2'>(() => {
     return initialStep || 'gateway';
   });
   const [guestCountrySelect, setGuestCountrySelect] = useState(false);
@@ -48,7 +48,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ initialStep }) => {
   // Handle local state step navigation back button
   const handleBack = useCallback(() => {
     setToastMsg('');
-    if (step === 'login' || step === 'reg-step1' || step === 'forgot') {
+    if (step === 'login' || step === 'reg-step1') {
       setStep('gateway');
     } else {
       goBack();
@@ -73,9 +73,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ initialStep }) => {
     setStep('reg-step1');
   }, []);
 
-  const handleSwitchToForgot = useCallback(() => {
-    setStep('forgot');
-  }, []);
+
 
   const handleGuestCountryClose = useCallback(() => setGuestCountrySelect(false), []);
   const handleGuestCountryOpen = useCallback(() => setGuestCountrySelect(true), []);
@@ -105,7 +103,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ initialStep }) => {
         secureToken={secureToken}
         handleSwitchToLogin={handleSwitchToLogin}
         handleSwitchToRegister={handleSwitchToRegister}
-        handleSwitchToForgot={handleSwitchToForgot}
+
         handleQuickDemoAuth={() => setDemoCountryPickerOpen(true)}
         handleSelectBrowseCountry={handleSelectBrowseCountry}
         handleGuestCountryClose={handleGuestCountryClose}
