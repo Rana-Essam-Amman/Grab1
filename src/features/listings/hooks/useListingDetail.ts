@@ -64,11 +64,11 @@ export function useListingDetail(): UseListingDetailReturn {
     } catch (error) { console.error('[Chat] Failed:', error); }
   }, [listing, authStatus, navigateTo, openConversation, setSelectedThreadId, user, activeCountry, isOwner]);
   const handleCall = useCallback(() => {
-    if (!listing) return;
+    if (!listing?.sellerPhone) return;
     window.location.href = `tel:${derived.formattedPhone.dialNumber}`;
   }, [listing, derived.formattedPhone.dialNumber]);
   const handleWhatsApp = useCallback(() => {
-    if (!listing) return;
+    if (!listing?.sellerPhone) return;
     window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: derived.formattedPhone.dialNumber, listingTitle: listing.title }), '_blank');
   }, [listing, derived.formattedPhone.dialNumber]);
   const handleWhatsAppClick = useCallback(() => {

@@ -16,7 +16,9 @@ export interface ListingActionBarProps {
 export const ListingActionBar: React.FC<ListingActionBarProps> = React.memo((props) => {
   const { isArabic, onCall, onWhatsAppClick, onStartChat, hasPhone } = props;
   const { t } = useTranslation();
+
   const waDisabled = !hasPhone;
+  const callDisabled = !hasPhone;
 
   return (
     <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] p-3 bg-surface border-t border-border flex items-center gap-2.5 z-40 shadow-lg">
@@ -47,8 +49,13 @@ export const ListingActionBar: React.FC<ListingActionBarProps> = React.memo((pro
 
       <button
         onClick={onCall}
+        disabled={callDisabled}
         type="button"
-        className="flex-1 h-12 rounded-full bg-brand text-white flex items-center justify-center gap-2 font-bold text-sm shadow-sm hover:bg-brand-strong active:scale-[0.98] transition-all cursor-pointer"
+        className={`flex-1 h-12 rounded-full flex items-center justify-center gap-2 font-bold text-sm shadow-sm transition-all ${
+          callDisabled
+            ? 'bg-border text-ink-muted cursor-not-allowed'
+            : 'bg-brand text-white hover:bg-brand-strong active:scale-[0.98] cursor-pointer'
+        }`}
         aria-label={isArabic ? 'اتصال' : 'Call'}
       >
         <Call size={18} variant="Bold" />
