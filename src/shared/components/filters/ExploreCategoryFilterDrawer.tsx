@@ -80,6 +80,8 @@ export const ExploreCategoryFilterDrawer: React.FC<ExploreCategoryFilterDrawerPr
                       alt={cat.nameEn}
                       className="w-10 h-10 rounded-full object-cover shrink-0"
                       onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><rect width="40" height="40" fill="%23f2eee3"/><text x="20" y="25" font-size="16" text-anchor="middle">🏷️</text></svg>'; }}
+                      loading="lazy"
+                      decoding="async"
                     />
                   )}
                 </button>

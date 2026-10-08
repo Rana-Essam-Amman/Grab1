@@ -75,7 +75,7 @@ export const CategoryPickScreen: React.FC = () => {
                   className="p-3.5 flex flex-col items-center text-center gap-2.5 transition-all group cursor-pointer"
                 >
                   <div className="w-16 h-16 rounded-2xl bg-background overflow-hidden border border-border group-hover:scale-105 transition-transform flex items-center justify-center">
-                    <img src={cat.asset} alt={cat.nameEn} className="w-full h-full object-cover" />
+                    <img src={cat.asset} alt={cat.nameEn} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                   </div>
                   <span className="text-xs font-bold text-ink group-hover:text-primary line-clamp-1">
                     {isArabic ? cat.nameAr : cat.nameEn}

@@ -82,11 +82,7 @@ export const CountrySheet: React.FC = () => {
                 }`}
               >
                 <span className="flex items-center gap-3 min-w-0">
-                  <img
-                    src={FLAG_SRC[code]}
-                    alt=""
-                    className="w-8 h-8 rounded-full object-cover shrink-0"
-                  />
+                  <img src={FLAG_SRC[code]} alt="" loading="lazy" decoding="async" className="w-8 h-8 rounded-full object-cover shrink-0" />
                   <span className="flex flex-col items-start min-w-0">
                     <span className="text-sm font-bold truncate">
                       {isArabic ? market.nameAr : market.nameEn}
