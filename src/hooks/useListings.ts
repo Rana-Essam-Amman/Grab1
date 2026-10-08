@@ -8,7 +8,6 @@ export const useListings = () => {
   const uiStore = useUIStore();
 
   const wishlistListings = store.listings.filter((l) => store.wishlist.includes(l.id));
-
   const isWishlisted = (id: string) => store.wishlist.includes(id);
 
   const getListing = (id: string) => {
@@ -53,6 +52,9 @@ export const useListings = () => {
     userListings,
     setIsQuotaExhausted: store.setIsQuotaExhausted,
     validateAdQuotaAvailability: store.validateAdQuotaAvailability,
+    hasMore: store.hasMore,
+    isLoadingMore: store.isLoadingMore,
+    loadMore: store.loadMore,
   };
 };
 

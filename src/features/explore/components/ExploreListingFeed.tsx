@@ -4,6 +4,7 @@ import { useUI } from '@/hooks/useUI';
 import { Listing } from '@/types';
 import { ListingCard } from '@/shared/components';
 import { ExploreEmptyFeedState } from './ExploreEmptyFeedState';
+import { FeedLoadMoreSentinel } from './FeedLoadMoreSentinel';
 
 interface ExploreListingFeedProps {
   listings: Listing[];
@@ -13,11 +14,17 @@ interface ExploreListingFeedProps {
   readonly activeSearchText?: string;
   readonly onPostWithSearch?: () => void;
   readonly onExpandSearch?: () => void;
+  readonly hasMore?: boolean;
+  readonly isLoadingMore?: boolean;
+  readonly onLoadMore?: () => void;
 }
 
 export const ExploreListingFeed: React.FC<ExploreListingFeedProps> = ({
   listings, feedLayout, hasActiveFilters = false, onResetFilters = () => {},
   activeSearchText, onPostWithSearch, onExpandSearch,
+  hasMore = false,
+  isLoadingMore = false,
+  onLoadMore = () => {},
 }) => {
   const { isArabic } = useUI();
   const parentRef = useRef<HTMLDivElement | null>(null);
@@ -25,6 +32,7 @@ export const ExploreListingFeed: React.FC<ExploreListingFeedProps> = ({
 
   const rowCount = useMemo(() => (feedLayout === 'grid' ? Math.ceil(listings.length / 2) : listings.length), [listings.length, feedLayout]);
   const estimatedRowHeight = useMemo(() => (feedLayout === 'grid' ? 290 : 130), [feedLayout]);
+
   const getScrollElement = useCallback(() => parentRef.current, []);
   const estimateSize = useCallback(() => estimatedRowHeight, [estimatedRowHeight]);
 
@@ -47,8 +55,13 @@ export const ExploreListingFeed: React.FC<ExploreListingFeedProps> = ({
 
   if (!isVirtualized) {
     return (
-      <div className={feedLayout === 'grid' ? 'grid grid-cols-2 gap-3.5' : 'flex flex-col gap-3.5'}>
-        {listings.map((l) => <ListingCard key={l.id} listing={l} layout={feedLayout === 'list' ? 'horizontal' : 'grid'} />)}
+      <div className="flex flex-col gap-3.5">
+        <div className={feedLayout === 'grid' ? 'grid grid-cols-2 gap-3.5' : 'flex flex-col gap-3.5'}>
+          {listings.map((l) => (
+            <ListingCard key={l.id} listing={l} layout={feedLayout === 'list' ? 'horizontal' : 'grid'} />
+          ))}
+        </div>
+        <FeedLoadMoreSentinel hasMore={hasMore} isLoadingMore={isLoadingMore} onLoadMore={onLoadMore} />
       </div>
     );
   }
@@ -75,6 +88,7 @@ export const ExploreListingFeed: React.FC<ExploreListingFeedProps> = ({
           ) : null;
         })}
       </div>
+      <FeedLoadMoreSentinel hasMore={hasMore} isLoadingMore={isLoadingMore} onLoadMore={onLoadMore} />
     </div>
   );
 };

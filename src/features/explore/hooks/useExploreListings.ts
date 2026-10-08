@@ -14,10 +14,10 @@ export function useExploreListings(): UseExploreListingsReturn {
     browseCountryCode, browseCityAr, browseCityEn, minPriceFilter, setMinPriceFilter,
     maxPriceFilter, setMaxPriceFilter, neighborhoodFilter, setNeighborhoodFilter,
   } = useUI();
-  const { listings } = useListings();
-
+  const { listings, hasMore, isLoadingMore, loadMore } = useListings();
   const [userFilterMode, setUserFilterMode] = useState<'city' | 'all' | null>(null);
   const { feedLayout, setFeedLayout: setFeedLayoutStore } = useAuth();
+
   const setFeedLayout = useCallback<Dispatch<SetStateAction<'list' | 'grid'>>>(
     (action) => {
       const next = typeof action === 'function' ? action(feedLayout) : action;
@@ -25,8 +25,8 @@ export function useExploreListings(): UseExploreListingsReturn {
     },
     [feedLayout, setFeedLayoutStore]
   );
-  const [voidedNotice, setVoidedNotice] = useState<string | null>(null);
 
+  const [voidedNotice, setVoidedNotice] = useState<string | null>(null);
   const activeSearchText = searchQuery;
   const setActiveSearchText = setSearchQuery;
   const activeNeighborhood = neighborhoodFilter;
@@ -59,9 +59,17 @@ export function useExploreListings(): UseExploreListingsReturn {
     });
   }, [marketListings, browseCountryCode, activeSearchText, searchQuery, categoryFilter, minPriceFilter, maxPriceFilter, activeNeighborhood, browseCityAr, browseCityEn, filterMode]);
 
+  const handleLoadMore = useCallback(() => {
+    if (!hasMore || isLoadingMore) return;
+    void loadMore();
+  }, [hasMore, isLoadingMore, loadMore]);
+
   return {
     allListings: listings, filterMode, setFilterMode, feedLayout, setFeedLayout, minPriceFilter, setMinPriceFilter,
     maxPriceFilter, setMaxPriceFilter, activeNeighborhood, setActiveNeighborhood, activeSearchText, setActiveSearchText,
     voidedNotice, setVoidedNotice, displayListings, handleResetAllFilters, isArabic, browseCountryCode, browseCityAr, browseCityEn,
+    hasMore,
+    isLoadingMore,
+    onLoadMore: handleLoadMore,
   };
 }
