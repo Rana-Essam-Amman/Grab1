@@ -5,6 +5,7 @@ import { Button } from '@/shared/ui/Button';
 import { EmptyState } from '@/shared/ui/EmptyState';
 import { Icon } from '@iconify/react';
 import { ListingActionsBar } from './ListingActionsBar';
+import { PaidUntilBadge } from './PaidUntilBadge';
 
 interface MyAdsContentProps {
   readonly isArabic: boolean;
@@ -21,8 +22,17 @@ interface MyAdsContentProps {
 }
 
 export const MyAdsContent: React.FC<MyAdsContentProps> = ({
-  isArabic, activeSubTab, sortedMyAds, wishlistListings, bumpCounts,
-  onNewAd, onEdit, onMarkSold, onDelete, onBump, onPromote,
+  isArabic,
+  activeSubTab,
+  sortedMyAds,
+  wishlistListings,
+  bumpCounts,
+  onNewAd,
+  onEdit,
+  onMarkSold,
+  onDelete,
+  onBump,
+  onPromote,
 }) => {
   if (activeSubTab === 'my') {
     if (sortedMyAds.length === 0) {
@@ -30,17 +40,40 @@ export const MyAdsContent: React.FC<MyAdsContentProps> = ({
         <EmptyState
           icon={<Icon icon="fluent-emoji:clipboard" width={48} height={48} />}
           title={isArabic ? 'لم تقم بنشر أي إعلان بعد' : 'No active listings yet'}
-          description={isArabic ? 'ابدأ بيع وتداول سلعك اليوم بسهولة وبسرعة!' : 'Start selling and trading your items today easily and quickly!'}
-          action={<Button variant="primary" size="md" onClick={onNewAd} className="rounded-full font-bold shadow-md">{isArabic ? 'أضف أول إعلان لك الآن' : 'Post your first ad now'}</Button>}
+          description={
+            isArabic
+              ? 'ابدأ بيع وتداول سلعك اليوم بسهولة وبسرعة!'
+              : 'Start selling and trading your items today easily and quickly!'
+          }
+          action={
+            <Button
+              variant="primary"
+              size="md"
+              onClick={onNewAd}
+              className="rounded-full font-bold shadow-md"
+            >
+              {isArabic ? 'أضف أول إعلان لك الآن' : 'Post your first ad now'}
+            </Button>
+          }
           className="py-16 bg-surface border border-border rounded-2xl"
         />
       );
     }
+
     return (
       <div className="flex flex-col gap-3">
         {sortedMyAds.map((listing) => (
-          <div key={listing.id} className="rounded-2xl border border-line bg-surface overflow-hidden">
+          <div
+            key={listing.id}
+            className="rounded-2xl border border-line bg-surface overflow-hidden"
+          >
             <ListingCard listing={listing} layout="horizontal" />
+            {listing.isPremium && listing.premiumExpiresAt && (
+              <PaidUntilBadge
+                expiresAt={listing.premiumExpiresAt}
+                isArabic={isArabic}
+              />
+            )}
             <ListingActionsBar
               isArabic={isArabic}
               status={listing.status}
@@ -62,7 +95,11 @@ export const MyAdsContent: React.FC<MyAdsContentProps> = ({
       <EmptyState
         icon={<Icon icon="fluent-emoji:red-heart" width={48} height={48} />}
         title={isArabic ? 'قائمة المفضلة فارغة' : 'Your favorites list is empty'}
-        description={isArabic ? 'اضغط على رمز الإشارة المرجعية والقلب في أي إعلان لحفظه والرجوع إليه بسهولة لاحقاً.' : 'Tap the bookmark heart on any listing to save it for quick reference.'}
+        description={
+          isArabic
+            ? 'اضغط على رمز الإشارة المرجعية والقلب في أي إعلان لحفظه والرجوع إليه بسهولة لاحقاً.'
+            : 'Tap the bookmark heart on any listing to save it for quick reference.'
+        }
         className="py-16 bg-surface border border-border rounded-2xl"
       />
     );
