@@ -88,7 +88,7 @@ export const SubCategoriesScreen: React.FC = () => {
           <button type="button" onClick={goBack} aria-label="Back" className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 flex items-center justify-center cursor-pointer active:scale-95">
             <BackIcon size={18} variant="Linear" color="#FFFFFF" />
           </button>
-          <div className="flex flex-col">
+          <div className="flex flex-col flex-1 min-w-0">
             <h1 className="text-base sm:text-lg font-bold text-white font-cairo leading-snug">
               {isArabic ? parentCategory.nameAr : parentCategory.nameEn}
             </h1>

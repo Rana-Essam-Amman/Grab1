@@ -6,6 +6,7 @@ import React, { useState, useCallback } from 'react';
 import { Listing } from '@/types';
 import { ArrowLeft, ArrowRight, Key } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
+import { BrandMark } from '@/shared/components/BrandMark';
 
 export const ConfirmScreen: React.FC = () => {
   const { isArabic, goBack, navigateTo, browseCountryCode, activeCurrency, setActiveTab } = useUI();
@@ -78,9 +79,10 @@ export const ConfirmScreen: React.FC = () => {
         <Button variant="ghost" size="icon" onClick={goBack}>
           <BackIcon size={18} variant="Linear" color="currentColor" className="text-ink" />
         </Button>
-        <h1 className="text-base font-bold text-ink">
+        <h1 className="text-base font-bold text-ink flex-1">
           {isArabic ? 'تأكيد رمز التحقق' : 'Confirm Verification Code'}
         </h1>
+        <BrandMark isArabic={isArabic} tone="dark" />
       </div>
 
       <form onSubmit={handleVerify} className="p-4 flex flex-col gap-5 flex-1 items-center justify-center max-w-sm mx-auto text-center">

@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, Global, Location, ArrowRight2, ArrowLeft2 } from
 import { SettingsProfileCard } from '../components/SettingsProfileCard';
 import { SettingsLegalSection } from '../components/SettingsLegalSection';
 import { SettingsThemeSection } from '../components/SettingsThemeSection';
+import { BrandMark } from '@/shared/components/BrandMark';
 import { EditNicknameModal } from '../components/EditNicknameModal';
 import { ChangeAccountMarketModal } from '../components/ChangeAccountMarketModal';
 import { MARKETS } from '@/data/markets/config';
@@ -41,7 +42,8 @@ export const SettingsScreen: React.FC = () => {
         <Button variant="ghost" size="icon" onClick={goBack} aria-label="Back" className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 flex items-center justify-center p-0">
           <BackIcon size={18} variant="Linear" color="#FFFFFF" />
         </Button>
-        <h1 className="text-lg font-bold text-white">{isArabic ? 'الإعدادات والحساب' : 'Settings & Account'}</h1>
+        <h1 className="text-lg font-bold text-white flex-1">{isArabic ? 'الإعدادات والحساب' : 'Settings & Account'}</h1>
+        <BrandMark isArabic={isArabic} />
       </div>
       <div className="p-4 flex flex-col gap-4">
         <SettingsProfileCard registered={registered} user={user} isArabic={isArabic} nickname={user?.nickname} onEditNickname={handleOpenNickname} handleLoginCta={handleLoginCta} handleLogout={handleLogout} />

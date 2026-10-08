@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from '@/shared/ui/Button';
 import { ArrowLeft, ArrowRight, MagicStar } from 'iconsax-react';
 import { usePostWizard } from '../hooks/usePostWizard';
+import { BrandMark } from '@/shared/components/BrandMark';
 
 interface Props {
   isArabic: boolean;
@@ -50,6 +51,7 @@ export const AiReviewHeader: React.FC<Props> = ({ isArabic, onBack }) => {
           {isArabic ? 'راجع التفاصيل وانشر' : 'Check details and publish'}
         </p>
       </div>
+      <BrandMark isArabic={isArabic} />
     </div>
   );
 };

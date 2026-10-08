@@ -5,6 +5,7 @@ import { Button } from '@/shared/ui/Button';
 import { Input } from '@/shared/ui/Input';
 import { ArrowLeft, ArrowRight, Lock1, TickCircle } from 'iconsax-react';
 import { AvatarUploader } from '../components/AvatarUploader';
+import { BrandMark } from '@/shared/components/BrandMark';
 
 export const EditProfileScreen: React.FC = () => {
   const { isArabic, goBack } = useUI();
@@ -43,7 +44,8 @@ export const EditProfileScreen: React.FC = () => {
         <button onClick={goBack} aria-label="Back" className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 flex items-center justify-center cursor-pointer">
           <BackIcon size={18} variant="Linear" color="#FFFFFF" />
         </button>
-        <h1 className="text-lg font-bold text-white">{isArabic ? 'تعديل الملف الشخصي' : 'Edit Profile'}</h1>
+        <h1 className="text-lg font-bold text-white flex-1">{isArabic ? 'تعديل الملف الشخصي' : 'Edit Profile'}</h1>
+        <BrandMark isArabic={isArabic} />
       </div>
 
       <div className="p-4 flex flex-col gap-6 max-w-[440px] mx-auto w-full">
