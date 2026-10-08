@@ -29,7 +29,7 @@ export const ExploreCategoryGrid: React.FC<ExploreCategoryGridProps> = React.mem
         {FEATURED_SLUGS.map((slug) => categoryBySlug(slug)).map((cat) => (
           <button key={cat.slug} onClick={() => onCategoryClick(cat.slug)} className="border-none bg-transparent hover:scale-105 transition-all outline-none cursor-pointer w-[85px] flex flex-col items-center mx-auto">
             <div className="w-16 h-16 rounded-full overflow-hidden bg-transparent flex items-center justify-center">
-              <img src={cat.asset} alt={isArabic ? cat.nameAr : cat.nameEn} className="w-full h-full object-cover" />
+              <img src={cat.asset} alt={isArabic ? cat.nameAr : cat.nameEn} className="w-full h-full object-cover" loading="lazy" decoding="async" />
             </div>
             <span className="text-ink font-cairo text-[11px] font-semibold text-center mt-0.5">{isArabic ? cat.nameAr : cat.nameEn}</span>
           </button>

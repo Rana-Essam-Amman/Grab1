@@ -70,6 +70,8 @@ export const CategoriesScreen: React.FC = () => {
                   alt={cat.nameEn}
                   className="w-full h-full object-cover"
                   onError={handleImageError}
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
               <div className="flex flex-col items-center gap-0.5 min-w-0 w-full">
