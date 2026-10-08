@@ -5,6 +5,7 @@ import { ListingAntiFraudBanner } from '../components/ListingAntiFraudBanner';
 import { ListingImageSlider } from '../components/ListingImageSlider';
 import { ListingMainInfo } from '../components/ListingMainInfo';
 import { ListingSellerCard } from '../components/ListingSellerCard';
+import { ListingRateSellerButton } from '../components/ListingRateSellerButton';
 import { ListingAttributesCard } from '../components/ListingAttributesCard';
 import { ListingDescriptionCard } from '../components/ListingDescriptionCard';
 import { ListingLocationCard } from '../components/ListingLocationCard';
@@ -60,6 +61,13 @@ export const ListingDetailScreen: React.FC = () => {
             sellerPhone={detail.listing.sellerPhone || ''}
             isArabic={detail.isArabic}
             onClick={detail.handleSelectSeller}
+          />
+          <ListingRateSellerButton
+            listingId={detail.listing.id}
+            sellerName={detail.listing.sellerName || ''}
+            sellerUserId={detail.listing.userId}
+            sellerPhone={detail.listing.sellerPhone}
+            isArabic={detail.isArabic}
           />
 
           <ListingAttributesCard attributes={detail.listing.attributes || []} isArabic={detail.isArabic} />
