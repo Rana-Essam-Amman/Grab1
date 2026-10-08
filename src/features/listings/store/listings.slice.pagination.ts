@@ -7,12 +7,19 @@ import { seedListings } from '@/data/seedListings';
 type SetFn = (fn: (state: ListingsState) => void) => void;
 type GetFn = () => ListingsState;
 
+const initialSearchQuery: string | null = null;
+
 export const createPaginationActions = (set: SetFn, get: GetFn) => ({
+  activeSearchQuery: initialSearchQuery,
   syncFromSupabase: async (market?: string) => {
     const targetMarket = market ?? get().activeMarket ?? undefined;
     set((s) => { s.isSyncing = true; });
     try {
-      const result = await performSupabaseSync({ market: targetMarket, offset: 0, limit: LISTINGS_PAGE_SIZE });
+      const result = await performSupabaseSync({
+        market: targetMarket,
+        offset: 0,
+        limit: LISTINGS_PAGE_SIZE,
+      });
       set((s) => {
         if (result.listings) {
           s.listings = [...result.listings, ...seedListings];
@@ -23,7 +30,9 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
           saveListingsToStorage(s.listings);
         }
       });
-    } finally { set((s) => { s.isSyncing = false; }); }
+    } finally {
+      set((s) => { s.isSyncing = false; });
+    }
   },
 
   loadMore: async () => {
@@ -33,8 +42,17 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
     set((s) => { s.isLoadingMore = true; });
     try {
       const result = state.activeSearchQuery
-        ? await performSupabaseSearch({ query: state.activeSearchQuery, market: state.activeMarket ?? undefined, offset: nextOffset, limit: LISTINGS_PAGE_SIZE })
-        : await performSupabaseSync({ market: state.activeMarket ?? undefined, offset: nextOffset, limit: LISTINGS_PAGE_SIZE });
+        ? await performSupabaseSearch({
+            query: state.activeSearchQuery,
+            market: state.activeMarket ?? undefined,
+            offset: nextOffset,
+            limit: LISTINGS_PAGE_SIZE,
+          })
+        : await performSupabaseSync({
+            market: state.activeMarket ?? undefined,
+            offset: nextOffset,
+            limit: LISTINGS_PAGE_SIZE,
+          });
       set((s) => {
         if (result.listings && result.listings.length > 0) {
           const existingIds = new Set(s.listings.map((l) => l.id));
@@ -42,17 +60,22 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
           s.listings = [...s.listings, ...fresh];
           s.page = s.page + 1;
           s.hasMore = result.listings.length === LISTINGS_PAGE_SIZE;
-          if (!state.activeSearchQuery) saveListingsToStorage(s.listings);
-        } else { s.hasMore = false; }
+          // Persist only non-search results (search is transient).
+          if (!s.activeSearchQuery) saveListingsToStorage(s.listings);
+        } else {
+          s.hasMore = false;
+        }
       });
-    } finally { set((s) => { s.isLoadingMore = false; }); }
+    } finally {
+      set((s) => { s.isLoadingMore = false; });
+    }
   },
-
   searchFromSupabase: async (query: string, market?: string) => {
     const trimmed = query.trim();
     set((s) => { s.isSyncing = true; });
     try {
       if (trimmed.length === 0) {
+        // Empty query → fall back to normal market sync.
         const targetMarket = market ?? get().activeMarket ?? undefined;
         const result = await performSupabaseSync({ market: targetMarket, offset: 0, limit: LISTINGS_PAGE_SIZE });
         set((s) => {
@@ -71,13 +94,16 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
       const result = await performSupabaseSearch({ query: trimmed, market: targetMarket, offset: 0, limit: LISTINGS_PAGE_SIZE });
       set((s) => {
         if (result.listings) {
-          s.listings = result.listings;
+          s.listings = result.listings; // search results — no seed merge
           s.activeMarket = targetMarket ?? null;
           s.activeSearchQuery = trimmed;
           s.page = 0;
           s.hasMore = result.listings.length === LISTINGS_PAGE_SIZE;
+          // Do NOT persist search results to localStorage.
         }
       });
-    } finally { set((s) => { s.isSyncing = false; }); }
+    } finally {
+      set((s) => { s.isSyncing = false; });
+    }
   },
 });
