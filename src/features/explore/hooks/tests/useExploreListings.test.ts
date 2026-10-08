@@ -26,7 +26,13 @@ describe('useExploreListings', () => {
     expect(result.current.displayListings).toEqual([]);
   });
 
-  it('filters by searchQuery across title and specs', () => {
+  it('does NOT filter displayListings by searchQuery (server owns FTS)', () => {
+    // Text search now runs on the server via search_listings RPC
+    // (see useSupabaseListingsSync + Wave 3 PRs 3A/3B-1).
+    // useExploreListings only applies category / price / neighborhood /
+    // city filters client-side. Setting searchQuery must NOT change the
+    // client-side result — that contract is verified by the sync hook
+    // and Supabase FTS integration tests.
     useListingsStore.setState({
       listings: [
         makeListing('a', { title: 'Toyota Camry 2022' }),
@@ -35,8 +41,8 @@ describe('useExploreListings', () => {
     });
     useUIStore.setState({ searchQuery: 'camry' });
     const { result } = renderHook(() => useExploreListings());
-    expect(result.current.displayListings.length).toBe(1);
-    expect(result.current.displayListings[0].id).toBe('a');
+    // All market-scoped listings are returned; no text filtering applied.
+    expect(result.current.displayListings.length).toBe(2);
   });
 
   it('respects market isolation (only current countryCode)', () => {
