@@ -95,6 +95,7 @@ export const ListingDetailScreen: React.FC = () => {
           onStartChat={detail.handleStartChat}
           isCountryMismatch={detail.isCountryMismatch}
           isAuthenticated={detail.isAuthenticated}
+          isOwner={detail.isOwner}
           hasPhone={Boolean(detail.listing.sellerPhone)}
         />
 
