@@ -21,6 +21,7 @@ export function getWhatsAppUrl(p: {
   countryCode: string;
   dialNumber: string;
   listingTitle: string;
+  isArabic: boolean;
   customMessage?: string;
 }): string {
   const pfx = PREFIXES[p.countryCode] || '962';
@@ -32,9 +33,10 @@ export function getWhatsAppUrl(p: {
     ? withoutLeadingZero
     : `${pfx}${withoutLeadingZero}`;
 
-  const message = p.customMessage
-    ? p.customMessage
-    : `مرحباً، بخصوص إعلانك "${p.listingTitle}" على تطبيق FOX Marketplace.`;
+  const fallback = p.isArabic
+    ? `مرحباً، بخصوص إعلانك "${p.listingTitle}" على تطبيق FOX Marketplace.`
+    : `Hi, regarding your listing "${p.listingTitle}" on FOX Marketplace.`;
+  const message = p.customMessage ? p.customMessage : fallback;
 
   return `https://wa.me/${fullNumber}?text=${encodeURIComponent(message)}`;
 }
