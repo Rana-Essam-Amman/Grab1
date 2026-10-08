@@ -75,10 +75,13 @@ export function screenToPath(screen: ScreenType, params?: RouteParams): string {
   if (screen === 'seller-profile') {
     return params?.sellerPhone ? `/seller/${encodeURIComponent(params.sellerPhone)}` : '/seller';
   }
+  if (screen === 'edit-post') {
+    return params?.listingId
+      ? `/post-ad/edit/${encodeURIComponent(params.listingId)}`
+      : '/post-ad/edit';
+  }
   if (screen === 'thread') {
-    return params?.threadId
-      ? `/messages/${encodeURIComponent(params.threadId)}`
-      : '/messages/thread';
+    return params?.threadId ? `/messages/${encodeURIComponent(params.threadId)}` : '/messages/thread';
   }
   return STATIC_SCREEN_TO_PATH[screen] ?? '/';
 }
@@ -106,21 +109,11 @@ export function resolvePath(pathname: string): PathMatch | null {
 
   // Dynamic: /listing/:id
   const listingMatch = clean.match(/^\/listing\/([^/]+)$/);
-  if (listingMatch) {
-    return {
-      screen: 'listing-detail',
-      params: { listingId: decodeURIComponent(listingMatch[1]) },
-    };
-  }
+  if (listingMatch) return { screen: 'listing-detail', params: { listingId: decodeURIComponent(listingMatch[1]) } };
 
   // Dynamic: /seller/:phone
   const sellerMatch = clean.match(/^\/seller\/([^/]+)$/);
-  if (sellerMatch) {
-    return {
-      screen: 'seller-profile',
-      params: { sellerPhone: decodeURIComponent(sellerMatch[1]) },
-    };
-  }
+  if (sellerMatch) return { screen: 'seller-profile', params: { sellerPhone: decodeURIComponent(sellerMatch[1]) } };
 
   // Legacy base paths without id (kept for backward-compat round-trip tests)
   if (clean === '/listing') return { screen: 'listing-detail', params: {} };
@@ -129,10 +122,14 @@ export function resolvePath(pathname: string): PathMatch | null {
 
   // Dynamic: /messages/:id (must come AFTER the /messages/thread check)
   const threadMatch = clean.match(/^\/messages\/([^/]+)$/);
-  if (threadMatch) {
+  if (threadMatch) return { screen: 'thread', params: { threadId: decodeURIComponent(threadMatch[1]) } };
+
+  // Dynamic: /post-ad/edit/:id (legacy /post-ad/edit remains static)
+  const editMatch = clean.match(/^\/post-ad\/edit\/([^/]+)$/);
+  if (editMatch) {
     return {
-      screen: 'thread',
-      params: { threadId: decodeURIComponent(threadMatch[1]) },
+      screen: 'edit-post',
+      params: { listingId: decodeURIComponent(editMatch[1]) },
     };
   }
 
