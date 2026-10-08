@@ -38,29 +38,21 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
       <div className="w-32 aspect-square rounded-xl overflow-hidden bg-black relative shrink-0">
         <img
           src={toOptimizedImageUrl(listing.imageUrl, { width: 320, quality: 75 })}
-          alt=""
-          aria-hidden="true"
-          loading="lazy"
-          decoding="async"
-          className="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-60 pointer-events-none"
-        />
-        <img
-          src={toOptimizedImageUrl(listing.imageUrl, { width: 320, quality: 75 })}
           alt={listing.title}
           loading="lazy"
           decoding="async"
-          className="relative w-full h-full object-contain z-10"
+          className="w-full h-full object-cover"
           onError={handleImageError}
         />
         {listing.isPremium && (
-          <div className="absolute top-1.5 start-1.5 z-20">
+          <div className="absolute top-1.5 start-1.5 z-10">
             <Badge variant="warning" size="sm" className="flex items-center gap-1">
               <span>{isArabic ? 'مُميز' : 'Featured'}</span>
               <Crown size={12} variant="Bold" color="currentColor" className="text-accent" />
             </Badge>
           </div>
         )}
-        <div className="absolute top-1.5 end-1.5 z-20">
+        <div className="absolute top-1.5 end-1.5">
           <BookmarkHeartButton listingId={listing.id} size="sm" />
         </div>
       </div>
