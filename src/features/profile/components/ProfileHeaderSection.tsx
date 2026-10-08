@@ -4,6 +4,7 @@ import { Icon } from '@iconify/react';
 import { Button } from '@/shared/ui/Button';
 import { Avatar } from '@/shared/ui/Avatar';
 import { getUserAvatar } from '@/shared/lib/userDisplay';
+import { BrandMark } from '@/shared/components/BrandMark';
 
 interface ProfileHeaderSectionProps {
   isArabic: boolean;
@@ -37,9 +38,10 @@ export const ProfileHeaderSection: React.FC<ProfileHeaderSectionProps> = ({
         >
           {isArabic ? <ArrowRight size={18} variant="Linear" color="#FFFFFF" /> : <ArrowLeft size={18} variant="Linear" color="#FFFFFF" />}
         </Button>
-        <h1 className="text-lg font-bold text-white">
+        <h1 className="text-lg font-bold text-white flex-1">
           {isArabic ? 'الملف الشخصي' : 'My Profile'}
         </h1>
+        <BrandMark isArabic={isArabic} />
       </div>
 
       {/* Profile Header Card */}
