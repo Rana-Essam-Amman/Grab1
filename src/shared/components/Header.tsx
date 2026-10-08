@@ -8,6 +8,7 @@ import { Avatar } from '@/shared/ui/Avatar';
 import { HeaderDropdownMenu } from './HeaderDropdownMenu';
 import { CountryFlag } from './CountryFlag';
 import { getUserAvatar } from '@/shared/lib/userDisplay';
+import { NotificationBellButton } from './NotificationBellButton';
 
 const DEFAULT_CAPITALS: Record<string, { en: string; ar: string; cityEn?: string; cityAr?: string }> = {
   JO: { en: 'Amman', ar: 'عمّان', cityEn: 'Amman', cityAr: 'عمّان' },
@@ -113,7 +114,7 @@ export const Header: React.FC = () => {
           </div>
         </div>
 
-        <div className="w-10 h-10 shrink-0" aria-hidden="true" />
+        <NotificationBellButton isArabic={isArabic} onPress={handleNotificationsNav} />
 
         <CountryFlag code={countryCode} />
       </div>
