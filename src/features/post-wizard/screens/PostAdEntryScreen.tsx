@@ -86,17 +86,31 @@ export const PostAdEntryScreen: React.FC = () => {
           data-free-limit={freeLimit}
           className={
             freeRemaining > 0
-              ? 'w-full max-w-xs rounded-full px-4 py-2 text-center text-xs font-bold bg-brand/10 text-brand border border-brand/20'
-              : 'w-full max-w-xs rounded-full px-4 py-2 text-center text-xs font-bold bg-danger/10 text-danger border border-danger/20'
+              ? 'w-full max-w-sm rounded-2xl px-5 py-3.5 text-center bg-brand text-white shadow-lg shadow-brand/25'
+              : 'w-full max-w-sm rounded-2xl px-5 py-3.5 text-center bg-danger text-white shadow-lg shadow-danger/25'
           }
         >
-          {freeRemaining > 0
-            ? isArabic
-              ? `عندك ${freeRemaining} من ${freeLimit} إعلانات مجانية`
-              : `${freeRemaining} of ${freeLimit} free ads remaining`
-            : isArabic
-              ? 'استهلكت الإعلانات المجانية — الإعلان القادم مدفوع'
-              : 'Free ads used — next ad is paid'}
+          <div className="flex items-center justify-center gap-2">
+            <Icon
+              icon={freeRemaining > 0 ? 'fluent-emoji:sparkles' : 'fluent-emoji:warning'}
+              width={20}
+              height={20}
+            />
+            <span className="text-sm font-black tracking-wide" dir="auto">
+              {freeRemaining > 0
+                ? isArabic
+                  ? `عندك ${freeRemaining} من ${freeLimit} إعلانات مجانية`
+                  : `${freeRemaining} of ${freeLimit} free ads remaining`
+                : isArabic
+                  ? 'استهلكت الإعلانات المجانية'
+                  : 'Free ads used'}
+            </span>
+          </div>
+          {freeRemaining === 0 && (
+            <div className="text-[11px] font-medium opacity-90 mt-0.5">
+              {isArabic ? 'الإعلان القادم مدفوع' : 'Next ad is paid'}
+            </div>
+          )}
         </div>
         <div className="w-24 h-24 rounded-full bg-brand/10 flex items-center justify-center mb-4">
           <Icon icon="fluent-emoji:rocket" width={48} height={48} />
