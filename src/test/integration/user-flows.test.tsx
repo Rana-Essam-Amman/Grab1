@@ -246,7 +246,7 @@ describe('Real User Flow Integration Test Suite (Sprint T3 Ultra)', () => {
   it('Flow 10: Quota limits are enforced based on category and country matrix', () => {
     const userId = 'quota-tester';
 
-    // Add 2 motors listings (the free limit for motors is 2)
+    // Add 3 motors listings (the free limit for motors is 3)
     useListingsStore.getState().addListing(
       createMockListing({ id: 'm1', sellerPhone: userId, countryCode: 'JO', categorySlug: 'motors' }),
       'JO'
@@ -255,12 +255,16 @@ describe('Real User Flow Integration Test Suite (Sprint T3 Ultra)', () => {
       createMockListing({ id: 'm2', sellerPhone: userId, countryCode: 'JO', categorySlug: 'motors' }),
       'JO'
     );
+    useListingsStore.getState().addListing(
+      createMockListing({ id: 'm3', sellerPhone: userId, countryCode: 'JO', categorySlug: 'motors' }),
+      'JO'
+    );
 
     const isAvailable = useListingsStore.getState().validateAdQuotaAvailability('motors', userId, 'JO', false);
     expect(isAvailable).toBe(false);
     expect(useListingsStore.getState().isQuotaExhausted).toBe(true);
 
-    // Electronics category has limit of 5 -> still available
+    // Electronics category has limit of 10 -> still available
     const isElecAvailable = useListingsStore.getState().validateAdQuotaAvailability('electronics', userId, 'JO', false);
     expect(isElecAvailable).toBe(true);
   });
