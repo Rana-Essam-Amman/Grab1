@@ -29,6 +29,33 @@ export async function fetchListings(params: FetchListingsParams = {}): Promise<{
   }
 }
 
+export interface SearchListingsParams {
+  readonly query: string;
+  readonly market?: string;
+  readonly offset?: number;
+  readonly limit?: number;
+}
+
+export async function searchListings(
+  params: SearchListingsParams
+): Promise<{ data: Listing[] | null; error: string | null }> {
+  try {
+    const { query, market, offset = 0, limit = LISTINGS_PAGE_SIZE } = params;
+    const trimmed = query.trim();
+    if (trimmed.length === 0) return { data: [], error: null };
+    const { data, error } = await supabase.rpc('search_listings', {
+      p_query: trimmed,
+      p_market: market ?? null,
+      p_limit: limit,
+      p_offset: offset,
+    });
+    if (error) return { data: null, error: error.message };
+    return { data: (data || []).map(rowToListing), error: null };
+  } catch (err) {
+    return { data: null, error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
 export interface CreateListingInput {
   readonly title: string;
   readonly description: string;
@@ -45,9 +72,7 @@ export interface CreateListingInput {
   readonly sellerPhone?: string;
 }
 
-export async function createListing(
-  input: CreateListingInput
-): Promise<{ data: Listing | null; error: string | null }> {
+export async function createListing(input: CreateListingInput): Promise<{ data: Listing | null; error: string | null }> {
   try {
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user) return { data: null, error: 'Not authenticated' };
@@ -97,10 +122,7 @@ export async function deleteListing(id: string): Promise<{ error: string | null 
   }
 }
 
-export async function updateListingStatus(
-  id: string,
-  status: 'active' | 'sold' | 'archived'
-): Promise<{ error: string | null }> {
+export async function updateListingStatus(id: string, status: 'active' | 'sold' | 'archived'): Promise<{ error: string | null }> {
   try {
     const { error } = await supabase
       .from('listings')
@@ -112,11 +134,7 @@ export async function updateListingStatus(
   }
 }
 
-/**
- * Increment the server-side daily bump counter for a listing.
- * Server validates ownership via auth.uid(). Returns the new count,
- * or null if the RPC failed (unauthenticated, not owned, network).
- */
+/** Increment server-side daily bump counter for listing. Returns count or null. */
 export async function bumpListing(listingId: string): Promise<number | null> {
   try {
     const { data, error } = await supabase.rpc('bump_listing', { p_listing_id: listingId });

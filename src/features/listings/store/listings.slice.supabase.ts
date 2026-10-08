@@ -1,5 +1,5 @@
 import type { Listing } from '@/types';
-import { fetchListings, createListing } from '../services/listingsService';
+import { fetchListings, createListing, searchListings } from '../services/listingsService';
 import { uploadListingImages, removeListingImages } from '../services/storageService';
 import { sanitizeListingData } from './listings.slice.helpers';
 import { supabase } from '@/shared/lib/supabase';
@@ -96,5 +96,20 @@ export interface SupabaseSyncParams {
 export async function performSupabaseSync(params: SupabaseSyncParams = {}): Promise<SupabaseSyncResult> {
   const { data, error } = await fetchListings(params);
   if (error || !data) return { listings: null, error: error || 'fetch failed' };
+  return { listings: data, error: null };
+}
+
+export interface SupabaseSearchParams {
+  readonly query: string;
+  readonly market?: string;
+  readonly offset?: number;
+  readonly limit?: number;
+}
+
+export async function performSupabaseSearch(
+  params: SupabaseSearchParams
+): Promise<SupabaseSyncResult> {
+  const { data, error } = await searchListings(params);
+  if (error || !data) return { listings: null, error: error || 'search failed' };
   return { listings: data, error: null };
 }
