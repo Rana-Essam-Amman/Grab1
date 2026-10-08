@@ -1,10 +1,12 @@
 import { useUI } from '@/hooks/useUI';
 import { useAiReview } from '../hooks/useAiReview';
-import React, { useRef, useState } from 'react';
+import React, { lazy, Suspense, useRef, useState } from 'react';
 import { Send2 } from 'iconsax-react';
 import { AiReviewHeader } from '../components/AiReviewHeader';
 import { AiReviewBody } from '../components/AiReviewBody';
-import { AiReviewCityDrawer } from '../components/AiReviewCityDrawer';
+const AiReviewCityDrawer = lazy(() =>
+  import('../components/AiReviewCityDrawer').then((m) => ({ default: m.AiReviewCityDrawer }))
+);
 import { ExploreLocationFilterDrawer } from '@/shared/components/filters/ExploreLocationFilterDrawer';
 import { locationsWithOther as locations, locationsArWithOther as locationsAr } from '@/data/locations';
 
@@ -102,14 +104,18 @@ export const AiReviewScreen: React.FC = () => {
           </span>
         </button>
       </div>
-      <AiReviewCityDrawer
-        isArabic={isArabic}
-        open={isCityDrawerOpen}
-        onClose={() => setIsCityDrawerOpen(false)}
-        browseCountryCode={browseCountryCode}
-        currentCity={city}
-        onSelect={(cityEn, cityAr) => setCity(isArabic ? cityAr : cityEn)}
-      />
+      {isCityDrawerOpen && (
+        <Suspense fallback={null}>
+          <AiReviewCityDrawer
+            isArabic={isArabic}
+            open={isCityDrawerOpen}
+            onClose={() => setIsCityDrawerOpen(false)}
+            browseCountryCode={browseCountryCode}
+            currentCity={city}
+            onSelect={(cityEn, cityAr) => setCity(isArabic ? cityAr : cityEn)}
+          />
+        </Suspense>
+      )}
       <ExploreLocationFilterDrawer
         open={isHoodDrawerOpen}
         onClose={() => setIsHoodDrawerOpen(false)}

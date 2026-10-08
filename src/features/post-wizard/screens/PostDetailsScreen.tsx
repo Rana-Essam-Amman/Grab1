@@ -1,10 +1,12 @@
-import React, { useState, useMemo } from 'react';
+import React, { lazy, Suspense, useState, useMemo } from 'react';
 import { Send2, Location, Image as ImageIcon } from 'iconsax-react';
 import { useUI } from '@/hooks/useUI';
 import { useAiReview } from '../hooks/useAiReview';
 import { usePostWizard } from '../hooks/usePostWizard';
 import { PostFlowHeader } from '../components/PostFlowHeader';
-import { AiReviewCityDrawer } from '../components/AiReviewCityDrawer';
+const AiReviewCityDrawer = lazy(() =>
+  import('../components/AiReviewCityDrawer').then((m) => ({ default: m.AiReviewCityDrawer }))
+);
 import { PreviewChips } from '../components/PreviewChips';
 import { categories } from '@/data/categories';
 import { findSubcategoryBySlug } from '@/data/subcategories';
@@ -127,7 +129,11 @@ export const PostDetailsScreen: React.FC = () => {
         </button>
       </div>
 
-      <AiReviewCityDrawer isArabic={isArabic} open={isCityDrawerOpen} onClose={() => setIsCityDrawerOpen(false)} browseCountryCode={browseCountryCode} currentCity={city} onSelect={(cityEn, cityAr) => setCity(isArabic ? cityAr : cityEn)} />
+      {isCityDrawerOpen && (
+        <Suspense fallback={null}>
+          <AiReviewCityDrawer isArabic={isArabic} open={isCityDrawerOpen} onClose={() => setIsCityDrawerOpen(false)} browseCountryCode={browseCountryCode} currentCity={city} onSelect={(cityEn, cityAr) => setCity(isArabic ? cityAr : cityEn)} />
+        </Suspense>
+      )}
     </div>
   );
 };
