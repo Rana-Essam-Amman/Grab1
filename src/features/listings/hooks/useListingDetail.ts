@@ -74,8 +74,8 @@ export function useListingDetail(): UseListingDetailReturn {
   }, [listing, derived.formattedPhone.dialNumber]);
   const handleWhatsApp = useCallback(() => {
     if (!listing?.sellerPhone) return;
-    window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: derived.formattedPhone.dialNumber, listingTitle: listing.title }), '_blank');
-  }, [listing, derived.formattedPhone.dialNumber]);
+    window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: derived.formattedPhone.dialNumber, listingTitle: listing.title, isArabic }), '_blank');
+  }, [listing, derived.formattedPhone.dialNumber, isArabic]);
   const handleWhatsAppClick = useCallback(() => {
     if (!listing) return;
     if (!listing.sellerPhone) return;
@@ -84,8 +84,8 @@ export function useListingDetail(): UseListingDetailReturn {
   const handleWhatsAppIntent = useCallback((intent: WhatsAppIntent) => {
     if (!listing) return;
     setShowWhatsAppSheet(false);
-    window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: derived.formattedPhone.dialNumber, listingTitle: listing.title, customMessage: composeIntentMessage(intent.body, listing) }), '_blank');
-  }, [listing, derived.formattedPhone.dialNumber]);
+    window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: derived.formattedPhone.dialNumber, listingTitle: listing.title, isArabic, customMessage: composeIntentMessage(intent.body, listing, isArabic) }), '_blank');
+  }, [listing, derived.formattedPhone.dialNumber, isArabic]);
   const handleDelete = useCallback(async () => {
     if (!listing) return;
     if ((await deleteListing(listing.id)).success) goBack();

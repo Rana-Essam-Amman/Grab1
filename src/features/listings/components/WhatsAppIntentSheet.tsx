@@ -16,7 +16,7 @@ export interface WhatsAppIntentSheetProps {
 export const WhatsAppIntentSheet: React.FC<WhatsAppIntentSheetProps> = ({
   open, listing, isArabic, onClose, onPick, onWriteOwn,
 }) => {
-  const intents = getWhatsAppIntents(listing.countryCode);
+  const intents = getWhatsAppIntents(listing.countryCode, isArabic);
   const hasPhone = Boolean(listing.sellerPhone);
   const Arrow = isArabic ? ArrowLeft2 : ArrowRight2;
 
