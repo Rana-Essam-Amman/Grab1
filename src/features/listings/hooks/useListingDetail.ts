@@ -10,7 +10,6 @@ import { useListingDerivedData, getWhatsAppUrl } from '../helpers/listingDerived
 import { composeIntentMessage, WhatsAppIntent } from '../helpers/whatsappIntents';
 import { Listing } from '@/types';
 import { ScreenType } from '@/store/ui.slice';
-
 export interface UseListingDetailReturn {
   listing: Listing | null; activeCountry: string; isCountryMismatch: boolean;
   sanitizedLoc: { city: string; neighborhood: string }; locationText: string;
@@ -23,7 +22,6 @@ export interface UseListingDetailReturn {
   handleDelete: () => Promise<void>; handleSelectSeller: () => void; isAuthenticated: boolean;
   isOwner: boolean; isArabic: boolean; goBack: () => void; navigateTo: (screen: ScreenType) => void;
 }
-
 export function useListingDetail(): UseListingDetailReturn {
   const { isArabic, goBack, selectedListingId, setSelectedThreadId, setSelectedSellerPhone, navigateTo, browseCountryCode } = useUI();
   const { getListing, deleteListing } = useListings();
@@ -33,23 +31,24 @@ export function useListingDetail(): UseListingDetailReturn {
   const [showShare, setShowShare] = useState(false);
   const [showReport, setShowReport] = useState(false);
   const [showWhatsAppSheet, setShowWhatsAppSheet] = useState(false);
-
   const listing = selectedListingId ? getListing(selectedListingId) || null : null;
   // Browse market is the source of truth (already resolved by useMarketSync).
   const activeCountry = isValidMarket(browseCountryCode) ? browseCountryCode : 'JO';
   const isCountryMismatch = useMemo(() => Boolean(listing && listing.countryCode !== activeCountry), [listing, activeCountry]);
-
   devAssertMarketIsolation(listing, activeCountry);
   const derived = useListingDerivedData(listing, isArabic);
   const isAuthenticated = authStatus === 'authenticated';
-  const isOwner = Boolean(user?.phone && listing?.sellerPhone === user.phone);
-
+  const isOwner = useMemo(() => {
+    if (!user || !listing) return false;
+    if (user.id && listing.userId && user.id === listing.userId) return true;
+    if (user.phone && listing.sellerPhone) return user.phone === listing.sellerPhone;
+    return false;
+  }, [user, listing]);
   const handleSelectSeller = useCallback(() => {
     if (listing?.sellerPhone) { setSelectedSellerPhone(listing.sellerPhone); navigateTo('seller-profile'); }
   }, [listing, setSelectedSellerPhone, navigateTo]);
-
   const handleStartChat = useCallback(async () => {
-    if (!listing || authStatus === 'unauthenticated' || !user?.id || !listing.userId || listing.userId === user.id) {
+    if (!listing || authStatus === 'unauthenticated' || !user?.id || !listing.userId || isOwner) {
       if (authStatus === 'unauthenticated') navigateTo('login');
       return;
     }
@@ -57,35 +56,29 @@ export function useListingDetail(): UseListingDetailReturn {
       const conv = await openConversation({ listingId: listing.id, buyerId: user.id, sellerId: listing.userId, marketCode: listing.countryCode }, activeCountry);
       if (conv) { setSelectedThreadId(conv.id); navigateTo('thread'); }
     } catch (error) { console.error('[Chat] Failed:', error); }
-  }, [listing, authStatus, navigateTo, openConversation, setSelectedThreadId, user, activeCountry]);
-
+  }, [listing, authStatus, navigateTo, openConversation, setSelectedThreadId, user, activeCountry, isOwner]);
   const handleCall = useCallback(() => {
     if (!listing) return;
     window.location.href = `tel:${derived.formattedPhone.dialNumber}`;
   }, [listing, derived.formattedPhone.dialNumber]);
-
   const handleWhatsApp = useCallback(() => {
     if (!listing) return;
     window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: derived.formattedPhone.dialNumber, listingTitle: listing.title }), '_blank');
   }, [listing, derived.formattedPhone.dialNumber]);
-
   const handleWhatsAppClick = useCallback(() => {
     if (!listing) return;
     if (!listing.sellerPhone) return;
     setShowWhatsAppSheet(true);
   }, [listing]);
-
   const handleWhatsAppIntent = useCallback((intent: WhatsAppIntent) => {
     if (!listing) return;
     setShowWhatsAppSheet(false);
     window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: derived.formattedPhone.dialNumber, listingTitle: listing.title, customMessage: composeIntentMessage(intent.body, listing) }), '_blank');
   }, [listing, derived.formattedPhone.dialNumber]);
-
   const handleDelete = useCallback(async () => {
     if (!listing) return;
     if ((await deleteListing(listing.id)).success) goBack();
   }, [listing, deleteListing, goBack]);
-
   return {
     listing, activeCountry, isCountryMismatch, ...derived, activePhotoIdx, setActivePhotoIdx,
     showShare, setShowShare, showReport, setShowReport, showWhatsAppSheet, setShowWhatsAppSheet,
