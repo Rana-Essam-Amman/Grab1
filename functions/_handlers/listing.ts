@@ -1,6 +1,12 @@
 import type { Env } from '../_shared/supabaseRest';
 import { fetchListingById } from '../_shared/supabaseRest';
-import { escapeHtml, buildTitle, buildDescription } from '../_shared/listingMeta';
+import {
+  escapeHtml,
+  buildTitle,
+  buildDescription,
+  buildListingBodyHtml,
+  buildBootstrapScript,
+} from '../_shared/listingMeta';
 import { buildJsonLd } from '../_shared/listingJsonLd';
 
 const MARKETS_LOWER = ['jo', 'sa', 'lb', 'ps', 'sy'];
@@ -38,22 +44,29 @@ export async function handleListing(
   const ogImage = listing.images && listing.images.length > 0 ? listing.images[0] : '';
 
   try {
+    const bodyHtml = buildListingBodyHtml(listing);
+    const bootstrap = buildBootstrapScript(listing);
     return new HTMLRewriter()
       .on('title', { element(el) { el.setInnerContent(buildTitle(listing)); } })
       .on('head', {
         element(el) {
           el.append(
             `<meta name="description" content="${description}">` +
-              `<meta property="og:title" content="${title}">` +
-              `<meta property="og:description" content="${description}">` +
-              `<meta property="og:type" content="product">` +
-              `<meta property="og:url" content="${escapeHtml(url.toString())}">` +
-              (ogImage ? `<meta property="og:image" content="${escapeHtml(ogImage)}">` : '') +
-              `<meta name="twitter:card" content="summary_large_image">` +
-              `<link rel="canonical" href="${escapeHtml(url.origin + url.pathname)}">` +
-              `${buildJsonLd(listing, url.origin)}`,
+            `<meta property="og:title" content="${title}">` +
+            `<meta property="og:description" content="${description}">` +
+            `<meta property="og:type" content="product">` +
+            `<meta property="og:url" content="${escapeHtml(url.toString())}">` +
+            (ogImage ? `<meta property="og:image" content="${escapeHtml(ogImage)}">` : '') +
+            `<meta name="twitter:card" content="summary_large_image">` +
+            `<link rel="canonical" href="${escapeHtml(url.origin + url.pathname)}">` +
+            buildJsonLd(listing, url.origin),
             { html: true }
           );
+        },
+      })
+      .on('div#root', {
+        element(el) {
+          el.setInnerContent(bodyHtml + bootstrap, { html: true });
         },
       })
       .transform(response);
