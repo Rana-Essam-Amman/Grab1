@@ -13,6 +13,8 @@ export interface SupabaseListingRow {
   readonly category_slug: string;
   readonly subcategory_slug: string | null;
   readonly images: string[];
+  readonly image_width?: number | null;
+  readonly image_height?: number | null;
   readonly attributes: unknown;
   readonly status: string;
   readonly views: number;
@@ -46,6 +48,8 @@ export function rowToListing(row: SupabaseListingRow): Listing {
     subcategorySlug: row.subcategory_slug || '',
     imageUrl: row.images?.[0] || '',
     images: row.images || [],
+    imageWidth: row.image_width ?? undefined,
+    imageHeight: row.image_height ?? undefined,
     sellerPhone: row.seller_phone || '',
     sellerName: row.seller_name || '',
     createdAt: row.created_at.split('T')[0],
