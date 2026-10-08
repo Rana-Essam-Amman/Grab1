@@ -19,6 +19,8 @@ export interface UseLocationPickReturn {
   handleSiteChange: (s: string) => void;
   mapQuery: string;
   saveAndContinue: () => void;
+  readonly canContinue: boolean;
+  readonly validationError: string | null;
 }
 
 export function useLocationPick(): UseLocationPickReturn {
@@ -30,6 +32,7 @@ export function useLocationPick(): UseLocationPickReturn {
   }, [isArabic, browseCountryCode]);
 
   const cities = useMemo(() => Object.keys(citiesRecord || {}), [citiesRecord]);
+
   const [selectedCity, setSelectedCity] = useState(postDraft.city || cities[0] || "");
   const [selectedNeighborhood, setSelectedNeighborhood] = useState(postDraft.neighborhood || (citiesRecord?.[selectedCity]?.[0] || ""));
   const [site, setSite] = useState(postDraft.site || "");
@@ -53,12 +56,25 @@ export function useLocationPick(): UseLocationPickReturn {
 
   const mapQuery = useMemo(() => googleSearchQuery({ city: selectedCity, area: selectedNeighborhood, site }), [selectedCity, selectedNeighborhood, site]);
 
+  const validationError = useMemo(() => {
+    if (isOtherValue(selectedCity) && !customCity.trim()) {
+      return isArabic ? 'يرجى كتابة اسم المدينة' : 'Please enter the city name';
+    }
+    if (isOtherValue(selectedNeighborhood) && !customNeighborhood.trim()) {
+      return isArabic ? 'يرجى كتابة اسم الحي' : 'Please enter the neighborhood name';
+    }
+    return null;
+  }, [selectedCity, customCity, selectedNeighborhood, customNeighborhood, isArabic]);
+
+  const canContinue = validationError === null;
+
   const saveAndContinue = useCallback(() => {
+    if (validationError) return;
     const finalCity = isOtherValue(selectedCity) && customCity.trim() ? customCity.trim() : selectedCity;
     const finalNeighborhood = isOtherValue(selectedNeighborhood) && customNeighborhood.trim() ? customNeighborhood.trim() : selectedNeighborhood;
     updatePostDraft({ city: finalCity, neighborhood: finalNeighborhood, site });
     navigateTo("post-details");
-  }, [selectedCity, selectedNeighborhood, customCity, customNeighborhood, site, updatePostDraft, navigateTo]);
+  }, [validationError, selectedCity, selectedNeighborhood, customCity, customNeighborhood, site, updatePostDraft, navigateTo]);
 
   return {
     cities,
@@ -75,5 +91,7 @@ export function useLocationPick(): UseLocationPickReturn {
     handleSiteChange,
     mapQuery,
     saveAndContinue,
+    canContinue,
+    validationError,
   };
 }

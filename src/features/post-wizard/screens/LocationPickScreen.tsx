@@ -23,6 +23,8 @@ export const LocationPickScreen: React.FC = () => {
     saveAndContinue,
     setCustomCity,
     setCustomNeighborhood,
+    canContinue,
+    validationError,
   } = useLocationPick();
 
   const NextIcon = isArabic ? ArrowLeft : ArrowRight;
@@ -53,9 +55,20 @@ export const LocationPickScreen: React.FC = () => {
           onCustomCityChange={setCustomCity}
           onCustomNeighborhoodChange={setCustomNeighborhood}
         />
-
-        <div className="mt-auto pt-6">
-          <Button variant="primary" fullWidth size="lg" onClick={saveAndContinue} className="gap-2">
+        <div className="mt-auto pt-6 flex flex-col gap-2">
+          {validationError && (
+            <p className="text-xs font-bold text-danger text-center" role="alert">
+              {validationError}
+            </p>
+          )}
+          <Button
+            variant="primary"
+            fullWidth
+            size="lg"
+            onClick={saveAndContinue}
+            disabled={!canContinue}
+            className="gap-2"
+          >
             <span>{isArabic ? "متابعة إلى تفاصيل الإعلان" : "Continue to Listing Details"}</span>
             <NextIcon size={18} variant="Linear" />
           </Button>
