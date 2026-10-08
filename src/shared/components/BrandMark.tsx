@@ -4,11 +4,6 @@ export interface BrandMarkProps {
   readonly isArabic: boolean;
 }
 
-/**
- * Vertical FOX brand stack for subpage headers.
- * Fox icon on top, FOX wordmark, MARKETPLACE tagline — all centered.
- * Airbnb/Booking pattern: compact corner brand on secondary screens.
- */
 export const BrandMark: React.FC<BrandMarkProps> = ({ isArabic }) => (
   <div
     className="flex flex-col items-center select-none shrink-0"
@@ -17,7 +12,7 @@ export const BrandMark: React.FC<BrandMarkProps> = ({ isArabic }) => (
     <img
       src="/assets/icons/logo.png"
       alt=""
-      className="w-8 h-8 object-contain"
+      className="w-10 h-10 object-contain"
     />
     <span className="text-[13px] font-black text-white leading-none mt-0.5 tracking-wide">
       FOX
