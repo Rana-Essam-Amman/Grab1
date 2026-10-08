@@ -35,24 +35,32 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
       className={`${premiumClasses} rounded-2xl p-3 border flex gap-3 cursor-pointer hover:border-primary/60 transition-all shadow-xs`}
       dir={isArabic ? 'rtl' : 'ltr'}
     >
-      <div className="w-32 aspect-square rounded-xl overflow-hidden bg-background relative shrink-0">
+      <div className="w-32 aspect-square rounded-xl overflow-hidden bg-black relative shrink-0">
+        <img
+          src={toOptimizedImageUrl(listing.imageUrl, { width: 320, quality: 75 })}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+          className="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-60 pointer-events-none"
+        />
         <img
           src={toOptimizedImageUrl(listing.imageUrl, { width: 320, quality: 75 })}
           alt={listing.title}
           loading="lazy"
           decoding="async"
-          className="w-full h-full object-cover"
+          className="relative w-full h-full object-contain z-10"
           onError={handleImageError}
         />
         {listing.isPremium && (
-          <div className="absolute top-1.5 start-1.5 z-10">
+          <div className="absolute top-1.5 start-1.5 z-20">
             <Badge variant="warning" size="sm" className="flex items-center gap-1">
               <span>{isArabic ? 'مُميز' : 'Featured'}</span>
               <Crown size={12} variant="Bold" color="currentColor" className="text-accent" />
             </Badge>
           </div>
         )}
-        <div className="absolute top-1.5 end-1.5">
+        <div className="absolute top-1.5 end-1.5 z-20">
           <BookmarkHeartButton listingId={listing.id} size="sm" />
         </div>
       </div>
