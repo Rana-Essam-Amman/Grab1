@@ -4,7 +4,10 @@ import { useListings } from '@/hooks/useListings';
 import React, { useState, useMemo, useCallback } from 'react';
 import { useBumpLimits } from '../hooks/useBumpLimits';
 import { toast } from 'sonner';
-import { usePayment, PaywallModal } from '@/shared/services/payment';
+import { usePayment } from '@/shared/services/payment';
+import { PromoteSheet } from '../components/PromoteSheet';
+import { PROMOTE_TYPE_MAP, getPromotePrice } from '../helpers/promoteOptions';
+import type { PromoteProduct } from '../components/PromoteOptionCard';
 import { MONETIZATION_MATRIX } from '@/data/monetization';
 import { MyAdsHeader } from '../components/MyAdsHeader';
 import { MyAdsTabs } from '../components/MyAdsTabs';
@@ -66,28 +69,32 @@ export const MyAdsScreen: React.FC = () => {
     }
   }, [bump, isArabic]);
 
-  const handlePromoteConfirm = useCallback(async () => {
-    if (!promoteTarget) return;
-
-    const receipt = await purchase({
-      type: 'featured-ad',
-      listingId: promoteTarget.id,
-      countryCode: browseCountryCode,
-      currency: pkg.currency,
-      amount: pkg.featuredAdCost,
-    });
-
-    if (receipt) {
-      updateListing(promoteTarget.id, {
-        isPremium: true,
-        lastBumpedAt: new Date().toISOString(),
+  const handlePromoteSelect = useCallback(
+    async (product: PromoteProduct) => {
+      if (!promoteTarget) return;
+      const receipt = await purchase({
+        type: PROMOTE_TYPE_MAP[product],
+        listingId: promoteTarget.id,
+        countryCode: browseCountryCode,
+        currency: pkg.currency,
+        amount: getPromotePrice(pkg, product),
       });
-      toast.success(isArabic ? 'تم تمييز الإعلان ✓' : 'Listing promoted ✓');
-    } else {
-      toast.error(isArabic ? 'فشل الدفع' : 'Payment failed');
-    }
-    setPromoteTarget(null);
-  }, [promoteTarget, purchase, browseCountryCode, pkg, updateListing, isArabic]);
+      if (receipt) {
+        if (product === 'featured') {
+          updateListing(promoteTarget.id, { isPremium: true, lastBumpedAt: new Date().toISOString() });
+        } else if (product === 'turbo') {
+          updateListing(promoteTarget.id, { lastBumpedAt: new Date().toISOString() });
+        } else if (product === 'auto-bump') {
+          updateListing(promoteTarget.id, { isAutoBumpActive: true });
+        }
+        toast.success(isArabic ? 'تم تفعيل الخدمة ✓' : 'Service activated ✓');
+      } else {
+        toast.error(isArabic ? 'فشل الدفع' : 'Payment failed');
+      }
+      setPromoteTarget(null);
+    },
+    [promoteTarget, purchase, browseCountryCode, pkg, updateListing, isArabic]
+  );
 
   return (
     <div className="flex flex-col pb-24 px-4 pt-3" dir={isArabic ? 'rtl' : 'ltr'}>
@@ -113,20 +120,13 @@ export const MyAdsScreen: React.FC = () => {
         onPromote={setPromoteTarget}
       />
 
-      <PaywallModal
+      <PromoteSheet
         open={Boolean(promoteTarget)}
-        onClose={() => setPromoteTarget(null)}
-        onConfirm={handlePromoteConfirm}
         isArabic={isArabic}
+        marketCode={browseCountryCode}
         isProcessing={isProcessing}
-        title="Feature your listing"
-        titleAr="تمييز الإعلان"
-        description="Your listing will appear at the top of search results for 7 days with a Featured badge."
-        descriptionAr="سيظهر إعلانك في أعلى نتائج البحث لمدة 7 أيام مع شارة (مُميز)."
-        amount={pkg.featuredAdCost}
-        currency={pkg.currencySymbol}
-        expiresLabel="Duration: 7 days"
-        expiresLabelAr="المدة: 7 أيام"
+        onClose={() => setPromoteTarget(null)}
+        onSelect={handlePromoteSelect}
       />
     </div>
   );
