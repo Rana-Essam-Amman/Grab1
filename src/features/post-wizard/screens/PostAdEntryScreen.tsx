@@ -6,7 +6,7 @@ import { Icon } from '@iconify/react';
 import { MARKETS } from '@/data/markets/config';
 
 export const PostAdEntryScreen: React.FC = () => {
-  const { isArabic, handleBack, startPostFlow, canPostInMarket, myMarket } = usePostAdEntry();
+  const { isArabic, handleBack, startPostFlow, canPostInMarket, myMarket, freeLimit, freeRemaining } = usePostAdEntry();
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
   const marketNameAr = myMarket && MARKETS[myMarket]
     ? MARKETS[myMarket].nameAr
@@ -79,6 +79,25 @@ export const PostAdEntryScreen: React.FC = () => {
     >
       {header}
       <div className="p-4 flex flex-col gap-5 flex-1 items-center justify-center">
+        <div
+          id="post-ad-free-remaining"
+          data-testid="post-ad-free-remaining"
+          data-free-remaining={freeRemaining}
+          data-free-limit={freeLimit}
+          className={
+            freeRemaining > 0
+              ? 'w-full max-w-xs rounded-full px-4 py-2 text-center text-xs font-bold bg-brand/10 text-brand border border-brand/20'
+              : 'w-full max-w-xs rounded-full px-4 py-2 text-center text-xs font-bold bg-danger/10 text-danger border border-danger/20'
+          }
+        >
+          {freeRemaining > 0
+            ? isArabic
+              ? `عندك ${freeRemaining} من ${freeLimit} إعلانات مجانية`
+              : `${freeRemaining} of ${freeLimit} free ads remaining`
+            : isArabic
+              ? 'استهلكت الإعلانات المجانية — الإعلان القادم مدفوع'
+              : 'Free ads used — next ad is paid'}
+        </div>
         <div className="w-24 h-24 rounded-full bg-brand/10 flex items-center justify-center mb-4">
           <Icon icon="fluent-emoji:rocket" width={48} height={48} />
         </div>

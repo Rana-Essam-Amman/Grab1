@@ -5,6 +5,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { marketStorage } from '@/shared/lib/marketStorage';
 import { isValidMarketCode } from '@/data/markets/config';
 import type { MarketCode } from '@/data/markets/types';
+import { useListings } from '@/hooks/useListings';
+import { MONETIZATION_MATRIX } from '@/data/monetization';
 
 export interface UsePostAdEntryReturn {
   readonly isArabic: boolean;
@@ -12,6 +14,8 @@ export interface UsePostAdEntryReturn {
   readonly startPostFlow: () => void;
   readonly canPostInMarket: boolean;
   readonly myMarket: MarketCode | null;
+  readonly freeLimit: number;
+  readonly freeRemaining: number;
 }
 
 export const usePostAdEntry = (): UsePostAdEntryReturn => {
@@ -25,6 +29,7 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
   } = useUI();
   const { startPostFlow: draftStartPostFlow } = useDraft();
   const { authStatus, isAnonymous, user } = useAuth();
+  const { userListings } = useListings();
 
   useEffect(() => {
     if (authStatus !== 'authenticated' || isAnonymous) {
@@ -54,6 +59,12 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
     currentBrowseMarket !== null &&
     myMarket === currentBrowseMarket;
 
+  const freeLimit = MONETIZATION_MATRIX.freeLimits.generalCategoryLimit;
+  const activeCount = userListings.filter(
+    (l) => l.status !== 'sold'
+  ).length;
+  const freeRemaining = Math.max(0, freeLimit - activeCount);
+
   const handleBack = useCallback(() => {
     setActiveTab('explore');
     goBack();
@@ -72,5 +83,7 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
     startPostFlow,
     canPostInMarket,
     myMarket,
+    freeLimit,
+    freeRemaining,
   };
 };
