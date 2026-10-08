@@ -14,7 +14,8 @@ export interface ListingsState {
   isSyncing: boolean;
   isQuotaExhausted: boolean;
   activeMarket: string | null;
-  activeSearchQuery: string | null;
+  activeSearchQuery?: string | null;
+  activeSearchQuery?: string | null;
   page: number;
   hasMore: boolean;
   isLoadingMore: boolean;
@@ -23,6 +24,7 @@ export interface ListingsState {
   initialize: () => void;
   syncFromSupabase: (market?: string) => Promise<void>;
   loadMore: () => Promise<void>;
+  searchFromSupabase: (query: string, market?: string) => Promise<void>;
   searchFromSupabase: (query: string, market?: string) => Promise<void>;
   publishListing: (listing: Listing, activeCountry: string, isArabic?: boolean) => Promise<PublishResult>;
   addListing: (listing: Listing, activeCountry: string, isArabic?: boolean) => void;

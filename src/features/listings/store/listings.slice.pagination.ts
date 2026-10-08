@@ -42,7 +42,7 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
           s.listings = [...s.listings, ...fresh];
           s.page = s.page + 1;
           s.hasMore = result.listings.length === LISTINGS_PAGE_SIZE;
-          if (!s.activeSearchQuery) saveListingsToStorage(s.listings);
+          if (!state.activeSearchQuery) saveListingsToStorage(s.listings);
         } else { s.hasMore = false; }
       });
     } finally { set((s) => { s.isLoadingMore = false; }); }
