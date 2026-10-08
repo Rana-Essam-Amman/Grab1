@@ -6,6 +6,7 @@ import { categoryBySlug, categories } from '@/data/categories';
 import { subcategoriesByCategory } from '@/data/subcategories';
 import { SubcategoryDef } from '@/types';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
+import { BrandMark } from '@/shared/components/BrandMark';
 import { ArrowLeft, ArrowRight } from 'iconsax-react';
 import { ParentCategoryBanner } from '../components/ParentCategoryBanner';
 import { SubCategoriesList } from '../components/SubCategoriesList';
@@ -88,7 +89,7 @@ export const SubCategoriesScreen: React.FC = () => {
           <button type="button" onClick={goBack} aria-label="Back" className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 flex items-center justify-center cursor-pointer active:scale-95">
             <BackIcon size={18} variant="Linear" color="#FFFFFF" />
           </button>
-          <div className="flex flex-col">
+          <div className="flex flex-col flex-1 min-w-0">
             <h1 className="text-base sm:text-lg font-bold text-white font-cairo leading-snug">
               {isArabic ? parentCategory.nameAr : parentCategory.nameEn}
             </h1>
@@ -97,6 +98,7 @@ export const SubCategoriesScreen: React.FC = () => {
             </span>
           </div>
         </div>
+        <BrandMark isArabic={isArabic} />
         <div className="w-10 h-10 rounded-xl bg-surface/15 overflow-hidden shrink-0 flex items-center justify-center">
           <img src={parentCategory.asset} alt={parentCategory.nameEn} className="w-full h-full object-cover" onError={handleImageError} />
         </div>

@@ -1,4 +1,4 @@
-import React from 'react';
+import { BrandMark } from '@/shared/components/BrandMark';
 import { useUI } from '@/hooks/useUI';
 import { useAiCapture } from '../hooks/useAiCapture';
 import { ArrowLeft, ArrowRight, Microphone2, Add, CloseCircle } from 'iconsax-react';
@@ -24,7 +24,8 @@ export const AiCaptureScreen: React.FC = () => {
           <BackIcon size={18} variant="Linear" color="#FFFFFF" />
         </Button>
         <Icon icon="fluent-emoji:sparkles" width={20} height={20} />
-        <h2 className="text-lg font-bold text-white">{isArabic ? 'باستخدام الذكاء الاصطناعي' : 'AI Listing Builder'}</h2>
+        <h2 className="text-lg font-bold text-white flex-1">{isArabic ? 'باستخدام الذكاء الاصطناعي' : 'AI Listing Builder'}</h2>
+        <BrandMark isArabic={isArabic} />
       </div>
       <div className="p-4 flex flex-col gap-6 flex-1">
         <div className="bg-surface border border-line rounded-2xl p-4 flex flex-col gap-3">

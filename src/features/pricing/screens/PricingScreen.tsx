@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, DollarCircle, TickCircle } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { Card } from '@/shared/ui/Card';
 import { MONETIZATION_MATRIX } from '@/data/monetization';
+import { BrandMark } from '@/shared/components/BrandMark';
 
 interface MarketRowProps {
   readonly code: string;
@@ -37,9 +38,10 @@ export const PricingScreen: React.FC = () => {
         <Button variant="ghost" size="icon" onClick={goBack} aria-label={isArabic ? 'رجوع' : 'Back'}>
           <BackIcon size={18} variant="Linear" color="currentColor" className="text-ink" />
         </Button>
-        <h1 className="text-base font-bold text-ink">
+        <h1 className="text-base font-bold text-ink flex-1">
           {isArabic ? 'الأسعار' : 'Pricing'}
         </h1>
+        <BrandMark isArabic={isArabic} tone="dark" />
       </div>
 
       <div className="p-4 flex flex-col gap-4">

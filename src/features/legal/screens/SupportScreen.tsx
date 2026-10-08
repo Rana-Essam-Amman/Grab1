@@ -3,6 +3,7 @@ import React from 'react';
 import { ArrowLeft, ArrowRight, Call } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { Card } from '@/shared/ui/Card';
+import { BrandMark } from '@/shared/components/BrandMark';
 
 export const SupportScreen: React.FC = () => {
   const { isArabic, goBack } = useUI();
@@ -17,9 +18,10 @@ export const SupportScreen: React.FC = () => {
             <BackIcon size={18} variant="Linear" color="currentColor" />
           </Button>
         </div>
-        <h1 className="text-base font-bold text-ink">
+        <h1 className="text-base font-bold text-ink flex-1">
           {isArabic ? 'الدعم' : 'Support'}
         </h1>
+        <BrandMark isArabic={isArabic} tone="dark" />
       </div>
 
       <div className="p-4 flex flex-col gap-4 text-xs text-ink-soft leading-relaxed">

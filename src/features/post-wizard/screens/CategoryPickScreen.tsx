@@ -5,6 +5,7 @@ import { categories } from '@/data/categories';
 import { ArrowLeft, ArrowRight, MagicStar } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { Card } from '@/shared/ui/Card';
+import { BrandMark } from '@/shared/components/BrandMark';
 import { useAiPublishFlow } from '../hooks/useAiPublishFlow';
 import { CategorySearchBar } from '../components/CategorySearchBar';
 import { searchCategories } from '@/data/searchIndex';
@@ -38,9 +39,10 @@ export const CategoryPickScreen: React.FC = () => {
         <Button variant="ghost" size="icon" onClick={goBack} className="w-10 h-10 rounded-full bg-surface/15 text-white" disabled={isAnalyzing}>
           <BackIcon size={18} variant="Linear" color="#FFFFFF" />
         </Button>
-        <div>
+        <div className="flex-1 min-w-0">
           <h2 className="text-lg font-bold text-white">{isArabic ? 'اختر القسم المناسب' : 'Choose the right category'}</h2>
         </div>
+        <BrandMark isArabic={isArabic} />
       </div>
       <div className="p-4">
         <p className="text-xs text-ink-muted mb-4">
