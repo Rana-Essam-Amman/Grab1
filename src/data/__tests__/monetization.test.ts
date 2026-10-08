@@ -21,8 +21,8 @@ describe('Data Layer - Monetization & Regional Quota Rules', () => {
   it('verifies correct currency mapping per market in MONETIZATION_MATRIX', () => {
     expect(MONETIZATION_MATRIX.packages.JO.currency).toBe('JOD');
     expect(MONETIZATION_MATRIX.packages.SA.currency).toBe('SAR');
-    expect(MONETIZATION_MATRIX.packages.SY.currency).toBe('SYP');
-    expect(MONETIZATION_MATRIX.packages.LB.currency).toBe('LBP');
+    expect(MONETIZATION_MATRIX.packages.SY.currency).toBe('USD');
+    expect(MONETIZATION_MATRIX.packages.LB.currency).toBe('USD');
     expect(MONETIZATION_MATRIX.packages.PS.currency).toBe('ILS');
   });
 
