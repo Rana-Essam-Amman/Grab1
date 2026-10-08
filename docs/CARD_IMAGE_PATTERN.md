@@ -15,9 +15,14 @@ natural aspect ratio. This mirrors Instagram's bounded-contain logic
 
 | Ratio (w/h) | Type | Fit | Example |
 |-------------|------|-----|---------|
-| **>= 1.0** | Landscape / square | `object-cover` | Car, Villa |
-| **0.33 → 1.0** | Normal portrait | `object-contain` | FOX plush (0.4) |
-| **< 0.33** | Extreme portrait | `object-cover` | Screenshot (0.2) |
+| **>= 1.4** | Wide landscape | `object-cover` | Car 16:9, Villa 16:9 |
+| **0.33 → 1.4** | Portrait, square, mild landscape (incl. EXIF-flipped) | `object-contain` | FOX plush, phone portrait |
+| **< 0.33** | Extreme portrait | `object-cover` | Screenshot |
+
+> **EXIF-flip safeguard:** Phone portrait photos are stored as landscape
+> pixels + EXIF rotate flag. Supabase Transform strips EXIF, so the
+> browser reads ratio ~1.33 on what users consider portrait. Threshold
+> 1.4 keeps these contained. Do NOT lower to 1.0.
 
 **Implementation:** `src/shared/lib/imageFit.ts` → `pickImageFitClass()`.
 
