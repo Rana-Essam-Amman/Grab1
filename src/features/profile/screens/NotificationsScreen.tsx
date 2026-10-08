@@ -4,7 +4,6 @@ import { ArrowLeft, ArrowRight, TickCircle, Tag, Message } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { EmptyState } from '@/shared/ui/EmptyState';
 import { Icon } from '@iconify/react';
-
 export interface Notification {
   id: string;
   titleEn: string;
@@ -14,52 +13,19 @@ export interface Notification {
   read: boolean;
   type: 'price' | 'message' | 'ad';
 }
-
-const INITIAL_NOTIFICATIONS: Notification[] = [
-  {
-    id: '1',
-    titleEn: 'Price drop alert on Toyota Camry',
-    titleAr: 'انخفاض سعر تويوتا كامري في قائمة الإعلانات المفضلة',
-    timeEn: '2 hours ago',
-    timeAr: 'منذ ساعتين',
-    read: false,
-    type: 'price',
-  },
-  {
-    id: '2',
-    titleEn: 'New message received from Ahmed',
-    titleAr: 'تم استلام رسالة جديدة من أحمد بخصوص إعلانك',
-    timeEn: 'Yesterday',
-    timeAr: 'أمس',
-    read: true,
-    type: 'message',
-  },
-  {
-    id: '3',
-    titleEn: 'Your ad "iPhone 15 Pro" is now active',
-    titleAr: 'إعلانك "آيفون 15 برو" نشط الآن وجاهز للمشاهدة',
-    timeEn: '3 days ago',
-    timeAr: 'قبل 3 أيام',
-    read: true,
-    type: 'ad',
-  },
-];
-
 export const NotificationsScreen: React.FC = () => {
-  // Note: Market isolation deferred — notifications are currently global per current single-market/user session scope.
+  // TODO(Wave 5): wire to Supabase notifications table + realtime.
+  //       For now: empty until real backend ships. No fake data.
   const { isArabic, goBack } = useUI();
-  const [notifications, setNotifications] = useState<Notification[]>(INITIAL_NOTIFICATIONS);
-
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const handleMarkAsRead = (id: string) => {
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, read: true } : n))
     );
   };
-
   const handleClearAll = () => {
     setNotifications([]);
   };
-
   return (
     <div className="flex flex-col min-h-screen bg-surface pb-12" dir={isArabic ? 'rtl' : 'ltr'}>
       {/* Top Header */}
@@ -74,7 +40,6 @@ export const NotificationsScreen: React.FC = () => {
           </button>
         ) : (<div className="w-10" />)}
       </div>
-
       {/* Content Area */}
       {notifications.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center p-8">
@@ -108,7 +73,6 @@ export const NotificationsScreen: React.FC = () => {
                 {n.type === 'price' ? <Tag size={18} variant="Linear" /> :
                  n.type === 'message' ? <Message size={18} variant="Linear" /> : <TickCircle size={18} variant="Linear" />}
               </div>
-
               <div className="flex-1 min-w-0">
                 <p className={`text-xs font-bold leading-snug mb-1 ${n.read ? 'text-ink-muted' : 'text-ink'}`}>
                   {isArabic ? n.titleAr : n.titleEn}
@@ -117,7 +81,6 @@ export const NotificationsScreen: React.FC = () => {
                   {isArabic ? n.timeAr : n.timeEn}
                 </span>
               </div>
-
               {!n.read && (
                 <span className="w-2.5 h-2.5 rounded-full bg-primary mt-1 shrink-0" />
               )}
