@@ -61,10 +61,10 @@ export const MONETIZATION_MATRIX: MonetizationMatrix = {
       countryCode: "LB",
       currency: "USD",
       currencySymbol: "$",
-      turboAdCost: 0.69,
-      autoBumpCost: 0.99,
-      featuredAdCost: 1.49,
-      vipStoreMonthlyCost: 9.99,
+      turboAdCost: 0.49,
+      autoBumpCost: 0.79,
+      featuredAdCost: 0.99,
+      vipStoreMonthlyCost: 7.99,
     },
     SY: {
       countryCode: "SY",
@@ -97,19 +97,17 @@ export function validateAdQuotaAvailability(
   if (isVipShop) {
     return { allowed: true, activeCount: 0, limit: 999 };
   }
-
   const limit = getFreeAdLimitForCategory(categorySlug);
-  
+
   // Count active listings for this user and country in this category branch
   const activeCount = listings.filter((l) => {
     const matchesUser = l.userId === userId || (!l.userId && userId);
     const matchesCountry = (l.countryCode || 'JO') === countryCode;
     const isPremiumCat = ['motors', 'real-estate'].includes(categorySlug.toLowerCase());
     const itemCat = (l.categorySlug || '').toLowerCase();
-    const matchesCategory = isPremiumCat 
-      ? ['motors', 'real-estate'].includes(itemCat) 
+    const matchesCategory = isPremiumCat
+      ? ['motors', 'real-estate'].includes(itemCat)
       : !['motors', 'real-estate'].includes(itemCat);
-
     return matchesUser && matchesCountry && matchesCategory;
   }).length;
 
@@ -123,6 +121,7 @@ export function validateAdQuotaAvailability(
 export function executeAutoBumpScheduler<T extends { isAutoBumpActive?: boolean; lastBumpedAt?: string; createdAt?: string }>(listings: T[]): T[] {
   const now = new Date().getTime();
   const oneDayMs = 24 * 60 * 60 * 1000;
+
   return listings.map((l) => {
     if (l.isAutoBumpActive) {
       const lastBump = l.lastBumpedAt ? new Date(l.lastBumpedAt).getTime() : new Date(l.createdAt || now).getTime();
@@ -135,4 +134,4 @@ export function executeAutoBumpScheduler<T extends { isAutoBumpActive?: boolean;
     }
     return l;
   });
-}
+      }
