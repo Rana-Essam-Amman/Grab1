@@ -1,25 +1,21 @@
 import { useUI } from '@/hooks/useUI';
 import { useListings } from '@/hooks/useListings';
-import { useAuth } from '@/hooks/useAuth';
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { ListingCard } from '@/shared/components';
 import { ArrowLeft, ArrowRight, User, TickCircle } from 'iconsax-react';
 import { Card } from '@/shared/ui/Card';
 import { Avatar } from '@/shared/ui/Avatar';
 import { EmptyState } from '@/shared/ui/EmptyState';
-import { Button } from '@/shared/ui/Button';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
 import { isUuid } from '@/shared/lib/uuid';
 import { fetchProfile, type ProfileRecord } from '@/shared/lib/profilesService';
-import { fetchSellerReviews, submitSellerReview, type SellerReview } from '../services/sellerReviewsService';
+import { fetchSellerReviews, type SellerReview } from '../services/sellerReviewsService';
 import { SellerRatingBadge } from '../components/SellerRatingBadge';
 import { ReviewList } from '../components/ReviewList';
-import { WriteReviewSheet } from '../components/WriteReviewSheet';
 
 export const SellerProfileScreen: React.FC = () => {
   const { isArabic, goBack, selectedSellerPhone, browseCountryCode } = useUI();
   const { listings } = useListings();
-  const { user } = useAuth();
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
   const sellerKeyIsUuid = isUuid(selectedSellerPhone);
   const sellerAds = useMemo(() => {
@@ -30,11 +26,8 @@ export const SellerProfileScreen: React.FC = () => {
     return scoped.filter((l) => l.sellerPhone === selectedSellerPhone);
   }, [listings, browseCountryCode, selectedSellerPhone, sellerKeyIsUuid]);
   const sellerId = sellerAds[0]?.userId ?? null;
-  const sampleListingId = sellerAds[0]?.id ?? null;
   const [sellerProfile, setSellerProfile] = useState<ProfileRecord | null>(null);
   const [reviews, setReviews] = useState<SellerReview[]>([]);
-  const [showWrite, setShowWrite] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const loadSellerData = useCallback(async () => {
     if (!sellerId) return;
@@ -46,16 +39,6 @@ export const SellerProfileScreen: React.FC = () => {
   useEffect(() => { loadSellerData(); }, [loadSellerData]);
 
   const sellerName = useMemo(() => sellerAds[0]?.sellerName || (isArabic ? 'معلن موثوق' : 'Verified Seller'), [sellerAds, isArabic]);
-  const isOwnProfile = Boolean(user && sellerId && user.id === sellerId);
-  const canRate = Boolean(user && !isOwnProfile && sampleListingId);
-
-  const handleSubmitReview = useCallback(async (rating: number, comment: string) => {
-    if (!sampleListingId) return;
-    setIsSubmitting(true);
-    const { error } = await submitSellerReview(sampleListingId, rating, comment);
-    setIsSubmitting(false);
-    if (!error) { setShowWrite(false); loadSellerData(); }
-  }, [sampleListingId, loadSellerData]);
 
   return (
     <div className="flex flex-col min-h-screen bg-background pb-16" dir={isArabic ? 'rtl' : 'ltr'}>
@@ -80,9 +63,8 @@ export const SellerProfileScreen: React.FC = () => {
               )}
             </div>
           </div>
-          <div className="pt-1 border-t border-border flex items-center justify-between">
+          <div className="pt-1 border-t border-border">
             <SellerRatingBadge ratingAvg={sellerProfile?.rating_avg ?? 0} ratingCount={sellerProfile?.rating_count ?? 0} isArabic={isArabic} />
-            {canRate && <Button variant="outline" size="sm" onClick={() => setShowWrite(true)}>{isArabic ? 'قيّم البائع' : 'Rate seller'}</Button>}
           </div>
         </Card>
         {reviews.length > 0 && (
@@ -103,8 +85,6 @@ export const SellerProfileScreen: React.FC = () => {
           )}
         </div>
       </div>
-      <WriteReviewSheet open={showWrite} isArabic={isArabic} sellerName={sellerName} isSubmitting={isSubmitting}
-        onClose={() => setShowWrite(false)} onSubmit={handleSubmitReview} />
     </div>
   );
 };
