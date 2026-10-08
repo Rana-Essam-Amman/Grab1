@@ -32,7 +32,8 @@ export const ExploreScreen: React.FC = () => {
   const {
     filterMode, setFilterMode, feedLayout, setFeedLayout, minPriceFilter, setMinPriceFilter,
     maxPriceFilter, setMaxPriceFilter, activeNeighborhood, setActiveNeighborhood, activeSearchText,
-    voidedNotice, setVoidedNotice, displayListings, handleResetAllFilters
+    voidedNotice, setVoidedNotice, displayListings, handleResetAllFilters,
+    hasMore, isLoadingMore, onLoadMore
   } = useExploreListings();
 
   const currentPackage = useMemo(() => {
@@ -113,6 +114,9 @@ export const ExploreScreen: React.FC = () => {
         activeSearchText={activeSearchText}
         onPostWithSearch={handlePostWithSearch}
         onExpandSearch={handleExpandSearch}
+        hasMore={hasMore}
+        isLoadingMore={isLoadingMore}
+        onLoadMore={onLoadMore}
       />
 
       {/* The Native Quota Exhaustion Paywall Modal */}

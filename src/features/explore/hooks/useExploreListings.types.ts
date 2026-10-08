@@ -23,4 +23,7 @@ export interface UseExploreListingsReturn {
   browseCountryCode: string;
   browseCityAr: string;
   browseCityEn: string;
+  readonly hasMore: boolean;
+  readonly isLoadingMore: boolean;
+  readonly onLoadMore: () => void;
 }
