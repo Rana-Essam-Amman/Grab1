@@ -46,7 +46,7 @@ export function filterListings(listings: Listing[], options: FilterListingsOptio
       if (isSearching) return true;
       if (filterMode !== 'city') return true;
       const c = normalizeArabic(item.city || '');
-      if (!c) return true;
+      if (!c) return false;
       const match =
         (normCityAr && (c === normCityAr || c.includes(normCityAr))) ||
         (normCityEn && (c === normCityEn || c.includes(normCityEn)));
