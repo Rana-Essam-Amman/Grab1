@@ -2,7 +2,6 @@ import React from 'react';
 import { Button } from '@/shared/ui/Button';
 import { ArrowLeft, ArrowRight, Magicpen } from 'iconsax-react';
 import { Badge } from '@/shared/ui/Badge';
-import { BrandMark } from '@/shared/components/BrandMark';
 
 interface Props {
   isArabic: boolean;
@@ -22,7 +21,6 @@ export const AiDraftHeader: React.FC<Props> = ({ isArabic, onBack }) => {
           <h2 className="text-lg font-bold text-white">{isArabic ? 'صياغة الإعلان بالذكاء الاصطناعي' : 'AI Listing Assistant'}</h2>
         </div>
       </div>
-      <BrandMark isArabic={isArabic} />
       <Badge variant="outline" size="sm" className="bg-surface/10 text-white border-white/25 font-bold px-2.5 py-1">
         <Magicpen size={14} variant="Linear" color="currentColor" className="text-white" />
         <span>{isArabic ? 'المساعد الذكي' : 'AI Assistant'}</span>

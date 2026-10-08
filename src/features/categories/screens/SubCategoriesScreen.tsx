@@ -6,7 +6,6 @@ import { categoryBySlug, categories } from '@/data/categories';
 import { subcategoriesByCategory } from '@/data/subcategories';
 import { SubcategoryDef } from '@/types';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
-import { BrandMark } from '@/shared/components/BrandMark';
 import { ArrowLeft, ArrowRight } from 'iconsax-react';
 import { ParentCategoryBanner } from '../components/ParentCategoryBanner';
 import { SubCategoriesList } from '../components/SubCategoriesList';
@@ -98,7 +97,6 @@ export const SubCategoriesScreen: React.FC = () => {
             </span>
           </div>
         </div>
-        <BrandMark isArabic={isArabic} />
         <div className="w-10 h-10 rounded-xl bg-surface/15 overflow-hidden shrink-0 flex items-center justify-center">
           <img src={parentCategory.asset} alt={parentCategory.nameEn} className="w-full h-full object-cover" onError={handleImageError} />
         </div>
