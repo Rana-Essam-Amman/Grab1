@@ -3,9 +3,25 @@ import { supabase } from '@/shared/lib/supabase';
 import { removeListingImages } from './storageService';
 import { rowToListing, type SupabaseListingRow } from './listingsMapper';
 
-export async function fetchListings(): Promise<{ data: Listing[] | null; error: string | null }> {
+export interface FetchListingsParams {
+  readonly market?: string;
+  readonly offset?: number;
+  readonly limit?: number;
+}
+
+export const LISTINGS_PAGE_SIZE = 20;
+
+export async function fetchListings(params: FetchListingsParams = {}): Promise<{ data: Listing[] | null; error: string | null }> {
   try {
-    const { data, error } = await supabase.from('listings').select('*').order('created_at', { ascending: false });
+    const { market, offset = 0, limit = LISTINGS_PAGE_SIZE } = params;
+    let q = supabase
+      .from('listings')
+      .select('*')
+      .eq('status', 'active');
+    if (market) q = q.eq('country_code', market);
+    const { data, error } = await q
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
     if (error) return { data: null, error: error.message };
     return { data: (data || []).map(rowToListing), error: null };
   } catch (err) {
@@ -35,7 +51,6 @@ export async function createListing(
   try {
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user) return { data: null, error: 'Not authenticated' };
-
     const { data, error } = await supabase
       .from('listings')
       .insert({
@@ -56,7 +71,6 @@ export async function createListing(
       })
       .select('*')
       .single();
-
     if (error) return { data: null, error: error.message };
     return { data: rowToListing(data as SupabaseListingRow), error: null };
   } catch (err) {
@@ -71,14 +85,11 @@ export async function deleteListing(id: string): Promise<{ error: string | null 
       .select('images')
       .eq('id', id)
       .maybeSingle();
-
     if (fetchError) return { error: fetchError.message };
-
     const images = Array.isArray(listing?.images) ? (listing.images as string[]) : [];
     if (images.length > 0) {
       await removeListingImages(images);
     }
-
     const { error } = await supabase.from('listings').delete().eq('id', id);
     return { error: error ? error.message : null };
   } catch (err) {
@@ -95,7 +106,6 @@ export async function updateListingStatus(
       .from('listings')
       .update({ status })
       .eq('id', id);
-
     return { error: error ? error.message : null };
   } catch (err) {
     return { error: err instanceof Error ? err.message : 'Unknown error' };

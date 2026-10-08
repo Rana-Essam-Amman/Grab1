@@ -13,10 +13,15 @@ export interface ListingsState {
   isInitialized: boolean;
   isSyncing: boolean;
   isQuotaExhausted: boolean;
+  activeMarket: string | null;
+  page: number;
+  hasMore: boolean;
+  isLoadingMore: boolean;
 
   // Actions
   initialize: () => void;
-  syncFromSupabase: () => Promise<void>;
+  syncFromSupabase: (market?: string) => Promise<void>;
+  loadMore: () => Promise<void>;
   publishListing: (listing: Listing, activeCountry: string, isArabic?: boolean) => Promise<PublishResult>;
   addListing: (listing: Listing, activeCountry: string, isArabic?: boolean) => void;
   updateListing: (id: string, updates: Partial<Listing>) => void;

@@ -70,7 +70,8 @@ export async function performSupabasePublish(
 
     if (error || !data) {
       // Roll back uploaded images — the listing was never persisted.
-      if (uploadedImages.length > 0) {        await removeListingImages(uploadedImages);
+      if (uploadedImages.length > 0) {
+        await removeListingImages(uploadedImages);
       }
       return { remoteListing: null, error: error || 'فشل النشر' };
     }
@@ -86,8 +87,14 @@ export interface SupabaseSyncResult {
   readonly error: string | null;
 }
 
-export async function performSupabaseSync(): Promise<SupabaseSyncResult> {
-  const { data, error } = await fetchListings();
+export interface SupabaseSyncParams {
+  readonly market?: string;
+  readonly offset?: number;
+  readonly limit?: number;
+}
+
+export async function performSupabaseSync(params: SupabaseSyncParams = {}): Promise<SupabaseSyncResult> {
+  const { data, error } = await fetchListings(params);
   if (error || !data) return { listings: null, error: error || 'fetch failed' };
   return { listings: data, error: null };
 }

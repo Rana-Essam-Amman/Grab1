@@ -1,6 +1,6 @@
 import { Listing } from '@/types';
 import { getListingsFromStorage, saveListingsToStorage, getWishlistForMarket, saveWishlistForMarket } from '@/services/listing.service';
-import { deleteListing as deleteListingService } from '@/features/listings/services/listingsService';
+import { deleteListing as deleteListingService, LISTINGS_PAGE_SIZE } from '@/features/listings/services/listingsService';
 import { validateAdQuotaAvailability as validateAdQuotaAvailabilityHelper } from '@/data/monetization';
 import { globalStorage } from '@/shared/lib/marketStorage';
 import { ListingsState } from './listings.slice.types';
@@ -67,18 +67,52 @@ export const createListingsActions = (
 
   refreshListings: () => set((state) => { state.listings = getListingsFromStorage(); }),
 
-  syncFromSupabase: async () => {
-    set((state) => { state.isSyncing = true; });
-    const { listings: remoteListings, error } = await performSupabaseSync();
+  syncFromSupabase: async (market?: string) => {
+    const targetMarket = market ?? get().activeMarket ?? undefined;
+    set((s) => { s.isSyncing = true; });
+    try {
+      const result = await performSupabaseSync({ market: targetMarket, offset: 0, limit: LISTINGS_PAGE_SIZE });
+      set((s) => {
+        if (result.listings) {
+          s.listings = [...result.listings, ...seedListings];
+          s.activeMarket = targetMarket ?? null;
+          s.page = 0;
+          s.hasMore = result.listings.length === LISTINGS_PAGE_SIZE;
+          saveListingsToStorage(s.listings);
+        }
+      });
+    } finally {
+      set((s) => { s.isSyncing = false; });
+    }
+  },
 
-    set((state) => {
-      state.isSyncing = false;
-      if (error || !remoteListings) return;
-      // Supabase is source of truth for user-created listings.
-      // Seed listings stay as local-only demo content.
-      state.listings = [...remoteListings, ...seedListings];
-      saveListingsToStorage(state.listings);
-    });
+  loadMore: async () => {
+    const state = get();
+    if (state.isLoadingMore || !state.hasMore || !state.activeMarket) return;
+    const nextOffset = (state.page + 1) * LISTINGS_PAGE_SIZE;
+    set((s) => { s.isLoadingMore = true; });
+    try {
+      const result = await performSupabaseSync({
+        market: state.activeMarket,
+        offset: nextOffset,
+        limit: LISTINGS_PAGE_SIZE,
+      });
+      set((s) => {
+        if (result.listings && result.listings.length > 0) {
+          // de-dup by id (defensive — page boundary)
+          const existingIds = new Set(s.listings.map((l) => l.id));
+          const fresh = result.listings.filter((l) => !existingIds.has(l.id));
+          s.listings = [...s.listings, ...fresh];
+          s.page = s.page + 1;
+          s.hasMore = result.listings.length === LISTINGS_PAGE_SIZE;
+          saveListingsToStorage(s.listings);
+        } else {
+          s.hasMore = false;
+        }
+      });
+    } finally {
+      set((s) => { s.isLoadingMore = false; });
+    }
   },
 
   publishListing: async (listing: Listing, activeCountry: string, isArabic = true): Promise<PublishResult> => {
@@ -87,7 +121,6 @@ export const createListingsActions = (
       activeCountry,
       isArabic
     );
-
     // No Supabase session (demo/E2E/offline) → save locally, don't block user.
     if (fallbackToLocal) {
       const sanitized = sanitizeListingData(listing, activeCountry, isArabic);
