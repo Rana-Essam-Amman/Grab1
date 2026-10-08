@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, User, TickCircle } from 'iconsax-react';
 import { Card } from '@/shared/ui/Card';
 import { Avatar } from '@/shared/ui/Avatar';
 import { EmptyState } from '@/shared/ui/EmptyState';
+import { BrandMark } from '@/shared/components/BrandMark';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
 import { isUuid } from '@/shared/lib/uuid';
 import { fetchProfile, type ProfileRecord } from '@/shared/lib/profilesService';
@@ -47,7 +48,8 @@ export const SellerProfileScreen: React.FC = () => {
           className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 flex items-center justify-center shrink-0 cursor-pointer transition-colors">
           <BackIcon size={18} variant="Linear" color="#FFFFFF" />
         </button>
-        <h1 className="text-base font-bold text-white">{isArabic ? 'ملف البائع' : 'Seller Profile'}</h1>
+        <h1 className="text-base font-bold text-white flex-1">{isArabic ? 'ملف البائع' : 'Seller Profile'}</h1>
+        <BrandMark isArabic={isArabic} />
       </div>
       <div className="p-4 flex flex-col gap-4">
         <Card variant="default" className="p-4 flex flex-col gap-3 shadow-xs">
