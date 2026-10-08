@@ -30,6 +30,7 @@ export type ScreenType =
   | 'support'
   | 'privacy'
   | 'terms'
+  | 'pricing'
   | 'wishlist'
   | 'login'
   | 'register'

@@ -48,6 +48,7 @@ const SettingsScreen = lazy(() => import('@/features/profile/screens/SettingsScr
 const RegisterScreen = lazy(() => import('@/features/auth/screens/RegisterScreen').then((m) => ({ default: m.RegisterScreen })));
 const ConfirmScreen = lazy(() => import('@/features/auth/screens/ConfirmScreen').then((m) => ({ default: m.ConfirmScreen })));
 const TermsScreen = lazy(() => import('@/features/auth/screens/TermsScreen').then((m) => ({ default: m.TermsScreen })));
+const PricingScreen = lazy(() => import('@/features/pricing/screens/PricingScreen').then((m) => ({ default: m.PricingScreen })));
 const ChooseCategoryScreen = lazy(() => import('@/features/post-wizard/screens/ChooseCategoryScreen').then((m) => ({ default: m.ChooseCategoryScreen })));
 const ChooseSubcategoryScreen = lazy(() => import('@/features/post-wizard/screens/ChooseSubcategoryScreen').then((m) => ({ default: m.ChooseSubcategoryScreen })));
 const PhotoUploadScreen = lazy(() => import('@/features/post-wizard/screens/PhotoUploadScreen').then((m) => ({ default: m.PhotoUploadScreen })));
@@ -136,6 +137,7 @@ const MainNavigator: React.FC = () => {
       case 'register': return r('register', RegisterScreen);
       case 'confirm': return r('confirm', ConfirmScreen);
       case 'terms': return r('terms', TermsScreen);
+      case 'pricing': return r('pricing', PricingScreen);
       case 'thread': return r('thread', ThreadScreen);
       case 'post-category': return r('post-category', ChooseCategoryScreen);
       case 'post-subcategory': return r('post-subcategory', ChooseSubcategoryScreen);
