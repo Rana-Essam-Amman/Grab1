@@ -43,8 +43,8 @@ export const ChangeAccountMarketModal: React.FC<ChangeAccountMarketModalProps> =
       title={isArabic ? 'تغيير سوق حسابك' : 'Change account market'}
       description={
         isArabic
-          ? 'سيتم نقل إعلاناتك ومحادثاتك إلى السوق الجديد. تصفحك للأسواق الأخرى لن يتأثر.'
-          : 'Your listings and chats will move to the new market. Browsing other markets stays unaffected.'
+          ? 'الإعلانات الحالية تبقى في سوقها الأصلي. الإعلانات الجديدة ستُنشر في السوق الجديد. لن تستطيع النشر في السوق القديم بعد هذا التغيير.'
+          : 'Your existing listings stay in their original market. New listings will publish in the new market. You will not be able to publish in your old market after this change.'
       }
       footer={
         <div className="flex gap-2">
