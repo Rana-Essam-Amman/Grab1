@@ -1,6 +1,7 @@
 import type { Env } from '../_shared/supabaseRest';
 import { fetchListingsByMarketCategory } from '../_shared/supabaseListings';
 import { buildListingLoc } from '../_shared/sitemapHelpers';
+import { buildCategoryBodyHtml } from '../_shared/categoryBody';
 import {
   categoryTitle,
   categoryDescription,
@@ -77,21 +78,33 @@ export async function handleCategory(
   if (!contentType.includes('text/html')) return response;
 
   try {
+    const bodyHtml = buildCategoryBodyHtml(
+      url.origin,
+      cat.market,
+      cat.category,
+      catMeta.nameAr,
+      rows
+    );
     return new HTMLRewriter()
       .on('title', { element(el) { el.setInnerContent(title); } })
       .on('head', {
         element(el) {
           el.append(
             `<meta name="description" content="${description}">` +
-              `<meta property="og:title" content="${title}">` +
-              `<meta property="og:description" content="${description}">` +
-              `<meta property="og:type" content="website">` +
-              `<meta property="og:url" content="${canonical}">` +
-              `<link rel="canonical" href="${canonical}">` +
-              `<script type="application/ld+json">${JSON.stringify(itemList)}</script>` +
-              `<script type="application/ld+json">${JSON.stringify(breadcrumb)}</script>`,
+            `<meta property="og:title" content="${title}">` +
+            `<meta property="og:description" content="${description}">` +
+            `<meta property="og:type" content="website">` +
+            `<meta property="og:url" content="${canonical}">` +
+            `<link rel="canonical" href="${canonical}">` +
+            `<script type="application/ld+json">${JSON.stringify(itemList)}</script>` +
+            `<script type="application/ld+json">${JSON.stringify(breadcrumb)}</script>`,
             { html: true }
           );
+        },
+      })
+      .on('div#root', {
+        element(el) {
+          el.setInnerContent(bodyHtml, { html: true });
         },
       })
       .transform(response);
