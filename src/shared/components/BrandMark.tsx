@@ -17,12 +17,12 @@ export const BrandMark: React.FC<BrandMarkProps> = ({ isArabic }) => (
     <img
       src="/assets/icons/logo.png"
       alt=""
-      className="w-[18px] h-[18px] object-contain"
+      className="w-8 h-8 object-contain"
     />
-    <span className="text-[9px] font-black text-white leading-none mt-0.5 tracking-wide">
+    <span className="text-[13px] font-black text-white leading-none mt-0.5 tracking-wide">
       FOX
     </span>
-    <span className="text-[6px] font-bold text-white/65 leading-none tracking-[0.18em] mt-0.5">
+    <span className="text-[8px] font-bold text-white/65 leading-none tracking-[0.18em] mt-0.5">
       MARKETPLACE
     </span>
   </div>
