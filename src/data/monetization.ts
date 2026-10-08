@@ -1,4 +1,7 @@
 // RULE-14-EXCEPTION: Pricing matrix
+// Strategic decision 2026-10-08: disruption via impulse pricing + 0% commission.
+// Verified against Haraj (1% commission, 2390 SAR/yr store), OpenSooq (paid
+// promotion), Dubizzle (109 AED / 7-day Featured), Motory (1% cars).
 export interface CountryMonetizationPackage {
   countryCode: string;
   currency: string;
@@ -28,49 +31,49 @@ export const MONETIZATION_MATRIX: MonetizationMatrix = {
   },
   packages: {
     JO: {
-      countryCode: 'JO',
-      currency: 'JOD',
-      currencySymbol: 'دينار',
-      turboAdCost: 1.5,
-      autoBumpCost: 1.5,
-      featuredAdCost: 3,
-      vipStoreMonthlyCost: 15,
-    },
-    LB: {
-      countryCode: 'LB',
-      currency: 'LBP',
-      currencySymbol: 'ليرة',
-      turboAdCost: 135000,
-      autoBumpCost: 135000,
-      featuredAdCost: 180000,
-      vipStoreMonthlyCost: 900000,
-    },
-    PS: {
-      countryCode: 'PS',
-      currency: 'ILS',
-      currencySymbol: 'شيكل',
-      turboAdCost: 7,
-      autoBumpCost: 7,
-      featuredAdCost: 7,
-      vipStoreMonthlyCost: 50,
-    },
-    SY: {
-      countryCode: 'SY',
-      currency: 'SYP',
-      currencySymbol: 'ليرة',
-      turboAdCost: 30000,
-      autoBumpCost: 30000,
-      featuredAdCost: 15000,
-      vipStoreMonthlyCost: 200000,
+      countryCode: "JO",
+      currency: "JOD",
+      currencySymbol: "دينار",
+      turboAdCost: 0.75,
+      autoBumpCost: 1,
+      featuredAdCost: 2,
+      vipStoreMonthlyCost: 9.9,
     },
     SA: {
-      countryCode: 'SA',
-      currency: 'SAR',
-      currencySymbol: 'ر.س',
-      turboAdCost: 7.5,
-      autoBumpCost: 7.5,
-      featuredAdCost: 15,
-      vipStoreMonthlyCost: 60,
+      countryCode: "SA",
+      currency: "SAR",
+      currencySymbol: "ر.س",
+      turboAdCost: 4,
+      autoBumpCost: 5,
+      featuredAdCost: 9,
+      vipStoreMonthlyCost: 39,
+    },
+    PS: {
+      countryCode: "PS",
+      currency: "ILS",
+      currencySymbol: "شيكل",
+      turboAdCost: 2,
+      autoBumpCost: 3,
+      featuredAdCost: 5,
+      vipStoreMonthlyCost: 29,
+    },
+    LB: {
+      countryCode: "LB",
+      currency: "USD",
+      currencySymbol: "$",
+      turboAdCost: 0.69,
+      autoBumpCost: 0.99,
+      featuredAdCost: 1.49,
+      vipStoreMonthlyCost: 9.99,
+    },
+    SY: {
+      countryCode: "SY",
+      currency: "USD",
+      currencySymbol: "$",
+      turboAdCost: 0.49,
+      autoBumpCost: 0.79,
+      featuredAdCost: 0.99,
+      vipStoreMonthlyCost: 7.99,
     },
   },
 };
