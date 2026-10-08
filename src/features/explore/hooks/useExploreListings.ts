@@ -48,7 +48,7 @@ export function useExploreListings(): UseExploreListingsReturn {
   const displayListings = useMemo(() => {
     return filterListings(marketListings, {
       market: browseCountryCode,
-      searchQuery: (activeSearchText || searchQuery || '').trim(),
+      searchQuery: '',
       categorySlug: categoryFilter,
       minPrice: minPriceFilter,
       maxPrice: maxPriceFilter,
@@ -57,7 +57,7 @@ export function useExploreListings(): UseExploreListingsReturn {
       cityEn: browseCityEn,
       filterMode,
     });
-  }, [marketListings, browseCountryCode, activeSearchText, searchQuery, categoryFilter, minPriceFilter, maxPriceFilter, activeNeighborhood, browseCityAr, browseCityEn, filterMode]);
+  }, [marketListings, browseCountryCode, categoryFilter, minPriceFilter, maxPriceFilter, activeNeighborhood, browseCityAr, browseCityEn, filterMode]);
 
   const handleLoadMore = useCallback(() => {
     if (!hasMore || isLoadingMore) return;
