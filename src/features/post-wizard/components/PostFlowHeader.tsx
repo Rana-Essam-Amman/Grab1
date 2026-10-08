@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowLeft, ArrowRight } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
+import { BrandMark } from '@/shared/components/BrandMark';
 
 interface PostFlowHeaderProps {
   readonly step: number;
@@ -69,6 +70,7 @@ export const PostFlowHeader: React.FC<PostFlowHeaderProps> = ({
           </div>
         )}
       </div>
+      <BrandMark isArabic={isArabic} />
     </div>
   );
 };
