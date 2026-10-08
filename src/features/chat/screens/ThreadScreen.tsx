@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useUI } from '@/hooks/useUI';
+import { toast } from 'sonner';
 import { useChat } from '@/hooks/useChat';
 import { useAuth } from '@/hooks/useAuth';
 import { useAuthStore } from '@/features/auth/store/auth.slice';
@@ -18,7 +19,7 @@ import { MessageDeleteConfirmDialog } from '../components/MessageDeleteConfirmDi
 
 export const ThreadScreen: React.FC = () => {
   const { isArabic, goBack, selectedThreadId, setSelectedListingId, navigateTo, browseCountryCode } = useUI();
-  const { conversations, sendChatMessage, isTyping } = useChat();
+  const { conversations, sendChatMessageAsync, isTyping } = useChat();
   const { authStatus } = useAuth();
   const currentUserId = useAuthStore((s) => s.user?.id ?? null);
   const onlineUserIds = useChatStore((s) => s.onlineUserIds);
@@ -64,17 +65,21 @@ export const ThreadScreen: React.FC = () => {
     void markMessagesReadAction(selectedThreadId);
   }, [selectedThreadId, authStatus, thread]);
 
-  const handleSend = useCallback((e: React.FormEvent) => {
+    const handleSend = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!thread || isMessageLimitReached || !inputText.trim()) return;
-    try {
-      sendChatMessage(thread.id, inputText.trim(), browseCountryCode);
-      setInputText('');
-    } catch (error) {
-      console.error('[Chat] Failed to send message:', error);
-      setInputText('');
+    const text = inputText.trim();
+    const result = await sendChatMessageAsync(thread.id, currentUserId ?? '', text);
+    if (result.error) {
+      toast.error(
+        isArabic
+          ? 'فشل إرسال الرسالة — حاول مرة أخرى'
+          : 'Failed to send message — please try again'
+      );
+      return;
     }
-  }, [thread, isMessageLimitReached, inputText, sendChatMessage, browseCountryCode]);
+    setInputText('');
+  }, [thread, isMessageLimitReached, inputText, sendChatMessageAsync, currentUserId, isArabic]);
 
   const handleViewListing = useCallback(() => {
     if (thread) {
