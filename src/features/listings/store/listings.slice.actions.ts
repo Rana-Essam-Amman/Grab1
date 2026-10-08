@@ -5,10 +5,10 @@ import { validateAdQuotaAvailability as validateAdQuotaAvailabilityHelper } from
 import { globalStorage } from '@/shared/lib/marketStorage';
 import { ListingsState } from './listings.slice.types';
 import { sanitizeListingData, logListingError } from './listings.slice.helpers';
-import { seedListings } from '@/data/seedListings';
 import type { PublishResult } from './listings.slice.types';
-import { performSupabasePublish, performSupabaseSync } from './listings.slice.supabase';
+import { performSupabasePublish } from './listings.slice.supabase';
 import { createWishlistActions } from './listings.slice.wishlist';
+import { createPaginationActions } from './listings.slice.pagination';
 
 export const createListingsActions = (
   set: (fn: (state: ListingsState) => void) => void,
@@ -64,22 +64,9 @@ export const createListingsActions = (
   },
 
   ...createWishlistActions(set, get),
+  ...createPaginationActions(set, get),
 
   refreshListings: () => set((state) => { state.listings = getListingsFromStorage(); }),
-
-  syncFromSupabase: async () => {
-    set((state) => { state.isSyncing = true; });
-    const { listings: remoteListings, error } = await performSupabaseSync();
-
-    set((state) => {
-      state.isSyncing = false;
-      if (error || !remoteListings) return;
-      // Supabase is source of truth for user-created listings.
-      // Seed listings stay as local-only demo content.
-      state.listings = [...remoteListings, ...seedListings];
-      saveListingsToStorage(state.listings);
-    });
-  },
 
   publishListing: async (listing: Listing, activeCountry: string, isArabic = true): Promise<PublishResult> => {
     const { remoteListing, error, fallbackToLocal } = await performSupabasePublish(
@@ -87,7 +74,6 @@ export const createListingsActions = (
       activeCountry,
       isArabic
     );
-
     // No Supabase session (demo/E2E/offline) → save locally, don't block user.
     if (fallbackToLocal) {
       const sanitized = sanitizeListingData(listing, activeCountry, isArabic);

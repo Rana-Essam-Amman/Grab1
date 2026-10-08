@@ -8,7 +8,6 @@ export type { ListingsState };
 export const useListingsStore = create<ListingsState>()(
   immer((set, get) => {
     const baseActions = createListingsActions(set, get);
-
     return {
       listings: [],
       wishlist: [],
@@ -16,6 +15,10 @@ export const useListingsStore = create<ListingsState>()(
       isInitialized: false,
       isSyncing: false,
       isQuotaExhausted: false,
+      activeMarket: null,
+      page: 0,
+      hasMore: false,
+      isLoadingMore: false,
       ...baseActions,
       addListing: (listing, activeCountry, isArabic) => {
         baseActions.addListing(listing, activeCountry, isArabic);
@@ -35,6 +38,8 @@ export const useListingsStore = create<ListingsState>()(
       refreshListings: () => {
         baseActions.refreshListings();
       },
+      loadMore: () => {
+        return baseActions.loadMore();
+      },
     };
-  })
-);
+  }));
