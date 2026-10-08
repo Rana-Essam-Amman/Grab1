@@ -1,9 +1,14 @@
 import { useCallback, useState } from 'react';
 import { MockPaymentAdapter } from '../data/adapters/MockPaymentAdapter';
+import { PaddleAdapter } from '../data/adapters/PaddleAdapter';
 import type { PaymentRepository } from '../data/repositories/PaymentRepository';
 import type { PurchaseRequest, PurchaseReceipt, PaymentMethod } from '../domain';
 
-const paymentRepo: PaymentRepository = new MockPaymentAdapter();
+const paddleToken = import.meta.env.VITE_PADDLE_CLIENT_TOKEN;
+const paymentRepo: PaymentRepository =
+  typeof paddleToken === 'string' && paddleToken.length > 0
+    ? new PaddleAdapter()
+    : new MockPaymentAdapter();
 
 export function usePayment() {
   const [isProcessing, setIsProcessing] = useState(false);
