@@ -104,7 +104,20 @@ describe('useListingDetail', () => {
     expect(mockGoBack).toHaveBeenCalledTimes(1);
   });
 
-  it('handleSelectSeller sets selectedSellerPhone and navigates to seller-profile', () => {
+  it('handleSelectSeller prefers userId when available', () => {
+    const { result } = renderHook(() => useListingDetail());
+    act(() => {
+      result.current.handleSelectSeller();
+    });
+    expect(mockSetSelectedSellerPhone).toHaveBeenCalledWith(mockListing.userId);
+    expect(mockNavigateTo).toHaveBeenCalledWith('seller-profile');
+  });
+
+  it('handleSelectSeller falls back to sellerPhone for legacy rows', () => {
+    mockGetListing.mockImplementation(() => ({
+      ...mockListing,
+      userId: undefined,
+    }));
     const { result } = renderHook(() => useListingDetail());
     act(() => {
       result.current.handleSelectSeller();
