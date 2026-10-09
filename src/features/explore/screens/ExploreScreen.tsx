@@ -7,7 +7,7 @@ import { useExploreListings } from '../hooks/useExploreListings';
 import { ExploreVoidedNoticeBanner } from '../components/ExploreVoidedNoticeBanner';
 import { ExploreTopSections } from '../components/ExploreTopSections';
 import { ExploreQuotaPaywallModal } from '../components/ExploreQuotaPaywallModal';
-import { ExploreFilterBar } from '@/shared/components/filters/ExploreFilterBar';
+import { FiltersTriggerBar } from '../components/filters/FiltersTriggerBar';
 import { ExploreListingFeed } from '@/features/explore/components/ExploreListingFeed';
 
 function useDebouncedValue<T>(value: T, delayMs: number): T {
@@ -30,8 +30,8 @@ export const ExploreScreen: React.FC = () => {
   }, [debouncedSearch, setSearchQuery]);
 
   const {
-    filterMode, setFilterMode, feedLayout, setFeedLayout, minPriceFilter, setMinPriceFilter,
-    maxPriceFilter, setMaxPriceFilter, activeNeighborhood, setActiveNeighborhood, activeSearchText,
+    setFilterMode, feedLayout, setFeedLayout, minPriceFilter,
+    maxPriceFilter, activeNeighborhood, activeSearchText,
     voidedNotice, setVoidedNotice, displayListings, handleResetAllFilters,
     hasMore, isLoadingMore, onLoadMore
   } = useExploreListings();
@@ -73,20 +73,9 @@ export const ExploreScreen: React.FC = () => {
           onFocusChange={setIsSearchFocused}
         />
         <div className="mt-2">
-          <ExploreFilterBar
-            filterMode={filterMode}
-            setFilterMode={setFilterMode}
+          <FiltersTriggerBar
             feedLayout={feedLayout}
-            setFeedLayout={setFeedLayout}
-            totalListingsCount={displayListings.length}
-            minPriceFilter={minPriceFilter}
-            setMinPriceFilter={setMinPriceFilter}
-            maxPriceFilter={maxPriceFilter}
-            setMaxPriceFilter={setMaxPriceFilter}
-            activeNeighborhood={activeNeighborhood}
-            setActiveNeighborhood={setActiveNeighborhood}
-            activeSearchText={activeSearchText}
-            onClearSearch={handleResetAllFilters}
+            onFeedLayoutChange={setFeedLayout}
           />
         </div>
       </div>
