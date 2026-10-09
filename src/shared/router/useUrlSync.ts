@@ -9,8 +9,6 @@ import { buildCategoryPath } from './categoryPaths';
 import { hydrateStoreFromUrl } from './hydrateStoreFromUrl';
 import { syncStoreFromFilterUrl, buildFilterQueryFromStore } from './filtersUrl';
 
-/** Store is source of truth. URL mirrors it. Mount once inside RouterProvider. */
-
 if (typeof window !== 'undefined') {
   hydrateStoreFromUrl(window.location.pathname, window.location.search);
 }
@@ -40,7 +38,6 @@ export function useUrlSync(): void {
 
   const lastPathRef = useRef<string | null>(null);
 
-  // --- URL → Store ---------------------------------------------------
   useLayoutEffect(() => {
     const store = useUIStore.getState();
     const tab = pathToTab(location.pathname);
@@ -54,6 +51,18 @@ export function useUrlSync(): void {
     }
 
     const match = resolvePath(location.pathname);
+    const pathCat = match?.params.category ?? null;
+    const pathSub = match?.params.subcategory ?? null;
+    if ((match?.screen === 'main' && pathCat) || location.pathname === '/') {
+      const nextCat = location.pathname === '/' ? null : pathCat;
+      const nextSub = location.pathname === '/' ? null : pathSub;
+      if (store.categoryFilter !== nextCat || store.subcategoryFilter !== nextSub) {
+        useUIStore.setState({ categoryFilter: nextCat, subcategoryFilter: nextSub, selectedParentCategory: nextCat });
+      }
+      syncStoreFromFilterUrl(location.search);
+      lastPathRef.current = location.pathname + location.search;
+      return;
+    }
     if (!match) return;
 
     const nextListingId = match.params.listingId ?? null;
@@ -92,7 +101,6 @@ export function useUrlSync(): void {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname, location.search]);
 
-  // --- Store → URL ---------------------------------------------------
   useEffect(() => {
     const latest = useUIStore.getState();
     let target: string;
@@ -110,8 +118,6 @@ export function useUrlSync(): void {
     } else if (latest.currentScreen === 'sub-categories' && latest.selectedParentCategory) {
       target = screenToPath('sub-categories', { category: latest.selectedParentCategory });
     } else if (latest.currentScreen === 'listing-detail' && latest.selectedListingId) {
-      // Skip write if current URL already resolves to this listing.
-      // Prevents: SEO URL → legacy URL → SEO URL flicker while data loads.
       const current = resolvePath(window.location.pathname);
       if (current?.screen === 'listing-detail' && current.params.listingId === latest.selectedListingId) {
         return;
