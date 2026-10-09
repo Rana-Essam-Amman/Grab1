@@ -8,7 +8,7 @@ import { Avatar } from '@/shared/ui/Avatar';
 import { HeaderDropdownMenu } from './HeaderDropdownMenu';
 import { CountryFlag } from './CountryFlag';
 import { getUserAvatar } from '@/shared/lib/userDisplay';
-import { NotificationBellButton } from './NotificationBellButton';
+import { useNotificationsStore } from '@/features/notifications';
 
 const DEFAULT_CAPITALS: Record<string, { en: string; ar: string; cityEn?: string; cityAr?: string }> = {
   JO: { en: 'Amman', ar: 'عمّان', cityEn: 'Amman', cityAr: 'عمّان' },
@@ -22,6 +22,7 @@ export const Header: React.FC = () => {
   const { isArabic, setLocale, browseCountry, browseCityEn, browseCityAr, activeCurrency, setActiveCurrency, setBrowseLocation, navigateTo, setIsCountrySheetOpen } = useUI();
   const { user, authStatus } = useAuth();
   const { wishlist } = useListings();
+  const unreadCount = useNotificationsStore((s) => s.unreadCount);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const countryCode = (browseCountry?.code || 'JO') as 'JO' | 'LB' | 'PS' | 'SY' | 'SA';
   const defaultCap = DEFAULT_CAPITALS[countryCode] || DEFAULT_CAPITALS.JO;
@@ -82,24 +83,27 @@ export const Header: React.FC = () => {
   return (
     <header className="relative z-30 px-4 pt-2 pb-2 bg-brand border-b border-white/20">
       <div className="flex items-center justify-between gap-2">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleMenuToggle}
-          className="w-10 h-10 rounded-full border border-white/20 overflow-hidden shadow-xs hover:ring-2 hover:ring-white/30 transition-all flex items-center justify-center bg-white/10 p-0 shrink-0"
-          title={isArabic ? 'القائمة والحساب' : 'Menu & Account'}
-          data-testid="header-menu-btn"
-          aria-label={isArabic ? 'القائمة والحساب' : 'Menu & Account'}
-        >
-          <Avatar
-            src={getUserAvatar(user)}
-            fallback={user?.firstName?.charAt(0)?.toUpperCase() || 'U'}
-            size="sm"
-            className="w-full h-full border-none ring-2 ring-white/30"
-          />
-        </Button>
-
-        <NotificationBellButton isArabic={isArabic} onPress={handleNotificationsNav} />
+        <div className="relative shrink-0">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleMenuToggle}
+            className="w-10 h-10 rounded-full border border-white/20 overflow-hidden shadow-xs hover:ring-2 hover:ring-white/30 transition-all flex items-center justify-center bg-white/10 p-0"
+            title={isArabic ? 'القائمة والحساب' : 'Menu & Account'}
+            data-testid="header-menu-btn"
+            aria-label={isArabic ? 'القائمة والحساب' : 'Menu & Account'}
+          >
+            <Avatar
+              src={getUserAvatar(user)}
+              fallback={user?.firstName?.charAt(0)?.toUpperCase() || 'U'}
+              size="sm"
+              className="w-full h-full border-none ring-2 ring-white/30"
+            />
+          </Button>
+          {unreadCount > 0 && (
+            <span data-testid="avatar-notification-dot" aria-label={isArabic ? `${unreadCount} إشعار غير مقروء` : `${unreadCount} unread`} style={{ position: 'absolute', top: 0, right: 0, width: 11, height: 11, borderRadius: 9999, backgroundColor: '#DC2626', border: '2px solid #0F1E3D', zIndex: 10, pointerEvents: 'none' }} />
+          )}
+        </div>
 
         <div
           className="cursor-pointer select-none flex-1 flex justify-center items-center gap-2 pe-6"
