@@ -67,6 +67,7 @@ const LoginScreen = lazy(() => import('@/features/auth/screens/LoginScreen').the
 const SubCategoriesScreen = lazy(() => import('@/features/categories/screens/SubCategoriesScreen').then((m) => ({ default: m.SubCategoriesScreen })));
 const EditProfileScreen = lazy(() => import('@/features/profile/screens/EditProfileScreen').then((m) => ({ default: m.EditProfileScreen })));
 const ProfileScreen = lazy(() => import('@/features/profile/screens/ProfileScreen').then((m) => ({ default: m.ProfileScreen })));
+const FiltersScreen = lazy(() => import('@/features/explore/screens/FiltersScreen').then((m) => ({ default: m.FiltersScreen })));
 
 const ScreenLoader: React.FC = () => (
   <div className="flex-1 w-full min-h-[60vh] flex items-center justify-center bg-background">
@@ -155,6 +156,7 @@ const MainNavigator: React.FC = () => {
       case 'sub-categories': return r('sub-categories', SubCategoriesScreen);
       case 'edit-profile': return r('edit-profile', EditProfileScreen);
       case 'profile': return r('profile', ProfileScreen);
+      case 'filters': return r('filters', FiltersScreen);
       case 'main':
         switch (activeTab) {
           case 'categories': return <CategoriesScreen />;

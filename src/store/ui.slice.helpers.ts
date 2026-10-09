@@ -79,6 +79,8 @@ export const getInitialState = () => {
     minPriceFilter: null,
     maxPriceFilter: null,
     neighborhoodFilter: null,
+    subcategoryFilter: null,
+    sortBy: 'newest' as const,
     selectedListingId: null,
     selectedThreadId: null,
     selectedSellerPhone: null,
