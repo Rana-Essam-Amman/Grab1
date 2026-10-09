@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { ListingCard } from '@/shared/components';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
 import { ArrowLeft, ArrowRight, SearchNormal1, Grid1, RowVertical } from 'iconsax-react';
-import { ExploreFilterBar } from '@/shared/components/filters/ExploreFilterBar';
+import { FiltersTriggerBar } from '@/features/explore/components/filters/FiltersTriggerBar';
 import { SearchResultsEmpty } from '../components/SearchResultsEmpty';
 import { filterListings } from '@/shared/lib/filterListings';
 
@@ -25,7 +25,7 @@ export const SearchResultsScreen: React.FC = () => {
     },
     [feedLayout, setFeedLayoutStore]
   );
-  const [filterMode, setFilterMode] = useState<'city' | 'all'>('city');
+  const [filterMode] = useState<'city' | 'all'>('city');
 
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
 
@@ -67,12 +67,9 @@ export const SearchResultsScreen: React.FC = () => {
           </div>
         </div>
 
-        <ExploreFilterBar
-          filterMode={filterMode} setFilterMode={setFilterMode} feedLayout={feedLayout} setFeedLayout={setFeedLayout}
-          totalListingsCount={results.length} minPriceFilter={minPriceFilter} setMinPriceFilter={setMinPriceFilter}
-          maxPriceFilter={maxPriceFilter} setMaxPriceFilter={setMaxPriceFilter} activeNeighborhood={neighborhoodFilter}
-          setActiveNeighborhood={setNeighborhoodFilter} activeSearchText={searchQuery} onClearSearch={() => setSearchQuery('')}
-          onDarkBackground={true}
+        <FiltersTriggerBar
+          feedLayout={feedLayout}
+          onFeedLayoutChange={setFeedLayout}
         />
       </div>
 
