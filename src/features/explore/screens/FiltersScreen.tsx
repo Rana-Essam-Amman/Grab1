@@ -7,15 +7,16 @@ import { CategoryFilterSection } from '../components/filters/CategoryFilterSecti
 import { SortFilterSection } from '../components/filters/SortFilterSection';
 import { PriceRangeFilterSection } from '../components/filters/PriceRangeFilterSection';
 import { LocationFilterSection } from '../components/filters/LocationFilterSection';
+import { CategoryAttrsSection } from '../components/filters/CategoryAttrsSection';
 import type { SortBy } from '@/shared/router/filterParams';
 
 export const FiltersScreen: React.FC = () => {
   const {
     isArabic, goBack, navigateTo, setActiveTab,
     categoryFilter, subcategoryFilter, sortBy,
-    minPriceFilter, maxPriceFilter, neighborhoodFilter,
+    minPriceFilter, maxPriceFilter, neighborhoodFilter, attrsFilter,
     setCategoryFilter, setSubcategoryFilter, setSortBy,
-    setMinPriceFilter, setMaxPriceFilter, setNeighborhoodFilter,
+    setMinPriceFilter, setMaxPriceFilter, setNeighborhoodFilter, setAttrsFilter,
     activeCurrency, browseCountryCode, browseCityEn, setBrowseLocation,
   } = useUI();
 
@@ -26,12 +27,14 @@ export const FiltersScreen: React.FC = () => {
   const [draftMax, setDraftMax] = useState<number | null>(maxPriceFilter);
   const [draftCity, setDraftCity] = useState<string>(browseCityEn);
   const [draftNeigh, setDraftNeigh] = useState<string | null>(neighborhoodFilter);
+  const [draftAttrs, setDraftAttrs] = useState<Record<string, string>>(attrsFilter);
 
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
   const catCount = draftCategory ? 1 + (draftSub ? 1 : 0) : 0;
   const sortActive = draftSort !== 'newest';
   const priceActive = draftMin !== null || draftMax !== null;
   const locActive = draftNeigh !== null ? 1 : 0;
+  const attrsActive = Object.keys(draftAttrs).length;
 
   const handleApply = useCallback(() => {
     setCategoryFilter(draftCategory);
@@ -40,9 +43,19 @@ export const FiltersScreen: React.FC = () => {
     setMinPriceFilter(draftMin);
     setMaxPriceFilter(draftMax);
     setNeighborhoodFilter(draftNeigh);
+    setAttrsFilter(draftAttrs);
     setActiveTab('explore');
     navigateTo('main');
-  }, [draftCategory, draftSub, draftSort, draftMin, draftMax, draftNeigh, setCategoryFilter, setSubcategoryFilter, setSortBy, setMinPriceFilter, setMaxPriceFilter, setNeighborhoodFilter, setActiveTab, navigateTo]);
+  }, [draftCategory, draftSub, draftSort, draftMin, draftMax, draftNeigh, draftAttrs, setCategoryFilter, setSubcategoryFilter, setSortBy, setMinPriceFilter, setMaxPriceFilter, setNeighborhoodFilter, setAttrsFilter, setActiveTab, navigateTo]);
+
+  const handleAttrChange = useCallback((key: string, value: string | null) => {
+    setDraftAttrs((prev) => {
+      const next = { ...prev };
+      if (value === null) delete next[key];
+      else next[key] = value;
+      return next;
+    });
+  }, []);
 
   const handleReset = useCallback(() => {
     setDraftCategory(null);
@@ -51,6 +64,7 @@ export const FiltersScreen: React.FC = () => {
     setDraftMin(null);
     setDraftMax(null);
     setDraftNeigh(null);
+    setDraftAttrs({});
   }, []);
 
   return (
@@ -69,7 +83,7 @@ export const FiltersScreen: React.FC = () => {
             isArabic={isArabic}
             activeCategory={draftCategory}
             activeSubcategory={draftSub}
-            onCategoryChange={setDraftCategory}
+            onCategoryChange={(slug) => { setDraftCategory(slug); setDraftAttrs({}); }}
             onSubcategoryChange={setDraftSub}
           />
         </FilterSection>
@@ -83,6 +97,18 @@ export const FiltersScreen: React.FC = () => {
             onChange={(mn, mx) => { setDraftMin(mn); setDraftMax(mx); }}
           />
         </FilterSection>
+
+        {draftCategory && (
+          <FilterSection isArabic={isArabic} title={isArabic ? 'المواصفات' : 'Specifications'} activeCount={attrsActive}>
+            <CategoryAttrsSection
+              isArabic={isArabic}
+              categorySlug={draftCategory}
+              subcategorySlug={draftSub}
+              attrs={draftAttrs}
+              onChange={handleAttrChange}
+            />
+          </FilterSection>
+        )}
 
         <FilterSection isArabic={isArabic} title={isArabic ? 'الموقع' : 'Location'} activeCount={locActive}>
           <LocationFilterSection
