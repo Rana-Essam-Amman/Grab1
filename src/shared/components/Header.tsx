@@ -99,6 +99,8 @@ export const Header: React.FC = () => {
           />
         </Button>
 
+        <NotificationBellButton isArabic={isArabic} onPress={handleNotificationsNav} />
+
         <div
           className="cursor-pointer select-none flex-1 flex justify-center items-center gap-2 pe-6"
           onClick={handleLogoClick}
@@ -113,8 +115,6 @@ export const Header: React.FC = () => {
             <span className="text-[10px] font-semibold text-white tracking-[7px] uppercase leading-none mt-1 m-0 block">Marketplace</span>
           </div>
         </div>
-
-        <NotificationBellButton isArabic={isArabic} onPress={handleNotificationsNav} />
 
         <CountryFlag code={countryCode} />
       </div>
