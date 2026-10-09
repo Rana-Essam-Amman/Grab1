@@ -1,5 +1,12 @@
 // Auth domain — pure business logic
-export type { User, MarketCountry } from './entities/User';
+export type { User } from './entities/User';
+
+/**
+ * @deprecated MarketCountry is now in @/shared/domain/market.
+ *             This re-export exists for backwards compatibility and will be
+ *             removed once all consumers migrate.
+ */
+export type { MarketCountry } from '@/shared/domain/market';
 
 export { canRegister } from './rules/canRegister';
 export type { RegisterInput, CanRegisterReason, CanRegisterResult } from './rules/canRegister';

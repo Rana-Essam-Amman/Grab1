@@ -1,4 +1,4 @@
-import type { MarketCountry } from '@/features/auth/domain';
+import type { MarketCountry } from '@/shared/domain/market';
 
 export interface ListingFilters {
   readonly market: MarketCountry;
