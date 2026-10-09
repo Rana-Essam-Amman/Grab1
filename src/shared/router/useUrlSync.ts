@@ -35,7 +35,6 @@ export function useUrlSync(): void {
   const setSelectedListingId = useUIStore((s) => s.setSelectedListingId);
   const setSelectedSellerPhone = useUIStore((s) => s.setSelectedSellerPhone);
   const setSelectedThreadId = useUIStore((s) => s.setSelectedThreadId);
-
   const lastPathRef = useRef<string | null>(null);
 
   useLayoutEffect(() => {
@@ -82,7 +81,6 @@ export function useUrlSync(): void {
     if (match.screen !== store.currentScreen) {
       useUIStore.setState({ currentScreen: match.screen });
     }
-
     if (!nextListingId && store.selectedListingId) {
       useUIStore.setState({ selectedListingId: null });
     }
@@ -92,7 +90,6 @@ export function useUrlSync(): void {
     if (!nextThreadId && store.selectedThreadId) {
       useUIStore.setState({ selectedThreadId: null });
     }
-
     if (match.screen === 'main') {
       syncStoreFromFilterUrl(location.search);
     }
@@ -132,7 +129,6 @@ export function useUrlSync(): void {
           })
         : `/listing/${latest.selectedListingId}`;
     } else if (latest.currentScreen === 'filters') {
-      // Preserve /filters query params (owned by useFiltersUrlSync).
       target = '/filters' + location.search;
     } else {
       target = screenToPath(latest.currentScreen, {
@@ -144,7 +140,6 @@ export function useUrlSync(): void {
 
     if (target === location.pathname + location.search) return;
     if (lastPathRef.current === target) return;
-
     lastPathRef.current = target;
     navigate(target, { replace: false });
     // eslint-disable-next-line react-hooks/exhaustive-deps
