@@ -32,7 +32,7 @@ export const NotificationBellButton: React.FC<NotificationBellButtonProps> = ({
           style={{
             position: 'absolute',
             top: '-2px',
-            [isArabic ? 'left' : 'right']: '-2px',
+            right: '-2px',
             minWidth: '18px',
             height: '18px',
             padding: '0 5px',
