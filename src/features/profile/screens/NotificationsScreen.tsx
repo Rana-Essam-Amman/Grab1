@@ -45,14 +45,14 @@ export const NotificationsScreen: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen bg-surface pb-12" dir={isArabic ? 'rtl' : 'ltr'}>
+    <div data-testid="notifications-screen" className="flex flex-col min-h-screen bg-surface pb-12" dir={isArabic ? 'rtl' : 'ltr'}>
       <div className="px-4 py-3 bg-brand border-b border-white/10 flex items-center justify-between sticky top-0 z-20">
         <Button variant="ghost" size="icon" onClick={goBack} aria-label="Back" className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 flex items-center justify-center p-0">
           {isArabic ? <ArrowRight size={18} variant="Linear" color="#FFFFFF" /> : <ArrowLeft size={18} variant="Linear" color="#FFFFFF" />}
         </Button>
         <h1 className="text-base font-bold text-white flex-1 text-center">{isArabic ? 'الإشعارات' : 'Notifications'}</h1>
         {unreadCount > 0 ? (
-          <button onClick={handleMarkAll} className="text-[11px] font-bold text-white/90 hover:text-white cursor-pointer select-none w-16 text-center">
+          <button data-testid="notifications-mark-all" onClick={handleMarkAll} className="text-[11px] font-bold text-white/90 hover:text-white cursor-pointer select-none w-16 text-center">
             {isArabic ? 'تعليم الكل' : 'Mark all'}
           </button>
         ) : (
@@ -65,7 +65,7 @@ export const NotificationsScreen: React.FC = () => {
           <Icon icon="svg-spinners:ring-resize" width={28} height={28} />
         </div>
       ) : notifications.length === 0 ? (
-        <div className="flex-1 flex flex-col items-center justify-center p-8">
+        <div data-testid="notifications-empty" className="flex-1 flex flex-col items-center justify-center p-8">
           <EmptyState
             icon={<Icon icon="fluent-emoji:bell" width={48} height={48} />}
             title={isArabic ? 'لا توجد إشعارات' : 'No Notifications'}
@@ -77,13 +77,16 @@ export const NotificationsScreen: React.FC = () => {
           />
         </div>
       ) : (
-        <div className="p-4 flex flex-col gap-3">
+        <div data-testid="notifications-list" className="p-4 flex flex-col gap-3">
           {notifications.map((n) => {
             const txt = buildNotificationText(n, isArabic);
             const unread = !n.readAt;
             return (
               <button
                 key={n.id}
+                data-testid="notification-row"
+                data-notification-id={n.id}
+                data-unread={unread}
                 type="button"
                 onClick={() => handleRowClick(n)}
                 className={`p-4 rounded-2xl border transition-all flex items-start gap-3.5 cursor-pointer text-start select-none ${
@@ -107,7 +110,7 @@ export const NotificationsScreen: React.FC = () => {
                   </span>
                 </div>
                 {unread && (
-                  <span className="w-2.5 h-2.5 rounded-full bg-primary mt-1 shrink-0" />
+                  <span data-testid="notification-unread-dot" className="w-2.5 h-2.5 rounded-full bg-primary mt-1 shrink-0" />
                 )}
               </button>
             );
