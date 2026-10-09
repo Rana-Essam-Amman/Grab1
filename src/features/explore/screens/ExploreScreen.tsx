@@ -20,7 +20,7 @@ function useDebouncedValue<T>(value: T, delayMs: number): T {
 }
 
 export const ExploreScreen: React.FC = () => {
-  const { isArabic, categoryFilter, browseCountryCode, navigateTo, setSearchQuery, isSearchFocused, setIsSearchFocused } = useUI();
+  const { isArabic, browseCountryCode, navigateTo, setSearchQuery, isSearchFocused, setIsSearchFocused } = useUI();
   const { isQuotaExhausted, setIsQuotaExhausted } = useMonetization();
   const [searchInput, setSearchInput] = useState('');
   const debouncedSearch = useDebouncedValue(searchInput, 300);
@@ -30,10 +30,9 @@ export const ExploreScreen: React.FC = () => {
   }, [debouncedSearch, setSearchQuery]);
 
   const {
-    setFilterMode, feedLayout, setFeedLayout, minPriceFilter,
-    maxPriceFilter, activeNeighborhood, activeSearchText,
+    setFilterMode, feedLayout, setFeedLayout, activeSearchText,
     voidedNotice, setVoidedNotice, displayListings, handleResetAllFilters,
-    hasMore, isLoadingMore, onLoadMore
+    hasMore, isLoadingMore, onLoadMore, hasAnyFilter
   } = useExploreListings();
 
   const currentPackage = useMemo(() => {
@@ -98,7 +97,7 @@ export const ExploreScreen: React.FC = () => {
       <ExploreListingFeed
         listings={displayListings}
         feedLayout={feedLayout}
-        hasActiveFilters={Boolean(categoryFilter || minPriceFilter !== null || maxPriceFilter !== null || activeNeighborhood || activeSearchText)}
+        hasActiveFilters={hasAnyFilter}
         onResetFilters={handleResetAllFilters}
         activeSearchText={activeSearchText}
         onPostWithSearch={handlePostWithSearch}
