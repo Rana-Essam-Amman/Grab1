@@ -106,7 +106,7 @@ export const Header: React.FC = () => {
         </div>
 
         <div
-          className="cursor-pointer select-none flex-1 flex justify-center items-center gap-2 pe-6"
+          className="cursor-pointer select-none flex-1 flex justify-center items-center gap-2"
           onClick={handleLogoClick}
         >
           <img
