@@ -34,6 +34,7 @@ import { MARKETS, isValidMarketCode } from '@/data/markets/config';
 import { RouterProvider } from '@/shared/router/RouterProvider';
 import { useScrollToTop } from '@/shared/router/useScrollToTop';
 import { useUrlSync } from '@/shared/router/useUrlSync';
+import { useScreenFromUrl } from '@/shared/router/useScreenFromUrl';
 import { globalStorage } from '@/shared/lib/marketStorage';
 
 const CategoriesScreen = lazy(() => import('@/features/categories/screens/CategoriesScreen').then((m) => ({ default: m.CategoriesScreen })));
@@ -73,7 +74,8 @@ const ScreenLoader: React.FC = () => (
 );
 
 const MainNavigator: React.FC = () => {
-  const { currentScreen, activeTab, isArabic } = useUI();
+  const { isArabic } = useUI();
+  const { currentScreen, activeTab } = useScreenFromUrl();
   useUrlSync();
   useScrollToTop();
   const { screens: registryScreens } = useRegistry();
