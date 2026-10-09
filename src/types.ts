@@ -127,7 +127,7 @@ export interface ChatMessage {
   isDeleted?: boolean;
 }
 
-import type { Conversation as DomainConversation } from '@/features/chat/domain/entities/Conversation';
+import type { Conversation as DomainConversation } from '@/features/chat';
 
 // Re-export from domain (single source of truth) with mutable compatibility
 export type Conversation = {
