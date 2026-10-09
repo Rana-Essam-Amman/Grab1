@@ -2,13 +2,14 @@ import { useUIStore } from '@/store/ui.slice';
 import { globalStorage } from '@/shared/lib/marketStorage';
 import { resolvePath } from './paths';
 import { pathToTab } from './tabPaths';
+import { syncStoreFromFilterUrl } from './filtersUrl';
 
 /**
  * Hydrate the UI store from the current URL BEFORE React renders.
  * Eliminates the race condition that caused "refresh goes Home".
  * Call at module scope in useUrlSync.ts, exactly once.
  */
-export function hydrateStoreFromUrl(path: string): void {
+export function hydrateStoreFromUrl(path: string, search: string): void {
   const initialTab = pathToTab(path);
   const store = useUIStore.getState();
 
@@ -43,11 +44,14 @@ export function hydrateStoreFromUrl(path: string): void {
 
   if (category) {
     useUIStore.setState({
-      categoryFilter: subcategory ?? category,
+      categoryFilter: category,
+      subcategoryFilter: subcategory,
       selectedParentCategory: category,
       activeTab: 'explore',
     });
   }
+
+  syncStoreFromFilterUrl(search);
 
   const nextListingId = initialMatch.params.listingId ?? null;
   const nextSellerPhone = initialMatch.params.sellerPhone ?? null;
