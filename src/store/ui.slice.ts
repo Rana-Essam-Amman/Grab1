@@ -118,33 +118,19 @@ export const useUIStore = create<UIState>()(
           document.documentElement.lang = locale;
           applyTheme(state.theme);
         }
-        // Hydrate URL-dependent state AFTER persist rehydration.
-        // Zustand persist restores state on an async microtask AFTER module
-        // scope — so hydrateStoreFromUrl() (called at module scope in
-        // useUrlSync.ts) had its `currentScreen` overwritten by the default
-        // 'main'. That erased 'sub-categories' on refresh.
-        // We re-run hydration here (async import avoids the ui.slice ←
-        // hydrateStoreFromUrl cycle) once persist has settled.
-        if (typeof window !== 'undefined') {
-          void import('@/shared/router/hydrateStoreFromUrl').then(
-            ({ hydrateStoreFromUrl }) => hydrateStoreFromUrl(window.location.pathname)
-          );
-        }
       },
     }
   )
 );
 
 // --- Synchronous rehydrate BEFORE first React render ---------------
-// With skipHydration: true above, persist no longer auto-runs. We do it
-// here — still at module scope — so the very first paint already has
-// the persisted locale + URL-derived screen/tab. Kills the multi-render
-// flicker that used to happen on every page.
+// With skipHydration: true above, persist no longer auto-runs. We call
+// it here at module scope so the very first paint already has the
+// persisted locale. URL-derived screen/tab hydration is handled by
+// useUrlSync.ts at its own module scope (avoids circular dependency
+// back into this slice).
 if (typeof window !== 'undefined') {
   void useUIStore.persist.rehydrate();
-  void import('@/shared/router/hydrateStoreFromUrl').then(
-    ({ hydrateStoreFromUrl }) => hydrateStoreFromUrl(window.location.pathname)
-  );
 }
 
 // Apply theme on store creation (before any React render).
