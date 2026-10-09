@@ -1,5 +1,5 @@
 import type { Listing } from '@/types';
-import type { MarketCountry } from '@/features/auth/domain';
+import type { MarketCountry } from '@/shared/domain/market';
 
 export type CanBookmarkReason = 'cross-market' | 'listing-archived' | 'already-bookmarked';
 
