@@ -10,10 +10,12 @@ import { LocationFilterSection } from '../components/filters/LocationFilterSecti
 import { CategoryAttrsSection } from '../components/filters/CategoryAttrsSection';
 import { FiltersFooter } from '../components/filters/FiltersFooter';
 import { useShareFilters } from '../hooks/useShareFilters';
+import { useFiltersUrlSync } from '../hooks/useFiltersUrlSync';
 import type { SortBy } from '@/shared/router/filterParams';
 import { BrandMark } from '@/shared/components/BrandMark';
 import { filterListings } from '@/shared/lib/filterListings';
 import { useListings } from '@/hooks/useListings';
+
 export const FiltersScreen: React.FC = () => {
   const {
     isArabic, goBack, navigateTo, setActiveTab,
@@ -31,6 +33,9 @@ export const FiltersScreen: React.FC = () => {
   const [draftCity, setDraftCity] = useState<string>(browseCityEn);
   const [draftNeigh, setDraftNeigh] = useState<string | null>(neighborhoodFilter);
   const [draftAttrs, setDraftAttrs] = useState<Record<string, string>>(attrsFilter);
+
+  useFiltersUrlSync({ category: draftCategory, sub: draftSub, min: draftMin, max: draftMax, neigh: draftNeigh, sort: draftSort, attrs: draftAttrs });
+
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
   const catCount = draftCategory ? 1 + (draftSub ? 1 : 0) : 0;
   const sortActive = draftSort !== 'newest';
@@ -62,10 +67,7 @@ export const FiltersScreen: React.FC = () => {
       return next;
     });
   }, []);
-
-  const handleShare = useShareFilters({
-    isArabic, browseCountryCode, draftCategory, draftSub, draftMin, draftMax, draftNeigh, draftSort, draftAttrs,
-  });
+  const handleShare = useShareFilters({ isArabic, browseCountryCode, draftCategory, draftSub, draftMin, draftMax, draftNeigh, draftSort, draftAttrs });
   const handleReset = useCallback(() => {
     setDraftCategory(null);
     setDraftSub(null);
