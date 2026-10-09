@@ -23,6 +23,8 @@ export const SortFilterSection: React.FC<SortFilterSectionProps> = ({
       return (
         <button
           key={opt.value}
+          data-testid="filter-sort-option"
+          data-value={opt.value}
           type="button"
           onClick={() => onChange(opt.value)}
           className={`w-full flex items-center justify-between px-3 py-3 text-sm font-bold rounded-xl transition-colors ${
