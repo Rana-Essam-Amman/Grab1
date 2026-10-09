@@ -13,6 +13,7 @@ export function useExploreListings(): UseExploreListingsReturn {
     isArabic, searchQuery, setSearchQuery, setCategoryFilter, categoryFilter,
     browseCountryCode, browseCityAr, browseCityEn, minPriceFilter, setMinPriceFilter,
     maxPriceFilter, setMaxPriceFilter, neighborhoodFilter, setNeighborhoodFilter,
+    sortBy, subcategoryFilter, setSubcategoryFilter,
   } = useUI();
   const { listings, hasMore, isLoadingMore, loadMore } = useListings();
   const [userFilterMode, setUserFilterMode] = useState<'city' | 'all' | null>(null);
@@ -33,9 +34,10 @@ export function useExploreListings(): UseExploreListingsReturn {
   const setActiveNeighborhood = setNeighborhoodFilter;
 
   const handleResetAllFilters = useCallback(() => {
-    setCategoryFilter(null); setMinPriceFilter(null); setMaxPriceFilter(null);
+    setCategoryFilter(null); setSubcategoryFilter(null);
+    setMinPriceFilter(null); setMaxPriceFilter(null);
     setNeighborhoodFilter(null); setSearchQuery(''); setVoidedNotice(null);
-  }, [setCategoryFilter, setMinPriceFilter, setMaxPriceFilter, setNeighborhoodFilter, setSearchQuery]);
+  }, [setCategoryFilter, setSubcategoryFilter, setMinPriceFilter, setMaxPriceFilter, setNeighborhoodFilter, setSearchQuery]);
 
   const marketListings = useMemo(() => filterListingsByMarket(listings, browseCountryCode), [listings, browseCountryCode]);
   const cityCount = useMemo(() => countCityListings(marketListings, browseCityAr, browseCityEn), [marketListings, browseCityAr, browseCityEn]);
@@ -49,15 +51,16 @@ export function useExploreListings(): UseExploreListingsReturn {
     return filterListings(marketListings, {
       market: browseCountryCode,
       searchQuery: '',
-      categorySlug: categoryFilter,
+      categorySlug: subcategoryFilter ?? categoryFilter,
       minPrice: minPriceFilter,
       maxPrice: maxPriceFilter,
       neighborhood: activeNeighborhood,
       cityAr: browseCityAr,
       cityEn: browseCityEn,
       filterMode,
+      sortBy,
     });
-  }, [marketListings, browseCountryCode, categoryFilter, minPriceFilter, maxPriceFilter, activeNeighborhood, browseCityAr, browseCityEn, filterMode]);
+  }, [marketListings, browseCountryCode, categoryFilter, subcategoryFilter, minPriceFilter, maxPriceFilter, activeNeighborhood, browseCityAr, browseCityEn, filterMode, sortBy]);
 
   const handleLoadMore = useCallback(() => {
     if (!hasMore || isLoadingMore) return;
