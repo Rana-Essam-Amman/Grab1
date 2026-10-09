@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useListings } from '@/hooks/useListings';
 import { useAuth } from '@/hooks/useAuth';
-import { bumpListing } from '@/features/listings/services/listingsService';
+import { bumpListing } from '@/features/listings';
 import { getBumpCount, canBump, BUMP_DAILY_LIMIT } from '../helpers/bumpLimit';
 
 /**

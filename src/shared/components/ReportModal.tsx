@@ -5,7 +5,7 @@ import { CloseCircle, Danger, TickCircle } from 'iconsax-react';
 import { Modal } from '@/shared/ui/Modal';
 import { Button } from '@/shared/ui/Button';
 import { ReportReasonsList } from './ReportReasonsList';
-import { submitListingReport } from '@/features/listings/services/reportsService';
+import { submitListingReport } from '@/features/listings';
 
 interface ReportModalProps {
   listing: Listing;

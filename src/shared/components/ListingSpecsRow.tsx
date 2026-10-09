@@ -1,7 +1,7 @@
 import React from 'react';
 import { Icon } from '@iconify/react';
 import { iconFor } from '@/features/post-wizard/components/data/fluentIconMap';
-import { labelToIconKey } from '@/features/listings/helpers/labelToIconKey';
+import { labelToIconKey } from '@/features/listings';
 
 interface SpecItem {
   readonly label: string;

@@ -4,7 +4,7 @@ import { BookmarkHeartButton } from './BookmarkHeartButton';
 import { Crown } from 'iconsax-react';
 import { Icon } from '@iconify/react';
 import { Badge } from '@/shared/ui/Badge';
-import { pickSpecs } from '@/features/listings/helpers/pickSpecs';
+import { pickSpecs } from '@/features/listings';
 import { ListingSpecsRow } from './ListingSpecsRow';
 import { toOptimizedImageUrl } from '@/shared/lib/optimizedImage';
 import { pickImageFitClass, ratioOf, type ImageFitClass } from '@/shared/lib/imageFit';
