@@ -103,6 +103,7 @@ export function useUrlSync(): void {
 
   useEffect(() => {
     const latest = useUIStore.getState();
+    if (latest.currentScreen === 'filters') return; // /filters owns its URL
     let target: string;
 
     if (latest.currentScreen === 'main') {
