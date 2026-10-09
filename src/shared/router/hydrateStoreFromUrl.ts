@@ -25,6 +25,11 @@ export function hydrateStoreFromUrl(path: string): void {
   const market = initialMatch.params.market ?? null;
   const category = initialMatch.params.category ?? null;
 
+  // Sub-categories: restore parent category from /categories/sub/:slug
+  if (initialMatch.screen === 'sub-categories' && category) {
+    useUIStore.setState({ selectedParentCategory: category });
+  }
+
   if (market && market !== store.browseCountryCode) {
     useUIStore.setState({
       browseCountryCode: market,

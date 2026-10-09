@@ -81,9 +81,8 @@ export function screenToPath(screen: ScreenType, params?: RouteParams): string {
       ? `/post-ad/edit/${encodeURIComponent(params.listingId)}`
       : '/post-ad/edit';
   }
-  if (screen === 'thread') {
-    return params?.threadId ? `/messages/${encodeURIComponent(params.threadId)}` : '/messages/thread';
-  }
+  if (screen === 'thread') return params?.threadId ? `/messages/${encodeURIComponent(params.threadId)}` : '/messages/thread';
+  if (screen === 'sub-categories' && params?.category) return `/categories/sub/${encodeURIComponent(params.category)}`;
   return STATIC_SCREEN_TO_PATH[screen] ?? '/';
 }
 
@@ -134,10 +133,11 @@ export function resolvePath(pathname: string): PathMatch | null {
     };
   }
 
-  // Static
+  const subCatMatch = clean.match(/^\/categories\/sub\/([^/]+)$/);
+  if (subCatMatch) return { screen: 'sub-categories', params: { category: decodeURIComponent(subCatMatch[1]) } };
+
   const screen = STATIC_PATH_TO_SCREEN[clean];
   if (screen) return { screen, params: {} };
-
   return null;
 }
 
