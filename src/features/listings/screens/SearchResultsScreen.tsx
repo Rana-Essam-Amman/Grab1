@@ -5,13 +5,14 @@ import { useAuth } from '@/hooks/useAuth';
 import { ListingCard } from '@/shared/components';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
 import { ArrowLeft, ArrowRight, SearchNormal1, Grid1, RowVertical } from 'iconsax-react';
-import { ExploreFilterBar } from '@/shared/components/filters/ExploreFilterBar';
+import { FiltersTriggerBar } from '@/features/explore/components/filters/FiltersTriggerBar';
 import { SearchResultsEmpty } from '../components/SearchResultsEmpty';
 import { filterListings } from '@/shared/lib/filterListings';
 
 export const SearchResultsScreen: React.FC = () => {
   const {
     isArabic, navigateTo, searchQuery, setSearchQuery, categoryFilter, setCategoryFilter,
+    subcategoryFilter,
     minPriceFilter, setMinPriceFilter, maxPriceFilter, setMaxPriceFilter,
     neighborhoodFilter, setNeighborhoodFilter, browseCountryCode, browseCityEn, browseCityAr
   } = useUI();
@@ -25,7 +26,7 @@ export const SearchResultsScreen: React.FC = () => {
     },
     [feedLayout, setFeedLayoutStore]
   );
-  const [filterMode, setFilterMode] = useState<'city' | 'all'>('city');
+  const [filterMode] = useState<'city' | 'all'>('city');
 
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
 
@@ -39,7 +40,7 @@ export const SearchResultsScreen: React.FC = () => {
     return filterListings(marketListings, {
       market: browseCountryCode,
       searchQuery,
-      categorySlug: categoryFilter,
+      categorySlug: subcategoryFilter ?? categoryFilter,
       minPrice: minPriceFilter,
       maxPrice: maxPriceFilter,
       neighborhood: neighborhoodFilter,
@@ -47,7 +48,7 @@ export const SearchResultsScreen: React.FC = () => {
       cityEn: browseCityEn,
       filterMode: searchQuery.trim() ? 'all' : filterMode,
     });
-  }, [marketListings, browseCountryCode, searchQuery, categoryFilter, minPriceFilter, maxPriceFilter, neighborhoodFilter, browseCityAr, browseCityEn, filterMode]);
+  }, [marketListings, browseCountryCode, searchQuery, categoryFilter, subcategoryFilter, minPriceFilter, maxPriceFilter, neighborhoodFilter, browseCityAr, browseCityEn, filterMode]);
 
   return (
     <div className="flex flex-col min-h-screen bg-canvas pb-16" dir={isArabic ? 'rtl' : 'ltr'}>
@@ -67,12 +68,9 @@ export const SearchResultsScreen: React.FC = () => {
           </div>
         </div>
 
-        <ExploreFilterBar
-          filterMode={filterMode} setFilterMode={setFilterMode} feedLayout={feedLayout} setFeedLayout={setFeedLayout}
-          totalListingsCount={results.length} minPriceFilter={minPriceFilter} setMinPriceFilter={setMinPriceFilter}
-          maxPriceFilter={maxPriceFilter} setMaxPriceFilter={setMaxPriceFilter} activeNeighborhood={neighborhoodFilter}
-          setActiveNeighborhood={setNeighborhoodFilter} activeSearchText={searchQuery} onClearSearch={() => setSearchQuery('')}
-          onDarkBackground={true}
+        <FiltersTriggerBar
+          feedLayout={feedLayout}
+          onFeedLayoutChange={setFeedLayout}
         />
       </div>
 
