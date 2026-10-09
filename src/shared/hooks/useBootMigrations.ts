@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useAuthStore } from '@/features/auth';
+import { useAuthStore } from '@/features/auth/store/auth.slice';
 import { useUIStore } from '@/store/ui.slice';
 import { useListingsStore } from '@/features/listings/store/listings.slice';
 import { migrateDraftsToMarket } from '@/shared/lib/migrations/draftsMigration';

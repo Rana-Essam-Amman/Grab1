@@ -1,6 +1,6 @@
 import { globalStorage } from '@/shared/lib/marketStorage';
 import { MarketCode } from '@/shared/lib/marketGate';
-import { useAuthStore } from '@/features/auth';
+import { useAuthStore } from '@/features/auth/store/auth.slice';
 import { DEFAULT_REGIONAL_CAPITALS } from '../data/locations/capitals';
 import { validateRegionalSanity } from '../data/locations';
 import { getSanitizedCurrencyByCountry } from './ui.slice.helpers';

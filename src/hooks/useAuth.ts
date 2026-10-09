@@ -1,4 +1,4 @@
-import { useAuthStore } from '@/features/auth';
+import { useAuthStore } from '@/features/auth/store/auth.slice';
 import { UserProfile, RegisteredAccount } from '../types';
 
 export interface AuthContextType {
