@@ -31,6 +31,7 @@ export type ScreenType =
   | 'privacy'
   | 'terms'
   | 'pricing'
+  | 'filters'
   | 'wishlist'
   | 'login'
   | 'register'
@@ -82,12 +83,16 @@ export interface UIState {
   minPriceFilter: number | null;
   maxPriceFilter: number | null;
   neighborhoodFilter: string | null;
+  subcategoryFilter: string | null;
+  sortBy: 'newest' | 'price-asc' | 'price-desc';
   setSearchQuery: (query: string) => void;
   setCategoryFilter: (category: string | null) => void;
   setSelectedParentCategory: (category: string | null) => void;
   setMinPriceFilter: (price: number | null) => void;
   setMaxPriceFilter: (price: number | null) => void;
   setNeighborhoodFilter: (neighborhood: string | null) => void;
+  setSubcategoryFilter: (subcategory: string | null) => void;
+  setSortBy: (sortBy: 'newest' | 'price-asc' | 'price-desc') => void;
 
   // Selected entities
   selectedListingId: string | null;

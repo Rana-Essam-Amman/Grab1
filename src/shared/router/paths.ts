@@ -63,6 +63,7 @@ const STATIC_SCREEN_TO_PATH: Record<Exclude<ScreenType, 'listing-detail' | 'sell
   'support': '/support',
   'safety': '/safety',
   'about': '/about',
+  'filters': '/filters',
 };
 
 const STATIC_PATH_TO_SCREEN: Record<string, ScreenType> = Object.fromEntries(
@@ -127,12 +128,7 @@ export function resolvePath(pathname: string): PathMatch | null {
 
   // Dynamic: /post-ad/edit/:id (legacy /post-ad/edit remains static)
   const editMatch = clean.match(/^\/post-ad\/edit\/([^/]+)$/);
-  if (editMatch) {
-    return {
-      screen: 'edit-post',
-      params: { listingId: decodeURIComponent(editMatch[1]) },
-    };
-  }
+  if (editMatch) return { screen: 'edit-post', params: { listingId: decodeURIComponent(editMatch[1]) } };
 
   const subCatMatch = clean.match(/^\/categories\/sub\/([^/]+)$/);
   if (subCatMatch) return { screen: 'sub-categories', params: { category: decodeURIComponent(subCatMatch[1]) } };
