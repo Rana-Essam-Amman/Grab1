@@ -28,8 +28,9 @@ export interface CountryDef {
 }
 
 export interface ListingAttribute {
-  label: string;
-  value: string;
+  readonly key?: string;
+  readonly label: string;
+  readonly value: string;
 }
 
 export type ListingStatus = 'active' | 'pending' | 'sold' | 'archived';
