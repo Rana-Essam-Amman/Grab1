@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNotificationsStore } from '@/features/notifications/store/notifications.slice';
+import { useNotificationsStore } from '@/features/notifications';
 
 export interface NotificationBellButtonProps {
   readonly isArabic: boolean;

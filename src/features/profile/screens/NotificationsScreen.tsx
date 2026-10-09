@@ -5,16 +5,14 @@ import { EmptyState } from '@/shared/ui/EmptyState';
 import { Icon } from '@iconify/react';
 import { BrandMark } from '@/shared/components/BrandMark';
 import { useUI } from '@/hooks/useUI';
-import { useNotificationsStore } from '@/features/notifications/store/notifications.slice';
 import {
+  useNotificationsStore,
   markOneRead,
   markAllRead,
-} from '@/features/notifications/store/notifications.slice.actions';
-import {
   buildNotificationText,
   formatNotificationTime,
-} from '@/features/notifications/helpers/notificationText';
-import type { AppNotification } from '@/features/notifications/services/notificationsService.types';
+  type AppNotification,
+} from '@/features/notifications';
 
 const ICON_BG: Record<string, string> = {
   message: 'bg-info/15 text-info',
