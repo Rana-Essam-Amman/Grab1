@@ -104,6 +104,10 @@ export const useUIStore = create<UIState>()(
     {
       name: 'ui-storage',
       storage: createJSONStorage(() => uiStorage),
+      // Prevent async auto-hydration. We rehydrate synchronously below
+      // (before React renders) to eliminate the first-paint flicker on
+      // every page (locale, screen, tab, theme all flashed).
+      skipHydration: true,
       partialize: (state) => ({
         locale: state.locale,
       }),
@@ -130,6 +134,18 @@ export const useUIStore = create<UIState>()(
     }
   )
 );
+
+// --- Synchronous rehydrate BEFORE first React render ---------------
+// With skipHydration: true above, persist no longer auto-runs. We do it
+// here — still at module scope — so the very first paint already has
+// the persisted locale + URL-derived screen/tab. Kills the multi-render
+// flicker that used to happen on every page.
+if (typeof window !== 'undefined') {
+  void useUIStore.persist.rehydrate();
+  void import('@/shared/router/hydrateStoreFromUrl').then(
+    ({ hydrateStoreFromUrl }) => hydrateStoreFromUrl(window.location.pathname)
+  );
+}
 
 // Apply theme on store creation (before any React render).
 applyTheme(useUIStore.getState().theme);
