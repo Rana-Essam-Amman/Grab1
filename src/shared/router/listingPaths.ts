@@ -25,13 +25,10 @@ export interface ParsedListingPath {
   readonly id: string;
 }
 
-/**
- * Parses /{market}/{category}/{slug}-{id}
- * Returns null if the shape doesn't match.
- */
-
-const UUID_LENGTH = 36; // 8-4-4-4-12 including dashes
+const UUID_LENGTH = 36;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+// Legacy seed IDs look like 'jo-4', 'sa-12' — {market}-{number} at the tail.
+const LEGACY_ID_RE = /([a-z]{2}-\d+)$/;
 
 export function parseListingPath(path: string): ParsedListingPath | null {
   const parts = path.split('/').filter(Boolean);
@@ -40,18 +37,24 @@ export function parseListingPath(path: string): ParsedListingPath | null {
   const [marketRaw, categoryRaw, tail] = parts;
   const market = marketRaw.toUpperCase();
   if (!MARKETS.includes(market as ListingMarket)) return null;
+  const category = categoryRaw.toLowerCase();
 
-  // UUID is fixed 36 chars. Slice from the END — the leading dashes inside
-  // the UUID make lastIndexOf('-') unreliable.
-  // Shape: {slug}-{uuid}  →  min length = 1 + 1 + 36 = 38
-  if (tail.length < UUID_LENGTH + 2) return null;
+  // Preferred: {slug}-{uuid}. Slice from the END.
+  if (tail.length >= UUID_LENGTH + 2) {
+    const id = tail.slice(-UUID_LENGTH);
+    if (UUID_RE.test(id)) {
+      const slug = tail.slice(0, tail.length - UUID_LENGTH - 1);
+      if (slug) return { market, category, slug, id };
+    }
+  }
 
-  const id = tail.slice(-UUID_LENGTH);
-  if (!UUID_RE.test(id)) return null;
+  // Legacy: {slug}-{market}-{number}, e.g. 'kia-...-panoramic-jo-4'.
+  const legacy = tail.match(LEGACY_ID_RE);
+  if (legacy) {
+    const id = legacy[1];
+    const slug = tail.slice(0, tail.length - id.length - 1);
+    if (slug) return { market, category, slug, id };
+  }
 
-  // Everything before the final dash is the slug (may be empty).
-  const slug = tail.slice(0, tail.length - UUID_LENGTH - 1);
-  if (!slug) return null;
-
-  return { market, category: categoryRaw.toLowerCase(), slug, id };
+  return null;
 }
