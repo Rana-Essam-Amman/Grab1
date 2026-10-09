@@ -4,7 +4,7 @@ import { onAuthStateChange } from '../services/authService';
 import { ensureAnonymousSession, isAnonymousUser } from '../services/anonymousSession';
 import { mapSessionToUser, resumePendingNavigation } from './authListenerHelpers';
 import { useUIStore } from '@/store/ui.slice';
-import { useListingsStore } from '@/features/listings/store/listings.slice';
+import { useListingsStore } from '@/features/listings';
 import { toast } from 'sonner';
 
 function resumePendingWishlist(): void {

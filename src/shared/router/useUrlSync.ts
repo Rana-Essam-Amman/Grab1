@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useUIStore } from '@/store/ui.slice';
 import { screenToPath, resolvePath } from './paths';
 import { buildListingPath } from './listingPaths';
-import { useListingsStore } from '@/features/listings/store/listings.slice';
+import { useListingsStore } from '@/features/listings';
 import { tabToPath, pathToTab } from './tabPaths';
 import { buildCategoryPath } from './categoryPaths';
 import { hydrateStoreFromUrl } from './hydrateStoreFromUrl';

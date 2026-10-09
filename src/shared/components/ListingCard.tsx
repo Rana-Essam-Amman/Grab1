@@ -6,7 +6,7 @@ import { getSanitizedRegionalLocation } from '@/data/locations';
 import { getSanitizedCurrency } from '@/data/countries';
 import { ListingCardImage } from './ListingCardImage';
 import { ListingCardHorizontal } from './ListingCardHorizontal';
-import { pickSpecs } from '@/features/listings/helpers/pickSpecs';
+import { pickSpecs } from '@/features/listings';
 import { ListingSpecsRow } from './ListingSpecsRow';
 
 interface ListingCardProps {
