@@ -5,7 +5,7 @@ import { useListingsStore } from '@/features/listings/store/listings.slice';
 import { migrateDraftsToMarket } from '@/shared/lib/migrations/draftsMigration';
 import { migrateChatsToMarket } from '@/shared/lib/migrations/chatsMigration';
 import { cleanupLegacyPendingFlags } from '@/shared/lib/migrations/pendingFlagsCleanup';
-import { registerListingsGetter } from '@/features/chat/store/chat.slice.deps';
+import { registerListingsGetter } from '@/features/chat';
 
 /**
  * Boot-time one-shot migrations + store initialization.
