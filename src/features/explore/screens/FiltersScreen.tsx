@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { ArrowLeft, ArrowRight, Setting4, Refresh } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { useUI } from '@/hooks/useUI';
@@ -9,7 +9,9 @@ import { PriceRangeFilterSection } from '../components/filters/PriceRangeFilterS
 import { LocationFilterSection } from '../components/filters/LocationFilterSection';
 import { CategoryAttrsSection } from '../components/filters/CategoryAttrsSection';
 import type { SortBy } from '@/shared/router/filterParams';
-
+import { BrandMark } from '@/shared/components/BrandMark';
+import { filterListings } from '@/shared/lib/filterListings';
+import { useListings } from '@/hooks/useListings';
 export const FiltersScreen: React.FC = () => {
   const {
     isArabic, goBack, navigateTo, setActiveTab,
@@ -19,7 +21,6 @@ export const FiltersScreen: React.FC = () => {
     setMinPriceFilter, setMaxPriceFilter, setNeighborhoodFilter, setAttrsFilter,
     activeCurrency, browseCountryCode, browseCityEn, setBrowseLocation,
   } = useUI();
-
   const [draftCategory, setDraftCategory] = useState<string | null>(categoryFilter);
   const [draftSub, setDraftSub] = useState<string | null>(subcategoryFilter);
   const [draftSort, setDraftSort] = useState<SortBy>(sortBy);
@@ -28,14 +29,17 @@ export const FiltersScreen: React.FC = () => {
   const [draftCity, setDraftCity] = useState<string>(browseCityEn);
   const [draftNeigh, setDraftNeigh] = useState<string | null>(neighborhoodFilter);
   const [draftAttrs, setDraftAttrs] = useState<Record<string, string>>(attrsFilter);
-
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
   const catCount = draftCategory ? 1 + (draftSub ? 1 : 0) : 0;
   const sortActive = draftSort !== 'newest';
   const priceActive = draftMin !== null || draftMax !== null;
   const locActive = draftNeigh !== null ? 1 : 0;
   const attrsActive = Object.keys(draftAttrs).length;
-
+  const { listings } = useListings();
+  const previewCount = useMemo(() => filterListings(listings, {
+    market: browseCountryCode, searchQuery: '', categorySlug: draftSub ?? draftCategory, minPrice: draftMin, maxPrice: draftMax,
+    neighborhood: draftNeigh, filterMode: 'all', sortBy: draftSort, attrs: draftAttrs,
+  }).length, [listings, browseCountryCode, draftCategory, draftSub, draftMin, draftMax, draftNeigh, draftSort, draftAttrs]);
   const handleApply = useCallback(() => {
     setCategoryFilter(draftCategory);
     setSubcategoryFilter(draftSub);
@@ -75,6 +79,7 @@ export const FiltersScreen: React.FC = () => {
         </Button>
         <Setting4 size={20} variant="Bold" color="#FFFFFF" />
         <h1 className="text-base font-bold text-white flex-1">{isArabic ? 'فلترة' : 'Filters'}</h1>
+        <BrandMark isArabic={isArabic} />
       </header>
 
       <div className="flex-1 flex flex-col gap-3 p-4 pb-32">
@@ -136,7 +141,7 @@ export const FiltersScreen: React.FC = () => {
           <Refresh size={18} variant="Linear" color="currentColor" />
         </button>
         <Button variant="primary" size="lg" fullWidth onClick={handleApply}>
-          {isArabic ? 'عرض النتائج' : 'Show results'}
+          {isArabic ? `عرض ${previewCount} نتيجة` : `Show ${previewCount} results`}
         </Button>
       </div>
     </div>
