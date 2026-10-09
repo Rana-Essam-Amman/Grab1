@@ -21,6 +21,7 @@ export interface RouteParams {
   readonly threadId?: string | null;
   readonly market?: MarketCode | null;
   readonly category?: string | null;
+  readonly subcategory?: string | null;
 }
 
 /** Result of resolving a URL back to a screen + its params. */
@@ -95,7 +96,7 @@ export function resolvePath(pathname: string): PathMatch | null {
   if (cat) {
     return {
       screen: 'main',
-      params: { market: cat.market, category: cat.category },
+      params: { market: cat.market, category: cat.category, subcategory: cat.subcategory },
     };
   }
 
