@@ -34,9 +34,10 @@ export function useExploreListings(): UseExploreListingsReturn {
   const setActiveNeighborhood = setNeighborhoodFilter;
 
   const handleResetAllFilters = useCallback(() => {
-    setCategoryFilter(null); setMinPriceFilter(null); setMaxPriceFilter(null);
+    setCategoryFilter(null); setSubcategoryFilter(null);
+    setMinPriceFilter(null); setMaxPriceFilter(null);
     setNeighborhoodFilter(null); setSearchQuery(''); setVoidedNotice(null);
-  }, [setCategoryFilter, setMinPriceFilter, setMaxPriceFilter, setNeighborhoodFilter, setSearchQuery]);
+  }, [setCategoryFilter, setSubcategoryFilter, setMinPriceFilter, setMaxPriceFilter, setNeighborhoodFilter, setSearchQuery]);
 
   const marketListings = useMemo(() => filterListingsByMarket(listings, browseCountryCode), [listings, browseCountryCode]);
   const cityCount = useMemo(() => countCityListings(marketListings, browseCityAr, browseCityEn), [marketListings, browseCityAr, browseCityEn]);
