@@ -6,15 +6,17 @@ import { FilterSection } from '../components/filters/FilterSection';
 import { CategoryFilterSection } from '../components/filters/CategoryFilterSection';
 import { SortFilterSection } from '../components/filters/SortFilterSection';
 import { PriceRangeFilterSection } from '../components/filters/PriceRangeFilterSection';
+import { LocationFilterSection } from '../components/filters/LocationFilterSection';
 import type { SortBy } from '@/shared/router/filterParams';
 
 export const FiltersScreen: React.FC = () => {
   const {
     isArabic, goBack, navigateTo, setActiveTab,
     categoryFilter, subcategoryFilter, sortBy,
-    minPriceFilter, maxPriceFilter,
+    minPriceFilter, maxPriceFilter, neighborhoodFilter,
     setCategoryFilter, setSubcategoryFilter, setSortBy,
-    setMinPriceFilter, setMaxPriceFilter, activeCurrency,
+    setMinPriceFilter, setMaxPriceFilter, setNeighborhoodFilter,
+    activeCurrency, browseCountryCode, browseCityEn, setBrowseLocation,
   } = useUI();
 
   const [draftCategory, setDraftCategory] = useState<string | null>(categoryFilter);
@@ -22,11 +24,14 @@ export const FiltersScreen: React.FC = () => {
   const [draftSort, setDraftSort] = useState<SortBy>(sortBy);
   const [draftMin, setDraftMin] = useState<number | null>(minPriceFilter);
   const [draftMax, setDraftMax] = useState<number | null>(maxPriceFilter);
+  const [draftCity, setDraftCity] = useState<string>(browseCityEn);
+  const [draftNeigh, setDraftNeigh] = useState<string | null>(neighborhoodFilter);
 
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
   const catCount = draftCategory ? 1 + (draftSub ? 1 : 0) : 0;
   const sortActive = draftSort !== 'newest';
   const priceActive = draftMin !== null || draftMax !== null;
+  const locActive = draftNeigh !== null ? 1 : 0;
 
   const handleApply = useCallback(() => {
     setCategoryFilter(draftCategory);
@@ -34,9 +39,10 @@ export const FiltersScreen: React.FC = () => {
     setSortBy(draftSort);
     setMinPriceFilter(draftMin);
     setMaxPriceFilter(draftMax);
+    setNeighborhoodFilter(draftNeigh);
     setActiveTab('explore');
     navigateTo('main');
-  }, [draftCategory, draftSub, draftSort, draftMin, draftMax, setCategoryFilter, setSubcategoryFilter, setSortBy, setMinPriceFilter, setMaxPriceFilter, setActiveTab, navigateTo]);
+  }, [draftCategory, draftSub, draftSort, draftMin, draftMax, draftNeigh, setCategoryFilter, setSubcategoryFilter, setSortBy, setMinPriceFilter, setMaxPriceFilter, setNeighborhoodFilter, setActiveTab, navigateTo]);
 
   const handleReset = useCallback(() => {
     setDraftCategory(null);
@@ -44,6 +50,7 @@ export const FiltersScreen: React.FC = () => {
     setDraftSort('newest');
     setDraftMin(null);
     setDraftMax(null);
+    setDraftNeigh(null);
   }, []);
 
   return (
@@ -74,6 +81,17 @@ export const FiltersScreen: React.FC = () => {
             maxPrice={draftMax}
             currencySymbol={activeCurrency}
             onChange={(mn, mx) => { setDraftMin(mn); setDraftMax(mx); }}
+          />
+        </FilterSection>
+
+        <FilterSection isArabic={isArabic} title={isArabic ? 'الموقع' : 'Location'} activeCount={locActive}>
+          <LocationFilterSection
+            isArabic={isArabic}
+            countryCode={browseCountryCode}
+            activeCity={draftCity}
+            activeNeighborhood={draftNeigh}
+            onCityChange={(cityEn, cityAr) => { setDraftCity(cityEn); setBrowseLocation(browseCountryCode, cityEn, cityAr); setDraftNeigh(null); }}
+            onNeighborhoodChange={setDraftNeigh}
           />
         </FilterSection>
 
