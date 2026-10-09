@@ -24,7 +24,7 @@ import { OfflineBanner } from '@/shared/ui/OfflineBanner';
 import { GlobalPhoneCaptureMount } from '@/shared/components/GlobalPhoneCaptureMount';
 import { BuildBadge } from '@/shared/components/BuildBadge';
 import { useBootMigrations } from '@/shared/hooks/useBootMigrations';
-import { useSupabaseListingsSync } from '@/features/listings/hooks/useSupabaseListingsSync';
+import { useSupabaseListingsSync } from '@/features/listings';
 import { useSupabaseWishlistSync } from '@/features/listings/hooks/useSupabaseWishlistSync';
 import { useSupabaseChatSync, useOnlinePresence } from '@/features/chat';
 import { useSupabaseNotificationsSync } from '@/features/notifications/hooks/useSupabaseNotificationsSync';

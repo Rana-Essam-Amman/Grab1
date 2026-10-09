@@ -25,3 +25,10 @@ export { submitListingReport } from './services/reportsService';
 // Helpers
 export { pickSpecs } from './helpers/pickSpecs';
 export { labelToIconKey } from './helpers/labelToIconKey';
+
+// Sync hooks (App-level wiring)
+// NOTE: useSupabaseWishlistSync is intentionally NOT exported here — it
+// imports from @/features/auth, creating a barrel cycle:
+//   auth/index → useSupabaseAuthListener → listings/index → wishlistSync → auth/index
+// Consumers must import it directly: '@/features/listings/hooks/useSupabaseWishlistSync'
+export { useSupabaseListingsSync } from './hooks/useSupabaseListingsSync';
