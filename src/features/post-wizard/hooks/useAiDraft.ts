@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { usePostWizard } from './usePostWizard';
 import { useUI } from '@/hooks/useUI';
 import { useAuth } from '@/hooks/useAuth';
-import { generateListing } from '@/ai/listingCopyAgent';
 
 export interface UseAiDraftReturn {
   prompt: string;
@@ -31,6 +30,7 @@ export function useAiDraft(): UseAiDraftReturn {
     setError(null);
     try {
       const sellerId = user?.email || user?.phone || postDraft.draftId || 'guest';
+      const { generateListing } = await import('@/ai/listingCopyAgent');
       const generated = await generateListing({
         raw,
         categorySlug: postDraft.categorySlug || '',
