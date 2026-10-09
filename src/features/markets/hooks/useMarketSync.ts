@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { useAuthStore } from '@/features/auth/store/auth.slice';
+import { useAuthStore } from '@/features/auth';
 import { useUIStore } from '@/store/ui.slice';
 import { DEFAULT_REGIONAL_CAPITALS } from '@/data/locations';
 import { resolveBrowseMarket } from '../helpers/resolveBrowseMarket';

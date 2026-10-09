@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useListingsStore } from '../store/listings.slice';
-import { useAuthStore } from '@/features/auth/store/auth.slice';
+import { useAuthStore } from '@/features/auth';
 import { useUIStore } from '@/store/ui.slice';
 
 /**

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useAuthStore } from '@/features/auth/store/auth.slice';
+import { useAuthStore } from '@/features/auth';
 import { loadConversationsForUser, resetChatStore } from '../store/chat.slice.actions.load';
 
 /**

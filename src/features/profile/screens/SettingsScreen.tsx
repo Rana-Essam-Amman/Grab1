@@ -10,7 +10,7 @@ import { BrandMark } from '@/shared/components/BrandMark';
 import { EditNicknameModal } from '../components/EditNicknameModal';
 import { ChangeAccountMarketModal } from '../components/ChangeAccountMarketModal';
 import { MARKETS } from '@/data/markets/config';
-import { useAuthStore } from '@/features/auth/store/auth.slice';
+import { useAuthStore } from '@/features/auth';
 
 export const SettingsScreen: React.FC = () => {
   const { isArabic, goBack, navigateTo, setLocale, browseCountry, browseCityAr, browseCityEn, setIsCountrySheetOpen } = useUI();

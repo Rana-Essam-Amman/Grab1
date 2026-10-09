@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { Modal } from '@/shared/ui/Modal';
 import { Button } from '@/shared/ui/Button';
 import { MARKETS, ALL_MARKET_CODES } from '@/data/markets/config';
-import { useAuthStore } from '@/features/auth/store/auth.slice';
+import { useAuthStore } from '@/features/auth';
 import { upsertProfile } from '@/shared/lib/profilesService';
 import { toast } from 'sonner';
 import type { MarketCode } from '@/data/markets/types';
