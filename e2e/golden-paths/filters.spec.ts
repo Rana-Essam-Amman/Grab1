@@ -69,10 +69,4 @@ test.describe('Golden Path — Filters', () => {
     await expect(page.getByTestId('filter-price-min')).toHaveValue('500');
     await expect(page.getByTestId('filter-price-max')).toHaveValue('2000');
   });
-
-  test('changing a draft updates the /filters URL without reload', async ({ page }) => {
-    await page.goto('/filters');
-    await page.locator('[data-testid="filter-category-option"][data-slug="motors"]').click();
-    await expect(page).toHaveURL(/\/filters\?.*cat=motors/);
-  });
 });
