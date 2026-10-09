@@ -5,35 +5,45 @@ import { useUI } from '@/hooks/useUI';
 import { FilterSection } from '../components/filters/FilterSection';
 import { CategoryFilterSection } from '../components/filters/CategoryFilterSection';
 import { SortFilterSection } from '../components/filters/SortFilterSection';
+import { PriceRangeFilterSection } from '../components/filters/PriceRangeFilterSection';
 import type { SortBy } from '@/shared/router/filterParams';
 
 export const FiltersScreen: React.FC = () => {
   const {
     isArabic, goBack, navigateTo, setActiveTab,
     categoryFilter, subcategoryFilter, sortBy,
+    minPriceFilter, maxPriceFilter,
     setCategoryFilter, setSubcategoryFilter, setSortBy,
+    setMinPriceFilter, setMaxPriceFilter, activeCurrency,
   } = useUI();
 
   const [draftCategory, setDraftCategory] = useState<string | null>(categoryFilter);
   const [draftSub, setDraftSub] = useState<string | null>(subcategoryFilter);
   const [draftSort, setDraftSort] = useState<SortBy>(sortBy);
+  const [draftMin, setDraftMin] = useState<number | null>(minPriceFilter);
+  const [draftMax, setDraftMax] = useState<number | null>(maxPriceFilter);
 
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
   const catCount = draftCategory ? 1 + (draftSub ? 1 : 0) : 0;
   const sortActive = draftSort !== 'newest';
+  const priceActive = draftMin !== null || draftMax !== null;
 
   const handleApply = useCallback(() => {
     setCategoryFilter(draftCategory);
     setSubcategoryFilter(draftSub);
     setSortBy(draftSort);
+    setMinPriceFilter(draftMin);
+    setMaxPriceFilter(draftMax);
     setActiveTab('explore');
     navigateTo('main');
-  }, [draftCategory, draftSub, draftSort, setCategoryFilter, setSubcategoryFilter, setSortBy, setActiveTab, navigateTo]);
+  }, [draftCategory, draftSub, draftSort, draftMin, draftMax, setCategoryFilter, setSubcategoryFilter, setSortBy, setMinPriceFilter, setMaxPriceFilter, setActiveTab, navigateTo]);
 
   const handleReset = useCallback(() => {
     setDraftCategory(null);
     setDraftSub(null);
     setDraftSort('newest');
+    setDraftMin(null);
+    setDraftMax(null);
   }, []);
 
   return (
@@ -54,6 +64,16 @@ export const FiltersScreen: React.FC = () => {
             activeSubcategory={draftSub}
             onCategoryChange={setDraftCategory}
             onSubcategoryChange={setDraftSub}
+          />
+        </FilterSection>
+
+        <FilterSection isArabic={isArabic} title={isArabic ? 'السعر' : 'Price'} activeCount={priceActive ? 1 : 0}>
+          <PriceRangeFilterSection
+            isArabic={isArabic}
+            minPrice={draftMin}
+            maxPrice={draftMax}
+            currencySymbol={activeCurrency}
+            onChange={(mn, mx) => { setDraftMin(mn); setDraftMax(mx); }}
           />
         </FilterSection>
 
