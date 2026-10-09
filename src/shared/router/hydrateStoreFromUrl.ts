@@ -24,6 +24,7 @@ export function hydrateStoreFromUrl(path: string): void {
 
   const market = initialMatch.params.market ?? null;
   const category = initialMatch.params.category ?? null;
+  const subcategory = initialMatch.params.subcategory ?? null;
 
   // Sub-categories: restore parent category from /categories/sub/:slug
   if (initialMatch.screen === 'sub-categories' && category) {
@@ -42,7 +43,8 @@ export function hydrateStoreFromUrl(path: string): void {
 
   if (category) {
     useUIStore.setState({
-      categoryFilter: category,
+      categoryFilter: subcategory ?? category,
+      selectedParentCategory: category,
       activeTab: 'explore',
     });
   }
