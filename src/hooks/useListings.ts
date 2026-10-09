@@ -1,5 +1,5 @@
 import { useListingsStore } from '@/features/listings/store/listings.slice';
-import { useAuthStore } from '@/features/auth/store/auth.slice';
+import { useAuthStore } from '@/features/auth';
 import { useUIStore } from '@/store/ui.slice';
 
 export const useListings = () => {
