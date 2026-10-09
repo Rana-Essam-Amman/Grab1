@@ -1,5 +1,6 @@
 import React from 'react';
-import { PhoneCaptureModal, usePhoneModalStore } from '@/features/auth';
+import { PhoneCaptureModal } from '@/features/auth/components/PhoneCaptureModal';
+import { usePhoneModalStore } from '@/features/auth/store/phoneModal.slice';
 
 /**
  * Global mount for PhoneCaptureModal.

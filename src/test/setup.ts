@@ -4,7 +4,7 @@ import { cleanup } from '@testing-library/react';
 import { server } from './msw-server';
 import { toHaveNoViolations } from 'jest-axe';
 import { useUIStore } from '@/store/ui.slice';
-import { useAuthStore } from '@/features/auth';
+import { useAuthStore } from '@/features/auth/store/auth.slice';
 import { registerUIGetter } from '@/shared/store-getters/ui.getter';
 import { registerAuthGetter } from '@/shared/store-getters/auth.getter';
 
