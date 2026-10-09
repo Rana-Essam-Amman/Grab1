@@ -13,7 +13,7 @@ export function useExploreListings(): UseExploreListingsReturn {
     isArabic, searchQuery, setSearchQuery, setCategoryFilter, categoryFilter,
     browseCountryCode, browseCityAr, browseCityEn, minPriceFilter, setMinPriceFilter,
     maxPriceFilter, setMaxPriceFilter, neighborhoodFilter, setNeighborhoodFilter,
-    sortBy, subcategoryFilter,
+    sortBy, subcategoryFilter, setSubcategoryFilter,
   } = useUI();
   const { listings, hasMore, isLoadingMore, loadMore } = useListings();
   const [userFilterMode, setUserFilterMode] = useState<'city' | 'all' | null>(null);
