@@ -15,12 +15,14 @@ export interface FilterListingsOptions {
   readonly filterMode?: 'city' | 'all';
   readonly includeSold?: boolean;
   readonly sortBy?: 'newest' | 'price-asc' | 'price-desc';
+  readonly attrs?: Record<string, string>;
 }
 
 export function filterListings(listings: Listing[], options: FilterListingsOptions): Listing[] {
   const {
     market, searchQuery = '', categorySlug = null, minPrice = null, maxPrice = null,
     neighborhood = null, cityAr = '', cityEn = '', filterMode = 'all', includeSold = false, sortBy = 'newest',
+    attrs = {},
   } = options;
 
   const scoped = market ? filterListingsByMarket(listings, market as MarketCode) : listings;
@@ -36,6 +38,14 @@ export function filterListings(listings: Listing[], options: FilterListingsOptio
       if (categorySlug && item.categorySlug !== categorySlug && item.subcategorySlug !== categorySlug) return false;
       if (!matchPrice(item, minPrice, maxPrice)) return false;
       if (neighborhood && !matchNeighborhood(item, neighborhood)) return false;
+      if (Object.keys(attrs).length > 0) {
+        const list = Array.isArray(item.attributes) ? item.attributes : [];
+        for (const [k, v] of Object.entries(attrs)) {
+          if (!v) continue;
+          const hasMatch = list.some((a) => a.key === k && String(a.value) === v);
+          if (!hasMatch) return false;
+        }
+      }
       return true;
     })
     .map((item) => ({

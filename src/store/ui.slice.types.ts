@@ -85,6 +85,7 @@ export interface UIState {
   neighborhoodFilter: string | null;
   subcategoryFilter: string | null;
   sortBy: 'newest' | 'price-asc' | 'price-desc';
+  attrsFilter: Record<string, string>;
   setSearchQuery: (query: string) => void;
   setCategoryFilter: (category: string | null) => void;
   setSelectedParentCategory: (category: string | null) => void;
@@ -93,6 +94,7 @@ export interface UIState {
   setNeighborhoodFilter: (neighborhood: string | null) => void;
   setSubcategoryFilter: (subcategory: string | null) => void;
   setSortBy: (sortBy: 'newest' | 'price-asc' | 'price-desc') => void;
+  setAttrsFilter: (attrs: Record<string, string>) => void;
 
   // Selected entities
   selectedListingId: string | null;

@@ -14,6 +14,7 @@ export function useExploreListings(): UseExploreListingsReturn {
     browseCountryCode, browseCityAr, browseCityEn, minPriceFilter, setMinPriceFilter,
     maxPriceFilter, setMaxPriceFilter, neighborhoodFilter, setNeighborhoodFilter,
     sortBy, subcategoryFilter, setSubcategoryFilter,
+    attrsFilter,
   } = useUI();
   const { listings, hasMore, isLoadingMore, loadMore } = useListings();
   const [userFilterMode, setUserFilterMode] = useState<'city' | 'all' | null>(null);
@@ -59,8 +60,9 @@ export function useExploreListings(): UseExploreListingsReturn {
       cityEn: browseCityEn,
       filterMode,
       sortBy,
+      attrs: attrsFilter,
     });
-  }, [marketListings, browseCountryCode, categoryFilter, subcategoryFilter, minPriceFilter, maxPriceFilter, activeNeighborhood, browseCityAr, browseCityEn, filterMode, sortBy]);
+  }, [marketListings, browseCountryCode, categoryFilter, subcategoryFilter, minPriceFilter, maxPriceFilter, activeNeighborhood, browseCityAr, browseCityEn, filterMode, sortBy, attrsFilter]);
 
   const handleLoadMore = useCallback(() => {
     if (!hasMore || isLoadingMore) return;

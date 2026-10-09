@@ -81,6 +81,7 @@ export const getInitialState = () => {
     neighborhoodFilter: null,
     subcategoryFilter: null,
     sortBy: 'newest' as const,
+    attrsFilter: {},
     selectedListingId: null,
     selectedThreadId: null,
     selectedSellerPhone: null,
