@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { categories } from '@/data/categories';
 import { subcategoriesByCategory } from '@/data/subcategories';
+import { useReplaceUrl } from '@/shared/router/useReplaceUrl';
 import type { SortBy } from '@/shared/router/filterParams';
 
 export interface FilterDrafts {
@@ -67,13 +67,13 @@ export function buildFiltersQuery(d: FilterDrafts): string {
 }
 
 export function useFiltersUrlSync(drafts: FilterDrafts): void {
-  const navigate = useNavigate();
+  const replaceUrl = useReplaceUrl();
   useEffect(() => {
     if (typeof window === 'undefined') return;
     if (window.location.pathname !== '/filters') return;
     const next = `/filters${buildFiltersQuery(drafts)}`;
     if (next !== window.location.pathname + window.location.search) {
-      navigate(next, { replace: true });
+      replaceUrl(next);
     }
-  }, [navigate, drafts.category, drafts.sub, drafts.min, drafts.max, drafts.neigh, drafts.sort, drafts.attrs]);
+  }, [replaceUrl, drafts]);
 }
