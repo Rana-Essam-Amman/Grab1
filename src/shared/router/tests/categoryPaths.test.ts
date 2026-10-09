@@ -14,8 +14,8 @@ describe('buildCategoryPath', () => {
 
 describe('parseCategoryPath', () => {
   it('parses valid market + category', () => {
-    expect(parseCategoryPath('/jo/motors')).toEqual({ market: 'JO', category: 'motors' });
-    expect(parseCategoryPath('/SA/Real-Estate')).toEqual({ market: 'SA', category: 'real-estate' });
+    expect(parseCategoryPath('/jo/motors')).toEqual({ market: 'JO', category: 'motors', subcategory: null });
+    expect(parseCategoryPath('/SA/Real-Estate')).toEqual({ market: 'SA', category: 'real-estate', subcategory: null });
   });
 
   it('returns null on 1 or 3 segments', () => {
@@ -32,5 +32,10 @@ describe('parseCategoryPath', () => {
 
   it('returns null on unknown category slug', () => {
     expect(parseCategoryPath('/jo/foobar')).toBeNull();
+  });
+
+  it('parses subcategory slug and resolves parent category', () => {
+    expect(parseCategoryPath('/jo/cars')).toEqual({ market: 'JO', category: 'motors', subcategory: 'cars' });
+    expect(parseCategoryPath('/SA/motorbikes')).toEqual({ market: 'SA', category: 'motors', subcategory: 'motorbikes' });
   });
 });
