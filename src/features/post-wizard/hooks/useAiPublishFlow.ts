@@ -3,7 +3,6 @@ import { useUI } from '@/hooks/useUI';
 import { useDraft } from '@/hooks/useDraft';
 import { useAuth } from '@/hooks/useAuth';
 import { matchCategory } from '@/ai/categoryMatch';
-import { generateListing } from '@/ai/listingCopyAgent';
 import type { ScreenType } from '@/store/ui.slice.types';
 import { buildAppliedDraft } from './useAiPublishFlow.helpers';
 import { globalStorage } from '@/shared/lib/marketStorage';
@@ -43,6 +42,7 @@ export const useAiPublishFlow = (setIsAnalyzing: (val: boolean) => void) => {
         const draftId = draftIdVal || 'unknown';
         const uniqueId = `${userId}:${draftId}`;
 
+        const { generateListing } = await import('@/ai/listingCopyAgent');
         const aiPromise = generateListing({
           raw,
           categorySlug: categoryForAI,

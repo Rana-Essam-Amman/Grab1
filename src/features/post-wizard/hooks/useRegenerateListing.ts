@@ -1,6 +1,4 @@
 import { useCallback } from 'react';
-import { extractFacts } from '@/ai/listingCopyAgent';
-import { composeListing } from '@/ai/expert/composer';
 import type { PostDraft } from '@/types';
 
 interface RegenerateParams {
@@ -17,10 +15,14 @@ export function useRegenerateListing({
   postDraft,
   updatePostDraft,
   userId,
-}: RegenerateParams): () => void {
-  return useCallback(() => {
+}: RegenerateParams): () => Promise<void> {
+  return useCallback(async () => {
     const raw = postDraft.noteText || '';
     if (!raw.trim()) return;
+    const [{ extractFacts }, { composeListing }] = await Promise.all([
+      import('@/ai/listingCopyAgent'),
+      import('@/ai/expert/composer'),
+    ]);
     const facts = extractFacts(raw, undefined);
     const nextSeed = (postDraft.variantSeed ?? 0) + 1;
     const uniqueId = `${userId ?? 'guest'}:${postDraft.draftId ?? 'unknown'}`;
