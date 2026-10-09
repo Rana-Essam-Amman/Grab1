@@ -7,22 +7,10 @@ import { useListingsStore } from '@/features/listings';
 import { tabToPath, pathToTab } from './tabPaths';
 import { buildCategoryPath } from './categoryPaths';
 import { hydrateStoreFromUrl } from './hydrateStoreFromUrl';
+import { syncStoreFromFilterUrl, buildFilterQueryFromStore } from './filtersUrl';
 
-/**
- * Two-way sync between the store and the browser URL.
- *
- * Store is source of truth. URL mirrors it so refresh, share, back, and
- * deep links all work — including the bottom-nav tabs (categories /
- * messages / my-ads), which used to share the path '/' and therefore
- * lost their identity on refresh.
- *
- * MUST be mounted exactly once, inside <RouterProvider>.
- */
-
-// Module-scope: hydrate the store from the current URL BEFORE React
-// renders. Eliminates the race condition that caused "refresh goes Home".
 if (typeof window !== 'undefined') {
-  hydrateStoreFromUrl(window.location.pathname);
+  hydrateStoreFromUrl(window.location.pathname, window.location.search);
 }
 
 export function useUrlSync(): void {
@@ -36,6 +24,11 @@ export function useUrlSync(): void {
   const selectedThreadId = useUIStore((s) => s.selectedThreadId);
   const listings = useListingsStore((s) => s.listings);
   const categoryFilter = useUIStore((s) => s.categoryFilter);
+  const subcategoryFilter = useUIStore((s) => s.subcategoryFilter);
+  const minPriceFilter = useUIStore((s) => s.minPriceFilter);
+  const maxPriceFilter = useUIStore((s) => s.maxPriceFilter);
+  const neighborhoodFilter = useUIStore((s) => s.neighborhoodFilter);
+  const sortBy = useUIStore((s) => s.sortBy);
   const browseCountryCode = useUIStore((s) => s.browseCountryCode);
   const selectedParentCategory = useUIStore((s) => s.selectedParentCategory);
 
@@ -45,7 +38,6 @@ export function useUrlSync(): void {
 
   const lastPathRef = useRef<string | null>(null);
 
-  // --- URL → Store ---------------------------------------------------
   useLayoutEffect(() => {
     const store = useUIStore.getState();
     const tab = pathToTab(location.pathname);
@@ -59,6 +51,18 @@ export function useUrlSync(): void {
     }
 
     const match = resolvePath(location.pathname);
+    const pathCat = match?.params.category ?? null;
+    const pathSub = match?.params.subcategory ?? null;
+    if ((match?.screen === 'main' && pathCat) || location.pathname === '/') {
+      const nextCat = location.pathname === '/' ? null : pathCat;
+      const nextSub = location.pathname === '/' ? null : pathSub;
+      if (store.categoryFilter !== nextCat || store.subcategoryFilter !== nextSub) {
+        useUIStore.setState({ categoryFilter: nextCat, subcategoryFilter: nextSub, selectedParentCategory: nextCat });
+      }
+      syncStoreFromFilterUrl(location.search);
+      lastPathRef.current = location.pathname + location.search;
+      return;
+    }
     if (!match) return;
 
     const nextListingId = match.params.listingId ?? null;
@@ -89,27 +93,31 @@ export function useUrlSync(): void {
       useUIStore.setState({ selectedThreadId: null });
     }
 
+    if (match.screen === 'main') {
+      syncStoreFromFilterUrl(location.search);
+    }
+
     lastPathRef.current = location.pathname;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname]);
+  }, [location.pathname, location.search]);
 
-  // --- Store → URL ---------------------------------------------------
   useEffect(() => {
     const latest = useUIStore.getState();
     let target: string;
 
     if (latest.currentScreen === 'main') {
-      // Category pages take priority: /{market}/{category}
-      if (latest.activeTab === 'explore' && latest.categoryFilter) {
-        target = buildCategoryPath(latest.browseCountryCode, latest.categoryFilter);
+      if (latest.activeTab === 'explore') {
+        const slug = latest.subcategoryFilter ?? latest.categoryFilter;
+        target = slug
+          ? buildCategoryPath(latest.browseCountryCode, slug)
+          : tabToPath(latest.activeTab);
+        target += buildFilterQueryFromStore();
       } else {
         target = tabToPath(latest.activeTab);
       }
     } else if (latest.currentScreen === 'sub-categories' && latest.selectedParentCategory) {
       target = screenToPath('sub-categories', { category: latest.selectedParentCategory });
     } else if (latest.currentScreen === 'listing-detail' && latest.selectedListingId) {
-      // Skip write if current URL already resolves to this listing.
-      // Prevents: SEO URL → legacy URL → SEO URL flicker while data loads.
       const current = resolvePath(window.location.pathname);
       if (current?.screen === 'listing-detail' && current.params.listingId === latest.selectedListingId) {
         return;
@@ -131,11 +139,11 @@ export function useUrlSync(): void {
       });
     }
 
-    if (target === location.pathname) return;
+    if (target === location.pathname + location.search) return;
     if (lastPathRef.current === target) return;
 
     lastPathRef.current = target;
     navigate(target, { replace: false });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentScreen, activeTab, selectedListingId, selectedSellerPhone, selectedThreadId, listings, categoryFilter, browseCountryCode, selectedParentCategory]);
+  }, [currentScreen, activeTab, selectedListingId, selectedSellerPhone, selectedThreadId, listings, categoryFilter, subcategoryFilter, minPriceFilter, maxPriceFilter, neighborhoodFilter, sortBy, browseCountryCode, selectedParentCategory]);
 }
