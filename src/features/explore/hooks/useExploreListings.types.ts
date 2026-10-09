@@ -26,4 +26,5 @@ export interface UseExploreListingsReturn {
   readonly hasMore: boolean;
   readonly isLoadingMore: boolean;
   readonly onLoadMore: () => void;
+  readonly hasAnyFilter: boolean;
 }

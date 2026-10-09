@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { ArrowLeft, ArrowRight, Setting4, Refresh } from 'iconsax-react';
+import { ArrowLeft, ArrowRight, Setting4 } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { useUI } from '@/hooks/useUI';
 import { FilterSection } from '../components/filters/FilterSection';
@@ -8,6 +8,8 @@ import { SortFilterSection } from '../components/filters/SortFilterSection';
 import { PriceRangeFilterSection } from '../components/filters/PriceRangeFilterSection';
 import { LocationFilterSection } from '../components/filters/LocationFilterSection';
 import { CategoryAttrsSection } from '../components/filters/CategoryAttrsSection';
+import { FiltersFooter } from '../components/filters/FiltersFooter';
+import { useShareFilters } from '../hooks/useShareFilters';
 import type { SortBy } from '@/shared/router/filterParams';
 import { BrandMark } from '@/shared/components/BrandMark';
 import { filterListings } from '@/shared/lib/filterListings';
@@ -61,6 +63,9 @@ export const FiltersScreen: React.FC = () => {
     });
   }, []);
 
+  const handleShare = useShareFilters({
+    isArabic, browseCountryCode, draftCategory, draftSub, draftMin, draftMax, draftNeigh, draftSort, draftAttrs,
+  });
   const handleReset = useCallback(() => {
     setDraftCategory(null);
     setDraftSub(null);
@@ -131,19 +136,13 @@ export const FiltersScreen: React.FC = () => {
         </FilterSection>
       </div>
 
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] p-3 bg-surface border-t border-border flex items-center gap-2.5 z-40 shadow-lg">
-        <button
-          type="button"
-          onClick={handleReset}
-          className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-ink hover:bg-canvas transition-colors shrink-0"
-          aria-label={isArabic ? 'تصفير' : 'Reset'}
-        >
-          <Refresh size={18} variant="Linear" color="currentColor" />
-        </button>
-        <Button variant="primary" size="lg" fullWidth onClick={handleApply}>
-          {isArabic ? `عرض ${previewCount} نتيجة` : `Show ${previewCount} results`}
-        </Button>
-      </div>
+      <FiltersFooter
+        isArabic={isArabic}
+        previewCount={previewCount}
+        onReset={handleReset}
+        onShare={handleShare}
+        onApply={handleApply}
+      />
     </div>
   );
 };

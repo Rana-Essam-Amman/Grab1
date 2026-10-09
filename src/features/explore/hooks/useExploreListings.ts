@@ -14,7 +14,7 @@ export function useExploreListings(): UseExploreListingsReturn {
     browseCountryCode, browseCityAr, browseCityEn, minPriceFilter, setMinPriceFilter,
     maxPriceFilter, setMaxPriceFilter, neighborhoodFilter, setNeighborhoodFilter,
     sortBy, subcategoryFilter, setSubcategoryFilter,
-    attrsFilter,
+    attrsFilter, setAttrsFilter, setSortBy,
   } = useUI();
   const { listings, hasMore, isLoadingMore, loadMore } = useListings();
   const [userFilterMode, setUserFilterMode] = useState<'city' | 'all' | null>(null);
@@ -38,7 +38,8 @@ export function useExploreListings(): UseExploreListingsReturn {
     setCategoryFilter(null); setSubcategoryFilter(null);
     setMinPriceFilter(null); setMaxPriceFilter(null);
     setNeighborhoodFilter(null); setSearchQuery(''); setVoidedNotice(null);
-  }, [setCategoryFilter, setSubcategoryFilter, setMinPriceFilter, setMaxPriceFilter, setNeighborhoodFilter, setSearchQuery]);
+    setAttrsFilter({}); setSortBy('newest');
+  }, [setCategoryFilter, setSubcategoryFilter, setMinPriceFilter, setMaxPriceFilter, setNeighborhoodFilter, setSearchQuery, setAttrsFilter, setSortBy]);
 
   const marketListings = useMemo(() => filterListingsByMarket(listings, browseCountryCode), [listings, browseCountryCode]);
   const cityCount = useMemo(() => countCityListings(marketListings, browseCityAr, browseCityEn), [marketListings, browseCityAr, browseCityEn]);
@@ -76,5 +77,9 @@ export function useExploreListings(): UseExploreListingsReturn {
     hasMore,
     isLoadingMore,
     onLoadMore: handleLoadMore,
+    hasAnyFilter: Boolean(
+      categoryFilter || subcategoryFilter || minPriceFilter !== null || maxPriceFilter !== null ||
+      activeNeighborhood || searchQuery || Object.keys(attrsFilter).length > 0 || sortBy !== 'newest'
+    ),
   };
 }
