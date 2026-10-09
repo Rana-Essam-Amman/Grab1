@@ -40,18 +40,25 @@ export function parseListingPath(path: string): ParsedListingPath | null {
   const [marketRaw, categoryRaw, tail] = parts;
   const market = marketRaw.toUpperCase();
   if (!MARKETS.includes(market as ListingMarket)) return null;
+  const category = categoryRaw.toLowerCase();
 
-  // UUID is fixed 36 chars. Slice from the END — the leading dashes inside
-  // the UUID make lastIndexOf('-') unreliable.
-  // Shape: {slug}-{uuid}  →  min length = 1 + 1 + 36 = 38
-  if (tail.length < UUID_LENGTH + 2) return null;
+  // Preferred shape: {slug}-{uuid}.
+  // Slice from the END — the leading dashes inside the UUID make
+  // lastIndexOf('-') unreliable.
+  if (tail.length >= UUID_LENGTH + 2) {
+    const id = tail.slice(-UUID_LENGTH);
+    if (UUID_RE.test(id)) {
+      const slug = tail.slice(0, tail.length - UUID_LENGTH - 1);
+      if (slug) return { market, category, slug, id };
+    }
+  }
 
-  const id = tail.slice(-UUID_LENGTH);
-  if (!UUID_RE.test(id)) return null;
-
-  // Everything before the final dash is the slug (may be empty).
-  const slug = tail.slice(0, tail.length - UUID_LENGTH - 1);
-  if (!slug) return null;
-
-  return { market, category: categoryRaw.toLowerCase(), slug, id };
+  // Legacy shape: seed data uses short IDs like '{slug}-jo-4'.
+  // Fall back to last-dash split so old listings still resolve.
+  const lastDash = tail.lastIndexOf('-');
+  if (lastDash <= 0 || lastDash >= tail.length - 1) return null;
+  const id = tail.slice(lastDash + 1);
+  const slug = tail.slice(0, lastDash);
+  if (!slug || !id) return null;
+  return { market, category, slug, id };
 }
