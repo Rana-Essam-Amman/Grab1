@@ -5,3 +5,9 @@ export { TermsScreen } from './screens/TermsScreen';
 
 export { useAuthProviders } from './hooks/useAuthProviders';
 export type { UseAuthProvidersReturn } from './hooks/useAuthProviders';
+
+// Public API — store + helpers
+export { useAuthStore, hydrateProfile } from './store/auth.slice';
+export type { AuthState } from './store/auth.slice.types';
+export { getCurrentUser, requirePhoneForPublish } from './helpers/publishPhoneGuard';
+export { useSupabaseAuthListener } from './hooks/useSupabaseAuthListener';

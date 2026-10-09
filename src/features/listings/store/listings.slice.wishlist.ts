@@ -1,6 +1,6 @@
 import { globalStorage } from '@/shared/lib/marketStorage';
 import type { MarketCode } from '@/shared/lib/marketGate';
-import { useAuthStore } from '@/features/auth/store/auth.slice';
+import { useAuthStore } from '@/features/auth';
 import { getWishlistForMarket, saveWishlistForMarket } from '@/services/listing.service';
 import {
   fetchWishlist,
