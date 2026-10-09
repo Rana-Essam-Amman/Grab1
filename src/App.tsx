@@ -155,7 +155,6 @@ const MainNavigator: React.FC = () => {
       case 'sub-categories': return r('sub-categories', SubCategoriesScreen);
       case 'edit-profile': return r('edit-profile', EditProfileScreen);
       case 'profile': return r('profile', ProfileScreen);
-      case 'filters': return r('filters', FiltersScreen);
       case 'main':
         switch (activeTab) {
           case 'categories': return <CategoriesScreen />;
