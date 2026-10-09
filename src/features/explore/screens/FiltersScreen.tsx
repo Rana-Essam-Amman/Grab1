@@ -10,10 +10,12 @@ import { LocationFilterSection } from '../components/filters/LocationFilterSecti
 import { CategoryAttrsSection } from '../components/filters/CategoryAttrsSection';
 import { FiltersFooter } from '../components/filters/FiltersFooter';
 import { useShareFilters } from '../hooks/useShareFilters';
+import { useFiltersUrlSync } from '../hooks/useFiltersUrlSync';
 import type { SortBy } from '@/shared/router/filterParams';
 import { BrandMark } from '@/shared/components/BrandMark';
 import { filterListings } from '@/shared/lib/filterListings';
 import { useListings } from '@/hooks/useListings';
+
 export const FiltersScreen: React.FC = () => {
   const {
     isArabic, goBack, navigateTo, setActiveTab,
@@ -31,6 +33,7 @@ export const FiltersScreen: React.FC = () => {
   const [draftCity, setDraftCity] = useState<string>(browseCityEn);
   const [draftNeigh, setDraftNeigh] = useState<string | null>(neighborhoodFilter);
   const [draftAttrs, setDraftAttrs] = useState<Record<string, string>>(attrsFilter);
+  useFiltersUrlSync({ category: draftCategory, sub: draftSub, min: draftMin, max: draftMax, neigh: draftNeigh, sort: draftSort, attrs: draftAttrs });
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
   const catCount = draftCategory ? 1 + (draftSub ? 1 : 0) : 0;
   const sortActive = draftSort !== 'newest';
@@ -53,7 +56,6 @@ export const FiltersScreen: React.FC = () => {
     setActiveTab('explore');
     navigateTo('main');
   }, [draftCategory, draftSub, draftSort, draftMin, draftMax, draftNeigh, draftAttrs, setCategoryFilter, setSubcategoryFilter, setSortBy, setMinPriceFilter, setMaxPriceFilter, setNeighborhoodFilter, setAttrsFilter, setActiveTab, navigateTo]);
-
   const handleAttrChange = useCallback((key: string, value: string | null) => {
     setDraftAttrs((prev) => {
       const next = { ...prev };
@@ -62,10 +64,7 @@ export const FiltersScreen: React.FC = () => {
       return next;
     });
   }, []);
-
-  const handleShare = useShareFilters({
-    isArabic, browseCountryCode, draftCategory, draftSub, draftMin, draftMax, draftNeigh, draftSort, draftAttrs,
-  });
+  const handleShare = useShareFilters({ isArabic, browseCountryCode, draftCategory, draftSub, draftMin, draftMax, draftNeigh, draftSort, draftAttrs });
   const handleReset = useCallback(() => {
     setDraftCategory(null);
     setDraftSub(null);
@@ -86,7 +85,6 @@ export const FiltersScreen: React.FC = () => {
         <h1 className="text-base font-bold text-white flex-1">{isArabic ? 'فلترة' : 'Filters'}</h1>
         <BrandMark isArabic={isArabic} />
       </header>
-
       <div className="flex-1 flex flex-col gap-3 p-4 pb-32">
         <FilterSection isArabic={isArabic} title={isArabic ? 'القسم' : 'Category'} activeCount={catCount}>
           <CategoryFilterSection
@@ -97,7 +95,6 @@ export const FiltersScreen: React.FC = () => {
             onSubcategoryChange={setDraftSub}
           />
         </FilterSection>
-
         <FilterSection isArabic={isArabic} title={isArabic ? 'السعر' : 'Price'} activeCount={priceActive ? 1 : 0}>
           <PriceRangeFilterSection
             isArabic={isArabic}
@@ -107,7 +104,6 @@ export const FiltersScreen: React.FC = () => {
             onChange={(mn, mx) => { setDraftMin(mn); setDraftMax(mx); }}
           />
         </FilterSection>
-
         {draftCategory && (
           <FilterSection isArabic={isArabic} title={isArabic ? 'المواصفات' : 'Specifications'} activeCount={attrsActive}>
             <CategoryAttrsSection
@@ -119,7 +115,6 @@ export const FiltersScreen: React.FC = () => {
             />
           </FilterSection>
         )}
-
         <FilterSection isArabic={isArabic} title={isArabic ? 'الموقع' : 'Location'} activeCount={locActive}>
           <LocationFilterSection
             isArabic={isArabic}
@@ -130,12 +125,10 @@ export const FiltersScreen: React.FC = () => {
             onNeighborhoodChange={setDraftNeigh}
           />
         </FilterSection>
-
         <FilterSection isArabic={isArabic} title={isArabic ? 'الترتيب' : 'Sort by'} activeCount={sortActive ? 1 : 0}>
           <SortFilterSection isArabic={isArabic} activeSort={draftSort} onChange={setDraftSort} />
         </FilterSection>
       </div>
-
       <FiltersFooter
         isArabic={isArabic}
         previewCount={previewCount}
