@@ -3,7 +3,7 @@ import { useUI } from '@/hooks/useUI';
 import { toast } from 'sonner';
 import { useChat } from '@/hooks/useChat';
 import { useAuth } from '@/hooks/useAuth';
-import { useAuthStore } from '@/features/auth/store/auth.slice';
+import { useAuthStore } from '@/features/auth';
 import { useChatStore } from '@/features/chat/store/chat.slice';
 import { useListings } from '@/hooks/useListings';
 import { markMessagesRead as markMessagesReadAction, applyMessageUpdate, reconcileConfirmedMessage } from '../store/chat.slice.actions.mutate';
