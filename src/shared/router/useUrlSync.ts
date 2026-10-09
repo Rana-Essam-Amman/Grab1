@@ -103,7 +103,6 @@ export function useUrlSync(): void {
 
   useEffect(() => {
     const latest = useUIStore.getState();
-    if (latest.currentScreen === 'filters') return; // /filters owns its URL
     let target: string;
 
     if (latest.currentScreen === 'main') {
@@ -132,6 +131,9 @@ export function useUrlSync(): void {
             categorySlug: listing.categorySlug,
           })
         : `/listing/${latest.selectedListingId}`;
+    } else if (latest.currentScreen === 'filters') {
+      // Preserve /filters query params (owned by useFiltersUrlSync).
+      target = '/filters' + location.search;
     } else {
       target = screenToPath(latest.currentScreen, {
         listingId: latest.selectedListingId,
