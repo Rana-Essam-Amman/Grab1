@@ -13,7 +13,7 @@ export function useExploreListings(): UseExploreListingsReturn {
     isArabic, searchQuery, setSearchQuery, setCategoryFilter, categoryFilter,
     browseCountryCode, browseCityAr, browseCityEn, minPriceFilter, setMinPriceFilter,
     maxPriceFilter, setMaxPriceFilter, neighborhoodFilter, setNeighborhoodFilter,
-    sortBy,
+    sortBy, subcategoryFilter,
   } = useUI();
   const { listings, hasMore, isLoadingMore, loadMore } = useListings();
   const [userFilterMode, setUserFilterMode] = useState<'city' | 'all' | null>(null);
@@ -50,7 +50,7 @@ export function useExploreListings(): UseExploreListingsReturn {
     return filterListings(marketListings, {
       market: browseCountryCode,
       searchQuery: '',
-      categorySlug: categoryFilter,
+      categorySlug: subcategoryFilter ?? categoryFilter,
       minPrice: minPriceFilter,
       maxPrice: maxPriceFilter,
       neighborhood: activeNeighborhood,
@@ -59,7 +59,7 @@ export function useExploreListings(): UseExploreListingsReturn {
       filterMode,
       sortBy,
     });
-  }, [marketListings, browseCountryCode, categoryFilter, minPriceFilter, maxPriceFilter, activeNeighborhood, browseCityAr, browseCityEn, filterMode, sortBy]);
+  }, [marketListings, browseCountryCode, categoryFilter, subcategoryFilter, minPriceFilter, maxPriceFilter, activeNeighborhood, browseCityAr, browseCityEn, filterMode, sortBy]);
 
   const handleLoadMore = useCallback(() => {
     if (!hasMore || isLoadingMore) return;
