@@ -12,6 +12,7 @@ import { filterListings } from '@/shared/lib/filterListings';
 export const SearchResultsScreen: React.FC = () => {
   const {
     isArabic, navigateTo, searchQuery, setSearchQuery, categoryFilter, setCategoryFilter,
+    subcategoryFilter,
     minPriceFilter, setMinPriceFilter, maxPriceFilter, setMaxPriceFilter,
     neighborhoodFilter, setNeighborhoodFilter, browseCountryCode, browseCityEn, browseCityAr
   } = useUI();
@@ -39,7 +40,7 @@ export const SearchResultsScreen: React.FC = () => {
     return filterListings(marketListings, {
       market: browseCountryCode,
       searchQuery,
-      categorySlug: categoryFilter,
+      categorySlug: subcategoryFilter ?? categoryFilter,
       minPrice: minPriceFilter,
       maxPrice: maxPriceFilter,
       neighborhood: neighborhoodFilter,
@@ -47,7 +48,7 @@ export const SearchResultsScreen: React.FC = () => {
       cityEn: browseCityEn,
       filterMode: searchQuery.trim() ? 'all' : filterMode,
     });
-  }, [marketListings, browseCountryCode, searchQuery, categoryFilter, minPriceFilter, maxPriceFilter, neighborhoodFilter, browseCityAr, browseCityEn, filterMode]);
+  }, [marketListings, browseCountryCode, searchQuery, categoryFilter, subcategoryFilter, minPriceFilter, maxPriceFilter, neighborhoodFilter, browseCityAr, browseCityEn, filterMode]);
 
   return (
     <div className="flex flex-col min-h-screen bg-canvas pb-16" dir={isArabic ? 'rtl' : 'ltr'}>
