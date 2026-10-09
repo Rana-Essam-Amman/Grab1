@@ -15,6 +15,7 @@
     "typecheck:functions": "tsc -p functions/tsconfig.json",
     "feature:new": "node scripts/new-feature.mjs",
     "test": "vitest run",
+    "test:prod": "playwright test --config playwright.prod.config.ts",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "preview": "vite preview",
