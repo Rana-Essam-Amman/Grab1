@@ -58,12 +58,12 @@ export const FiltersTriggerBar: React.FC<FiltersTriggerBarProps> = ({ feedLayout
 
   return (
     <div className="flex flex-row items-center gap-2 font-cairo">
-      <button type="button" onClick={() => navigateTo('filters')} className="relative flex items-center gap-1.5 px-3.5 h-9 rounded-full bg-brand text-white text-xs font-bold shadow-xs hover:bg-brand-strong transition-colors shrink-0 cursor-pointer" aria-label={isArabic ? 'فتح الفلترة' : 'Open filters'}>
+      <button type="button" data-testid="filters-trigger" onClick={() => navigateTo('filters')} className="relative flex items-center gap-1.5 px-3.5 h-9 rounded-full bg-brand text-white text-xs font-bold shadow-xs hover:bg-brand-strong transition-colors shrink-0 cursor-pointer" aria-label={isArabic ? 'فتح الفلترة' : 'Open filters'}>
         <Setting4 size={14} variant="Bold" color="currentColor" />
         <span>{isArabic ? 'فلترة' : 'Filters'}</span>
         {activeCount > 0 && <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-accent text-white text-[10px] font-black flex items-center justify-center">{activeCount}</span>}
       </button>
-      <div className="flex-1 flex flex-row items-center gap-2 overflow-x-auto no-scrollbar min-w-0">
+      <div data-testid="filters-active-chips" className="flex-1 flex flex-row items-center gap-2 overflow-x-auto no-scrollbar min-w-0">
         {categoryTitle && chip(categoryTitle, () => { setCategoryFilter(null); setSubcategoryFilter(null); })}
         {priceTitle && chip(priceTitle, () => { setMinPriceFilter(null); setMaxPriceFilter(null); })}
         {neighborhoodFilter && chip(neighborhoodFilter, () => setNeighborhoodFilter(null))}
@@ -72,6 +72,7 @@ export const FiltersTriggerBar: React.FC<FiltersTriggerBarProps> = ({ feedLayout
         {activeCount > 0 && (
           <button
             type="button"
+            data-testid="filters-clear-all"
             onClick={handleClearAll}
             className="text-[11px] font-bold text-ink-muted hover:text-danger shrink-0 px-1 cursor-pointer"
           >

@@ -44,6 +44,7 @@ export const PriceRangeFilterSection: React.FC<PriceRangeFilterSectionProps> = (
             {isArabic ? 'من' : 'From'}
           </label>
           <Input
+            data-testid="filter-price-min"
             type="text"
             inputMode="numeric"
             value={minPrice ?? ''}
@@ -56,6 +57,7 @@ export const PriceRangeFilterSection: React.FC<PriceRangeFilterSectionProps> = (
             {isArabic ? 'إلى' : 'To'}
           </label>
           <Input
+            data-testid="filter-price-max"
             type="text"
             inputMode="numeric"
             value={maxPrice ?? ''}
@@ -75,6 +77,8 @@ export const PriceRangeFilterSection: React.FC<PriceRangeFilterSectionProps> = (
           return (
             <button
               key={p.labelEn}
+              data-testid="filter-price-preset"
+              data-preset={p.labelEn}
               type="button"
               onClick={() => onChange(active ? null : p.min, active ? null : p.max)}
               className={`px-3 py-1.5 rounded-full border text-xs font-bold transition-all ${

@@ -77,7 +77,7 @@ export const FiltersScreen: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen bg-canvas" dir={isArabic ? 'rtl' : 'ltr'}>
+    <div data-testid="filters-screen" className="flex flex-col min-h-screen bg-canvas" dir={isArabic ? 'rtl' : 'ltr'}>
       <header className="px-4 py-3 bg-brand border-b border-white/10 flex items-center gap-3 sticky top-0 z-20">
         <Button variant="ghost" size="icon" onClick={goBack} aria-label={isArabic ? 'رجوع' : 'Back'} className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 flex items-center justify-center p-0">
           <BackIcon size={18} variant="Linear" color="#FFFFFF" />

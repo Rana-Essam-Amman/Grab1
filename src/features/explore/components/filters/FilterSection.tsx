@@ -18,6 +18,8 @@ export const FilterSection: React.FC<FilterSectionProps> = ({
     <section className="rounded-2xl border border-border bg-surface overflow-hidden shadow-xs">
       <button
         type="button"
+        data-testid="filter-section-toggle"
+        data-section-title={title}
         onClick={() => setOpen((o) => !o)}
         className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start cursor-pointer hover:bg-canvas/40 transition-colors"
       >

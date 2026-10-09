@@ -18,6 +18,7 @@ export const CategoryFilterSection: React.FC<CategoryFilterSectionProps> = ({
     <div className="flex flex-col gap-3">
       <button
         type="button"
+        data-testid="filter-category-all"
         onClick={() => { onCategoryChange(null); onSubcategoryChange(null); }}
         className={`w-full h-11 rounded-full flex items-center justify-center px-4 text-sm font-bold transition-all active:scale-[0.98] ${
           !activeCategory ? 'bg-brand text-white' : 'bg-canvas text-ink'
@@ -32,6 +33,8 @@ export const CategoryFilterSection: React.FC<CategoryFilterSectionProps> = ({
           return (
             <button
               key={cat.slug}
+              data-testid="filter-category-option"
+              data-slug={cat.slug}
               type="button"
               onClick={() => { onCategoryChange(cat.slug); onSubcategoryChange(null); }}
               className={`h-12 rounded-2xl flex items-center gap-2 px-3 text-xs font-bold transition-all active:scale-[0.98] ${
@@ -49,6 +52,7 @@ export const CategoryFilterSection: React.FC<CategoryFilterSectionProps> = ({
         <div className="flex flex-wrap gap-2 mt-1">
           <button
             type="button"
+            data-testid="filter-sub-all"
             onClick={() => onSubcategoryChange(null)}
             className={`px-3 py-1.5 rounded-full border text-xs font-bold transition-all ${
               !activeSubcategory ? 'bg-accent/15 border-accent text-accent' : 'bg-surface border-border text-ink'
@@ -61,6 +65,8 @@ export const CategoryFilterSection: React.FC<CategoryFilterSectionProps> = ({
             return (
               <button
                 key={sub.slug}
+                data-testid="filter-sub-option"
+                data-slug={sub.slug}
                 type="button"
                 onClick={() => onSubcategoryChange(isActive ? null : sub.slug)}
                 className={`px-3 py-1.5 rounded-full border text-xs font-bold transition-all ${
