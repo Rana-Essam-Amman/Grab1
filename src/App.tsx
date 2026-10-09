@@ -1,7 +1,7 @@
 import { useUI } from './hooks/useUI';
 import React, { lazy, Suspense, useMemo } from 'react';
 import { useUIStore } from './store/ui.slice';
-import { useAuthStore } from '@/features/auth/store/auth.slice';
+import { useAuthStore, useSupabaseAuthListener } from '@/features/auth';
 import { useListingsStore } from './features/listings/store/listings.slice';
 import { registerListingsGetterForMonetization } from '@/features/monetization/store/deps';
 import { registerUIGetter } from '@/shared/store-getters/ui.getter';
@@ -23,7 +23,6 @@ import { Toaster } from 'sonner';
 import { OfflineBanner } from '@/shared/ui/OfflineBanner';
 import { GlobalPhoneCaptureMount } from '@/shared/components/GlobalPhoneCaptureMount';
 import { BuildBadge } from '@/shared/components/BuildBadge';
-import { useSupabaseAuthListener } from '@/features/auth/hooks/useSupabaseAuthListener';
 import { useBootMigrations } from '@/shared/hooks/useBootMigrations';
 import { useSupabaseListingsSync } from '@/features/listings/hooks/useSupabaseListingsSync';
 import { useSupabaseWishlistSync } from '@/features/listings/hooks/useSupabaseWishlistSync';

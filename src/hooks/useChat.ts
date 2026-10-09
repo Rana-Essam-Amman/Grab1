@@ -1,5 +1,5 @@
 import { useChatStore } from '@/features/chat/store/chat.slice';
-import { useAuthStore } from '@/features/auth/store/auth.slice';
+import { useAuthStore } from '@/features/auth';
 import {
   openConversation,
   sendChatMessage as sendChatMessageAction,
