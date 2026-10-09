@@ -114,6 +114,18 @@ export const useUIStore = create<UIState>()(
           document.documentElement.lang = locale;
           applyTheme(state.theme);
         }
+        // Hydrate URL-dependent state AFTER persist rehydration.
+        // Zustand persist restores state on an async microtask AFTER module
+        // scope — so hydrateStoreFromUrl() (called at module scope in
+        // useUrlSync.ts) had its `currentScreen` overwritten by the default
+        // 'main'. That erased 'sub-categories' on refresh.
+        // We re-run hydration here (async import avoids the ui.slice ←
+        // hydrateStoreFromUrl cycle) once persist has settled.
+        if (typeof window !== 'undefined') {
+          void import('@/shared/router/hydrateStoreFromUrl').then(
+            ({ hydrateStoreFromUrl }) => hydrateStoreFromUrl(window.location.pathname)
+          );
+        }
       },
     }
   )
