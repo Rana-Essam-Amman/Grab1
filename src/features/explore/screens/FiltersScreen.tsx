@@ -16,7 +16,7 @@ export const FiltersScreen: React.FC = () => {
     minPriceFilter, maxPriceFilter, neighborhoodFilter,
     setCategoryFilter, setSubcategoryFilter, setSortBy,
     setMinPriceFilter, setMaxPriceFilter, setNeighborhoodFilter,
-    activeCurrency, browseCountryCode, browseCityAr, browseCityEn, setBrowseLocation,
+    activeCurrency, browseCountryCode, browseCityEn, setBrowseLocation,
   } = useUI();
 
   const [draftCategory, setDraftCategory] = useState<string | null>(categoryFilter);
