@@ -37,6 +37,7 @@ export function useUrlSync(): void {
   const listings = useListingsStore((s) => s.listings);
   const categoryFilter = useUIStore((s) => s.categoryFilter);
   const browseCountryCode = useUIStore((s) => s.browseCountryCode);
+  const selectedParentCategory = useUIStore((s) => s.selectedParentCategory);
 
   const setSelectedListingId = useUIStore((s) => s.setSelectedListingId);
   const setSelectedSellerPhone = useUIStore((s) => s.setSelectedSellerPhone);
@@ -104,6 +105,8 @@ export function useUrlSync(): void {
       } else {
         target = tabToPath(latest.activeTab);
       }
+    } else if (latest.currentScreen === 'sub-categories' && latest.selectedParentCategory) {
+      target = screenToPath('sub-categories', { category: latest.selectedParentCategory });
     } else if (latest.currentScreen === 'listing-detail' && latest.selectedListingId) {
       // Skip write if current URL already resolves to this listing.
       // Prevents: SEO URL → legacy URL → SEO URL flicker while data loads.
@@ -134,5 +137,5 @@ export function useUrlSync(): void {
     lastPathRef.current = target;
     navigate(target, { replace: false });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentScreen, activeTab, selectedListingId, selectedSellerPhone, selectedThreadId, listings, categoryFilter, browseCountryCode]);
+  }, [currentScreen, activeTab, selectedListingId, selectedSellerPhone, selectedThreadId, listings, categoryFilter, browseCountryCode, selectedParentCategory]);
 }
