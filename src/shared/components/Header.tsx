@@ -81,25 +81,27 @@ export const Header: React.FC = () => {
   return (
     <header className="relative z-30 px-4 pt-2 pb-2 bg-brand border-b border-white/20">
       <div className="flex items-center justify-between gap-2">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleMenuToggle}
-          className="w-10 h-10 rounded-full border border-white/20 overflow-hidden shadow-xs hover:ring-2 hover:ring-white/30 transition-all flex items-center justify-center bg-white/10 p-0 shrink-0"
-          title={isArabic ? 'القائمة والحساب' : 'Menu & Account'}
-          data-testid="header-menu-btn"
-          aria-label={isArabic ? 'القائمة والحساب' : 'Menu & Account'}
-        >
-          <Avatar
-            src={getUserAvatar(user)}
-            fallback={user?.firstName?.charAt(0)?.toUpperCase() || 'U'}
-            size="sm"
-            className="w-full h-full border-none ring-2 ring-white/30"
-          />
-        </Button>
+        <div className="w-12 shrink-0 flex items-center justify-start">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleMenuToggle}
+            className="w-10 h-10 rounded-full border border-white/20 overflow-hidden shadow-xs hover:ring-2 hover:ring-white/30 transition-all flex items-center justify-center bg-white/10 p-0"
+            title={isArabic ? 'القائمة والحساب' : 'Menu & Account'}
+            data-testid="header-menu-btn"
+            aria-label={isArabic ? 'القائمة والحساب' : 'Menu & Account'}
+          >
+            <Avatar
+              src={getUserAvatar(user)}
+              fallback={user?.firstName?.charAt(0)?.toUpperCase() || 'U'}
+              size="sm"
+              className="w-full h-full border-none ring-2 ring-white/30"
+            />
+          </Button>
+        </div>
 
         <div
-          className="cursor-pointer select-none flex-1 flex justify-center items-center gap-2 pe-6"
+          className="cursor-pointer select-none flex-1 flex justify-center items-center gap-2"
           onClick={handleLogoClick}
         >
           <img
@@ -113,7 +115,9 @@ export const Header: React.FC = () => {
           </div>
         </div>
 
-        <CountryFlag code={countryCode} />
+        <div className="w-12 shrink-0 flex items-center justify-end">
+          <CountryFlag code={countryCode} />
+        </div>
       </div>
 
       {isMenuOpen && (
