@@ -18,11 +18,17 @@ export function syncStoreFromFilterUrl(search: string): void {
   const nextNeigh: string | null = parsed.neighborhood;
   const nextSort: SortBy = parsed.sortBy;
 
+  const nextAttrs = parsed.attrs;
+  const attrsEqual =
+    Object.keys(nextAttrs).length === Object.keys(store.attrsFilter).length &&
+    Object.entries(nextAttrs).every(([k, v]) => store.attrsFilter[k] === v);
+
   if (
     nextMin === store.minPriceFilter &&
     nextMax === store.maxPriceFilter &&
     nextNeigh === store.neighborhoodFilter &&
-    nextSort === store.sortBy
+    nextSort === store.sortBy &&
+    attrsEqual
   ) {
     return;
   }
@@ -32,6 +38,7 @@ export function syncStoreFromFilterUrl(search: string): void {
     maxPriceFilter: nextMax,
     neighborhoodFilter: nextNeigh,
     sortBy: nextSort,
+    attrsFilter: nextAttrs,
   });
 }
 
@@ -44,5 +51,6 @@ export function buildFilterQueryFromStore(): string {
     city: null,
     neighborhood: store.neighborhoodFilter,
     sortBy: store.sortBy,
+    attrs: store.attrsFilter,
   });
 }

@@ -27,6 +27,8 @@ export const useUI = () => {
     setSubcategoryFilter: store.setSubcategoryFilter,
     sortBy: store.sortBy,
     setSortBy: store.setSortBy,
+    attrsFilter: store.attrsFilter,
+    setAttrsFilter: store.setAttrsFilter,
     selectedParentCategory: store.selectedParentCategory,
     setSelectedParentCategory: store.setSelectedParentCategory,
     maxPriceFilter: store.maxPriceFilter,

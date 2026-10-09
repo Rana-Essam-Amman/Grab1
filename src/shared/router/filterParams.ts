@@ -10,7 +10,10 @@ export interface FilterParams {
   readonly city: string | null;
   readonly neighborhood: string | null;
   readonly sortBy: SortBy;
+  readonly attrs: Record<string, string>;
 }
+
+const ATTR_PREFIX = 'f_';
 
 const CATEGORY_SLUGS = new Set<string>(categories.map((c) => c.slug));
 
@@ -31,6 +34,13 @@ export function parseFilterParams(search: URLSearchParams): FilterParams {
   const sortBy: SortBy =
     sortRaw === 'price-asc' || sortRaw === 'price-desc' ? sortRaw : 'newest';
 
+  const attrs: Record<string, string> = {};
+  search.forEach((value, key) => {
+    if (key.startsWith(ATTR_PREFIX) && value.trim()) {
+      attrs[key.slice(ATTR_PREFIX.length)] = value;
+    }
+  });
+
   return {
     subcategory,
     minPrice,
@@ -38,6 +48,7 @@ export function parseFilterParams(search: URLSearchParams): FilterParams {
     city: cityRaw && cityRaw.trim() ? cityRaw.trim() : null,
     neighborhood: neighRaw && neighRaw.trim() ? neighRaw.trim() : null,
     sortBy,
+    attrs,
   };
 }
 
@@ -50,6 +61,9 @@ export function buildFilterQuery(f: FilterParams): string {
   if (f.city) parts.push(`city=${encodeURIComponent(f.city)}`);
   if (f.neighborhood) parts.push(`neigh=${encodeURIComponent(f.neighborhood)}`);
   if (f.sortBy && f.sortBy !== 'newest') parts.push(`sort=${f.sortBy}`);
+  for (const [key, value] of Object.entries(f.attrs)) {
+    if (value) parts.push(`${ATTR_PREFIX}${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
+  }
   return parts.length > 0 ? '?' + parts.join('&') : '';
 }
 
@@ -57,7 +71,8 @@ export function buildFilterQuery(f: FilterParams): string {
 export function hasActiveFilters(f: FilterParams): boolean {
   return Boolean(
     f.subcategory || f.minPrice !== null || f.maxPrice !== null ||
-    f.city || f.neighborhood || (f.sortBy && f.sortBy !== 'newest')
+    f.city || f.neighborhood || (f.sortBy && f.sortBy !== 'newest') ||
+    Object.keys(f.attrs).length > 0
   );
 }
 
