@@ -14,12 +14,13 @@ export interface FilterListingsOptions {
   readonly cityEn?: string;
   readonly filterMode?: 'city' | 'all';
   readonly includeSold?: boolean;
+  readonly sortBy?: 'newest' | 'price-asc' | 'price-desc';
 }
 
 export function filterListings(listings: Listing[], options: FilterListingsOptions): Listing[] {
   const {
     market, searchQuery = '', categorySlug = null, minPrice = null, maxPrice = null,
-    neighborhood = null, cityAr = '', cityEn = '', filterMode = 'all', includeSold = false,
+    neighborhood = null, cityAr = '', cityEn = '', filterMode = 'all', includeSold = false, sortBy = 'newest',
   } = options;
 
   const scoped = market ? filterListingsByMarket(listings, market as MarketCode) : listings;
@@ -58,5 +59,8 @@ export function filterListings(listings: Listing[], options: FilterListingsOptio
       .sort((a, b) => (b.score !== a.score ? b.score - a.score : sortListingsByPriority(a.item, b.item)))
       .map((s) => s.item);
   }
-  return [...scored.map((s) => s.item)].sort(sortListingsByPriority);
+  const items = scored.map((s) => s.item);
+  if (sortBy === 'price-asc') return [...items].sort((a, b) => Number(a.price) - Number(b.price));
+  if (sortBy === 'price-desc') return [...items].sort((a, b) => Number(b.price) - Number(a.price));
+  return [...items].sort(sortListingsByPriority);
 }
