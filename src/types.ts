@@ -1,4 +1,10 @@
 import type { CategoryMatch } from './ai/categoryMatch';
+import type {
+  VisionHints,
+  ListingFacts,
+  ListingCopyResult,
+  GeneratedListing,
+} from './ai/listingTypes';
 
 export type {
   VisionHints,
