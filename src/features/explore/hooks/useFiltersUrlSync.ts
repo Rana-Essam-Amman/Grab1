@@ -66,14 +66,23 @@ export function buildFiltersQuery(d: FilterDrafts): string {
   return s ? `?${s}` : '';
 }
 
-export function useFiltersUrlSync(drafts: FilterDrafts): void {
+export function useFiltersUrlSync(
+  category: string | null,
+  sub: string | null,
+  min: number | null,
+  max: number | null,
+  neigh: string | null,
+  sort: SortBy,
+  attrs: Record<string, string>,
+): void {
   const replaceUrl = useReplaceUrl();
   useEffect(() => {
     if (typeof window === 'undefined') return;
     if (window.location.pathname !== '/filters') return;
+    const drafts: FilterDrafts = { category, sub, min, max, neigh, sort, attrs };
     const next = `/filters${buildFiltersQuery(drafts)}`;
     if (next !== window.location.pathname + window.location.search) {
       replaceUrl(next);
     }
-  }, [replaceUrl, drafts]);
+  }, [replaceUrl, category, sub, min, max, neigh, sort, attrs]);
 }
