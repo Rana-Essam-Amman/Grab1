@@ -32,6 +32,26 @@ the CI Gate runs **every** Protected E2E — not just the ones for that feature.
 
 ---
 
+## Protected Implementations
+
+Every Protected feature maps to critical source files. Deleting any file
+here requires an explicit REGISTRY.md update in the same PR.
+
+| Feature | Critical source files | Migration |
+|---|---|---|
+| Filter System | `src/features/explore/hooks/useFiltersUrlSync.ts`, `src/shared/router/filtersUrl.ts`, `src/shared/router/filterParams.ts`, `src/features/explore/screens/FiltersScreen.tsx` | — |
+| Search (FTS) | `src/features/listings/hooks/useSupabaseListingsSync.ts`, `src/features/listings/services/listingsService.ts`, `src/features/listings/store/listings.slice.pagination.ts` | `supabase/migrations/20261018_search_v3_schema.sql`, `supabase/migrations/20261019_search_v3_trigger.sql` |
+| AI Search | NEEDS CONFIRMATION: ai-search.spec.ts tests only search UI, not AI-specific behavior | — |
+| Notifications | `src/features/notifications/hooks/useSupabaseNotificationsSync.ts`, `src/features/notifications/services/notificationsService.ts`, `src/features/notifications/store/notifications.slice.ts` | `supabase/migrations/20261016_create_notifications.sql`, `supabase/migrations/20261017_notifications_triggers.sql` |
+| Wishlist | `src/features/listings/hooks/useSupabaseWishlistSync.ts`, `src/features/listings/services/wishlistService.ts` | `supabase/migrations/20261009_create_wishlists.sql` |
+| Chat | `src/features/chat/hooks/useSupabaseChatSync.ts`, `src/features/chat/services/chatService.ts`, `src/features/chat/store/chat.slice.ts` | `supabase/migrations/20261006_create_chat_tables.sql` |
+| Post Ad | `src/features/post-wizard/hooks/usePostWizard.ts`, `src/features/post-wizard/helpers/buildNewListingPayload.ts`, `src/features/post-wizard/store/draft.slice.ts` | — |
+| Register | `src/features/auth/services/authService.ts`, `src/features/auth/hooks/useRegisterStep1.ts`, `src/features/auth/store/auth.slice.ts` | — |
+| App boot | `src/App.tsx`, `src/main.tsx` | — |
+| Production health | NEEDS CONFIRMATION: prod-smoke.spec.ts not wired into any CI workflow | — |
+
+---
+
 ## Uncovered — known gaps
 
 These exist in the product but have **no E2E coverage today**.
@@ -53,7 +73,8 @@ They are candidates for silent loss.
 
 1. Write `e2e/golden-paths/<feature>.spec.ts` with 1–3 assertions that prove the feature exists.
 2. Move its row from **Uncovered** to **Protected** in this file.
-3. Open a PR with both changes.
+3. Add its critical files under **Protected Implementations**.
+4. Open a PR with all changes.
 
 That's it.
 
@@ -62,3 +83,4 @@ That's it.
 ## Changelog
 
 - **2026-10-16** — Initial registry. Search promoted to Protected (PRs #233–#237).
+- **2026-10-10** — Added Protected Implementations layer.
