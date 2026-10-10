@@ -1,5 +1,91 @@
 import type { CategoryFieldMap, ListingFieldOption } from './types';
 
+const FASHION_BRANDS: ListingFieldOption[] = [
+  { value: 'zara', labelAr: 'زارا (Zara)', labelEn: 'Zara' },
+  { value: 'hm', labelAr: 'إتش آند إم (H&M)', labelEn: 'H&M' },
+  { value: 'mango', labelAr: 'مانجو (Mango)', labelEn: 'Mango' },
+  { value: 'massimo_dutti', labelAr: 'ماسيمو دوتي (Massimo Dutti)', labelEn: 'Massimo Dutti' },
+  { value: 'cos', labelAr: 'كوز (COS)', labelEn: 'COS' },
+  { value: 'uniqlo', labelAr: 'يونيكلو (Uniqlo)', labelEn: 'Uniqlo' },
+  { value: 'nike', labelAr: 'نايك (Nike)', labelEn: 'Nike' },
+  { value: 'adidas', labelAr: 'أديداس (Adidas)', labelEn: 'Adidas' },
+  { value: 'puma', labelAr: 'بوما (Puma)', labelEn: 'Puma' },
+  { value: 'reebok', labelAr: 'ريبوك (Reebok)', labelEn: 'Reebok' },
+  { value: 'levis', labelAr: 'ليفايز (Levi\'s)', labelEn: 'Levi\'s' },
+  { value: 'tommy_hilfiger', labelAr: 'تومي هيلفيغر (Tommy Hilfiger)', labelEn: 'Tommy Hilfiger' },
+  { value: 'calvin_klein', labelAr: 'كالفين كلاين (Calvin Klein)', labelEn: 'Calvin Klein' },
+  { value: 'ralph_lauren', labelAr: 'رالف لورين (Ralph Lauren)', labelEn: 'Ralph Lauren' },
+  { value: 'gucci', labelAr: 'غوتشي (Gucci)', labelEn: 'Gucci' },
+  { value: 'prada', labelAr: 'برادا (Prada)', labelEn: 'Prada' },
+  { value: 'louis_vuitton', labelAr: 'لويس فيتون (Louis Vuitton)', labelEn: 'Louis Vuitton' },
+  { value: 'burberry', labelAr: 'بربري (Burberry)', labelEn: 'Burberry' },
+  { value: 'dior', labelAr: 'ديور (Dior)', labelEn: 'Dior' },
+  { value: 'chanel', labelAr: 'شانيل (Chanel)', labelEn: 'Chanel' },
+];
+
+const SHOES_BRANDS: ListingFieldOption[] = [
+  { value: 'nike', labelAr: 'نايك (Nike)', labelEn: 'Nike' },
+  { value: 'adidas', labelAr: 'أديداس (Adidas)', labelEn: 'Adidas' },
+  { value: 'puma', labelAr: 'بوما (Puma)', labelEn: 'Puma' },
+  { value: 'new_balance', labelAr: 'نيو بالانس (New Balance)', labelEn: 'New Balance' },
+  { value: 'reebok', labelAr: 'ريبوك (Reebok)', labelEn: 'Reebok' },
+  { value: 'vans', labelAr: 'فانز (Vans)', labelEn: 'Vans' },
+  { value: 'converse', labelAr: 'كونفرس (Converse)', labelEn: 'Converse' },
+  { value: 'asics', labelAr: 'أسيكس (Asics)', labelEn: 'Asics' },
+  { value: 'skechers', labelAr: 'سكيتشرز (Skechers)', labelEn: 'Skechers' },
+  { value: 'clarks', labelAr: 'كلاركس (Clarks)', labelEn: 'Clarks' },
+  { value: 'ecco', labelAr: 'إيكو (ECCO)', labelEn: 'ECCO' },
+  { value: 'aldo', labelAr: 'ألدو (Aldo)', labelEn: 'Aldo' },
+  { value: 'steve_madden', labelAr: 'ستيف مادن (Steve Madden)', labelEn: 'Steve Madden' },
+  { value: 'gucci', labelAr: 'غوتشي (Gucci)', labelEn: 'Gucci' },
+  { value: 'prada', labelAr: 'برادا (Prada)', labelEn: 'Prada' },
+];
+
+const BAGS_BRANDS: ListingFieldOption[] = [
+  { value: 'louis_vuitton', labelAr: 'لويس فيتون (Louis Vuitton)', labelEn: 'Louis Vuitton' },
+  { value: 'chanel', labelAr: 'شانيل (Chanel)', labelEn: 'Chanel' },
+  { value: 'gucci', labelAr: 'غوتشي (Gucci)', labelEn: 'Gucci' },
+  { value: 'prada', labelAr: 'برادا (Prada)', labelEn: 'Prada' },
+  { value: 'dior', labelAr: 'ديور (Dior)', labelEn: 'Dior' },
+  { value: 'hermes', labelAr: 'هيرميس (Hermès)', labelEn: 'Hermès' },
+  { value: 'michael_kors', labelAr: 'مايكل كورس (Michael Kors)', labelEn: 'Michael Kors' },
+  { value: 'coach', labelAr: 'كوتش (Coach)', labelEn: 'Coach' },
+  { value: 'guess', labelAr: 'جيس (Guess)', labelEn: 'Guess' },
+  { value: 'zara', labelAr: 'زارا (Zara)', labelEn: 'Zara' },
+  { value: 'hm', labelAr: 'إتش آند إم (H&M)', labelEn: 'H&M' },
+  { value: 'charles_keith', labelAr: 'تشارلز آند كيث (Charles & Keith)', labelEn: 'Charles & Keith' },
+];
+
+const JEWELRY_BRANDS: ListingFieldOption[] = [
+  { value: 'cartier', labelAr: 'كارتييه (Cartier)', labelEn: 'Cartier' },
+  { value: 'tiffany', labelAr: 'تيفاني (Tiffany & Co)', labelEn: 'Tiffany & Co' },
+  { value: 'bulgari', labelAr: 'بولغاري (Bulgari)', labelEn: 'Bulgari' },
+  { value: 'van_cleef', labelAr: 'فان كليف (Van Cleef)', labelEn: 'Van Cleef' },
+  { value: 'swarovski', labelAr: 'سواروفسكي (Swarovski)', labelEn: 'Swarovski' },
+  { value: 'pandora', labelAr: 'باندورا (Pandora)', labelEn: 'Pandora' },
+  { value: 'chopard', labelAr: 'شوبارد (Chopard)', labelEn: 'Chopard' },
+  { value: 'damas', labelAr: 'داماس (Damas)', labelEn: 'Damas' },
+  { value: 'malabar', labelAr: 'مالابار (Malabar)', labelEn: 'Malabar' },
+  { value: 'rolex', labelAr: 'روليكس (Rolex)', labelEn: 'Rolex' },
+];
+
+const PERFUME_BRANDS: ListingFieldOption[] = [
+  { value: 'dior', labelAr: 'ديور (Dior)', labelEn: 'Dior' },
+  { value: 'chanel', labelAr: 'شانيل (Chanel)', labelEn: 'Chanel' },
+  { value: 'ysl', labelAr: 'إيف سان لوران (YSL)', labelEn: 'YSL' },
+  { value: 'gucci', labelAr: 'غوتشي (Gucci)', labelEn: 'Gucci' },
+  { value: 'armani', labelAr: 'أرماني (Armani)', labelEn: 'Armani' },
+  { value: 'tom_ford', labelAr: 'توم فورد (Tom Ford)', labelEn: 'Tom Ford' },
+  { value: 'versace', labelAr: 'فيرزاتشي (Versace)', labelEn: 'Versace' },
+  { value: 'calvin_klein', labelAr: 'كالفين كلاين (Calvin Klein)', labelEn: 'Calvin Klein' },
+  { value: 'hugo_boss', labelAr: 'هوغو بوس (Hugo Boss)', labelEn: 'Hugo Boss' },
+  { value: 'lacoste', labelAr: 'لاكوست (Lacoste)', labelEn: 'Lacoste' },
+  { value: 'rasasi', labelAr: 'رصاصي (Rasasi)', labelEn: 'Rasasi' },
+  { value: 'ajmal', labelAr: 'أجمل (Ajmal)', labelEn: 'Ajmal' },
+  { value: 'al_haramain', labelAr: 'الحرمين (Al Haramain)', labelEn: 'Al Haramain' },
+  { value: 'lattafa', labelAr: 'لطافة (Lattafa)', labelEn: 'Lattafa' },
+];
+
 const CLOTHING_SIZES: ListingFieldOption[] = [
   { value: 'xs', labelAr: 'XS (صغير جداً)', labelEn: 'XS' },
   { value: 's', labelAr: 'S (صغير)', labelEn: 'S' },
@@ -157,7 +243,7 @@ export const FASHION_FIELDS: CategoryFieldMap = {
       { value: 'linen', labelAr: 'كتان طبيعي', labelEn: 'Linen' },
       { value: 'polyester_blend', labelAr: 'بوليستر / مخلوط', labelEn: 'Polyester Blend' },
     ]},
-    { key: 'brand', labelAr: 'الماركة المصممة', labelEn: 'Brand', type: 'text', required: false, placeholder: 'Zara, Mango, Massimo Dutti, Shein...', placeholderAr: 'مثال: زارا، مانجو، ماسيمو دوتي...' },
+    { key: 'brand', labelAr: 'الماركة المصممة', labelEn: 'Brand', type: 'select', allowOther: true, required: false, options: FASHION_BRANDS },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
     { key: 'occasion', labelAr: 'المناسبة', labelEn: 'Occasion', type: 'select', allowOther: true, required: false, options: OCCASION_OPTIONS },
     { key: 'season', labelAr: 'الموسم', labelEn: 'Season', type: 'select', allowOther: true, required: false, options: SEASON_OPTIONS },
@@ -188,7 +274,7 @@ export const FASHION_FIELDS: CategoryFieldMap = {
       { value: 'wool', labelAr: 'صوف', labelEn: 'Wool' },
       { value: 'denim', labelAr: 'جينز (Denim)', labelEn: 'Denim' },
     ]},
-    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'text', required: false, placeholder: 'Hugo Boss, Ralph Lauren, Zara, Nike...', placeholderAr: 'مثال: رالف لورين، زارا، نايكي...' },
+    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: false, options: FASHION_BRANDS },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
     { key: 'occasion', labelAr: 'المناسبة', labelEn: 'Occasion', type: 'select', allowOther: true, required: false, options: OCCASION_OPTIONS },
     { key: 'season', labelAr: 'الموسم', labelEn: 'Season', type: 'select', allowOther: true, required: false, options: SEASON_OPTIONS },
@@ -218,7 +304,7 @@ export const FASHION_FIELDS: CategoryFieldMap = {
     ]},
     { key: 'weightGrams', labelAr: 'الوزن التقريبي (بالجرام)', labelEn: 'Weight in Grams', type: 'number', required: false, placeholder: '5.5', placeholderAr: '5.5' },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
-    { key: 'brand', labelAr: 'الماركة المصنعة (إن وجدت)', labelEn: 'Brand', type: 'text', required: false, placeholder: 'Cartier, Tiffany & Co, Pandora, Damas...', placeholderAr: 'مثال: داماس، تيفاني، باندورا...' },
+    { key: 'brand', labelAr: 'الماركة المصنعة (إن وجدت)', labelEn: 'Brand', type: 'select', allowOther: true, required: false, options: JEWELRY_BRANDS },
     { key: 'certified', labelAr: 'مرفق فاتورة أو شهادة فحص معتمدة', labelEn: 'Certificate / Invoice Included', type: 'boolean', required: false },
     { key: 'boxIncluded', labelAr: 'العلبة الأصلية متوفرة', labelEn: 'Original Box Included', type: 'boolean', required: false },
     { key: 'stoneType', labelAr: 'نوع الحجر', labelEn: 'Stone Type', type: 'select', allowOther: true, required: false, options: STONE_TYPE },
@@ -235,7 +321,7 @@ export const FASHION_FIELDS: CategoryFieldMap = {
       { value: 'luggage', labelAr: 'حقيبة سفر / ترولي (Luggage)', labelEn: 'Luggage / Suitcase' },
       { value: 'wallet', labelAr: 'محفظة نقود وبطاقات (Wallet)', labelEn: 'Wallet' },
     ]},
-    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'text', required: true, placeholder: 'Louis Vuitton, Chanel, Michael Kors, Coach...', placeholderAr: 'مثال: لويس فيتون، كوتش، مايكل كورس...' },
+    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: true, options: BAGS_BRANDS },
     { key: 'material', labelAr: 'المادة', labelEn: 'Material', type: 'select', allowOther: true, required: false, options: [
       { value: 'genuine_leather', labelAr: 'جلد طبيعي فاخر', labelEn: 'Genuine Leather' },
       { value: 'vegan_leather', labelAr: 'جلد صناعي (Vegan Leather / PU)', labelEn: 'Vegan / Faux Leather' },
@@ -266,7 +352,7 @@ export const FASHION_FIELDS: CategoryFieldMap = {
       { value: 'unisex', labelAr: 'للجنسين', labelEn: 'Unisex' },
     ]},
     { key: 'size', labelAr: 'المقاس الأوروبي (EU Size)', labelEn: 'Size (EU)', type: 'select', allowOther: true, required: true, options: SHOE_SIZES },
-    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'text', required: true, placeholder: 'Nike, Adidas, Jordan, New Balance, Aldo...', placeholderAr: 'مثال: نايكي، أديداس، جوردن...' },
+    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: true, options: SHOES_BRANDS },
     { key: 'color', labelAr: 'اللون', labelEn: 'Color', type: 'select', allowOther: true, required: true, options: COLOR_OPTIONS },
     { key: 'material', labelAr: 'الخامة الخارجية', labelEn: 'Material', type: 'select', allowOther: true, required: false, options: [
       { value: 'leather', labelAr: 'جلد طبيعي', labelEn: 'Leather' },
@@ -282,7 +368,7 @@ export const FASHION_FIELDS: CategoryFieldMap = {
     { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
   ],
   perfumes: [
-    { key: 'brand', labelAr: 'الماركة ودار العطور', labelEn: 'Brand / House', type: 'text', required: true, placeholder: 'Dior, Chanel, Creed, Tom Ford, Arabian Oud...', placeholderAr: 'مثال: ديور، شانيل، توم فورد، العربية للعود...' },
+    { key: 'brand', labelAr: 'الماركة ودار العطور', labelEn: 'Brand / House', type: 'select', allowOther: true, required: true, options: PERFUME_BRANDS },
     { key: 'perfumeName', labelAr: 'اسم العطر', labelEn: 'Perfume Name', type: 'text', required: true, placeholder: 'Sauvage, Bleu de Chanel, Aventus...', placeholderAr: 'مثال: سوفاج، بلو دو شانيل، أفينتوس...' },
     { key: 'concentration', labelAr: 'تركيز العطر', labelEn: 'Concentration', type: 'select', allowOther: true, required: false, options: [
       { value: 'edp', labelAr: 'أو دو بارفيوم (Eau de Parfum)', labelEn: 'Eau de Parfum (EDP)' },
