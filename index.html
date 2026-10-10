@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
   <head>
     <script>
-      (function() {
+      (function () {
         try {
           var saved = localStorage.getItem('catch_locale');
           var locale = 'ar';
@@ -36,27 +36,19 @@
     <link rel="preconnect" href="https://wmchqotsforwcoxilaeo.supabase.co" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Geist:wght@400;500;600;700&display=swap"
-      media="print"
-      onload="this.media='all'"
-    />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Geist:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'" />
     <noscript>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Geist:wght@400;500;600;700&display=swap"
-      />
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Geist:wght@400;500;600;700&display=swap" />
     </noscript>
     <style>
-      :lang(ar), [dir="rtl"] {
-        font-family: 'IBM Plex Sans Arabic', sans-serif;
-      }
-      :lang(en), [dir="ltr"] {
-        font-family: 'Geist', system-ui, sans-serif;
-      }
+      :lang(ar), [dir="rtl"] { font-family: 'IBM Plex Sans Arabic', sans-serif; }
+      :lang(en), [dir="ltr"] { font-family: 'Geist', system-ui, sans-serif; }
+      #boot-skeleton { max-width: 440px; margin: 0 auto; padding: 12px 16px; box-sizing: border-box; }
+      #boot-skeleton .bs-bar { height: 32px; background: rgba(0,0,0,0.08); border-radius: 8px; margin-bottom: 14px; }
+      #boot-skeleton .bs-search { height: 44px; background: rgba(0,0,0,0.06); border-radius: 12px; margin-bottom: 18px; }
+      #boot-skeleton .bs-card { height: 150px; background: rgba(0,0,0,0.06); border-radius: 16px; margin-bottom: 12px; animation: bs-pulse 1.4s ease-in-out infinite; }
+      @keyframes bs-pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
     </style>
-  
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -66,10 +58,7 @@
         "inLanguage": ["ar", "en"],
         "potentialAction": {
           "@type": "SearchAction",
-          "target": {
-            "@type": "EntryPoint",
-            "urlTemplate": "https://fox-marketplaces.pages.dev/search?q={search_term_string}"
-          },
+          "target": { "@type": "EntryPoint", "urlTemplate": "https://fox-marketplaces.pages.dev/search?q={search_term_string}" },
           "query-input": "required name=search_term_string"
         }
       }
@@ -92,7 +81,15 @@
     </script>
   </head>
   <body class="bg-[#ebe6db] text-[#4a4845] antialiased">
-    <div id="root"></div>
+    <div id="root">
+      <div id="boot-skeleton" aria-hidden="true">
+        <div class="bs-bar"></div>
+        <div class="bs-search"></div>
+        <div class="bs-card"></div>
+        <div class="bs-card"></div>
+        <div class="bs-card"></div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
