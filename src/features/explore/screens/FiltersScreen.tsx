@@ -33,7 +33,7 @@ export const FiltersScreen: React.FC = () => {
   const [draftCity, setDraftCity] = useState<string>(browseCityEn);
   const [draftNeigh, setDraftNeigh] = useState<string | null>(neighborhoodFilter);
   const [draftAttrs, setDraftAttrs] = useState<Record<string, string>>(attrsFilter);
-  useFiltersUrlSync({ category: draftCategory, sub: draftSub, min: draftMin, max: draftMax, neigh: draftNeigh, sort: draftSort, attrs: draftAttrs });
+  useFiltersUrlSync(draftCategory, draftSub, draftMin, draftMax, draftNeigh, draftSort, draftAttrs);
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
   const catCount = draftCategory ? 1 + (draftSub ? 1 : 0) : 0;
   const sortActive = draftSort !== 'newest';
