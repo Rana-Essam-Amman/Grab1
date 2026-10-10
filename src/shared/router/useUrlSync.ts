@@ -129,6 +129,7 @@ export function useUrlSync(): void {
           })
         : `/listing/${latest.selectedListingId}`;
     } else if (latest.currentScreen === 'filters') {
+      if (resolvePath(window.location.pathname)?.screen === 'filters') return;
       target = '/filters' + location.search;
     } else {
       target = screenToPath(latest.currentScreen, {
