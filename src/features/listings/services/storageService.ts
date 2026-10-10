@@ -7,6 +7,17 @@ async function dataUrlToBlob(dataUrl: string): Promise<Blob> {
   return response.blob();
 }
 
+/** Read intrinsic pixel dimensions of an image source (data: or blob: URL). */
+async function readImageDimensions(src: string): Promise<{ width: number; height: number }> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () =>
+      resolve({ width: img.naturalWidth, height: img.naturalHeight });
+    img.onerror = () => reject(new Error('image load failed'));
+    img.src = src;
+  });
+}
+
 const MAX_RETRIES = 2;
 const RETRY_DELAY_MS = 800;
 
@@ -14,7 +25,15 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function uploadOne(dataUrl: string, userId: string): Promise<string> {
+interface UploadedOne {
+  readonly url: string;
+  readonly width: number;
+  readonly height: number;
+}
+
+async function uploadOne(dataUrl: string, userId: string): Promise<UploadedOne> {
+  // Read dimensions BEFORE upload so the listing can persist them.
+  const dims = await readImageDimensions(dataUrl);
   const blob = await dataUrlToBlob(dataUrl);
   const ext = (blob.type.split('/')[1] || 'jpg').split(';')[0];
   const path = `${userId}/${crypto.randomUUID()}.${ext}`;
@@ -27,7 +46,7 @@ async function uploadOne(dataUrl: string, userId: string): Promise<string> {
     });
     if (!error) {
       const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
-      return data.publicUrl;
+      return { url: data.publicUrl, width: dims.width, height: dims.height };
     }
     lastError = new Error(error.message);
     // Retry only on transient errors; abort immediately on 4xx auth/content.
@@ -41,6 +60,8 @@ async function uploadOne(dataUrl: string, userId: string): Promise<string> {
 
 export interface UploadBatchResult {
   readonly urls: string[];
+  /** Parallel to urls. null = static asset (no uploaded dims available). */
+  readonly dims: ReadonlyArray<{ readonly width: number; readonly height: number } | null>;
   readonly failedCount: number;
 }
 
@@ -49,20 +70,24 @@ export async function uploadListingImages(
   userId: string
 ): Promise<UploadBatchResult> {
   const urls: string[] = [];
+  const dims: Array<{ width: number; height: number } | null> = [];
   let failedCount = 0;
   for (const src of sources) {
     // Static assets (/assets/...) already have permanent URLs — keep as-is.
     if (!src.startsWith('data:') && !src.startsWith('blob:')) {
       urls.push(src);
+      dims.push(null);
       continue;
     }
     try {
-      urls.push(await uploadOne(src, userId));
+      const result = await uploadOne(src, userId);
+      urls.push(result.url);
+      dims.push({ width: result.width, height: result.height });
     } catch {
       failedCount += 1;
     }
   }
-  return { urls, failedCount };
+  return { urls, dims, failedCount };
 }
 
 /**
