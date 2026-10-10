@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CAR_BRANDS } from '@/data/brands/carBrands';
 import { getModelOptions } from '@/data/brands/carModels';
 import { OtherOptionInput } from './OtherOptionInput';
+import { SearchableDropdown } from '@/shared/ui/SearchableDropdown';
 
 const OTHER_VALUE = '__other__';
 
@@ -37,6 +38,12 @@ export const CascadingModelSelect: React.FC<Props> = ({
   }, [isModelCustom, modelValue]);
 
   const modelTestId = hideMakeField ? testId : (testId ? `${testId}-model` : undefined);
+  const otherMakeLabel = isArabic ? 'أخرى — اكتب يدوياً' : 'Other — type manually';
+  const brandOptions = CAR_BRANDS.map((b) => isArabic ? b.nameAr : b.nameEn);
+  const selectedBrand = CAR_BRANDS.find((b) => b.slug === makeValue);
+  const selectedBrandLabel = selectedBrand
+    ? (isArabic ? selectedBrand.nameAr : selectedBrand.nameEn)
+    : makeValue;
 
   const renderModelBlock = () => (
     <div className="flex flex-col gap-1.5 py-1.5">
@@ -55,7 +62,7 @@ export const CascadingModelSelect: React.FC<Props> = ({
           >
             <option value="">{isArabic ? '-- اختر الموديل --' : '-- Select Model --'}</option>
             {modelOptions.map((m) => (<option key={m.value} value={m.value}>{m.labelAr}</option>))}
-            <option value={OTHER_VALUE}>{isArabic ? 'أخرى — اكتب يدوياً' : 'Other — type manually'}</option>
+            <option value={OTHER_VALUE}>{otherMakeLabel}</option>
           </select>
           {showOtherModel && (
             <OtherOptionInput value={customModel} onChange={(v) => { setCustomModel(v); onModelChange(v); }} placeholder={isArabic ? 'اكتب اسم الموديل...' : 'Type model name...'} isArabic={isArabic} />
@@ -73,11 +80,13 @@ export const CascadingModelSelect: React.FC<Props> = ({
     <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-1.5 py-1.5">
         <label className="text-xs font-bold text-ink-soft">{isArabic ? 'الماركة' : 'Make'} <span className="text-accent">*</span></label>
-        <select
-          data-testid={testId}
-          value={showOtherMake ? OTHER_VALUE : makeValue}
-          onChange={(e) => {
-            const v = e.target.value;
+        <SearchableDropdown
+          options={[...brandOptions, otherMakeLabel]}
+          value={showOtherMake ? otherMakeLabel : selectedBrandLabel}
+          onChange={(selected) => {
+            const v = selected === otherMakeLabel
+              ? OTHER_VALUE
+              : CAR_BRANDS.find((b) => (isArabic ? b.nameAr : b.nameEn) === selected)?.slug ?? selected;
             onModelChange(''); setCustomModel('');
             if (v === OTHER_VALUE) {
               setShowOtherMake(true); setShowOtherModel(true); onMakeChange(customMake);
@@ -86,12 +95,9 @@ export const CascadingModelSelect: React.FC<Props> = ({
               setShowOtherModel(getModelOptions(v).length === 0);
             }
           }}
-          className="w-full h-11 px-3 rounded-xl border border-line bg-canvas text-ink text-sm font-medium focus:outline-none focus:border-primary cursor-pointer"
-        >
-          <option value="">{isArabic ? '-- اختر الماركة --' : '-- Select Make --'}</option>
-          {CAR_BRANDS.map((b) => (<option key={b.slug} value={b.slug}>{isArabic ? b.nameAr : b.nameEn}</option>))}
-          <option value={OTHER_VALUE}>{isArabic ? 'أخرى — اكتب يدوياً' : 'Other — type manually'}</option>
-        </select>
+          placeholder={isArabic ? '-- اختر الماركة --' : '-- Select Make --'}
+          isArabic={isArabic}
+        />
         {showOtherMake && (
           <OtherOptionInput value={customMake} onChange={(v) => { setCustomMake(v); onMakeChange(v); }} placeholder={isArabic ? 'اكتب اسم الماركة...' : 'Type brand name...'} isArabic={isArabic} />
         )}
