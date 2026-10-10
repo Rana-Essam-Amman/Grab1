@@ -30,7 +30,7 @@ export async function installFiltersMocks(page: Page): Promise<void> {
         user_id: FAKE_USER_ID,
         title: 'Toyota Camry 2020',
         description: 'Clean car',
-        price: '8000',
+        price: '1800',
         currency: 'JOD',
         country_code: 'JO',
         city: 'Amman',
