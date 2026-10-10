@@ -1,5 +1,74 @@
 import type { CategoryFieldMap, ListingFieldOption } from './types';
 
+const PERFUME_BRANDS: ListingFieldOption[] = [
+  { value: 'dior', labelAr: 'ديور (Dior)', labelEn: 'Dior' },
+  { value: 'chanel', labelAr: 'شانيل (Chanel)', labelEn: 'Chanel' },
+  { value: 'ysl', labelAr: 'إيف سان لوران (YSL)', labelEn: 'YSL' },
+  { value: 'gucci', labelAr: 'غوتشي (Gucci)', labelEn: 'Gucci' },
+  { value: 'armani', labelAr: 'أرماني (Armani)', labelEn: 'Armani' },
+  { value: 'tom_ford', labelAr: 'توم فورد (Tom Ford)', labelEn: 'Tom Ford' },
+  { value: 'versace', labelAr: 'فيرزاتشي (Versace)', labelEn: 'Versace' },
+  { value: 'calvin_klein', labelAr: 'كالفين كلاين (Calvin Klein)', labelEn: 'Calvin Klein' },
+  { value: 'hugo_boss', labelAr: 'هوغو بوس (Hugo Boss)', labelEn: 'Hugo Boss' },
+  { value: 'lacoste', labelAr: 'لاكوست (Lacoste)', labelEn: 'Lacoste' },
+  { value: 'rasasi', labelAr: 'رصاصي (Rasasi)', labelEn: 'Rasasi' },
+  { value: 'ajmal', labelAr: 'أجمل (Ajmal)', labelEn: 'Ajmal' },
+  { value: 'al_haramain', labelAr: 'الحرمين (Al Haramain)', labelEn: 'Al Haramain' },
+  { value: 'lattafa', labelAr: 'لطافة (Lattafa)', labelEn: 'Lattafa' },
+];
+
+const COSMETICS_BRANDS: ListingFieldOption[] = [
+  { value: 'loreal', labelAr: 'لوريال (L\'Oréal)', labelEn: 'L\'Oréal' },
+  { value: 'maybelline', labelAr: 'ميبيلين (Maybelline)', labelEn: 'Maybelline' },
+  { value: 'mac', labelAr: 'ماك (MAC)', labelEn: 'MAC' },
+  { value: 'nars', labelAr: 'نارس (NARS)', labelEn: 'NARS' },
+  { value: 'estee_lauder', labelAr: 'إستي لودر (Estée Lauder)', labelEn: 'Estée Lauder' },
+  { value: 'lancome', labelAr: 'لانكوم (Lancôme)', labelEn: 'Lancôme' },
+  { value: 'clinique', labelAr: 'كلينيك (Clinique)', labelEn: 'Clinique' },
+  { value: 'fenty', labelAr: 'فينتي بيوتي (Fenty Beauty)', labelEn: 'Fenty Beauty' },
+  { value: 'huda_beauty', labelAr: 'هدى بيوتي (Huda Beauty)', labelEn: 'Huda Beauty' },
+  { value: 'charlotte_tilbury', labelAr: 'شارلوت تيلبري (Charlotte Tilbury)', labelEn: 'Charlotte Tilbury' },
+  { value: 'nyx', labelAr: 'نيكس (NYX)', labelEn: 'NYX' },
+];
+
+const SKINCARE_BRANDS: ListingFieldOption[] = [
+  { value: 'the_ordinary', labelAr: 'ذا أورديناري (The Ordinary)', labelEn: 'The Ordinary' },
+  { value: 'cerave', labelAr: 'سيرافي (CeraVe)', labelEn: 'CeraVe' },
+  { value: 'la_roche_posay', labelAr: 'لاروش بوزيه (La Roche-Posay)', labelEn: 'La Roche-Posay' },
+  { value: 'neutrogena', labelAr: 'نيوتروجينا (Neutrogena)', labelEn: 'Neutrogena' },
+  { value: 'nivea', labelAr: 'نيفيا (Nivea)', labelEn: 'Nivea' },
+  { value: 'loccitane', labelAr: 'لوكسيتان (L\'Occitane)', labelEn: 'L\'Occitane' },
+  { value: 'kiehls', labelAr: 'كيلز (Kiehl\'s)', labelEn: 'Kiehl\'s' },
+  { value: 'vichy', labelAr: 'فيشي (Vichy)', labelEn: 'Vichy' },
+  { value: 'bioderma', labelAr: 'بيوديرما (Bioderma)', labelEn: 'Bioderma' },
+  { value: 'avene', labelAr: 'أفين (Avene)', labelEn: 'Avene' },
+];
+
+const HAIRCARE_BRANDS: ListingFieldOption[] = [
+  { value: 'loreal', labelAr: 'لوريال (L\'Oréal)', labelEn: 'L\'Oréal' },
+  { value: 'pantene', labelAr: 'بانتين (Pantene)', labelEn: 'Pantene' },
+  { value: 'head_shoulders', labelAr: 'هيد آند شولدرز (Head & Shoulders)', labelEn: 'Head & Shoulders' },
+  { value: 'dove', labelAr: 'دوف (Dove)', labelEn: 'Dove' },
+  { value: 'garnier', labelAr: 'غارنييه (Garnier)', labelEn: 'Garnier' },
+  { value: 'kerastase', labelAr: 'كيراستاس (Kerastase)', labelEn: 'Kerastase' },
+  { value: 'olaplex', labelAr: 'أولابلكس (Olaplex)', labelEn: 'Olaplex' },
+  { value: 'tresemme', labelAr: 'تريسمي (TRESemmé)', labelEn: 'TRESemmé' },
+  { value: 'schwarzkopf', labelAr: 'شوارزكوف (Schwarzkopf)', labelEn: 'Schwarzkopf' },
+  { value: 'dyson', labelAr: 'دايسون (Dyson)', labelEn: 'Dyson' },
+];
+
+const BEAUTY_DEVICE_BRANDS: ListingFieldOption[] = [
+  { value: 'philips', labelAr: 'فيليبس (Philips)', labelEn: 'Philips' },
+  { value: 'braun', labelAr: 'براون (Braun)', labelEn: 'Braun' },
+  { value: 'oral_b', labelAr: 'أورال بي (Oral-B)', labelEn: 'Oral-B' },
+  { value: 'foreo', labelAr: 'فوريو (Foreo)', labelEn: 'Foreo' },
+  { value: 'dyson', labelAr: 'دايسون (Dyson)', labelEn: 'Dyson' },
+  { value: 'remington', labelAr: 'ريمينغتون (Remington)', labelEn: 'Remington' },
+  { value: 'panasonic', labelAr: 'باناسونيك (Panasonic)', labelEn: 'Panasonic' },
+  { value: 'wahl', labelAr: 'وول (Wahl)', labelEn: 'Wahl' },
+  { value: 'theragun', labelAr: 'ثيراغن (Theragun)', labelEn: 'Theragun' },
+];
+
 const BEAUTY_CONDITION_OPTIONS: ListingFieldOption[] = [
   { value: 'new_sealed', labelAr: 'جديد ومغلق بالكامل (مغلف)', labelEn: 'Brand New Sealed' },
   { value: 'new_unsealed', labelAr: 'جديد غير مستخدم (بدون تغليف)', labelEn: 'New Unsealed' },
@@ -16,7 +85,7 @@ const VOLUME_OPTIONS: ListingFieldOption[] = [
 
 export const BEAUTY_FIELDS: CategoryFieldMap = {
   'perfumes-cosmetics': [
-    { key: 'brand', labelAr: 'الماركة المصنعة', labelEn: 'Brand', type: 'text', required: true, placeholder: 'Huda Beauty, MAC, Maybelline, Dior...', placeholderAr: 'مثال: هدى بيوتي، ماك، ميبلين...' },
+    { key: 'brand', labelAr: 'الماركة المصنعة', labelEn: 'Brand', type: 'select', allowOther: true, required: true, options: [...PERFUME_BRANDS, ...COSMETICS_BRANDS] },
     { key: 'productType', labelAr: 'نوع المستحضر', labelEn: 'Product Type', type: 'select', allowOther: true, required: true, options: [
       { value: 'foundation_powder', labelAr: 'كريم أساس وبودرة (Foundation / Powder)', labelEn: 'Foundation / Powder' },
       { value: 'lipstick_lipgloss', labelAr: 'أحمر شفاه وقلوس (Lipstick / Gloss)', labelEn: 'Lipstick / Gloss' },
@@ -34,7 +103,7 @@ export const BEAUTY_FIELDS: CategoryFieldMap = {
     ]},
   ],
   hair: [
-    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'text', required: false, placeholder: 'Dyson, L’Oreal, Olaplex, Philips...', placeholderAr: 'مثال: دايسون، لوريال، أولابلكس...' },
+    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: false, options: HAIRCARE_BRANDS },
     { key: 'productType', labelAr: 'نوع المنتج أو الجهاز', labelEn: 'Product / Device Type', type: 'select', allowOther: true, required: true, options: [
       { value: 'hair_dryer', labelAr: 'استشوار ومجفف شعر (Hair Dryer)', labelEn: 'Hair Dryer' },
       { value: 'straightener', labelAr: 'مملس شعر ومكواة (Straightener)', labelEn: 'Straightener' },
@@ -56,7 +125,7 @@ export const BEAUTY_FIELDS: CategoryFieldMap = {
     ]},
   ],
   skin: [
-    { key: 'brand', labelAr: 'الماركة الطبية أو التجارية', labelEn: 'Brand', type: 'text', required: true, placeholder: 'La Roche-Posay, CeraVe, The Ordinary, Vichy...', placeholderAr: 'مثال: لاروش بوزيه، سيرافي، ذا أورديناري...' },
+    { key: 'brand', labelAr: 'الماركة الطبية أو التجارية', labelEn: 'Brand', type: 'select', allowOther: true, required: true, options: SKINCARE_BRANDS },
     { key: 'productType', labelAr: 'نوع المستحضر', labelEn: 'Product Type', type: 'select', allowOther: true, required: true, options: [
       { value: 'cleanser', labelAr: 'غسول وجه ومنظف (Cleanser)', labelEn: 'Cleanser' },
       { value: 'moisturizer', labelAr: 'كريم مرطب (Moisturizer)', labelEn: 'Moisturizer' },
@@ -84,7 +153,7 @@ export const BEAUTY_FIELDS: CategoryFieldMap = {
       { value: 'face_cleanser_device', labelAr: 'جهاز تنظيف الوجه والمساج (Foreo Style)', labelEn: 'Facial Cleanser Device' },
       { value: 'massage_gun', labelAr: 'جهاز تدليك ومساج عضلي (Massage Gun)', labelEn: 'Massage Gun' },
     ]},
-    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'text', required: true, placeholder: 'Philips, Braun, Braun Silk-expert, Oral-B...', placeholderAr: 'مثال: فيليبس، براون، أورال بي...' },
+    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: true, options: BEAUTY_DEVICE_BRANDS },
     { key: 'powerSource', labelAr: 'نوع الطاقة والتغذية', labelEn: 'Power Source', type: 'select', allowOther: true, required: false, options: [
       { value: 'rechargeable', labelAr: 'شحن لاسلكي / بطارية مدمجة', labelEn: 'Rechargeable Battery' },
       { value: 'corded', labelAr: 'سلك كهربائي مباشر', labelEn: 'Corded Electric' },
