@@ -40,6 +40,8 @@ jobs:
 
       - name: Run architecture audit
         run: npm run audit:arch
+      - name: Check feature registry
+        run: npm run check:registry
 
       - name: Run git health check
         run: npm run health:git
