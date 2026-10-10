@@ -19,9 +19,11 @@ const LIMITS = {
   default: 150,
 };
 
+const WARNING_RATIO = 0.8;
+
 function getFileType(filePath) {
   const normalized = filePath.replace(/\\/g, '/');
-  
+
   if (normalized === 'src/App.tsx') return { type: 'app', limit: LIMITS.app };
   if (normalized === 'src/types.ts') return { type: 'types', limit: LIMITS.types };
   if (normalized.startsWith('src/ai/')) return { type: 'ai', limit: LIMITS.ai };
@@ -34,7 +36,7 @@ function getFileType(filePath) {
   if (normalized.includes('/components/') && normalized.endsWith('.tsx')) return { type: 'component', limit: LIMITS.component };
   if (normalized.includes('/hooks/') && normalized.endsWith('.ts')) return { type: 'hook', limit: LIMITS.hook };
   if (normalized.includes('/helpers/') && normalized.endsWith('.ts')) return { type: 'helper', limit: LIMITS.helper };
-  
+
   return { type: 'default', limit: LIMITS.default };
 }
 
@@ -43,8 +45,7 @@ function walkDir(dir, fileList = []) {
   for (const file of files) {
     const filePath = path.join(dir, file);
     const stat = fs.statSync(filePath);
-    
-    // Skip tests
+
     if (filePath.includes('__tests__')) continue;
     if (file.endsWith('.test.ts') || file.endsWith('.test.tsx') || file.endsWith('.spec.ts') || file.endsWith('.spec.tsx')) continue;
 
@@ -59,16 +60,17 @@ function walkDir(dir, fileList = []) {
   return fileList;
 }
 
+function pad(str, width) {
+  return str.length >= width ? str : str + ' '.repeat(width - str.length);
+}
+
 function auditArchitecture() {
   const allFiles = walkDir(SRC_DIR);
-  let violations = 0;
-  let warnings = 0;
-  let compliant = 0;
-  
+  const violations = [];
+  const warnings = [];
   const categoryCounts = {};
-
-  console.log('[ARCHITECTURE AUDIT - RULE 14]');
-  console.log('--------------------------------------------------------------------------------');
+  let compliant = 0;
+  let exempted = 0;
 
   for (const file of allFiles) {
     const content = fs.readFileSync(file, 'utf-8');
@@ -76,42 +78,63 @@ function auditArchitecture() {
     const relPath = path.relative(process.cwd(), file).replace(/\\/g, '/');
 
     if (content.includes('// RULE-14-EXCEPTION')) {
-      console.log(`EXEMPTED  ${relPath} (${lines} lines)`);
+      exempted++;
       compliant++;
       continue;
     }
 
     const { type, limit } = getFileType(relPath);
     categoryCounts[type] = (categoryCounts[type] || 0) + 1;
-    
+
     const ratio = lines / limit;
 
     if (lines > limit) {
-      console.log(`\x1b[31mVIOLATION\x1b[0m ${relPath} (${lines}/${limit} lines - ${type})`);
-      violations++;
-    } else if (ratio >= 0.8) {
-      console.log(`\x1b[33mWARNING\x1b[0m   ${relPath} (${lines}/${limit} lines - ${type} >= 80%)`);
-      warnings++;
+      violations.push({ relPath, lines, limit, ratio, type });
+    } else if (ratio >= WARNING_RATIO) {
+      warnings.push({ relPath, lines, limit, ratio, type });
       compliant++;
     } else {
       compliant++;
     }
   }
 
+  violations.sort((a, b) => b.ratio - a.ratio);
+  warnings.sort((a, b) => b.ratio - a.ratio);
+
+  console.log('[ARCHITECTURE AUDIT - RULE 14]');
   console.log('--------------------------------------------------------------------------------');
+
+  if (violations.length > 0) {
+    console.log(`\x1b[31m❌ VIOLATIONS (${violations.length}) — file is OVER its limit:\x1b[0m`);
+    violations.forEach((v, i) => {
+      const pct = (v.ratio * 100).toFixed(1);
+      console.log(`  ${String(i + 1).padStart(2)}. \x1b[31m${pad(v.relPath, 60)}\x1b[0m ${v.lines}/${v.limit} (${pct}%) - ${v.type}`);
+    });
+    console.log('--------------------------------------------------------------------------------');
+  }
+
+  if (warnings.length > 0) {
+    console.log(`\x1b[33m⚠️  WARNINGS (${warnings.length}) — at or above 80% of limit:\x1b[0m`);
+    warnings.forEach((w, i) => {
+      const pct = (w.ratio * 100).toFixed(1);
+      console.log(`  ${String(i + 1).padStart(2)}. \x1b[33m${pad(w.relPath, 60)}\x1b[0m ${w.lines}/${w.limit} (${pct}%) - ${w.type}`);
+    });
+    console.log('--------------------------------------------------------------------------------');
+  }
+
   console.log('Category Counts:');
   for (const [type, count] of Object.entries(categoryCounts).sort((a, b) => b[1] - a[1])) {
-    console.log(` - ${type}: ${count} files`);
+    console.log(`  - ${type}: ${count} files`);
   }
-  
-  console.log('--------------------------------------------------------------------------------');
-  console.log(`Summary: \x1b[31m${violations} violations\x1b[0m, \x1b[33m${warnings} warnings\x1b[0m, ${compliant} compliant files.`);
 
-  if (violations > 0) {
-    console.log('\n❌ Architecture audit failed due to Rule 14 size violations.');
+  console.log('--------------------------------------------------------------------------------');
+  console.log(`Summary: \x1b[31m${violations.length} violations\x1b[0m, \x1b[33m${warnings.length} warnings\x1b[0m, ${compliant} compliant (${exempted} exempted).`);
+
+  if (violations.length > 0) {
+    console.log('\n❌ Architecture audit failed. Fix all violations above, then re-run.');
     process.exit(1);
   } else {
-    console.log('\n✨ Architecture audit passed successfully!');
+    console.log('\n✨ Architecture audit passed successfully.');
     process.exit(0);
   }
 }
