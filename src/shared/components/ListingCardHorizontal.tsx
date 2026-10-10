@@ -49,6 +49,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
 
   return (
     <div
+      data-testid="listing-card"
       onClick={handleClick}
       className={`${premiumClasses} rounded-2xl p-3 border flex gap-3 cursor-pointer hover:border-primary/60 transition-all shadow-xs`}
       dir={isArabic ? 'rtl' : 'ltr'}

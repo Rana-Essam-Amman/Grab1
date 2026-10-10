@@ -7,7 +7,7 @@ interface SearchResultsEmptyProps {
 
 export const SearchResultsEmpty: React.FC<SearchResultsEmptyProps> = ({ isArabic }) => {
   return (
-    <div className="py-16 flex flex-col items-center justify-center text-center gap-2">
+    <div className="py-16 flex flex-col items-center justify-center text-center gap-2" data-testid="search-empty">
       <div className="w-12 h-12 rounded-full bg-surface-raised flex items-center justify-center text-ink-muted">
         <SearchNormal1 size={22} variant="Linear" />
       </div>

@@ -15,9 +15,10 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   onSubmit,
 }) => {
   return (
-    <div className="relative flex items-center w-full">
+    <div className="relative flex items-center w-full" data-testid="search-container">
       <input
         type="text"
+        data-testid="search-input"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
