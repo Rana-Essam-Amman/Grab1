@@ -25,6 +25,29 @@ const BATTERY_HEALTH_OPTIONS: ListingFieldOption[] = [
   { value: 'fair', labelAr: 'متوسطة', labelEn: 'Fair' }, { value: 'needs_replacement', labelAr: 'تحتاج تغيير', labelEn: 'Needs Replacement' },
 ];
 
+const PHONE_BRANDS: ListingFieldOption[] = [
+  { value: 'apple', labelAr: 'أبل', labelEn: 'Apple' },
+  { value: 'samsung', labelAr: 'سامسونج', labelEn: 'Samsung' },
+  { value: 'huawei', labelAr: 'هواوي', labelEn: 'Huawei' },
+  { value: 'xiaomi', labelAr: 'شاومي', labelEn: 'Xiaomi' },
+  { value: 'oppo', labelAr: 'أوبو', labelEn: 'Oppo' },
+  { value: 'vivo', labelAr: 'فيفو', labelEn: 'Vivo' },
+  { value: 'realme', labelAr: 'ريلمي', labelEn: 'Realme' },
+  { value: 'google', labelAr: 'جوجل', labelEn: 'Google' },
+  { value: 'sony', labelAr: 'سوني', labelEn: 'Sony' },
+  { value: 'nokia', labelAr: 'نوكيا', labelEn: 'Nokia' },
+  { value: 'oneplus', labelAr: 'ون بلس', labelEn: 'OnePlus' },
+  { value: 'motorola', labelAr: 'موتورولا', labelEn: 'Motorola' },
+  { value: 'honor', labelAr: 'هونر', labelEn: 'Honor' },
+  { value: 'infinix', labelAr: 'إنفينكس', labelEn: 'Infinix' },
+  { value: 'tecno', labelAr: 'تكنو', labelEn: 'Tecno' },
+  { value: 'tcl', labelAr: 'TCL', labelEn: 'TCL' },
+  { value: 'zte', labelAr: 'ZTE', labelEn: 'ZTE' },
+  { value: 'nothing', labelAr: 'ناثينغ', labelEn: 'Nothing' },
+  { value: 'asus', labelAr: 'أسوس', labelEn: 'Asus' },
+  { value: 'lenovo', labelAr: 'لينوفو', labelEn: 'Lenovo' },
+];
+
 const TABLET_BRANDS: ListingFieldOption[] = [
   { value: 'apple', labelAr: 'أبل', labelEn: 'Apple' }, { value: 'samsung', labelAr: 'سامسونج', labelEn: 'Samsung' },
   { value: 'huawei', labelAr: 'هواوي', labelEn: 'Huawei' }, { value: 'lenovo', labelAr: 'لينوفو', labelEn: 'Lenovo' },
@@ -91,7 +114,6 @@ const ORIGIN_OPTIONS: ListingFieldOption[] = [
   { value: 'original', labelAr: 'أصلي', labelEn: 'Original' }, { value: 'aftermarket', labelAr: 'تجاري', labelEn: 'Aftermarket' },
 ];
 
-
 const NETWORK_TECH: readonly ListingFieldOption[] = [
   { value: '2g', labelAr: '2G', labelEn: '2G' },
   { value: '3g', labelAr: '3G', labelEn: '3G' },
@@ -118,7 +140,7 @@ const MOBILE_SELLER_TYPE: readonly ListingFieldOption[] = [
 
 export const MOBILES_FIELDS: CategoryFieldMap = {
   phones: [
-    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'text', required: true, placeholder: 'Apple, Samsung...' },
+    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: true, options: PHONE_BRANDS },
     { key: 'storage', labelAr: 'السعة التخزينية', labelEn: 'Storage', type: 'select', allowOther: true, required: true, options: STORAGE_OPTIONS },
     { key: 'ram', labelAr: 'الرام', labelEn: 'RAM', type: 'select', allowOther: true, required: false, options: RAM_OPTIONS },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: GENERAL_CONDITION },
