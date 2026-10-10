@@ -129,7 +129,7 @@ export function useUrlSync(): void {
           })
         : `/listing/${latest.selectedListingId}`;
     } else if (latest.currentScreen === 'filters') {
-      target = '/filters' + location.search;
+      return; // /filters owns its own URL via useFiltersUrlSync; never touch it here.
     } else {
       target = screenToPath(latest.currentScreen, {
         listingId: latest.selectedListingId,
