@@ -9,6 +9,7 @@
     "lint": "eslint src/ --max-warnings 500",
     "lint:strict": "eslint src/ --max-warnings 0",
     "audit:arch": "node scripts/audit-architecture.mjs",
+    "check:registry": "node scripts/check-registry.mjs",
     "health:git": "node scripts/git-health-check.mjs",
     "audit:all": "npm run audit:arch && npm run health:git",
     "audit:deps": "depcruise --config .dependency-cruiser.js src/",
