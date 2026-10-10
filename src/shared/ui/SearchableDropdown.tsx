@@ -1,8 +1,7 @@
-import React, {
-  useState, useMemo, useRef, useEffect, useCallback, useId,
-} from 'react';
+import React, { useState } from 'react';
 import { Icon } from '@iconify/react';
-import { matchScore, findMatchRange } from '@/shared/lib/arabicNormalize';
+import { findMatchRange } from '@/shared/lib/arabicNormalize';
+import { useSearchableDropdown } from './useSearchableDropdown';
 
 interface Props {
   readonly options: readonly string[];
@@ -23,74 +22,24 @@ export const SearchableDropdown: React.FC<Props> = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const [highlighted, setHighlighted] = useState(0);
-  const rootRef = useRef<HTMLDivElement>(null);
-  const listRef = useRef<HTMLDivElement>(null);
-  const listId = useId();
 
-  // Close on outside click
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: MouseEvent) => {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) {
-        setOpen(false);
-        setQuery('');
-      }
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [open]);
-
-  // Ranked + filtered results
-  const filtered = useMemo(() => {
-    if (!query.trim()) return options;
-    const scored = options
-      .map((o) => ({ option: o, score: matchScore(query, o) }))
-      .filter((x) => x.score > 0)
-      .sort((a, b) => b.score - a.score);
-    return scored.map((x) => x.option);
-  }, [options, query]);
-
-  // Reset highlight when results change
-  useEffect(() => {
-    setHighlighted(0);
-  }, [query]);
-
-  // Keep highlighted item in view
-  useEffect(() => {
-    if (!open || !listRef.current) return;
-    const el = listRef.current.querySelector<HTMLElement>(
-      `[data-option-index="${highlighted}"]`
-    );
-    el?.scrollIntoView({ block: 'nearest' });
-  }, [highlighted, open]);
-
-  const handleSelect = useCallback(
-    (v: string) => {
-      onChange(v);
-      setOpen(false);
-      setQuery('');
-    },
-    [onChange]
-  );
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setHighlighted((i) => Math.min(i + 1, filtered.length - 1));
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setHighlighted((i) => Math.max(i - 1, 0));
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-      if (filtered[highlighted]) handleSelect(filtered[highlighted]);
-    } else if (e.key === 'Escape') {
-      setOpen(false);
-      setQuery('');
-    } else if (e.key === 'Tab') {
-      setOpen(false);
-    }
-  };
+  const {
+    rootRef,
+    listRef,
+    listId,
+    filtered,
+    highlighted,
+    setHighlighted,
+    handleSelect,
+    handleKeyDown,
+  } = useSearchableDropdown({
+    options,
+    query,
+    setQuery,
+    open,
+    setOpen,
+    onChange,
+  });
 
   const renderOptionLabel = (option: string): React.ReactNode => {
     const range = findMatchRange(query, option);
