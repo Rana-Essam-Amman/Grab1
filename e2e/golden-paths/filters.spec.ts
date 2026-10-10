@@ -13,6 +13,15 @@ test.describe('Golden Path — Filters', () => {
     await expect(page.getByTestId('filters-screen')).toBeVisible();
   });
 
+  test('changing a draft updates the /filters URL without reload', async ({ page }) => {
+    let loadCount = 0;
+    page.on('load', () => { loadCount += 1; });
+    await page.goto('/filters');
+    await page.getByTestId('filter-price-min').fill('500');
+    await expect(page).toHaveURL(/min=500/);
+    expect(loadCount).toBe(1);
+  });
+
   test('apply category + subcategory updates URL to /jo/cars', async ({ page }) => {
     await page.goto('/filters');
     await page.locator('[data-testid="filter-category-option"][data-slug="motors"]').click();
