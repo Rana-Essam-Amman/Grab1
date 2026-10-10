@@ -51,7 +51,7 @@ export const SearchResultsScreen: React.FC = () => {
   }, [marketListings, browseCountryCode, searchQuery, categoryFilter, subcategoryFilter, minPriceFilter, maxPriceFilter, neighborhoodFilter, browseCityAr, browseCityEn, filterMode]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-canvas pb-16" dir={isArabic ? 'rtl' : 'ltr'}>
+    <div className="flex flex-col min-h-screen bg-canvas pb-16" dir={isArabic ? 'rtl' : 'ltr'} data-testid="search-results">
       {/* Search Header (Sticky) */}
       <div className="p-4 pb-2.5 bg-[#1a2238] border-b border-white/10 flex flex-col gap-2 sticky top-0 z-30">
         <div className="flex items-center gap-3">
@@ -63,7 +63,7 @@ export const SearchResultsScreen: React.FC = () => {
             <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={isArabic ? 'ابحث في الصفقات...' : 'Search deals...'} className="w-full h-10 pl-9 pr-9 rounded-xl bg-canvas border border-line text-xs text-ink focus:outline-none focus:border-brand" />
             <SearchNormal1 size={16} variant="Linear" className={`absolute ${isArabic ? 'right-3' : 'left-3'} text-ink-muted`} />
             {searchQuery && (
-              <button onClick={() => setSearchQuery('')} className={`absolute ${isArabic ? 'left-3' : 'right-3'} text-xs text-ink-muted cursor-pointer`}>✕</button>
+              <button onClick={() => setSearchQuery('')} className={`absolute ${isArabic ? 'left-3' : 'right-3'} text-xs text-ink-muted cursor-pointer`} data-testid="search-clear">✕</button>
             )}
           </div>
         </div>
@@ -86,7 +86,7 @@ export const SearchResultsScreen: React.FC = () => {
           >
             {feedLayout === 'list' ? <Grid1 size={15} variant="Linear" /> : <RowVertical size={15} variant="Linear" />}
           </button>
-          <span className="text-xs text-ink-muted">{results.length} {isArabic ? 'إعلان متوفر' : 'listings available'}</span>
+          <span className="text-xs text-ink-muted" data-testid="search-results-count">{results.length} {isArabic ? 'إعلان متوفر' : 'listings available'}</span>
         </div>
       </div>
 
