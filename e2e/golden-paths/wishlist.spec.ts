@@ -6,7 +6,7 @@ test.describe('Golden Path 5 — Wishlist Flow', () => {
   test('User can open Wishlist from Header menu', async ({ loggedInPage }) => {
     await loggedInPage.locator(SELECTORS.app.menuButton).click();
     await loggedInPage.locator(SELECTORS.wishlist.wishlistTab).click();
-    await expect(loggedInPage.locator('h1, h2, h3').filter({ hasText: /Wishlist|المفضلة/ })).toBeVisible();
+    await expect(loggedInPage.locator('h1, h2, h3').filter({ hasText: /Wishlist|المفضلة/ }).first()).toBeVisible();
   });
 
   test('User can bookmark a listing from Listing Detail', async ({ loggedInPage }) => {
