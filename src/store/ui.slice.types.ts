@@ -1,44 +1,8 @@
 import { MarketCode } from '@/shared/lib/marketGate';
 import { AppTheme } from '@/features/ui/domain';
+import type { ScreenType, TabType } from './ui.slice.screen.types';
 
-export type ScreenType =
-  | 'main'
-  | 'listing-detail'
-  | 'profile'
-  | 'notifications'
-  | 'thread'
-  | 'messages'
-  | 'seller-profile'
-  | 'settings'
-  | 'search-results'
-  | 'sub-categories'
-  | 'post-category'
-  | 'post-subcategory'
-  | 'post-photos'
-  | 'post-location'
-  | 'post-details'
-  | 'edit-post'
-  | 'post-ai-draft'
-  | 'post-ai-review'
-  | 'post-ad-entry'
-  | 'post-ai-capture'
-  | 'post-category-pick'
-  | 'edit-profile'
-  | 'my-listings'
-  | 'about'
-  | 'safety'
-  | 'support'
-  | 'privacy'
-  | 'terms'
-  | 'pricing'
-  | 'filters'
-  | 'wishlist'
-  | 'login'
-  | 'register'
-  | 'confirm'
-  | 'post-publish-success';
-
-export type TabType = 'explore' | 'search' | 'post' | 'activity' | 'profile' | 'messages' | 'my-ads' | 'categories';
+export type { ScreenType, TabType } from './ui.slice.screen.types';
 
 export interface UIState {
   // Locale
