@@ -55,9 +55,13 @@ export const LocationFields: React.FC<Props> = ({
       <LocationMyLocationButton isArabic={isArabic} preferredCountry={browseCountryCode} onCityChange={onCityChange} onNeighborhoodChange={onNeighborhoodChange} />
       <div>
         <label className="block text-xs font-bold text-ink mb-1.5">{isArabic ? "المدينة / المحافظة" : "City / Governorate"}</label>
-        <select value={selectedCity} onChange={(e) => onCityChange(e.target.value)} className="w-full h-11 px-3.5 rounded-xl bg-surface border border-border text-sm text-ink focus:outline-none focus:border-primary">
-          {cities.map((city) => <option key={city} value={city}>{city}</option>)}
-        </select>
+        <SearchableDropdown
+          options={cities}
+          value={selectedCity}
+          onChange={onCityChange}
+          placeholder={isArabic ? 'ابحث عن مدينة...' : 'Search city...'}
+          isArabic={isArabic}
+        />
       </div>
       {isOtherValue(selectedCity) && (
         <Input label={isArabic ? "اكتب اسم المدينة" : "Type city name"} type="text" value={customCity} onChange={(e) => onCustomCityChange(e.target.value)} placeholder={isArabic ? "مثال: الطفيلة" : "e.g., Tafilah"} className="h-11" />
@@ -80,7 +84,6 @@ export const LocationFields: React.FC<Props> = ({
             </p>
           )}
 
-          {/* end of neighborhood select */}
           {isOtherValue(selectedNeighborhood) && (
             <Input label={isArabic ? "اكتب اسم المنطقة" : "Type neighborhood name"} type="text" value={customNeighborhood} onChange={(e) => onCustomNeighborhoodChange(e.target.value)} placeholder={isArabic ? "مثال: الرابية الجديدة" : "e.g., New Rabieh"} className="h-11" />
           )}
