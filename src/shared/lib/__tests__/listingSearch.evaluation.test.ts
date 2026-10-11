@@ -8,12 +8,10 @@ import {
 } from './listingSearch.evaluation.fixtures';
 
 /**
- * Client-side helper evaluation only.
+ * Client-side helper evaluation and Phase 2A regressions.
  *
  * These tests exercise scoreListing / matchSearch in listingSearch.ts.
  * They do NOT call Supabase and do NOT prove PostgreSQL RPC behavior.
- * See docs/search/relevance-evaluation.md for the separation and for the
- * RPC contract specification that remains unverified against a live database.
  */
 
 function inMarket(listing: EvaluationListing, market?: EvaluationListing['countryCode']): boolean {
@@ -30,7 +28,7 @@ function ids(listings: readonly EvaluationListing[]): string[] {
   return listings.map((l) => l.id).sort();
 }
 
-describe('listingSearch client-side evaluation (Phase 1 baseline)', () => {
+describe('listingSearch client-side evaluation', () => {
   it('records a stable fixture set', () => {
     expect(EVALUATION_LISTINGS.length).toBe(10);
     expect(EVALUATION_CASES.length).toBe(19);
@@ -38,7 +36,7 @@ describe('listingSearch client-side evaluation (Phase 1 baseline)', () => {
     expect(unique.size).toBe(EVALUATION_LISTINGS.length);
   });
 
-  describe('current client behavior (baseline assertions)', () => {
+  describe('supported matches', () => {
     it('exact English Toyota matches the English Camry listing', () => {
       const hits = matchesFor('Toyota', 'JO');
       expect(ids(hits)).toEqual(
@@ -50,7 +48,6 @@ describe('listingSearch client-side evaluation (Phase 1 baseline)', () => {
     it('Arabic تويوتا matches the Arabic Camry listing and the Latin Toyota listing via phonetic fallback', () => {
       const hits = matchesFor('تويوتا', 'JO');
       expect(ids(hits)).toContain('jo-toyota-camry-ar');
-      // Observed: phoneticKey bridges تويوتا ↔ Toyota even without a synonym group.
       expect(ids(hits)).toContain('jo-toyota-camry-2018');
     });
 
@@ -80,23 +77,23 @@ describe('listingSearch client-side evaluation (Phase 1 baseline)', () => {
       );
     });
 
-    it('whitespace is trimmed before matching', () => {
+    it('whitespace around a real query is trimmed before matching', () => {
       expect(ids(matchesFor('  Camry  ', 'JO'))).toEqual(
         expect.arrayContaining(['jo-toyota-camry-2018', 'jo-punctuation']),
       );
     });
 
-    it('multi-term Toyota Camry ranks the full match above a partial', () => {
+    it('multi-term Toyota Camry ranks the full match above an unrelated listing', () => {
       const full = scoreListing(
         EVALUATION_LISTINGS.find((l) => l.id === 'jo-toyota-camry-2018')!,
         'Toyota Camry',
       );
-      const partial = scoreListing(
+      const unrelated = scoreListing(
         EVALUATION_LISTINGS.find((l) => l.id === 'jo-samsung-tv')!,
         'Toyota Camry',
       );
       expect(full).toBeGreaterThan(0);
-      expect(partial).toBe(0);
+      expect(unrelated).toBe(0);
     });
 
     it('market filter excludes the other market when applied by the caller', () => {
@@ -105,48 +102,68 @@ describe('listingSearch client-side evaluation (Phase 1 baseline)', () => {
     });
   });
 
-  describe('confirmed client-side defects (reproducible baseline)', () => {
-    it('"Sam" matches both Samsung and the incidental Sam table (false positives)', () => {
+  describe('Phase 2A short-query and empty-query regressions', () => {
+    it('"Sam" matches Samsung (prefix) and the exact "Sam" token, not unrelated listings', () => {
       const hits = ids(matchesFor('Sam', 'JO'));
-      // Current behavior: includes() on title/description produces incidental matches.
       expect(hits).toEqual(expect.arrayContaining(['jo-samsung-tv', 'jo-sam-the-seller']));
+      expect(hits).not.toContain('jo-toyota-camry-2018');
+      expect(hits).not.toContain('lb-unrelated');
     });
 
-    it('one-character query "s" matches many unrelated JO listings', () => {
-      const hits = matchesFor('s', 'JO');
-      expect(hits.length).toBeGreaterThan(1);
-      expect(ids(hits)).toEqual(
-        expect.arrayContaining(['jo-samsung-tv', 'jo-sam-the-seller']),
-      );
+    it('"sam" and "samsung" match the Samsung listing', () => {
+      expect(ids(matchesFor('sam', 'JO'))).toContain('jo-samsung-tv');
+      expect(ids(matchesFor('samsung', 'JO'))).toContain('jo-samsung-tv');
+      expect(ids(matchesFor('samsung', 'JO'))).not.toContain('jo-sam-the-seller');
     });
 
-    it('two-character query "sa" matches Samsung and Sam', () => {
-      const hits = ids(matchesFor('sa', 'JO'));
-      expect(hits).toEqual(expect.arrayContaining(['jo-samsung-tv', 'jo-sam-the-seller']));
+    it('one-character query "s" matches nothing', () => {
+      expect(matchesFor('s', 'JO')).toEqual([]);
+      expect(scoreListing(EVALUATION_LISTINGS[0], 's')).toBe(0);
     });
 
-    it('empty / whitespace query scores every listing as 1 (no selective filter)', () => {
+    it('two-character query "sa" matches nothing', () => {
+      expect(matchesFor('sa', 'JO')).toEqual([]);
+      expect(scoreListing(EVALUATION_LISTINGS[0], 'sa')).toBe(0);
+    });
+
+    it('empty string scores 0 and is not a match', () => {
       for (const listing of EVALUATION_LISTINGS) {
-        expect(scoreListing(listing, '   ')).toBe(1);
-        expect(matchSearch(listing, '   ')).toBe(true);
+        expect(scoreListing(listing, '')).toBe(0);
+        expect(matchSearch(listing, '')).toBe(false);
       }
     });
 
-    it('client helper does not enforce active-only eligibility', () => {
+    it('whitespace-only query scores 0 and is not a match', () => {
+      for (const listing of EVALUATION_LISTINGS) {
+        expect(scoreListing(listing, '   ')).toBe(0);
+        expect(matchSearch(listing, '   ')).toBe(false);
+      }
+    });
+
+    it('normalized-empty input (stop words only) is not a match', () => {
+      for (const listing of EVALUATION_LISTINGS) {
+        expect(scoreListing(listing, 'the and')).toBe(0);
+        expect(matchSearch(listing, 'the and')).toBe(false);
+      }
+    });
+  });
+
+  describe('eligibility is not a client-helper responsibility', () => {
+    it('scoreListing does not filter pending listings; callers and the server own eligibility', () => {
       const draft = EVALUATION_LISTINGS.find((l) => l.id === 'jo-draft-toyota')!;
       expect(draft.status).toBe('pending');
       expect(matchSearch(draft, 'Toyota')).toBe(true);
     });
+  });
 
-    it('cross-script Toyota ↔ تويوتا is bridged by phoneticKey, not by the synonym table', () => {
+  describe('cross-script', () => {
+    it('Toyota ↔ تويوتا is bridged by phoneticKey, not by the synonym table', () => {
       const enHits = ids(matchesFor('Toyota', 'JO'));
       const arHits = ids(matchesFor('تويوتا', 'JO'));
-      // Observed baseline: phonetic fallback retrieves the other script.
       expect(enHits).toContain('jo-toyota-camry-2018');
       expect(enHits).toContain('jo-toyota-camry-ar');
       expect(arHits).toContain('jo-toyota-camry-ar');
       expect(arHits).toContain('jo-toyota-camry-2018');
-      // Kia is shorter; phonetic bridge is not asserted here. Recorded separately.
     });
   });
 
@@ -160,35 +177,9 @@ describe('listingSearch client-side evaluation (Phase 1 baseline)', () => {
       }
     });
 
-    it('known client gaps are explicitly flagged', () => {
-      const gaps = EVALUATION_CASES.filter((c) => c.knownClientGap);
-      const gapIds = gaps.map((c) => c.id).sort();
-      expect(gapIds).toEqual(
-        expect.arrayContaining([
-          'short-1-s',
-          'short-2-sa',
-          'short-3-sam',
-          'empty-query',
-          'eligibility-draft',
-        ]),
-      );
-    });
-
-    it('computes a simple client-side recall@all against the fixture set', () => {
-      let relevantHits = 0;
-      let relevantTotal = 0;
-      for (const c of EVALUATION_CASES) {
-        if (c.expectedRelevantIds.length === 0) continue;
-        const hitIds = new Set(ids(matchesFor(c.query, c.market)));
-        for (const expected of c.expectedRelevantIds) {
-          relevantTotal += 1;
-          if (hitIds.has(expected)) relevantHits += 1;
-        }
-      }
-      // Baseline number is recorded; it is not a production metric.
-      expect(relevantTotal).toBeGreaterThan(0);
-      expect(relevantHits).toBeLessThanOrEqual(relevantTotal);
-      expect(relevantHits).toBeGreaterThan(0);
+    it('only eligibility remains a known client-helper non-responsibility', () => {
+      const gaps = EVALUATION_CASES.filter((c) => c.knownClientGap).map((c) => c.id);
+      expect(gaps).toEqual(['eligibility-draft']);
     });
   });
 });
