@@ -70,7 +70,14 @@ export async function uploadListingImages(
   for (const src of sources) {
     if (!src.startsWith('data:') && !src.startsWith('blob:')) {
       urls.push(src);
-      dims.push(null);
+      try {
+        const d = await readImageDimensions(src);
+        dims.push(d);
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.warn('[uploadListingImages] dims read failed for URL', src, err);
+        dims.push(null);
+      }
       continue;
     }
     try {
