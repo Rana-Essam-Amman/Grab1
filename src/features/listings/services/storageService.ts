@@ -7,10 +7,12 @@ async function dataUrlToBlob(dataUrl: string): Promise<Blob> {
   return response.blob();
 }
 
-/** Read intrinsic pixel dimensions of an image source (data: or blob: URL). */
+/** Read intrinsic pixel dimensions of an image source (data:, blob:, or remote URL). */
 async function readImageDimensions(src: string): Promise<{ width: number; height: number }> {
   return new Promise((resolve, reject) => {
     const img = new Image();
+    // Allow loading dimensions from remote URLs (Supabase Storage, assets).
+    img.crossOrigin = 'anonymous';
     img.onload = () =>
       resolve({ width: img.naturalWidth, height: img.naturalHeight });
     img.onerror = () => reject(new Error('image load failed'));
@@ -75,8 +77,15 @@ export async function uploadListingImages(
   for (const src of sources) {
     // Static assets (/assets/...) already have permanent URLs — keep as-is.
     if (!src.startsWith('data:') && !src.startsWith('blob:')) {
-      urls.push(src);
-      dims.push(null);
+      // Try to read dimensions from remote URL (best effort).
+      try {
+        const remoteDims = await readImageDimensions(src);
+        urls.push(src);
+        dims.push({ width: remoteDims.width, height: remoteDims.height });
+      } catch {
+        urls.push(src);
+        dims.push(null);
+      }
       continue;
     }
     try {
