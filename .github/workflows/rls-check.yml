@@ -1,0 +1,78 @@
+name: RLS Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: rls-check-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  rls:
+    name: Anon read blocks
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Anon cannot read non-active listings
+        env:
+          SB_URL: https://wmchqotsforwcoxilaeo.supabase.co
+          SB_ANON: sb_publishable_G_g0UzFu8SGDynrUPIF8Qw_TFb3GTTj
+        run: |
+          set -euo pipefail
+          RESP=$(curl -s -w "\n%{http_code}" \
+            -H "apikey: $SB_ANON" \
+            -H "Authorization: Bearer $SB_ANON" \
+            "$SB_URL/rest/v1/listings?select=id&status=neq.active&limit=1")
+          BODY=$(echo "$RESP" | head -n -1)
+          CODE=$(echo "$RESP" | tail -n 1)
+          echo "HTTP $CODE — body: $BODY"
+          if [ "$CODE" != "200" ]; then
+            echo "::error::Expected 200, got $CODE"
+            exit 1
+          fi
+          if [ "$BODY" != "[]" ]; then
+            echo "::error::RLS FAIL — anon saw non-active listings: $BODY"
+            exit 1
+          fi
+          echo "PASS: anon sees 0 non-active listings"
+
+      - name: Anon cannot read search_keywords
+        env:
+          SB_URL: https://wmchqotsforwcoxilaeo.supabase.co
+          SB_ANON: sb_publishable_G_g0UzFu8SGDynrUPIF8Qw_TFb3GTTj
+        run: |
+          set -euo pipefail
+          CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "apikey: $SB_ANON" \
+            -H "Authorization: Bearer $SB_ANON" \
+            "$SB_URL/rest/v1/search_keywords?select=*&limit=1")
+          echo "HTTP $CODE"
+          if [ "$CODE" = "200" ]; then
+            echo "::error::RLS FAIL — anon can read search_keywords"
+            exit 1
+          fi
+          echo "PASS: anon blocked from search_keywords (HTTP $CODE)"
+
+      - name: Anon cannot read storage_orphans
+        env:
+          SB_URL: https://wmchqotsforwcoxilaeo.supabase.co
+          SB_ANON: sb_publishable_G_g0UzFu8SGDynrUPIF8Qw_TFb3GTTj
+        run: |
+          set -euo pipefail
+          CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "apikey: $SB_ANON" \
+            -H "Authorization: Bearer $SB_ANON" \
+            "$SB_URL/rest/v1/storage_orphans?select=*&limit=1")
+          echo "HTTP $CODE"
+          if [ "$CODE" = "200" ]; then
+            echo "::error::RLS FAIL — anon can read storage_orphans"
+            exit 1
+          fi
+          echo "PASS: anon blocked from storage_orphans (HTTP $CODE)"
