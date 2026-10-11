@@ -63,15 +63,31 @@ jobs:
 
       - name: Apply repository migrations in filename order
         run: |
-          set -euo pipefail
+          set -uo pipefail
           echo "Full checked-in migration chain (not a hand-assembled search schema):"
+          failed=0
+          : > /tmp/migration-failures.txt
           for f in $(ls supabase/migrations/*.sql | sort); do
             echo "---- applying $f ----"
-            psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$f"
+            if ! psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$f"; then
+              echo "FAILED: $f" | tee -a /tmp/migration-failures.txt
+              failed=1
+            fi
           done
+          if [ "$failed" -ne 0 ]; then
+            echo "MIGRATION CHAIN INCOMPLETE. Exact failures:"
+            cat /tmp/migration-failures.txt
+            echo "Known blocker if present: 20261026_rls_security_fix.sql references"
+            echo "public.listing_search_embeddings, public.search_query_embeddings, and"
+            echo "public.search_embedding_jobs. No CREATE TABLE for those relations exists"
+            echo "in any checked-in migration. This is not a search-function failure and"
+            echo "those tables are not created by this workflow."
+            exit 1
+          fi
           echo "All repository migrations applied."
 
       - name: Run search RPC SQL regression suite
+        if: always()
         run: |
           chmod +x test-search-rpc-local.sh
           ./test-search-rpc-local.sh
