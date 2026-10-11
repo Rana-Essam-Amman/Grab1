@@ -10,6 +10,7 @@ import { PhotoPreviewList } from '../components/PhotoPreviewList';
 import { PhotoUploader } from '../components/PhotoUploader';
 import { PostFlowHeader } from '../components/PostFlowHeader';
 import { LocationFields } from '../components/LocationFields';
+import { PhotoUploadErrors } from '../components/PhotoUploadErrors';
 import { categories } from '@/data/categories';
 import { findSubcategoryBySlug } from '@/data/subcategories';
 
@@ -18,7 +19,7 @@ export const PhotoUploadScreen: React.FC = () => {
   const { postDraft, updatePostDraft } = usePostWizard();
   const cat = categories.find((c) => c.slug === postDraft.categorySlug);
   const sub = findSubcategoryBySlug(postDraft.subcategorySlug);
-  const { photos, handleFiles, handleRemove, handleUseSample } = usePhotoUpload();
+  const { photos, errors, handleFiles, handleRemove, handleUseSample } = usePhotoUpload();
   const {
     cities,
     neighborhoods,
@@ -85,6 +86,8 @@ export const PhotoUploadScreen: React.FC = () => {
             <PhotoPreviewList photos={photos} isArabic={isArabic} onRemove={handleRemove} onSetCover={handleSetCover} onImageError={handleImageError} />
             <PhotoUploader photoCount={photos.length} isArabic={isArabic} onFiles={handleFiles} />
           </div>
+
+          <PhotoUploadErrors errors={errors} />
 
           {photos.length === 0 && (
             <Button type="button" variant="outline" size="sm" onClick={() => handleUseSample(postDraft.categorySlug)} className="self-start">
