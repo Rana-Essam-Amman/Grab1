@@ -63,39 +63,53 @@ describe("SearchResultsScreen Phase 3A regressions", () => {
     expect(screen.queryByText("Saudi Car")).toBeNull();
   });
 
-  it("preserves category, subcategory, and price filters", () => {
+  it("preserves category and price range (min/max) filters", () => {
     const matchingListing = createMockListing({
       id: "match-1",
-      title: "Motors Deal",
+      title: "In-Range Motors Deal",
       categorySlug: "motors",
       subcategorySlug: "cars",
       price: "500",
       countryCode: "JO",
     });
-    const wrongCategory = createMockListing({
-      id: "wrong-cat",
-      title: "Electronics Deal",
-      categorySlug: "electronics",
-      subcategorySlug: "phones",
-      price: "500",
+    const tooCheapListing = createMockListing({
+      id: "too-cheap",
+      title: "Too Cheap Motors Deal",
+      categorySlug: "motors",
+      subcategorySlug: "cars",
+      price: "100",
       countryCode: "JO",
     });
-    const tooExpensive = createMockListing({
+    const tooExpensiveListing = createMockListing({
       id: "too-exp",
-      title: "Expensive Motors Deal",
+      title: "Too Expensive Motors Deal",
       categorySlug: "motors",
       subcategorySlug: "cars",
       price: "5000",
       countryCode: "JO",
     });
+    const wrongCategoryListing = createMockListing({
+      id: "wrong-cat",
+      title: "Wrong Category Phone Deal",
+      categorySlug: "electronics",
+      subcategorySlug: "phones",
+      price: "500",
+      countryCode: "JO",
+    });
 
     useListingsStore.setState({
-      listings: [matchingListing, wrongCategory, tooExpensive],
+      listings: [
+        matchingListing,
+        tooCheapListing,
+        tooExpensiveListing,
+        wrongCategoryListing,
+      ],
     });
     useUIStore.setState({
       browseCountryCode: "JO",
       searchQuery: "Deal",
       categoryFilter: "motors",
+      minPriceFilter: 200,
       maxPriceFilter: 1000,
     });
 
@@ -103,9 +117,55 @@ describe("SearchResultsScreen Phase 3A regressions", () => {
 
     const countElement = screen.getByTestId("search-results-count");
     expect(countElement.textContent).toContain("1");
-    expect(screen.getByText("Motors Deal")).toBeDefined();
-    expect(screen.queryByText("Electronics Deal")).toBeNull();
-    expect(screen.queryByText("Expensive Motors Deal")).toBeNull();
+    expect(screen.getByText("In-Range Motors Deal")).toBeDefined();
+    expect(screen.queryByText("Too Cheap Motors Deal")).toBeNull();
+    expect(screen.queryByText("Too Expensive Motors Deal")).toBeNull();
+    expect(screen.queryByText("Wrong Category Phone Deal")).toBeNull();
+  });
+
+  it("preserves subcategory filter over general category (e.g. cars vs motorcycles)", () => {
+    const carsListing = createMockListing({
+      id: "car-1",
+      title: "Toyota Sedan",
+      categorySlug: "motors",
+      subcategorySlug: "cars",
+      price: "8000",
+      countryCode: "JO",
+    });
+    const bikeListing = createMockListing({
+      id: "bike-1",
+      title: "Harley Cruiser",
+      categorySlug: "motors",
+      subcategorySlug: "motorcycles",
+      price: "6000",
+      countryCode: "JO",
+    });
+    const phoneListing = createMockListing({
+      id: "phone-1",
+      title: "iPhone Pro",
+      categorySlug: "electronics",
+      subcategorySlug: "phones",
+      price: "900",
+      countryCode: "JO",
+    });
+
+    useListingsStore.setState({
+      listings: [carsListing, bikeListing, phoneListing],
+    });
+    useUIStore.setState({
+      browseCountryCode: "JO",
+      searchQuery: "Ride",
+      categoryFilter: "motors",
+      subcategoryFilter: "cars",
+    });
+
+    render(<SearchResultsScreen />);
+
+    const countElement = screen.getByTestId("search-results-count");
+    expect(countElement.textContent).toContain("1");
+    expect(screen.getByText("Toyota Sedan")).toBeDefined();
+    expect(screen.queryByText("Harley Cruiser")).toBeNull();
+    expect(screen.queryByText("iPhone Pro")).toBeNull();
   });
 
   it("preserves empty-query browsing behavior", () => {
