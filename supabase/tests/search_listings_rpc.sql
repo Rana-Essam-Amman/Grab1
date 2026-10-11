@@ -194,8 +194,10 @@ BEGIN
   END IF;
 
   -- Multi-token AND behavior: a listing must not match unrelated combined terms.
-  IF EXISTS (SELECT 1 FROM public.search_listings('Toyota Samsung', 'JO', 100, 0)) THEN
-    RAISE EXCEPTION 'FAIL: unrelated multi-token query Toyota Samsung returned rows';
+  SELECT coalesce(array_agg(id), '{}'::uuid[]) INTO v_ids
+  FROM public.search_listings('Toyota Samsung', 'JO', 100, 0);
+  IF cardinality(v_ids) > 0 THEN
+    RAISE EXCEPTION 'FAIL: unrelated multi-token query Toyota Samsung returned rows; IDs=%', v_ids;
   END IF;
 
   -- Year and indexed attribute values.
