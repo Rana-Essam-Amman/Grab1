@@ -14,6 +14,25 @@ const LANGUAGE_OPTIONS: ListingFieldOption[] = [
   { value: 'other', labelAr: 'لغات أخرى', labelEn: 'Other Languages' },
 ];
 
+const INSTRUMENT_BRANDS: ListingFieldOption[] = [
+  { value: 'yamaha', labelAr: 'ياماها (Yamaha)', labelEn: 'Yamaha' },
+  { value: 'roland', labelAr: 'رولاند (Roland)', labelEn: 'Roland' },
+  { value: 'casio', labelAr: 'كاسيو (Casio)', labelEn: 'Casio' },
+  { value: 'korg', labelAr: 'كورغ (Korg)', labelEn: 'Korg' },
+  { value: 'fender', labelAr: 'فندر (Fender)', labelEn: 'Fender' },
+  { value: 'gibson', labelAr: 'جيبسون (Gibson)', labelEn: 'Gibson' },
+  { value: 'ibanez', labelAr: 'إيبانيز (Ibanez)', labelEn: 'Ibanez' },
+  { value: 'squier', labelAr: 'سكوير (Squier)', labelEn: 'Squier' },
+  { value: 'epiphone', labelAr: 'إبي فون (Epiphone)', labelEn: 'Epiphone' },
+  { value: 'taylor', labelAr: 'تايلور (Taylor)', labelEn: 'Taylor' },
+  { value: 'martin', labelAr: 'مارتن (Martin)', labelEn: 'Martin' },
+  { value: 'pearl', labelAr: 'بيرل (Pearl)', labelEn: 'Pearl' },
+  { value: 'tama', labelAr: 'تاما (Tama)', labelEn: 'Tama' },
+  { value: 'zildjian', labelAr: 'زيلجيان (Zildjian)', labelEn: 'Zildjian' },
+  { value: 'zeryab', labelAr: 'زرياب (Zeryab)', labelEn: 'Zeryab' },
+  { value: 'aithoob', labelAr: 'أيثوب (Aithoob)', labelEn: 'Aithoob' },
+];
+
 export const BOOKS_FIELDS: CategoryFieldMap = {
   'books-magazines': [
     { key: 'bookType', labelAr: 'نوع المطبوعة', labelEn: 'Publication Type', type: 'select', allowOther: true, required: true, options: [
@@ -44,7 +63,7 @@ export const BOOKS_FIELDS: CategoryFieldMap = {
       { value: 'wind_flute_nay', labelAr: 'ناي / ساكسفون / فلوت / بوق', labelEn: 'Saxophone / Flute / Nay' },
       { value: 'qanun', labelAr: 'قانون شرقي', labelEn: 'Qanun' },
     ]},
-    { key: 'brand', labelAr: 'الماركة أو الصانع', labelEn: 'Brand / Luthier', type: 'text', required: false, placeholder: 'Yamaha, Roland, Fender, Gibson, Zeryab...', placeholderAr: 'مثال: ياماها، رولاند، زرياب...' },
+    { key: 'brand', labelAr: 'الماركة أو الصانع', labelEn: 'Brand / Luthier', type: 'select', allowOther: true, required: false, options: INSTRUMENT_BRANDS },
     { key: 'level', labelAr: 'المستوى المناسب', labelEn: 'Target Level', type: 'select', allowOther: true, required: false, options: [
       { value: 'beginner', labelAr: 'للمبتدئين والتعلم', labelEn: 'Beginner' },
       { value: 'intermediate', labelAr: 'متوسط', labelEn: 'Intermediate' },
