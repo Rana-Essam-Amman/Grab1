@@ -17,6 +17,11 @@
 -- 7. status = 'active' and optional country_code = upper(p_market) filters.
 -- 8. Stable tie-breakers (relevance, created_at, id).
 --
+-- Intentional difference from the previously inspected live function:
+-- Multi-token trigram and substring fallbacks require every query token to
+-- appear in search_text. Disposable CI showed 'Toyota Samsung' returning the
+-- Samsung-only fixture. Single-token fuzzy behavior is unchanged.
+--
 -- Intentionally NOT done:
 -- - No INSERT into search_keywords for a new "samsung" group.
 --   Live uses group_key conventions such as "brand_toyota". Adding a
@@ -107,6 +112,28 @@ AS $function$
     ''
   )
   FROM mapped;
+$function$;
+
+
+-- Multi-token constraint: every normalized query token must occur in search_text.
+-- Single-token queries are unaffected. Prevents "Toyota Samsung" from matching
+-- a Samsung-only listing via trigram or substring fallback.
+CREATE OR REPLACE FUNCTION public.search_text_has_all_tokens(
+  p_search_text text,
+  p_norm_query text
+)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SET search_path TO 'public'
+AS $function$
+  SELECT NOT EXISTS (
+    SELECT 1
+    FROM regexp_split_to_table(btrim(coalesce(p_norm_query, '')), '[[:space:]]+') AS tok
+    WHERE tok <> ''
+      AND public.normalize_search_text(coalesce(p_search_text, ''))
+        NOT LIKE '%' || tok || '%'
+  );
 $function$;
 
 -- ============================================================
@@ -227,6 +254,7 @@ BEGIN
     WHERE l.status = 'active'
       AND (p_market IS NULL OR l.country_code = upper(p_market))
       AND word_similarity(v_norm, l.search_text) > 0.5
+      AND public.search_text_has_all_tokens(l.search_text, v_norm)
   ) THEN
     RETURN QUERY
     SELECT l.*
@@ -234,6 +262,7 @@ BEGIN
     WHERE l.status = 'active'
       AND (p_market IS NULL OR l.country_code = upper(p_market))
       AND word_similarity(v_norm, l.search_text) > 0.5
+      AND public.search_text_has_all_tokens(l.search_text, v_norm)
     ORDER BY
       word_similarity(v_norm, l.search_text) DESC,
       l.created_at DESC,
@@ -251,6 +280,7 @@ BEGIN
     AND (p_market IS NULL OR l.country_code = upper(p_market))
     AND public.normalize_search_text(l.search_text)
       LIKE '%' || v_norm || '%'
+    AND public.search_text_has_all_tokens(l.search_text, v_norm)
   ORDER BY l.created_at DESC, l.id ASC
   LIMIT v_limit OFFSET v_offset;
 
