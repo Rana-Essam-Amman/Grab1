@@ -25,6 +25,23 @@ const SEARCH_STOP_WORDS = new Set([
   'a', 'an', 'the', 'of', 'in', 'on', 'at', 'with', 'for', 'and', 'or',
 ]);
 
+/**
+ * Short-query policy (Phase 2A).
+ *
+ * Tokens shorter than 3 characters after normalization are not selective
+ * enough for substring matching. "s" and "sa" would otherwise match a large
+ * unrelated set via includes(). Queries that normalize to no token of length
+ * >= 3 are not a search match.
+ *
+ * Tokens of length >= 3 keep prefix, middle, and suffix substring matching,
+ * so "Sam" still matches "Samsung" and an exact "Sam" token, and "toy" /
+ * "yot" / "ota" still match "Toyota".
+ *
+ * Empty and whitespace-only queries return 0. Browsing is a separate path
+ * in filterListings (isSearching === false) and does not depend on this score.
+ */
+const MIN_QUERY_TOKEN_LENGTH = 3;
+
 const collectSearchStrings = (value: unknown, out: string[]): void => {
   if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
     const s = String(value);
@@ -42,16 +59,17 @@ const collectSearchStrings = (value: unknown, out: string[]): void => {
 
 export const scoreListing = (item: Listing, q: string): number => {
   const query = (q || '').trim();
-  if (!query) return 1;
+  if (!query) return 0;
 
   const rawTokens = query.split(/\s+/).map((t) => normalizeArabic(t)).filter(Boolean);
-  const tokens = rawTokens.filter((t) => t.length >= 2 && !SEARCH_STOP_WORDS.has(t));
-  const baseTokens = tokens.length > 0 ? tokens : rawTokens.filter((t) => t.length >= 1);
+  const tokens = rawTokens.filter(
+    (t) => t.length >= MIN_QUERY_TOKEN_LENGTH && !SEARCH_STOP_WORDS.has(t),
+  );
 
-  if (baseTokens.length === 0) return 1;
+  if (tokens.length === 0) return 0;
 
   // Expand each token with its synonym group (e.g. سيارة → عربية, car).
-  const effectiveTokens = expandWithSynonyms(baseTokens);
+  const effectiveTokens = expandWithSynonyms(tokens);
 
   const title = normalizeArabic(item.title || '');
   const desc = normalizeArabic(item.description || '');
@@ -84,6 +102,8 @@ export const scoreListing = (item: Listing, q: string): number => {
 
   let score = 0;
   for (const t of effectiveTokens) {
+    if (t.length < MIN_QUERY_TOKEN_LENGTH) continue;
+
     let tokenScore = 0;
     const tStem = stemArabic(t);
 
