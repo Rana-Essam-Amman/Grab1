@@ -1,15 +1,13 @@
 import type { Listing } from '@/types';
 
 /**
- * Phase 1 evaluation fixtures.
+ * Client-side evaluation fixtures.
  *
- * These fixtures are used only by client-side helper tests.
- * They are NOT evidence of PostgreSQL / search_listings RPC behavior.
- * Server-side contract expectations live in the companion RPC specification.
+ * Used only by scoreListing / matchSearch tests.
+ * Not evidence of PostgreSQL / search_listings RPC behavior.
  */
 
 export type EvaluationListing = Listing & {
-  /** Optional structured fields used by scoreListing via collectSearchStrings. */
   make?: string;
   year?: string;
 };
@@ -152,11 +150,8 @@ export interface EvaluationCase {
   readonly market?: Listing['countryCode'];
   readonly scenario: string;
   readonly rationale: string;
-  /** Listing ids that the product requirement considers relevant. */
   readonly expectedRelevantIds: readonly string[];
-  /** Listing ids that must not be returned. */
   readonly expectedExcludedIds: readonly string[];
-  /** Whether this case is expected to expose a current client-side gap. */
   readonly knownClientGap?: boolean;
 }
 
@@ -184,7 +179,7 @@ export const EVALUATION_CASES: readonly EvaluationCase[] = [
     query: 'تويوتا',
     market: 'JO',
     scenario: 'cross-script brand',
-    rationale: 'Observed client behavior: phoneticKey bridges تويوتا and Toyota even without a synonym group. This is not a client gap on this fixture.',
+    rationale: 'phoneticKey bridges تويوتا and Toyota on the client helper.',
     expectedRelevantIds: ['jo-toyota-camry-ar', 'jo-toyota-camry-2018'],
     expectedExcludedIds: ['sa-kia-cerato'],
   },
@@ -238,7 +233,7 @@ export const EVALUATION_CASES: readonly EvaluationCase[] = [
     query: 'yot',
     market: 'JO',
     scenario: 'middle-of-token substring',
-    rationale: 'Middle fragment yot must retrieve Toyota. Client includes() supports this; RPC prefix-FTS path may not.',
+    rationale: 'Middle fragment yot must retrieve Toyota on the client helper.',
     expectedRelevantIds: ['jo-toyota-camry-2018'],
     expectedExcludedIds: ['jo-samsung-tv', 'jo-sam-the-seller'],
   },
@@ -256,30 +251,27 @@ export const EVALUATION_CASES: readonly EvaluationCase[] = [
     query: 's',
     market: 'JO',
     scenario: 'one-character query',
-    rationale: 'Single character must not treat every listing as equally relevant. Product requires controlled false positives.',
+    rationale: 'Phase 2A: tokens shorter than 3 characters are not a search match.',
     expectedRelevantIds: [],
     expectedExcludedIds: ['jo-samsung-tv', 'jo-sam-the-seller', 'jo-toyota-camry-2018'],
-    knownClientGap: true,
   },
   {
     id: 'short-2-sa',
     query: 'sa',
     market: 'JO',
     scenario: 'two-character query',
-    rationale: 'Two-character fragment should not indiscriminately match Samsung and Sam.',
+    rationale: 'Phase 2A: two-character fragments are not selective enough for substring matching.',
     expectedRelevantIds: [],
     expectedExcludedIds: ['jo-samsung-tv', 'jo-sam-the-seller'],
-    knownClientGap: true,
   },
   {
     id: 'short-3-sam',
     query: 'Sam',
     market: 'JO',
-    scenario: 'three-character false-positive pattern',
-    rationale: 'Previously observed pattern: short query Sam must not return unrelated listings merely because a permissive similarity score exceeds a threshold. Client includes() will match Samsung and the Sam table; that is the defect to record.',
-    expectedRelevantIds: [],
-    expectedExcludedIds: ['jo-samsung-tv', 'jo-sam-the-seller'],
-    knownClientGap: true,
+    scenario: 'three-character legitimate prefix and exact token',
+    rationale: 'Phase 2A: "Sam" is long enough to match "Samsung" as a prefix and the exact word "Sam". Unrelated listings that do not contain the substring must not match.',
+    expectedRelevantIds: ['jo-samsung-tv', 'jo-sam-the-seller'],
+    expectedExcludedIds: ['jo-toyota-camry-2018', 'lb-unrelated'],
   },
   {
     id: 'numeric-2018',
@@ -304,17 +296,16 @@ export const EVALUATION_CASES: readonly EvaluationCase[] = [
     query: '   ',
     market: 'JO',
     scenario: 'empty / whitespace-only',
-    rationale: 'Whitespace-only query must not be treated as a selective search. Client scoreListing returns 1 for empty query.',
+    rationale: 'Phase 2A: whitespace-only query is not a search match. Browsing stays on the filterListings non-search path.',
     expectedRelevantIds: [],
     expectedExcludedIds: [],
-    knownClientGap: true,
   },
   {
     id: 'multi-term',
     query: 'Toyota Camry',
     market: 'JO',
     scenario: 'multi-term relevance',
-    rationale: 'Both tokens must match. A listing matching only one term should rank below a listing matching both.',
+    rationale: 'Both tokens must match. An unrelated listing must score 0.',
     expectedRelevantIds: ['jo-toyota-camry-2018', 'jo-punctuation'],
     expectedExcludedIds: ['jo-samsung-tv'],
   },
@@ -323,7 +314,7 @@ export const EVALUATION_CASES: readonly EvaluationCase[] = [
     query: 'Kia',
     market: 'JO',
     scenario: 'market isolation',
-    rationale: 'JO market must not return the SA Kia listing when market filter is applied.',
+    rationale: 'JO market must not return the SA Kia listing when market filter is applied by the caller.',
     expectedRelevantIds: [],
     expectedExcludedIds: ['sa-kia-cerato'],
   },
@@ -332,7 +323,7 @@ export const EVALUATION_CASES: readonly EvaluationCase[] = [
     query: 'Toyota',
     market: 'JO',
     scenario: 'active-listing eligibility',
-    rationale: 'Pending/draft listings must be excluded by the server contract. Client helper does not enforce status; the gap is recorded.',
+    rationale: 'The client helper does not enforce status. Authoritative eligibility remains with the server and with filterListings for sold/archived.',
     expectedRelevantIds: ['jo-toyota-camry-2018', 'jo-punctuation'],
     expectedExcludedIds: ['jo-draft-toyota'],
     knownClientGap: true,
