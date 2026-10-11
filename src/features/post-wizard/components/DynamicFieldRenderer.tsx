@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { ListingField } from '@/data/listingFields';
-import { OtherOptionInput } from './OtherOptionInput';
 import { CascadingModelSelect } from './CascadingModelSelect';
-
-const OTHER_VALUE = '__other__';
+import { FieldSelectInput } from './FieldSelectInput';
 
 interface DynamicFieldRendererProps {
   readonly field: ListingField;
@@ -77,27 +75,19 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
   }
 
   if (field.type === 'select' && field.options) {
-    const placeholderText = field.placeholderAr && isArabic ? field.placeholderAr : (field.placeholder || (isArabic ? 'اكتب القيمة...' : 'Type value...'));
     return (
       <div className="flex flex-col gap-1.5 py-1.5">
         <label className="text-xs font-bold text-ink-soft">{label} {field.required && <span className="text-accent">*</span>}</label>
-        <select
-          data-testid={`field-${field.key}`}
-          value={showOther ? OTHER_VALUE : value}
-          onChange={(e) => {
-            const sel = e.target.value;
-            if (sel === OTHER_VALUE) { setShowOther(true); onChange(field.key, customValue); }
-            else { setShowOther(false); onChange(field.key, sel); }
-          }}
-          className="w-full h-11 px-3 rounded-xl border border-line bg-canvas text-ink text-sm font-medium focus:outline-none focus:border-primary cursor-pointer"
-        >
-          <option value="">{isArabic ? '-- اختر --' : '-- Select --'}</option>
-          {field.options.map((opt) => (<option key={opt.value} value={opt.value}>{isArabic ? opt.labelAr : opt.labelEn}</option>))}
-          {field.allowOther && (<option value={OTHER_VALUE}>{isArabic ? 'أخرى — اكتب يدوياً' : 'Other — type manually'}</option>)}
-        </select>
-        {showOther && (
-          <OtherOptionInput value={customValue} onChange={(v) => { setCustomValue(v); onChange(field.key, v); }} placeholder={placeholderText} isArabic={isArabic} />
-        )}
+        <FieldSelectInput
+          field={field}
+          value={value}
+          onChange={onChange}
+          isArabic={isArabic}
+          showOther={showOther}
+          customValue={customValue}
+          onShowOtherChange={setShowOther}
+          onCustomValueChange={setCustomValue}
+        />
       </div>
     );
   }
