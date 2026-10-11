@@ -7,6 +7,21 @@ const SPORT_CONDITION_OPTIONS: ListingFieldOption[] = [
   { value: 'needs_service', labelAr: 'بحاجة لصيانة خفيفة', labelEn: 'Needs Light Maintenance' },
 ];
 
+const FITNESS_BRANDS: ListingFieldOption[] = [
+  { value: 'technogym', labelAr: 'تكنوجيم (Technogym)', labelEn: 'Technogym' },
+  { value: 'life_fitness', labelAr: 'لايف فيتنس (Life Fitness)', labelEn: 'Life Fitness' },
+  { value: 'nordictrack', labelAr: 'نوردك تراك (NordicTrack)', labelEn: 'NordicTrack' },
+  { value: 'proform', labelAr: 'برو فورم (ProForm)', labelEn: 'ProForm' },
+  { value: 'bowflex', labelAr: 'باوفلكس (Bowflex)', labelEn: 'Bowflex' },
+  { value: 'reebok', labelAr: 'ريبوك (Reebok)', labelEn: 'Reebok' },
+  { value: 'adidas', labelAr: 'أديداس (Adidas)', labelEn: 'Adidas' },
+  { value: 'nike', labelAr: 'نايك (Nike)', labelEn: 'Nike' },
+  { value: 'everlast', labelAr: 'إيفرلست (Everlast)', labelEn: 'Everlast' },
+  { value: 'rogue', labelAr: 'روغ (Rogue)', labelEn: 'Rogue' },
+  { value: 'hammer_strength', labelAr: 'هامر سترينث (Hammer Strength)', labelEn: 'Hammer Strength' },
+  { value: 'decathlon', labelAr: 'ديكاتلون (Decathlon)', labelEn: 'Decathlon' },
+];
+
 const BICYCLE_BRANDS: ListingFieldOption[] = [
   { value: 'trek', labelAr: 'تريك (Trek)', labelEn: 'Trek' },
   { value: 'giant', labelAr: 'جاينت (Giant)', labelEn: 'Giant' },
@@ -14,8 +29,39 @@ const BICYCLE_BRANDS: ListingFieldOption[] = [
   { value: 'merida', labelAr: 'ميريدا (Merida)', labelEn: 'Merida' },
   { value: 'cannondale', labelAr: 'كانونديل (Cannondale)', labelEn: 'Cannondale' },
   { value: 'scott', labelAr: 'سكوت (Scott)', labelEn: 'Scott' },
+  { value: 'bianchi', labelAr: 'بيانكي (Bianchi)', labelEn: 'Bianchi' },
+  { value: 'cube', labelAr: 'كيوب (Cube)', labelEn: 'Cube' },
+  { value: 'gt', labelAr: 'جي تي (GT)', labelEn: 'GT' },
+  { value: 'fuji', labelAr: 'فوجي (Fuji)', labelEn: 'Fuji' },
   { value: 'trinx', labelAr: 'ترينكس (Trinx)', labelEn: 'Trinx' },
   { value: 'btwin', labelAr: 'بي توين ديكاتلون (B’Twin / Rockrider)', labelEn: 'B’Twin / Decathlon' },
+];
+
+const CAMPING_BRANDS: ListingFieldOption[] = [
+  { value: 'coleman', labelAr: 'كولمان (Coleman)', labelEn: 'Coleman' },
+  { value: 'quechua', labelAr: 'كيشوا (Quechua)', labelEn: 'Quechua' },
+  { value: 'naturehike', labelAr: 'نيتشر هايك (Naturehike)', labelEn: 'Naturehike' },
+  { value: 'north_face', labelAr: 'ذا نورث فيس (The North Face)', labelEn: 'The North Face' },
+  { value: 'kampa', labelAr: 'كامبا (Kampa)', labelEn: 'Kampa' },
+  { value: 'vango', labelAr: 'فانغو (Vango)', labelEn: 'Vango' },
+  { value: 'outwell', labelAr: 'أوت ويل (Outwell)', labelEn: 'Outwell' },
+  { value: 'msr', labelAr: 'إم إس آر (MSR)', labelEn: 'MSR' },
+  { value: 'jetboil', labelAr: 'جيت بويل (Jetboil)', labelEn: 'Jetboil' },
+  { value: 'leatherman', labelAr: 'ليذرمان (Leatherman)', labelEn: 'Leatherman' },
+  { value: 'gerber', labelAr: 'جيربر (Gerber)', labelEn: 'Gerber' },
+];
+
+const WATER_SPORTS_BRANDS: ListingFieldOption[] = [
+  { value: 'cressi', labelAr: 'كريسي (Cressi)', labelEn: 'Cressi' },
+  { value: 'mares', labelAr: 'ماريس (Mares)', labelEn: 'Mares' },
+  { value: 'scubapro', labelAr: 'سكوبا برو (Scubapro)', labelEn: 'Scubapro' },
+  { value: 'aqua_lung', labelAr: 'أكوا لانج (Aqua Lung)', labelEn: 'Aqua Lung' },
+  { value: 'speedo', labelAr: 'سبيدو (Speedo)', labelEn: 'Speedo' },
+  { value: 'arena', labelAr: 'أرينا (Arena)', labelEn: 'Arena' },
+  { value: 'shimano', labelAr: 'شيمانو للصيد (Shimano)', labelEn: 'Shimano' },
+  { value: 'daiwa', labelAr: 'دايوا للصيد (Daiwa)', labelEn: 'Daiwa' },
+  { value: 'intex', labelAr: 'إنتكس (Intex)', labelEn: 'Intex' },
+  { value: 'bestway', labelAr: 'بست وي (Bestway)', labelEn: 'Bestway' },
 ];
 
 export const SPORTS_FIELDS: CategoryFieldMap = {
@@ -29,7 +75,7 @@ export const SPORTS_FIELDS: CategoryFieldMap = {
       { value: 'multi_gym', labelAr: 'محطة أجهزة جيم منزلية متكاملة (Multi-Gym)', labelEn: 'Multi-Gym Station' },
       { value: 'rowing_machine', labelAr: 'جهاز تجديف (Rowing Machine)', labelEn: 'Rowing Machine' },
     ]},
-    { key: 'brand', labelAr: 'الماركة المصنعة', labelEn: 'Brand', type: 'text', required: false, placeholder: 'NordicTrack, ProForm, Life Fitness, Decathlon...', placeholderAr: 'مثال: نوردك تراك، ديكاتلون...' },
+    { key: 'brand', labelAr: 'الماركة المصنعة', labelEn: 'Brand', type: 'select', allowOther: true, required: false, options: FITNESS_BRANDS },
     { key: 'maxWeight', labelAr: 'أقصى وزن للمستخدم (كجم)', labelEn: 'Max User Weight (kg)', type: 'number', required: false, placeholder: '120', placeholderAr: '120' },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: SPORT_CONDITION_OPTIONS },
     { key: 'age', labelAr: 'مدة الاستخدام (بالسنوات)', labelEn: 'Age (Years)', type: 'number', required: false, placeholder: '1', placeholderAr: '1' },
@@ -92,7 +138,7 @@ export const SPORTS_FIELDS: CategoryFieldMap = {
       { value: '5_6', labelAr: '5 - 6 أشخاص', labelEn: '5 - 6 Persons' },
       { value: '8_plus', labelAr: '8 أشخاص فأكثر (عائلية كبيرة)', labelEn: '8+ Persons' },
     ]},
-    { key: 'brand', labelAr: 'الماركة المصنعة', labelEn: 'Brand', type: 'text', required: false, placeholder: 'Coleman, Quechua, The North Face, Naturehike...', placeholderAr: 'مثال: كولمان، كيشوا، ذا نورث فيس...' },
+    { key: 'brand', labelAr: 'الماركة المصنعة', labelEn: 'Brand', type: 'select', allowOther: true, required: false, options: CAMPING_BRANDS },
     { key: 'waterproof', labelAr: 'مقاوم للماء والأمطار والرياح الشديدة', labelEn: 'Waterproof & Windproof', type: 'boolean', required: false },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: SPORT_CONDITION_OPTIONS },
     { key: 'dimensions', labelAr: 'المقاس والوزن التقريبي', labelEn: 'Dimensions & Weight', type: 'text', required: false, placeholder: 'Weight / Dimensions', placeholderAr: 'مثال: وزن 4 كجم، 2×2 متر' },
@@ -106,7 +152,7 @@ export const SPORTS_FIELDS: CategoryFieldMap = {
       { value: 'fishing_gear', labelAr: 'مستلزمات صيد سمك وصنانير ومكائن', labelEn: 'Fishing Rods & Reels' },
       { value: 'lifejacket_safety', labelAr: 'سترات نجاة ومعدات سلامة', labelEn: 'Lifejackets & Safety' },
     ]},
-    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'text', required: false, placeholder: 'Cressi, Mares, Scubapro, Speedo, Shimano...', placeholderAr: 'مثال: كريسي، ماريس، شيمانو...' },
+    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: false, options: WATER_SPORTS_BRANDS },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: SPORT_CONDITION_OPTIONS },
     { key: 'safetyGearIncluded', labelAr: 'تشمل حقيبة حفظ أو أحزمة أمان متطابقة', labelEn: 'Safety Gear / Bag Included', type: 'boolean', required: false },
   ],
