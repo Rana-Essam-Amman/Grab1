@@ -34,7 +34,7 @@ Fixtures live in `src/shared/lib/__tests__/listingSearch.evaluation.fixtures.ts`
 | jo-punctuation | JO | active | Toyota, Camry — 2.5L | Punctuation / whitespace |
 | lb-unrelated | LB | active | Apartment for rent in Beirut | Unrelated market |
 
-### Cases (18)
+### Cases (19)
 
 Covered scenarios: exact English/Arabic brand, cross-script, prefix / middle / suffix, 1/2/3-character queries including the "Sam" pattern, numeric year, punctuation and whitespace, empty query, multi-term, market isolation, active-listing eligibility.
 
@@ -52,16 +52,20 @@ These are confirmed by the Vitest suite against the fixtures. They are propertie
    `scoreListing(item, '   ')` returns `1` for every listing, so `matchSearch` is true for all.  
    Product requirement: empty query should not present every listing as a search hit.
 
-3. **No cross-script brand equivalence in the client synonym table.**  
-   `arabicSynonyms.ts` has groups for generic terms (car, apartment, …) but not for Toyota/تويوتا, Kia/كيا, or Camry/كامري.  
-   Result: `تويوتا` matches the Arabic listing only; `Toyota` matches the Latin listing only.
-
-4. **Client helper does not enforce listing eligibility.**  
+3. **Client helper does not enforce listing eligibility.**  
    A `status: 'pending'` Toyota listing still matches `Toyota`. Eligibility is a server concern; the client gap is recorded so callers do not assume the helper is a substitute for the RPC.
+
+## Observed client capability (corrected from first hypothesis)
+
+- **Cross-script Toyota ↔ تويوتا is bridged by `phoneticKey`, not by the synonym table.**  
+  The first draft of this document hypothesized a gap. The test run showed the opposite: `تويوتا` matches the Latin Toyota listing, and `Toyota` matches the Arabic listing, via the phonetic fallback in `scoreListing`.  
+  `arabicSynonyms.ts` still has no Toyota/تويوتا group; the bridge is phonetic.  
+  Kia/كيا is not asserted as bridged; the Arabic Kia test matches the Arabic listing only.
 
 ## Client-side behavior that currently meets the fixture requirement
 
 - Exact English `Toyota` / `Camry` and Arabic `تويوتا` / `كامري` / `كيا` match the same-script listing.
+- Cross-script Toyota/تويوتا matches via phonetic fallback (observed).
 - Prefix (`toy`), middle (`yot`), and suffix (`ota`) of "Toyota" match via `includes()`.
 - Numeric year `2018` matches both JO Camry listings.
 - Leading/trailing whitespace is trimmed.
@@ -76,9 +80,9 @@ This is a **fixture-level** number, not a production Recall@K, Precision@K, MRR,
 | Metric | Value | Notes |
 |--------|-------|-------|
 | Fixture listings | 10 | Hand-authored |
-| Evaluation cases | 18 | Hand-authored |
-| Cases with known client gap | 6 | Flagged in fixtures |
-| Client recall@all (relevant hits / relevant total) | Recorded by the test run | See test output. Not a production metric. |
+| Evaluation cases | 19 | Hand-authored |
+| Cases with known client gap | 5 | Flagged in fixtures (short-1, short-2, short-3, empty, eligibility) |
+| Client recall@all | See test run | Fixture-level only. Not a production metric. |
 | Precision@K / MRR / nDCG / zero-result rate / latency | Not computed | Fixture set is too small and is not a production sample. |
 
 ## Server RPC — unverified hypotheses
@@ -123,7 +127,7 @@ select count(*) from public.search_listings('toyota', 'JO', 100, 0) where status
 
 ## Recommended next step
 
-Phase 2 should fix the confirmed client-side defects and the migration-level LIKE short-query gap, with regression tests that invert the currently-recorded failing expectations. Database changes remain coordinated with the Supabase engineer and must not be applied from this phase.
+Phase 2 should fix the confirmed client-side defects (short-query overmatching, empty-query non-selectivity) and the migration-level LIKE short-query gap, with regression tests that invert the currently-recorded failing expectations. Database changes remain coordinated with the Supabase engineer and must not be applied from this phase.
 
 ---
 
