@@ -184,10 +184,9 @@ export const EVALUATION_CASES: readonly EvaluationCase[] = [
     query: 'تويوتا',
     market: 'JO',
     scenario: 'cross-script brand',
-    rationale: 'Arabic query for Toyota should also retrieve the Latin-script listing when alias data exists. Client helpers currently lack a Toyota↔تويوتا synonym group.',
+    rationale: 'Observed client behavior: phoneticKey bridges تويوتا and Toyota even without a synonym group. This is not a client gap on this fixture.',
     expectedRelevantIds: ['jo-toyota-camry-ar', 'jo-toyota-camry-2018'],
     expectedExcludedIds: ['sa-kia-cerato'],
-    knownClientGap: true,
   },
   {
     id: 'kia-en',
