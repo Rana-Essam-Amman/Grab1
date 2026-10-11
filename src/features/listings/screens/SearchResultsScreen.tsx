@@ -39,7 +39,7 @@ export const SearchResultsScreen: React.FC = () => {
   const results = useMemo(() => {
     return filterListings(marketListings, {
       market: browseCountryCode,
-      searchQuery,
+      searchQuery: "",
       categorySlug: subcategoryFilter ?? categoryFilter,
       minPrice: minPriceFilter,
       maxPrice: maxPriceFilter,
