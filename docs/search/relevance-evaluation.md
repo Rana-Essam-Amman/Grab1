@@ -45,7 +45,7 @@ Fixtures: `src/shared/lib/__tests__/listingSearch.evaluation.fixtures.ts` (10 li
 
 ## Server RPC — still unverified
 
-Documented in `src/shared/lib/__tests__/searchListings.rpc.contract.spec.ts`. Hypotheses only:
+Documented in `src/shared/lib/searchListings.rpc.contract.ts` (not a Vitest file). Hypotheses only:
 
 1. Prefix FTS can match "toy" → "toyota" on the 20261020 function.
 2. Middle and suffix fragments miss the prefix-FTS path and may fall through to `LIKE`.
