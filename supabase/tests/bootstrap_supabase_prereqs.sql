@@ -62,6 +62,15 @@ AS $$
   SELECT NULL::uuid;
 $$;
 
+
+CREATE OR REPLACE FUNCTION auth.jwt()
+RETURNS jsonb
+LANGUAGE sql
+STABLE
+AS $$
+  SELECT '{}'::jsonb;
+$$;
+
 CREATE SCHEMA IF NOT EXISTS storage;
 
 CREATE TABLE IF NOT EXISTS storage.objects (
