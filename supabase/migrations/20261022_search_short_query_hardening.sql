@@ -258,7 +258,4 @@ BEGIN
 END;
 $function$;
 
-COMMENT ON FUNCTION public.search_listings IS
-  'Preserves live paths: short-query guard (<3), FTS, synonym retry via expand_search_query_synonyms + expand_search_keywords, trigram only when length>=4 and similarity>0.5, substring fallback. No search_keywords Samsung group.';
-
 COMMIT;

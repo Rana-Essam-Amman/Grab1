@@ -91,3 +91,5 @@ The first draft of `20261022_search_short_query_hardening.sql` omitted the synon
 - Samsung coverage uses the existing `search_synonyms` table (`سامسونج` → `samsung`). No `search_keywords` group named `samsung` is inserted. Live group_key convention is values such as `brand_toyota`.
 - Tests assert the length < 3 guard, the "Sam" false-positive (no unrelated gibberish), and synonym retry for `سامسونج` against the Samsung fixture.
 - Local PostgreSQL was unavailable in the authoring environment. SQL execution is unverified.
+
+- Invalid `COMMENT ON FUNCTION public.search_listings` (missing argument signature) was removed. No function-comment metadata change is introduced by this reconciliation migration.
