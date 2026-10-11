@@ -28,6 +28,17 @@ BEGIN
 END
 $$;
 
+
+-- Supabase realtime publication referenced by chat migration.
+-- Platform-provided; not created by repository migrations.
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_publication WHERE pubname = 'supabase_realtime') THEN
+    CREATE PUBLICATION supabase_realtime;
+  END IF;
+END
+$$;
+
 CREATE SCHEMA IF NOT EXISTS auth;
 
 CREATE TABLE IF NOT EXISTS auth.users (
