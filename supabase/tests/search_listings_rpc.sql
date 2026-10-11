@@ -27,6 +27,20 @@ SELECT
   '{}'::jsonb
 FROM fox_search_rpc_test_context;
 
+-- Keyword groups follow the live convention (e.g. brand_toyota).
+-- Inserted before listings so set_listings_search_text expands them into search_text.
+INSERT INTO public.search_keywords (group_key, keyword)
+VALUES
+  ('brand_toyota', 'toyota'),
+  ('brand_toyota', 'تويوتا'),
+  ('model_camry', 'camry'),
+  ('model_camry', 'كامري'),
+  ('brand_kia', 'kia'),
+  ('brand_kia', 'كيا'),
+  ('brand_samsung', 'samsung'),
+  ('brand_samsung', 'سامسونج')
+ON CONFLICT (group_key, keyword) DO NOTHING;
+
 INSERT INTO public.listings (
   id, user_id, title, description, price, currency, country_code,
   city, neighborhood, category_slug, subcategory_slug, attributes,
