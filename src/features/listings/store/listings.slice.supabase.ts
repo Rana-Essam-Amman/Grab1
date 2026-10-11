@@ -38,10 +38,11 @@ export async function performSupabasePublish(
 
     // If user picked photos but none uploaded → block publish.
     const hadPhotos = sanitized.images.length > 0;
-    const { urls: uploadedImages, failedCount } = await uploadListingImages(
+    const { urls: uploadedImages, dims, failedCount } = await uploadListingImages(
       sanitized.images,
       userData.user.id
     );
+    const firstDims = dims[0] ?? null;
 
     if (hadPhotos && uploadedImages.length === 0) {
       return { remoteListing: null, error: 'فشل رفع الصور — جرب مرة ثانية' };
@@ -63,6 +64,8 @@ export async function performSupabasePublish(
       categorySlug: sanitized.categorySlug,
       subcategorySlug: sanitized.subcategorySlug,
       images: uploadedImages,
+      imageWidth: firstDims?.width,
+      imageHeight: firstDims?.height,
       attributes: sanitized.attributes,
       sellerName: sanitized.sellerName,
       sellerPhone: sanitized.sellerPhone,
