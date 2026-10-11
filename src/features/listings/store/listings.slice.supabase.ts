@@ -1,6 +1,6 @@
 import type { Listing } from '@/types';
 import { fetchListings, createListing, searchListings } from '../services/listingsService';
-import { uploadListingImages, removeListingImages } from '../services/storageService';
+import { uploadListingImages, removeListingImages, readImageDimensions } from '../services/storageService';
 import { sanitizeListingData } from './listings.slice.helpers';
 import { supabase } from '@/shared/lib/supabase';
 
@@ -18,13 +18,9 @@ export async function performSupabasePublish(
   try {
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user) {
-      // No Supabase session (demo mode, E2E, offline) → local-only fallback.
-      // Real visitors are blocked at the UI level BEFORE reaching this function.
       return { remoteListing: null, error: null, fallbackToLocal: true };
     }
 
-    // Publish-lock: the target market is derived from the signed-in user's
-    // profile, NOT from the caller. Prevents cross-market data leakage.
     const { data: profileRow } = await supabase
       .from('profiles')
       .select('country_code')
@@ -36,7 +32,20 @@ export async function performSupabasePublish(
 
     const sanitized = sanitizeListingData(listing, publishCountry, isArabic);
 
-    // If user picked photos but none uploaded → block publish.
+    // Read dims from the FIRST source URL BEFORE upload.
+    // At this point sources are still data:/blob: URLs (no crossOrigin issues).
+    let firstDims: { width: number; height: number } | null = null;
+    if (sanitized.images.length > 0) {
+      try {
+        firstDims = await readImageDimensions(sanitized.images[0]);
+      } catch {
+        firstDims = null;
+      }
+      if (firstDims && (firstDims.width <= 0 || firstDims.height <= 0)) {
+        firstDims = null;
+      }
+    }
+
     const hadPhotos = sanitized.images.length > 0;
     const { urls: uploadedImages, failedCount } = await uploadListingImages(
       sanitized.images,
@@ -48,7 +57,6 @@ export async function performSupabasePublish(
     }
 
     if (failedCount > 0) {
-      // Partial failure — publish with what we have, log silently.
       console.warn(`[publish] ${failedCount} image(s) failed to upload`);
     }
 
@@ -63,13 +71,14 @@ export async function performSupabasePublish(
       categorySlug: sanitized.categorySlug,
       subcategorySlug: sanitized.subcategorySlug,
       images: uploadedImages,
+      imageWidth: firstDims?.width,
+      imageHeight: firstDims?.height,
       attributes: sanitized.attributes,
       sellerName: sanitized.sellerName,
       sellerPhone: sanitized.sellerPhone,
     });
 
     if (error || !data) {
-      // Roll back uploaded images — the listing was never persisted.
       if (uploadedImages.length > 0) {
         await removeListingImages(uploadedImages);
       }
