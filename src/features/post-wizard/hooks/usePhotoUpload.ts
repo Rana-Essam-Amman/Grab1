@@ -2,10 +2,12 @@ import { useState, useRef, RefObject, useCallback } from 'react';
 import { usePostWizard } from './usePostWizard';
 import { listingMaxPhotos } from '@/data/photoRules';
 import { compressImage } from '../helpers/compressImage';
+import { validateImage } from '@/features/listings/helpers/imageValidator';
 
 export interface UsePhotoUploadReturn {
   photos: string[];
   uploading: boolean;
+  errors: string[];
   fileInputRef: RefObject<HTMLInputElement>;
   handleFiles: (files: FileList | null) => void;
   handleRemove: (index: number) => void;
@@ -16,6 +18,7 @@ export interface UsePhotoUploadReturn {
 export function usePhotoUpload(): UsePhotoUploadReturn {
   const { postDraft, updatePostDraft } = usePostWizard();
   const [uploading, setUploading] = useState(false);
+  const [errors, setErrors] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const photos = postDraft.photos || [];
 
@@ -27,14 +30,25 @@ export function usePhotoUpload(): UsePhotoUploadReturn {
       const filesToRead = Array.from(files).slice(0, remainingSlots);
 
       setUploading(true);
+      setErrors([]);
       try {
-        const results = await Promise.all(filesToRead.map(compressImage));
+        const validFiles: File[] = [];
+        const nextErrors: string[] = [];
+        for (const f of filesToRead) {
+          const v = await validateImage(f);
+          if (v.ok) validFiles.push(f);
+          else nextErrors.push(`${f.name}: ${v.reason ?? 'رفض'}`);
+        }
+        if (nextErrors.length > 0) setErrors(nextErrors);
+        if (validFiles.length === 0) return;
+
+        const results = await Promise.all(validFiles.map(compressImage));
         const newPhotos = results.map((r) => r.dataUrl);
         const existing = postDraft.photos || [];
         const merged = [...existing, ...newPhotos].slice(0, listingMaxPhotos);
         updatePostDraft({ photos: merged });
       } catch {
-        // file reading error handled silently
+        // silent fallback
       } finally {
         setUploading(false);
       }
@@ -49,5 +63,5 @@ export function usePhotoUpload(): UsePhotoUploadReturn {
   };
   const clearPhotos = () => updatePostDraft({ photos: [] });
 
-  return { photos, uploading, fileInputRef, handleFiles, handleRemove, handleUseSample, clearPhotos };
+  return { photos, uploading, errors, fileInputRef, handleFiles, handleRemove, handleUseSample, clearPhotos };
 }
