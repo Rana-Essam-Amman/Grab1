@@ -24,6 +24,64 @@ const KIDS_CONDITION_OPTIONS: ListingFieldOption[] = [
   { value: 'good', labelAr: 'مستعمل بحالة جيدة', labelEn: 'Good' },
 ];
 
+const KIDS_CLOTHES_BRANDS: ListingFieldOption[] = [
+  { value: 'mothercare', labelAr: 'مذركير (Mothercare)', labelEn: 'Mothercare' },
+  { value: 'carters', labelAr: 'كارترز (Carter\'s)', labelEn: 'Carter\'s' },
+  { value: 'zara_kids', labelAr: 'زارا كيدز (Zara Kids)', labelEn: 'Zara Kids' },
+  { value: 'hm_kids', labelAr: 'إتش آند إم كيدز (H&M Kids)', labelEn: 'H&M Kids' },
+  { value: 'next_kids', labelAr: 'نكست كيدز (Next Kids)', labelEn: 'Next Kids' },
+  { value: 'gap_kids', labelAr: 'جاب كيدز (Gap Kids)', labelEn: 'Gap Kids' },
+  { value: 'oshkosh', labelAr: 'أوشكوش (OshKosh)', labelEn: 'OshKosh' },
+  { value: 'mayoral', labelAr: 'مايورال (Mayoral)', labelEn: 'Mayoral' },
+  { value: 'jacadi', labelAr: 'جاكادي (Jacadi)', labelEn: 'Jacadi' },
+  { value: 'chicco', labelAr: 'شيكو (Chicco)', labelEn: 'Chicco' },
+  { value: 'marks_spencer', labelAr: 'ماركس آند سبنسر (M&S)', labelEn: 'Marks & Spencer' },
+  { value: 'baby_shop', labelAr: 'بيبي شوب (Baby Shop)', labelEn: 'Baby Shop' },
+];
+
+const TOY_BRANDS: ListingFieldOption[] = [
+  { value: 'lego', labelAr: 'ليجو (LEGO)', labelEn: 'LEGO' },
+  { value: 'playmobil', labelAr: 'بلاي موبيل (Playmobil)', labelEn: 'Playmobil' },
+  { value: 'fisher_price', labelAr: 'فيشر برايس (Fisher-Price)', labelEn: 'Fisher-Price' },
+  { value: 'vtech', labelAr: 'في تك (VTech)', labelEn: 'VTech' },
+  { value: 'hasbro', labelAr: 'هاسبرو (Hasbro)', labelEn: 'Hasbro' },
+  { value: 'mattel', labelAr: 'ماتيل (Mattel)', labelEn: 'Mattel' },
+  { value: 'melissa_doug', labelAr: 'مليسا آند دوغ (Melissa & Doug)', labelEn: 'Melissa & Doug' },
+  { value: 'chicco', labelAr: 'شيكو (Chicco)', labelEn: 'Chicco' },
+  { value: 'bright_starts', labelAr: 'برايت ستارتس (Bright Starts)', labelEn: 'Bright Starts' },
+  { value: 'ravensburger', labelAr: 'رافنسبورغر (Ravensburger)', labelEn: 'Ravensburger' },
+  { value: 'spin_master', labelAr: 'سبين ماستر (Spin Master)', labelEn: 'Spin Master' },
+  { value: 'funko', labelAr: 'فانكو (Funko)', labelEn: 'Funko' },
+  { value: 'disney', labelAr: 'ديزني (Disney)', labelEn: 'Disney' },
+];
+
+const STROLLER_BRANDS: ListingFieldOption[] = [
+  { value: 'chicco', labelAr: 'شيكو (Chicco)', labelEn: 'Chicco' },
+  { value: 'graco', labelAr: 'جراكو (Graco)', labelEn: 'Graco' },
+  { value: 'babyzen', labelAr: 'بيبي زن (Babyzen)', labelEn: 'Babyzen' },
+  { value: 'joie', labelAr: 'جوي (Joie)', labelEn: 'Joie' },
+  { value: 'cybex', labelAr: 'سايبكس (Cybex)', labelEn: 'Cybex' },
+  { value: 'bugaboo', labelAr: 'بوغابو (Bugaboo)', labelEn: 'Bugaboo' },
+  { value: 'maxi_cosi', labelAr: 'ماكسي كوزي (Maxi-Cosi)', labelEn: 'Maxi-Cosi' },
+  { value: 'britax', labelAr: 'بريتاكس (Britax)', labelEn: 'Britax' },
+  { value: 'nuna', labelAr: 'نونا (Nuna)', labelEn: 'Nuna' },
+  { value: 'silver_cross', labelAr: 'سيلفر كروس (Silver Cross)', labelEn: 'Silver Cross' },
+  { value: 'stokke', labelAr: 'ستوكه (Stokke)', labelEn: 'Stokke' },
+  { value: 'peg_perego', labelAr: 'بيغ بيريغو (Peg Perego)', labelEn: 'Peg Perego' },
+];
+
+const FEEDING_BRANDS: ListingFieldOption[] = [
+  { value: 'philips_avent', labelAr: 'فيليبس أفينت (Philips Avent)', labelEn: 'Philips Avent' },
+  { value: 'chicco', labelAr: 'شيكو (Chicco)', labelEn: 'Chicco' },
+  { value: 'mam', labelAr: 'مام (MAM)', labelEn: 'MAM' },
+  { value: 'tommee_tippee', labelAr: 'تومي تيبي (Tommee Tippee)', labelEn: 'Tommee Tippee' },
+  { value: 'medela', labelAr: 'ميديلا (Medela)', labelEn: 'Medela' },
+  { value: 'dr_browns', labelAr: 'دكتور براون (Dr. Brown\'s)', labelEn: 'Dr. Brown\'s' },
+  { value: 'nuk', labelAr: 'نوك (NUK)', labelEn: 'NUK' },
+  { value: 'baby_bjorn', labelAr: 'بيبي بيورن (Baby Björn)', labelEn: 'Baby Björn' },
+  { value: 'pigeon', labelAr: 'بيجون (Pigeon)', labelEn: 'Pigeon' },
+];
+
 export const KIDS_FIELDS: CategoryFieldMap = {
   clothes: [
     { key: 'clothingType', labelAr: 'نوع الملابس', labelEn: 'Type', type: 'select', allowOther: true, required: true, options: [
@@ -44,7 +102,7 @@ export const KIDS_FIELDS: CategoryFieldMap = {
       { value: 'grey', labelAr: 'رمادي', labelEn: 'Grey' },
       { value: 'multicolor', labelAr: 'متعدد الألوان / مشجر', labelEn: 'Multicolor' },
     ]},
-    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'text', required: false, placeholder: 'Mothercare, Carter’s, Zara Kids, H&M, Next...', placeholderAr: 'مثال: مذركير، كارترز، زارا كيدز...' },
+    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: false, options: KIDS_CLOTHES_BRANDS },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: KIDS_CONDITION_OPTIONS },
     { key: 'season', labelAr: 'الموسم', labelEn: 'Season', type: 'select', allowOther: true, required: false, options: [
       { value: 'summer', labelAr: 'صيفي', labelEn: 'Summer' },
@@ -65,7 +123,7 @@ export const KIDS_FIELDS: CategoryFieldMap = {
       { value: 'trampoline_swings', labelAr: 'ترامبولين وزحاليق ومراجيح', labelEn: 'Trampolines & Slides' },
     ]},
     { key: 'ageGroup', labelAr: 'الفئة العمرية المناسبة', labelEn: 'Target Age Group', type: 'select', allowOther: true, required: false, options: KIDS_AGE_OPTIONS },
-    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'text', required: false, placeholder: 'LEGO, Fisher-Price, Chicco, Disney...', placeholderAr: 'مثال: ليجو، فيشر برايس، شيكو...' },
+    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: false, options: TOY_BRANDS },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: KIDS_CONDITION_OPTIONS },
     { key: 'batteryRequired', labelAr: 'تحتاج بطاريات للتشغيل', labelEn: 'Requires Batteries', type: 'boolean', required: false },
     { key: 'boxIncluded', labelAr: 'الكرتونة الأصلية ودليل التركيب متوفر', labelEn: 'Original Box & Manual Included', type: 'boolean', required: false },
@@ -79,7 +137,7 @@ export const KIDS_FIELDS: CategoryFieldMap = {
       { value: 'baby_carrier', labelAr: 'شيالة أطفال قماشية / كانغارو', labelEn: 'Baby Carrier / Wrap' },
       { value: 'baby_rocker', labelAr: 'كرسي هزاز كهربائي / باونسر', labelEn: 'Electric Rocker / Bouncer' },
     ]},
-    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'text', required: true, placeholder: 'Chicco, Graco, Joie, Stokke, Maxi-Cosi, Cybex...', placeholderAr: 'مثال: شيكو، جراكو، سايبكس، جوي...' },
+    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: true, options: STROLLER_BRANDS },
     { key: 'color', labelAr: 'اللون', labelEn: 'Color', type: 'select', allowOther: true, required: false, options: [
       { value: 'black', labelAr: 'أسود', labelEn: 'Black' },
       { value: 'grey', labelAr: 'رمادي', labelEn: 'Grey' },
@@ -100,7 +158,7 @@ export const KIDS_FIELDS: CategoryFieldMap = {
       { value: 'baby_monitor', labelAr: 'كاميرا وجهاز مراقبة الطفل (Baby Monitor)', labelEn: 'Baby Monitor Camera' },
       { value: 'feeding_set', labelAr: 'طقم رضاعات وصحون سيليكون', labelEn: 'Feeding Set / Bottles' },
     ]},
-    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'text', required: false, placeholder: 'Philips Avent, Medela, Chicco, Tommee Tippee...', placeholderAr: 'مثال: فيليبس أفينت، ميديلا، تومي تيبي...' },
+    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: false, options: FEEDING_BRANDS },
     { key: 'condition', labelAr: 'الحالة والنظافة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: KIDS_CONDITION_OPTIONS },
     { key: 'bpaFree', labelAr: 'خالٍ من مادة BPA وآمن صحياً', labelEn: 'BPA Free & Safe', type: 'boolean', required: false },
     { key: 'boxIncluded', labelAr: 'مغلف بالكرتونة الأصلية', labelEn: 'Original Box Included', type: 'boolean', required: false },
