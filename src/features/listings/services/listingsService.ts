@@ -8,9 +8,7 @@ export interface FetchListingsParams {
   readonly offset?: number;
   readonly limit?: number;
 }
-
 export const LISTINGS_PAGE_SIZE = 20;
-
 export async function fetchListings(params: FetchListingsParams = {}): Promise<{ data: Listing[] | null; error: string | null }> {
   try {
     const { market, offset = 0, limit = LISTINGS_PAGE_SIZE } = params;
@@ -67,6 +65,8 @@ export interface CreateListingInput {
   readonly categorySlug: string;
   readonly subcategorySlug?: string;
   readonly images: string[];
+  readonly imageWidth?: number;
+  readonly imageHeight?: number;
   readonly attributes?: Array<{ key?: string; label: string; value: string }>;
   readonly sellerName?: string;
   readonly sellerPhone?: string;
@@ -90,6 +90,8 @@ export async function createListing(input: CreateListingInput): Promise<{ data: 
         category_slug: input.categorySlug,
         subcategory_slug: input.subcategorySlug || null,
         images: input.images,
+        image_width: input.imageWidth ?? null,
+        image_height: input.imageHeight ?? null,
         attributes: input.attributes || [],
         seller_name: input.sellerName || null,
         seller_phone: input.sellerPhone || null,
