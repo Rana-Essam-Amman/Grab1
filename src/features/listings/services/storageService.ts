@@ -7,12 +7,9 @@ async function dataUrlToBlob(dataUrl: string): Promise<Blob> {
   return response.blob();
 }
 
-/** Read intrinsic pixel dimensions of an image source (data:, blob:, or remote URL). */
-async function readImageDimensions(src: string): Promise<{ width: number; height: number }> {
+export async function readImageDimensions(src: string): Promise<{ width: number; height: number }> {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    // Allow loading dimensions from remote URLs (Supabase Storage, assets).
-    img.crossOrigin = 'anonymous';
     img.onload = () =>
       resolve({ width: img.naturalWidth, height: img.naturalHeight });
     img.onerror = () => reject(new Error('image load failed'));
@@ -34,7 +31,6 @@ interface UploadedOne {
 }
 
 async function uploadOne(dataUrl: string, userId: string): Promise<UploadedOne> {
-  // Read dimensions BEFORE upload so the listing can persist them.
   const dims = await readImageDimensions(dataUrl);
   const blob = await dataUrlToBlob(dataUrl);
   const ext = (blob.type.split('/')[1] || 'jpg').split(';')[0];
@@ -51,7 +47,6 @@ async function uploadOne(dataUrl: string, userId: string): Promise<UploadedOne> 
       return { url: data.publicUrl, width: dims.width, height: dims.height };
     }
     lastError = new Error(error.message);
-    // Retry only on transient errors; abort immediately on 4xx auth/content.
     const status = (error as { statusCode?: number | string }).statusCode;
     const statusStr = typeof status === 'string' ? status : String(status ?? '');
     if (/^4\d\d$/.test(statusStr)) break;
@@ -62,7 +57,6 @@ async function uploadOne(dataUrl: string, userId: string): Promise<UploadedOne> 
 
 export interface UploadBatchResult {
   readonly urls: string[];
-  /** Parallel to urls. null = static asset (no uploaded dims available). */
   readonly dims: ReadonlyArray<{ readonly width: number; readonly height: number } | null>;
   readonly failedCount: number;
 }
@@ -75,17 +69,9 @@ export async function uploadListingImages(
   const dims: Array<{ width: number; height: number } | null> = [];
   let failedCount = 0;
   for (const src of sources) {
-    // Static assets (/assets/...) already have permanent URLs — keep as-is.
     if (!src.startsWith('data:') && !src.startsWith('blob:')) {
-      // Try to read dimensions from remote URL (best effort).
-      try {
-        const remoteDims = await readImageDimensions(src);
-        urls.push(src);
-        dims.push({ width: remoteDims.width, height: remoteDims.height });
-      } catch {
-        urls.push(src);
-        dims.push(null);
-      }
+      urls.push(src);
+      dims.push(null);
       continue;
     }
     try {
@@ -99,10 +85,6 @@ export async function uploadListingImages(
   return { urls, dims, failedCount };
 }
 
-/**
- * Extract storage path from a public URL.
- * Returns null if URL is not from our bucket (e.g. static asset).
- */
 export function extractStoragePath(url: string): string | null {
   const marker = `/storage/v1/object/public/${BUCKET}/`;
   const idx = url.indexOf(marker);
@@ -110,10 +92,6 @@ export function extractStoragePath(url: string): string | null {
   return url.slice(idx + marker.length);
 }
 
-/**
- * Remove listing images from storage. Best-effort — never throws.
- * Returns count of paths attempted.
- */
 export async function removeListingImages(urls: readonly string[]): Promise<number> {
   const paths: string[] = [];
   for (const url of urls) {
