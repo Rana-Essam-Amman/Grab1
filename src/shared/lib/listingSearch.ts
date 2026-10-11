@@ -26,17 +26,16 @@ export const matchNeighborhood = (
   target: string,
 ): boolean => {
   const t = target.trim().toLowerCase();
+  // Empty target matches nothing — avoid false positives from ''.includes / includes('')
+  if (t.length === 0) return false;
+
   const n = (item.neighborhood || '').trim().toLowerCase();
   const c = (item.city || '').trim().toLowerCase();
 
-  return (
-    n === t ||
-    c === t ||
-    n.includes(t) ||
-    t.includes(n) ||
-    c.includes(t) ||
-    t.includes(c)
-  );
+  const matchesField = (field: string): boolean =>
+    field.length > 0 && (field === t || field.includes(t) || t.includes(field));
+
+  return matchesField(n) || matchesField(c);
 };
 
 const PREMIUM_BOOST_MS = 3 * 60 * 60 * 1000;
