@@ -93,3 +93,11 @@ The first draft of `20261022_search_short_query_hardening.sql` omitted the synon
 - Local PostgreSQL was unavailable in the authoring environment. SQL execution is unverified.
 
 - Invalid `COMMENT ON FUNCTION public.search_listings` (missing argument signature) was removed. No function-comment metadata change is introduced by this reconciliation migration.
+
+## Disposable SQL CI (free GitHub Actions)
+
+`.github/workflows/search-rpc-sql.yml` starts a temporary `postgres:16` service container, bootstraps the Supabase platform schemas (`auth`, `storage`) that repository migrations reference but do not create, applies every file in `supabase/migrations/` in filename order, then runs `./test-search-rpc-local.sh`.
+
+The container is destroyed with the job. No hosted Supabase connection and no paid database service are used. Local password in the workflow is a disposable container credential.
+
+If the historical chain fails, the workflow fails closed. A success means the full checked-in chain applied after the documented platform bootstrap, not a hand-assembled search schema.
