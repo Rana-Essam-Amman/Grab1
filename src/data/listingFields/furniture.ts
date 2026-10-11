@@ -1,5 +1,22 @@
 import type { CategoryFieldMap, ListingFieldOption } from './types';
 
+const FURNITURE_BRANDS: ListingFieldOption[] = [
+  { value: 'ikea', labelAr: 'إيكيا (IKEA)', labelEn: 'IKEA' },
+  { value: 'home_centre', labelAr: 'هوم سنتر (Home Centre)', labelEn: 'Home Centre' },
+  { value: 'pan_emirates', labelAr: 'بان إمارات (Pan Emirates)', labelEn: 'Pan Emirates' },
+  { value: 'marina_home', labelAr: 'مارينا هوم (Marina Home)', labelEn: 'Marina Home' },
+  { value: 'danube_home', labelAr: 'دنيوب هوم (Danube Home)', labelEn: 'Danube Home' },
+  { value: 'natuzzi', labelAr: 'ناتوزي (Natuzzi)', labelEn: 'Natuzzi' },
+  { value: 'ashley', labelAr: 'آشلي (Ashley)', labelEn: 'Ashley' },
+  { value: 'interwood', labelAr: 'إنتروود (Interwood)', labelEn: 'Interwood' },
+  { value: 'kare', labelAr: 'كاري (KARE)', labelEn: 'KARE' },
+  { value: 'habitat', labelAr: 'هابيتات (Habitat)', labelEn: 'Habitat' },
+  { value: 'west_elm', labelAr: 'ويست إلم (West Elm)', labelEn: 'West Elm' },
+  { value: 'pottery_barn', labelAr: 'بوترى بارن (Pottery Barn)', labelEn: 'Pottery Barn' },
+  { value: 'herman_miller', labelAr: 'هيرمان ميلر (Herman Miller)', labelEn: 'Herman Miller' },
+  { value: 'steelcase', labelAr: 'ستيل كيس (Steelcase)', labelEn: 'Steelcase' },
+];
+
 const FURNITURE_MATERIALS: ListingFieldOption[] = [
   { value: 'wood_solid', labelAr: 'خشب طبيعي / زان / سويد', labelEn: 'Solid Wood' },
   { value: 'wood_mdf', labelAr: 'خشب مضغوط / MDF / لاتيه', labelEn: 'MDF / Engineered Wood' },
@@ -90,7 +107,7 @@ export const FURNITURE_FIELDS: CategoryFieldMap = {
     ]},
     { key: 'style', labelAr: 'الستايل والتصميم', labelEn: 'Style', type: 'select', allowOther: true, required: false, options: STYLE_OPTIONS },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
-    { key: 'brand', labelAr: 'الماركة أو مكان الشراء', labelEn: 'Brand / Store', type: 'text', required: false, placeholder: 'IKEA, Ashley, Home Centre, Custom...', placeholderAr: 'مثال: ايكيا، هوم سنتر، تفصيل محلي...' },
+    { key: 'brand', labelAr: 'الماركة أو مكان الشراء', labelEn: 'Brand / Store', type: 'select', allowOther: true, required: false, options: FURNITURE_BRANDS },
     { key: 'assemblyRequired', labelAr: 'يحتاج فك وتركيب', labelEn: 'Assembly Required', type: 'boolean', required: false },
     { key: 'includesChaise', labelAr: 'يشمل شازلونج أو طرف ممتد', labelEn: 'Includes Chaise Lounge', type: 'boolean', required: false },
     { key: 'includesOttoman', labelAr: 'يشمل بف أو مسند أقدام (Ottoman)', labelEn: 'Includes Ottoman', type: 'boolean', required: false },
@@ -122,7 +139,7 @@ export const FURNITURE_FIELDS: CategoryFieldMap = {
     { key: 'style', labelAr: 'الستايل', labelEn: 'Style', type: 'select', allowOther: true, required: false, options: STYLE_OPTIONS },
     { key: 'mattressIncluded', labelAr: 'يشمل فرشة السرير', labelEn: 'Mattress Included', type: 'boolean', required: false },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
-    { key: 'brand', labelAr: 'الماركة أو المصنع', labelEn: 'Brand', type: 'text', required: false, placeholder: 'IKEA, Home Centre, Local Carpenter...', placeholderAr: 'مثال: ايكيا، هوم سنتر، منجرة...' },
+    { key: 'brand', labelAr: 'الماركة أو المصنع', labelEn: 'Brand', type: 'select', allowOther: true, required: false, options: FURNITURE_BRANDS },
     { key: 'age', labelAr: 'مدة الاستخدام (سنوات)', labelEn: 'Age (Years)', type: 'number', required: false, placeholder: '1', placeholderAr: '1' },
     { key: 'wardrobeSubtype', labelAr: 'نوع الخزانة', labelEn: 'Wardrobe Type', type: 'select', allowOther: true, required: false, options: WARDROBE_SUBTYPE },
     { key: 'underBedStorage', labelAr: 'تخزين أسفل السرير', labelEn: 'Under-Bed Storage', type: 'boolean', required: false },
@@ -152,7 +169,7 @@ export const FURNITURE_FIELDS: CategoryFieldMap = {
     { key: 'color', labelAr: 'اللون', labelEn: 'Color', type: 'select', allowOther: true, required: true, options: COLOR_OPTIONS },
     { key: 'chairsIncluded', labelAr: 'تشمل الكراسي', labelEn: 'Chairs Included', type: 'boolean', required: false },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
-    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'text', required: false, placeholder: 'IKEA, Ashley...', placeholderAr: 'مثال: ايكيا...' },
+    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: false, options: FURNITURE_BRANDS },
     { key: 'dimensions', labelAr: 'المقاس (سم)', labelEn: 'Dimensions', type: 'text', required: false, placeholder: '200 x 100 cm', placeholderAr: 'مثال: 200 × 100 سم' },
     { key: 'extendable', labelAr: 'قابل للتمديد', labelEn: 'Extendable', type: 'boolean', required: false },
   ],
@@ -180,7 +197,7 @@ export const FURNITURE_FIELDS: CategoryFieldMap = {
     ]},
     { key: 'cushionsIncluded', labelAr: 'يشمل مخدات ودواسات الجلوس', labelEn: 'Cushions Included', type: 'boolean', required: false },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
-    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'text', required: false, placeholder: 'Brand name...', placeholderAr: 'اسم الماركة...' },
+    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: false, options: FURNITURE_BRANDS },
   ],
   decor: [
     { key: 'decorType', labelAr: 'نوع الديكور', labelEn: 'Decor Type', type: 'select', allowOther: true, required: true, options: [
@@ -196,7 +213,7 @@ export const FURNITURE_FIELDS: CategoryFieldMap = {
     { key: 'style', labelAr: 'الستايل', labelEn: 'Style', type: 'select', allowOther: true, required: false, options: STYLE_OPTIONS },
     { key: 'dimensions', labelAr: 'الأبعاد / الحجم (سم أو م²)', labelEn: 'Dimensions', type: 'text', required: false, placeholder: '200x300 cm', placeholderAr: 'مثال: 200 × 300 سم' },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
-    { key: 'brand', labelAr: 'الماركة أو المنشأ', labelEn: 'Brand / Origin', type: 'text', required: false, placeholder: 'Turkish, Persian, IKEA...', placeholderAr: 'مثال: تركي، يدوي، ايكيا...' },
+    { key: 'brand', labelAr: 'الماركة أو المنشأ', labelEn: 'Brand / Origin', type: 'select', allowOther: true, required: false, options: FURNITURE_BRANDS },
     { key: 'originCountry', labelAr: 'المنشأ', labelEn: 'Origin', type: 'select', allowOther: true, required: false, options: DECOR_ORIGIN },
   ],
   office: [
@@ -212,7 +229,7 @@ export const FURNITURE_FIELDS: CategoryFieldMap = {
     { key: 'color', labelAr: 'اللون', labelEn: 'Color', type: 'select', allowOther: true, required: false, options: COLOR_OPTIONS },
     { key: 'adjustable', labelAr: 'قابل لتعديل الارتفاع أو كهربائي (Sit-Stand)', labelEn: 'Adjustable / Standing Desk', type: 'boolean', required: false },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
-    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'text', required: false, placeholder: 'Herman Miller, Steelcase, IKEA...', placeholderAr: 'مثال: هيرمان ميلر، ايكيا...' },
+    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: false, options: FURNITURE_BRANDS },
     { key: 'chairSubtype', labelAr: 'نوع الكرسي', labelEn: 'Chair Type', type: 'select', allowOther: true, required: false, options: CHAIR_SUBTYPE },
     { key: 'dimensions', labelAr: 'الأبعاد (الطول × العرض × الارتفاع)', labelEn: 'Dimensions', type: 'text', required: false, placeholder: '160x80 cm', placeholderAr: 'مثال: 160 × 80 سم' },
   ],
