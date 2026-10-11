@@ -57,15 +57,15 @@ here requires an explicit REGISTRY.md update in the same PR.
 These exist in the product but have **no E2E coverage today**.
 They are candidates for silent loss.
 
-| Feature | Risk | Priority |
-|---|---|---|
-| Bumps | Listing bump counter + auto-bump | Medium |
-| Premium / Paid-until | Premium flag + expiry rendering | High |
-| Reviews | Seller review submit + rating display | High |
-| Phone Verify | OTP flow + trust badge | Medium |
-| Monetization / Quota | Free listing quota + paywall modal | High |
-| Multi-Market Isolation | Cross-market listing filter | High |
-| RLS Security | Row-level access on listings/profiles | Critical |
+| Feature | Risk | Priority | Verification status |
+|---|---|---|---|
+| Bumps | Listing bump counter + auto-bump | Medium | Not verified |
+| Premium / Paid-until | Premium flag + expiry rendering | High | Not verified |
+| Reviews | Seller review submit + rating display | High | Not verified |
+| Phone Verify | OTP flow + trust badge | Medium | Not verified |
+| Monetization / Quota | Free listing quota + paywall modal | High | Not verified |
+| Multi-Market Isolation | Cross-market listing filter | High | Implementation verified 2026-10-11 (domain rules + RLS + store + RPC). E2E still missing. |
+| RLS Security | Row-level access on listings/profiles | Critical | Policies live on DB 2026-10-11 (listings active-only, profiles self-or-active-sellers, 5 search tables revoked+RLS). Migration `20261026_rls_security_fix.sql` committed. E2E still missing. |
 
 ---
 
@@ -82,5 +82,6 @@ That's it.
 
 ## Changelog
 
+- **2026-10-11 (Session 8)** — RLS policies live (listings active-only, profiles self-or-active-sellers, 5 search tables revoked+RLS). Multi-Market Isolation implementation verified end-to-end (domain rules, store, RPC, RLS). Neither has E2E yet — both remain Uncovered with verification noted.
 - **2026-10-16** — Initial registry. Search promoted to Protected (PRs #233–#237).
 - **2026-10-10** — Added Protected Implementations layer.
