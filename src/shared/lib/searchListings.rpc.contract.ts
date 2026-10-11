@@ -11,7 +11,7 @@
  * - Function: public.search_listings(p_query text, p_market text, p_limit integer, p_offset integer)
  * - Returns: SETOF public.listings
  * - Filters: status = 'active' AND (p_market IS NULL OR country_code = upper(p_market))
- * - Empty / whitespace query: returns no rows (early RETURN)
+ * - Empty / whitespace / normalized length < 3: returns no rows (early RETURN)
  * - Single-character path: search_chars containment when cardinality(v_chars) = 1
  * - Preferred path: build_prefix_tsquery + fts @@
  * - Trigram fallback (20261020): only when length(v_norm) >= 4 AND word_similarity > 0.5

@@ -50,7 +50,7 @@ Use a labeled query set where every fixture/query pair is marked relevant or irr
 From the repository root, with local Supabase/PostgreSQL running and `DATABASE_URL` pointing to its local database:
 
 ```sh
-DATABASE_URL='postgresql://postgres:postgres@127.0.0.1:54322/postgres' ./scripts/test-search-rpc-local.sh
+DATABASE_URL='postgresql://postgres:postgres@127.0.0.1:54322/postgres' ./test-search-rpc-local.sh
 ```
 
 The test runner uses `psql -v ON_ERROR_STOP=1`. A failed run exits non-zero; the connection's open transaction is rolled back when the process disconnects. Successful runs print assertions from the SQL script and finish with an explicit rollback.
@@ -61,3 +61,14 @@ The test runner uses `psql -v ON_ERROR_STOP=1`. A failed run exits non-zero; the
 - No embeddings or AI ranking.
 - No broad search rewrite.
 - No claims of benchmark success until tests have actually run against a labeled fixture set.
+
+## Path corrections (2026-10-11)
+
+- Local runner is `./test-search-rpc-local.sh` (repository root). The previous reference to `scripts/test-search-rpc-local.sh` was incorrect.
+- SQL test suite is `supabase/tests/search_listings_rpc.sql`.
+- Short-query policy in tests now matches the live verified behavior: normalized length < 3 (including "sam"/"Sam"/"toy"/"kia") returns no rows. This prevents the previously observed false-positive regression.
+- A forward reconciliation migration `supabase/migrations/20261022_search_short_query_hardening.sql` has been added so that local application of repository migrations produces the same short-query guard observed live. ChatGPT must still inspect the live function and migration ledger before applying any change.
+
+## Local test safety
+
+The runner refuses any non-loopback host. Fixtures are transaction-scoped and rolled back. Do not point DATABASE_URL at hosted Supabase.
