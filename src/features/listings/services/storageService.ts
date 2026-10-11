@@ -8,13 +8,12 @@ async function dataUrlToBlob(dataUrl: string): Promise<Blob> {
 }
 
 export async function readImageDimensions(src: string): Promise<{ width: number; height: number }> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () =>
-      resolve({ width: img.naturalWidth, height: img.naturalHeight });
-    img.onerror = () => reject(new Error('image load failed'));
-    img.src = src;
-  });
+  const response = await fetch(src);
+  const blob = await response.blob();
+  const bitmap = await createImageBitmap(blob);
+  const dims = { width: bitmap.width, height: bitmap.height };
+  bitmap.close();
+  return dims;
 }
 
 const MAX_RETRIES = 2;
