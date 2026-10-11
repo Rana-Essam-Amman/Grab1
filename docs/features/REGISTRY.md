@@ -40,7 +40,7 @@ here requires an explicit REGISTRY.md update in the same PR.
 | Feature | Critical source files | Migration |
 |---|---|---|
 | Filter System | `src/features/explore/hooks/useFiltersUrlSync.ts`, `src/shared/router/filtersUrl.ts`, `src/shared/router/filterParams.ts`, `src/features/explore/screens/FiltersScreen.tsx` | — |
-| Search (FTS) | `src/features/listings/hooks/useSupabaseListingsSync.ts`, `src/features/listings/services/listingsService.ts`, `src/features/listings/store/listings.slice.pagination.ts` | `supabase/migrations/20261018_search_v3_schema.sql`, `supabase/migrations/20261019_search_v3_trigger.sql` |
+| Search (FTS) | `src/features/listings/hooks/useSupabaseListingsSync.ts`, `src/features/listings/services/listingsService.ts`, `src/features/listings/store/listings.slice.pagination.ts` | `supabase/migrations/20261018_search_v3_schema.sql`, `supabase/migrations/20261019_search_v3_trigger.sql`, `supabase/migrations/20261027_search_trigger_security_definer.sql` |
 | AI Search | NEEDS CONFIRMATION: ai-search.spec.ts tests only search UI, not AI-specific behavior | — |
 | Notifications | `src/features/notifications/hooks/useSupabaseNotificationsSync.ts`, `src/features/notifications/services/notificationsService.ts`, `src/features/notifications/store/notifications.slice.ts` | `supabase/migrations/20261016_create_notifications.sql`, `supabase/migrations/20261017_notifications_triggers.sql` |
 | Wishlist | `src/features/listings/hooks/useSupabaseWishlistSync.ts`, `src/features/listings/services/wishlistService.ts` | `supabase/migrations/20261009_create_wishlists.sql` |
@@ -65,7 +65,7 @@ They are candidates for silent loss.
 | Phone Verify | OTP flow + trust badge | Medium | Not verified |
 | Monetization / Quota | Free listing quota + paywall modal | High | Not verified |
 | Multi-Market Isolation | Cross-market listing filter | High | Implementation verified 2026-10-11 (domain rules + RLS + store + RPC). E2E still missing. |
-| RLS Security | Row-level access on listings/profiles | Critical | Policies live on DB 2026-10-11 (listings active-only, profiles self-or-active-sellers, 5 search tables revoked+RLS). Migration `20261026_rls_security_fix.sql` committed. E2E still missing. |
+| RLS Security | Row-level access on listings/profiles | Critical | Policies live on DB 2026-10-11. `20261026_rls_security_fix.sql` committed. SQL test `supabase/tests/rls_security.sql` passes 8/8 (anon read blocks + authenticated insert regression guard). CI wiring still missing. E2E still missing. |
 
 ---
 
@@ -82,6 +82,7 @@ That's it.
 
 ## Changelog
 
+- **2026-10-12 (Session 8 cont.)** — Regression: revoke on `search_keywords` broke listing inserts via trigger `set_listings_search_text()`. Fixed in `20261027_search_trigger_security_definer.sql` (SECURITY DEFINER). Test 8 added to `supabase/tests/rls_security.sql` — proves authenticated inserts succeed post-revoke. **Lesson:** any revoke on internal tables requires auditing every trigger/function that reads them; tests must cover insert paths, not only reads.
 - **2026-10-11 (Session 8)** — RLS policies live (listings active-only, profiles self-or-active-sellers, 5 search tables revoked+RLS). Multi-Market Isolation implementation verified end-to-end (domain rules, store, RPC, RLS). Neither has E2E yet — both remain Uncovered with verification noted.
 - **2026-10-16** — Initial registry. Search promoted to Protected (PRs #233–#237).
 - **2026-10-10** — Added Protected Implementations layer.
