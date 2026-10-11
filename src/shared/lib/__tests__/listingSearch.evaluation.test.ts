@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { matchSearch, scoreListing } from '../listingSearch';
+import { matchNeighborhood, matchSearch, scoreListing } from '../listingSearch';
 import {
   EVALUATION_CASES,
   EVALUATION_LISTINGS,
@@ -257,6 +257,66 @@ describe('listingSearch client-side evaluation', () => {
       expect(gaps).toEqual(['eligibility-draft']);
     });
   });
+
+  describe('matchNeighborhood empty-value regressions', () => {
+    const base = {
+      id: 'test-listing',
+      title: 'Test',
+      description: '',
+      price: '100',
+      currency: 'JOD' as const,
+      countryCode: 'JO' as const,
+      categorySlug: 'cars',
+      subcategorySlug: 'sedan',
+      imageUrl: '',
+      images: [],
+      sellerPhone: '',
+      sellerName: 'Seller',
+      createdAt: new Date().toISOString(),
+      views: 0,
+      attributes: [],
+    };
+
+    it('empty neighborhood must not match an unrelated target', () => {
+      const listing = { ...base, city: 'Amman', neighborhood: '' };
+      expect(matchNeighborhood(listing, 'Abdoun')).toBe(false);
+      expect(matchNeighborhood(listing, 'something-else')).toBe(false);
+    });
+
+    it('empty city and neighborhood must not match', () => {
+      const listing = { ...base, city: '', neighborhood: '' };
+      expect(matchNeighborhood(listing, 'Amman')).toBe(false);
+      expect(matchNeighborhood(listing, 'Abdoun')).toBe(false);
+    });
+
+    it('empty target must return false', () => {
+      const listing = { ...base, city: 'Amman', neighborhood: 'Abdoun' };
+      expect(matchNeighborhood(listing, '')).toBe(false);
+      expect(matchNeighborhood(listing, '   ')).toBe(false);
+    });
+
+    it('valid city and neighborhood matches must still work', () => {
+      const listing = { ...base, city: 'Amman', neighborhood: 'Abdoun' };
+
+      // exact
+      expect(matchNeighborhood(listing, 'Amman')).toBe(true);
+      expect(matchNeighborhood(listing, 'Abdoun')).toBe(true);
+
+      // case-insensitive
+      expect(matchNeighborhood(listing, 'amman')).toBe(true);
+      expect(matchNeighborhood(listing, 'ABDOUN')).toBe(true);
+
+      // partial / substring both directions
+      expect(matchNeighborhood(listing, 'Amm')).toBe(true);
+      expect(matchNeighborhood(listing, 'Abd')).toBe(true);
+      expect(matchNeighborhood(listing, 'Amman Downtown')).toBe(true); // target includes city
+      expect(matchNeighborhood(listing, 'Abdoun Hills')).toBe(true);
+
+      // unrelated
+      expect(matchNeighborhood(listing, 'Zarqa')).toBe(false);
+    });
+  });
+
 });
 
 export type { EvaluationCase };
