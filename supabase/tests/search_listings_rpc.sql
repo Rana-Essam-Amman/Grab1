@@ -131,19 +131,39 @@ BEGIN
     RAISE EXCEPTION 'FAIL: two-character query sa returned rows';
   END IF;
 
-  -- Hardened short-query policy (live verified): queries with normalized length < 3 return no rows.
-  -- "sam" (3 chars) is treated as too short / false-positive prone and must return no rows.
-  IF EXISTS (SELECT 1 FROM public.search_listings('sam', 'JO', 100, 0)) THEN
-    RAISE EXCEPTION 'FAIL: short query sam returned rows (false-positive regression)';
+  -- Live short-query policy: normalized length < 3 returns no rows.
+  -- "sam" is 3 characters, so it is not rejected by the length guard.
+  -- The regression guard is: it must not return the unrelated gibberish fixture.
+  -- Matching the intentional Samsung title or the "by Sam" fixture is allowed.
+  SELECT coalesce(array_agg(id), '{}'::uuid[]) INTO v_ids
+  FROM public.search_listings('sam', 'JO', 100, 0);
+  IF '10000000-0000-4000-8000-000000000005'::uuid = ANY(v_ids) THEN
+    RAISE EXCEPTION 'FAIL: sam matched unrelated gibberish fixture (false-positive regression)';
   END IF;
-  IF EXISTS (SELECT 1 FROM public.search_listings('Sam', 'JO', 100, 0)) THEN
-    RAISE EXCEPTION 'FAIL: short query Sam returned rows (false-positive regression)';
+  IF EXISTS (SELECT 1 FROM public.search_listings('Sam', 'JO', 100, 0) WHERE id = '10000000-0000-4000-8000-000000000005'::uuid) THEN
+    RAISE EXCEPTION 'FAIL: Sam matched unrelated gibberish fixture (false-positive regression)';
   END IF;
-  IF EXISTS (SELECT 1 FROM public.search_listings('toy', 'JO', 100, 0)) THEN
-    RAISE EXCEPTION 'FAIL: short query toy returned rows';
+
+  -- Synonym retry: Arabic Samsung query must find the English Samsung fixture
+  -- via expand_search_query_synonyms + expand_search_keywords, not via a
+  -- search_keywords group named "samsung".
+  INSERT INTO public.search_synonyms (term, expansions)
+  VALUES ('سامسونج', ARRAY['samsung']::text[])
+  ON CONFLICT (term) DO UPDATE
+  SET expansions =
+    CASE
+      WHEN 'samsung' = ANY(public.search_synonyms.expansions)
+        THEN public.search_synonyms.expansions
+      ELSE array_append(public.search_synonyms.expansions, 'samsung')
+    END;
+
+  SELECT coalesce(array_agg(id), '{}'::uuid[]) INTO v_ids
+  FROM public.search_listings('سامسونج', 'JO', 100, 0);
+  IF NOT ('10000000-0000-4000-8000-000000000003'::uuid = ANY(v_ids)) THEN
+    RAISE EXCEPTION 'FAIL: synonym retry did not match Samsung fixture for سامسونج; IDs=%', v_ids;
   END IF;
-  IF EXISTS (SELECT 1 FROM public.search_listings('kia', 'JO', 100, 0)) THEN
-    RAISE EXCEPTION 'FAIL: short query kia returned rows';
+  IF '10000000-0000-4000-8000-000000000005'::uuid = ANY(v_ids) THEN
+    RAISE EXCEPTION 'FAIL: synonym retry matched unrelated gibberish fixture';
   END IF;
 
   -- English and Arabic make/model search, including cross-script aliases.

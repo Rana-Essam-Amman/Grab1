@@ -72,3 +72,22 @@ The test runner uses `psql -v ON_ERROR_STOP=1`. A failed run exits non-zero; the
 ## Local test safety
 
 The runner refuses any non-loopback host. Fixtures are transaction-scoped and rolled back. Do not point DATABASE_URL at hosted Supabase.
+
+
+## Corrective revision (PR #278 review)
+
+Live `search_listings` (verified by ChatGPT, read-only) already includes:
+
+- Early return for empty or normalized length < 3.
+- Prefix full-text search.
+- Synonym retry via `expand_search_query_synonyms(v_norm)` then `expand_search_keywords(...)`.
+- Trigram fallback only for length >= 4 and `word_similarity > 0.5`.
+- Active-status and optional market filters.
+- Stable tie-breakers.
+
+The first draft of `20261022_search_short_query_hardening.sql` omitted the synonym retry path and proposed a `search_keywords` group named `samsung`. Both are corrected:
+
+- The migration now preserves the synonym retry path and defines `expand_search_query_synonyms`.
+- Samsung coverage uses the existing `search_synonyms` table (`سامسونج` → `samsung`). No `search_keywords` group named `samsung` is inserted. Live group_key convention is values such as `brand_toyota`.
+- Tests assert the length < 3 guard, the "Sam" false-positive (no unrelated gibberish), and synonym retry for `سامسونج` against the Samsung fixture.
+- Local PostgreSQL was unavailable in the authoring environment. SQL execution is unverified.

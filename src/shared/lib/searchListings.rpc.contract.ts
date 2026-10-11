@@ -12,6 +12,7 @@
  * - Returns: SETOF public.listings
  * - Filters: status = 'active' AND (p_market IS NULL OR country_code = upper(p_market))
  * - Empty / whitespace / normalized length < 3: returns no rows (early RETURN)
+ * - Synonym retry: expand_search_query_synonyms then expand_search_keywords before trigram
  * - Single-character path: search_chars containment when cardinality(v_chars) = 1
  * - Preferred path: build_prefix_tsquery + fts @@
  * - Trigram fallback (20261020): only when length(v_norm) >= 4 AND word_similarity > 0.5
