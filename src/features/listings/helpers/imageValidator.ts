@@ -50,7 +50,11 @@ export async function validateImage(
 
   const dims = await readImageDimsFromFile(file);
   if (!dims) {
-    return { ok: false, reason: 'تعذّر فك الصورة. الملف قد يكون تالفاً.' };
+    // Some valid JPEGs (Telegram-saved, progressive) cannot be decoded by
+    // createImageBitmap or HTMLImageElement on mobile browsers. The
+    // pre-validator pipeline accepted them; keep that behavior.
+    // Dimensions will be null in the DB for these — same as before.
+    return { ok: true, format };
   }
 
   const { width, height } = dims;
