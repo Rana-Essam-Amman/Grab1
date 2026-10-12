@@ -3,13 +3,16 @@
 --
 -- Each path is fetched independently, then combined by rank (not raw score):
 --     rrf_score(d) = Σ 1 / (k + rank_i(d))
--- with k = 60 (OpenSearch default, used by Vinted for dense-retrieval fusion).
+-- with k = 60 (OpenSearch default).
+--
+-- Uses row_number() over () instead of WITH ORDINALITY — the latter binds
+-- the first composite column to a scalar alias, causing PostgREST error
+-- 42809 ("column notation .id applied to type uuid").
 --
 -- Safe properties:
 --   - Zero changes to search_listings or search_listings_semantic.
 --   - Read-only (STABLE + SECURITY DEFINER + search_path locked).
 --   - Degrades to FTS-only when p_query_vector is NULL.
---   - Degrades gracefully when either path returns zero rows.
 --   - Deterministic tie-break by created_at DESC, id ASC.
 
 create or replace function public.search_listings_hybrid(
@@ -32,7 +35,6 @@ declare
   v_rrf_k constant integer := 60;
   v_fetch integer := least(greatest(v_limit * 3, 30), 100);
 begin
-  -- FTS-only path when no query vector is supplied.
   if p_query_vector is null then
     return query
       select * from public.search_listings(p_query, p_market, v_limit, v_offset);
@@ -42,15 +44,16 @@ begin
   return query
   with
     fts_ranked as (
-      select (t.l).id as listing_id, t.ord as rank_fts
-      from public.search_listings(p_query, p_market, v_fetch, 0)
-        with ordinality as t(l, ord)
+      select f.id as listing_id,
+             row_number() over () as rank_fts
+      from public.search_listings(p_query, p_market, v_fetch, 0) as f
     ),
     sem_ranked as (
-      select (t.l).id as listing_id, t.ord as rank_sem
+      select s.id as listing_id,
+             row_number() over () as rank_sem
       from public.search_listings_semantic(
         p_query_vector, p_market, v_fetch, 0, p_max_distance
-      ) with ordinality as t(l, ord)
+      ) as s
     ),
     fused as (
       select
