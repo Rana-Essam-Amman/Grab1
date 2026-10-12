@@ -54,51 +54,53 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
     <div
       data-testid="listing-card"
       onClick={handleClick}
-      className={`${premiumClasses} rounded-2xl p-3 border flex gap-3 cursor-pointer hover:border-primary/60 transition-all shadow-xs`}
+      className={`${premiumClasses} rounded-2xl border overflow-hidden cursor-pointer hover:border-primary/60 transition-all shadow-xs`}
       dir={isArabic ? 'rtl' : 'ltr'}
     >
-      <div className="w-[136px] h-[136px] rounded-xl overflow-hidden bg-surface relative shrink-0">
-        <img
-          src={toOptimizedImageUrl(listing.imageUrl, { width: 400, quality: 80 })}
-          alt={listing.title}
-          loading="lazy"
-          decoding="async"
-          className={`w-full h-full ${fitClass}`}
-          onLoad={handleLoad}
-          onError={handleImageError}
-        />
-        {listing.isPremium && (
-          <div className="absolute top-1.5 start-1.5 z-10">
-            <Badge variant="warning" size="sm" className="flex items-center gap-1">
-              <span>{isArabic ? 'مُميز' : 'Featured'}</span>
-              <Crown size={12} variant="Bold" color="currentColor" className="text-accent" />
-            </Badge>
+      <div className="p-3 flex gap-3">
+        <div className="w-[136px] h-[136px] rounded-xl overflow-hidden bg-surface relative shrink-0">
+          <img
+            src={toOptimizedImageUrl(listing.imageUrl, { width: 400, quality: 80 })}
+            alt={listing.title}
+            loading="lazy"
+            decoding="async"
+            className={`w-full h-full ${fitClass}`}
+            onLoad={handleLoad}
+            onError={handleImageError}
+          />
+          {listing.isPremium && (
+            <div className="absolute top-1.5 start-1.5 z-10">
+              <Badge variant="warning" size="sm" className="flex items-center gap-1">
+                <span>{isArabic ? 'مُميز' : 'Featured'}</span>
+                <Crown size={12} variant="Bold" color="currentColor" className="text-accent" />
+              </Badge>
+            </div>
+          )}
+          <div className="absolute top-1.5 end-1.5">
+            <BookmarkHeartButton listingId={listing.id} size="sm" />
           </div>
-        )}
-        <div className="absolute top-1.5 end-1.5">
-          <BookmarkHeartButton listingId={listing.id} size="sm" />
+        </div>
+
+        <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+          <div>
+            <div className="text-[15px] font-bold text-ink line-clamp-2" dir="auto">{listing.title}</div>
+            <div className="flex items-center gap-1 text-xs text-ink-soft font-medium mt-1 mb-2">
+              <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
+              <span className="truncate" dir="auto">{locationText}</span>
+            </div>
+            {specs.length > 0 && <ListingSpecsRow specs={specs} compact />}
+          </div>
+          <div className="flex items-center mt-2 gap-1.5">
+            <div className="price-tag text-base shrink-0">
+              <span dir="ltr">
+                {listing.price} <span className="text-xs font-bold text-danger">{displayCurrency}</span>
+              </span>
+            </div>
+          </div>
         </div>
       </div>
-
-      <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
-        <div>
-          <div className="text-[15px] font-bold text-ink line-clamp-2" dir="auto">{listing.title}</div>
-          <div className="mt-1">
-            <ListingCardSellerRow sellerName={listing.sellerName} sellerKey={sellerKey} />
-          </div>
-          <div className="flex items-center gap-1 text-xs text-ink-soft font-medium mt-1 mb-2">
-            <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
-            <span className="truncate" dir="auto">{locationText}</span>
-          </div>
-          {specs.length > 0 && <ListingSpecsRow specs={specs} compact />}
-        </div>
-        <div className="flex items-center justify-between mt-2 gap-1.5">
-          <div className="price-tag text-base shrink-0">
-            <span dir="ltr">
-              {listing.price} <span className="text-xs font-bold text-danger">{displayCurrency}</span>
-            </span>
-          </div>
-        </div>
+      <div className="border-t border-border px-3 py-2 bg-canvas/40">
+        <ListingCardSellerRow sellerName={listing.sellerName} sellerKey={sellerKey} />
       </div>
     </div>
   );
