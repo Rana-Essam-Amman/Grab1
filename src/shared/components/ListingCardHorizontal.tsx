@@ -8,6 +8,7 @@ import { pickSpecs } from '@/features/listings';
 import { ListingSpecsRow } from './ListingSpecsRow';
 import { toOptimizedImageUrl } from '@/shared/lib/optimizedImage';
 import { pickImageFitClass, ratioOf, type ImageFitClass } from '@/shared/lib/imageFit';
+import { ListingCardSellerOverlay } from '@/features/listings/components/ListingCardSellerOverlay';
 
 interface ListingCardHorizontalProps {
   listing: Listing;
@@ -15,6 +16,7 @@ interface ListingCardHorizontalProps {
   locationText: string;
   displayCurrency: string;
   premiumClasses: string;
+  sellerKey: string;
   handleClick: () => void;
   handleImageError: (e: React.SyntheticEvent<HTMLImageElement>) => void;
 }
@@ -25,6 +27,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
   locationText,
   displayCurrency,
   premiumClasses,
+  sellerKey,
   handleClick,
   handleImageError,
 }) => {
@@ -75,6 +78,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
         <div className="absolute top-1.5 end-1.5">
           <BookmarkHeartButton listingId={listing.id} size="sm" />
         </div>
+        <ListingCardSellerOverlay sellerName={listing.sellerName} sellerKey={sellerKey} />
       </div>
 
       <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
