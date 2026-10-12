@@ -8,6 +8,7 @@ import {
 
 const MAX_COSINE_DISTANCE = 0.85;
 const HYBRID_TIMEOUT_MS = 4000;
+const FTS_DOMINANT_MIN_RESULTS = 1;
 
 async function fetchQueryVector(query: string): Promise<number[] | null> {
   const supaUrl = import.meta.env.VITE_SUPABASE_URL as string;
@@ -39,12 +40,16 @@ async function fetchQueryVector(query: string): Promise<number[] | null> {
 }
 
 /**
- * Hybrid FTS + semantic search using Reciprocal Rank Fusion.
+ * FTS-dominant hybrid search.
  *
- * Flow:
- *   1. embed-query edge function → 384-dim vector (or null on failure).
- *   2. search_listings_hybrid RPC → fused results.
- *   3. If embed-query fails, the RPC falls back to FTS-only.
+ * Strategy:
+ *   1. Try FTS (search_listings) first.
+ *   2. If FTS returns at least FTS_DOMINANT_MIN_RESULTS → return FTS only.
+ *      Prevents semantic fallback from polluting exact queries with
+ *      weakly-related listings (e.g. "شقة" no longer returns a Samsung TV).
+ *   3. Otherwise → full RRF hybrid: fetch the query vector and call
+ *      search_listings_hybrid. Preserves semantic power for descriptive
+ *      queries ("سيارة عائلية") and non-literal matches ("روليكس" → "Rolex").
  *
  * PostgREST cannot cast a JS null to extensions.vector; the request fails
  * with 400. When the vector is unavailable we omit the argument entirely
@@ -58,8 +63,22 @@ export async function searchListingsHybrid(
     const trimmed = query.trim();
     if (trimmed.length === 0) return { data: [], error: null };
 
+    // Step 1: FTS-dominant check.
+    const { data: ftsData, error: ftsError } = await supabase.rpc('search_listings', {
+      p_query: trimmed,
+      p_market: market ?? null,
+      p_limit: limit,
+      p_offset: offset,
+    });
+    if (!ftsError) {
+      const ftsListings = (ftsData || []).map(rowToListing);
+      if (ftsListings.length >= FTS_DOMINANT_MIN_RESULTS) {
+        return { data: ftsListings, error: null };
+      }
+    }
+
+    // Step 2: Hybrid path (FTS + semantic fused by RRF).
     if (trimmed.length < 3) {
-      // Short queries: FTS-only. Omit p_query_vector so DEFAULT NULL applies.
       const { data, error } = await supabase.rpc('search_listings_hybrid', {
         p_query: trimmed,
         p_market: market ?? null,
