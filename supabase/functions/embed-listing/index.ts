@@ -137,13 +137,13 @@ Deno.serve(async (request: Request): Promise<Response> => {
       await admin
         .from("search_embedding_jobs")
         .update({
-          status: "completed",
+          status: "done",
           completed_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
           last_error: "Listing no longer exists; nothing to embed",
         })
         .eq("listing_id", listingId)
-        .in("status", ["pending", "dispatched"]);
+        .in("status", ["pending", "processing"]);
 
       return jsonResponse({
         ok: true,
@@ -179,13 +179,13 @@ Deno.serve(async (request: Request): Promise<Response> => {
       await admin
         .from("search_embedding_jobs")
         .update({
-          status: "completed",
+          status: "done",
           completed_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
           last_error: null,
         })
         .eq("listing_id", listingId)
-        .in("status", ["pending", "dispatched"]);
+        .in("status", ["pending", "processing"]);
 
       return jsonResponse({
         ok: true,
@@ -208,22 +208,26 @@ Deno.serve(async (request: Request): Promise<Response> => {
 
     if (upsertError) throw upsertError;
 
-    await admin
+    const { data: updated, error: jobError } = await admin
       .from("search_embedding_jobs")
       .update({
-        status: "completed",
+        status: "done",
         completed_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         last_error: null,
       })
       .eq("listing_id", listingId)
-      .in("status", ["pending", "dispatched"]);
+      .in("status", ["pending", "processing"])
+      .select("job_key");
+
+    if (jobError) throw jobError;
 
     return jsonResponse({
       ok: true,
       listing_id: listingId,
       model: MODEL,
       dimensions: embedding.length,
+      jobs_updated: updated?.length ?? 0,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -233,7 +237,7 @@ Deno.serve(async (request: Request): Promise<Response> => {
         .from("search_embedding_jobs")
         .select("job_key,attempts")
         .eq("listing_id", listingId)
-        .in("status", ["pending", "dispatched"]);
+        .in("status", ["pending", "processing"]);
 
       for (const job of jobs ?? []) {
         const attempts = Number(job.attempts ?? 0) + 1;
