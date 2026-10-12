@@ -50,9 +50,13 @@ export function useExploreListings(): UseExploreListingsReturn {
   }, []);
 
   const displayListings = useMemo(() => {
+    // When the store carries search results, they arrive from Postgres
+    // already ordered by FTS rank or semantic distance. We filter but we
+    // do NOT re-sort — re-sorting by date would destroy that ranking.
+    const hasActiveSearch = searchQuery.trim().length > 0;
     return filterListings(marketListings, {
       market: browseCountryCode,
-      searchQuery: '',
+      searchQuery: hasActiveSearch ? searchQuery : '',
       categorySlug: subcategoryFilter ?? categoryFilter,
       minPrice: minPriceFilter,
       maxPrice: maxPriceFilter,
@@ -62,8 +66,9 @@ export function useExploreListings(): UseExploreListingsReturn {
       filterMode,
       sortBy,
       attrs: attrsFilter,
+      preserveOrder: hasActiveSearch,
     });
-  }, [marketListings, browseCountryCode, categoryFilter, subcategoryFilter, minPriceFilter, maxPriceFilter, activeNeighborhood, browseCityAr, browseCityEn, filterMode, sortBy, attrsFilter]);
+  }, [marketListings, browseCountryCode, searchQuery, categoryFilter, subcategoryFilter, minPriceFilter, maxPriceFilter, activeNeighborhood, browseCityAr, browseCityEn, filterMode, sortBy, attrsFilter]);
 
   const handleLoadMore = useCallback(() => {
     if (!hasMore || isLoadingMore) return;
