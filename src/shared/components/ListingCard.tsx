@@ -6,6 +6,7 @@ import { getSanitizedRegionalLocation } from '@/data/locations';
 import { getSanitizedCurrency } from '@/data/countries';
 import { ListingCardImage } from './ListingCardImage';
 import { ListingCardHorizontal } from './ListingCardHorizontal';
+import { ListingCardSellerRow } from '@/features/listings/components/ListingCardSellerRow';
 import { pickSpecs } from '@/features/listings';
 import { ListingSpecsRow } from './ListingSpecsRow';
 
@@ -44,9 +45,12 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
 
   const specs = useMemo(() => pickSpecs(listing.attributes, 5, listing.title), [listing.attributes, listing.title]);
 
+  // Prefer seller_phone (unique per demo listing) over userId (all demo
+  // listings share the founder's userId) so each seller chip opens the
+  // correct seller profile.
   const sellerKey = useMemo(
-    () => listing.userId || listing.sellerPhone || '',
-    [listing.userId, listing.sellerPhone]
+    () => listing.sellerPhone || listing.userId || '',
+    [listing.sellerPhone, listing.userId]
   );
 
   const handleClick = useCallback(() => {
@@ -91,13 +95,14 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
         isPremium={listing.isPremium}
         listingId={listing.id}
         isArabic={isArabic}
-        sellerName={listing.sellerName}
-        sellerKey={sellerKey}
         onImageError={handleImageError}
       />
       <div className="p-3 flex flex-col flex-1 justify-between">
         <div>
           <div className="text-[15px] font-bold text-ink line-clamp-2 min-h-[2.5rem]" dir="auto">{listing.title}</div>
+          <div className="mt-1">
+            <ListingCardSellerRow sellerName={listing.sellerName} sellerKey={sellerKey} />
+          </div>
           <div className="flex items-center gap-1 text-xs text-ink-soft font-medium mt-1 mb-2">
             <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
             <span className="truncate" dir="auto">{locationText}</span>
