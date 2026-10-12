@@ -9,8 +9,8 @@
 -- Drift note (2026-10-12): listing_search_embeddings, search_query_embeddings,
 -- and search_embedding_jobs exist on production but are not created by any
 -- migration. This migration only touches them if they exist, so a fresh
--- Postgres (CI) does not fail. See 20261028_capture_semantic_drift.sql
--- for the follow-up that documents their schema.
+-- Postgres (CI) does not fail. Follow-up 20261028_capture_semantic_drift.sql
+-- will capture their schema.
 
 -- 1. Listings — public reads active only; owner reads own
 drop policy if exists listings_read_all on public.listings;
