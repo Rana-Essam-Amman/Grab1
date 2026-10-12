@@ -8,11 +8,11 @@ interface ListingCardSellerRowProps {
 }
 
 /**
- * Seller row rendered inside the card body (not over the image).
+ * Seller row rendered in the card footer.
  *
- * Shows a small avatar + the seller's name. Clicking navigates to
- * seller-profile with the seller's phone (preferred, unique per listing)
- * or userId (fallback). stopPropagation keeps the card onClick isolated.
+ * Clicking the avatar or name navigates to seller-profile with the
+ * seller's phone (preferred) or userId (fallback). stopPropagation keeps
+ * the card onClick isolated so users do not accidentally open the listing.
  */
 export const ListingCardSellerRow: React.FC<ListingCardSellerRowProps> = ({
   sellerName,
@@ -38,12 +38,12 @@ export const ListingCardSellerRow: React.FC<ListingCardSellerRowProps> = ({
       onClick={handleClick}
       data-testid="listing-card-seller"
       aria-label={sellerName}
-      className="flex items-center gap-1.5 min-w-0 max-w-full cursor-pointer group/seller"
+      className="flex items-center gap-2 min-w-0 max-w-full cursor-pointer group/seller"
     >
       <Avatar
         fallback={sellerName.charAt(0).toUpperCase()}
         size="xs"
-        className="border border-brand/40 bg-brand/10 text-brand shrink-0"
+        className="border-none bg-brand text-white font-bold shrink-0"
       />
       <span
         className="text-xs font-bold text-ink truncate group-hover/seller:text-brand group-hover/seller:underline"
