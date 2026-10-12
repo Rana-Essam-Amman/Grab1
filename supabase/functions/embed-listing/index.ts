@@ -62,6 +62,7 @@ async function createEmbedding(
       model: MODEL,
       input: [text],
       dimensions: DIMENSIONS,
+      task: "retrieval.passage",
     }),
   });
 
