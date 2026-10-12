@@ -74,6 +74,7 @@ export const CountrySheet: React.FC = () => {
               <button
                 key={code}
                 type="button"
+                data-testid={`market-option-${code}`}
                 onClick={() => handleMarketSelect(code)}
                 className={`w-full flex items-center justify-between gap-3 px-4 py-3.5 rounded-2xl border transition-all active:scale-[0.99] cursor-pointer ${
                   isCurrent
