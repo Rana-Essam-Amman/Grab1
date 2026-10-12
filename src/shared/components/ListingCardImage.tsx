@@ -3,6 +3,7 @@ import { Crown } from 'iconsax-react';
 import { Badge } from '@/shared/ui/Badge';
 import { BookmarkHeartButton } from './BookmarkHeartButton';
 import { toOptimizedImageUrl } from '@/shared/lib/optimizedImage';
+import { ListingCardSellerOverlay } from '@/features/listings/components/ListingCardSellerOverlay';
 
 export interface ListingCardImageProps {
   readonly imageUrl: string;
@@ -10,11 +11,13 @@ export interface ListingCardImageProps {
   readonly isPremium?: boolean;
   readonly listingId: string;
   readonly isArabic: boolean;
+  readonly sellerName: string;
+  readonly sellerKey: string;
   readonly onImageError: (e: React.SyntheticEvent<HTMLImageElement>) => void;
 }
 
 export const ListingCardImage: React.FC<ListingCardImageProps> = ({
-  imageUrl, title, isPremium, listingId, isArabic, onImageError,
+  imageUrl, title, isPremium, listingId, isArabic, sellerName, sellerKey, onImageError,
 }) => (
   <div className="w-full aspect-square bg-background relative overflow-hidden">
     <img
@@ -36,5 +39,6 @@ export const ListingCardImage: React.FC<ListingCardImageProps> = ({
     <div className={isPremium ? 'absolute top-2 end-16' : 'absolute top-2 end-2'}>
       <BookmarkHeartButton listingId={listingId} size="md" />
     </div>
+    <ListingCardSellerOverlay sellerName={sellerName} sellerKey={sellerKey} />
   </div>
 );
