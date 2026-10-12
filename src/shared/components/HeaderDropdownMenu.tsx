@@ -45,6 +45,7 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
         <div className="divide-y divide-border bg-surface flex flex-col">
           <button
             type="button"
+            data-testid="header-market-btn"
             onClick={() => {
               setIsCountrySheetOpen(true);
               handleMenuClose();
