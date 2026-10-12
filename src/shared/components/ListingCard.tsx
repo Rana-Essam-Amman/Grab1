@@ -6,7 +6,6 @@ import { getSanitizedRegionalLocation } from '@/data/locations';
 import { getSanitizedCurrency } from '@/data/countries';
 import { ListingCardImage } from './ListingCardImage';
 import { ListingCardHorizontal } from './ListingCardHorizontal';
-import { ListingCardSellerChip } from '@/features/listings/components/ListingCardSellerChip';
 import { pickSpecs } from '@/features/listings';
 import { ListingSpecsRow } from './ListingSpecsRow';
 
@@ -45,6 +44,11 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
 
   const specs = useMemo(() => pickSpecs(listing.attributes, 5, listing.title), [listing.attributes, listing.title]);
 
+  const sellerKey = useMemo(
+    () => listing.userId || listing.sellerPhone || '',
+    [listing.userId, listing.sellerPhone]
+  );
+
   const handleClick = useCallback(() => {
     setSelectedListingId(listing.id);
     navigateTo('listing-detail');
@@ -67,6 +71,7 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
         locationText={locationText}
         displayCurrency={displayCurrency}
         premiumClasses={premiumClasses}
+        sellerKey={sellerKey}
         handleClick={handleClick}
         handleImageError={handleImageError}
       />
@@ -86,12 +91,13 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
         isPremium={listing.isPremium}
         listingId={listing.id}
         isArabic={isArabic}
+        sellerName={listing.sellerName}
+        sellerKey={sellerKey}
         onImageError={handleImageError}
       />
       <div className="p-3 flex flex-col flex-1 justify-between">
         <div>
           <div className="text-[15px] font-bold text-ink line-clamp-2 min-h-[2.5rem]" dir="auto">{listing.title}</div>
-          <ListingCardSellerChip listing={listing} />
           <div className="flex items-center gap-1 text-xs text-ink-soft font-medium mt-1 mb-2">
             <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
             <span className="truncate" dir="auto">{locationText}</span>
