@@ -1,9 +1,16 @@
 -- 20261026_rls_security_fix.sql
--- Session 8 — Critical RLS hardening (idempotent)
+-- Session 8 — Critical RLS hardening (idempotent + drift-safe)
+--
 -- Fixes:
 --   1. anon/authenticated had write access on 5 internal search tables
 --   2. profiles read exposed to any visitor
 --   3. listings_read_all = true → any visitor reads drafts/sold/archived
+--
+-- Drift note (2026-10-12): listing_search_embeddings, search_query_embeddings,
+-- and search_embedding_jobs exist on production but are not created by any
+-- migration. This migration only touches them if they exist, so a fresh
+-- Postgres (CI) does not fail. See 20261028_capture_semantic_drift.sql
+-- for the follow-up that documents their schema.
 
 -- 1. Listings — public reads active only; owner reads own
 drop policy if exists listings_read_all on public.listings;
@@ -27,15 +34,25 @@ create policy profiles_read_self_or_active_sellers
     )
   );
 
--- 3. Internal search tables — revoke + enable RLS
-revoke all on public.search_keywords from anon, authenticated;
-revoke all on public.listing_search_embeddings from anon, authenticated;
-revoke all on public.search_query_embeddings from anon, authenticated;
-revoke all on public.search_embedding_jobs from anon, authenticated;
-revoke all on public.storage_orphans from anon, authenticated;
-
-alter table public.search_keywords enable row level security;
-alter table public.listing_search_embeddings enable row level security;
-alter table public.search_query_embeddings enable row level security;
-alter table public.search_embedding_jobs enable row level security;
-alter table public.storage_orphans enable row level security;
+-- 3. Internal search tables — revoke + enable RLS (only if they exist)
+do $$
+declare
+  t text;
+  tables text[] := array[
+    'search_keywords',
+    'listing_search_embeddings',
+    'search_query_embeddings',
+    'search_embedding_jobs',
+    'storage_orphans'
+  ];
+begin
+  foreach t in array tables loop
+    if exists (
+      select 1 from pg_tables
+      where schemaname = 'public' and tablename = t
+    ) then
+      execute format('revoke all on public.%I from anon, authenticated', t);
+      execute format('alter table public.%I enable row level security', t);
+    end if;
+  end loop;
+end $$;
