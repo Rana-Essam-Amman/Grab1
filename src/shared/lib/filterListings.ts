@@ -17,9 +17,10 @@ export interface FilterListingsOptions {
   readonly sortBy?: 'newest' | 'price-asc' | 'price-desc';
   readonly attrs?: Record<string, string>;
   /**
-   * When true, the function applies filters but does NOT reorder the
-   * results. Used when the input already carries DB-provided ranking
-   * (FTS rank or semantic distance) that must not be destroyed.
+   * When true, the function applies non-search filters (market, category,
+   * price, city, attrs) but skips both re-ranking AND client-side text
+   * filtering. The database already filtered by searchQuery (FTS +
+   * semantic), and the row order it returned must survive intact.
    */
   readonly preserveOrder?: boolean;
 }
@@ -31,9 +32,13 @@ export function filterListings(listings: Listing[], options: FilterListingsOptio
     attrs = {}, preserveOrder = false,
   } = options;
 
+  // When the caller preserves DB order (search results), the search query
+  // is a display hint only — the server already filtered and ranked. We
+  // skip both the scoring and the re-sort so the ranking survives.
+  const effectiveSearchQuery = preserveOrder ? '' : searchQuery.trim();
+  const isSearching = effectiveSearchQuery.length > 0;
+
   const scoped = market ? filterListingsByMarket(listings, market as MarketCode) : listings;
-  const q = searchQuery.trim();
-  const isSearching = q.length > 0;
 
   const normCityAr = cityAr ? normalizeArabic(cityAr) : '';
   const normCityEn = cityEn ? normalizeArabic(cityEn) : '';
@@ -56,7 +61,7 @@ export function filterListings(listings: Listing[], options: FilterListingsOptio
     })
     .map((item) => ({
       item,
-      score: isSearching ? scoreListing(item, q) : 1,
+      score: isSearching ? scoreListing(item, effectiveSearchQuery) : 1,
     }))
     .filter(({ score }) => (isSearching ? score > 0 : true))
     .filter(({ item }) => {
@@ -70,8 +75,6 @@ export function filterListings(listings: Listing[], options: FilterListingsOptio
       return Boolean(match);
     });
 
-  // When the caller says "keep the order we gave you", we filter but do not sort.
-  // This preserves FTS rank / semantic distance provided by the database.
   if (preserveOrder) {
     return scored.map((s) => s.item);
   }
@@ -85,4 +88,4 @@ export function filterListings(listings: Listing[], options: FilterListingsOptio
   if (sortBy === 'price-asc') return [...items].sort((a, b) => Number(a.price) - Number(b.price));
   if (sortBy === 'price-desc') return [...items].sort((a, b) => Number(b.price) - Number(a.price));
   return [...items].sort(sortListingsByPriority);
-}
+  }
