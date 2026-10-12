@@ -90,3 +90,4 @@ Every push to `main` MUST pass:
 - 🟢 UI-3: Home Redesign (next)
 - ⏳ Supabase Backend
 - ⏳ Beta Launch (target: 2026-10-29)
+<!-- trigger merge-ref recompute — 2026-10-12 -->
