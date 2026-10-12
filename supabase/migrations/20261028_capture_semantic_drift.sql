@@ -1,16 +1,24 @@
 -- 20261028_capture_semantic_drift.sql
--- Session 8 — captures three production-only tables into version control.
+-- Session 8/9 — captures three production-only tables into version control.
 --
--- Idempotent. On production: no-op. On fresh Postgres without pgvector:
--- creates only the non-vector table. Never attempts to install pgvector
--- (CI Postgres does not ship it).
+-- On production: no-op (tables + extension already exist).
+-- On CI (pgvector/pgvector:pg16): installs vector first, then creates
+-- the vector-dependent tables so the full DDL is actually exercised.
+-- On plain postgres (no pgvector available): skips vector tables rather
+-- than failing the chain.
 
--- 1. Determine vector availability (no install attempt)
+-- 1. Install pgvector if available in this environment
 do $$
 begin
-  if not exists (select 1 from pg_extension where extname = 'vector') then
-    raise notice 'pgvector missing — vector tables will be skipped';
+  if exists (select 1 from pg_available_extensions where name = 'vector') then
+    execute 'create schema if not exists extensions';
+    execute 'create extension if not exists vector with schema extensions';
+    raise notice 'pgvector installed';
+  else
+    raise notice 'pgvector not available — vector tables will be skipped';
   end if;
+exception when others then
+  raise notice 'pgvector install failed: %', sqlerrm;
 end $$;
 
 -- 2. listing_search_embeddings (vector-dependent)
@@ -80,7 +88,7 @@ create index if not exists search_embedding_jobs_request_idx
   on public.search_embedding_jobs (request_id)
   where request_id is not null;
 
--- 5. Grants + RLS (only for tables that exist)
+-- 5. Grants + RLS
 do $$
 declare
   t text;
