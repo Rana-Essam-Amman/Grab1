@@ -16,6 +16,16 @@ type ListingRow = {
   title: string;
   description: string;
   attributes: Record<string, unknown> | null;
+  city: string | null;
+  neighborhood: string | null;
+  seller_name: string | null;
+  category_slug: string;
+  subcategory_slug: string | null;
+};
+
+type LabelRow = {
+  name_ar: string;
+  name_en: string;
 };
 
 function jsonResponse(body: unknown, status = 200): Response {
@@ -44,7 +54,6 @@ function vectorLiteral(values: number[]): string {
   ) {
     throw new Error(`Expected ${DIMENSIONS} finite embedding values`);
   }
-
   return `[${values.join(",")}]`;
 }
 
@@ -89,6 +98,37 @@ async function createEmbedding(
   return embedding as number[];
 }
 
+/**
+ * Build the semantic surface for a listing.
+ *
+ * Includes everything a buyer might type into search: title, description,
+ * city, neighborhood, seller name, category labels (AR + EN), subcategory
+ * labels (AR + EN), and the free-form attributes. Deliberately excludes
+ * seller_phone — that is handled by the FTS layer and gives no semantic
+ * signal.
+ */
+function buildEmbeddingSurface(
+  row: ListingRow,
+  cat: LabelRow | null,
+  sub: LabelRow | null,
+): string {
+  const parts: Array<string | null | undefined> = [
+    row.title,
+    row.description,
+    row.city,
+    row.neighborhood,
+    row.seller_name,
+    cat?.name_ar,
+    cat?.name_en,
+    sub?.name_ar,
+    sub?.name_en,
+    row.attributes ? JSON.stringify(row.attributes) : null,
+  ];
+  return parts
+    .filter((p): p is string => typeof p === "string" && p.trim().length > 0)
+    .join(" ");
+}
+
 function retryDelaySeconds(attempts: number): number {
   return Math.min(3600, 30 * 2 ** Math.min(attempts, 7));
 }
@@ -128,7 +168,7 @@ Deno.serve(async (request: Request): Promise<Response> => {
 
     const { data: listing, error: listingError } = await admin
       .from("listings")
-      .select("id,title,description,attributes")
+      .select("id,title,description,attributes,city,neighborhood,seller_name,category_slug,subcategory_slug")
       .eq("id", listingId)
       .maybeSingle();
 
@@ -154,10 +194,30 @@ Deno.serve(async (request: Request): Promise<Response> => {
     }
 
     const row = listing as ListingRow;
-    const attributesText = JSON.stringify(row.attributes ?? {});
-    const normalizedText = normalizeText(
-      `${row.title ?? ""} ${row.description ?? ""} ${attributesText}`,
+
+    const [catRes, subRes] = await Promise.all([
+      admin
+        .from("search_category_labels")
+        .select("name_ar,name_en")
+        .eq("category_slug", row.category_slug)
+        .maybeSingle(),
+      row.subcategory_slug
+        ? admin
+            .from("search_subcategory_labels")
+            .select("name_ar,name_en")
+            .eq("category_slug", row.category_slug)
+            .eq("subcategory_slug", row.subcategory_slug)
+            .maybeSingle()
+        : Promise.resolve({ data: null }),
+    ]);
+
+    const surface = buildEmbeddingSurface(
+      row,
+      (catRes.data as LabelRow | null) ?? null,
+      (subRes.data as LabelRow | null) ?? null,
     );
+
+    const normalizedText = normalizeText(surface);
 
     if (!normalizedText) {
       throw new Error("Listing has no searchable text");
