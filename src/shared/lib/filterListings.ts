@@ -16,13 +16,19 @@ export interface FilterListingsOptions {
   readonly includeSold?: boolean;
   readonly sortBy?: 'newest' | 'price-asc' | 'price-desc';
   readonly attrs?: Record<string, string>;
+  /**
+   * When true, the function applies filters but does NOT reorder the
+   * results. Used when the input already carries DB-provided ranking
+   * (FTS rank or semantic distance) that must not be destroyed.
+   */
+  readonly preserveOrder?: boolean;
 }
 
 export function filterListings(listings: Listing[], options: FilterListingsOptions): Listing[] {
   const {
     market, searchQuery = '', categorySlug = null, minPrice = null, maxPrice = null,
     neighborhood = null, cityAr = '', cityEn = '', filterMode = 'all', includeSold = false, sortBy = 'newest',
-    attrs = {},
+    attrs = {}, preserveOrder = false,
   } = options;
 
   const scoped = market ? filterListingsByMarket(listings, market as MarketCode) : listings;
@@ -63,6 +69,12 @@ export function filterListings(listings: Listing[], options: FilterListingsOptio
         (normCityEn && (c === normCityEn || c.includes(normCityEn)));
       return Boolean(match);
     });
+
+  // When the caller says "keep the order we gave you", we filter but do not sort.
+  // This preserves FTS rank / semantic distance provided by the database.
+  if (preserveOrder) {
+    return scored.map((s) => s.item);
+  }
 
   if (isSearching) {
     return [...scored]
