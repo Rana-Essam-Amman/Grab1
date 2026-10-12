@@ -84,12 +84,12 @@ export async function searchListingsHybrid(
       p_offset: offset,
     });
     if (!ftsError) {
-      let ftsListings = (ftsData || []).map(rowToListing);
-      if (categoryHint) {
-        ftsListings = ftsListings.filter((l) => l.categorySlug === categoryHint);
-      }
-      if (ftsListings.length >= FTS_DOMINANT_MIN_RESULTS) {
-        return { data: ftsListings, error: null };
+      const ftsListings: Listing[] = (ftsData || []).map(rowToListing);
+      const filtered: Listing[] = categoryHint
+        ? ftsListings.filter((item) => item.categorySlug === categoryHint)
+        : ftsListings;
+      if (filtered.length >= FTS_DOMINANT_MIN_RESULTS) {
+        return { data: filtered, error: null };
       }
     }
 
