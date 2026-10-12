@@ -1,10 +1,13 @@
 -- 20261038_search_listings_filters.sql
--- Adds optional filter parameters to search_listings. All new parameters
--- default NULL, so existing 4-argument callers (including the internal
--- call inside search_listings_hybrid) keep working unchanged.
+-- Adds optional filter parameters to search_listings.
+-- All new parameters default NULL, so existing 4-argument callers
+-- (including the internal call inside search_listings_hybrid) keep working.
 --
--- Filters applied server-side via the shared listing_passes_filters
--- predicate so pagination stays correct when the caller narrows results.
+-- IMPORTANT: This migration is based on the 20261022 body
+-- (search_short_query_hardening), NOT 20261020. The multi-token guard
+-- search_text_has_all_tokens is preserved in both the trigram fallback and
+-- the final normalized-substring fallback, so "Toyota Samsung" does not
+-- match a Samsung-only listing.
 
 drop function if exists public.search_listings(text, text, integer, integer);
 
@@ -119,12 +122,14 @@ BEGIN
     RETURN;
   END IF;
 
+  -- Trigram fallback — multi-token guard preserved from 20261022.
   IF length(v_norm) >= 4 AND EXISTS (
     SELECT 1
     FROM public.listings AS l
     WHERE l.status = 'active'
       AND (p_market IS NULL OR l.country_code = upper(p_market))
       AND word_similarity(v_norm, l.search_text) > 0.5
+      AND public.search_text_has_all_tokens(l.search_text, v_norm)
       AND public.listing_passes_filters(l, p_category_slug, p_subcategory_slug, p_min_price, p_max_price, p_city, p_neighborhood, p_attrs)
   ) THEN
     RETURN QUERY
@@ -133,6 +138,7 @@ BEGIN
     WHERE l.status = 'active'
       AND (p_market IS NULL OR l.country_code = upper(p_market))
       AND word_similarity(v_norm, l.search_text) > 0.5
+      AND public.search_text_has_all_tokens(l.search_text, v_norm)
       AND public.listing_passes_filters(l, p_category_slug, p_subcategory_slug, p_min_price, p_max_price, p_city, p_neighborhood, p_attrs)
     ORDER BY word_similarity(v_norm, l.search_text) DESC, l.created_at DESC, l.id ASC
     LIMIT v_limit OFFSET v_offset;
@@ -140,12 +146,14 @@ BEGIN
     RETURN;
   END IF;
 
+  -- Final normalized-substring fallback — multi-token guard preserved.
   RETURN QUERY
   SELECT l.*
   FROM public.listings AS l
   WHERE l.status = 'active'
     AND (p_market IS NULL OR l.country_code = upper(p_market))
     AND public.normalize_search_text(l.search_text) LIKE '%' || v_norm || '%'
+    AND public.search_text_has_all_tokens(l.search_text, v_norm)
     AND public.listing_passes_filters(l, p_category_slug, p_subcategory_slug, p_min_price, p_max_price, p_city, p_neighborhood, p_attrs)
   ORDER BY l.created_at DESC, l.id ASC
   LIMIT v_limit OFFSET v_offset;
@@ -157,7 +165,7 @@ $function$;
 comment on function public.search_listings(
   text, text, integer, integer, text, text, numeric, numeric, text, text, jsonb
 ) is
-  'FTS search with optional server-side filters. All new params default NULL; existing 4-arg callers keep working.';
+  'FTS search with optional server-side filters and preserved multi-token AND guard.';
 
 grant execute on function public.search_listings(
   text, text, integer, integer, text, text, numeric, numeric, text, text, jsonb
