@@ -1,10 +1,8 @@
+import type { Listing } from '@/types';
 import type { ListingsState } from './listings.slice.types';
 import { LISTINGS_PAGE_SIZE } from '../services/listingsService';
-import {
-  performSupabaseSync,
-  performSupabaseSearch,
-} from './listings.slice.supabase';
-import { searchListingsSemantic } from '../services/searchListingsSemantic';
+import { performSupabaseSync } from './listings.slice.supabase';
+import { searchListingsHybrid } from '../services/searchListingsHybrid';
 import { saveListingsToStorage } from '@/services/listing.service';
 import { seedListings } from '@/data/seedListings';
 
@@ -46,25 +44,30 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
     const nextOffset = (state.page + 1) * LISTINGS_PAGE_SIZE;
     set((s) => { s.isLoadingMore = true; });
     try {
-      const result = state.activeSearchQuery
-        ? await performSupabaseSearch({
-            query: state.activeSearchQuery,
-            market: state.activeMarket ?? undefined,
-            offset: nextOffset,
-            limit: LISTINGS_PAGE_SIZE,
-          })
-        : await performSupabaseSync({
-            market: state.activeMarket ?? undefined,
-            offset: nextOffset,
-            limit: LISTINGS_PAGE_SIZE,
-          });
+      let rows: Listing[] | null = null;
+      if (state.activeSearchQuery) {
+        const res = await searchListingsHybrid({
+          query: state.activeSearchQuery,
+          market: state.activeMarket ?? undefined,
+          offset: nextOffset,
+          limit: LISTINGS_PAGE_SIZE,
+        });
+        rows = res.data;
+      } else {
+        const res = await performSupabaseSync({
+          market: state.activeMarket ?? undefined,
+          offset: nextOffset,
+          limit: LISTINGS_PAGE_SIZE,
+        });
+        rows = res.listings;
+      }
       set((s) => {
-        if (result.listings && result.listings.length > 0) {
+        if (rows && rows.length > 0) {
           const existingIds = new Set(s.listings.map((l) => l.id));
-          const fresh = result.listings.filter((l) => !existingIds.has(l.id));
+          const fresh = rows!.filter((l) => !existingIds.has(l.id));
           s.listings = [...s.listings, ...fresh];
           s.page = s.page + 1;
-          s.hasMore = result.listings.length === LISTINGS_PAGE_SIZE;
+          s.hasMore = rows!.length === LISTINGS_PAGE_SIZE;
           if (!s.activeSearchQuery) saveListingsToStorage(s.listings);
         } else {
           s.hasMore = false;
@@ -78,9 +81,7 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
   searchFromSupabase: async (query: string, market?: string) => {
     const trimmed = query.trim();
     set((s) => { s.isSyncing = true; });
-
     try {
-      // Empty query → normal market sync
       if (trimmed.length === 0) {
         const targetMarket = market ?? get().activeMarket ?? undefined;
         const result = await performSupabaseSync({
@@ -102,40 +103,18 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
       }
 
       const targetMarket = market ?? get().activeMarket ?? undefined;
-
-      // 1) FTS first (fast path — no added latency)
-      const fts = await performSupabaseSearch({
+      const hybrid = await searchListingsHybrid({
         query: trimmed,
         market: targetMarket,
         offset: 0,
         limit: LISTINGS_PAGE_SIZE,
       });
-
-      if (fts.listings && fts.listings.length > 0) {
-        set((s) => {
-          s.listings = fts.listings!;
-          s.activeMarket = targetMarket ?? null;
-          s.activeSearchQuery = trimmed;
-          s.page = 0;
-          s.hasMore = fts.listings!.length === LISTINGS_PAGE_SIZE;
-        });
-        return;
-      }
-
-      // 2) Semantic fallback (FTS returned 0)
-      const semantic = await searchListingsSemantic({
-        query: trimmed,
-        market: targetMarket,
-        offset: 0,
-        limit: LISTINGS_PAGE_SIZE,
-      });
-
       set((s) => {
-        s.listings = semantic.data ?? [];
+        s.listings = hybrid.data ?? [];
         s.activeMarket = targetMarket ?? null;
         s.activeSearchQuery = trimmed;
         s.page = 0;
-        s.hasMore = (semantic.data?.length ?? 0) === LISTINGS_PAGE_SIZE;
+        s.hasMore = (hybrid.data?.length ?? 0) === LISTINGS_PAGE_SIZE;
       });
     } finally {
       set((s) => { s.isSyncing = false; });
