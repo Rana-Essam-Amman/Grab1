@@ -91,3 +91,4 @@ Every push to `main` MUST pass:
 - ⏳ Supabase Backend
 - ⏳ Beta Launch (target: 2026-10-29)
 <!-- trigger merge-ref recompute — 2026-10-12 -->
+<!-- re-sync trigger 2026-10-12 -->
