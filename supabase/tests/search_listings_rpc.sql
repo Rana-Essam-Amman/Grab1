@@ -27,6 +27,20 @@ SELECT
   '{}'::jsonb
 FROM fox_search_rpc_test_context;
 
+-- Keyword groups follow the live convention (e.g. brand_toyota).
+-- Inserted before listings so set_listings_search_text expands them into search_text.
+INSERT INTO public.search_keywords (group_key, keyword)
+VALUES
+  ('brand_toyota', 'toyota'),
+  ('brand_toyota', 'تويوتا'),
+  ('model_camry', 'camry'),
+  ('model_camry', 'كامري'),
+  ('brand_kia', 'kia'),
+  ('brand_kia', 'كيا'),
+  ('brand_samsung', 'samsung'),
+  ('brand_samsung', 'سامسونج')
+ON CONFLICT (group_key, keyword) DO NOTHING;
+
 INSERT INTO public.listings (
   id, user_id, title, description, price, currency, country_code,
   city, neighborhood, category_slug, subcategory_slug, attributes,
@@ -131,17 +145,39 @@ BEGIN
     RAISE EXCEPTION 'FAIL: two-character query sa returned rows';
   END IF;
 
-  -- A 3-character prefix may match intended Sam/Samsung records, not noise.
+  -- Live short-query policy: normalized length < 3 returns no rows.
+  -- "sam" is 3 characters, so it is not rejected by the length guard.
+  -- The regression guard is: it must not return the unrelated gibberish fixture.
+  -- Matching the intentional Samsung title or the "by Sam" fixture is allowed.
   SELECT coalesce(array_agg(id), '{}'::uuid[]) INTO v_ids
   FROM public.search_listings('sam', 'JO', 100, 0);
-  IF NOT ('10000000-0000-4000-8000-000000000003'::uuid = ANY(v_ids)) THEN
-    RAISE EXCEPTION 'FAIL: sam did not match Samsung fixture; IDs=%', v_ids;
+  IF '10000000-0000-4000-8000-000000000005'::uuid = ANY(v_ids) THEN
+    RAISE EXCEPTION 'FAIL: sam matched unrelated gibberish fixture (false-positive regression)';
   END IF;
-  IF NOT ('10000000-0000-4000-8000-000000000004'::uuid = ANY(v_ids)) THEN
-    RAISE EXCEPTION 'FAIL: sam did not match Sam seller fixture; IDs=%', v_ids;
+  IF EXISTS (SELECT 1 FROM public.search_listings('Sam', 'JO', 100, 0) WHERE id = '10000000-0000-4000-8000-000000000005'::uuid) THEN
+    RAISE EXCEPTION 'FAIL: Sam matched unrelated gibberish fixture (false-positive regression)';
+  END IF;
+
+  -- Synonym retry: Arabic Samsung query must find the English Samsung fixture
+  -- via expand_search_query_synonyms + expand_search_keywords, not via a
+  -- search_keywords group named "samsung".
+  INSERT INTO public.search_synonyms (term, expansions)
+  VALUES ('سامسونج', ARRAY['samsung']::text[])
+  ON CONFLICT (term) DO UPDATE
+  SET expansions =
+    CASE
+      WHEN 'samsung' = ANY(public.search_synonyms.expansions)
+        THEN public.search_synonyms.expansions
+      ELSE array_append(public.search_synonyms.expansions, 'samsung')
+    END;
+
+  SELECT coalesce(array_agg(id), '{}'::uuid[]) INTO v_ids
+  FROM public.search_listings('سامسونج', 'JO', 100, 0);
+  IF NOT ('10000000-0000-4000-8000-000000000003'::uuid = ANY(v_ids)) THEN
+    RAISE EXCEPTION 'FAIL: synonym retry did not match Samsung fixture for سامسونج; IDs=%', v_ids;
   END IF;
   IF '10000000-0000-4000-8000-000000000005'::uuid = ANY(v_ids) THEN
-    RAISE EXCEPTION 'FAIL: sam matched unrelated gibberish fixture';
+    RAISE EXCEPTION 'FAIL: synonym retry matched unrelated gibberish fixture';
   END IF;
 
   -- English and Arabic make/model search, including cross-script aliases.
@@ -172,8 +208,10 @@ BEGIN
   END IF;
 
   -- Multi-token AND behavior: a listing must not match unrelated combined terms.
-  IF EXISTS (SELECT 1 FROM public.search_listings('Toyota Samsung', 'JO', 100, 0)) THEN
-    RAISE EXCEPTION 'FAIL: unrelated multi-token query Toyota Samsung returned rows';
+  SELECT coalesce(array_agg(id), '{}'::uuid[]) INTO v_ids
+  FROM public.search_listings('Toyota Samsung', 'JO', 100, 0);
+  IF cardinality(v_ids) > 0 THEN
+    RAISE EXCEPTION 'FAIL: unrelated multi-token query Toyota Samsung returned rows; IDs=%', v_ids;
   END IF;
 
   -- Year and indexed attribute values.

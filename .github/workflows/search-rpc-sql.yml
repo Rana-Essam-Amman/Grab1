@@ -1,0 +1,93 @@
+name: Search RPC SQL (disposable Postgres)
+
+# Free GitHub Actions + official postgres service container only.
+# Does not create cloud databases, use paid services, or touch hosted Supabase.
+# The service container is destroyed with the job.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches:
+      - fix/search-evaluation-source-of-truth-20261011
+
+permissions:
+  contents: read
+
+concurrency:
+  group: search-rpc-sql-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  search-rpc-sql:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      # Loopback only. Matches the guard in test-search-rpc-local.sh.
+      # Local password is a disposable container credential, not a secret.
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/postgres
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Wait for disposable Postgres
+        run: |
+          for i in $(seq 1 30); do
+            pg_isready -h 127.0.0.1 -p 5432 -U postgres && exit 0
+            sleep 2
+          done
+          echo "Postgres did not become ready" >&2
+          exit 1
+
+      - name: Bootstrap Supabase platform prerequisites
+        run: |
+          echo "Applying auth/storage stubs required by repository migrations."
+          echo "These schemas are not in supabase/migrations/; they are platform-provided."
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/bootstrap_supabase_prereqs.sql
+
+      - name: Apply repository migrations in filename order
+        run: |
+          set -uo pipefail
+          echo "Full checked-in migration chain (not a hand-assembled search schema):"
+          failed=0
+          : > /tmp/migration-failures.txt
+          for f in $(ls supabase/migrations/*.sql | sort); do
+            echo "---- applying $f ----"
+            if ! psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$f"; then
+              echo "FAILED: $f" | tee -a /tmp/migration-failures.txt
+              failed=1
+            fi
+          done
+          if [ "$failed" -ne 0 ]; then
+            echo "MIGRATION CHAIN INCOMPLETE. Exact failures:"
+            cat /tmp/migration-failures.txt
+            echo "Known blocker if present: 20261026_rls_security_fix.sql references"
+            echo "public.listing_search_embeddings, public.search_query_embeddings, and"
+            echo "public.search_embedding_jobs. No CREATE TABLE for those relations exists"
+            echo "in any checked-in migration. This is not a search-function failure and"
+            echo "those tables are not created by this workflow."
+            exit 1
+          fi
+          echo "All repository migrations applied."
+
+      - name: Run search RPC SQL regression suite
+        if: always()
+        run: |
+          chmod +x test-search-rpc-local.sh
+          ./test-search-rpc-local.sh
