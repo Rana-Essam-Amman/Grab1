@@ -74,6 +74,7 @@ async function createEmbedding(
       model: MODEL,
       input: [query],
       dimensions: DIMENSIONS,
+      task: "retrieval.query",
     }),
   });
 
