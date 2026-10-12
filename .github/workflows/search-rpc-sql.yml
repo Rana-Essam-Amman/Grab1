@@ -57,7 +57,7 @@ jobs:
       - name: Verify pgvector is available
         run: |
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c \
-            "select extname, extversion from pg_available_extensions where name = 'vector';"
+            "select name, default_version from pg_available_extensions where name = 'vector';"
 
       - name: Bootstrap Supabase platform prerequisites
         run: |
