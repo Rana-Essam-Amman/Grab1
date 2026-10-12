@@ -32,6 +32,13 @@ export interface SearchListingsParams {
   readonly market?: string;
   readonly offset?: number;
   readonly limit?: number;
+  readonly categorySlug?: string | null;
+  readonly subcategorySlug?: string | null;
+  readonly minPrice?: number | null;
+  readonly maxPrice?: number | null;
+  readonly city?: string | null;
+  readonly neighborhood?: string | null;
+  readonly attrs?: Record<string, string>;
 }
 
 export async function searchListings(
