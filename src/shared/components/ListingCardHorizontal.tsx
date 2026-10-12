@@ -99,7 +99,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
           </div>
         </div>
       </div>
-      <div className="border-t border-border px-3 py-2 bg-canvas/40">
+      <div className="border-t border-border px-3 py-2 bg-canvas">
         <ListingCardSellerRow sellerName={listing.sellerName} sellerKey={sellerKey} />
       </div>
     </div>
