@@ -39,21 +39,32 @@ async function fetchQueryVector(query: string): Promise<number[] | null> {
   }
 }
 
+async function detectCategory(query: string): Promise<string | null> {
+  try {
+    const { data, error } = await supabase.rpc('detect_query_category', {
+      p_query: query,
+    });
+    if (error) return null;
+    return typeof data === 'string' && data.length > 0 ? data : null;
+  } catch {
+    return null;
+  }
+}
+
 /**
- * FTS-dominant hybrid search.
+ * FTS-dominant hybrid search with query-intent category filter.
  *
- * Strategy:
- *   1. Try FTS (search_listings) first.
- *   2. If FTS returns at least FTS_DOMINANT_MIN_RESULTS → return FTS only.
- *      Prevents semantic fallback from polluting exact queries with
- *      weakly-related listings (e.g. "شقة" no longer returns a Samsung TV).
- *   3. Otherwise → full RRF hybrid: fetch the query vector and call
- *      search_listings_hybrid. Preserves semantic power for descriptive
- *      queries ("سيارة عائلية") and non-literal matches ("روليكس" → "Rolex").
+ * Flow:
+ *   1. detect_query_category(query) — maps Arabic/English keywords to a
+ *      category_slug (e.g. "سيارات" → "motors"). NULL when no match.
+ *   2. FTS (search_listings) — if it returns at least one result, we
+ *      return those directly (FTS-dominant behavior preserved).
+ *   3. Otherwise → semantic + RRF hybrid via search_listings_hybrid,
+ *      passing the category hint so both branches are narrowed.
  *
- * PostgREST cannot cast a JS null to extensions.vector; the request fails
- * with 400. When the vector is unavailable we omit the argument entirely
- * so the SQL DEFAULT NULL applies.
+ * Safety: PostgREST rejects JS null for extensions.vector. When the
+ * vector is unavailable, p_query_vector is omitted so SQL DEFAULT NULL
+ * applies and the RPC degrades to FTS-only.
  */
 export async function searchListingsHybrid(
   params: SearchListingsParams,
@@ -63,6 +74,8 @@ export async function searchListingsHybrid(
     const trimmed = query.trim();
     if (trimmed.length === 0) return { data: [], error: null };
 
+    const categoryHint = await detectCategory(trimmed);
+
     // Step 1: FTS-dominant check.
     const { data: ftsData, error: ftsError } = await supabase.rpc('search_listings', {
       p_query: trimmed,
@@ -71,13 +84,16 @@ export async function searchListingsHybrid(
       p_offset: offset,
     });
     if (!ftsError) {
-      const ftsListings = (ftsData || []).map(rowToListing);
+      let ftsListings = (ftsData || []).map(rowToListing);
+      if (categoryHint) {
+        ftsListings = ftsListings.filter((l) => l.categorySlug === categoryHint);
+      }
       if (ftsListings.length >= FTS_DOMINANT_MIN_RESULTS) {
         return { data: ftsListings, error: null };
       }
     }
 
-    // Step 2: Hybrid path (FTS + semantic fused by RRF).
+    // Step 2: Hybrid path (FTS + semantic fused by RRF, category-filtered).
     if (trimmed.length < 3) {
       const { data, error } = await supabase.rpc('search_listings_hybrid', {
         p_query: trimmed,
@@ -85,6 +101,7 @@ export async function searchListingsHybrid(
         p_limit: limit,
         p_offset: offset,
         p_max_distance: MAX_COSINE_DISTANCE,
+        p_category_hint: categoryHint,
       });
       if (error) return { data: null, error: error.message };
       return { data: (data || []).map(rowToListing), error: null };
@@ -98,6 +115,7 @@ export async function searchListingsHybrid(
       p_limit: limit,
       p_offset: offset,
       p_max_distance: MAX_COSINE_DISTANCE,
+      p_category_hint: categoryHint,
     };
     if (vector) {
       rpcArgs.p_query_vector = `[${vector.join(',')}]`;
