@@ -45,9 +45,6 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
 
   const specs = useMemo(() => pickSpecs(listing.attributes, 5, listing.title), [listing.attributes, listing.title]);
 
-  // Prefer seller_phone (unique per demo listing) over userId (all demo
-  // listings share the founder's userId) so each seller chip opens the
-  // correct seller profile.
   const sellerKey = useMemo(
     () => listing.sellerPhone || listing.userId || '',
     [listing.sellerPhone, listing.userId]
@@ -97,25 +94,23 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
         isArabic={isArabic}
         onImageError={handleImageError}
       />
-      <div className="p-3 flex flex-col flex-1 justify-between">
-        <div>
-          <div className="text-[15px] font-bold text-ink line-clamp-2 min-h-[2.5rem]" dir="auto">{listing.title}</div>
-          <div className="mt-1">
-            <ListingCardSellerRow sellerName={listing.sellerName} sellerKey={sellerKey} />
-          </div>
-          <div className="flex items-center gap-1 text-xs text-ink-soft font-medium mt-1 mb-2">
-            <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
-            <span className="truncate" dir="auto">{locationText}</span>
-          </div>
-          {specs.length > 0 && <ListingSpecsRow specs={specs} compact />}
+      <div className="p-3 flex flex-col flex-1">
+        <div className="text-[15px] font-bold text-ink line-clamp-2" dir="auto">{listing.title}</div>
+        <div className="flex items-center gap-1 text-xs text-ink-soft font-medium mt-1 mb-2">
+          <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
+          <span className="truncate" dir="auto">{locationText}</span>
         </div>
-        <div className="flex items-center justify-between mt-3 pt-2 border-t border-border gap-1.5">
+        {specs.length > 0 && <ListingSpecsRow specs={specs} compact />}
+        <div className="flex items-center mt-3 pt-2 border-t border-border gap-1.5">
           <div className="price-tag text-base shrink-0">
             <span dir="ltr">
               {listing.price} <span className="text-xs font-bold text-danger">{displayCurrency}</span>
             </span>
           </div>
         </div>
+      </div>
+      <div className="border-t border-border px-3 py-2 bg-canvas/40">
+        <ListingCardSellerRow sellerName={listing.sellerName} sellerKey={sellerKey} />
       </div>
     </div>
   );
