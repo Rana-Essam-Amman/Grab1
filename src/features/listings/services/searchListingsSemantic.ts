@@ -12,9 +12,15 @@ import {
  * Flow: text query → embed-query edge function (Jina AI) → 384-dim vector
  * → search_listings_semantic RPC (pure-SQL cosine).
  *
+ * Applies a maximum cosine distance of 0.85 to filter out weakly-related
+ * listings. Without this, the RPC returns top-N regardless of relevance,
+ * which produced the "Kia → كلب" failure mode.
+ *
  * Gated on query length >= 3, matching search_listings. Used as a fallback
  * when FTS returns zero results (see listings.slice.pagination.ts).
  */
+const MAX_COSINE_DISTANCE = 0.85;
+
 export async function searchListingsSemantic(
   params: SearchListingsParams,
 ): Promise<{ data: Listing[] | null; error: string | null }> {
@@ -50,6 +56,7 @@ export async function searchListingsSemantic(
       p_market: market ?? null,
       p_limit: limit,
       p_offset: offset,
+      p_max_distance: MAX_COSINE_DISTANCE,
     });
     if (error) return { data: null, error: error.message };
     return { data: (data || []).map(rowToListing), error: null };
