@@ -46,8 +46,9 @@ async function fetchQueryVector(query: string): Promise<number[] | null> {
  *   2. search_listings_hybrid RPC → fused results.
  *   3. If embed-query fails, the RPC falls back to FTS-only.
  *
- * The edge function caches query vectors in search_query_embeddings, so
- * repeated queries skip the Jina round-trip.
+ * PostgREST cannot cast a JS null to extensions.vector; the request fails
+ * with 400. When the vector is unavailable we omit the argument entirely
+ * so the SQL DEFAULT NULL applies.
  */
 export async function searchListingsHybrid(
   params: SearchListingsParams,
@@ -58,9 +59,9 @@ export async function searchListingsHybrid(
     if (trimmed.length === 0) return { data: [], error: null };
 
     if (trimmed.length < 3) {
+      // Short queries: FTS-only. Omit p_query_vector so DEFAULT NULL applies.
       const { data, error } = await supabase.rpc('search_listings_hybrid', {
         p_query: trimmed,
-        p_query_vector: null,
         p_market: market ?? null,
         p_limit: limit,
         p_offset: offset,
@@ -71,16 +72,19 @@ export async function searchListingsHybrid(
     }
 
     const vector = await fetchQueryVector(trimmed);
-    const vectorLiteral = vector ? `[${vector.join(',')}]` : null;
 
-    const { data, error } = await supabase.rpc('search_listings_hybrid', {
+    const rpcArgs: Record<string, unknown> = {
       p_query: trimmed,
-      p_query_vector: vectorLiteral,
       p_market: market ?? null,
       p_limit: limit,
       p_offset: offset,
       p_max_distance: MAX_COSINE_DISTANCE,
-    });
+    };
+    if (vector) {
+      rpcArgs.p_query_vector = `[${vector.join(',')}]`;
+    }
+
+    const { data, error } = await supabase.rpc('search_listings_hybrid', rpcArgs);
     if (error) return { data: null, error: error.message };
     return { data: (data || []).map(rowToListing), error: null };
   } catch (err) {
