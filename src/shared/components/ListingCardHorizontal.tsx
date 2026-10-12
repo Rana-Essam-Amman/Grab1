@@ -6,9 +6,9 @@ import { Icon } from '@iconify/react';
 import { Badge } from '@/shared/ui/Badge';
 import { pickSpecs } from '@/features/listings';
 import { ListingSpecsRow } from './ListingSpecsRow';
+import { ListingCardSellerRow } from '@/features/listings/components/ListingCardSellerRow';
 import { toOptimizedImageUrl } from '@/shared/lib/optimizedImage';
 import { pickImageFitClass, ratioOf, type ImageFitClass } from '@/shared/lib/imageFit';
-import { ListingCardSellerOverlay } from '@/features/listings/components/ListingCardSellerOverlay';
 
 interface ListingCardHorizontalProps {
   listing: Listing;
@@ -78,12 +78,14 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
         <div className="absolute top-1.5 end-1.5">
           <BookmarkHeartButton listingId={listing.id} size="sm" />
         </div>
-        <ListingCardSellerOverlay sellerName={listing.sellerName} sellerKey={sellerKey} />
       </div>
 
       <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
         <div>
           <div className="text-[15px] font-bold text-ink line-clamp-2" dir="auto">{listing.title}</div>
+          <div className="mt-1">
+            <ListingCardSellerRow sellerName={listing.sellerName} sellerKey={sellerKey} />
+          </div>
           <div className="flex items-center gap-1 text-xs text-ink-soft font-medium mt-1 mb-2">
             <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
             <span className="truncate" dir="auto">{locationText}</span>
