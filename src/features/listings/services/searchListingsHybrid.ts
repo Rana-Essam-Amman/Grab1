@@ -5,60 +5,14 @@ import {
   LISTINGS_PAGE_SIZE,
   type SearchListingsParams,
 } from './listingsService';
+import {
+  fetchQueryVector,
+  detectCategory,
+  attrsToJsonbArray,
+} from './searchListingsHybrid.helpers';
 
 const MAX_COSINE_DISTANCE = 0.85;
-const HYBRID_TIMEOUT_MS = 4000;
 const FTS_DOMINANT_MIN_RESULTS = 1;
-
-async function fetchQueryVector(query: string): Promise<number[] | null> {
-  const supaUrl = import.meta.env.VITE_SUPABASE_URL as string;
-  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
-  if (!supaUrl || !anonKey) return null;
-
-  try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), HYBRID_TIMEOUT_MS);
-    const res = await fetch(`${supaUrl}/functions/v1/embed-query`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${anonKey}`,
-        'apikey': anonKey,
-      },
-      body: JSON.stringify({ query }),
-      signal: controller.signal,
-    });
-    clearTimeout(timer);
-    if (!res.ok) return null;
-    const payload = (await res.json()) as { embedding?: unknown };
-    const embedding = payload.embedding;
-    if (!Array.isArray(embedding) || embedding.length !== 384) return null;
-    return embedding as number[];
-  } catch {
-    return null;
-  }
-}
-
-async function detectCategory(query: string): Promise<string | null> {
-  try {
-    const { data, error } = await supabase.rpc('detect_query_category', {
-      p_query: query,
-    });
-    if (error) return null;
-    return typeof data === 'string' && data.length > 0 ? data : null;
-  } catch {
-    return null;
-  }
-}
-
-function attrsToJsonbArray(
-  attrs: Record<string, string> | undefined,
-): Array<{ key: string; value: string }> | null {
-  if (!attrs) return null;
-  const entries = Object.entries(attrs).filter(([k, v]) => k && v);
-  if (entries.length === 0) return null;
-  return entries.map(([key, value]) => ({ key, value }));
-}
 
 /**
  * FTS-dominant hybrid search with query-intent category + full filters.
