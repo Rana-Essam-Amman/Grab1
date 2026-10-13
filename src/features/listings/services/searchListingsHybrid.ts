@@ -13,7 +13,6 @@ import {
 
 const MAX_COSINE_DISTANCE = 0.85;
 const FTS_DOMINANT_MIN_RESULTS = 1;
-const SHORT_QUERY_MAX_LENGTH = 4;
 
 /**
  * FTS-dominant hybrid search with query-intent category + full filters.
@@ -21,12 +20,12 @@ const SHORT_QUERY_MAX_LENGTH = 4;
  * Flow:
  *   1. detect_query_category(query) — maps Arabic/English keywords to a
  *      category_slug (e.g. "سيارات" → "motors"). NULL when no match.
- *   2. Short queries (≤ 4 chars, typing prefixes): FTS-dominant via
- *      search_listings_v2_intent_typo. If ≥ 1 result → return immediately.
- *   3. All other queries (≥ 5 chars): hybrid path — FTS + semantic fused
- *      by RRF. Required for descriptive queries (Group F) where FTS-only
- *      returns weak literal matches. Short prefixes (< 5 chars) skip
- *      embed-query to avoid cache pollution.
+ *   2. FTS (search_listings_v2_intent_typo, 11-arg) with filters. If it
+ *      returns at least one result → return those directly. This wrapper
+ *      is v2_intent + a fuzzy typo fallback (Group H).
+ *   3. Otherwise → search_listings_hybrid with the query vector + category
+ *      hint + all filters. Both FTS and semantic branches are filtered
+ *      before RRF fusion. This is the path that serves Group F (semantic).
  *
  * Safety: PostgREST rejects JS null for extensions.vector. When the vector
  * is unavailable, p_query_vector is omitted so SQL DEFAULT NULL applies
@@ -59,28 +58,28 @@ export async function searchListingsHybrid(
       p_attrs: attrsJson,
     };
 
-    // Step 1: FTS-dominant check ONLY for short typing prefixes.
-    // Longer queries skip this so hybrid (semantic) runs — required for
-    // descriptive queries where FTS-only returns weak literal matches.
-    if (trimmed.length <= SHORT_QUERY_MAX_LENGTH) {
-      const { data: ftsData, error: ftsError } = await supabase.rpc('search_listings_v2_intent_typo', {
-        p_query: trimmed,
-        p_market: market ?? null,
-        p_limit: limit,
-        p_offset: offset,
-        ...filterArgs,
-      });
-      if (!ftsError) {
-        const ftsListings: Listing[] = (ftsData || []).map(rowToListing);
-        if (ftsListings.length >= FTS_DOMINANT_MIN_RESULTS) {
-          return { data: ftsListings, error: null };
-        }
+    // Step 1: FTS-dominant check (with filters) via v2_intent_typo.
+    // v2_intent_typo wraps v2_intent (stopword-gated FTS-OR + hard intent
+    // filter) and adds a fuzzy fallback for typos. Same 11-arg signature
+    // as v1; v1 remains available as a DB fallback.
+    const { data: ftsData, error: ftsError } = await supabase.rpc('search_listings_v2_intent_typo', {
+      p_query: trimmed,
+      p_market: market ?? null,
+      p_limit: limit,
+      p_offset: offset,
+      ...filterArgs,
+    });
+    if (!ftsError) {
+      const ftsListings: Listing[] = (ftsData || []).map(rowToListing);
+      if (ftsListings.length >= FTS_DOMINANT_MIN_RESULTS) {
+        return { data: ftsListings, error: null };
       }
     }
 
     // Step 2: Hybrid path (FTS + semantic fused by RRF, filtered).
-    // Short prefixes (< 5 chars) skip embed-query to avoid cache pollution;
-    // they run hybrid without a vector and degrade to FTS-only inside SQL.
+    // Skip embed-query for queries under 5 chars — short prefixes during
+    // typing pollute the cache without improving relevance. FTS-OR
+    // (step 1) already handles 3-4 char queries.
     if (trimmed.length < 5) {
       const { data, error } = await supabase.rpc('search_listings_hybrid', {
         p_query: trimmed,
