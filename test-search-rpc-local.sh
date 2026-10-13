@@ -32,7 +32,13 @@ fi
 
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/search_listings_rpc.sql
 
-# RLS security tests: seed deterministic fixtures, then run assertions.
+# RLS — anon suite (8 assertions).
 # Seed is committed; rls_security.sql rolls back its own Test-1 mutation.
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_seed.sql
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security.sql
+
+# RLS — authenticated suite (3 assertions).
+# Stubs must override auth.uid()/auth.jwt() AFTER the anon suite runs,
+# so the anon tests keep their original NULL semantics.
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/bootstrap_auth_stubs.sql
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_authenticated.sql
