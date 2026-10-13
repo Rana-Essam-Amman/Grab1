@@ -76,3 +76,40 @@ jobs:
             exit 1
           fi
           echo "PASS: anon blocked from storage_orphans (HTTP $CODE)"
+
+      - name: Anon cannot upload to listing-images
+        env:
+          SB_URL: https://wmchqotsforwcoxilaeo.supabase.co
+          SB_ANON: sb_publishable_G_g0UzFu8SGDynrUPIF8Qw_TFb3GTTj
+        run: |
+          set -euo pipefail
+
+          # Minimal JPEG magic header so the storage mime check passes
+          # and RLS is the layer that denies. Prevents a false pass where
+          # the request fails earlier for the wrong reason.
+          PAYLOAD=$(mktemp)
+          printf '\xff\xd8\xff\xe0\x00\x10JFIF' > "$PAYLOAD"
+
+          # Distinct probe path — never a real user folder, so a false
+          # pass cannot collide with real uploads.
+          PROBE_PATH="rls-check-ci-probe-${{ github.run_id }}.jpg"
+
+          RESP=$(curl -s -w "\n%{http_code}" \
+            -X POST \
+            -H "apikey: $SB_ANON" \
+            -H "Authorization: Bearer $SB_ANON" \
+            -H "Content-Type: image/jpeg" \
+            --data-binary @"$PAYLOAD" \
+            "$SB_URL/storage/v1/object/listing-images/$PROBE_PATH")
+
+          BODY=$(echo "$RESP" | head -n -1)
+          CODE=$(echo "$RESP" | tail -n 1)
+          rm -f "$PAYLOAD"
+
+          echo "HTTP $CODE — body: $BODY"
+
+          if [ "$CODE" -lt 400 ]; then
+            echo "::error::RLS FAIL — anon uploaded to listing-images (HTTP $CODE). Expected 4xx."
+            exit 1
+          fi
+          echo "PASS: anon blocked from uploading to listing-images (HTTP $CODE)"
