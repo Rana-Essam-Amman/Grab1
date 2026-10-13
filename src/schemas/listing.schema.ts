@@ -8,6 +8,7 @@ export const ListingAttributeSchema = z.object({
 
 export const ListingSchema = z.object({
   id: z.string().min(1),
+  userId: z.string().optional(),
   title: z.string().min(3).max(200),
   description: z.string().min(1),
   price: z.string(),
