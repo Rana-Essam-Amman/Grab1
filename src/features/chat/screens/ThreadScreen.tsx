@@ -111,7 +111,7 @@ export const ThreadScreen: React.FC = () => {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-surface overflow-hidden" dir={isArabic ? 'rtl' : 'ltr'}>
+    <div className="flex flex-col h-[100dvh] overflow-hidden bg-surface" dir={isArabic ? 'rtl' : 'ltr'}>
       <ThreadHeader
         isArabic={isArabic}
         goBack={goBack}
