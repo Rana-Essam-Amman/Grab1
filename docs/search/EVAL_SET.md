@@ -137,9 +137,27 @@ For exact-match rows, the first ID in Expected included (ids) is the expected to
 
 ## 5. Baseline snapshot
 
-| Date | Commit SHA | Metric | Value |
-|---|---|---|---|
-|  |  |  |  |
+### 2026-10-13 — FTS-only baseline
+
+Ran all 60 queries via `search_listings` (FTS only, no semantic vector). Commit: `74e836a87cd8b2f12885cbcb74576508380e4ba2`.
+
+| Metric | Value |
+|---|---|
+| Precision@5 (A–F, H–I) | 14.12% |
+| Zero-result rate (A–F) | 35.56% |
+| Must-not-include violations | 0 |
+| Negative tests (G) | 5/5 pass |
+| Group A — Arabic MSA exact | 9/10 top-1 |
+| Group B — Jordanian colloquial | 0/10 top-1 ❌ |
+| Group C — English exact | 10/10 top-1 |
+| Group D — Mixed Arabic/English | 5/5 top-1 |
+| Group E — Category intent | 3/4 known top-1 |
+| Group F — Descriptive/semantic | 0/3 known top-1 ❌ |
+| Group G — Negative tests | 5/5 pass |
+| Group H — Typo/near-match | 1/5 top-1 ❌ |
+| Group I — Multi-market scope | 4/4 known top-1 |
+
+The FTS baseline performs well on exact matches (A, C, D) and multi-market isolation. It fails on colloquial Arabic (B), descriptive semantic queries (F), and typo tolerance (H). Hybrid RPC has not yet been exercised against this set.
 
 ## 6. Change log
 
@@ -147,6 +165,7 @@ For exact-match rows, the first ID in Expected included (ids) is the expected to
 |---|---|---|
 | 2026-10-13 | ChatGPT | Initial 60-query search regression suite, curated from repository seed fixtures; unresolved categories/semantic expectations marked PENDING DATA. |
 | 2026-10-13 | ChatGPT | Section 7 filled: 20/20 seed IDs matched production UUIDs by exact title query. |
+| 2026-10-13 | ChatGPT | Section 5 baseline recorded: FTS-only run of all 60 queries. Precision@5 = 14.12%, Zero-result rate = 35.56%, Violations = 0. |
 
 ## 7. ID translation to production
 
