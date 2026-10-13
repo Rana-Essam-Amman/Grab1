@@ -16,7 +16,7 @@ export const ThreadMessageFlow: React.FC<ThreadMessageFlowProps> = ({
   onLongPress,
 }) => {
   return (
-    <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-3" dir="ltr">
+    <div className="flex-1 min-h-0 p-4 overflow-y-auto flex flex-col gap-3" dir="ltr">
       {messages.map((msg) => {
         const pending = isPending ? isPending(msg.id) : false;
         return (
