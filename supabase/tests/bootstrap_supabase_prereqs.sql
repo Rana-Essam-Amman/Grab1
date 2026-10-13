@@ -5,12 +5,12 @@
 -- and must never be applied to hosted Supabase.
 --
 -- Exact platform gap: public migrations reference auth.users, auth.uid(),
--- and storage.objects. Those schemas are not in supabase/migrations/.
+-- storage.objects, storage.buckets, and storage.foldername. Those schemas
+-- are not in supabase/migrations/.
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE EXTENSION IF NOT EXISTS unaccent;
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
-
 
 -- Supabase platform roles referenced by RLS policies and GRANTs.
 -- Not created by repository migrations.
@@ -27,7 +27,6 @@ BEGIN
   END IF;
 END
 $$;
-
 
 -- Supabase realtime publication referenced by chat migration.
 -- Platform-provided; not created by repository migrations.
@@ -62,7 +61,6 @@ AS $$
   SELECT NULL::uuid;
 $$;
 
-
 CREATE OR REPLACE FUNCTION auth.jwt()
 RETURNS jsonb
 LANGUAGE sql
@@ -73,6 +71,7 @@ $$;
 
 CREATE SCHEMA IF NOT EXISTS storage;
 
+-- Storage.objects — referenced by listing-images RLS policies.
 CREATE TABLE IF NOT EXISTS storage.objects (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   bucket_id text,
@@ -80,3 +79,27 @@ CREATE TABLE IF NOT EXISTS storage.objects (
   metadata jsonb,
   created_at timestamptz DEFAULT now()
 );
+
+-- Storage.buckets — referenced by the avatars bucket migration (20261059).
+CREATE TABLE IF NOT EXISTS storage.buckets (
+  id text PRIMARY KEY,
+  name text NOT NULL,
+  owner uuid,
+  public boolean DEFAULT false,
+  avif_autodetection boolean DEFAULT false,
+  file_size_limit bigint,
+  allowed_mime_types text[],
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+-- storage.foldername(name) — returns the folder components of a path.
+-- Used in RLS policies that gate uploads to <uid>/.
+-- Supabase platform provides this; we stub it for the disposable postgres.
+CREATE OR REPLACE FUNCTION storage.foldername(name text)
+RETURNS text[]
+LANGUAGE sql
+IMMUTABLE
+AS $$
+  SELECT (string_to_array(name, '/'))[1:array_length(string_to_array(name, '/'), 1) - 1];
+$$;
