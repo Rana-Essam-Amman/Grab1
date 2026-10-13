@@ -1,6 +1,6 @@
 # FOX Search Evaluation Set — 60 queries
 
-> ⚠️ Fixture note: The listing IDs below (jo-1, jo-4, sa-1, ...) are the in-repo seed IDs from src/data/seedListings/*.ts. Production rows use UUIDs. Before treating any assertion as a hard regression gate on production, the IDs must be translated to their current UUIDs on the target environment. Track this translation in section 7.
+> ⚠️ Fixture note: The listing IDs in section 4 are in-repo seed IDs (jo-1, jo-4, sa-1, ...) from src/data/seedListings/*.ts. Section 7 maps each seed ID to its current production UUID. Tests against production must use the UUIDs, not the seed IDs.
 
 Canonical query count: 60 (A: 10, B: 10, C: 10, D: 5, E: 5, F: 5, G: 5, H: 5, I: 5).
 
@@ -146,30 +146,31 @@ For exact-match rows, the first ID in Expected included (ids) is the expected to
 | Date | Author | Reason |
 |---|---|---|
 | 2026-10-13 | ChatGPT | Initial 60-query search regression suite, curated from repository seed fixtures; unresolved categories/semantic expectations marked PENDING DATA. |
+| 2026-10-13 | ChatGPT | Section 7 filled: 20/20 seed IDs matched production UUIDs by exact title query. |
 
-## 7. ID translation to production (TODO)
+## 7. ID translation to production
 
-The IDs used throughout this file are the in-repo seed IDs. Before running the suite on production, translate each seed ID to the current production UUID for the corresponding listing.
+Mapping verified against current production listing titles using an exact-title query. All 20 requested titles matched exactly; no missing titles required partial-match lookup.
 
-| Seed ID | Production UUID | Verified |
-|---|---|---|
-| jo-1 |  |  |
-| jo-2 |  |  |
-| jo-3 |  |  |
-| jo-4 |  |  |
-| jo-5 |  |  |
-| jo-6 |  |  |
-| jo-7 |  |  |
-| jo-8 |  |  |
-| jo-9 |  |  |
-| jo-10 |  |  |
-| jo-11 |  |  |
-| jo-12 |  |  |
-| jo-13 |  |  |
-| jo-14 |  |  |
-| jo-15 |  |  |
-| jo-16 |  |  |
-| sa-1 |  |  |
-| sa-3 |  |  |
-| sy-5 |  |  |
-| lb-8 |  |  |
+| Seed ID | Production UUID | Title (short) | Match |
+|---|---|---|---|
+| jo-1 | ef44ca01-0055-4e4a-b776-51e0d5558de9 | iPhone 15 Pro Max | exact |
+| jo-2 | 4a681f0d-4e0e-4466-916a-602c3ea32836 | Hyundai Avante | exact |
+| jo-3 | 4223f559-bd86-47ba-bb85-65847081ddb2 | Modern Furnished Apartment | exact |
+| jo-4 | 1e71ace8-4dba-4b74-945c-20fa6fc12d4e | Kia Sportage | exact |
+| jo-5 | d1cbcb30-5d70-4883-9a43-ebd563537fc1 | Toyota Camry Hybrid | exact |
+| jo-6 | b680f15c-28a1-4557-ac60-586ad231bbab | Modern Villa | exact |
+| jo-7 | 8ce41d7a-c5c4-487b-ac56-288e2c0aa280 | Spacious Apartment | exact |
+| jo-8 | f92d41ef-1ad7-4e0f-9fcf-463da028fd4e | Samsung 65 Inch TV | exact |
+| jo-9 | 6c47fd30-8e1e-48f8-8bda-d6982bc4b0d8 | Sony PlayStation 5 Slim | exact |
+| jo-10 | 522cd6a5-fa44-4db5-a542-17f8e93a7afc | Samsung Galaxy S24 Plus | exact |
+| jo-11 | 023e1d48-6019-4cdc-bfd3-ee7507e2ba1c | Luxury L-Shape Sofa | exact |
+| jo-12 | 8d675cee-59a6-4aa8-8dd1-677b89143cfb | Outdoor Garden Dining Table | exact |
+| jo-13 | 93ef8daa-2cd7-455f-b41a-1185220d8155 | Automatic Petrol Lawn Mower | exact |
+| jo-14 | 1d62a7d5-63fd-4037-a46d-7adff060a24a | Rolex Submariner | exact |
+| jo-15 | 0de7b0a6-67b6-44f4-b8f0-db40780ca443 | Handmade Italian Leather Shoes | exact |
+| jo-16 | 84bc574b-d124-4948-8f62-4c02e9e16c72 | Professional Home AC Cleaning | exact |
+| sa-1 | e87a1253-763f-4237-aadd-3c4e22fd62eb | تويوتا لاندكروزر VXR | exact |
+| sa-3 | ab9ace8b-fceb-4199-94fb-d89f636fe068 | آيفون 15 بروماكس | exact |
+| sy-5 | 5d084b6c-2e15-4bd9-a1af-73560baf8e73 | Kia Cerato 2018 | exact |
+| lb-8 | 7a55d72c-e9ca-4365-81ba-77a875832940 | iPhone 15 Pro 128GB | exact |
