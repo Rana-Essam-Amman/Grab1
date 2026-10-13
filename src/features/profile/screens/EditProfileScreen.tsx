@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/shared/ui/Button';
 import { Input } from '@/shared/ui/Input';
 import { ArrowLeft, ArrowRight, Lock1 } from 'iconsax-react';
-import { AvatarUploader } from '../components/AvatarUploader';
+import { EditProfileAvatarSection } from '../components/EditProfileAvatarSection';
 import { BrandMark } from '@/shared/components/BrandMark';
 import { ProfileToast } from '../components/ProfileToast';
 import { useEditProfileDraft } from '../hooks/useEditProfileDraft';
@@ -37,6 +37,7 @@ export const EditProfileScreen: React.FC = () => {
       const saved = await upsertProfile(user.id, {
         first_name: draft.firstName.trim(),
         last_name: draft.lastName.trim() || undefined,
+        avatar_url: localAvatar?.startsWith('http') ? localAvatar : undefined,
       });
 
       if (!saved) {
@@ -75,13 +76,12 @@ export const EditProfileScreen: React.FC = () => {
       </div>
 
       <div className="p-4 flex flex-col gap-6 max-w-[440px] mx-auto w-full">
-        <div className="flex flex-col items-center py-4 bg-surface rounded-2xl border border-border shadow-2xs">
-          <AvatarUploader
-            currentAvatar={localAvatar}
-            fallbackInitial={user?.firstName?.charAt(0) || 'U'}
-            onAvatarChange={(dataUrl) => setLocalAvatar(dataUrl || undefined)}
-          />
-        </div>
+        <EditProfileAvatarSection
+          userId={user?.id ?? null}
+          currentAvatar={localAvatar}
+          fallbackInitial={user?.firstName?.charAt(0) || 'U'}
+          onAvatarChange={setLocalAvatar}
+        />
 
         <div className="flex flex-col gap-4 bg-surface rounded-2xl border border-border p-5 shadow-2xs">
           <Input
