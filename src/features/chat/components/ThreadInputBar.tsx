@@ -22,7 +22,7 @@ export const ThreadInputBar: React.FC<ThreadInputBarProps> = ({
 }) => {
   if (isMessageLimitReached) {
     return (
-      <div className="p-4 bg-surface border-t border-border flex flex-col gap-3 animate-in fade-in slide-in-from-bottom duration-300">
+      <div className="p-4 bg-surface border-t border-border flex flex-col gap-3 shrink-0 animate-in fade-in slide-in-from-bottom duration-300">
         <div className="p-3.5 rounded-2xl bg-warning/15 border border-warning/40 text-center text-xs text-primary font-bold leading-relaxed">
           {isArabic
             ? 'لقد وصلت للحد الأقصى من الرسائل، يرجى الاتصال بالبائع فوراً لإتمام الاتفاق'
@@ -48,7 +48,7 @@ export const ThreadInputBar: React.FC<ThreadInputBarProps> = ({
   return (
     <form
       onSubmit={handleSend}
-      className="p-3 bg-surface border-t border-border flex items-center gap-2"
+      className="p-3 bg-surface border-t border-border flex items-center gap-2 shrink-0"
       dir="ltr"
     >
       <div className="flex-1">
