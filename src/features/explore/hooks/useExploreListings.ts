@@ -4,6 +4,7 @@ import { useListings } from '@/hooks/useListings';
 import { useAuth } from '@/hooks/useAuth';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
 import { EXPLORE_CONFIG } from '@/config/explore.config';
+import { DEFAULT_REGIONAL_CAPITALS } from '@/data/locations/capitals';
 import { UseExploreListingsReturn } from './useExploreListings.types';
 import { countCityListings, computeAdaptiveFilterMode } from './useExploreListings.helpers';
 import { filterListings } from '@/shared/lib/filterListings';
@@ -45,7 +46,17 @@ export function useExploreListings(): UseExploreListingsReturn {
 
   const marketListings = useMemo(() => filterListingsByMarket(listings, browseCountryCode), [listings, browseCountryCode]);
   const cityCount = useMemo(() => countCityListings(marketListings, browseCityAr, browseCityEn), [marketListings, browseCityAr, browseCityEn]);
-  const filterMode = useMemo(() => computeAdaptiveFilterMode(userFilterMode, cityCount, EXPLORE_CONFIG.CITY_MIN_DENSITY), [userFilterMode, cityCount]);
+
+  // If the user has explicitly picked a city different from the country
+  // capital, force 'city' mode so only that city shows. D6 made 'all' the
+  // home default; this restores the filter when a specific city is picked.
+  const filterMode = useMemo(() => {
+    const capital = DEFAULT_REGIONAL_CAPITALS[browseCountryCode];
+    if (capital && browseCityEn && browseCityEn !== capital.cityEn) {
+      return 'city' as const;
+    }
+    return computeAdaptiveFilterMode(userFilterMode, cityCount, EXPLORE_CONFIG.CITY_MIN_DENSITY);
+  }, [browseCountryCode, browseCityEn, userFilterMode, cityCount]);
 
   const setFilterMode = useCallback<Dispatch<SetStateAction<'city' | 'all'>>>((action) => {
     setUserFilterMode((prev) => typeof action === 'function' ? action(prev ?? 'all') : action);
