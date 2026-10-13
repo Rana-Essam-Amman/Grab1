@@ -65,7 +65,7 @@ export const ThreadScreen: React.FC = () => {
     void markMessagesReadAction(selectedThreadId);
   }, [selectedThreadId, authStatus, thread]);
 
-    const handleSend = useCallback(async (e: React.FormEvent) => {
+  const handleSend = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!thread || isMessageLimitReached || !inputText.trim()) return;
     const text = inputText.trim();
@@ -95,7 +95,7 @@ export const ThreadScreen: React.FC = () => {
 
   const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     (e.target as HTMLImageElement).src =
-      'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"><rect width="40" height="40" fill="%23E5E7EB"/></svg>';
+      'data:image/svg+xml;utf8,&lt;svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"&gt;&lt;rect width="40" height="40" fill="%23E5E7EB"/&gt;&lt;/svg&gt;';
   }, []);
 
   if (authStatus === 'unauthenticated') return null;
@@ -111,13 +111,13 @@ export const ThreadScreen: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-surface" dir={isArabic ? 'rtl' : 'ltr'}>
+    <div className="flex flex-col h-[100dvh] bg-surface" dir={isArabic ? 'rtl' : 'ltr'}>
       <ThreadHeader
         isArabic={isArabic}
         goBack={goBack}
         handleViewListing={handleViewListing}
         imageUrl={thread.imageUrl}
-        title={thread.title}
+        title={listing?.sellerName || thread.title}
         handleImageError={handleImageError}
         dialNumber={formattedPhone.dialNumber}
         isTyping={selectedThreadId ? isTyping(selectedThreadId) : false}
