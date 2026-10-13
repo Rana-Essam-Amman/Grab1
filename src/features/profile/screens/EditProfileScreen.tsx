@@ -66,7 +66,6 @@ export const EditProfileScreen: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-background pb-16 font-cairo relative" dir={isArabic ? 'rtl' : 'ltr'}>
-      {/* Top Bar */}
       <div className="px-4 py-4 bg-brand border-b border-white/10 flex items-center gap-3 sticky top-0 z-20">
         <button onClick={goBack} aria-label="Back" className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 flex items-center justify-center cursor-pointer">
           <BackIcon size={18} variant="Linear" color="#FFFFFF" />
@@ -76,7 +75,6 @@ export const EditProfileScreen: React.FC = () => {
       </div>
 
       <div className="p-4 flex flex-col gap-6 max-w-[440px] mx-auto w-full">
-        {/* Avatar Uploader Section */}
         <div className="flex flex-col items-center py-4 bg-surface rounded-2xl border border-border shadow-2xs">
           <AvatarUploader
             currentAvatar={localAvatar}
@@ -85,7 +83,6 @@ export const EditProfileScreen: React.FC = () => {
           />
         </div>
 
-        {/* Form Fields */}
         <div className="flex flex-col gap-4 bg-surface rounded-2xl border border-border p-5 shadow-2xs">
           <Input
             label={isArabic ? 'الاسم الأول (مطلوب)' : 'First Name (Required)'}
@@ -119,7 +116,6 @@ export const EditProfileScreen: React.FC = () => {
           />
         </div>
 
-        {/* Buttons */}
         <div className="flex flex-col gap-3">
           <Button
             variant="primary"
@@ -146,7 +142,6 @@ export const EditProfileScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* Toasts */}
       {toastMessage && <ProfileToast kind="success" message={toastMessage} />}
       {errorMessage && <ProfileToast kind="error" message={errorMessage} />}
     </div>
