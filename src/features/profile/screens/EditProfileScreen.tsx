@@ -3,10 +3,11 @@ import { useUI } from '@/hooks/useUI';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/shared/ui/Button';
 import { Input } from '@/shared/ui/Input';
-import { ArrowLeft, ArrowRight, Lock1, TickCircle } from 'iconsax-react';
+import { ArrowLeft, ArrowRight, Lock1, TickCircle, CloseCircle } from 'iconsax-react';
 import { AvatarUploader } from '../components/AvatarUploader';
 import { BrandMark } from '@/shared/components/BrandMark';
 import { useEditProfileDraft } from '../hooks/useEditProfileDraft';
+import { upsertProfile } from '@/shared/lib/profilesService';
 
 export const EditProfileScreen: React.FC = () => {
   const { isArabic, goBack } = useUI();
@@ -20,27 +21,47 @@ export const EditProfileScreen: React.FC = () => {
 
   const [localAvatar, setLocalAvatar] = useState<string | undefined>(user?.avatar);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
 
-  const handleSave = useCallback(() => {
-    if (!draft.firstName.trim()) return;
+  const handleSave = useCallback(async () => {
+    if (!draft.firstName.trim() || !user?.id || isSaving) return;
 
-    updateUser({
-      firstName: draft.firstName.trim(),
-      lastName: draft.lastName.trim(),
-      email: draft.email.trim(),
-      avatar: localAvatar,
-    });
+    setIsSaving(true);
+    setErrorMessage(null);
 
-    clearDraft();
-    setToastMessage(isArabic ? 'تم حفظ التعديلات بنجاح' : 'Changes saved successfully');
+    try {
+      const saved = await upsertProfile(user.id, {
+        first_name: draft.firstName.trim(),
+        last_name: draft.lastName.trim() || undefined,
+      });
 
-    setTimeout(() => {
-      setToastMessage(null);
-      goBack();
-    }, 1500);
-  }, [draft, localAvatar, updateUser, isArabic, goBack, clearDraft]);
+      if (!saved) {
+        setErrorMessage(isArabic ? 'تعذّر الحفظ، حاول مرة أخرى' : 'Could not save, try again');
+        return;
+      }
+
+      updateUser({
+        firstName: saved.first_name,
+        lastName: saved.last_name ?? '',
+        avatar: localAvatar,
+      });
+
+      clearDraft();
+      setToastMessage(isArabic ? 'تم حفظ التعديلات بنجاح' : 'Changes saved successfully');
+
+      setTimeout(() => {
+        setToastMessage(null);
+        goBack();
+      }, 1500);
+    } catch {
+      setErrorMessage(isArabic ? 'تعذّر الحفظ، حاول مرة أخرى' : 'Could not save, try again');
+    } finally {
+      setIsSaving(false);
+    }
+  }, [draft, localAvatar, user?.id, updateUser, isArabic, goBack, clearDraft, isSaving]);
 
   return (
     <div className="flex flex-col min-h-screen bg-background pb-16 font-cairo relative" dir={isArabic ? 'rtl' : 'ltr'}>
@@ -104,10 +125,12 @@ export const EditProfileScreen: React.FC = () => {
             size="lg"
             fullWidth
             onClick={handleSave}
-            disabled={!draft.firstName.trim()}
+            disabled={!draft.firstName.trim() || isSaving}
             className="font-bold bg-primary hover:bg-primary-hover text-white py-3.5 rounded-xl justify-center"
           >
-            {isArabic ? 'حفظ التعديلات' : 'Save Changes'}
+            {isSaving
+              ? (isArabic ? 'جارٍ الحفظ...' : 'Saving...')
+              : (isArabic ? 'حفظ التعديلات' : 'Save Changes')}
           </Button>
 
           <Button
@@ -122,11 +145,19 @@ export const EditProfileScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* Visual Toast Notification Overlay */}
+      {/* Success Toast */}
       {toastMessage && (
         <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-ink text-surface px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-lg z-50 text-sm font-bold animate-in fade-in slide-in-from-bottom-4 duration-300">
           <TickCircle size={16} variant="Linear" color="currentColor" className="text-primary" />
           <span>{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Error Toast */}
+      {errorMessage && (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-ink text-surface px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-lg z-50 text-sm font-bold">
+          <CloseCircle size={16} variant="Linear" color="currentColor" className="text-red-400" />
+          <span>{errorMessage}</span>
         </div>
       )}
     </div>
