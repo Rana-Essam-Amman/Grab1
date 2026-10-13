@@ -1,4 +1,5 @@
 import { supabase } from '@/shared/lib/supabase';
+import { logWarning } from '@/shared/lib/errorLogger';
 
 const HYBRID_TIMEOUT_MS = 4000;
 
@@ -26,12 +27,19 @@ export async function fetchQueryVector(query: string): Promise<number[] | null> 
       signal: controller.signal,
     });
     clearTimeout(timer);
-    if (!res.ok) return null;
+    if (!res.ok) {
+      void logWarning({ message: `embed-query HTTP ${res.status}` });
+      return null;
+    }
     const payload = (await res.json()) as { embedding?: unknown };
     const embedding = payload.embedding;
-    if (!Array.isArray(embedding) || embedding.length !== 384) return null;
+    if (!Array.isArray(embedding) || embedding.length !== 384) {
+      void logWarning({ message: 'embed-query returned invalid embedding shape' });
+      return null;
+    }
     return embedding as number[];
   } catch {
+    void logWarning({ message: 'embed-query network failure or timeout' });
     return null;
   }
 }
@@ -63,4 +71,4 @@ export function attrsToJsonbArray(
   const entries = Object.entries(attrs).filter(([k, v]) => k && v);
   if (entries.length === 0) return null;
   return entries.map(([key, value]) => ({ key, value }));
-}
+    }
