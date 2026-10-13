@@ -44,7 +44,7 @@ export const EditProfileScreen: React.FC = () => {
       }
 
       updateUser({
-        firstName: saved.first_name,
+        firstName: saved.first_name ?? '',
         lastName: saved.last_name ?? '',
         avatar: localAvatar,
       });
