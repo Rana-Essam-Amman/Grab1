@@ -53,6 +53,14 @@ export function hydrateStoreFromUrl(path: string, search: string): void {
 
   syncStoreFromFilterUrl(search);
 
+  // Search results: restore ?q= from the URL so refresh preserves the query.
+  if (initialMatch.screen === 'search-results') {
+    const q = new URLSearchParams(search).get('q');
+    if (q && q.trim() !== store.searchQuery) {
+      useUIStore.setState({ searchQuery: q.trim() });
+    }
+  }
+
   const nextListingId = initialMatch.params.listingId ?? null;
   const nextSellerPhone = initialMatch.params.sellerPhone ?? null;
   const nextThreadId = initialMatch.params.threadId ?? null;
