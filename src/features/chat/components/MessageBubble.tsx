@@ -15,6 +15,26 @@ const TickIcon: React.FC<{ pending: boolean; read: boolean }> = ({ pending, read
   return <span className="text-ink-muted">✓✓</span>;
 };
 
+/**
+ * Format a timestamp for display. Accepts either an ISO 8601 string or an
+ * already-formatted short string (HH:MM). Returns the input unchanged if it
+ * cannot be parsed so users never see a raw timestamp.
+ */
+function formatTimestamp(value: string, isArabic: boolean): string {
+  if (!value) return '';
+  if (value.length <= 8 && !value.includes('T')) return value;
+  try {
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return value;
+    return d.toLocaleTimeString(isArabic ? 'ar-JO' : 'en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch {
+    return value;
+  }
+}
+
 export const MessageBubble: React.FC<MessageBubbleProps> = ({
   msg,
   isArabic,
@@ -60,7 +80,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         dir={isArabic ? 'rtl' : 'ltr'}
       >
         {msg.fromBuyer && !deleted && <TickIcon pending={pending} read={read} />}
-        {msg.timestamp}
+        {formatTimestamp(msg.timestamp, isArabic)}
       </span>
     </div>
   );
