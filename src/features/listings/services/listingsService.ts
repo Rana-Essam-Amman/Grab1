@@ -2,6 +2,9 @@ import type { Listing } from '@/types';
 import { supabase } from '@/shared/lib/supabase';
 import { removeListingImages } from './storageService';
 import { rowToListing, type SupabaseListingRow } from './listingsMapper';
+import type { SearchListingsParams } from './searchListings.types';
+
+export type { SearchListingsParams } from './searchListings.types';
 
 export interface FetchListingsParams {
   readonly market?: string;
@@ -25,20 +28,6 @@ export async function fetchListings(params: FetchListingsParams = {}): Promise<{
   } catch (err) {
     return { data: null, error: err instanceof Error ? err.message : 'Unknown error' };
   }
-}
-
-export interface SearchListingsParams {
-  readonly query: string;
-  readonly market?: string;
-  readonly offset?: number;
-  readonly limit?: number;
-  readonly categorySlug?: string | null;
-  readonly subcategorySlug?: string | null;
-  readonly minPrice?: number | null;
-  readonly maxPrice?: number | null;
-  readonly city?: string | null;
-  readonly neighborhood?: string | null;
-  readonly attrs?: Record<string, string>;
 }
 
 export async function searchListings(
