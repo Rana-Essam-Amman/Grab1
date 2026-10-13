@@ -31,3 +31,8 @@ if ! command -v psql >/dev/null 2>&1; then
 fi
 
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/search_listings_rpc.sql
+
+# RLS security tests: seed deterministic fixtures, then run assertions.
+# Seed is committed; rls_security.sql rolls back its own Test-1 mutation.
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_seed.sql
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security.sql
