@@ -66,7 +66,7 @@ They are candidates for silent loss.
 | Reviews | Seller review submit + rating display | High | Not verified |
 | Phone Verify | OTP flow + trust badge | Medium | Not verified |
 | Monetization / Quota | Free listing quota + paywall modal | High | Not verified |
-| RLS Security | Row-level access on listings/profiles | Critical | Policies live on DB 2026-10-11. `20261026_rls_security_fix.sql` committed. SQL test `supabase/tests/rls_security.sql` passes 8/8 (anon read blocks + authenticated insert regression guard). CI wired via `.github/workflows/rls-check.yml` (REST-based anon read-block checks). Playwright E2E still missing. |
+| RLS Security | Row-level access on listings/profiles | Critical | Policies live on DB 2026-10-11. `20261026_rls_security_fix.sql` committed. Coverage: 3 REST checks (`rls-check.yml`) + 8 anon SQL assertions (`rls_security.sql`) + 3 authenticated SQL assertions (`rls_security_authenticated.sql`) = 14 CI-blocking checks. Playwright RLS E2E **deferred** — `useDemoAuth.handleQuickDemoAuth` is client-side only (Zustand `loginDirectly`, no Supabase JWT), so Playwright would test with anon token. Authenticated REST tests are the next step, requiring an isolated test project. |
 
 ---
 
@@ -83,6 +83,7 @@ That's it.
 
 ## Changelog
 
+- **2026-10-14 (Session 15)** — RLS coverage upgraded: wired `rls_security.sql` (8 anon assertions) into CI via `test-search-rpc-local.sh`, added `rls_security_seed.sql` (deterministic fixtures — without it the anon tests passed trivially on an empty DB), and added `rls_security_authenticated.sql` (3 authenticated assertions using `SET LOCAL ROLE authenticated` + JWT claims, validating SQLSTATE 42501 on cross-user inserts). Auth stubs overridden in CI-only `bootstrap_auth_stubs.sql`. Playwright RLS E2E **deferred** — Quick Demo login is client-side only. Also shipped in Session 15: D9.1 URL sync fix, D11 email read-only, frontend rate limit (30 req/min).
 - **2026-10-12 (Session 9)** — Multi-Market Isolation promoted to Protected. E2E (`e2e/golden-paths/multi-market.spec.ts`) verifies default browse scopes to JO and switching SA/LB via CountrySheet produces requests with matching `country_code` filter. 3 tests, all green. Complements `supabase/tests/rls_security.sql` (DB-level) with UI-level coverage. RLS Security entry updated: CI wiring now in place via `rls-check.yml`. Only Playwright E2E for RLS remains open.
 - **2026-10-12 (Session 8 cont.)** — Regression: revoke on `search_keywords` broke listing inserts via trigger `set_listings_search_text()`. Fixed in `20261027_search_trigger_security_definer.sql` (SECURITY DEFINER). Test 8 added to `supabase/tests/rls_security.sql` — proves authenticated inserts succeed post-revoke. **Lesson:** any revoke on internal tables requires auditing every trigger/function that reads them; tests must cover insert paths, not only reads.
 - **2026-10-11 (Session 8)** — RLS policies live (listings active-only, profiles self-or-active-sellers, 5 search tables revoked+RLS). Multi-Market Isolation implementation verified end-to-end (domain rules, store, RPC, RLS). Neither has E2E yet — both remain Uncovered with verification noted.
