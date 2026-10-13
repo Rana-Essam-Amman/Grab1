@@ -103,3 +103,35 @@ IMMUTABLE
 AS $$
   SELECT (string_to_array(name, '/'))[1:array_length(string_to_array(name, '/'), 1) - 1];
 $$;
+
+-- ---------------------------------------------------------------------------
+-- Baseline privileges (mirrors Supabase platform defaults).
+--
+-- Supabase grants USAGE on schema public and default table/function
+-- privileges to anon/authenticated. Bootstrap creates the roles but not
+-- the grants, so `set local role anon` in rls_security.sql fails with
+-- "permission denied for table listings" before RLS can evaluate.
+--
+-- Individual migrations REVOKE sensitive tables (search_keywords, etc.),
+-- so the effective post-migration state matches production.
+-- ---------------------------------------------------------------------------
+grant usage on schema public to anon, authenticated, service_role;
+
+alter default privileges in schema public
+  grant select on tables to anon;
+alter default privileges in schema public
+  grant select, insert, update, delete on tables to authenticated;
+alter default privileges in schema public
+  grant all on tables to service_role;
+
+alter default privileges in schema public
+  grant usage, select on sequences to anon, authenticated, service_role;
+
+alter default privileges in schema public
+  grant execute on functions to anon, authenticated, service_role;
+
+-- Storage schema access (mirrors Supabase platform grants).
+grant usage on schema storage to anon, authenticated, service_role;
+grant select on storage.buckets to anon, authenticated;
+grant select, insert, update, delete on storage.objects to anon, authenticated;
+grant all on storage.buckets, storage.objects to service_role;
