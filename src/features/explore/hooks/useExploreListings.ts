@@ -4,9 +4,8 @@ import { useListings } from '@/hooks/useListings';
 import { useAuth } from '@/hooks/useAuth';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
 import { EXPLORE_CONFIG } from '@/config/explore.config';
-import { DEFAULT_REGIONAL_CAPITALS } from '@/data/locations/capitals';
 import { UseExploreListingsReturn } from './useExploreListings.types';
-import { countCityListings, computeAdaptiveFilterMode } from './useExploreListings.helpers';
+import { countCityListings, computeFilterModeWithCapital } from './useExploreListings.helpers';
 import { filterListings } from '@/shared/lib/filterListings';
 
 export function useExploreListings(): UseExploreListingsReturn {
@@ -18,8 +17,6 @@ export function useExploreListings(): UseExploreListingsReturn {
     attrsFilter, setAttrsFilter, setSortBy,
   } = useUI();
   const { listings, hasMore, isLoadingMore, loadMore } = useListings();
-  // Default to 'all' so home shows the full market (all cities), not just the capital.
-  // Users who want a specific city can pick it via the filter UI.
   const [userFilterMode, setUserFilterMode] = useState<'city' | 'all' | null>('all');
   const { feedLayout, setFeedLayout: setFeedLayoutStore } = useAuth();
 
@@ -47,25 +44,16 @@ export function useExploreListings(): UseExploreListingsReturn {
   const marketListings = useMemo(() => filterListingsByMarket(listings, browseCountryCode), [listings, browseCountryCode]);
   const cityCount = useMemo(() => countCityListings(marketListings, browseCityAr, browseCityEn), [marketListings, browseCityAr, browseCityEn]);
 
-  // If the user has explicitly picked a city different from the country
-  // capital, force 'city' mode so only that city shows. D6 made 'all' the
-  // home default; this restores the filter when a specific city is picked.
-  const filterMode = useMemo(() => {
-    const capital = DEFAULT_REGIONAL_CAPITALS[browseCountryCode];
-    if (capital && browseCityEn && browseCityEn !== capital.cityEn) {
-      return 'city' as const;
-    }
-    return computeAdaptiveFilterMode(userFilterMode, cityCount, EXPLORE_CONFIG.CITY_MIN_DENSITY);
-  }, [browseCountryCode, browseCityEn, userFilterMode, cityCount]);
+  const filterMode = useMemo(
+    () => computeFilterModeWithCapital(browseCountryCode, browseCityEn, userFilterMode, cityCount, EXPLORE_CONFIG.CITY_MIN_DENSITY),
+    [browseCountryCode, browseCityEn, userFilterMode, cityCount],
+  );
 
   const setFilterMode = useCallback<Dispatch<SetStateAction<'city' | 'all'>>>((action) => {
     setUserFilterMode((prev) => typeof action === 'function' ? action(prev ?? 'all') : action);
   }, []);
 
   const displayListings = useMemo(() => {
-    // When the store carries search results, they arrive from Postgres
-    // already ordered by FTS rank or semantic distance. We filter but we
-    // do NOT re-sort — re-sorting by date would destroy that ranking.
     const hasActiveSearch = searchQuery.trim().length > 0;
     return filterListings(marketListings, {
       market: browseCountryCode,
