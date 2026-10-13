@@ -18,10 +18,6 @@ function jsonResponse(body: unknown, status = 200): Response {
   });
 }
 
-function normalizeQuery(value: string): string {
-  return value.normalize("NFKC").toLowerCase().replace(/\s+/gu, " ").trim();
-}
-
 function parseVector(value: unknown): number[] | null {
   let parsed: unknown = value;
 
@@ -130,19 +126,27 @@ Deno.serve(async (request: Request): Promise<Response> => {
     return jsonResponse({ error: "query must be a string" }, 400);
   }
 
-  const normalizedQuery = normalizeQuery(body.query);
-
-  if (!normalizedQuery) {
-    return jsonResponse({ error: "query must not be empty" }, 400);
-  }
-
-  if (normalizedQuery.length > 2000) {
+  if (body.query.length > 2000) {
     return jsonResponse({ error: "query is too long" }, 400);
   }
 
   const admin = createClient(supabaseUrl, serviceRoleKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
+
+  const { data: normalizedQuery, error: normalizeError } = await admin
+    .rpc("normalize_search_query", { p_query: body.query });
+
+  if (normalizeError) {
+    return jsonResponse(
+      { error: "query normalization failed", details: normalizeError.message },
+      500,
+    );
+  }
+
+  if (typeof normalizedQuery !== "string" || !normalizedQuery) {
+    return jsonResponse({ error: "query must not be empty" }, 400);
+  }
 
   try {
     const { data: cached, error: cacheError } = await admin
