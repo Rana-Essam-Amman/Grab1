@@ -91,10 +91,21 @@ revoke execute on function public.expire_premiums()
 grant execute on function public.expire_premiums()
   to service_role;
 
-revoke execute on function public.fox_enqueue_embedding(text, uuid, text)
-  from public, anon, authenticated;
-grant execute on function public.fox_enqueue_embedding(text, uuid, text)
-  to service_role;
+-- fox_enqueue_embedding is schema drift: exists in production (from
+-- 20261028_capture_semantic_drift.sql) but not in the CI migration chain.
+-- Wrap in a conditional so CI (no function) and production (has function)
+-- both succeed.
+do $$
+begin
+  if exists (
+    select 1 from pg_proc
+    where proname = 'fox_enqueue_embedding'
+      and pronamespace = 'public'::regnamespace
+  ) then
+    execute 'revoke execute on function public.fox_enqueue_embedding(text, uuid, text) from public, anon, authenticated';
+    execute 'grant execute on function public.fox_enqueue_embedding(text, uuid, text) to service_role';
+  end if;
+end $$;
 
 -- =========================================================================
 -- 5. postgres only (cron-owned; explicit for ownership-change safety)
@@ -154,16 +165,10 @@ revoke execute on function public.enqueue_listing_embedding()
 
 -- =========================================================================
 -- 7. Default privileges — global (per-schema cannot revoke global default)
+--    supabase_admin intentionally excluded: postgres lacks privileges to
+--    alter its defaults; a superuser-level role must do that separately.
 -- =========================================================================
 alter default privileges for role postgres
   revoke execute on functions from public, anon, authenticated;
 
-alter default privileges for role supabase_admin
-  revoke execute on functions from public, anon, authenticated;
-
 commit;
-
--- Verification (run separately after apply):
---   select proname, proacl from pg_proc 
---   where pronamespace = 'public'::regnamespace 
---     and proname in ('bump_listing', 'test_hf_endpoint', 'detect_query_category');
