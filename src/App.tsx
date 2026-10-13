@@ -34,6 +34,7 @@ import { MARKETS, isValidMarketCode } from '@/data/markets/config';
 import { RouterProvider } from '@/shared/router/RouterProvider';
 import { useScrollToTop } from '@/shared/router/useScrollToTop';
 import { useUrlSync } from '@/shared/router/useUrlSync';
+import { useSearchResultsUrlSync } from '@/shared/router/useSearchResultsUrlSync';
 import { useScreenFromUrl } from '@/shared/router/useScreenFromUrl';
 import { globalStorage } from '@/shared/lib/marketStorage';
 
@@ -78,6 +79,7 @@ const MainNavigator: React.FC = () => {
   const { isArabic } = useUI();
   const { currentScreen, activeTab } = useScreenFromUrl();
   useUrlSync();
+  useSearchResultsUrlSync();
   useScrollToTop();
   const { screens: registryScreens } = useRegistry();
 
@@ -227,4 +229,4 @@ export default function App() {
       </ErrorBoundaryWithLogging>
     </RouterProvider>
   );
-  }
+    }
