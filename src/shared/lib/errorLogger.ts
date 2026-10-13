@@ -1,10 +1,13 @@
 import { supabase } from '@/shared/lib/supabase';
 
+export type LogSeverity = 'info' | 'warn' | 'error';
+
 export interface ErrorPayload {
   readonly message: string;
   readonly stack?: string;
   readonly componentStack?: string;
   readonly url?: string;
+  readonly severity?: LogSeverity;
   readonly metadata?: Record<string, unknown>;
 }
 
@@ -21,9 +24,18 @@ export async function logError(payload: ErrorPayload): Promise<void> {
       url: payload.url || (typeof window !== 'undefined' ? window.location.href : ''),
       user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
       build_version: BUILD_VERSION,
+      severity: payload.severity ?? 'error',
       metadata: payload.metadata || {},
     });
   } catch {
     // Silent fail: logging must never crash the app.
   }
+}
+
+export async function logWarning(payload: Omit<ErrorPayload, 'severity'>): Promise<void> {
+  return logError({ ...payload, severity: 'warn' });
+}
+
+export async function logInfo(payload: Omit<ErrorPayload, 'severity'>): Promise<void> {
+  return logError({ ...payload, severity: 'info' });
 }
