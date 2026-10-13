@@ -7,12 +7,18 @@ import type { SearchListingsParams } from '../services/searchListings.types';
  * Keeps listings in sync with the UI state:
  *   - browseCountryCode change → market sync (list RPC).
  *   - searchQuery change (non-empty) → hybrid search (FTS + semantic).
- *   - filter changes (category/price/city/attrs) → re-run hybrid search.
+ *   - filter changes (category/price/attrs) → re-run hybrid search.
  *   - searchQuery cleared → fall back to market sync.
  *
- * Search query is debounced at the screen level (ExploreScreen, 300ms).
- * Filters are read directly from the UI store and passed to the RPC so
- * pagination stays correct on the server.
+ * Filters forwarded to the RPC: category, subcategory, price range, attrs.
+ *
+ * Deliberately NOT forwarded: city and neighborhood.
+ * Reason: listing.city and listing.neighborhood are stored in Arabic for
+ * many rows (e.g. "عمّان"), while the UI store exposes English names
+ * ("Amman"). The RPC matches them with an exact (city) or LIKE
+ * (neighborhood) comparison, which fails on script mismatch. Both are
+ * applied client-side by useExploreListings via normalizeArabic, which
+ * handles bilingual matching correctly.
  */
 export function useSupabaseListingsSync(): void {
   const isInitialized = useListingsStore((s) => s.isInitialized);
@@ -24,8 +30,6 @@ export function useSupabaseListingsSync(): void {
   const subcategoryFilter = useUIStore((s) => s.subcategoryFilter);
   const minPriceFilter = useUIStore((s) => s.minPriceFilter);
   const maxPriceFilter = useUIStore((s) => s.maxPriceFilter);
-  const neighborhoodFilter = useUIStore((s) => s.neighborhoodFilter);
-  const browseCityEn = useUIStore((s) => s.browseCityEn);
   const attrsFilter = useUIStore((s) => s.attrsFilter);
 
   const searchParams: SearchListingsParams = useMemo(
@@ -36,8 +40,8 @@ export function useSupabaseListingsSync(): void {
       subcategorySlug: subcategoryFilter ?? null,
       minPrice: minPriceFilter,
       maxPrice: maxPriceFilter,
-      city: browseCityEn || null,
-      neighborhood: neighborhoodFilter,
+      city: null,
+      neighborhood: null,
       attrs: attrsFilter,
     }),
     [
@@ -47,8 +51,6 @@ export function useSupabaseListingsSync(): void {
       subcategoryFilter,
       minPriceFilter,
       maxPriceFilter,
-      browseCityEn,
-      neighborhoodFilter,
       attrsFilter,
     ],
   );
