@@ -75,7 +75,10 @@ export async function searchListingsHybrid(
     }
 
     // Step 2: Hybrid path (FTS + semantic fused by RRF, filtered).
-    if (trimmed.length < 3) {
+    // Skip embed-query for queries under 5 chars — short prefixes during
+    // typing pollute the cache without improving relevance. FTS-OR
+    // (step 1) already handles 3-4 char queries.
+    if (trimmed.length < 5) {
       const { data, error } = await supabase.rpc('search_listings_hybrid', {
         p_query: trimmed,
         p_market: market ?? null,
