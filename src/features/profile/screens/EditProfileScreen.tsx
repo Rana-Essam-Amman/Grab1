@@ -3,9 +3,10 @@ import { useUI } from '@/hooks/useUI';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/shared/ui/Button';
 import { Input } from '@/shared/ui/Input';
-import { ArrowLeft, ArrowRight, Lock1, TickCircle, CloseCircle } from 'iconsax-react';
+import { ArrowLeft, ArrowRight, Lock1 } from 'iconsax-react';
 import { AvatarUploader } from '../components/AvatarUploader';
 import { BrandMark } from '@/shared/components/BrandMark';
+import { ProfileToast } from '../components/ProfileToast';
 import { useEditProfileDraft } from '../hooks/useEditProfileDraft';
 import { upsertProfile } from '@/shared/lib/profilesService';
 
@@ -145,21 +146,9 @@ export const EditProfileScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* Success Toast */}
-      {toastMessage && (
-        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-ink text-surface px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-lg z-50 text-sm font-bold animate-in fade-in slide-in-from-bottom-4 duration-300">
-          <TickCircle size={16} variant="Linear" color="currentColor" className="text-primary" />
-          <span>{toastMessage}</span>
-        </div>
-      )}
-
-      {/* Error Toast */}
-      {errorMessage && (
-        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-ink text-surface px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-lg z-50 text-sm font-bold">
-          <CloseCircle size={16} variant="Linear" color="currentColor" className="text-red-400" />
-          <span>{errorMessage}</span>
-        </div>
-      )}
+      {/* Toasts */}
+      {toastMessage && <ProfileToast kind="success" message={toastMessage} />}
+      {errorMessage && <ProfileToast kind="error" message={errorMessage} />}
     </div>
   );
 };
