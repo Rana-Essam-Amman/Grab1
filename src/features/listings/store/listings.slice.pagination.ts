@@ -1,5 +1,6 @@
 import type { Listing } from '@/types';
 import type { ListingsState } from './listings.slice.types';
+import type { SearchListingsParams } from '../services/searchListings.types';
 import { LISTINGS_PAGE_SIZE } from '../services/listingsService';
 import { performSupabaseSync } from './listings.slice.supabase';
 import { searchListingsHybrid } from '../services/searchListingsHybrid';
@@ -10,9 +11,11 @@ type SetFn = (fn: (state: ListingsState) => void) => void;
 type GetFn = () => ListingsState;
 
 const initialSearchQuery: string | null = null;
+const initialFilterArgs: SearchListingsParams | null = null;
 
 export const createPaginationActions = (set: SetFn, get: GetFn) => ({
   activeSearchQuery: initialSearchQuery,
+  activeFilterArgs: initialFilterArgs,
 
   syncFromSupabase: async (market?: string) => {
     const targetMarket = market ?? get().activeMarket ?? undefined;
@@ -28,6 +31,7 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
           s.listings = [...result.listings, ...seedListings];
           s.activeMarket = targetMarket ?? null;
           s.activeSearchQuery = null;
+          s.activeFilterArgs = null;
           s.page = 0;
           s.hasMore = result.listings.length === LISTINGS_PAGE_SIZE;
           saveListingsToStorage(s.listings);
@@ -45,10 +49,9 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
     set((s) => { s.isLoadingMore = true; });
     try {
       let rows: Listing[] | null = null;
-      if (state.activeSearchQuery) {
+      if (state.activeSearchQuery && state.activeFilterArgs) {
         const res = await searchListingsHybrid({
-          query: state.activeSearchQuery,
-          market: state.activeMarket ?? undefined,
+          ...state.activeFilterArgs,
           offset: nextOffset,
           limit: LISTINGS_PAGE_SIZE,
         });
@@ -78,12 +81,12 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
     }
   },
 
-  searchFromSupabase: async (query: string, market?: string) => {
-    const trimmed = query.trim();
+  searchFromSupabase: async (params: SearchListingsParams) => {
+    const trimmed = params.query.trim();
     set((s) => { s.isSyncing = true; });
     try {
       if (trimmed.length === 0) {
-        const targetMarket = market ?? get().activeMarket ?? undefined;
+        const targetMarket = params.market ?? get().activeMarket ?? undefined;
         const result = await performSupabaseSync({
           market: targetMarket,
           offset: 0,
@@ -94,6 +97,7 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
             s.listings = [...result.listings, ...seedListings];
             s.activeMarket = targetMarket ?? null;
             s.activeSearchQuery = null;
+            s.activeFilterArgs = null;
             s.page = 0;
             s.hasMore = result.listings.length === LISTINGS_PAGE_SIZE;
             saveListingsToStorage(s.listings);
@@ -102,17 +106,20 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
         return;
       }
 
-      const targetMarket = market ?? get().activeMarket ?? undefined;
-      const hybrid = await searchListingsHybrid({
+      const targetMarket = params.market ?? get().activeMarket ?? undefined;
+      const callParams: SearchListingsParams = {
+        ...params,
         query: trimmed,
         market: targetMarket,
         offset: 0,
         limit: LISTINGS_PAGE_SIZE,
-      });
+      };
+      const hybrid = await searchListingsHybrid(callParams);
       set((s) => {
         s.listings = hybrid.data ?? [];
         s.activeMarket = targetMarket ?? null;
         s.activeSearchQuery = trimmed;
+        s.activeFilterArgs = callParams;
         s.page = 0;
         s.hasMore = (hybrid.data?.length ?? 0) === LISTINGS_PAGE_SIZE;
       });
