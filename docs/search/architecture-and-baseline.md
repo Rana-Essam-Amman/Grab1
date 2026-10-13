@@ -2,9 +2,9 @@
 
 **Phase 0 deliverable** — Repository discovery only. No search logic changes.
 
-**Repository:** Rana-Essam-Amman/Grab1  
-**Branch:** main  
-**Commit SHA (at inspection):** ac593445036e1db001e2e9801fb80b37f73c3e55  
+**Repository:** Rana-Essam-Amman/Grab1
+**Branch:** main
+**Commit SHA (at inspection):** ac593445036e1db001e2e9801fb80b37f73c3e55
 **Date of inspection:** 2026-10-11
 
 ## 1. Verified Current Architecture
@@ -102,6 +102,50 @@ Follow the mandated phases:
 4. Subsequent phases for ranking, semantic evaluation, performance/security, UI integration, and final readiness.
 
 All database changes must be coordinated with the Supabase engineer via idempotent migrations and verification SQL.
+
+## 11. Search V2 (2026-10-13)
+
+Parallel function: `public.search_listings_v2`
+Status: present in production, NOT wired to frontend.
+Frontend continues to call `search_listings` (v1).
+
+Design:
+- Same 11-arg signature as v1
+- Adds stopword-gated FTS-OR fallback
+- Uses `search_text_has_all_tokens_v2` (ignores stopwords + tokens < 3 chars)
+- v1 untouched
+
+A/B results (60 EVAL_SET queries, with category hint applied):
+
+| Metric | v1 | v2 |
+|---|---|---|
+| Precision@5 | 14.51% | 18.04% |
+| Zero-result rate | 43.33% | 26.67% |
+| Group B precision | 0% | 18% |
+| Group B zero-result | 10/10 | 0/10 |
+| Group G pass | 5/5 | 5/5 |
+| Group F | 0% | 0% |
+| Group H | 4% | 4% |
+
+Known regressions in v2 (returned IDs marked Must NOT include):
+- #14 "في شقة للإيجار؟" returns villa + apartment in Abdoun
+- #19 "بدي طاولة للحديقة" returns L-Shape sofa
+
+Decision: v1 remains production. v2 kept for further iteration.
+
+## 12. Cache Hygiene Observation (2026-10-13)
+
+Recent cache inspection revealed prefix-typing pollution:
+- Typing "بدي سيارة كيا" produced 5 cache entries:
+  بدي سياره ك / بدي سياره كي / بدي سياره / بدي سياره م / بدي سياره ميا
+- All within one second (same user session)
+- Each triggers a Jina API call + upsert
+
+Impact:
+- Jina API cost: ~5x per search session
+- Cache size grows with no benefit (prefix queries are never read)
+
+Status: documented, not fixed. Candidate for a future C4 spec.
 
 ---
 
