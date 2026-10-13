@@ -17,7 +17,6 @@ export const EditProfileScreen: React.FC = () => {
   const { draft, setField, clearDraft } = useEditProfileDraft({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
-    email: user?.email || '',
   });
 
   const [localAvatar, setLocalAvatar] = useState<string | undefined>(user?.avatar);
@@ -108,11 +107,11 @@ export const EditProfileScreen: React.FC = () => {
           />
 
           <Input
-            label={isArabic ? 'البريد الإلكتروني' : 'Email Address'}
-            value={draft.email}
-            onChange={(e) => setField('email', e.target.value)}
-            type="email"
-            className="font-cairo"
+            label={isArabic ? 'البريد الإلكتروني (لا يمكن تعديله)' : 'Email Address (Read-only)'}
+            value={user?.email || ''}
+            disabled
+            icon={<Lock1 size={16} variant="Linear" className="text-ink-muted" />}
+            className="font-cairo opacity-70"
           />
         </div>
 
