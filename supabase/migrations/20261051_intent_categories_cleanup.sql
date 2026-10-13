@@ -29,7 +29,6 @@ insert into public.search_intent_categories (keyword, category_slug) values
   ('garden', 'home-garden'),
   ('outdoor', 'home-garden'),
   ('terrace', 'home-garden'),
-  ('تراس', 'home-garden'),
   ('تراس', 'home-garden')
 on conflict (keyword) do update set category_slug = excluded.category_slug;
 
