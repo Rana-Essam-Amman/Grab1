@@ -20,8 +20,8 @@ const FTS_DOMINANT_MIN_RESULTS = 1;
  * Flow:
  *   1. detect_query_category(query) — maps Arabic/English keywords to a
  *      category_slug (e.g. "سيارات" → "motors"). NULL when no match.
- *   2. FTS (search_listings, 11-arg) with filters. If it returns at least
- *      one result → return those directly.
+ *   2. FTS (search_listings_v2_intent, 11-arg) with filters. If it returns
+ *      at least one result → return those directly.
  *   3. Otherwise → search_listings_hybrid with the query vector + category
  *      hint + all filters. Both FTS and semantic branches are filtered
  *      before RRF fusion.
@@ -57,8 +57,10 @@ export async function searchListingsHybrid(
       p_attrs: attrsJson,
     };
 
-    // Step 1: FTS-dominant check (with filters).
-    const { data: ftsData, error: ftsError } = await supabase.rpc('search_listings', {
+    // Step 1: FTS-dominant check (with filters) via v2_intent.
+    // v2_intent wraps v2 (stopword-gated FTS-OR) + hard intent filter.
+    // Same 11-arg signature as v1; v1 remains available as a DB fallback.
+    const { data: ftsData, error: ftsError } = await supabase.rpc('search_listings_v2_intent', {
       p_query: trimmed,
       p_market: market ?? null,
       p_limit: limit,
