@@ -6,7 +6,6 @@ const DRAFT_KEY = 'catch_edit_profile_draft_v1';
 export interface EditProfileDraft {
   readonly firstName: string;
   readonly lastName: string;
-  readonly email: string;
 }
 
 /**
@@ -27,7 +26,6 @@ export function useEditProfileDraft(initial: EditProfileDraft): {
       return {
         firstName: typeof stored.firstName === 'string' ? stored.firstName : initial.firstName,
         lastName: typeof stored.lastName === 'string' ? stored.lastName : initial.lastName,
-        email: typeof stored.email === 'string' ? stored.email : initial.email,
       };
     }
     return initial;
