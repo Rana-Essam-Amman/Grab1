@@ -23,7 +23,7 @@ export const ExploreScreen: React.FC = () => {
   const { isArabic, browseCountryCode, navigateTo, setSearchQuery, isSearchFocused, setIsSearchFocused } = useUI();
   const { isQuotaExhausted, setIsQuotaExhausted } = useMonetization();
   const [searchInput, setSearchInput] = useState('');
-  const debouncedSearch = useDebouncedValue(searchInput, 300);
+  const debouncedSearch = useDebouncedValue(searchInput, 600);
 
   React.useEffect(() => {
     setSearchQuery(debouncedSearch.trim());
@@ -59,7 +59,7 @@ export const ExploreScreen: React.FC = () => {
   }, [searchInput, setSearchQuery, navigateTo]);
 
   return (
-    <div 
+    <div
       className={`max-w-[440px] mx-auto w-full flex flex-col gap-5 pt-0 pb-28 px-4 bg-surface ${isArabic ? 'font-cairo' : ''}`} dir={isArabic ? "rtl" : "ltr"}
       style={{ WebkitOverflowScrolling: 'touch' }}
     >
