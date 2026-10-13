@@ -1,4 +1,5 @@
 import { Listing } from '@/types';
+import type { SearchListingsParams } from '../services/searchListings.types';
 
 export interface PublishResult {
   readonly success: boolean;
@@ -15,6 +16,7 @@ export interface ListingsState {
   isQuotaExhausted: boolean;
   activeMarket: string | null;
   activeSearchQuery: string | null;
+  activeFilterArgs: SearchListingsParams | null;
   page: number;
   hasMore: boolean;
   isLoadingMore: boolean;
@@ -23,7 +25,7 @@ export interface ListingsState {
   initialize: () => void;
   syncFromSupabase: (market?: string) => Promise<void>;
   loadMore: () => Promise<void>;
-  searchFromSupabase: (query: string, market?: string) => Promise<void>;
+  searchFromSupabase: (params: SearchListingsParams) => Promise<void>;
   publishListing: (listing: Listing, activeCountry: string, isArabic?: boolean) => Promise<PublishResult>;
   addListing: (listing: Listing, activeCountry: string, isArabic?: boolean) => void;
   updateListing: (id: string, updates: Partial<Listing>) => void;
