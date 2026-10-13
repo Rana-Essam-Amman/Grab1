@@ -34,7 +34,8 @@ end $$;
 
 -- =========================================================================
 -- R1: UUID key → active-only (archived must NOT leak)
--- User X has 2 active JO + 1 archived JO. Expect exactly 2 rows.
+-- User X has 2 active JO + 1 active SA + 1 archived JO.
+-- With p_market=null the market filter is disabled → expect 3 active rows.
 -- =========================================================================
 do $$
 declare
@@ -47,8 +48,8 @@ begin
   );
 
   if v_ids is null then raise exception 'R1 FAIL: no rows returned'; end if;
-  if array_length(v_ids, 1) <> 2 then
-    raise exception 'R1 FAIL: expected 2 active rows, got % (%)',
+  if array_length(v_ids, 1) <> 3 then
+    raise exception 'R1 FAIL: expected 3 active rows (2 JO + 1 SA), got % (%)',
       array_length(v_ids, 1), v_ids;
   end if;
   if '50000000-0000-4000-8000-000000000003'::uuid = any(v_ids) then
