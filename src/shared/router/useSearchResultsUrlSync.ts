@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useUIStore } from '@/store/ui.slice';
 
@@ -17,7 +17,6 @@ export function useSearchResultsUrlSync(): void {
   const location = useLocation();
   const searchQuery = useUIStore((s) => s.searchQuery);
   const currentScreen = useUIStore((s) => s.currentScreen);
-  const lastWrittenRef = useRef<string | null>(null);
 
   // Write: store → URL. Runs only on the search-results screen.
   useEffect(() => {
@@ -41,9 +40,7 @@ export function useSearchResultsUrlSync(): void {
     const current = location.pathname + location.search;
 
     if (next === current) return;
-    if (lastWrittenRef.current === next) return;
 
-    lastWrittenRef.current = next;
     navigate(next, { replace: true });
   }, [currentScreen, searchQuery, location.pathname, location.search, navigate]);
 
