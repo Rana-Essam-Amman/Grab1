@@ -17,7 +17,9 @@ export function useExploreListings(): UseExploreListingsReturn {
     attrsFilter, setAttrsFilter, setSortBy,
   } = useUI();
   const { listings, hasMore, isLoadingMore, loadMore } = useListings();
-  const [userFilterMode, setUserFilterMode] = useState<'city' | 'all' | null>(null);
+  // Default to 'all' so home shows the full market (all cities), not just the capital.
+  // Users who want a specific city can pick it via the filter UI.
+  const [userFilterMode, setUserFilterMode] = useState<'city' | 'all' | null>('all');
   const { feedLayout, setFeedLayout: setFeedLayoutStore } = useAuth();
 
   const setFeedLayout = useCallback<Dispatch<SetStateAction<'list' | 'grid'>>>(
@@ -46,7 +48,7 @@ export function useExploreListings(): UseExploreListingsReturn {
   const filterMode = useMemo(() => computeAdaptiveFilterMode(userFilterMode, cityCount, EXPLORE_CONFIG.CITY_MIN_DENSITY), [userFilterMode, cityCount]);
 
   const setFilterMode = useCallback<Dispatch<SetStateAction<'city' | 'all'>>>((action) => {
-    setUserFilterMode((prev) => typeof action === 'function' ? action(prev ?? 'city') : action);
+    setUserFilterMode((prev) => typeof action === 'function' ? action(prev ?? 'all') : action);
   }, []);
 
   const displayListings = useMemo(() => {
