@@ -1,31 +1,29 @@
 import { useUI } from '@/hooks/useUI';
-import { useListings } from '@/hooks/useListings';
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { ListingCard } from '@/shared/components';
 import { ArrowLeft, ArrowRight, User, TickCircle } from 'iconsax-react';
 import { Card } from '@/shared/ui/Card';
 import { Avatar } from '@/shared/ui/Avatar';
 import { EmptyState } from '@/shared/ui/EmptyState';
+import { Spinner } from '@/shared/ui/Spinner';
 import { BrandMark } from '@/shared/components/BrandMark';
-import { filterListingsByMarket } from '@/shared/lib/marketGate';
 import { isUuid } from '@/shared/lib/uuid';
 import { fetchProfile, type ProfileRecord } from '@/shared/lib/profilesService';
 import { fetchSellerReviews, type SellerReview } from '../services/sellerReviewsService';
 import { SellerRatingBadge } from '../components/SellerRatingBadge';
 import { ReviewList } from '../components/ReviewList';
+import { useSellerListings } from '../hooks/useSellerListings';
 
 export const SellerProfileScreen: React.FC = () => {
   const { isArabic, goBack, selectedSellerPhone, browseCountryCode } = useUI();
-  const { listings } = useListings();
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
   const sellerKeyIsUuid = isUuid(selectedSellerPhone);
-  const sellerAds = useMemo(() => {
-    const scoped = filterListingsByMarket(listings, browseCountryCode);
-    if (sellerKeyIsUuid) {
-      return scoped.filter((l) => l.userId === selectedSellerPhone);
-    }
-    return scoped.filter((l) => l.sellerPhone === selectedSellerPhone);
-  }, [listings, browseCountryCode, selectedSellerPhone, sellerKeyIsUuid]);
+
+  const { listings: sellerAds, isLoading, error } = useSellerListings(
+    selectedSellerPhone,
+    browseCountryCode ?? null,
+  );
+
   const sellerId = sellerAds[0]?.userId ?? null;
   const [sellerProfile, setSellerProfile] = useState<ProfileRecord | null>(null);
   const [reviews, setReviews] = useState<SellerReview[]>([]);
@@ -39,7 +37,10 @@ export const SellerProfileScreen: React.FC = () => {
 
   useEffect(() => { loadSellerData(); }, [loadSellerData]);
 
-  const sellerName = useMemo(() => sellerAds[0]?.sellerName || (isArabic ? 'معلن موثوق' : 'Verified Seller'), [sellerAds, isArabic]);
+  const sellerName = useMemo(
+    () => sellerAds[0]?.sellerName || (isArabic ? 'معلن موثوق' : 'Verified Seller'),
+    [sellerAds, isArabic],
+  );
 
   return (
     <div className="flex flex-col min-h-screen bg-background pb-16" dir={isArabic ? 'rtl' : 'ltr'}>
@@ -77,7 +78,14 @@ export const SellerProfileScreen: React.FC = () => {
         )}
         <div>
           <h3 className="text-sm font-bold text-ink mb-3">{isArabic ? 'إعلانات هذا البائع' : 'Listings from this seller'} ({sellerAds.length})</h3>
-          {sellerAds.length === 0 ? (
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Spinner size="md" />
+            </div>
+          ) : error ? (
+            <EmptyState icon={<User size={40} variant="Linear" />} title={isArabic ? 'تعذّر التحميل' : 'Could not load'}
+              description={isArabic ? 'حاول مرة أخرى لاحقاً.' : 'Please try again later.'} />
+          ) : sellerAds.length === 0 ? (
             <EmptyState icon={<User size={40} variant="Linear" />} title={isArabic ? 'لا توجد إعلانات' : 'No Listings'}
               description={isArabic ? 'هذا البائع لا يملك إعلانات نشطة حالياً.' : 'This seller has no active listings right now.'} />
           ) : (
