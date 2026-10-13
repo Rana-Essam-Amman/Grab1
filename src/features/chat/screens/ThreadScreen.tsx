@@ -18,7 +18,7 @@ import { ThreadInputBar } from '../components/ThreadInputBar';
 import { MessageDeleteConfirmDialog } from '../components/MessageDeleteConfirmDialog';
 
 export const ThreadScreen: React.FC = () => {
-  const { isArabic, goBack, selectedThreadId, setSelectedListingId, navigateTo, browseCountryCode } = useUI();
+  const { isArabic, goBack, selectedThreadId, setSelectedListingId, navigateTo } = useUI();
   const { conversations, sendChatMessageAsync, isTyping } = useChat();
   const { authStatus } = useAuth();
   const currentUserId = useAuthStore((s) => s.user?.id ?? null);
@@ -111,7 +111,7 @@ export const ThreadScreen: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-[100dvh] bg-surface" dir={isArabic ? 'rtl' : 'ltr'}>
+    <div className="flex flex-col h-[100dvh] overflow-hidden bg-surface" dir={isArabic ? 'rtl' : 'ltr'}>
       <ThreadHeader
         isArabic={isArabic}
         goBack={goBack}
