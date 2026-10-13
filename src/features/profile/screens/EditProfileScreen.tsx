@@ -6,36 +6,41 @@ import { Input } from '@/shared/ui/Input';
 import { ArrowLeft, ArrowRight, Lock1, TickCircle } from 'iconsax-react';
 import { AvatarUploader } from '../components/AvatarUploader';
 import { BrandMark } from '@/shared/components/BrandMark';
+import { useEditProfileDraft } from '../hooks/useEditProfileDraft';
 
 export const EditProfileScreen: React.FC = () => {
   const { isArabic, goBack } = useUI();
   const { user, updateUser } = useAuth();
 
-  const [firstName, setFirstName] = useState(user?.firstName || '');
-  const [lastName, setLastName] = useState(user?.lastName || '');
-  const [email, setEmail] = useState(user?.email || '');
+  const { draft, setField, clearDraft } = useEditProfileDraft({
+    firstName: user?.firstName || '',
+    lastName: user?.lastName || '',
+    email: user?.email || '',
+  });
+
   const [localAvatar, setLocalAvatar] = useState<string | undefined>(user?.avatar);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
 
   const handleSave = useCallback(() => {
-    if (!firstName.trim()) return;
+    if (!draft.firstName.trim()) return;
 
     updateUser({
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      email: email.trim(),
+      firstName: draft.firstName.trim(),
+      lastName: draft.lastName.trim(),
+      email: draft.email.trim(),
       avatar: localAvatar,
     });
 
+    clearDraft();
     setToastMessage(isArabic ? 'تم حفظ التعديلات بنجاح' : 'Changes saved successfully');
-    
+
     setTimeout(() => {
       setToastMessage(null);
       goBack();
     }, 1500);
-  }, [firstName, lastName, email, localAvatar, updateUser, isArabic, goBack]);
+  }, [draft, localAvatar, updateUser, isArabic, goBack, clearDraft]);
 
   return (
     <div className="flex flex-col min-h-screen bg-background pb-16 font-cairo relative" dir={isArabic ? 'rtl' : 'ltr'}>
@@ -62,16 +67,16 @@ export const EditProfileScreen: React.FC = () => {
         <div className="flex flex-col gap-4 bg-surface rounded-2xl border border-border p-5 shadow-2xs">
           <Input
             label={isArabic ? 'الاسم الأول (مطلوب)' : 'First Name (Required)'}
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
+            value={draft.firstName}
+            onChange={(e) => setField('firstName', e.target.value)}
             required
             className="font-cairo"
           />
 
           <Input
             label={isArabic ? 'اسم العائلة' : 'Last Name'}
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
+            value={draft.lastName}
+            onChange={(e) => setField('lastName', e.target.value)}
             className="font-cairo"
           />
 
@@ -85,8 +90,8 @@ export const EditProfileScreen: React.FC = () => {
 
           <Input
             label={isArabic ? 'البريد الإلكتروني' : 'Email Address'}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={draft.email}
+            onChange={(e) => setField('email', e.target.value)}
             type="email"
             className="font-cairo"
           />
@@ -99,7 +104,7 @@ export const EditProfileScreen: React.FC = () => {
             size="lg"
             fullWidth
             onClick={handleSave}
-            disabled={!firstName.trim()}
+            disabled={!draft.firstName.trim()}
             className="font-bold bg-primary hover:bg-primary-hover text-white py-3.5 rounded-xl justify-center"
           >
             {isArabic ? 'حفظ التعديلات' : 'Save Changes'}
