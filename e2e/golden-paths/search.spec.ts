@@ -1,8 +1,10 @@
 import { test, expect, type Page } from '@playwright/test';
 import { installFakeAuth, installFiltersMocks } from '../fixtures/filters-mocks';
 
+const SEARCH_LISTING_ID = 'a1b2c3d4-e5f6-4789-abcd-ef1234567890';
+
 const SEARCH_FIXTURE = {
-  id: 'search-listing-1',
+  id: SEARCH_LISTING_ID,
   user_id: 'e2e00000-0000-0000-0000-000000000001',
   title: 'تويوتا كامري 2018',
   description: 'بحالة ممتازة',
@@ -16,6 +18,7 @@ const SEARCH_FIXTURE = {
   images: ['https://example.com/camry.jpg'],
   attributes: [{ key: 'make', label: 'Make', value: 'toyota' }],
   status: 'active',
+  views: 0,
   seller_name: 'E2E',
   seller_phone: '0790000000',
   created_at: new Date().toISOString(),
@@ -23,6 +26,15 @@ const SEARCH_FIXTURE = {
 };
 
 async function installSearchMock(page: Page, results: unknown[]): Promise<void> {
+  await page.route(/\/rest\/v1\/listings(\?|$)/, async (route) => {
+    if (route.request().method() !== 'GET') return route.continue();
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(results),
+    });
+  });
+
   await page.route('**/rest/v1/rpc/search_listings**', async (route) => {
     await route.fulfill({
       status: 200,
@@ -65,5 +77,21 @@ test.describe('Golden Path — Search', () => {
     await expect(input).toHaveValue('كامري');
     await input.fill('');
     await expect(input).toHaveValue('');
+  });
+
+  test('clicking a search result opens listing detail', async ({ page }) => {
+    await installSearchMock(page, [SEARCH_FIXTURE]);
+    await page.goto('/');
+    const input = page.getByTestId('search-input');
+    await input.fill('كامري');
+    await input.press('Enter');
+
+    const card = page.getByTestId('listing-card').first();
+    await expect(card).toBeVisible({ timeout: 5000 });
+    await card.click();
+
+    await expect(
+      page.getByRole('heading', { name: 'تويوتا كامري 2018' })
+    ).toBeVisible({ timeout: 5000 });
   });
 });
