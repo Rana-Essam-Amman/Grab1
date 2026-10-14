@@ -49,6 +49,7 @@ export const ListingActionBar: React.FC<ListingActionBarProps> = React.memo((pro
       )}
       <div className="flex items-center gap-2.5">
         <button
+          data-testid="listing-chat-button"
           onClick={onStartChat}
           disabled={chatState.disabled}
           type="button"
