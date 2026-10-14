@@ -1,5 +1,12 @@
 -- H4 phone-write lockdown regression tests.
 -- LOCAL ONLY: run via test-search-rpc-local.sh.
+--
+-- Phase 1: privileged fixture/RPC verification. The JWT subject remains
+-- the test user, so auth.uid() resolves to that user without requiring
+-- authenticated to have direct SELECT access to profiles.phone.
+--
+-- Phase 2: authenticated direct-write denial assertions.
+-- The entire test runs in one transaction and rolls back at the end.
 
 BEGIN;
 
@@ -24,45 +31,38 @@ SELECT set_config(
   true
 );
 
-SET LOCAL ROLE authenticated;
+-- PHASE 1: RPC behavior and database-state verification.
+-- Do not SET ROLE authenticated here: profiles.phone is intentionally
+-- not directly readable by authenticated.
 
 DO $$
 DECLARE
+  v_user_id uuid := auth.uid();
   v_request_id uuid;
   v_status text;
 BEGIN
+  IF v_user_id IS DISTINCT FROM
+     '60000000-0000-4000-8000-000000000082'::uuid THEN
+    RAISE EXCEPTION 'FAIL 1: test JWT subject did not resolve';
+  END IF;
+
   IF public.set_initial_phone('+962791234567') IS DISTINCT FROM true THEN
-    RAISE EXCEPTION 'FAIL 1: initial-phone RPC did not set the phone';
+    RAISE EXCEPTION 'FAIL 2: initial-phone RPC did not set the phone';
   END IF;
 
   IF NOT EXISTS (
-    SELECT 1 FROM public.profiles
-    WHERE id = auth.uid()
+    SELECT 1
+    FROM public.profiles
+    WHERE id = v_user_id
       AND phone = '+962791234567'
       AND phone_locked = true
   ) THEN
-    RAISE EXCEPTION 'FAIL 2: phone not stored and locked';
+    RAISE EXCEPTION 'FAIL 3: phone not stored and locked';
   END IF;
 
   IF public.set_initial_phone('+962791234568') IS DISTINCT FROM false THEN
-    RAISE EXCEPTION 'FAIL 3: initial phone was overwritten';
+    RAISE EXCEPTION 'FAIL 4: initial phone was overwritten';
   END IF;
-
-  BEGIN
-    UPDATE public.profiles SET phone = '+962791234569' WHERE id = auth.uid();
-    RAISE EXCEPTION 'FAIL 4: direct phone update unexpectedly succeeded';
-  EXCEPTION
-    WHEN insufficient_privilege THEN
-      RAISE NOTICE 'PASS 4: direct phone update denied';
-  END;
-
-  BEGIN
-    UPDATE public.profiles SET phone_locked = false WHERE id = auth.uid();
-    RAISE EXCEPTION 'FAIL 5: direct phone_locked update unexpectedly succeeded';
-  EXCEPTION
-    WHEN insufficient_privilege THEN
-      RAISE NOTICE 'PASS 5: direct phone_locked update denied';
-  END;
 
   v_request_id := public.request_phone_change(
     '+962791234568',
@@ -70,46 +70,93 @@ BEGIN
   );
 
   IF v_request_id IS NULL THEN
-    RAISE EXCEPTION 'FAIL 6: request RPC returned NULL';
+    RAISE EXCEPTION 'FAIL 5: request RPC returned NULL';
   END IF;
 
-  SELECT status INTO v_status
-  FROM public.phone_change_requests
-  WHERE id = v_request_id AND user_id = auth.uid();
+  SELECT status
+    INTO v_status
+    FROM public.phone_change_requests
+   WHERE id = v_request_id
+     AND user_id = v_user_id;
 
   IF v_status IS DISTINCT FROM 'pending' THEN
-    RAISE EXCEPTION 'FAIL 7: request is not visible as pending';
+    RAISE EXCEPTION 'FAIL 6: request is not stored as pending';
   END IF;
 
   BEGIN
-    UPDATE public.phone_change_requests SET status = 'approved' WHERE id = v_request_id;
-    RAISE EXCEPTION 'FAIL 8: direct request approval unexpectedly succeeded';
-  EXCEPTION
-    WHEN insufficient_privilege THEN
-      RAISE NOTICE 'PASS 8: direct request update denied';
-  END;
+    PERFORM public.request_phone_change(
+      '+962791234570',
+      'A second request'
+    );
 
-  BEGIN
-    DELETE FROM public.phone_change_requests WHERE id = v_request_id;
-    RAISE EXCEPTION 'FAIL 9: direct request delete unexpectedly succeeded';
-  EXCEPTION
-    WHEN insufficient_privilege THEN
-      RAISE NOTICE 'PASS 9: direct request delete denied';
-  END;
-
-  BEGIN
-    PERFORM public.request_phone_change('+962791234570', 'A second request');
-    RAISE EXCEPTION 'FAIL 10: second pending request unexpectedly succeeded';
+    RAISE EXCEPTION 'FAIL 7: second pending request unexpectedly succeeded';
   EXCEPTION
     WHEN unique_violation THEN
-      RAISE NOTICE 'PASS 10: duplicate pending request denied';
+      RAISE NOTICE 'PASS 7: duplicate pending request denied';
+  END;
+END;
+$$;
+
+-- PHASE 2: verify direct writes are blocked for authenticated.
+SET LOCAL ROLE authenticated;
+
+DO $$
+DECLARE
+  v_user_id uuid := auth.uid();
+BEGIN
+  IF v_user_id IS DISTINCT FROM
+     '60000000-0000-4000-8000-000000000082'::uuid THEN
+    RAISE EXCEPTION 'FAIL 8: authenticated JWT subject did not resolve';
+  END IF;
+
+  BEGIN
+    UPDATE public.profiles
+       SET phone = '+962791234569'
+     WHERE id = v_user_id;
+
+    RAISE EXCEPTION 'FAIL 9: direct phone update unexpectedly succeeded';
+  EXCEPTION
+    WHEN insufficient_privilege THEN
+      RAISE NOTICE 'PASS 9: direct phone update denied';
   END;
 
-  RAISE NOTICE 'ALL H4 PHONE WRITE TESTS PASSED';
+  BEGIN
+    UPDATE public.profiles
+       SET phone_locked = false
+     WHERE id = v_user_id;
+
+    RAISE EXCEPTION 'FAIL 10: direct phone_locked update unexpectedly succeeded';
+  EXCEPTION
+    WHEN insufficient_privilege THEN
+      RAISE NOTICE 'PASS 10: direct phone_locked update denied';
+  END;
+
+  BEGIN
+    UPDATE public.phone_change_requests
+       SET status = 'approved'
+     WHERE user_id = v_user_id
+       AND status = 'pending';
+
+    RAISE EXCEPTION 'FAIL 11: direct request approval unexpectedly succeeded';
+  EXCEPTION
+    WHEN insufficient_privilege THEN
+      RAISE NOTICE 'PASS 11: direct request update denied';
+  END;
+
+  BEGIN
+    DELETE FROM public.phone_change_requests
+     WHERE user_id = v_user_id
+       AND status = 'pending';
+
+    RAISE EXCEPTION 'FAIL 12: direct request delete unexpectedly succeeded';
+  EXCEPTION
+    WHEN insufficient_privilege THEN
+      RAISE NOTICE 'PASS 12: direct request delete denied';
+  END;
 END;
 $$;
 
 RESET ROLE;
 ROLLBACK;
 
-SELECT 'H4 phone-write tests completed' AS result;
+SELECT 'H4 phone-write tests completed; transaction rolled back' AS result;
