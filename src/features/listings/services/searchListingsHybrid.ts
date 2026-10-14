@@ -20,12 +20,11 @@ const FTS_DOMINANT_MIN_RESULTS = 1;
  * Flow:
  *   1. detect_query_category(query) — maps Arabic/English keywords to a
  *      category_slug (e.g. "سيارات" → "motors"). NULL when no match.
- *   2. FTS (search_listings_v2_intent_typo, 11-arg) with filters. If it
- *      returns at least one result → return those directly. This wrapper
- *      is v2_intent + a fuzzy typo fallback (Group H).
+ *   2. FTS (search_listings_v2_intent, 11-arg) with filters. If it returns
+ *      at least one result → return those directly.
  *   3. Otherwise → search_listings_hybrid with the query vector + category
  *      hint + all filters. Both FTS and semantic branches are filtered
- *      before RRF fusion. This is the path that serves Group F (semantic).
+ *      before RRF fusion.
  *
  * Safety: PostgREST rejects JS null for extensions.vector. When the vector
  * is unavailable, p_query_vector is omitted so SQL DEFAULT NULL applies
@@ -58,11 +57,10 @@ export async function searchListingsHybrid(
       p_attrs: attrsJson,
     };
 
-    // Step 1: FTS-dominant check (with filters) via v2_intent_typo.
-    // v2_intent_typo wraps v2_intent (stopword-gated FTS-OR + hard intent
-    // filter) and adds a fuzzy fallback for typos. Same 11-arg signature
-    // as v1; v1 remains available as a DB fallback.
-    const { data: ftsData, error: ftsError } = await supabase.rpc('search_listings_v2_intent_typo', {
+    // Step 1: FTS-dominant check (with filters) via v2_intent.
+    // v2_intent wraps v2 (stopword-gated FTS-OR) + hard intent filter.
+    // Same 11-arg signature as v1; v1 remains available as a DB fallback.
+    const { data: ftsData, error: ftsError } = await supabase.rpc('search_listings_v2_intent', {
       p_query: trimmed,
       p_market: market ?? null,
       p_limit: limit,
