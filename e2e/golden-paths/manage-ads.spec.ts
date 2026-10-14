@@ -23,12 +23,14 @@ test.describe('Golden Path — J5 Manage Ads', () => {
 
     await toyotaWrapper.getByRole('button', { name: /تعديل|Edit/i }).click();
 
+    const titleInput = page.getByRole('textbox', { name: 'عنوان الإعلان' });
+    await expect(titleInput).toBeVisible({ timeout: 5000 });
+    await expect(titleInput).toHaveValue('Toyota Camry 2020');
+
     const saveBtn = page.getByRole('button', { name: /حفظ التعديلات|Save Changes/i });
-    await expect(saveBtn).toBeVisible({ timeout: 5000 });
+    await expect(saveBtn).toBeEnabled({ timeout: 5000 });
 
-    await page.locator('input[type="text"]').first().fill('Toyota Camry 2020 UPDATED');
-    await page.locator('textarea').first().fill('Updated description for test');
-
+    await titleInput.fill('Toyota Camry 2020 UPDATED');
     await saveBtn.click();
 
     await expect(
