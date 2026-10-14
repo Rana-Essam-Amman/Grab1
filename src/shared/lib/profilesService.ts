@@ -1,11 +1,11 @@
 /**
  * Profile persistence service.
  *
- * Wraps Supabase queries for the public.profiles table.
- * No UI, no React — pure async functions.
+ * Wraps Supabase writes for the public.profiles table.
+ * Reads live in profilesFetchService (fetchPublicProfile / fetchOwnProfile).
  *
- * Callers: useAuth (fetch on session), useAuth (upsert on phone capture),
- * EditProfileScreen (update name/avatar/phone).
+ * Note: `phone` and `phone_locked` are intentionally NOT in the write
+ * surface here. Phone changes flow through the request/approval path.
  */
 
 import { supabase } from './supabase';
@@ -15,7 +15,6 @@ export interface ProfileRecord {
   readonly first_name: string | null;
   readonly last_name: string | null;
   readonly nickname: string | null;
-  readonly phone: string | null;
   readonly phone_locked?: boolean | null;
   readonly avatar_url: string | null;
   readonly country_code: string | null;
@@ -31,43 +30,17 @@ export interface ProfileUpdate {
   readonly first_name?: string;
   readonly last_name?: string;
   readonly nickname?: string;
-  readonly phone?: string;
-  readonly phone_locked?: boolean;
   readonly avatar_url?: string;
   readonly country_code?: string;
   readonly feed_layout?: 'list' | 'grid';
   readonly browse_market?: 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | null;
 }
 
-/**
- * Fetch a profile by user id.
- * Returns null if no row exists yet (older users before trigger).
- * Never throws — logs and returns null on error.
- */
-export async function fetchProfile(userId: string): Promise<ProfileRecord | null> {
-  if (!userId) return null;
-  try {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('id, first_name, last_name, nickname, phone, phone_locked, avatar_url, country_code, feed_layout, browse_market, rating_avg, rating_count, created_at, updated_at')
-      .eq('id', userId)
-      .maybeSingle();
-    if (error) {
-      console.warn('[profilesService] fetchProfile error', error.message);
-      return null;
-    }
-    return (data as ProfileRecord | null) ?? null;
-  } catch (err) {
-    console.warn('[profilesService] fetchProfile threw', err);
-    return null;
-  }
-}
+const RETURN_COLUMNS =
+  'id, first_name, last_name, nickname, phone_locked, avatar_url, ' +
+  'country_code, feed_layout, browse_market, rating_avg, rating_count, ' +
+  'created_at, updated_at';
 
-/**
- * Upsert profile fields for a user.
- * Creates the row if it does not exist.
- * Never throws — returns null on error.
- */
 export async function upsertProfile(
   userId: string,
   patch: ProfileUpdate
@@ -78,7 +51,7 @@ export async function upsertProfile(
     const { data, error } = await supabase
       .from('profiles')
       .upsert(payload, { onConflict: 'id' })
-      .select('id, first_name, last_name, nickname, phone, phone_locked, avatar_url, country_code, feed_layout, browse_market, rating_avg, rating_count, created_at, updated_at')
+      .select(RETURN_COLUMNS)
       .maybeSingle();
     if (error) {
       console.warn('[profilesService] upsertProfile error', error.message);
@@ -91,19 +64,6 @@ export async function upsertProfile(
   }
 }
 
-/**
- * Convenience: save just the phone.
- */
-export async function savePhone(userId: string, phone: string): Promise<ProfileRecord | null> {
-  const trimmed = phone.trim();
-  if (!trimmed) return null;
-  return upsertProfile(userId, { phone: trimmed, phone_locked: true });
-}
-
-/**
- * Convenience: save the user's nickname.
- * Trims and validates client-side (2–50 chars).
- */
 export async function saveNickname(
   userId: string,
   nickname: string
@@ -113,10 +73,6 @@ export async function saveNickname(
   return upsertProfile(userId, { nickname: trimmed });
 }
 
-/**
- * Convenience: save the user's feed layout preference.
- * Persisted to Supabase → available across devices.
- */
 export async function saveFeedLayout(
   userId: string,
   layout: 'list' | 'grid'
@@ -124,10 +80,6 @@ export async function saveFeedLayout(
   return upsertProfile(userId, { feed_layout: layout });
 }
 
-/**
- * Convenience: save the user's browse market override.
- * Pass null to clear the override (user is back home).
- */
 export async function saveBrowseMarket(
   userId: string,
   market: 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | null
