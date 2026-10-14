@@ -54,3 +54,4 @@ psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_s16_batch
 
 # Session 16 fix — last_bumped_at column exists.
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_s16_fix.sql
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_phone_write.sql
