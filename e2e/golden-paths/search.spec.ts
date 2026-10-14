@@ -24,8 +24,6 @@ const SEARCH_FIXTURE = {
 };
 
 async function installSearchMock(page: Page, results: unknown[]): Promise<void> {
-  // REST /listings — keeps the store populated with the fixture
-  // even if a re-sync fires after navigation (race guard).
   await page.route(/\/rest\/v1\/listings(\?|$)/, async (route) => {
     if (route.request().method() !== 'GET') return route.continue();
     await route.fulfill({
@@ -35,7 +33,6 @@ async function installSearchMock(page: Page, results: unknown[]): Promise<void> 
     });
   });
 
-  // RPC search endpoint — matches search_listings_v2_intent_typo + hybrid
   await page.route('**/rest/v1/rpc/search_listings**', async (route) => {
     await route.fulfill({
       status: 200,
@@ -83,13 +80,31 @@ test.describe('Golden Path — Search', () => {
   test('clicking a search result opens listing detail', async ({ page }) => {
     await installSearchMock(page, [SEARCH_FIXTURE]);
     await page.goto('/');
+
     const input = page.getByTestId('search-input');
     await input.fill('كامري');
     await input.press('Enter');
 
     const card = page.getByTestId('listing-card').first();
     await expect(card).toBeVisible({ timeout: 5000 });
+
+    const beforeClick = await page.evaluate(() => {
+      const w = window as unknown as { __e2e_state?: () => unknown };
+      return w.__e2e_state?.() ?? null;
+    });
+    console.log('[J2 BEFORE CLICK]', JSON.stringify(beforeClick, null, 2));
+
     await card.click();
+    await page.waitForTimeout(1500);
+
+    const afterClick = await page.evaluate(() => {
+      const w = window as unknown as { __e2e_state?: () => unknown };
+      return w.__e2e_state?.() ?? null;
+    });
+    console.log('[J2 AFTER CLICK]', JSON.stringify(afterClick, null, 2));
+
+    const bodyText = await page.evaluate(() => document.body.innerText.slice(0, 500));
+    console.log('[J2 BODY]', bodyText);
 
     await expect(
       page.getByRole('heading', { name: 'تويوتا كامري 2018' })
