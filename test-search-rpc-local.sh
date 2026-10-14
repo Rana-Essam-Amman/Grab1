@@ -45,8 +45,12 @@ psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_authentic
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_profiles.sql
 
 # RPC — listings_by_seller security (4 assertions).
-# SECURITY DEFINER bypasses RLS; tests cover internal filters.
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_rpc_seed.sql
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_rpc.sql
+
+# Session 16 batch 1 + 2 (metadata guards).
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_s16.sql
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_s16_batch2.sql
+
+# Session 16 fix — last_bumped_at column exists.
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_s16_fix.sql
