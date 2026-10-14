@@ -64,3 +64,6 @@ psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/schema_demo_marker.sql
 
 # Wave 2B — demo filtering.
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_demo_filter.sql
+
+# Wave 4 — schema contract.
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/schema_contract.sql
