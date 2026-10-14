@@ -97,6 +97,7 @@ export const ListingDetailScreen: React.FC = () => {
           isAuthenticated={detail.isAuthenticated}
           isOwner={detail.isOwner}
           hasPhone={Boolean(detail.listing.sellerPhone)}
+          hasSellerAccount={Boolean(detail.listing.userId)}
         />
 
         {detail.showShare && <ShareModal listing={detail.listing} onClose={() => detail.setShowShare(false)} />}
