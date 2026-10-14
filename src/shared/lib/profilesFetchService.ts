@@ -31,13 +31,16 @@ export interface OwnProfileRecord extends PublicProfileRecord {
 }
 
 /**
- * Discriminated result for fetchOwnProfile. Distinguishes RPC failure
- * from a legitimately null phone, so hydration cannot silently overwrite
- * a valid phone with null on transient errors.
+ * Discriminated result for fetchOwnProfile.
+ *
+ * - ok: true, phoneError: false — full profile, phone present (may be null)
+ * - ok: true, phoneError: true  — profile loaded, phone RPC failed.
+ *                                 Callers must NOT overwrite existing phone state.
+ * - ok: false                   — profile SELECT failed or row not found.
  */
 export type FetchOwnProfileResult =
-  | { readonly ok: true; readonly profile: OwnProfileRecord }
-  | { readonly ok: false; readonly reason: 'profile_error' | 'phone_error' | 'not_found' };
+  | { readonly ok: true; readonly profile: OwnProfileRecord; readonly phoneError: boolean }
+  | { readonly ok: false; readonly reason: 'profile_error' | 'not_found' };
 
 const PUBLIC_COLUMNS =
   'id, nickname, avatar_url, rating_avg, rating_count, vip_store';
@@ -76,8 +79,9 @@ export async function fetchPublicProfile(
  * Fetch the signed-in user's own profile.
  *
  * Phone comes from get_own_phone() RPC (authenticated-only, uses auth.uid()).
- * If the RPC fails, returns { ok: false, reason: 'phone_error' } — callers
- * must NOT treat this as "no phone" and must NOT overwrite existing state.
+ * If the RPC fails, returns { ok: true, phoneError: true } so hydration can
+ * still apply nickname/feed_layout/preferences — callers must check the flag
+ * and skip phone updates in that case.
  */
 export async function fetchOwnProfile(
   userId: string,
@@ -96,19 +100,26 @@ export async function fetchOwnProfile(
     if (!profileRes.data) {
       return { ok: false, reason: 'not_found' };
     }
-    if (phoneRes.error) {
-      console.warn('[profilesFetchService] phone RPC error', phoneRes.error.message);
-      return { ok: false, reason: 'phone_error' };
-    }
 
     const row = profileRes.data as unknown as Omit<OwnProfileRecord, 'phone'>;
+
+    if (phoneRes.error) {
+      console.warn('[profilesFetchService] phone RPC error', phoneRes.error.message);
+      return {
+        ok: true,
+        phoneError: true,
+        profile: { ...row, phone: null },
+      };
+    }
+
     const phone = (phoneRes.data as string | null) ?? null;
     return {
       ok: true,
+      phoneError: false,
       profile: { ...row, phone },
     };
   } catch (err) {
     console.warn('[profilesFetchService] fetchOwnProfile threw', err);
     return { ok: false, reason: 'profile_error' };
   }
-    }
+}
