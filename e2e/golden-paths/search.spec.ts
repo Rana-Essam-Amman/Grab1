@@ -66,4 +66,20 @@ test.describe('Golden Path — Search', () => {
     await input.fill('');
     await expect(input).toHaveValue('');
   });
+
+  test('clicking a search result opens listing detail', async ({ page }) => {
+    await installSearchMock(page, [SEARCH_FIXTURE]);
+    await page.goto('/');
+    const input = page.getByTestId('search-input');
+    await input.fill('كامري');
+    await input.press('Enter');
+
+    const card = page.getByTestId('listing-card').first();
+    await expect(card).toBeVisible({ timeout: 5000 });
+    await card.click();
+
+    await expect(
+      page.getByRole('heading', { name: 'تويوتا كامري 2018' })
+    ).toBeVisible({ timeout: 5000 });
+  });
 });
