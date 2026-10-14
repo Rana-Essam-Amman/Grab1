@@ -19,7 +19,7 @@ ALTER TABLE public.profiles
   ADD COLUMN IF NOT EXISTS browse_market text,
   ADD COLUMN IF NOT EXISTS vip_store boolean NOT NULL DEFAULT false,
   ADD COLUMN IF NOT EXISTS vip_store_expires_at timestamptz,
-  ADD COLUMN IF NOT EXISTS rating_avg numeric NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS rating_avg numeric(3,2) NOT NULL DEFAULT 0,
   ADD COLUMN IF NOT EXISTS rating_count integer NOT NULL DEFAULT 0;
 
 DO $$
@@ -37,7 +37,7 @@ BEGIN
       ('browse_market', 'text', true, NULL::text),
       ('vip_store', 'boolean', false, 'false'),
       ('vip_store_expires_at', 'timestamp with time zone', true, NULL::text),
-      ('rating_avg', 'numeric', false, '0'),
+      ('rating_avg', 'numeric(3,2)', false, '0'),
       ('rating_count', 'integer', false, '0')
     ) AS expected(column_name, data_type, is_nullable, expected_default)
   LOOP
