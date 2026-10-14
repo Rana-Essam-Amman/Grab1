@@ -25,19 +25,15 @@ describe('Modal Primitive Component - Behavior Tests', () => {
     const user = userEvent.setup();
     const handleClose = vi.fn();
 
-    const { container } = renderWithProviders(
+    renderWithProviders(
       <Modal open={true} onClose={handleClose} title="Backdrop Test">
         Modal Content
       </Modal>
     );
 
-    const backdrop = container.querySelector('.bg-black\\/50') || container.querySelector('[data-testid="modal-backdrop"]');
-    expect(backdrop).toBeInTheDocument();
-
-    if (backdrop) {
-      await user.click(backdrop);
-      expect(handleClose).toHaveBeenCalledTimes(1);
-    }
+    const backdrop = screen.getByTestId('modal-backdrop');
+    await user.click(backdrop);
+    expect(handleClose).toHaveBeenCalledTimes(1);
   });
 
   it('3. User CANNOT close by clicking modal content (stopPropagation works)', async () => {
@@ -57,7 +53,7 @@ describe('Modal Primitive Component - Behavior Tests', () => {
 
   it('4. Modal respects RTL direction inheritance', () => {
     document.documentElement.dir = 'rtl';
-    const { container } = renderWithProviders(
+    renderWithProviders(
       <div dir="rtl">
         <Modal open={true} onClose={vi.fn()} title="عنوان النافذة">
           <p>محتوى النافذة المنبثقة</p>
@@ -136,4 +132,3 @@ describe('Modal Primitive Component - Behavior Tests', () => {
     expect(results).toHaveNoViolations();
   });
 });
-
