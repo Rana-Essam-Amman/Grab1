@@ -13,6 +13,9 @@ the CI Gate runs **every** Protected E2E — not just the ones for that feature.
 **Rule:** No feature enters `main` without an E2E entry here.
 **Rule:** No PR removes or weakens a Protected E2E without an explicit note in the PR description.
 
+**Rule:** Every migration that adds, removes, or changes a critical schema object MUST update `supabase/tests/schema_contract.sql` in the same PR.
+**Rule:** The schema contract must pass against a fresh database built from the repository migration chain; production-only schema changes are not a substitute for checked-in migrations.
+
 ---
 
 ## Protected
