@@ -1,6 +1,11 @@
 import { supabase } from '@/shared/lib/supabase';
-import type { ChatMessage, ChatMessageRow, Conversation, ConversationRow } from './chatService.types';
+import type { ChatMessage, ChatMessageRow } from './chatService.types';
 import { rowToMessage } from './chatService.mappers';
+
+export {
+  subscribeToUserConversations,
+  type ConversationSubscription,
+} from './userConversationRealtime';
 
 export interface MessageSubscription {
   readonly unsubscribe: () => void;
@@ -33,51 +38,13 @@ export function subscribeToMessages(
   return { unsubscribe: () => { supabase.removeChannel(channel); } };
 }
 
-export interface ConversationSubscription {
-  readonly unsubscribe: () => void;
-}
-
-/**
- * Subscribe to changes on a user's conversations (buyer OR seller).
- */
-export function subscribeToUserConversations(
-  userId: string,
-  onChange: (payload: { eventType: 'INSERT' | 'UPDATE' | 'DELETE'; conversation: Conversation | null }) => void
-): ConversationSubscription {
-  const channel = supabase
-    .channel(`user-conversations:${userId}`)
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'conversations' }, (payload) => {
-      const row = payload.new as ConversationRow | null;
-      if (payload.eventType === 'DELETE') {
-        onChange({ eventType: 'DELETE', conversation: null });
-        return;
-      }
-      if (!row || !row.id || (row.buyer_id !== userId && row.seller_id !== userId)) return;
-      onChange({
-        eventType: payload.eventType === 'UPDATE' ? 'UPDATE' : 'INSERT',
-        conversation: {
-          id: row.id,
-          listingId: row.listing_id,
-          buyerId: row.buyer_id,
-          sellerId: row.seller_id,
-          marketCode: row.market_code,
-          createdAt: row.created_at,
-          updatedAt: row.updated_at,
-        },
-      });
-    })
-    .subscribe();
-
-  return { unsubscribe: () => { supabase.removeChannel(channel); } };
-}
-
 export interface TypingSubscription {
   readonly unsubscribe: () => void;
   readonly sendTyping: () => void;
 }
 
 /**
- * Subscribe to typing events on a conversation. Ephemeral Broadcast 
+ * Subscribe to typing events on a conversation. Ephemeral Broadcast
  * channel — no DB. Fires onTyping when the OTHER user is typing.
  */
 export function subscribeToTyping(
@@ -113,7 +80,7 @@ export interface PresenceSubscription {
 }
 
 /**
- * Subscribe to global online presence. Tracks current user and 
+ * Subscribe to global online presence. Tracks current user and
  * delivers the list of online user ids on every sync event.
  *
  * Ephemeral — Supabase handles untrack on disconnect/tab close.
@@ -142,6 +109,3 @@ export function subscribeToPresence(
 
   return { unsubscribe: () => { supabase.removeChannel(channel); } };
 }
-
-
-
