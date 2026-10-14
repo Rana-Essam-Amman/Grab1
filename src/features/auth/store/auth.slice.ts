@@ -78,16 +78,8 @@ export const useAuthStore = create<AuthState>()(
 );
 
 /**
- * Fetch the user's Supabase profile after sign-in and hydrate local
- * state with fields that are not present in the OAuth session
- * (phone, nickname, preferences).
- *
- * Uses fetchOwnProfile (split service): phone comes from get_own_phone()
- * RPC. If the RPC fails, we still apply nickname/feed_layout/browse_market
- * but skip the phone update — never overwrite a valid phone with null.
- *
- * Runs once per auth event. Idempotent.
- * Uses `finally` so profileHydrated flips true even on failure.
+ * Hydrate local state with phone/nickname/preferences after sign-in.
+ * Skips phone on RPC failure. Idempotent. profileHydrated set in finally.
  */
 export async function hydrateProfile(): Promise<void> {
   try {
@@ -110,7 +102,6 @@ export async function hydrateProfile(): Promise<void> {
       useAuthStore.getState().updateUser(patch);
     }
 
-    // Feed layout preference (Supabase = source of truth)
     if (profile.feed_layout === 'list' || profile.feed_layout === 'grid') {
       useAuthStore.setState({ feedLayout: profile.feed_layout });
     }
