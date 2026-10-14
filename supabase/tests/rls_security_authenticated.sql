@@ -49,6 +49,7 @@ end $$;
 
 -- =========================================================================
 -- A1: authenticated user inserts own listing → succeeds
+-- Note: `status` is not in the INSERT grant (20261068) — rely on DEFAULT.
 -- =========================================================================
 set local role authenticated;
 set local request.jwt.claims = '{"sub":"20000000-0000-4000-8000-000000000001","is_anonymous":false}';
@@ -67,10 +68,10 @@ begin
 
   insert into public.listings (
     user_id, title, description, price, country_code,
-    city, category_slug, status
+    city, category_slug
   ) values (
     v_uid, 'A1 Own Insert', 'auth rls test', '1', v_country,
-    'Amman', 'cars', 'active'
+    'Amman', 'cars'
   );
 
   raise notice 'PASS A1: authenticated user inserted own listing';
@@ -82,6 +83,7 @@ reset request.jwt.claims;
 -- =========================================================================
 -- A2: authenticated user inserts listing for another user → RLS denial
 -- Must fail with SQLSTATE 42501 (insufficient_privilege), not FK.
+-- Note: `status` is not in the INSERT grant (20261068) — rely on DEFAULT.
 -- =========================================================================
 set local role authenticated;
 set local request.jwt.claims = '{"sub":"20000000-0000-4000-8000-000000000001","is_anonymous":false}';
@@ -97,11 +99,11 @@ begin
   begin
     insert into public.listings (
       user_id, title, description, price, country_code,
-      city, category_slug, status
+      city, category_slug
     ) values (
       '20000000-0000-4000-8000-000000000002'::uuid,
       'A2 Cross Insert', 'auth rls test', '1', v_country_a,
-      'Amman', 'cars', 'active'
+      'Amman', 'cars'
     );
     raise exception 'A2 FAIL: insert for another user_id succeeded — RLS bypassed';
   exception
