@@ -57,3 +57,6 @@ psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_s16_fix.s
 
 # SEC-2 — required Realtime publication tables (metadata only).
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/realtime_publication_check.sql
+
+# H4 — phone-write lockdown.
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_phone_write.sql

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useUI } from '@/hooks/useUI';
 import { useAuthStore } from '../store/auth.slice';
-import { savePhone } from '@/shared/lib/profilesService';
+import { setInitialPhone } from '@/shared/lib/profilesService';
 import { validatePhone } from '../helpers/phoneValidation';
 
 type Step = 'input' | 'confirm';
@@ -55,8 +55,8 @@ export function usePhoneCaptureModal({ open, onSaved, onClose }: Params) {
     setSaving(true);
     setError(null);
     try {
-      const result = await savePhone(user.id, v.normalized);
-      if (!result) {
+      const saved = await setInitialPhone(v.normalized);
+      if (!saved) {
         setError(isArabic ? 'تعذّر حفظ الرقم، حاول مرة أخرى' : 'Could not save phone, try again');
         setStep('input');
         return;
