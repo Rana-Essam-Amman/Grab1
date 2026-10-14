@@ -4,8 +4,11 @@
  * Wraps Supabase writes for the public.profiles table.
  * Reads live in profilesFetchService (fetchPublicProfile / fetchOwnProfile).
  *
- * Note: `phone` and `phone_locked` are intentionally NOT in the write
- * surface here. Phone changes flow through the request/approval path.
+ * Note on phone:
+ *  - SELECT on profiles.phone is revoked from authenticated (Phase C).
+ *    Reads go through get_own_phone() RPC.
+ *  - INSERT/UPDATE on profiles.phone is still granted for the registration
+ *    and phone-capture flows. Writes go through savePhone here.
  */
 
 import { supabase } from './supabase';
@@ -30,12 +33,19 @@ export interface ProfileUpdate {
   readonly first_name?: string;
   readonly last_name?: string;
   readonly nickname?: string;
+  readonly phone?: string;
+  readonly phone_locked?: boolean;
   readonly avatar_url?: string;
   readonly country_code?: string;
   readonly feed_layout?: 'list' | 'grid';
   readonly browse_market?: 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | null;
 }
 
+/**
+ * Read-back projection for upsert. Deliberately excludes `phone` — SELECT
+ * on that column is revoked from authenticated (Phase C), so RETURNING it
+ * would raise 42501. Callers needing their own phone use fetchOwnProfile().
+ */
 const RETURN_COLUMNS =
   'id, first_name, last_name, nickname, phone_locked, avatar_url, ' +
   'country_code, feed_layout, browse_market, rating_avg, rating_count, ' +
@@ -62,6 +72,15 @@ export async function upsertProfile(
     console.warn('[profilesService] upsertProfile threw', err);
     return null;
   }
+}
+
+export async function savePhone(
+  userId: string,
+  phone: string
+): Promise<ProfileRecord | null> {
+  const trimmed = phone.trim();
+  if (!trimmed) return null;
+  return upsertProfile(userId, { phone: trimmed, phone_locked: true });
 }
 
 export async function saveNickname(
