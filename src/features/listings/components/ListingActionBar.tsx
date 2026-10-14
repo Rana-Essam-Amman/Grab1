@@ -13,15 +13,31 @@ export interface ListingActionBarProps {
   isAuthenticated: boolean;
   isOwner: boolean;
   hasPhone: boolean;
+  hasSellerAccount?: boolean;
 }
 
 export const ListingActionBar: React.FC<ListingActionBarProps> = React.memo((props) => {
-  const { isArabic, onCall, onWhatsAppClick, onStartChat, hasPhone, isOwner, isAuthenticated, isCountryMismatch } = props;
+  const {
+    isArabic,
+    onCall,
+    onWhatsAppClick,
+    onStartChat,
+    hasPhone,
+    isOwner,
+    isAuthenticated,
+    isCountryMismatch,
+    hasSellerAccount = true,
+  } = props;
   const { t } = useTranslation();
 
   const waDisabled = !hasPhone;
   const callDisabled = !hasPhone;
-  const chatState = getChatActionState({ isAuthenticated, isOwner, isCountryMismatch });
+  const chatState = getChatActionState({
+    isAuthenticated,
+    isOwner,
+    isCountryMismatch,
+    hasSellerAccount,
+  });
   const chatHint = isArabic ? chatState.hintAr : chatState.hintEn;
 
   return (
