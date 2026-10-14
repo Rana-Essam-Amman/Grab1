@@ -8,7 +8,7 @@ import { EmptyState } from '@/shared/ui/EmptyState';
 import { Spinner } from '@/shared/ui/Spinner';
 import { BrandMark } from '@/shared/components/BrandMark';
 import { isUuid } from '@/shared/lib/uuid';
-import { fetchProfile, type ProfileRecord } from '@/shared/lib/profilesService';
+import { fetchPublicProfile, type PublicProfileRecord } from '@/shared/lib/profilesFetchService';
 import { fetchSellerReviews, type SellerReview } from '../services/sellerReviewsService';
 import { SellerRatingBadge } from '../components/SellerRatingBadge';
 import { ReviewList } from '../components/ReviewList';
@@ -25,17 +25,22 @@ export const SellerProfileScreen: React.FC = () => {
   );
 
   const sellerId = sellerAds[0]?.userId ?? null;
-  const [sellerProfile, setSellerProfile] = useState<ProfileRecord | null>(null);
+  const [sellerProfile, setSellerProfile] = useState<PublicProfileRecord | null>(null);
   const [reviews, setReviews] = useState<SellerReview[]>([]);
 
   const loadSellerData = useCallback(async () => {
     if (!sellerId) return;
-    const [pRes, rRes] = await Promise.all([fetchProfile(sellerId), fetchSellerReviews(sellerId)]);
+    const [pRes, rRes] = await Promise.all([
+      fetchPublicProfile(sellerId),
+      fetchSellerReviews(sellerId),
+    ]);
     setSellerProfile(pRes);
     setReviews(rRes.data);
   }, [sellerId]);
 
-  useEffect(() => { loadSellerData(); }, [loadSellerData]);
+  useEffect(() => {
+    loadSellerData();
+  }, [loadSellerData]);
 
   const sellerName = useMemo(
     () => sellerAds[0]?.sellerName || (isArabic ? 'معلن موثوق' : 'Verified Seller'),
@@ -45,17 +50,28 @@ export const SellerProfileScreen: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-background pb-16" dir={isArabic ? 'rtl' : 'ltr'}>
       <div className="px-4 py-4 bg-brand border-b border-white/10 flex items-center gap-3 sticky top-0 z-20">
-        <button type="button" onClick={goBack} aria-label={isArabic ? 'العودة' : 'Go back'}
-          className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 flex items-center justify-center shrink-0 cursor-pointer transition-colors">
+        <button
+          type="button"
+          onClick={goBack}
+          aria-label={isArabic ? 'العودة' : 'Go back'}
+          className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 flex items-center justify-center shrink-0 cursor-pointer transition-colors"
+        >
           <BackIcon size={18} variant="Linear" color="#FFFFFF" />
         </button>
-        <h1 className="text-base font-bold text-white flex-1">{isArabic ? 'ملف البائع' : 'Seller Profile'}</h1>
+        <h1 className="text-base font-bold text-white flex-1">
+          {isArabic ? 'ملف البائع' : 'Seller Profile'}
+        </h1>
         <BrandMark isArabic={isArabic} />
       </div>
+
       <div className="p-4 flex flex-col gap-4">
         <Card variant="default" className="p-4 flex flex-col gap-3 shadow-xs">
           <div className="flex items-center gap-3.5">
-            <Avatar fallback={sellerName.charAt(0)} size="lg" className="text-primary font-bold border-border bg-background" />
+            <Avatar
+              fallback={sellerName.charAt(0)}
+              size="lg"
+              className="text-primary font-bold border-border bg-background"
+            />
             <div>
               <div className="flex items-center gap-1.5">
                 <h2 className="text-base font-bold text-ink">{sellerName}</h2>
@@ -67,30 +83,52 @@ export const SellerProfileScreen: React.FC = () => {
             </div>
           </div>
           <div className="pt-1 border-t border-border">
-            <SellerRatingBadge ratingAvg={sellerProfile?.rating_avg ?? 0} ratingCount={sellerProfile?.rating_count ?? 0} isArabic={isArabic} />
+            <SellerRatingBadge
+              ratingAvg={sellerProfile?.rating_avg ?? 0}
+              ratingCount={sellerProfile?.rating_count ?? 0}
+              isArabic={isArabic}
+            />
           </div>
         </Card>
+
         {reviews.length > 0 && (
           <div>
-            <h3 className="text-sm font-bold text-ink mb-3">{isArabic ? 'التقييمات' : 'Reviews'} ({reviews.length})</h3>
+            <h3 className="text-sm font-bold text-ink mb-3">
+              {isArabic ? 'التقييمات' : 'Reviews'} ({reviews.length})
+            </h3>
             <ReviewList reviews={reviews} isArabic={isArabic} />
           </div>
         )}
+
         <div>
-          <h3 className="text-sm font-bold text-ink mb-3">{isArabic ? 'إعلانات هذا البائع' : 'Listings from this seller'} ({sellerAds.length})</h3>
+          <h3 className="text-sm font-bold text-ink mb-3">
+            {isArabic ? 'إعلانات هذا البائع' : 'Listings from this seller'} ({sellerAds.length})
+          </h3>
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <Spinner size="md" />
             </div>
           ) : error ? (
-            <EmptyState icon={<User size={40} variant="Linear" />} title={isArabic ? 'تعذّر التحميل' : 'Could not load'}
-              description={isArabic ? 'حاول مرة أخرى لاحقاً.' : 'Please try again later.'} />
+            <EmptyState
+              icon={<User size={40} variant="Linear" />}
+              title={isArabic ? 'تعذّر التحميل' : 'Could not load'}
+              description={isArabic ? 'حاول مرة أخرى لاحقاً.' : 'Please try again later.'}
+            />
           ) : sellerAds.length === 0 ? (
-            <EmptyState icon={<User size={40} variant="Linear" />} title={isArabic ? 'لا توجد إعلانات' : 'No Listings'}
-              description={isArabic ? 'هذا البائع لا يملك إعلانات نشطة حالياً.' : 'This seller has no active listings right now.'} />
+            <EmptyState
+              icon={<User size={40} variant="Linear" />}
+              title={isArabic ? 'لا توجد إعلانات' : 'No Listings'}
+              description={
+                isArabic
+                  ? 'هذا البائع لا يملك إعلانات نشطة حالياً.'
+                  : 'This seller has no active listings right now.'
+              }
+            />
           ) : (
             <div className="grid grid-cols-2 gap-3">
-              {sellerAds.map((ad) => (<ListingCard key={ad.id} listing={ad} />))}
+              {sellerAds.map((ad) => (
+                <ListingCard key={ad.id} listing={ad} />
+              ))}
             </div>
           )}
         </div>
