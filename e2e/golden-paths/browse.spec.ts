@@ -14,15 +14,23 @@ test.describe('Golden Path — Browse Marketplace (J1)', () => {
   test('browse feed shows fixture listing titles', async ({ page }) => {
     await installBrowseMocks(page, 'default');
     await page.goto('/');
-    await expect(page.locator('text=Toyota Camry 2020')).toBeVisible({ timeout: 10000 });
-    await expect(page.locator('text=Honda Civic 2019')).toBeVisible({ timeout: 10000 });
+    await expect(
+      page.locator('[data-testid="listing-card"]').filter({ hasText: 'Toyota Camry 2020' }).first()
+    ).toBeVisible({ timeout: 10000 });
+    await expect(
+      page.locator('[data-testid="listing-card"]').filter({ hasText: 'Honda Civic 2019' }).first()
+    ).toBeVisible({ timeout: 10000 });
   });
 
   test('market isolation — SA listing hidden in JO browse', async ({ page }) => {
     await installBrowseMocks(page, 'cross');
     await page.goto('/');
-    await expect(page.locator('text=Toyota Camry 2020')).toBeVisible({ timeout: 10000 });
-    await expect(page.locator('text=Honda Civic 2019')).toBeVisible({ timeout: 10000 });
+    await expect(
+      page.locator('[data-testid="listing-card"]').filter({ hasText: 'Toyota Camry 2020' }).first()
+    ).toBeVisible({ timeout: 10000 });
+    await expect(
+      page.locator('[data-testid="listing-card"]').filter({ hasText: 'Honda Civic 2019' }).first()
+    ).toBeVisible({ timeout: 10000 });
     await expect(page.locator('text=Riyadh Furniture Set')).toHaveCount(0);
   });
 
