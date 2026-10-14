@@ -1,0 +1,206 @@
+-- 20261086_mark_demo_listings.sql
+-- Wave 2A: mark only the 80 verified demo listing UUIDs.
+-- No RLS, search, or frontend behavior changes.
+
+BEGIN;
+
+SET LOCAL lock_timeout = '3s';
+SET LOCAL statement_timeout = '20s';
+
+DO $$
+DECLARE
+  v_target_ids uuid[] := ARRAY[
+    '93ef8daa-2cd7-455f-b41a-1185220d8155',
+    '0de7b0a6-67b6-44f4-b8f0-db40780ca443',
+    '4a681f0d-4e0e-4466-916a-602c3ea32836',
+    'ef44ca01-0055-4e4a-b776-51e0d5558de9',
+    '1e71ace8-4dba-4b74-945c-20fa6fc12d4e',
+    '023e1d48-6019-4cdc-bfd3-ee7507e2ba1c',
+    '4223f559-bd86-47ba-bb85-65847081ddb2',
+    'b680f15c-28a1-4557-ac60-586ad231bbab',
+    '8d675cee-59a6-4aa8-8dd1-677b89143cfb',
+    '84bc574b-d124-4948-8f62-4c02e9e16c72',
+    '1d62a7d5-63fd-4037-a46d-7adff060a24a',
+    'f92d41ef-1ad7-4e0f-9fcf-463da028fd4e',
+    '522cd6a5-fa44-4db5-a542-17f8e93a7afc',
+    '6c47fd30-8e1e-48f8-8bda-d6982bc4b0d8',
+    '8ce41d7a-c5c4-487b-ac56-288e2c0aa280',
+    'd1cbcb30-5d70-4883-9a43-ebd563537fc1',
+    '0aa91407-6b4d-4a5a-9a47-bc878455656e',
+    '4ce4c70e-d6a4-45d3-8378-de3544a24b13',
+    '5578dbdc-699b-4dbd-8400-70f790506255',
+    '7a55d72c-e9ca-4365-81ba-77a875832940',
+    'c6266280-9012-4172-afbf-8314481da2a6',
+    '495104e5-e703-466e-ba6b-86e9b134177d',
+    '4a644b8b-b27b-4378-b7fa-59002e16b378',
+    '844c93b2-1dfe-425c-b660-e07edc75bae2',
+    'dc17996f-e0f6-4a28-96ce-f91890f5af7a',
+    '10468686-195a-41ce-afd1-05288e7b6a78',
+    'c0d89653-3de5-44e4-b98f-80bb460d7938',
+    '787b26c9-9cb5-49be-aff0-613d2dfef546',
+    'b902e8c1-f255-4fc3-8ac2-7ff5c5c0e1d3',
+    'a68a412d-5fd4-439d-bdde-6d9de94aa0d1',
+    '94ffc7f5-6da4-4ba1-b27c-3b5093e8fc13',
+    '9cedaa65-4ef3-4f57-be5d-b844f7136211',
+    '2175240e-6d74-4de5-b420-cbc7f0583ed9',
+    'c53fe060-6a68-4745-bacc-41c77931c998',
+    'f89cba28-4ae9-4246-9204-be6afccddd70',
+    'f60df4fd-f41a-45e4-a083-093a5d9ec78d',
+    '938d8ac3-f9c3-4b2d-b7fe-07da216f1220',
+    '0b76df61-6f8f-452d-8e50-f1815e0d5a99',
+    '1d7c8674-8209-4332-81e7-864be83ea7c3',
+    '8fc7a2c4-84c7-43f5-b2f4-747bf0f08c0d',
+    'bd8d3a33-9f46-4303-882d-9261cc1b8b5b',
+    'e0964566-0c64-415c-8c50-67cee3ed2f42',
+    'f03ee69d-c80e-49d3-8490-3d7f1d2ef2e1',
+    'b0a6e323-029e-42ff-a0b2-19aa6896bc04',
+    'e2821ac0-7c90-4d80-aaef-26769d1eb5f5',
+    'bb7caebe-780e-4446-9427-d656d994f55c',
+    '9854d29a-555b-4907-80a0-b77a666fb458',
+    '0be2bb1c-39f6-44c8-bee7-7d7b3380672d',
+    'ab9ace8b-fceb-4199-94fb-d89f636fe068',
+    '6d6abbe5-8e61-4b6c-8c2b-9b968b08e7cb',
+    'e87a1253-763f-4237-aadd-3c4e22fd62eb',
+    '24a9f2aa-b34e-4e5f-9e3b-e99f74224ab9',
+    '380f2062-9cde-49ab-964b-4b4d2b5892aa',
+    'd2c784cb-cd7f-4ffa-8e35-757921ba4752',
+    'cf0c7856-e5f3-4bfa-851a-1940b386fe3b',
+    '1537e847-b3e5-4a74-bff6-4ed4568f4e12',
+    '00bd8b8e-1a0c-4236-baa5-fd378f7a8c80',
+    '470d8498-9712-4c92-a4e7-1c46afb9bdc0',
+    '71f2b8af-d01b-4c5a-8fa5-5144acd8e569',
+    'befa0574-3034-4d5f-912e-154b10f16834',
+    'b85c9910-86bd-4ea9-b1ff-697de5a0d1e2',
+    '7613de43-0769-466b-811a-d425dfa7783c',
+    'b18488a0-9cdc-4bde-990f-c14a9e667f7d',
+    'a250d5c1-8e97-40fb-a014-657f2b31aaaf',
+    '5dca9e11-9f78-4c0a-8dba-9ba90570f79b',
+    'a6b3e049-1bce-488c-bafe-ee12d3736e5f',
+    'e049d099-6e62-4c16-96b0-9f173fb0e839',
+    '81eb9df2-47cf-4298-acbc-566fffa91319',
+    '49040e11-0e53-435e-847e-671a6821212f',
+    '1fdecada-ce11-435d-823d-5454970d4e32',
+    '523975ae-272c-49a1-a5e5-6bd3899f877b',
+    '92de7358-eacc-414d-ac4a-b922ae37c9ce',
+    '71e09368-e392-49c0-b700-ec2abb21be29',
+    '16032e83-c313-4f62-a70e-0d565c2eee79',
+    '5d084b6c-2e15-4bd9-a1af-73560baf8e73',
+    '408b5743-b159-4d41-aaf8-ad35c2ab85e2',
+    '1f758c14-134f-4de9-b5a1-b7845b01ed66',
+    '761d38ce-813e-4a3d-9c38-e0540b910fdd',
+    'bf78c30f-de98-4f8c-bd48-fdc3bb29c2c8',
+    '2014abb6-d18b-473e-8e8e-e995d6912b2f'
+  ]::uuid[];
+  v_targets integer;
+  v_distinct integer;
+  v_found integer;
+  v_marked integer;
+  v_global_marked integer;
+  v_production_like boolean;
+BEGIN
+  IF to_regclass('public.listings') IS NULL THEN
+    RAISE EXCEPTION 'Wave 2A: public.listings is missing';
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_attribute
+    WHERE attrelid = 'public.listings'::regclass
+      AND attname = 'is_demo'
+      AND atttypid = 'boolean'::regtype
+      AND attnotnull
+      AND NOT attisdropped
+  ) THEN
+    RAISE EXCEPTION
+      'Wave 2A: apply 20261085_add_is_demo.sql first';
+  END IF;
+
+  SELECT count(*), count(DISTINCT id)
+  INTO v_targets, v_distinct
+  FROM unnest(v_target_ids) AS x(id);
+
+  IF v_targets <> 80 OR v_distinct <> 80 THEN
+    RAISE EXCEPTION
+      'Wave 2A: allowlist invalid; count %, distinct %',
+      v_targets, v_distinct;
+  END IF;
+
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.listings
+    WHERE id = ANY(v_target_ids)
+  )
+  INTO v_production_like;
+
+  IF NOT v_production_like THEN
+    RAISE NOTICE
+      'Wave 2A: no production targets found; skipping demo marker';
+    RETURN;
+  END IF;
+
+  SELECT count(*)
+  INTO v_found
+  FROM public.listings
+  WHERE id = ANY(v_target_ids);
+
+  IF v_found <> 80 THEN
+    RAISE EXCEPTION
+      'Wave 2A: production-like DB contains only % of 80 targets',
+      v_found;
+  END IF;
+
+  IF EXISTS (
+    SELECT 1
+    FROM unnest(v_target_ids) AS x(id)
+    WHERE x.id = ANY(ARRAY[
+      '6005a510-ef1b-4fcf-bf3c-e70d33dc58bb'::uuid,
+      '6d9627bf-2063-4145-be16-496785d6eee9'::uuid,
+      '96ccbe26-b889-47db-8f50-be556fbbe713'::uuid
+    ])
+  ) THEN
+    RAISE EXCEPTION 'Wave 2A: allowlist includes an excluded real listing';
+  END IF;
+
+  UPDATE public.listings
+  SET is_demo = true
+  WHERE id = ANY(v_target_ids)
+    AND is_demo IS DISTINCT FROM true;
+
+  SELECT count(*)
+  INTO v_marked
+  FROM public.listings
+  WHERE id = ANY(v_target_ids)
+    AND is_demo IS TRUE;
+
+  SELECT count(*)
+  INTO v_global_marked
+  FROM public.listings
+  WHERE is_demo IS TRUE;
+
+  IF v_marked <> 80 THEN
+    RAISE EXCEPTION
+      'Wave 2A: marked target count %, expected 80', v_marked;
+  END IF;
+
+  IF v_global_marked <> 80 THEN
+    RAISE EXCEPTION
+      'Wave 2A: global demo count %, expected 80', v_global_marked;
+  END IF;
+
+  IF EXISTS (
+    SELECT 1
+    FROM public.listings
+    WHERE id = ANY(ARRAY[
+      '6005a510-ef1b-4fcf-bf3c-e70d33dc58bb'::uuid,
+      '6d9627bf-2063-4145-be16-496785d6eee9'::uuid,
+      '96ccbe26-b889-47db-8f50-be556fbbe713'::uuid
+    ])
+    AND is_demo IS DISTINCT FROM false
+  ) THEN
+    RAISE EXCEPTION
+      'Wave 2A: excluded listing is not is_demo=false';
+  END IF;
+END
+$$;
+
+COMMIT;

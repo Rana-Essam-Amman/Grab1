@@ -60,3 +60,4 @@ psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/realtime_publication_c
 
 # H4 — phone-write lockdown.
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_phone_write.sql
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/schema_demo_marker.sql
