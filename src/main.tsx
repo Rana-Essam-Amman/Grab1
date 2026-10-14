@@ -5,6 +5,8 @@ import App from './App';
 import './index.css';
 import { initSentry } from './config/sentry.init';
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
+import { useListingsStore } from '@/features/listings/store/listings.slice';
+import { useUIStore } from '@/store/ui.slice';
 
 try {
   const saved = localStorage.getItem('catch_locale');
@@ -81,6 +83,21 @@ try {
 }
 
 initSentry();
+
+// TEMP e2e diagnostic — remove after J2 test is stabilized.
+// Exposed only when VITE_ALLOW_QUICK_DEMO=true (CI e2e builds).
+if (import.meta.env.VITE_ALLOW_QUICK_DEMO === 'true') {
+  (window as unknown as { __e2e_state?: () => unknown }).__e2e_state = () => ({
+    listings: useListingsStore.getState().listings.map((l) => ({
+      id: l.id,
+      title: l.title,
+    })),
+    selectedListingId: useUIStore.getState().selectedListingId,
+    currentScreen: useUIStore.getState().currentScreen,
+    searchQuery: useUIStore.getState().searchQuery,
+    isInitialized: useListingsStore.getState().isInitialized,
+  });
+}
 
 window.addEventListener('error', (event) => {
   void logError({
