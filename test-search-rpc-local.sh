@@ -48,3 +48,4 @@ psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_profiles.
 # SECURITY DEFINER bypasses RLS; tests cover internal filters.
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_rpc_seed.sql
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_rpc.sql
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_s16.sql
