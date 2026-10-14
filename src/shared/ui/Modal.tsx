@@ -1,4 +1,5 @@
 import React, { forwardRef, useEffect, useId, ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { CloseCircle } from 'iconsax-react';
 import { cn } from '../lib/cn';
@@ -70,7 +71,7 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(
 
     if (!open) return null;
 
-    return (
+    return createPortal(
       <div
         className="fixed inset-0 z-50 flex items-center justify-center p-4"
         aria-modal="true"
@@ -135,7 +136,8 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(
             </div>
           )}
         </div>
-      </div>
+      </div>,
+      document.body
     );
   }
 );
