@@ -16,6 +16,7 @@ const SEARCH_FIXTURE = {
   images: ['https://example.com/camry.jpg'],
   attributes: [{ key: 'make', label: 'Make', value: 'toyota' }],
   status: 'active',
+  views: 0,
   seller_name: 'E2E',
   seller_phone: '0790000000',
   created_at: new Date().toISOString(),
@@ -23,6 +24,18 @@ const SEARCH_FIXTURE = {
 };
 
 async function installSearchMock(page: Page, results: unknown[]): Promise<void> {
+  // REST /listings — keeps the store populated with the fixture
+  // even if a re-sync fires after navigation (race guard).
+  await page.route(/\/rest\/v1\/listings(\?|$)/, async (route) => {
+    if (route.request().method() !== 'GET') return route.continue();
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(results),
+    });
+  });
+
+  // RPC search endpoint — matches search_listings_v2_intent_typo + hybrid
   await page.route('**/rest/v1/rpc/search_listings**', async (route) => {
     await route.fulfill({
       status: 200,
