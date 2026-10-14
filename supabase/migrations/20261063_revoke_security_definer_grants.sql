@@ -12,8 +12,10 @@
 --   detect_orphan_images / get_due_orphan_paths — path enumeration
 --   expire_premiums / refresh_seller_rating     — forced global recompute
 --
--- Classification is verified by a caller audit (grep across src/,
--- scripts/, supabase/functions/, and cron.job). See commit message.
+-- All REVOKE/GRANT statements are wrapped in DO blocks with
+-- to_regprocedure() existence checks. This handles schema drift:
+-- several functions (fox_enqueue_embedding, dispatch_search_embedding_jobs,
+-- etc.) exist in production but not in the CI migration chain.
 
 begin;
 
@@ -23,148 +25,92 @@ begin;
 drop function if exists public.test_hf_endpoint();
 
 -- =========================================================================
--- 2. anon + authenticated (guest search uses detect_query_category)
+-- 2. Client-facing + cron + admin functions (existence-checked)
 -- =========================================================================
-revoke execute on function public.detect_query_category(text)
-  from public, anon, authenticated;
-grant execute on function public.detect_query_category(text)
-  to anon, authenticated;
-
--- =========================================================================
--- 3. authenticated only (frontend RPCs, internal auth checks verified)
--- =========================================================================
-revoke execute on function public.bump_listing(uuid)
-  from public, anon, authenticated;
-grant execute on function public.bump_listing(uuid)
-  to authenticated;
-
-revoke execute on function public.submit_seller_review(uuid, smallint, text)
-  from public, anon, authenticated;
-grant execute on function public.submit_seller_review(uuid, smallint, text)
-  to authenticated;
-
-revoke execute on function public.get_unread_notification_count()
-  from public, anon, authenticated;
-grant execute on function public.get_unread_notification_count()
-  to authenticated;
-
-revoke execute on function public.mark_all_notifications_read()
-  from public, anon, authenticated;
-grant execute on function public.mark_all_notifications_read()
-  to authenticated;
-
-revoke execute on function public.mark_notification_read(uuid)
-  from public, anon, authenticated;
-grant execute on function public.mark_notification_read(uuid)
-  to authenticated;
-
-revoke execute on function public.mark_messages_read(uuid)
-  from public, anon, authenticated;
-grant execute on function public.mark_messages_read(uuid)
-  to authenticated;
-
--- =========================================================================
--- 4. service_role only (admin/scripts/maintenance)
--- =========================================================================
-revoke execute on function public.apply_premium_purchase(uuid)
-  from public, anon, authenticated;
-grant execute on function public.apply_premium_purchase(uuid)
-  to service_role;
-
-revoke execute on function public.detect_orphan_images(integer)
-  from public, anon, authenticated;
-grant execute on function public.detect_orphan_images(integer)
-  to service_role;
-
-revoke execute on function public.get_due_orphan_paths()
-  from public, anon, authenticated;
-grant execute on function public.get_due_orphan_paths()
-  to service_role;
-
-revoke execute on function public.confirm_orphan_deletion(text[])
-  from public, anon, authenticated;
-grant execute on function public.confirm_orphan_deletion(text[])
-  to service_role;
-
-revoke execute on function public.expire_premiums()
-  from public, anon, authenticated;
-grant execute on function public.expire_premiums()
-  to service_role;
-
--- fox_enqueue_embedding is schema drift: exists in production (from
--- 20261028_capture_semantic_drift.sql) but not in the CI migration chain.
--- Wrap in a conditional so CI (no function) and production (has function)
--- both succeed.
 do $$
+declare
+  v_rules text[] := array[
+    -- anon + authenticated (guest search uses detect_query_category)
+    'public.detect_query_category(text)|anon, authenticated',
+    -- authenticated only (frontend RPCs with internal auth checks)
+    'public.bump_listing(uuid)|authenticated',
+    'public.submit_seller_review(uuid, smallint, text)|authenticated',
+    'public.get_unread_notification_count()|authenticated',
+    'public.mark_all_notifications_read()|authenticated',
+    'public.mark_notification_read(uuid)|authenticated',
+    'public.mark_messages_read(uuid)|authenticated',
+    -- service_role only (admin/scripts/maintenance)
+    'public.apply_premium_purchase(uuid)|service_role',
+    'public.detect_orphan_images(integer)|service_role',
+    'public.get_due_orphan_paths()|service_role',
+    'public.confirm_orphan_deletion(text[])|service_role',
+    'public.expire_premiums()|service_role',
+    'public.fox_enqueue_embedding(text, uuid, text)|service_role',
+    -- postgres only (cron-owned; explicit for ownership-change safety)
+    'public.dispatch_search_embedding_jobs()|postgres',
+    'public.recover_stale_embedding_jobs()|postgres',
+    'public.sweep_orphan_listings()|postgres'
+  ];
+  v_rule text;
+  v_sig text;
+  v_grantee text;
 begin
-  if exists (
-    select 1 from pg_proc
-    where proname = 'fox_enqueue_embedding'
-      and pronamespace = 'public'::regnamespace
-  ) then
-    execute 'revoke execute on function public.fox_enqueue_embedding(text, uuid, text) from public, anon, authenticated';
-    execute 'grant execute on function public.fox_enqueue_embedding(text, uuid, text) to service_role';
-  end if;
+  foreach v_rule in array v_rules loop
+    v_sig := split_part(v_rule, '|', 1);
+    v_grantee := split_part(v_rule, '|', 2);
+    if to_regprocedure(v_sig) is not null then
+      execute format(
+        'revoke execute on function %s from public, anon, authenticated',
+        v_sig
+      );
+      execute format(
+        'grant execute on function %s to %s',
+        v_sig, v_grantee
+      );
+      raise notice 'applied grants: % → %', v_sig, v_grantee;
+    else
+      raise notice 'skipped (not present): %', v_sig;
+    end if;
+  end loop;
 end $$;
 
 -- =========================================================================
--- 5. postgres only (cron-owned; explicit for ownership-change safety)
--- =========================================================================
-revoke execute on function public.dispatch_search_embedding_jobs()
-  from public, anon, authenticated;
-grant execute on function public.dispatch_search_embedding_jobs()
-  to postgres;
-
-revoke execute on function public.recover_stale_embedding_jobs()
-  from public, anon, authenticated;
-grant execute on function public.recover_stale_embedding_jobs()
-  to postgres;
-
-revoke execute on function public.sweep_orphan_listings()
-  from public, anon, authenticated;
-grant execute on function public.sweep_orphan_listings()
-  to postgres;
-
--- =========================================================================
--- 6. Trigger-only functions — revoke all direct client execution
+-- 3. Trigger-only functions — revoke all direct client execution
 --    (Triggers fire regardless of EXECUTE grant.)
 --    get_user_display_name() is called only from notify_on_new_message.
 -- =========================================================================
-revoke execute on function public.handle_new_user()
-  from public, anon, authenticated, service_role;
-
-revoke execute on function public.notify_on_new_message()
-  from public, anon, authenticated, service_role;
-
-revoke execute on function public.notify_on_new_review()
-  from public, anon, authenticated, service_role;
-
-revoke execute on function public.set_listings_search_text()
-  from public, anon, authenticated, service_role;
-
-revoke execute on function public.touch_conversation_on_new_message()
-  from public, anon, authenticated, service_role;
-
-revoke execute on function public.propagate_profile_name_to_listings()
-  from public, anon, authenticated, service_role;
-
-revoke execute on function public.check_error_logs_rate_limit()
-  from public, anon, authenticated, service_role;
-
-revoke execute on function public.check_listing_rate_limit()
-  from public, anon, authenticated, service_role;
-
-revoke execute on function public.get_user_display_name(uuid)
-  from public, anon, authenticated, service_role;
-
-revoke execute on function public.refresh_seller_rating()
-  from public, anon, authenticated, service_role;
-
-revoke execute on function public.enqueue_listing_embedding()
-  from public, anon, authenticated, service_role;
+do $$
+declare
+  v_sigs text[] := array[
+    'public.handle_new_user()',
+    'public.notify_on_new_message()',
+    'public.notify_on_new_review()',
+    'public.set_listings_search_text()',
+    'public.touch_conversation_on_new_message()',
+    'public.propagate_profile_name_to_listings()',
+    'public.check_error_logs_rate_limit()',
+    'public.check_listing_rate_limit()',
+    'public.get_user_display_name(uuid)',
+    'public.refresh_seller_rating()',
+    'public.enqueue_listing_embedding()'
+  ];
+  v_sig text;
+begin
+  foreach v_sig in array v_sigs loop
+    if to_regprocedure(v_sig) is not null then
+      execute format(
+        'revoke execute on function %s from public, anon, authenticated, service_role',
+        v_sig
+      );
+      raise notice 'revoked all: %', v_sig;
+    else
+      raise notice 'skipped (not present): %', v_sig;
+    end if;
+  end loop;
+end $$;
 
 -- =========================================================================
--- 7. Default privileges — global (per-schema cannot revoke global default)
+-- 4. Default privileges — global (per-schema cannot revoke global default)
 --    supabase_admin intentionally excluded: postgres lacks privileges to
 --    alter its defaults; a superuser-level role must do that separately.
 -- =========================================================================
