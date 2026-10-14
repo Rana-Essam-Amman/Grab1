@@ -1,8 +1,10 @@
 import { test, expect, type Page } from '@playwright/test';
 import { installFakeAuth, installFiltersMocks } from '../fixtures/filters-mocks';
 
+const SEARCH_LISTING_ID = 'a1b2c3d4-e5f6-4789-abcd-ef1234567890';
+
 const SEARCH_FIXTURE = {
-  id: 'search-listing-1',
+  id: SEARCH_LISTING_ID,
   user_id: 'e2e00000-0000-0000-0000-000000000001',
   title: 'تويوتا كامري 2018',
   description: 'بحالة ممتازة',
@@ -80,31 +82,13 @@ test.describe('Golden Path — Search', () => {
   test('clicking a search result opens listing detail', async ({ page }) => {
     await installSearchMock(page, [SEARCH_FIXTURE]);
     await page.goto('/');
-
     const input = page.getByTestId('search-input');
     await input.fill('كامري');
     await input.press('Enter');
 
     const card = page.getByTestId('listing-card').first();
     await expect(card).toBeVisible({ timeout: 5000 });
-
-    const beforeClick = await page.evaluate(() => {
-      const w = window as unknown as { __e2e_state?: () => unknown };
-      return w.__e2e_state?.() ?? null;
-    });
-    console.log('[J2 BEFORE CLICK]', JSON.stringify(beforeClick, null, 2));
-
     await card.click();
-    await page.waitForTimeout(1500);
-
-    const afterClick = await page.evaluate(() => {
-      const w = window as unknown as { __e2e_state?: () => unknown };
-      return w.__e2e_state?.() ?? null;
-    });
-    console.log('[J2 AFTER CLICK]', JSON.stringify(afterClick, null, 2));
-
-    const bodyText = await page.evaluate(() => document.body.innerText.slice(0, 500));
-    console.log('[J2 BODY]', bodyText);
 
     await expect(
       page.getByRole('heading', { name: 'تويوتا كامري 2018' })
