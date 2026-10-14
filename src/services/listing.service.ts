@@ -6,21 +6,21 @@ import { readValidated, writeValidated } from '../shared/lib/safeStorage';
 import { seedListings } from '../data/seedListings';
 import { executeAutoBumpScheduler as runBumpScheduler } from '../data/monetization';
 
-
 const ListingsArraySchema = z.array(ListingSchema);
 const WishlistArraySchema = z.array(z.string());
 
+/**
+ * Read listings from localStorage, dropping any legacy seed records.
+ *
+ * Seed listings have no canonical seller UUID and cannot support chat.
+ * Historically they were appended to the cache; now they're filtered out
+ * so the store contains only real Supabase listings.
+ */
 export function getListingsFromStorage(): Listing[] {
-  // Read and validate using safeStorage with fallback to empty array
   const parsed = readValidated<Listing[]>('catch_listings', ListingsArraySchema, []);
-  let rawListings = seedListings;
-
-  if (parsed.length > 0) {
-    const userCreated = parsed.filter(pl => pl && !seedListings.some(sl => sl.id === pl.id));
-    rawListings = [...userCreated, ...seedListings];
-  }
-
-  return executeAutoBumpScheduler(rawListings);
+  const seedIds = new Set(seedListings.map((sl) => sl.id));
+  const liveListings = parsed.filter((pl) => pl && !seedIds.has(pl.id));
+  return executeAutoBumpScheduler(liveListings);
 }
 
 export function saveListingsToStorage(listings: Listing[]): void {
