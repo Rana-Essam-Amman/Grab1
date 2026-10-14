@@ -65,7 +65,7 @@ export async function fetchPublicProfile(
       console.warn('[profilesFetchService] fetchPublicProfile error', error.message);
       return null;
     }
-    return (data as PublicProfileRecord | null) ?? null;
+    return (data as unknown as PublicProfileRecord | null) ?? null;
   } catch (err) {
     console.warn('[profilesFetchService] fetchPublicProfile threw', err);
     return null;
@@ -101,16 +101,14 @@ export async function fetchOwnProfile(
       return { ok: false, reason: 'phone_error' };
     }
 
+    const row = profileRes.data as unknown as Omit<OwnProfileRecord, 'phone'>;
     const phone = (phoneRes.data as string | null) ?? null;
     return {
       ok: true,
-      profile: {
-        ...(profileRes.data as Omit<OwnProfileRecord, 'phone'>),
-        phone,
-      },
+      profile: { ...row, phone },
     };
   } catch (err) {
     console.warn('[profilesFetchService] fetchOwnProfile threw', err);
     return { ok: false, reason: 'profile_error' };
   }
-}
+    }
