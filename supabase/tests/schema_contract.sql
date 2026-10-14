@@ -209,6 +209,7 @@ DO $$
 DECLARE
   v_fn record;
   v_oid oid;
+  v_actual_args text;
   v_result text;
 BEGIN
   FOR v_fn IN
@@ -228,13 +229,25 @@ BEGIN
        'SETOF listings')
     ) AS expected(function_name, identity_args, result_type)
   LOOP
-    SELECT p.oid, pg_get_function_result(p.oid)
-    INTO v_oid, v_result
+    SELECT p.oid,
+      regexp_replace(
+        pg_get_function_identity_arguments(p.oid),
+        '(extensions|public)\.',
+        '',
+        'g'
+      ),
+      pg_get_function_result(p.oid)
+    INTO v_oid, v_actual_args, v_result
     FROM pg_proc p
     JOIN pg_namespace n ON n.oid = p.pronamespace
     WHERE n.nspname = 'public'
       AND p.proname = v_fn.function_name
-      AND pg_get_function_identity_arguments(p.oid) = v_fn.identity_args;
+      AND regexp_replace(
+            pg_get_function_identity_arguments(p.oid),
+            '(extensions|public)\.',
+            '',
+            'g'
+          ) = v_fn.identity_args;
 
     IF NOT FOUND THEN
       RAISE EXCEPTION
@@ -258,6 +271,7 @@ DO $$
 DECLARE
   v_fn record;
   v_oid oid;
+  v_actual_args text;
   v_result text;
 BEGIN
   FOR v_fn IN
@@ -277,13 +291,25 @@ BEGIN
        'boolean')
     ) AS expected(function_name, identity_args, result_type)
   LOOP
-    SELECT p.oid, pg_get_function_result(p.oid)
-    INTO v_oid, v_result
+    SELECT p.oid,
+      regexp_replace(
+        pg_get_function_identity_arguments(p.oid),
+        '(extensions|public)\.',
+        '',
+        'g'
+      ),
+      pg_get_function_result(p.oid)
+    INTO v_oid, v_actual_args, v_result
     FROM pg_proc p
     JOIN pg_namespace n ON n.oid = p.pronamespace
     WHERE n.nspname = 'public'
       AND p.proname = v_fn.function_name
-      AND pg_get_function_identity_arguments(p.oid) = v_fn.identity_args;
+      AND regexp_replace(
+            pg_get_function_identity_arguments(p.oid),
+            '(extensions|public)\.',
+            '',
+            'g'
+          ) = v_fn.identity_args;
 
     IF NOT FOUND THEN
       RAISE EXCEPTION
