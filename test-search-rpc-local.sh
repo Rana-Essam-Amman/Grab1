@@ -41,6 +41,9 @@ psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security.sql
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/bootstrap_auth_stubs.sql
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_authenticated.sql
 
+# RLS — profiles.phone closure (4 assertions). Uses auth stubs above.
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_profiles.sql
+
 # RPC — listings_by_seller security (4 assertions).
 # SECURITY DEFINER bypasses RLS; tests cover internal filters.
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_rpc_seed.sql
