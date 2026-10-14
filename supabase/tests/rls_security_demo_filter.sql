@@ -41,6 +41,8 @@ BEGIN
 END
 $fixture$;
 
+GRANT USAGE ON SCHEMA extensions TO anon;
+
 SET LOCAL ROLE anon;
 
 -- T1: anon cannot see demo fixture in listings
