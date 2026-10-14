@@ -5,7 +5,6 @@ import { LISTINGS_PAGE_SIZE } from '../services/listingsService';
 import { performSupabaseSync } from './listings.slice.supabase';
 import { searchListingsHybrid } from '../services/searchListingsHybrid';
 import { saveListingsToStorage } from '@/services/listing.service';
-import { seedListings } from '@/data/seedListings';
 
 type SetFn = (fn: (state: ListingsState) => void) => void;
 type GetFn = () => ListingsState;
@@ -28,7 +27,7 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
       });
       set((s) => {
         if (result.listings) {
-          s.listings = [...result.listings, ...seedListings];
+          s.listings = result.listings;
           s.activeMarket = targetMarket ?? null;
           s.activeSearchQuery = null;
           s.activeFilterArgs = null;
@@ -94,7 +93,7 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
         });
         set((s) => {
           if (result.listings) {
-            s.listings = [...result.listings, ...seedListings];
+            s.listings = result.listings;
             s.activeMarket = targetMarket ?? null;
             s.activeSearchQuery = null;
             s.activeFilterArgs = null;
