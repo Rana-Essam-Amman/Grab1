@@ -76,20 +76,26 @@ BEGIN
         v_column.column_name, v_actual_nullable, v_column.is_nullable;
     END IF;
 
-    IF v_column.column_name = 'browse_market' THEN
+    IF v_column.expected_default IS NULL THEN
       IF v_actual_default IS NOT NULL
          AND lower(regexp_replace(v_actual_default, '\s+', '', 'g'))
-             NOT IN ('null', 'null::text') THEN
+             NOT IN (
+               'null',
+               'null::text',
+               'null::timestampwithtimezone',
+               'null::numeric',
+               'null::boolean'
+             ) THEN
         RAISE EXCEPTION
-          'Wave 4 schema reconciliation failed: profiles.browse_market default is %, expected NULL',
-          v_actual_default;
+          'Wave 4 schema reconciliation failed: profiles.% default is %, expected NULL',
+          v_column.column_name, v_actual_default;
       END IF;
     ELSE
       v_expected_default := v_column.expected_default;
 
       IF regexp_replace(
            coalesce(v_actual_default, ''),
-           '::(text|numeric|boolean)$',
+           '::(text|numeric|boolean|timestampwithtimezone)$',
            '',
            'g'
          ) IS DISTINCT FROM v_expected_default THEN
