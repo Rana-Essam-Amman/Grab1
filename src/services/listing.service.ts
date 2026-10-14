@@ -4,21 +4,24 @@ import { Listing } from '../types';
 import { ListingSchema } from '../schemas/listing.schema';
 import { readValidated, writeValidated } from '../shared/lib/safeStorage';
 import { seedListings } from '../data/seedListings';
+import { isDemoMode, withDemoSeeds } from '../shared/lib/demoMode';
 import { executeAutoBumpScheduler as runBumpScheduler } from '../data/monetization';
 
 const ListingsArraySchema = z.array(ListingSchema);
 const WishlistArraySchema = z.array(z.string());
 
 /**
- * Read listings from localStorage, dropping any legacy seed records.
+ * Read listings from localStorage.
  *
- * Seed listings have no canonical seller UUID and cannot support chat.
- * Historically they were appended to the cache; now they're filtered out
- * so the store contains only real Supabase listings.
+ * Demo mode: seed listings are appended (deduped).
+ * Production: seeds are filtered out — only real DB listings persist.
  */
 export function getListingsFromStorage(): Listing[] {
   const parsed = readValidated<Listing[]>('catch_listings', ListingsArraySchema, []);
-  const seedIds = new Set(seedListings.map((sl) => sl.id));
+  if (isDemoMode()) {
+    return executeAutoBumpScheduler(withDemoSeeds(parsed));
+  }
+  const seedIds = new Set(seedListings.map((s) => s.id));
   const liveListings = parsed.filter((pl) => pl && !seedIds.has(pl.id));
   return executeAutoBumpScheduler(liveListings);
 }
