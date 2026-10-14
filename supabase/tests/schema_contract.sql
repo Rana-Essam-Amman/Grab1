@@ -28,7 +28,7 @@ BEGIN
       ('browse_market', 'text', true, NULL::text),
       ('vip_store', 'boolean', false, 'false'),
       ('vip_store_expires_at', 'timestamp with time zone', true, NULL::text),
-      ('rating_avg', 'numeric', false, '0'),
+      ('rating_avg', 'numeric(3,2)', false, '0'),
       ('rating_count', 'integer', false, '0')
     ) AS expected(column_name, data_type, is_nullable, expected_default)
   LOOP
