@@ -33,8 +33,6 @@ export interface ProfileUpdate {
   readonly first_name?: string;
   readonly last_name?: string;
   readonly nickname?: string;
-  readonly phone?: string;
-  readonly phone_locked?: boolean;
   readonly avatar_url?: string;
   readonly country_code?: string;
   readonly feed_layout?: 'list' | 'grid';
@@ -74,13 +72,45 @@ export async function upsertProfile(
   }
 }
 
-export async function savePhone(
-  userId: string,
-  phone: string
-): Promise<ProfileRecord | null> {
+export async function setInitialPhone(phone: string): Promise<boolean> {
   const trimmed = phone.trim();
-  if (!trimmed) return null;
-  return upsertProfile(userId, { phone: trimmed, phone_locked: true });
+  if (!trimmed) return false;
+  try {
+    const { data, error } = await supabase.rpc('set_initial_phone', {
+      p_phone: trimmed,
+    });
+    if (error) {
+      console.warn('[profilesService] setInitialPhone error', error.message);
+      return false;
+    }
+    return data === true;
+  } catch (err) {
+    console.warn('[profilesService] setInitialPhone threw', err);
+    return false;
+  }
+}
+
+export async function requestPhoneChange(
+  phone: string,
+  reason: string
+): Promise<string | null> {
+  const trimmedPhone = phone.trim();
+  const trimmedReason = reason.trim();
+  if (!trimmedPhone || trimmedReason.length < 3) return null;
+  try {
+    const { data, error } = await supabase.rpc('request_phone_change', {
+      p_requested_phone: trimmedPhone,
+      p_reason: trimmedReason,
+    });
+    if (error) {
+      console.warn('[profilesService] requestPhoneChange error', error.message);
+      return null;
+    }
+    return typeof data === 'string' ? data : null;
+  } catch (err) {
+    console.warn('[profilesService] requestPhoneChange threw', err);
+    return null;
+  }
 }
 
 export async function saveNickname(
