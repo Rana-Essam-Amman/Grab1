@@ -22,7 +22,9 @@ export async function installFiltersMocks(page: Page): Promise<void> {
 
   await page.route(/\/rest\/v1\/listings(\?|$)/, async (route: Route) => {
     const method = route.request().method();
-    if (method !== 'GET') return route.continue();
+    const url = new URL(route.request().url());
+    const select = url.searchParams.get('select');
+
     const now = new Date().toISOString();
     const seed = [
       {
@@ -66,6 +68,28 @@ export async function installFiltersMocks(page: Page): Promise<void> {
         updated_at: now,
       },
     ];
+
+    // Image-select GET (deleteListing service) → return single object.
+    if (method === 'GET' && select === 'images') {
+      const idParam = url.searchParams.get('id') ?? '';
+      const id = idParam.replace(/^eq\./, '');
+      const match = seed.find((l) => l.id === id);
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ id, images: match?.images ?? [] }),
+      });
+      return;
+    }
+
+    // DELETE → 204 No Content
+    if (method === 'DELETE') {
+      await route.fulfill({ status: 204, body: '' });
+      return;
+    }
+
+    if (method !== 'GET') return route.continue();
+
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(seed) });
   });
 
