@@ -10,14 +10,14 @@ import { useListingDerivedData, getWhatsAppUrl } from '../helpers/listingDerived
 import { composeIntentMessage, WhatsAppIntent } from '../helpers/whatsappIntents';
 import { Listing } from '@/types';
 import { ScreenType } from '@/store/ui.slice';
-import { toast } from 'sonner';
+import { showChatUnavailable, showChatSignInRequired, showChatOpenFailed, showChatCrossMarket } from '../helpers/chatErrorToast';
+
 export interface UseListingDetailReturn {
   listing: Listing | null; activeCountry: string; isCountryMismatch: boolean;
   sanitizedLoc: { city: string; neighborhood: string }; locationText: string;
   mapUrl: string; displayCurrency: string; images: string[]; mapQuery: string;
   formattedPhone: FormattedPhone; activePhotoIdx: number; setActivePhotoIdx: (idx: number) => void;
-  showShare: boolean; setShowShare: (v: boolean) => void; showReport: boolean; setShowReport: (v: boolean) => void;
-  showWhatsAppSheet: boolean; setShowWhatsAppSheet: (v: boolean) => void;
+  showShare: boolean; setShowShare: (v: boolean) => void; showReport: boolean; setShowReport: (v: boolean) => void; showWhatsAppSheet: boolean; setShowWhatsAppSheet: (v: boolean) => void;
   handleStartChat: () => void | Promise<void>; handleCall: () => void; handleWhatsApp: () => void;
   handleWhatsAppClick: () => void; handleWhatsAppIntent: (intent: WhatsAppIntent) => void;
   handleDelete: () => Promise<void>; handleSelectSeller: () => void; isAuthenticated: boolean;
@@ -51,20 +51,20 @@ export function useListingDetail(): UseListingDetailReturn {
     navigateTo('seller-profile');
   }, [listing, setSelectedSellerPhone, navigateTo]);
   const handleStartChat = useCallback(async () => {
-    if (!listing || authStatus === 'unauthenticated' || !user?.id || !listing.userId || isOwner) {
-      if (authStatus === 'unauthenticated') navigateTo('login');
-      return;
-    }
+    if (!listing) return;
+    if (authStatus === 'unauthenticated') { navigateTo('login'); return; }
+    if (!user?.id) { showChatSignInRequired(isArabic); return; }
+    if (isOwner) return;
+    if (!listing.userId) { showChatUnavailable(isArabic); return; }
     try {
       const conv = await openConversation({ listingId: listing.id, buyerId: user.id, sellerId: listing.userId, marketCode: listing.countryCode }, activeCountry);
-      if (conv) { setSelectedThreadId(conv.id); navigateTo('thread'); }
+      if (!conv) { showChatOpenFailed(isArabic); return; }
+      setSelectedThreadId(conv.id);
+      navigateTo('thread');
     } catch (error) {
       const msg = error instanceof Error ? error.message : '';
-      if (msg.includes('Cross-market')) {
-        toast.error(isArabic ? 'الدردشة غير متاحة عبر الأسواق' : 'Chat not available across markets');
-      } else {
-        toast.error(isArabic ? 'تعذر فتح الدردشة — حاول مرة أخرى' : 'Could not open chat — please retry');
-      }
+      if (msg.includes('Cross-market')) showChatCrossMarket(isArabic);
+      else showChatOpenFailed(isArabic);
       console.error('[Chat] Failed:', error);
     }
   }, [listing, authStatus, navigateTo, openConversation, setSelectedThreadId, user, activeCountry, isOwner, isArabic]);
