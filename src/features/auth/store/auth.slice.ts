@@ -4,7 +4,7 @@ import { immer } from 'zustand/middleware/immer';
 import { AuthState } from './auth.slice.types';
 import { getInitialSession, getInitialRegisteredUsers } from './auth.slice.helpers';
 import { createAuthActions } from './auth.slice.actions';
-import { fetchProfile } from '@/shared/lib/profilesService';
+import { fetchOwnProfile } from '@/shared/lib/profilesFetchService';
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -77,11 +77,14 @@ export const useAuthStore = create<AuthState>()(
   )
 );
 
-
 /**
- * Fetch the user's Supabase profile after sign-in and hydrate local 
- * state with fields that are not present in the OAuth session 
- * (phone, nickname).
+ * Fetch the user's Supabase profile after sign-in and hydrate local
+ * state with fields that are not present in the OAuth session
+ * (phone, nickname, preferences).
+ *
+ * Uses fetchOwnProfile (split service): phone comes from get_own_phone()
+ * RPC. If the RPC fails, we still apply nickname/feed_layout/browse_market
+ * but skip the phone update — never overwrite a valid phone with null.
  *
  * Runs once per auth event. Idempotent.
  * Uses `finally` so profileHydrated flips true even on failure.
@@ -90,13 +93,16 @@ export async function hydrateProfile(): Promise<void> {
   try {
     const current = useAuthStore.getState().user;
     if (!current?.id) return;
-    const profile = await fetchProfile(current.id);
-    if (!profile) return;
+
+    const result = await fetchOwnProfile(current.id);
+    if (!result.ok) return;
+
     const latest = useAuthStore.getState().user;
     if (!latest || latest.id !== current.id) return;
 
+    const profile = result.profile;
     const patch: { phone?: string; nickname?: string; browseMarket?: 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | null } = {};
-    if (profile.phone) patch.phone = profile.phone;
+    if (!result.phoneError && profile.phone) patch.phone = profile.phone;
     if (profile.nickname) patch.nickname = profile.nickname;
     if (profile.browse_market) patch.browseMarket = profile.browse_market;
 
