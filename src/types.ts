@@ -38,6 +38,7 @@ export type ListingStatus = 'active' | 'pending' | 'sold' | 'archived';
 export interface Listing {
   id: string;
   userId?: string;
+  isDemo?: boolean;
   title: string;
   description: string;
   price: string;

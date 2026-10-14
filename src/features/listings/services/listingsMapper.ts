@@ -3,6 +3,7 @@ import type { Listing } from '@/types';
 export interface SupabaseListingRow {
   readonly id: string;
   readonly user_id: string;
+  readonly is_demo?: boolean;
   readonly title: string;
   readonly description: string;
   readonly price: string;
@@ -37,6 +38,7 @@ export function rowToListing(row: SupabaseListingRow): Listing {
   return {
     id: row.id,
     userId: row.user_id,
+    isDemo: row.is_demo ?? false,
     title: row.title,
     description: row.description,
     price: row.price,
