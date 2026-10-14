@@ -50,32 +50,32 @@ end $$;
 -- C. 11 functions have search_path pinned
 do $$
 declare
-  v_sigs text[] := array[
-    'arabic_word_variants(text)',
-    'build_prefix_tsquery(text)',
-    'expand_arabic_variants(text)',
-    'expand_search_keywords(text)',
-    'listing_passes_filters(listings, text, text, numeric, numeric, text, text, jsonb)',
-    'normalize_arabic(text)',
-    'normalize_search_query(text)',
-    'normalize_search_text(text)',
-    'search_character_array(text)',
-    'search_json_values(jsonb)',
-    'set_updated_at()'
+  v_names text[] := array[
+    'arabic_word_variants',
+    'build_prefix_tsquery',
+    'expand_arabic_variants',
+    'expand_search_keywords',
+    'listing_passes_filters',
+    'normalize_arabic',
+    'normalize_search_query',
+    'normalize_search_text',
+    'search_character_array',
+    'search_json_values',
+    'set_updated_at'
   ];
-  v_sig text;
+  v_name text;
   v_cfg text[];
 begin
-  foreach v_sig in array v_sigs loop
+  foreach v_name in array v_names loop
     select proconfig into v_cfg
     from pg_proc
     where pronamespace='public'::regnamespace
-      and format('%s(%s)', proname, pg_get_function_identity_arguments(oid)) = format('%s', v_sig)
+      and proname = v_name
     limit 1;
     if v_cfg is null or not exists (
       select 1 from unnest(v_cfg) c where c like 'search_path=%'
     ) then
-      raise exception 'FAIL C: no search_path on %', v_sig;
+      raise exception 'FAIL C: no search_path on %', v_name;
     end if;
   end loop;
   raise notice 'PASS C: 11 functions have search_path pinned';
