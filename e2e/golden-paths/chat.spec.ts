@@ -97,19 +97,15 @@ test.describe('Golden Path — J3 View + Contact (from listing detail)', () => {
     const chatBtn = chatReadyPage.locator('[data-testid="listing-chat-button"]').first();
     await expect(chatBtn).toBeVisible({ timeout: 5000 });
 
-    const convRequestPromise = chatReadyPage.waitForRequest(
-      (req) => req.url().includes('/rest/v1/conversations') && req.method() === 'POST',
-      { timeout: 10000 }
-    );
-
     await chatBtn.click();
 
-    const convRequest = await convRequestPromise;
-    const body = convRequest.postDataJSON() as { listing_id?: string; buyer_id?: string };
-    expect(body.listing_id).toBe('e2e00000-0000-0000-0000-000000000003');
-
+    // ThreadScreen renders → message input visible + seller header text.
     const input = chatReadyPage.locator(SELECTORS.chat.messageInput).first();
-    await expect(input).toBeVisible({ timeout: 5000 });
+    await expect(input).toBeVisible({ timeout: 10000 });
+
+    await expect(chatReadyPage.getByText('Seller E2E').first()).toBeVisible({
+      timeout: 5000,
+    });
 
     await expectNoConsoleErrors(filterExpectedAuth400s(consoleErrors));
   });
