@@ -65,3 +65,48 @@ test.describe('Chat Golden Path', () => {
     await expectNoConsoleErrors(filterExpectedAuth400s(consoleErrors));
   });
 });
+
+test.describe('Golden Path — J3 View + Contact (from listing detail)', () => {
+  test('listing detail shows all three contact actions', async ({ chatReadyPage }) => {
+    const consoleErrors = setupConsoleErrorListener(chatReadyPage);
+
+    await chatReadyPage.goto('/');
+    await chatReadyPage.locator(SELECTORS.wishlist.listingCard).first().click();
+
+    const chatBtn = chatReadyPage.locator('[data-testid="listing-chat-button"]').first();
+    const waBtn = chatReadyPage
+      .getByRole('button', { name: /Contact via WhatsApp|تواصل عبر واتساب/ })
+      .first();
+    const callBtn = chatReadyPage
+      .getByRole('button', { name: /^Call$|^اتصال$/ })
+      .first();
+
+    await expect(chatBtn).toBeVisible({ timeout: 5000 });
+    await expect(waBtn).toBeVisible({ timeout: 5000 });
+    await expect(callBtn).toBeVisible({ timeout: 5000 });
+
+    await expectNoConsoleErrors(filterExpectedAuth400s(consoleErrors));
+  });
+
+  test('clicking chat on listing detail opens the thread with input', async ({ chatReadyPage }) => {
+    const consoleErrors = setupConsoleErrorListener(chatReadyPage);
+
+    await chatReadyPage.goto('/');
+    await chatReadyPage.locator(SELECTORS.wishlist.listingCard).first().click();
+
+    const chatBtn = chatReadyPage.locator('[data-testid="listing-chat-button"]').first();
+    await expect(chatBtn).toBeVisible({ timeout: 5000 });
+
+    await chatBtn.click();
+
+    // ThreadScreen renders → message input visible + seller header text.
+    const input = chatReadyPage.locator(SELECTORS.chat.messageInput).first();
+    await expect(input).toBeVisible({ timeout: 10000 });
+
+    await expect(chatReadyPage.getByText('Seller E2E').first()).toBeVisible({
+      timeout: 5000,
+    });
+
+    await expectNoConsoleErrors(filterExpectedAuth400s(consoleErrors));
+  });
+});
