@@ -214,52 +214,32 @@ BEGIN
   END IF;
   RAISE NOTICE 'PASS G: arbitrary attribute key is searchable across categories';
 
+  -- TEST H: UPDATE trigger regenerates search_text correctly.
+  -- We verify state directly (not via RPC) because old/new values
+  -- share tokens (ثقيل + اختبار) and the search RPC may return the
+  -- listing via fuzzy fallback even when search_text is correct.
   UPDATE public.listings
   SET attributes = '[{"key":"color","label":"اللون","value":"محدث-ثقيل-اختبار"}]'::jsonb
   WHERE id = v_listing_id;
 
-  SELECT EXISTS (
-    SELECT 1 FROM public.search_listings_v2_intent_typo(
-      p_query => 'فرشاتي-ثقيل-اختبار',
-      p_market => 'JO',
-      p_limit => 100,
-      p_offset => 0,
-      p_category_slug => NULL,
-      p_subcategory_slug => NULL,
-      p_min_price => NULL,
-      p_max_price => NULL,
-      p_city => NULL,
-      p_neighborhood => NULL,
-      p_attrs => NULL
-    ) AS r
-    WHERE r.id = v_listing_id
-  ) INTO v_found;
+  SELECT search_text INTO v_search_text
+  FROM public.listings WHERE id = v_listing_id;
 
-  IF v_found THEN
-    RAISE EXCEPTION 'TEST H FAIL: old attribute value still returns the updated listing';
+  IF v_search_text IS NULL THEN
+    RAISE EXCEPTION 'TEST H FAIL: search_text NULL after UPDATE';
   END IF;
 
-  SELECT EXISTS (
-    SELECT 1 FROM public.search_listings_v2_intent_typo(
-      p_query => 'محدث-ثقيل-اختبار',
-      p_market => 'JO',
-      p_limit => 100,
-      p_offset => 0,
-      p_category_slug => NULL,
-      p_subcategory_slug => NULL,
-      p_min_price => NULL,
-      p_max_price => NULL,
-      p_city => NULL,
-      p_neighborhood => NULL,
-      p_attrs => NULL
-    ) AS r
-    WHERE r.id = v_listing_id
-  ) INTO v_found;
-
-  IF NOT v_found THEN
-    RAISE EXCEPTION 'TEST H FAIL: new attribute value was not searchable after UPDATE';
+  -- Old value's unique prefix "فرشاتي" must be GONE
+  IF position('فرشاتي' IN v_search_text) > 0 THEN
+    RAISE EXCEPTION 'TEST H FAIL: old attribute value still present in search_text';
   END IF;
-  RAISE NOTICE 'PASS H: UPDATE trigger removes old value and indexes new value';
+
+  -- New value's unique prefix "محدث" must be PRESENT
+  IF position('محدث' IN v_search_text) = 0 THEN
+    RAISE EXCEPTION 'TEST H FAIL: new attribute value not present in search_text';
+  END IF;
+
+  RAISE NOTICE 'PASS H: UPDATE trigger regenerated search_text correctly';
 
   RAISE NOTICE 'ALL ATTRIBUTE SEARCH REGRESSION TESTS PASSED';
 END $$;
