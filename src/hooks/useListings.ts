@@ -57,6 +57,8 @@ export const useListings = () => {
     loadMore: store.loadMore,
     searchFromSupabase: store.searchFromSupabase,
     activeSearchQuery: store.activeSearchQuery,
+    searchBanner: store.searchBanner,
+    searchRelatedHeader: store.searchRelatedHeader,
   };
 };
 

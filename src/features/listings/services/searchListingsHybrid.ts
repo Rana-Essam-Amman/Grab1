@@ -10,6 +10,7 @@ import {
   detectCategory,
   attrsToJsonbArray,
 } from './searchListingsHybrid.helpers';
+import { searchListingsV4 } from './searchListingsV4';
 
 const MAX_COSINE_DISTANCE = 0.85;
 const FTS_DOMINANT_MIN_RESULTS = 1;
@@ -40,12 +41,9 @@ function checkRateLimit(): boolean {
  *   0. Rate limit (frontend, 30/min). Rejects with a user-facing error.
  *   1. detect_query_category(query) — maps Arabic/English keywords to a
  *      category_slug (e.g. "سيارات" → "motors"). NULL when no match.
- *   2. FTS (search_listings_v2_intent_typo, 11-arg) with filters. If it
- *      returns at least one result → return those directly. This wrapper
- *      is v2_intent + a fuzzy typo fallback (Group H).
- *   3. Otherwise → search_listings_hybrid with the query vector + category
- *      hint + all filters. Both FTS and semantic branches are filtered
- *      before RRF fusion. This is the path that serves Group F (semantic).
+ *   2. search_listings_v4_exact. Exact matches are returned as results.
+ *      Related matches are returned only when exact is empty.
+ *   3. On v4 error only: fall back to v2_intent_typo, then hybrid.
  *
  * Safety: PostgREST rejects JS null for extensions.vector. When the vector
  * is unavailable, p_query_vector is omitted so SQL DEFAULT NULL applies
@@ -53,7 +51,7 @@ function checkRateLimit(): boolean {
  */
 export async function searchListingsHybrid(
   params: SearchListingsParams,
-): Promise<{ data: Listing[] | null; error: string | null }> {
+): Promise<{ data: Listing[] | null; error: string | null; matchKind?: string; banner?: string | null; relatedHeader?: string | null }> {
   try {
     if (!checkRateLimit()) {
       return { data: null, error: 'Too many searches. Please wait a moment.' };
@@ -81,6 +79,9 @@ export async function searchListingsHybrid(
       p_neighborhood: neighborhood,
       p_attrs: attrsJson,
     };
+
+    const v4 = await searchListingsV4(trimmed, market, limit, offset, filterArgs);
+    if (v4) return v4;
 
     const { data: ftsData, error: ftsError } = await supabase.rpc('search_listings_v2_intent_typo', {
       p_query: trimmed,

@@ -15,6 +15,8 @@ const initialFilterArgs: SearchListingsParams | null = null;
 
 export const createPaginationActions = (set: SetFn, get: GetFn) => ({
   activeSearchQuery: initialSearchQuery,
+  searchBanner: null,
+  searchRelatedHeader: null,
   activeFilterArgs: initialFilterArgs,
 
   syncFromSupabase: async (market?: string) => {
@@ -31,6 +33,8 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
           s.listings = withDemoSeeds(result.listings);
           s.activeMarket = targetMarket ?? null;
           s.activeSearchQuery = null;
+          s.searchBanner = null;
+          s.searchRelatedHeader = null;
           s.activeFilterArgs = null;
           s.page = 0;
           s.hasMore = result.listings.length === LISTINGS_PAGE_SIZE;
@@ -97,6 +101,8 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
             s.listings = withDemoSeeds(result.listings);
             s.activeMarket = targetMarket ?? null;
             s.activeSearchQuery = null;
+            s.searchBanner = null;
+            s.searchRelatedHeader = null;
             s.activeFilterArgs = null;
             s.page = 0;
             s.hasMore = result.listings.length === LISTINGS_PAGE_SIZE;
@@ -119,6 +125,8 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
         s.listings = hybrid.data ?? [];
         s.activeMarket = targetMarket ?? null;
         s.activeSearchQuery = trimmed;
+        s.searchBanner = hybrid.banner ?? null;
+        s.searchRelatedHeader = hybrid.relatedHeader ?? null;
         s.activeFilterArgs = callParams;
         s.page = 0;
         s.hasMore = (hybrid.data?.length ?? 0) === LISTINGS_PAGE_SIZE;

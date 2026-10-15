@@ -16,6 +16,8 @@ export interface ListingsState {
   isQuotaExhausted: boolean;
   activeMarket: string | null;
   activeSearchQuery: string | null;
+  searchBanner: string | null;
+  searchRelatedHeader: string | null;
   activeFilterArgs: SearchListingsParams | null;
   page: number;
   hasMore: boolean;

@@ -6,10 +6,11 @@ if [[ -z "${DATABASE_URL:-}" ]]; then
   exit 2
 fi
 
-# Safety boundary: only loopback databases are allowed. This deliberately rejects
-# hosted Supabase and every non-local host, even if credentials are available.
-node - "$DATABASE_URL" <<'NODE'
-const raw = process.argv[2];
+# Safety boundary: only loopback databases are allowed. DATABASE_URL is read
+# from the environment, never from argv, so it does not appear in `ps`.
+assert_loopback() {
+  node <<'NODE'
+const raw = process.env.DATABASE_URL || '';
 let url;
 try {
   url = new URL(raw);
@@ -24,52 +25,83 @@ if (!allowed.has(host)) {
   process.exit(3);
 }
 NODE
+}
+
+# Prove a hosted Supabase URL is rejected before any SQL runs.
+if DATABASE_URL='postgresql://postgres:secret@db.example.supabase.co:5432/postgres' assert_loopback; then
+  echo "ERROR: hosted Supabase URL was not rejected." >&2
+  exit 5
+fi
+
+assert_loopback
 
 if ! command -v psql >/dev/null 2>&1; then
   echo "ERROR: psql is required. Start local Supabase and install/use PostgreSQL client tools." >&2
   exit 4
 fi
 
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/search_listings_rpc.sql
+# Hand connection params to psql via the environment, not argv.
+eval "$(node <<'NODE'
+const url = new URL(process.env.DATABASE_URL);
+const q = (v) => `'${String(v).replace(/'/g, `'\\''`)}'`;
+process.stdout.write(`export PGHOST=${q(url.hostname)}\n`);
+process.stdout.write(`export PGPORT=${q(url.port || '5432')}\n`);
+process.stdout.write(`export PGUSER=${q(decodeURIComponent(url.username))}\n`);
+process.stdout.write(`export PGPASSWORD=${q(decodeURIComponent(url.password))}\n`);
+process.stdout.write(`export PGDATABASE=${q(url.pathname.replace(/^\//, ''))}\n`);
+NODE
+)"
+
+run_sql() {
+  psql -v ON_ERROR_STOP=1 -f "$1"
+}
+
+run_sql supabase/tests/search_listings_rpc.sql
 
 # RLS — anon suite (8 assertions).
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_seed.sql
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security.sql
+run_sql supabase/tests/rls_security_seed.sql
+run_sql supabase/tests/rls_security.sql
 
 # RLS — authenticated suite (3 assertions).
 # Stubs override auth.uid()/auth.jwt() AFTER the anon suite runs.
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/bootstrap_auth_stubs.sql
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_authenticated.sql
+run_sql supabase/tests/bootstrap_auth_stubs.sql
+run_sql supabase/tests/rls_security_authenticated.sql
 
 # RLS — profiles.phone closure (4 assertions). Uses auth stubs above.
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_profiles.sql
+run_sql supabase/tests/rls_security_profiles.sql
 
 # RPC — listings_by_seller security (4 assertions).
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_rpc_seed.sql
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_rpc.sql
+run_sql supabase/tests/rls_rpc_seed.sql
+run_sql supabase/tests/rls_security_rpc.sql
 
 # Session 16 batch 1 + 2 (metadata guards).
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_s16.sql
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_s16_batch2.sql
+run_sql supabase/tests/rls_security_s16.sql
+run_sql supabase/tests/rls_security_s16_batch2.sql
 
 # Session 16 fix — last_bumped_at column exists.
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_s16_fix.sql
+run_sql supabase/tests/rls_security_s16_fix.sql
 
 # SEC-2 — required Realtime publication tables (metadata only).
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/realtime_publication_check.sql
+run_sql supabase/tests/realtime_publication_check.sql
 
 # H4 — phone-write lockdown.
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_phone_write.sql
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/schema_demo_marker.sql
+run_sql supabase/tests/rls_security_phone_write.sql
+run_sql supabase/tests/schema_demo_marker.sql
 
 # Wave 2B — demo filtering.
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_demo_filter.sql
+run_sql supabase/tests/rls_security_demo_filter.sql
 
 # Wave 4 — schema contract.
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/schema_contract.sql
+run_sql supabase/tests/schema_contract.sql
 
 # Attribute-only search regression — must pass before CI succeeds.
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/attribute_search.sql
+run_sql supabase/tests/attribute_search.sql
 
 # v3_relaxed progressive relaxation regression.
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/attribute_search_v3.sql
+run_sql supabase/tests/attribute_search_v3.sql
+
+# v4 exact-first search regression.
+run_sql supabase/tests/search_v4_exact.sql
+
+# v4 rollback idempotence — run twice, then assert function is gone.
+run_sql supabase/tests/search_v4_rollback_idempotence.sql
