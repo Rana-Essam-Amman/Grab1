@@ -14,17 +14,38 @@ import {
 const MAX_COSINE_DISTANCE = 0.85;
 const FTS_DOMINANT_MIN_RESULTS = 1;
 
+// Frontend rate limit: max 30 searches per rolling 60-second window.
+// Module-level so all calls share state per browser tab. Blocks
+// accidental loops and typing spam. Not a security boundary — bots
+// bypass via direct RPC (WAF concern, deferred).
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX = 30;
+const searchTimestamps: number[] = [];
+
+function checkRateLimit(): boolean {
+  const now = Date.now();
+  const cutoff = now - RATE_LIMIT_WINDOW_MS;
+  while (searchTimestamps.length > 0 && searchTimestamps[0] < cutoff) {
+    searchTimestamps.shift();
+  }
+  if (searchTimestamps.length >= RATE_LIMIT_MAX) return false;
+  searchTimestamps.push(now);
+  return true;
+}
+
 /**
  * FTS-dominant hybrid search with query-intent category + full filters.
  *
  * Flow:
+ *   0. Rate limit (frontend, 30/min). Rejects with a user-facing error.
  *   1. detect_query_category(query) — maps Arabic/English keywords to a
  *      category_slug (e.g. "سيارات" → "motors"). NULL when no match.
- *   2. FTS (search_listings, 11-arg) with filters. If it returns at least
- *      one result → return those directly.
+ *   2. FTS (search_listings_v2_intent_typo, 11-arg) with filters. If it
+ *      returns at least one result → return those directly. This wrapper
+ *      is v2_intent + a fuzzy typo fallback (Group H).
  *   3. Otherwise → search_listings_hybrid with the query vector + category
  *      hint + all filters. Both FTS and semantic branches are filtered
- *      before RRF fusion.
+ *      before RRF fusion. This is the path that serves Group F (semantic).
  *
  * Safety: PostgREST rejects JS null for extensions.vector. When the vector
  * is unavailable, p_query_vector is omitted so SQL DEFAULT NULL applies
@@ -34,6 +55,10 @@ export async function searchListingsHybrid(
   params: SearchListingsParams,
 ): Promise<{ data: Listing[] | null; error: string | null }> {
   try {
+    if (!checkRateLimit()) {
+      return { data: null, error: 'Too many searches. Please wait a moment.' };
+    }
+
     const {
       query, market, offset = 0, limit = LISTINGS_PAGE_SIZE,
       categorySlug = null, subcategorySlug = null,
@@ -57,8 +82,7 @@ export async function searchListingsHybrid(
       p_attrs: attrsJson,
     };
 
-    // Step 1: FTS-dominant check (with filters).
-    const { data: ftsData, error: ftsError } = await supabase.rpc('search_listings', {
+    const { data: ftsData, error: ftsError } = await supabase.rpc('search_listings_v2_intent_typo', {
       p_query: trimmed,
       p_market: market ?? null,
       p_limit: limit,
@@ -72,8 +96,7 @@ export async function searchListingsHybrid(
       }
     }
 
-    // Step 2: Hybrid path (FTS + semantic fused by RRF, filtered).
-    if (trimmed.length < 3) {
+    if (trimmed.length < 5) {
       const { data, error } = await supabase.rpc('search_listings_hybrid', {
         p_query: trimmed,
         p_market: market ?? null,
