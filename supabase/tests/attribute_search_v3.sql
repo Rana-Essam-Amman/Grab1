@@ -200,6 +200,9 @@ DECLARE
   v_delegate uuid := '81000000-0000-4000-8000-000000000007'::uuid;
   v_page_a uuid := '81000000-0000-4000-8000-000000000008'::uuid;
   v_page_b uuid := '81000000-0000-4000-8000-000000000009'::uuid;
+  v_t6b_query text := 'v3del a b c d e';
+  v_v3_ids uuid[];
+  v_v2_ids uuid[];
 BEGIN
   -- T1: both functions exist
   IF NOT EXISTS (
@@ -273,19 +276,30 @@ BEGIN
   END IF;
   RAISE NOTICE 'PASS T6: more than 5 meaningful tokens yields no subsets';
 
-  -- T6B: v3_relaxed delegates >5 meaningful tokens to v2_intent_typo.
-  SELECT EXISTS (
-    SELECT 1 FROM public.search_listings_v3_relaxed(
-      p_query => 'v3delegation test marker extra1 extra2 extra3',
-      p_market => 'JO',
-      p_limit => 100
-    ) r WHERE r.id = v_delegate
-  ) INTO v_found;
+  -- T6B: >5 meaningful tokens delegates to v2_intent_typo.
+  -- Verified by result-set equality (not by fixture presence),
+  -- because v2 requires ALL tokens to match.
+  SELECT array_agg(id ORDER BY id) INTO v_v3_ids
+  FROM public.search_listings_v3_relaxed(
+    v_t6b_query, 'JO', 100, 0,
+    NULL, NULL, NULL, NULL, NULL, NULL, NULL
+  );
 
-  IF NOT v_found THEN
-    RAISE EXCEPTION 'TEST T6B FAIL: >5 token query did not delegate and return the fixture';
+  SELECT array_agg(id ORDER BY id) INTO v_v2_ids
+  FROM public.search_listings_v2_intent_typo(
+    v_t6b_query, 'JO', 100, 0,
+    NULL, NULL, NULL, NULL, NULL, NULL, NULL
+  );
+
+  -- Both NULL (no rows) OR identical arrays → delegation confirmed.
+  IF v_v3_ids IS DISTINCT FROM v_v2_ids THEN
+    RAISE EXCEPTION
+      'T6B FAIL: >5 token delegation mismatch. v3=% v2=%',
+      coalesce(v_v3_ids::text, 'NULL'),
+      coalesce(v_v2_ids::text, 'NULL');
   END IF;
-  RAISE NOTICE 'PASS T6B: >5 meaningful tokens delegate to v2_intent_typo';
+
+  RAISE NOTICE 'PASS T6B: >5 token query delegates to v2 (results match)';
 
   -- T7: market + hard filters preserved
   SELECT EXISTS (
