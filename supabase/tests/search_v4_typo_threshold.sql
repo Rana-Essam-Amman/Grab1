@@ -145,21 +145,24 @@ BEGIN
   RAISE NOTICE 'PASS T6: N=2 requires both tokens';
 
   -- T6b: multi-token near match must not be promoted to exact.
+  -- Exactly one related row is required. Zero rows would hide a
+  -- broken trigram or a broken related stage.
   SELECT count(*) INTO v_count
   FROM public.search_listings_v4_exact('تسلا ازرق 2022', 'JO', 100, 0)
   WHERE id = '95000000-0000-4000-8000-000000000010'::uuid
     AND match_kind = 'exact';
   IF v_count <> 0 THEN
-    RAISE EXCEPTION 'TEST T6b FAIL: multi-token near match was promoted to exact';
+    RAISE EXCEPTION 'TEST T6b FAIL: multi-token near match was promoted to exact (% rows)', v_count;
   END IF;
 
-  SELECT count(*), max(match_kind) INTO v_count, v_kind
+  SELECT count(*) INTO v_count
   FROM public.search_listings_v4_exact('تسلا ازرق 2022', 'JO', 100, 0)
-  WHERE id = '95000000-0000-4000-8000-000000000010'::uuid;
-  IF v_count > 0 AND v_kind IS DISTINCT FROM 'related' THEN
-    RAISE EXCEPTION 'TEST T6b FAIL: unexpected kind=%', v_kind;
+  WHERE id = '95000000-0000-4000-8000-000000000010'::uuid
+    AND match_kind = 'related';
+  IF v_count <> 1 THEN
+    RAISE EXCEPTION 'TEST T6b FAIL: expected exactly 1 related row, got %', v_count;
   END IF;
-  RAISE NOTICE 'PASS T6b: zero exact rows; multi-token trigram stayed off (rows=%)', v_count;
+  RAISE NOTICE 'PASS T6b: zero exact rows and exactly 1 related row';
 
   -- T7
   SELECT count(*), max(match_kind) INTO v_count, v_kind
@@ -232,6 +235,10 @@ BEGIN
   RAISE NOTICE 'PASS T10: offset past exact does not fall through';
 
   -- T11
+  -- Near-boundary negative (0.35-0.39) is not constructed here.
+  -- The current fixtures do not naturally produce one, and inventing
+  -- a string to land in that band would not be evidence. T8 already
+  -- proves the 0.4 boundary matches; this proves a clear miss.
   SELECT word_similarity(
     'xyzabc',
     public.normalize_search_text(coalesce(search_text, ''))
