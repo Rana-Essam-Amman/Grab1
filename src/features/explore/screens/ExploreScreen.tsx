@@ -55,8 +55,7 @@ export const ExploreScreen: React.FC = () => {
   const handleSearchSubmit = useCallback(() => {
     if (!searchInput.trim()) return;
     setSearchQuery(searchInput.trim());
-    navigateTo('search-results');
-  }, [searchInput, setSearchQuery, navigateTo]);
+  }, [searchInput, setSearchQuery]);
 
   return (
     <div
