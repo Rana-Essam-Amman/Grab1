@@ -136,8 +136,8 @@ test.describe('Golden Path — Search quality UI', () => {
 
     await searchFromHome(page, 'سيارة');
 
-    await expect(page.getByText(TOYOTA_FIXTURE.title, { exact: true })).toBeVisible();
-    await expect(page.getByText(HONDA_FIXTURE.title, { exact: true })).toBeVisible();
+    await expect(page.getByText(TOYOTA_FIXTURE.title, { exact: true }).first()).toBeVisible();
+    await expect(page.getByText(HONDA_FIXTURE.title, { exact: true }).first()).toBeVisible();
     await expect(page.getByTestId('search-results')).toHaveCount(0);
   });
 
@@ -150,7 +150,7 @@ test.describe('Golden Path — Search quality UI', () => {
     await searchFromHome(page, 'تويوتا كمرى');
 
     await expect(
-      page.getByText(TOYOTA_FIXTURE.title, { exact: true }),
+      page.getByText(TOYOTA_FIXTURE.title, { exact: true }).first(),
     ).toBeVisible();
   });
 
@@ -163,7 +163,7 @@ test.describe('Golden Path — Search quality UI', () => {
     await searchFromHome(page, 'بدي سيارة كيا');
 
     await expect(
-      page.getByText(KIA_FIXTURE.title, { exact: true }),
+      page.getByText(KIA_FIXTURE.title, { exact: true }).first(),
     ).toBeVisible();
   });
 
@@ -176,7 +176,7 @@ test.describe('Golden Path — Search quality UI', () => {
     await searchFromHome(page, 'سامسونج جالاكسي');
 
     await expect(
-      page.getByText(SAMSUNG_FIXTURE.title, { exact: true }),
+      page.getByText(SAMSUNG_FIXTURE.title, { exact: true }).first(),
     ).toBeVisible();
   });
 
@@ -189,16 +189,16 @@ test.describe('Golden Path — Search quality UI', () => {
 
     await searchFromHome(page, 'سيارة');
     await expect(
-      page.getByText(TOYOTA_FIXTURE.title, { exact: true }),
+      page.getByText(TOYOTA_FIXTURE.title, { exact: true }).first(),
     ).toBeVisible();
     await expect(
-      page.getByText(HONDA_FIXTURE.title, { exact: true }),
+      page.getByText(HONDA_FIXTURE.title, { exact: true }).first(),
     ).toBeVisible();
 
     await searchFromHome(page, 'كيا');
 
     await expect(
-      page.getByText(KIA_FIXTURE.title, { exact: true }),
+      page.getByText(KIA_FIXTURE.title, { exact: true }).first(),
     ).toBeVisible();
     await expect(
       page.getByText(TOYOTA_FIXTURE.title, { exact: true }),
@@ -219,7 +219,7 @@ test.describe('Search — inline on Home', () => {
     await searchFromHome(page, 'كامري');
 
     await expect(
-      page.getByText(TOYOTA_FIXTURE.title, { exact: true }),
+      page.getByText(TOYOTA_FIXTURE.title, { exact: true }).first(),
     ).toBeVisible({ timeout: 5000 });
     await expect(page).toHaveURL(/\/$/);
     await expect(page.getByTestId('search-results')).toHaveCount(0);
@@ -250,7 +250,7 @@ test.describe('Search — inline on Home', () => {
     await input.press('Enter');
 
     await expect(
-      page.getByText(TOYOTA_FIXTURE.title, { exact: true }),
+      page.getByText(TOYOTA_FIXTURE.title, { exact: true }).first(),
     ).toBeVisible({ timeout: 5000 });
 
     await input.fill('');
@@ -265,7 +265,7 @@ test.describe('Search — inline on Home', () => {
 
     await searchFromHome(page, 'كامري');
 
-    const title = page.getByText(TOYOTA_FIXTURE.title, { exact: true });
+    const title = page.getByText(TOYOTA_FIXTURE.title, { exact: true }).first();
     await expect(title).toBeVisible({ timeout: 5000 });
     await expect(page).toHaveURL(/\/$/);
     await title.click();
@@ -286,7 +286,7 @@ test.describe('Search — /search deep link', () => {
 
     await expect(page.getByTestId('search-results')).toBeVisible({ timeout: 5000 });
     await expect(
-      page.getByText(TOYOTA_FIXTURE.title, { exact: true }),
+      page.getByText(TOYOTA_FIXTURE.title, { exact: true }).first(),
     ).toBeVisible({ timeout: 5000 });
     await expect(page).toHaveURL(/\/search\?q=/);
   });
