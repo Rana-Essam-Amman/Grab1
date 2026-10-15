@@ -149,7 +149,6 @@ BEGIN
   SELECT EXISTS (
     SELECT 1 FROM public.search_listings_hybrid(
       p_query => 'فرشاتي-ثقيل-اختبار',
-      p_query_vector => NULL::vector,
       p_market => 'JO',
       p_limit => 100,
       p_offset => 0,
