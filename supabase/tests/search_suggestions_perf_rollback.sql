@@ -1,7 +1,6 @@
 -- Prove 20261095 rollback is idempotent and does not delete pre-existing keywords.
 
--- Seed pre-existing brand keywords that the migration would skip
--- due to WHERE NOT EXISTS. These must survive the rollback.
+-- Ensure the keywords exist (migration may already have inserted them).
 INSERT INTO public.search_keywords (group_key, keyword)
 VALUES ('brand_toyota', 'toyota')
 ON CONFLICT DO NOTHING;
@@ -9,6 +8,13 @@ ON CONFLICT DO NOTHING;
 INSERT INTO public.search_keywords (group_key, keyword)
 VALUES ('brand_toyota', 'تويوتا')
 ON CONFLICT DO NOTHING;
+
+-- Simulate that these keywords pre-existed and the migration skipped them:
+-- remove any log entries so the rollback will not delete them.
+DELETE FROM public.search_keywords_migration_log
+WHERE migration_name = '20261095_search_suggestions_perf'
+  AND group_key = 'brand_toyota'
+  AND keyword IN ('toyota', 'تويوتا');
 
 -- Capture count before rollback (persist across \i via temp table)
 CREATE TEMP TABLE IF NOT EXISTS _rollback_toyota_check (before_count int);
