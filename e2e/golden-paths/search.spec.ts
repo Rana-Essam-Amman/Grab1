@@ -271,7 +271,7 @@ test.describe('Search — inline on Home', () => {
     await title.click();
 
     await expect(
-      page.getByRole('heading', { name: TOYOTA_FIXTURE.title }),
+      page.getByRole('heading', { name: TOYOTA_FIXTURE.title }).first(),
     ).toBeVisible({ timeout: 5000 });
   });
 });
