@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { SearchSuggestions } from '@/features/listings/components/SearchSuggestions';
 
 export interface SearchBarProps {
@@ -16,7 +16,6 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   onSubmit,
 }) => {
   const [focused, setFocused] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleSelect = (suggestion: string) => {
     onChange(suggestion);
@@ -25,11 +24,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   return (
-    <div
-      ref={containerRef}
-      className="relative flex items-center w-full scroll-mt-32"
-      data-testid="search-container"
-    >
+    <div className="relative flex items-center w-full" data-testid="search-container">
       <input
         type="text"
         data-testid="search-input"
@@ -38,15 +33,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         onKeyDown={(e) => {
           if (e.key === 'Enter') onSubmit();
         }}
-        onFocus={() => {
-          setFocused(true);
-          requestAnimationFrame(() => {
-            containerRef.current?.scrollIntoView({
-              block: 'start',
-              behavior: 'instant',
-            });
-          });
-        }}
+        onFocus={() => setFocused(true)}
         onBlur={() => {
           setTimeout(() => setFocused(false), 150);
         }}
