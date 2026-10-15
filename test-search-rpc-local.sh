@@ -67,3 +67,6 @@ psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_security_demo_filt
 
 # Wave 4 — schema contract.
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/schema_contract.sql
+
+# Attribute-only search regression — must pass before CI succeeds.
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/attribute_search.sql
