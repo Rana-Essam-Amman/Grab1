@@ -415,6 +415,17 @@ BEGIN
     RAISE EXCEPTION 'TEST T10 FAIL: related-branch query unexpectedly had exact rows';
   END IF;
 
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_exact(
+    'v4flt تسلا 2022 احمر extraunmatched', 'JO', 100, 0,
+    'motors', 'cars', 100, 200, 'Amman', 'Abdoun',
+    '[{"key":"make","value":"v4fltattr"}]'::jsonb
+  )
+  WHERE match_kind = 'related';
+  IF v_count < 1 THEN
+    RAISE EXCEPTION 'TEST T10 FAIL: related set was empty, exclusion checks are vacuous';
+  END IF;
+
   IF EXISTS (
     SELECT 1 FROM public.search_listings_v4_exact(
       'v4flt تسلا 2022 احمر extraunmatched', 'JO', 100, 0,
