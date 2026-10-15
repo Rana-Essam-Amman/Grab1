@@ -150,24 +150,14 @@ BEGIN
   END IF;
   RAISE NOTICE 'PASS T8: v2 still returns results';
 
-  -- T9
-  SELECT EXISTS (
-    SELECT 1 FROM public.search_listings_v4_exact('لون ازرق', 'JO', 100, 0)
-    WHERE id = '93000000-0000-4000-8000-000000000001'::uuid
-      AND match_kind = 'exact'
-  ) INTO v_found;
-  IF v_found THEN
-    RAISE EXCEPTION 'TEST T9 FAIL: non-matching color was exact';
+  -- T9: N=2 requires both tokens. One-token related is no longer returned.
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_exact('لون ازرق', 'JO', 100, 0)
+  WHERE id = '93000000-0000-4000-8000-000000000001'::uuid;
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'TEST T9 FAIL: one-token N=2 match was returned';
   END IF;
-  SELECT EXISTS (
-    SELECT 1 FROM public.search_listings_v4_exact('لون ازرق', 'JO', 100, 0)
-    WHERE id = '93000000-0000-4000-8000-000000000001'::uuid
-      AND match_kind = 'related'
-  ) INTO v_found;
-  IF NOT v_found THEN
-    RAISE EXCEPTION 'TEST T9 FAIL: non-matching color was not related';
-  END IF;
-  RAISE NOTICE 'PASS T9: wrong color is related, not exact';
+  RAISE NOTICE 'PASS T9: N=2 one-token match is empty';
 
   -- T10
   SELECT search_text INTO v_text

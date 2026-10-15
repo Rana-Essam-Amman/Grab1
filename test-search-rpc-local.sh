@@ -106,8 +106,14 @@ run_sql supabase/tests/search_v4_exact.sql
 # Attribute-key expansion regression. Must run before the v4 rollback.
 run_sql supabase/tests/search_attribute_keys.sql
 
+# v4 trigram fallback + related threshold.
+run_sql supabase/tests/search_v4_typo_threshold.sql
+
 # v4 rollback idempotence — run twice, then assert function is gone.
 run_sql supabase/tests/search_v4_rollback_idempotence.sql
 
 # Attribute-key rollback idempotence — run twice, then assert helper is gone.
 run_sql supabase/tests/search_attribute_keys_rollback.sql
+
+# v4 typo-threshold rollback idempotence — run twice, then assert stage is gone.
+run_sql supabase/tests/search_v4_typo_threshold_rollback.sql

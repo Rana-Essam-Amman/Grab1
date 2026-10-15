@@ -466,12 +466,13 @@ BEGIN
     RAISE EXCEPTION 'TEST T11 FAIL: offset past exact returned % rows', v_count;
   END IF;
 
-  -- T11B: related pagination is independent when exact is empty
+  -- T11B: related pagination stays in the winning related set.
+  -- After the threshold, only the 3-of-4 fixture qualifies, so offset 1 is empty.
   SELECT count(*) INTO v_count
   FROM public.search_listings_v4_exact('v4relordonly تسلا 2022 احمر', 'JO', 1, 1)
   WHERE match_kind = 'related';
-  IF v_count <> 1 THEN
-    RAISE EXCEPTION 'TEST T11 FAIL: related pagination returned % rows', v_count;
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'TEST T11 FAIL: related offset past the threshold set returned % rows', v_count;
   END IF;
   RAISE NOTICE 'PASS T11: exact page does not fall through; related paginates independently';
 
