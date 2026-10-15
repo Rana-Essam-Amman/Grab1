@@ -101,6 +101,28 @@ async function installSearchMock(
     });
   };
 
+  const fulfillV4Results = async (route: import('@playwright/test').Route) => {
+    const body = route.request().postDataJSON() as { p_query?: string };
+    const query = body.p_query ?? '';
+    const results = (resultsByQuery[query] ?? []).map((row) => ({
+      ...(row as Record<string, unknown>),
+      match_kind: 'exact',
+      matched_tokens: query.split(/\s+/).filter(Boolean),
+      total_matched_tokens: query.split(/\s+/).filter(Boolean).length,
+    }));
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(results),
+    });
+  };
+
+  await page.route(
+    '**/rest/v1/rpc/search_listings_v4_exact**',
+    fulfillV4Results,
+  );
+
   await page.route(
     '**/rest/v1/rpc/search_listings_v2_intent_typo**',
     fulfillQueryResults,

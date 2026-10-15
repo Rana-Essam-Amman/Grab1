@@ -59,6 +59,23 @@ async function installCamrySearchMock(page: Page): Promise<void> {
     });
   };
 
+  const fulfillV4 = async (route: import('@playwright/test').Route) => {
+    const body = route.request().postDataJSON() as { p_query?: string };
+    const query = body.p_query ?? '';
+    const results = (query === 'كامري' ? [CAMRY] : []).map((row) => ({
+      ...row,
+      match_kind: 'exact',
+      matched_tokens: [query],
+      total_matched_tokens: 1,
+    }));
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(results),
+    });
+  };
+
+  await page.route('**/rest/v1/rpc/search_listings_v4_exact**', fulfillV4);
   await page.route('**/rest/v1/rpc/search_listings_v2_intent_typo**', fulfill);
   await page.route('**/rest/v1/rpc/search_listings_hybrid**', fulfill);
 
