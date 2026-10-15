@@ -15,7 +15,7 @@ VALUES ('عربية', ARRAY['car','auto']::text[])
 ON CONFLICT (term) DO NOTHING;
 
 INSERT INTO public.search_subcategory_labels (category_slug, subcategory_slug, name_ar, name_en)
-VALUES ('real-estate', 'apartments-fixture', 'شقة', 'Apartment')
+VALUES ('real-estate', 'apartments-fixture', 'شقة للبيع', 'Apartment for Sale')
 ON CONFLICT DO NOTHING;
 
 -- Temporary listing so token extraction has an 'ايفون' token.
