@@ -30,6 +30,7 @@ BEGIN
       '81000000-0000-4000-8000-000000000007'::uuid,
       '81000000-0000-4000-8000-000000000008'::uuid,
       '81000000-0000-4000-8000-000000000009'::uuid,
+      '81000000-0000-4000-8000-000000000010'::uuid,
       '71000000-0000-4000-8000-000000000001'::uuid,
       '71000000-0000-4000-8000-000000000002'::uuid
     )
@@ -155,6 +156,20 @@ VALUES
     '[]'::jsonb
   );
 
+-- C fixture: used to prove hard filters reach the v2 fallback path.
+INSERT INTO public.listings (
+  id, user_id, title, description, price, currency, country_code,
+  city, category_slug, status, attributes
+)
+VALUES (
+  '81000000-0000-4000-8000-000000000010'::uuid,
+  '80000000-0000-4000-8000-000000000001'::uuid,
+  'v3fbprobe only',
+  'Fallback filter fixture.',
+  '150', 'JOD', 'JO', 'Amman', 'motors', 'active',
+  '[]'::jsonb
+);
+
 -- T9 fixtures (same as attribute_search.sql).
 INSERT INTO public.listings (
   id, user_id, title, description, price, currency, country_code,
@@ -226,37 +241,70 @@ BEGIN
   IF v_tokens IS DISTINCT FROM ARRAY['تسلا', 'احمر', '2022']::text[] THEN
     RAISE EXCEPTION 'TEST T2 FAIL: attempt 1 tokens = %', v_tokens;
   END IF;
-  RAISE NOTICE 'PASS T2: stopword removed; core token first';
+  RAISE NOTICE 'PASS T2: stopword removed; attempt 1 is the full meaningful set';
 
-  -- T3: exact subset priority for 3 tokens
-  IF (SELECT subset_tokens FROM public.search_relaxed_subsets('tesla red 2022') WHERE attempt_no = 1)
-       IS DISTINCT FROM ARRAY['tesla', 'red', '2022']::text[]
-     OR (SELECT subset_tokens FROM public.search_relaxed_subsets('tesla red 2022') WHERE attempt_no = 2)
-       IS DISTINCT FROM ARRAY['tesla', 'red']::text[]
-     OR (SELECT subset_tokens FROM public.search_relaxed_subsets('tesla red 2022') WHERE attempt_no = 3)
-       IS DISTINCT FROM ARRAY['tesla', '2022']::text[]
-     OR (SELECT subset_tokens FROM public.search_relaxed_subsets('tesla red 2022') WHERE attempt_no = 4)
-       IS DISTINCT FROM ARRAY['tesla']::text[]
+  -- T3: exact N=3 / N=4 / N=5 subset sequences (v3.1).
+  IF (SELECT subset_tokens FROM public.search_relaxed_subsets('تسلا احمر 2022') WHERE attempt_no = 1)
+       IS DISTINCT FROM ARRAY['تسلا', 'احمر', '2022']::text[]
+     OR (SELECT subset_tokens FROM public.search_relaxed_subsets('تسلا احمر 2022') WHERE attempt_no = 2)
+       IS DISTINCT FROM ARRAY['تسلا', 'احمر']::text[]
+     OR (SELECT subset_tokens FROM public.search_relaxed_subsets('تسلا احمر 2022') WHERE attempt_no = 3)
+       IS DISTINCT FROM ARRAY['تسلا', '2022']::text[]
+     OR (SELECT subset_tokens FROM public.search_relaxed_subsets('تسلا احمر 2022') WHERE attempt_no = 4)
+       IS DISTINCT FROM ARRAY['احمر', '2022']::text[]
+     OR (SELECT count(*) FROM public.search_relaxed_subsets('تسلا احمر 2022')) <> 4
   THEN
-    RAISE EXCEPTION 'TEST T3 FAIL: subset order is not [tesla,red,2022] / [tesla,red] / [tesla,2022] / [tesla]';
-  END IF;
-  RAISE NOTICE 'PASS T3: exact subset priority for 3 tokens';
-
-  -- T4: max 4 attempts for 5 tokens + core always retained
-  SELECT count(*) INTO v_count
-  FROM public.search_relaxed_subsets('tesla red 2022 awd used');
-
-  IF v_count <> 4 THEN
-    RAISE EXCEPTION 'TEST T4 FAIL: expected 4 attempts, got %', v_count;
+    RAISE EXCEPTION 'TEST T3 FAIL: N=3 sequence is not the v3.1 vector';
   END IF;
 
+  IF (SELECT subset_tokens FROM public.search_relaxed_subsets('تسلا لون احمر 2022') WHERE attempt_no = 1)
+       IS DISTINCT FROM ARRAY['تسلا', 'لون', 'احمر', '2022']::text[]
+     OR (SELECT subset_tokens FROM public.search_relaxed_subsets('تسلا لون احمر 2022') WHERE attempt_no = 2)
+       IS DISTINCT FROM ARRAY['تسلا', 'لون', 'احمر']::text[]
+     OR (SELECT subset_tokens FROM public.search_relaxed_subsets('تسلا لون احمر 2022') WHERE attempt_no = 3)
+       IS DISTINCT FROM ARRAY['تسلا', 'لون', '2022']::text[]
+     OR (SELECT subset_tokens FROM public.search_relaxed_subsets('تسلا لون احمر 2022') WHERE attempt_no = 4)
+       IS DISTINCT FROM ARRAY['تسلا', 'احمر', '2022']::text[]
+     OR (SELECT subset_tokens FROM public.search_relaxed_subsets('تسلا لون احمر 2022') WHERE attempt_no = 5)
+       IS DISTINCT FROM ARRAY['لون', 'احمر', '2022']::text[]
+     OR (SELECT count(*) FROM public.search_relaxed_subsets('تسلا لون احمر 2022')) <> 5
+  THEN
+    RAISE EXCEPTION 'TEST T3 FAIL: N=4 sequence is not the v3.1 vector';
+  END IF;
+
+  IF (SELECT subset_tokens FROM public.search_relaxed_subsets('سيارة تسلا لون احمر 2022') WHERE attempt_no = 1)
+       IS DISTINCT FROM ARRAY['سيارة', 'تسلا', 'لون', 'احمر', '2022']::text[]
+     OR (SELECT subset_tokens FROM public.search_relaxed_subsets('سيارة تسلا لون احمر 2022') WHERE attempt_no = 2)
+       IS DISTINCT FROM ARRAY['سيارة', 'تسلا', 'لون', 'احمر']::text[]
+     OR (SELECT subset_tokens FROM public.search_relaxed_subsets('سيارة تسلا لون احمر 2022') WHERE attempt_no = 3)
+       IS DISTINCT FROM ARRAY['سيارة', 'تسلا', 'لون', '2022']::text[]
+     OR (SELECT subset_tokens FROM public.search_relaxed_subsets('سيارة تسلا لون احمر 2022') WHERE attempt_no = 4)
+       IS DISTINCT FROM ARRAY['سيارة', 'تسلا', 'احمر', '2022']::text[]
+     OR (SELECT subset_tokens FROM public.search_relaxed_subsets('سيارة تسلا لون احمر 2022') WHERE attempt_no = 5)
+       IS DISTINCT FROM ARRAY['سيارة', 'لون', 'احمر', '2022']::text[]
+     OR (SELECT count(*) FROM public.search_relaxed_subsets('سيارة تسلا لون احمر 2022')) <> 5
+  THEN
+    RAISE EXCEPTION 'TEST T3 FAIL: N=5 sequence is not the v3.1 vector';
+  END IF;
+  RAISE NOTICE 'PASS T3: N=3/N=4/N=5 subset sequences match v3.1';
+
+  -- T4: no singleton subsets, hard cap 5.
   IF EXISTS (
-    SELECT 1 FROM public.search_relaxed_subsets('tesla red 2022 awd used') s
-    WHERE NOT ('tesla' = ANY(s.subset_tokens))
+    SELECT 1 FROM public.search_relaxed_subsets('تسلا احمر 2022') s
+    WHERE cardinality(s.subset_tokens) < 2
+  ) OR EXISTS (
+    SELECT 1 FROM public.search_relaxed_subsets('تسلا لون احمر 2022') s
+    WHERE cardinality(s.subset_tokens) < 2
   ) THEN
-    RAISE EXCEPTION 'TEST T4 FAIL: a subset dropped the core token';
+    RAISE EXCEPTION 'TEST T4 FAIL: a singleton subset was emitted';
   END IF;
-  RAISE NOTICE 'PASS T4: 5 tokens yield 4 attempts, core retained';
+
+  SELECT count(*) INTO v_count
+  FROM public.search_relaxed_subsets('سيارة تسلا لون احمر 2022');
+  IF v_count > 5 THEN
+    RAISE EXCEPTION 'TEST T4 FAIL: hard cap of 5 exceeded, got %', v_count;
+  END IF;
+  RAISE NOTICE 'PASS T4: no singletons; hard cap of 5 held';
 
   -- T5: stopword-only query → no subsets
   SELECT count(*) INTO v_count
@@ -265,7 +313,18 @@ BEGIN
   IF v_count <> 0 THEN
     RAISE EXCEPTION 'TEST T5 FAIL: stopword-only query produced % subsets', v_count;
   END IF;
-  RAISE NOTICE 'PASS T5: stopword-only query yields no subsets';
+
+  -- A: stopword-only RPC returns empty and does NOT fall back to v2.
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v3_relaxed(
+    p_query => 'بدي شو',
+    p_market => 'JO',
+    p_limit => 100
+  );
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'TEST T5 FAIL: stopword-only RPC returned % rows', v_count;
+  END IF;
+  RAISE NOTICE 'PASS T5: stopword-only yields no subsets and empty RPC (no v2 fallback)';
 
   -- T6: >5 meaningful tokens → 0 subsets
   SELECT count(*) INTO v_count
@@ -591,6 +650,93 @@ BEGIN
     RAISE EXCEPTION 'TEST T10 FAIL: winning subset did not return fixture A at offset 0';
   END IF;
   RAISE NOTICE 'PASS T10: pagination stays in the winning subset';
+
+  -- D: winning subset owns an empty page; v2 is not invoked.
+  -- v2 with the same query would return fixture B (looser match).
+  SELECT EXISTS (
+    SELECT 1 FROM public.search_listings_v2_intent_typo(
+      p_query => 'v3pagecore v3pagecolor v3pageyear',
+      p_market => 'JO',
+      p_limit => 10,
+      p_offset => 1
+    ) r WHERE r.id = v_page_b
+  ) INTO v_found;
+
+  IF NOT v_found THEN
+    RAISE EXCEPTION 'TEST T10 FAIL: prereq — v2 did not return fixture B, so the no-fallback proof is inconclusive';
+  END IF;
+
+  SELECT EXISTS (
+    SELECT 1 FROM public.search_listings_v3_relaxed(
+      p_query => 'v3pagecore v3pagecolor v3pageyear',
+      p_market => 'JO',
+      p_limit => 10,
+      p_offset => 1
+    ) r WHERE r.id = v_page_b
+  ) INTO v_found;
+
+  IF v_found THEN
+    RAISE EXCEPTION 'TEST T10 FAIL: empty winning page fell through to v2 (fixture B returned)';
+  END IF;
+  RAISE NOTICE 'PASS T10b: empty winning page did not invoke v2';
+
+  -- C: fallback argument vector. No-subset-match query under hard filters
+  -- returns the same IDs as a direct v2 call with the same arguments.
+  SELECT array_agg(id ORDER BY id) INTO v_v3_ids
+  FROM public.search_listings_v3_relaxed(
+    'nohitalpha nohitbeta nohitgamma', 'JO', 100, 0,
+    'motors', NULL, 100, NULL, 'Amman', NULL, NULL
+  );
+
+  SELECT array_agg(id ORDER BY id) INTO v_v2_ids
+  FROM public.search_listings_v2_intent_typo(
+    'nohitalpha nohitbeta nohitgamma', 'JO', 100, 0,
+    'motors', NULL, 100, NULL, 'Amman', NULL, NULL
+  );
+
+  IF v_v3_ids IS DISTINCT FROM v_v2_ids THEN
+    RAISE EXCEPTION
+      'TEST C FAIL: no-subset fallback args mismatch. v3=% v2=%',
+      coalesce(v_v3_ids::text, 'NULL'),
+      coalesce(v_v2_ids::text, 'NULL');
+  END IF;
+
+  -- Direct-to-v2 path with hard filters must also match v2 exactly,
+  -- and a wrong category must exclude the filtered fixture.
+  SELECT array_agg(id ORDER BY id) INTO v_v3_ids
+  FROM public.search_listings_v3_relaxed(
+    'v3fbprobe only extra1 extra2 extra3 extra4', 'JO', 100, 0,
+    'motors', NULL, 100, NULL, 'Amman', NULL, NULL
+  );
+
+  SELECT array_agg(id ORDER BY id) INTO v_v2_ids
+  FROM public.search_listings_v2_intent_typo(
+    'v3fbprobe only extra1 extra2 extra3 extra4', 'JO', 100, 0,
+    'motors', NULL, 100, NULL, 'Amman', NULL, NULL
+  );
+
+  IF v_v3_ids IS DISTINCT FROM v_v2_ids THEN
+    RAISE EXCEPTION
+      'TEST C FAIL: >5-token filtered delegation mismatch. v3=% v2=%',
+      coalesce(v_v3_ids::text, 'NULL'),
+      coalesce(v_v2_ids::text, 'NULL');
+  END IF;
+
+  SELECT EXISTS (
+    SELECT 1 FROM public.search_listings_v3_relaxed(
+      p_query => 'v3fbprobe only extra1 extra2 extra3 extra4',
+      p_market => 'JO',
+      p_category_slug => 'electronics',
+      p_min_price => 100,
+      p_city => 'Amman',
+      p_limit => 100
+    ) r WHERE r.id = '81000000-0000-4000-8000-000000000010'::uuid
+  ) INTO v_found;
+
+  IF v_found THEN
+    RAISE EXCEPTION 'TEST C FAIL: wrong category still returned the fallback fixture';
+  END IF;
+  RAISE NOTICE 'PASS C: fallback forwards original query and hard filters';
 
   RAISE NOTICE 'PASS T9: PR #322 assertions A-H preserved, with v3_relaxed on B/F/G';
   RAISE NOTICE 'ALL V3 RELAXED REGRESSION TESTS PASSED';
