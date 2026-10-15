@@ -83,7 +83,7 @@ export const Header: React.FC = () => {
   const displayCityEn = isValidCity ? browseCityEn : defaultCap.en;
 
   return (
-    <header className="sticky top-0 z-50 px-4 pt-2 pb-2 bg-brand border-b border-white/20">
+    <header className="relative px-4 pt-2 pb-2 bg-brand border-b border-white/20">
       <div className="flex items-center justify-between gap-2">
         <div className="w-12 shrink-0 flex items-center justify-start">
           <Button
