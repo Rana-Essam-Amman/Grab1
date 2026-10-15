@@ -87,11 +87,7 @@ export const ExploreScreen: React.FC = () => {
         }
         style={DEBUG_MODE ? { outline: '3px solid red', background: 'rgba(255,0,0,0.1)' } : undefined}
       >
-        {DEBUG_MODE && (
-          <div style={{position:'fixed',top:0,left:0,background:'red',color:'white',fontSize:'12px',padding:'2px 6px',zIndex:9999}}>
-            WRAPPER fixed:true
-          </div>
-        )}
+        {DEBUG_MODE && <div style={{position:'fixed',top:0,left:0,background:'red',color:'white',fontSize:'12px',padding:'2px 6px',zIndex:9999}}>WRAPPER fixed:true</div>}
         <SearchBar
           isArabic={isArabic}
           value={searchInput}
