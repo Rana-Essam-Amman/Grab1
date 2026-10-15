@@ -54,7 +54,12 @@ VALUES
    '92000000-0000-4000-8000-000000000001'::uuid,
    'akprobe other', 'other fixture', '100', 'JOD', 'JO',
    'Amman', 'motors', 'cars', 'active',
-   '[{"key":"fuel","value":"بنزين"}]'::jsonb);
+   '[{"key":"fuel","value":"بنزين"}]'::jsonb),
+  ('93000000-0000-4000-8000-000000000006'::uuid,
+   '92000000-0000-4000-8000-000000000001'::uuid,
+   'akprobe device', 'device fixture', '400', 'JOD', 'JO',
+   'Amman', 'electronics', NULL, 'active',
+   '[{"key":"network","value":"5G"},{"key":"storage","value":"256GB"},{"key":"processor","value":"Snapdragon"}]'::jsonb);
 
 DO $$
 DECLARE
@@ -209,6 +214,35 @@ BEGIN
     RAISE EXCEPTION 'TEST T12 FAIL: search_text changed on idempotent update';
   END IF;
   RAISE NOTICE 'PASS T12: trigger is idempotent for the same attributes';
+
+  -- T13
+  SELECT EXISTS (
+    SELECT 1 FROM public.search_listings_v4_exact('الشبكة 5G', 'JO', 100, 0)
+    WHERE id = '93000000-0000-4000-8000-000000000006'::uuid
+      AND match_kind = 'exact'
+  ) INTO v_found;
+  IF NOT v_found THEN
+    RAISE EXCEPTION 'TEST T13 FAIL: الشبكة 5G was not exact';
+  END IF;
+
+  SELECT EXISTS (
+    SELECT 1 FROM public.search_listings_v4_exact('الذاكرة 256GB', 'JO', 100, 0)
+    WHERE id = '93000000-0000-4000-8000-000000000006'::uuid
+      AND match_kind = 'exact'
+  ) INTO v_found;
+  IF NOT v_found THEN
+    RAISE EXCEPTION 'TEST T13 FAIL: الذاكرة 256GB was not exact';
+  END IF;
+
+  SELECT EXISTS (
+    SELECT 1 FROM public.search_listings_v4_exact('المعالج Snapdragon', 'JO', 100, 0)
+    WHERE id = '93000000-0000-4000-8000-000000000006'::uuid
+      AND match_kind = 'exact'
+  ) INTO v_found;
+  IF NOT v_found THEN
+    RAISE EXCEPTION 'TEST T13 FAIL: المعالج Snapdragon was not exact';
+  END IF;
+  RAISE NOTICE 'PASS T13: UI-style exact phrases match';
 
   RAISE NOTICE 'ALL ATTRIBUTE KEY TESTS PASSED';
 END $$;
