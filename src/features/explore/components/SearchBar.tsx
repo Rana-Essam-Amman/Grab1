@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { SearchSuggestions } from '@/features/listings/components/SearchSuggestions';
 
 export interface SearchBarProps {
@@ -16,6 +16,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   onSubmit,
 }) => {
   const [focused, setFocused] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleSelect = (suggestion: string) => {
     onChange(suggestion);
@@ -24,7 +25,11 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   return (
-    <div className="relative flex items-center w-full" data-testid="search-container">
+    <div
+      ref={containerRef}
+      className="relative flex items-center w-full scroll-mt-32"
+      data-testid="search-container"
+    >
       <input
         type="text"
         data-testid="search-input"
@@ -36,14 +41,17 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         onFocus={() => {
           setFocused(true);
           requestAnimationFrame(() => {
-            window.scrollTo({ top: 0, behavior: 'instant' });
+            containerRef.current?.scrollIntoView({
+              block: 'start',
+              behavior: 'instant',
+            });
           });
         }}
         onBlur={() => {
           setTimeout(() => setFocused(false), 150);
         }}
         placeholder={isArabic ? 'ابحث في الماركت بليس...' : 'Search marketplace...'}
-        className="w-full h-11 px-4 scroll-mt-24 bg-surface border border-border rounded-xl text-sm text-content-primary placeholder:text-content-tertiary focus:outline-none focus:border-primary transition-colors"
+        className="w-full h-11 px-4 bg-surface border border-border rounded-xl text-sm text-content-primary placeholder:text-content-tertiary focus:outline-none focus:border-primary transition-colors"
       />
       <SearchSuggestions
         query={value}
