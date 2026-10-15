@@ -17,6 +17,7 @@ STABLE
 SECURITY DEFINER
 SET search_path = public
 AS $function$
+#variable_conflict use_column
 DECLARE
   v_norm text;
   v_limit integer;
