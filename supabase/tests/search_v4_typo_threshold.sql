@@ -195,6 +195,11 @@ BEGIN
   FROM public.listings
   WHERE id = '95000000-0000-4000-8000-000000000002'::uuid;
   RAISE NOTICE 'T8 normalized score for كمری vs كامري: %', v_score;
+  IF v_score IS DISTINCT FROM 0.4::real THEN
+    RAISE EXCEPTION
+      'TEST T8 FAIL: expected boundary score 0.4, got %',
+      v_score;
+  END IF;
 
   SELECT count(*), max(match_kind) INTO v_count, v_kind
   FROM public.search_listings_v4_exact('تويوتا', 'JO', 100, 0)
