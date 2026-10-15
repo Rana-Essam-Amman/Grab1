@@ -273,15 +273,15 @@ BEGIN
   END IF;
 
   IF (SELECT subset_tokens FROM public.search_relaxed_subsets('سيارة تسلا لون احمر 2022') WHERE attempt_no = 1)
-       IS DISTINCT FROM ARRAY['سيارة', 'تسلا', 'لون', 'احمر', '2022']::text[]
+       IS DISTINCT FROM ARRAY['سياره', 'تسلا', 'لون', 'احمر', '2022']::text[]
      OR (SELECT subset_tokens FROM public.search_relaxed_subsets('سيارة تسلا لون احمر 2022') WHERE attempt_no = 2)
-       IS DISTINCT FROM ARRAY['سيارة', 'تسلا', 'لون', 'احمر']::text[]
+       IS DISTINCT FROM ARRAY['سياره', 'تسلا', 'لون', 'احمر']::text[]
      OR (SELECT subset_tokens FROM public.search_relaxed_subsets('سيارة تسلا لون احمر 2022') WHERE attempt_no = 3)
-       IS DISTINCT FROM ARRAY['سيارة', 'تسلا', 'لون', '2022']::text[]
+       IS DISTINCT FROM ARRAY['سياره', 'تسلا', 'لون', '2022']::text[]
      OR (SELECT subset_tokens FROM public.search_relaxed_subsets('سيارة تسلا لون احمر 2022') WHERE attempt_no = 4)
-       IS DISTINCT FROM ARRAY['سيارة', 'تسلا', 'احمر', '2022']::text[]
+       IS DISTINCT FROM ARRAY['سياره', 'تسلا', 'احمر', '2022']::text[]
      OR (SELECT subset_tokens FROM public.search_relaxed_subsets('سيارة تسلا لون احمر 2022') WHERE attempt_no = 5)
-       IS DISTINCT FROM ARRAY['سيارة', 'لون', 'احمر', '2022']::text[]
+       IS DISTINCT FROM ARRAY['سياره', 'لون', 'احمر', '2022']::text[]
      OR (SELECT count(*) FROM public.search_relaxed_subsets('سيارة تسلا لون احمر 2022')) <> 5
   THEN
     RAISE EXCEPTION 'TEST T3 FAIL: N=5 sequence is not the v3.1 vector';
