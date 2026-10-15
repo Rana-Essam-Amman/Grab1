@@ -103,5 +103,11 @@ run_sql supabase/tests/attribute_search_v3.sql
 # v4 exact-first search regression.
 run_sql supabase/tests/search_v4_exact.sql
 
+# Attribute-key expansion regression. Must run before the v4 rollback.
+run_sql supabase/tests/search_attribute_keys.sql
+
 # v4 rollback idempotence — run twice, then assert function is gone.
 run_sql supabase/tests/search_v4_rollback_idempotence.sql
+
+# Attribute-key rollback idempotence — run twice, then assert helper is gone.
+run_sql supabase/tests/search_attribute_keys_rollback.sql
