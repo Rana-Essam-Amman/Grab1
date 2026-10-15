@@ -1,5 +1,8 @@
 -- Rollback for 20261095_search_suggestions_perf.sql
 -- Idempotent.
+-- Deletes only keywords that this migration actually inserted
+-- (tracked in search_keywords_migration_log). Pre-existing keywords
+-- are never deleted.
 
 BEGIN;
 
@@ -15,51 +18,19 @@ DROP INDEX IF EXISTS public.search_category_labels_norm_name_en_idx;
 DROP INDEX IF EXISTS public.search_subcategory_labels_norm_name_ar_idx;
 DROP INDEX IF EXISTS public.search_subcategory_labels_norm_name_en_idx;
 
--- Remove brand keywords added by this migration
-DELETE FROM public.search_keywords
-WHERE (group_key, keyword) IN (
-  ('brand_iphone', 'ايفون'),
-  ('brand_iphone', 'آيفون'),
-  ('brand_iphone', 'iphone'),
-  ('brand_iphone', 'أيفون'),
-  ('brand_tesla', 'تسلا'),
-  ('brand_tesla', 'tesla'),
-  ('brand_samsung', 'سامسونج'),
-  ('brand_samsung', 'samsung'),
-  ('brand_samsung', 'سامسونغ'),
-  ('brand_samsung', 'جالاكسي'),
-  ('brand_samsung', 'galaxy'),
-  ('brand_hyundai', 'هيونداي'),
-  ('brand_hyundai', 'hyundai'),
-  ('brand_hyundai', 'هيونداى'),
-  ('brand_toyota', 'تويوتا'),
-  ('brand_toyota', 'toyota'),
-  ('brand_toyota', 'تيوتا'),
-  ('brand_kia', 'كيا'),
-  ('brand_kia', 'kia'),
-  ('brand_honda', 'هوندا'),
-  ('brand_honda', 'honda'),
-  ('brand_nissan', 'نيسان'),
-  ('brand_nissan', 'nissan'),
-  ('brand_bmw', 'بي ام دبليو'),
-  ('brand_bmw', 'bmw'),
-  ('brand_mercedes', 'مرسيدس'),
-  ('brand_mercedes', 'mercedes'),
-  ('brand_mercedes', 'بنز'),
-  ('brand_huawei', 'هواوي'),
-  ('brand_huawei', 'huawei'),
-  ('brand_xiaomi', 'شاومي'),
-  ('brand_xiaomi', 'xiaomi'),
-  ('brand_xiaomi', 'redmi'),
-  ('brand_lg', 'ال جي'),
-  ('brand_lg', 'lg'),
-  ('brand_dell', 'ديل'),
-  ('brand_dell', 'dell'),
-  ('brand_hp', 'اتش بي'),
-  ('brand_hp', 'hp'),
-  ('brand_lenovo', 'لينوفو'),
-  ('brand_lenovo', 'lenovo')
-);
+-- Remove only brand keywords that this migration actually inserted
+DELETE FROM public.search_keywords sk
+USING public.search_keywords_migration_log log
+WHERE log.migration_name = '20261095_search_suggestions_perf'
+  AND sk.group_key = log.group_key
+  AND sk.keyword   = log.keyword;
+
+-- Clean up the log entries for this migration
+DELETE FROM public.search_keywords_migration_log
+WHERE migration_name = '20261095_search_suggestions_perf';
+
+-- Drop the log table (this migration is its only user)
+DROP TABLE IF EXISTS public.search_keywords_migration_log;
 
 -- Restore search_suggestions body from 20261094 (with #variable_conflict)
 CREATE OR REPLACE FUNCTION public.search_suggestions(

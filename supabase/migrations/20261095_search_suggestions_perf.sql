@@ -87,61 +87,84 @@ CREATE INDEX search_subcategory_labels_norm_name_en_idx
   ON public.search_subcategory_labels
   ((public.normalize_search_text(name_en)) text_pattern_ops);
 
--- 5. Brand keywords (WHERE NOT EXISTS)
-INSERT INTO public.search_keywords (group_key, keyword)
-SELECT v.group_key, v.keyword
-FROM (VALUES
-  ('brand_iphone', 'ايفون'),
-  ('brand_iphone', 'آيفون'),
-  ('brand_iphone', 'iphone'),
-  ('brand_iphone', 'أيفون'),
-  ('brand_tesla', 'تسلا'),
-  ('brand_tesla', 'tesla'),
-  ('brand_samsung', 'سامسونج'),
-  ('brand_samsung', 'samsung'),
-  ('brand_samsung', 'سامسونغ'),
-  ('brand_samsung', 'جالاكسي'),
-  ('brand_samsung', 'galaxy'),
-  ('brand_hyundai', 'هيونداي'),
-  ('brand_hyundai', 'hyundai'),
-  ('brand_hyundai', 'هيونداى'),
-  ('brand_toyota', 'تويوتا'),
-  ('brand_toyota', 'toyota'),
-  ('brand_toyota', 'تيوتا'),
-  ('brand_kia', 'كيا'),
-  ('brand_kia', 'kia'),
-  ('brand_honda', 'هوندا'),
-  ('brand_honda', 'honda'),
-  ('brand_nissan', 'نيسان'),
-  ('brand_nissan', 'nissan'),
-  ('brand_bmw', 'بي ام دبليو'),
-  ('brand_bmw', 'bmw'),
-  ('brand_mercedes', 'مرسيدس'),
-  ('brand_mercedes', 'mercedes'),
-  ('brand_mercedes', 'بنز'),
-  ('brand_huawei', 'هواوي'),
-  ('brand_huawei', 'huawei'),
-  ('brand_xiaomi', 'شاومي'),
-  ('brand_xiaomi', 'xiaomi'),
-  ('brand_xiaomi', 'redmi'),
-  ('brand_lg', 'ال جي'),
-  ('brand_lg', 'lg'),
-  ('brand_dell', 'ديل'),
-  ('brand_dell', 'dell'),
-  ('brand_hp', 'اتش بي'),
-  ('brand_hp', 'hp'),
-  ('brand_lenovo', 'لينوفو'),
-  ('brand_lenovo', 'lenovo')
-) AS v(group_key, keyword)
-WHERE NOT EXISTS (
-  SELECT 1 FROM public.search_keywords k
-  WHERE k.group_key = v.group_key AND k.keyword = v.keyword
-);
+-- 5. Marker table for keywords this migration actually inserts
+-- (so rollback can delete only those, never pre-existing rows)
+CREATE TABLE IF NOT EXISTS
+  public.search_keywords_migration_log (
+    migration_name text NOT NULL,
+    group_key      text NOT NULL,
+    keyword        text NOT NULL,
+    inserted_at    timestamptz NOT NULL DEFAULT now(),
+    PRIMARY KEY (migration_name, group_key, keyword)
+  );
 
--- 6. Initial population
+-- 6. Brand keywords — insert only if missing, log only what was inserted
+WITH to_insert AS (
+  SELECT v.group_key, v.keyword
+  FROM (VALUES
+    ('brand_iphone', 'ايفون'),
+    ('brand_iphone', 'آيفون'),
+    ('brand_iphone', 'iphone'),
+    ('brand_iphone', 'أيفون'),
+    ('brand_tesla', 'تسلا'),
+    ('brand_tesla', 'tesla'),
+    ('brand_samsung', 'سامسونج'),
+    ('brand_samsung', 'samsung'),
+    ('brand_samsung', 'سامسونغ'),
+    ('brand_samsung', 'جالاكسي'),
+    ('brand_samsung', 'galaxy'),
+    ('brand_hyundai', 'هيونداي'),
+    ('brand_hyundai', 'hyundai'),
+    ('brand_hyundai', 'هيونداى'),
+    ('brand_toyota', 'تويوتا'),
+    ('brand_toyota', 'toyota'),
+    ('brand_toyota', 'تيوتا'),
+    ('brand_kia', 'كيا'),
+    ('brand_kia', 'kia'),
+    ('brand_honda', 'هوندا'),
+    ('brand_honda', 'honda'),
+    ('brand_nissan', 'نيسان'),
+    ('brand_nissan', 'nissan'),
+    ('brand_bmw', 'بي ام دبليو'),
+    ('brand_bmw', 'bmw'),
+    ('brand_mercedes', 'مرسيدس'),
+    ('brand_mercedes', 'mercedes'),
+    ('brand_mercedes', 'بنز'),
+    ('brand_huawei', 'هواوي'),
+    ('brand_huawei', 'huawei'),
+    ('brand_xiaomi', 'شاومي'),
+    ('brand_xiaomi', 'xiaomi'),
+    ('brand_xiaomi', 'redmi'),
+    ('brand_lg', 'ال جي'),
+    ('brand_lg', 'lg'),
+    ('brand_dell', 'ديل'),
+    ('brand_dell', 'dell'),
+    ('brand_hp', 'اتش بي'),
+    ('brand_hp', 'hp'),
+    ('brand_lenovo', 'لينوفو'),
+    ('brand_lenovo', 'lenovo')
+  ) AS v(group_key, keyword)
+  WHERE NOT EXISTS (
+    SELECT 1 FROM public.search_keywords sk
+    WHERE sk.group_key = v.group_key
+      AND sk.keyword   = v.keyword
+  )
+),
+inserted AS (
+  INSERT INTO public.search_keywords (group_key, keyword)
+  SELECT group_key, keyword FROM to_insert
+  RETURNING group_key, keyword
+)
+INSERT INTO public.search_keywords_migration_log
+  (migration_name, group_key, keyword)
+SELECT '20261095_search_suggestions_perf',
+       group_key, keyword
+FROM inserted;
+
+-- 7. Initial population
 SELECT public.refresh_suggestion_tokens();
 
--- 7. Updated search_suggestions (tokens from pool)
+-- 8. Updated search_suggestions (tokens from pool)
 CREATE OR REPLACE FUNCTION public.search_suggestions(
   p_query text,
   p_limit integer DEFAULT 10
