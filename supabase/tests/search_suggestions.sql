@@ -18,7 +18,10 @@ INSERT INTO public.search_subcategory_labels (category_slug, subcategory_slug, n
 VALUES ('real-estate', 'apartments-fixture', 'شقة للبيع', 'Apartment for Sale')
 ON CONFLICT DO NOTHING;
 
--- Temporary listing so token extraction has an 'ايفون' token.
+-- Temporary listing so token extraction has coverage.
+-- Marker 'زيبولين' is placed in description (a source field the
+-- BEFORE INSERT set_listings_search_text_trigger reads). Do not set
+-- search_text directly — the trigger rebuilds it and would overwrite.
 INSERT INTO auth.users (
   id, aud, role, email, encrypted_password, email_confirmed_at,
   raw_app_meta_data, raw_user_meta_data
@@ -33,14 +36,15 @@ ON CONFLICT DO NOTHING;
 
 INSERT INTO public.listings (
   id, user_id, title, description, price, currency, country_code,
-  city, category_slug, status, search_text
+  city, category_slug, status
 )
 VALUES (
   '97000000-0000-4000-8000-000000000001'::uuid,
   '96000000-0000-4000-8000-000000000001'::uuid,
-  'ايفون 15 برو', 'token fixture', '100', 'JOD', 'JO',
-  'Amman', 'mobiles', 'active',
-  public.normalize_search_text('ايفون 15 برو ماكس')
+  'fixture iphone listing',
+  'fixture description with unique token زيبولين',
+  '100', 'JOD', 'JO',
+  'Amman', 'mobiles', 'active'
 )
 ON CONFLICT DO NOTHING;
 
@@ -124,19 +128,52 @@ BEGIN
   RAISE NOTICE 'PASS T5: كامري → result';
 END $$;
 
--- T6: 'ايفو' returns token 'ايفون'
+-- DIAG: fixture search_text and trigger/pool state before T6
+DO $$
+DECLARE
+  v_search text;
+  v_count int;
+  v_has_marker int;
+  v_min_word text;
+  v_max_word text;
+BEGIN
+  SELECT search_text INTO v_search
+    FROM public.listings
+    WHERE id = '97000000-0000-4000-8000-000000000001'::uuid;
+  RAISE NOTICE 'DIAG: fixture search_text = %', v_search;
+
+  SELECT count(*) INTO v_count FROM public.search_suggestion_tokens;
+  SELECT count(*) INTO v_has_marker
+    FROM public.search_suggestion_tokens
+    WHERE word = 'زيبولين';
+  SELECT min(word), max(word) INTO v_min_word, v_max_word
+    FROM public.search_suggestion_tokens;
+
+  RAISE NOTICE 'DIAG: token_pool_count=% min=% max=% has_zippolin=%',
+    v_count, v_min_word, v_max_word, v_has_marker;
+
+  IF v_has_marker = 0 THEN
+    RAISE NOTICE 'DIAG: trigger did NOT refresh pool after insert (or marker filtered)';
+  ELSE
+    RAISE NOTICE 'DIAG: trigger refreshed pool, marker present';
+  END IF;
+END $$;
+
+-- T6: unique non-keyword token from fixture listing
+-- 'زيبولين' is not in search_keywords (unlike 'ايفون' which is now a brand_keyword weight 1.0).
+-- Dedup keeps highest weight, so a pure token assertion requires a non-keyword token.
 DO $$
 DECLARE
   found boolean;
 BEGIN
   SELECT EXISTS (
-    SELECT 1 FROM public.search_suggestions('ايفو', 10)
-    WHERE suggestion = 'ايفون' AND suggestion_type = 'token' AND weight = 0.6
+    SELECT 1 FROM public.search_suggestions('زيبو', 10)
+    WHERE suggestion = 'زيبولين' AND suggestion_type = 'token' AND weight = 0.6
   ) INTO found;
   IF NOT found THEN
-    RAISE EXCEPTION 'T6 FAIL: expected token ايفون';
+    RAISE EXCEPTION 'T6 FAIL: expected token زيبولين';
   END IF;
-  RAISE NOTICE 'PASS T6: ايفو → token ايفون';
+  RAISE NOTICE 'PASS T6: زيبو → token زيبولين';
 END $$;
 
 -- T7: Deduplication — same text from 2 sources keeps highest weight
