@@ -66,7 +66,11 @@ VALUES
   ('95000000-0000-4000-8000-000000000009'::uuid,
    '94000000-0000-4000-8000-000000000001'::uuid,
    'v4page تسلا 2022', 'page related candidate', '150', 'JOD', 'JO',
-   'Amman', 'Abdoun', 'motors', 'cars', 'active', '[]'::jsonb);
+   'Amman', 'Abdoun', 'motors', 'cars', 'active', '[]'::jsonb),
+  ('95000000-0000-4000-8000-000000000010'::uuid,
+   '94000000-0000-4000-8000-000000000001'::uuid,
+   'تسلا احمر 2022', 'multi token near', '100', 'JOD', 'JO',
+   'Amman', NULL, 'motors', 'cars', 'active', '[]'::jsonb);
 
 DO $$
 DECLARE
@@ -74,6 +78,7 @@ DECLARE
   v_kind text;
   v_matched integer;
   v_found boolean;
+  v_score real;
 BEGIN
   -- T1
   SELECT count(*), max(match_kind) INTO v_count, v_kind
@@ -104,11 +109,12 @@ BEGIN
   -- T3
   SELECT count(*) INTO v_count
   FROM public.search_listings_v4_exact('سامسونغ', 'JO', 100, 0)
-  WHERE id = '95000000-0000-4000-8000-000000000003'::uuid;
+  WHERE id = '95000000-0000-4000-8000-000000000003'::uuid
+    AND match_kind = 'exact';
   IF v_count <> 1 THEN
-    RAISE EXCEPTION 'TEST T3 FAIL: سامسونغ missed';
+    RAISE EXCEPTION 'TEST T3 FAIL: سامسونغ was not exact';
   END IF;
-  RAISE NOTICE 'PASS T3: different-letter typo matched';
+  RAISE NOTICE 'PASS T3: different-letter typo matched as exact';
 
   -- T4
   SELECT count(*) INTO v_count
@@ -137,6 +143,23 @@ BEGIN
     RAISE EXCEPTION 'TEST T6 FAIL: N=2 one-token match was returned';
   END IF;
   RAISE NOTICE 'PASS T6: N=2 requires both tokens';
+
+  -- T6b: multi-token near match must not be promoted to exact.
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_exact('تسلا ازرق 2022', 'JO', 100, 0)
+  WHERE id = '95000000-0000-4000-8000-000000000010'::uuid
+    AND match_kind = 'exact';
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'TEST T6b FAIL: multi-token near match was promoted to exact';
+  END IF;
+
+  SELECT count(*), max(match_kind) INTO v_count, v_kind
+  FROM public.search_listings_v4_exact('تسلا ازرق 2022', 'JO', 100, 0)
+  WHERE id = '95000000-0000-4000-8000-000000000010'::uuid;
+  IF v_count > 0 AND v_kind IS DISTINCT FROM 'related' THEN
+    RAISE EXCEPTION 'TEST T6b FAIL: unexpected kind=%', v_kind;
+  END IF;
+  RAISE NOTICE 'PASS T6b: zero exact rows; multi-token trigram stayed off (rows=%)', v_count;
 
   -- T7
   SELECT count(*), max(match_kind) INTO v_count, v_kind
@@ -209,13 +232,24 @@ BEGIN
   RAISE NOTICE 'PASS T10: offset past exact does not fall through';
 
   -- T11
+  SELECT word_similarity(
+    'xyzabc',
+    public.normalize_search_text(coalesce(search_text, ''))
+  ) INTO v_score
+  FROM public.listings
+  WHERE id = '95000000-0000-4000-8000-000000000007'::uuid;
+  RAISE NOTICE 'T11 similarity score for xyzabc vs iPhone fixture: %', v_score;
+  IF v_score IS NULL OR v_score >= 0.4 THEN
+    RAISE EXCEPTION 'TEST T11 FAIL: negative fixture score % is not below 0.4', v_score;
+  END IF;
+
   SELECT count(*) INTO v_count
   FROM public.search_listings_v4_exact('xyzabc', 'JO', 100, 0)
   WHERE id = '95000000-0000-4000-8000-000000000007'::uuid;
   IF v_count <> 0 THEN
     RAISE EXCEPTION 'TEST T11 FAIL: unrelated trigram match';
   END IF;
-  RAISE NOTICE 'PASS T11: trigram does not match unrelated text';
+  RAISE NOTICE 'PASS T11: trigram does not match unrelated text (score=%)', v_score;
 
   RAISE NOTICE 'ALL V4 TYPO THRESHOLD TESTS PASSED';
 END $$;
