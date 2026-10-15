@@ -18,16 +18,25 @@ DROP INDEX IF EXISTS public.search_category_labels_norm_name_en_idx;
 DROP INDEX IF EXISTS public.search_subcategory_labels_norm_name_ar_idx;
 DROP INDEX IF EXISTS public.search_subcategory_labels_norm_name_en_idx;
 
--- Remove only brand keywords that this migration actually inserted
-DELETE FROM public.search_keywords sk
-USING public.search_keywords_migration_log log
-WHERE log.migration_name = '20261095_search_suggestions_perf'
-  AND sk.group_key = log.group_key
-  AND sk.keyword   = log.keyword;
+-- Remove only brand keywords that this migration actually inserted.
+-- Guarded so a second run (table already dropped) is a no-op.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM pg_class c
+    JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE n.nspname = 'public' AND c.relname = 'search_keywords_migration_log'
+  ) THEN
+    DELETE FROM public.search_keywords sk
+    USING public.search_keywords_migration_log log
+    WHERE log.migration_name = '20261095_search_suggestions_perf'
+      AND sk.group_key = log.group_key
+      AND sk.keyword   = log.keyword;
 
--- Clean up the log entries for this migration
-DELETE FROM public.search_keywords_migration_log
-WHERE migration_name = '20261095_search_suggestions_perf';
+    DELETE FROM public.search_keywords_migration_log
+    WHERE migration_name = '20261095_search_suggestions_perf';
+  END IF;
+END $$;
 
 -- Drop the log table (this migration is its only user)
 DROP TABLE IF EXISTS public.search_keywords_migration_log;
