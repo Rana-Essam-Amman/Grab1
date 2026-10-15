@@ -142,8 +142,9 @@ BEGIN
     RETURN;
   END IF;
 
-  -- Trigram fallback. Treated as exact for the UI. No fall-through
-  -- once this stage has any row, including when offset is past the end.
+  -- Trigram fallback for single-token typos only. Multi-token near
+  -- matches stay in related so a missing token is not promoted to exact.
+  IF v_n = 1 THEN
   SELECT count(*) INTO v_trigram_count
   FROM public.listings AS l
   WHERE l.status = 'active'
@@ -192,6 +193,7 @@ BEGIN
     ) DESC, l.created_at DESC, l.id ASC
     LIMIT v_limit OFFSET v_offset;
     RETURN;
+  END IF;
   END IF;
 
   -- Related threshold. N=1 is never related.
