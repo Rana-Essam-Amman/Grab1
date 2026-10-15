@@ -35,7 +35,10 @@ BEGIN
       AND l.search_text <> ''
   ) t
   WHERE length(word) >= 3
-    AND word ~ '^[[:alnum:]\u0600-\u06FF]+$'
+    -- Match Unicode letters and digits only.
+    -- PostgreSQL POSIX classes handle Arabic under UTF-8.
+    -- Do NOT use \uXXXX escapes — not supported by PG regex.
+    AND word ~ '^[[:alpha:][:digit:]]+$'
   GROUP BY word;
 END;
 $function$;
