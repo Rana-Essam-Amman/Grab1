@@ -32,6 +32,13 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     setFocused(false);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      setFocused(false);
+      onSubmit();
+    }
+  };
+
   return (
     <div className="relative flex items-center w-full" data-testid="search-container">
       {focused && (
@@ -52,9 +59,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         data-testid="search-input"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') onSubmit();
-        }}
+        onKeyDown={handleKeyDown}
         onFocus={() => setFocused(true)}
         onBlur={() => {
           setTimeout(() => setFocused(false), 150);
