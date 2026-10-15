@@ -118,14 +118,15 @@ run_sql supabase/tests/search_attribute_keys_rollback.sql
 # v4 typo-threshold rollback idempotence — run twice, then assert stage is gone.
 run_sql supabase/tests/search_v4_typo_threshold_rollback.sql
 
-# Search suggestions autocomplete.
+# Search suggestions autocomplete (tests 20261094 + 20261095).
 run_sql supabase/tests/search_suggestions.sql
 
-# Search suggestions rollback idempotence — run twice, then assert function is gone.
-run_sql supabase/tests/search_suggestions_rollback.sql
-
-# Search suggestions performance path.
+# Search suggestions performance path (needs the function still present).
 run_sql supabase/tests/search_suggestions_perf.sql
 
-# Search suggestions performance rollback idempotence.
+# Search suggestions performance rollback idempotence (restores 20261094 state).
 run_sql supabase/tests/search_suggestions_perf_rollback.sql
+
+# Search suggestions rollback idempotence — run twice, then assert function is gone.
+# Must be last: 20261094 rollback drops search_suggestions entirely.
+run_sql supabase/tests/search_suggestions_rollback.sql
