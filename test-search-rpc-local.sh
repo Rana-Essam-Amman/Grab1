@@ -123,3 +123,9 @@ run_sql supabase/tests/search_suggestions.sql
 
 # Search suggestions rollback idempotence — run twice, then assert function is gone.
 run_sql supabase/tests/search_suggestions_rollback.sql
+
+# Search suggestions performance path.
+run_sql supabase/tests/search_suggestions_perf.sql
+
+# Search suggestions performance rollback idempotence.
+run_sql supabase/tests/search_suggestions_perf_rollback.sql
