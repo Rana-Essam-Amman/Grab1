@@ -90,6 +90,17 @@ BEGIN
   RAISE NOTICE 'PASS T1: exact still works';
 
   -- T2
+  SELECT word_similarity(
+    'تيوتا',
+    public.normalize_search_text(coalesce(search_text, ''))
+  ) INTO v_score
+  FROM public.listings
+  WHERE id = '95000000-0000-4000-8000-000000000002'::uuid;
+  RAISE NOTICE 'T2 similarity score for تيوتا vs تويوتا fixture: %', v_score;
+  IF v_score IS NULL OR v_score < 0.4 THEN
+    RAISE EXCEPTION 'TEST T2 FAIL: threshold not exercised, score=%', v_score;
+  END IF;
+
   SELECT count(*) INTO v_count
   FROM public.search_listings_v4_exact('تويوتا', 'JO', 100, 0)
   WHERE id = '95000000-0000-4000-8000-000000000002'::uuid
@@ -104,7 +115,7 @@ BEGIN
   IF v_count <> 1 THEN
     RAISE EXCEPTION 'TEST T2 FAIL: typo تيوتا missed';
   END IF;
-  RAISE NOTICE 'PASS T2: typo caught by trigram';
+  RAISE NOTICE 'PASS T2: typo caught by trigram at score %', v_score;
 
   -- T3
   SELECT count(*) INTO v_count
@@ -180,6 +191,17 @@ BEGIN
   RAISE NOTICE 'PASS T7: N=3 requires 2';
 
   -- T8
+  SELECT word_similarity(
+    'كمری',
+    public.normalize_search_text(coalesce(search_text, ''))
+  ) INTO v_score
+  FROM public.listings
+  WHERE id = '95000000-0000-4000-8000-000000000002'::uuid;
+  RAISE NOTICE 'T8 similarity score for كمری vs كامري fixture: %', v_score;
+  IF v_score IS NULL OR v_score < 0.4 THEN
+    RAISE EXCEPTION 'TEST T8 FAIL: threshold not exercised, score=%', v_score;
+  END IF;
+
   SELECT count(*), max(match_kind) INTO v_count, v_kind
   FROM public.search_listings_v4_exact('تويوتا', 'JO', 100, 0)
   WHERE id = '95000000-0000-4000-8000-000000000002'::uuid;
@@ -192,7 +214,7 @@ BEGIN
   IF v_count <> 1 OR v_kind <> 'exact' THEN
     RAISE EXCEPTION 'TEST T8 FAIL: N=1 typo count=% kind=%', v_count, v_kind;
   END IF;
-  RAISE NOTICE 'PASS T8: N=1 exact and N=1 typo both exact';
+  RAISE NOTICE 'PASS T8: N=1 exact and N=1 typo both exact at score %', v_score;
 
   -- T9 filters on all stages
   SELECT EXISTS (
@@ -235,10 +257,11 @@ BEGIN
   RAISE NOTICE 'PASS T10: offset past exact does not fall through';
 
   -- T11
-  -- Near-boundary negative (0.35-0.39) is not constructed here.
-  -- The current fixtures do not naturally produce one, and inventing
-  -- a string to land in that band would not be evidence. T8 already
-  -- proves the 0.4 boundary matches; this proves a clear miss.
+  -- Behavior is verified at the measured scores printed by T2, T8,
+  -- and this test. It is not an exhaustive boundary validation.
+  -- A near-boundary negative (0.35-0.39) is deferred: the current
+  -- fixtures do not naturally produce one, and inventing a string
+  -- to land in that band would not be evidence.
   SELECT word_similarity(
     'xyzabc',
     public.normalize_search_text(coalesce(search_text, ''))
