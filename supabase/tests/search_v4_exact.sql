@@ -148,37 +148,37 @@ VALUES
   -- T10 filter mismatches: each filter excludes a deliberately wrong row.
   ('91000000-0000-4000-8000-000000000021'::uuid,
    '90000000-0000-4000-8000-000000000001'::uuid,
-   'v4fltbad تسلا 2022 احمر', 'wrong category', '150', 'JOD', 'JO',
+   'v4flt تسلا 2022 احمر', 'wrong category', '150', 'JOD', 'JO',
    'Amman', 'Abdoun', 'electronics', 'cars', 'active',
    '[{"key":"make","value":"v4fltattr"}]'::jsonb, '2026-10-04T10:00:00Z'),
   ('91000000-0000-4000-8000-000000000022'::uuid,
    '90000000-0000-4000-8000-000000000001'::uuid,
-   'v4fltbad تسلا 2022 احمر', 'wrong subcategory', '150', 'JOD', 'JO',
+   'v4flt تسلا 2022 احمر', 'wrong subcategory', '150', 'JOD', 'JO',
    'Amman', 'Abdoun', 'motors', 'parts', 'active',
    '[{"key":"make","value":"v4fltattr"}]'::jsonb, '2026-10-04T10:00:00Z'),
   ('91000000-0000-4000-8000-000000000023'::uuid,
    '90000000-0000-4000-8000-000000000001'::uuid,
-   'v4fltbad تسلا 2022 احمر', 'below min', '50', 'JOD', 'JO',
+   'v4flt تسلا 2022 احمر', 'below min', '50', 'JOD', 'JO',
    'Amman', 'Abdoun', 'motors', 'cars', 'active',
    '[{"key":"make","value":"v4fltattr"}]'::jsonb, '2026-10-04T10:00:00Z'),
   ('91000000-0000-4000-8000-000000000024'::uuid,
    '90000000-0000-4000-8000-000000000001'::uuid,
-   'v4fltbad تسلا 2022 احمر', 'above max', '900', 'JOD', 'JO',
+   'v4flt تسلا 2022 احمر', 'above max', '900', 'JOD', 'JO',
    'Amman', 'Abdoun', 'motors', 'cars', 'active',
    '[{"key":"make","value":"v4fltattr"}]'::jsonb, '2026-10-04T10:00:00Z'),
   ('91000000-0000-4000-8000-000000000025'::uuid,
    '90000000-0000-4000-8000-000000000001'::uuid,
-   'v4fltbad تسلا 2022 احمر', 'wrong city', '150', 'JOD', 'JO',
+   'v4flt تسلا 2022 احمر', 'wrong city', '150', 'JOD', 'JO',
    'Zarqa', 'Abdoun', 'motors', 'cars', 'active',
    '[{"key":"make","value":"v4fltattr"}]'::jsonb, '2026-10-04T10:00:00Z'),
   ('91000000-0000-4000-8000-000000000026'::uuid,
    '90000000-0000-4000-8000-000000000001'::uuid,
-   'v4fltbad تسلا 2022 احمر', 'wrong neighborhood', '150', 'JOD', 'JO',
+   'v4flt تسلا 2022 احمر', 'wrong neighborhood', '150', 'JOD', 'JO',
    'Amman', 'Jubeiha', 'motors', 'cars', 'active',
    '[{"key":"make","value":"v4fltattr"}]'::jsonb, '2026-10-04T10:00:00Z'),
   ('91000000-0000-4000-8000-000000000027'::uuid,
    '90000000-0000-4000-8000-000000000001'::uuid,
-   'v4fltbad تسلا 2022 احمر', 'wrong attrs', '150', 'JOD', 'JO',
+   'v4flt تسلا 2022 احمر', 'wrong attrs', '150', 'JOD', 'JO',
    'Amman', 'Abdoun', 'motors', 'cars', 'active',
    '[{"key":"make","value":"other"}]'::jsonb, '2026-10-04T10:00:00Z'),
   ('91000000-0000-4000-8000-000000000028'::uuid,
@@ -191,6 +191,13 @@ VALUES
    'v4ord تسلا', 'related candidate for T11', '100', 'JOD', 'JO',
    'Amman', NULL, 'motors', 'cars', 'active', '[]'::jsonb,
    '2026-10-01T10:00:00Z');
+
+-- Test-only instrumentation. Created inside this transaction and rolled back.
+CREATE TABLE public.search_v4_trace (
+  id bigserial PRIMARY KEY,
+  branch text NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
 
 DO $$
 DECLARE
@@ -362,13 +369,27 @@ BEGIN
     RAISE EXCEPTION 'TEST T10 FAIL: SA fixture leaked into JO filtered exact';
   END IF;
 
+  -- T10 exact-branch: non-empty exact set, each mismatch excluded.
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_exact(
+    'v4flt تسلا 2022 احمر', 'JO', 100, 0,
+    'motors', 'cars', 100, 200, 'Amman', 'Abdoun',
+    '[{"key":"make","value":"v4fltattr"}]'::jsonb
+  )
+  WHERE match_kind = 'exact';
+  IF v_count < 1 THEN
+    RAISE EXCEPTION 'TEST T10 FAIL: exact set was empty, filter exclusions are vacuous';
+  END IF;
+
   IF EXISTS (
     SELECT 1 FROM public.search_listings_v4_exact(
-      'v4fltbad تسلا 2022 احمر', 'JO', 100, 0,
+      'v4flt تسلا 2022 احمر', 'JO', 100, 0,
       'motors', 'cars', 100, 200, 'Amman', 'Abdoun',
       '[{"key":"make","value":"v4fltattr"}]'::jsonb
     )
-    WHERE id IN (
+    WHERE match_kind = 'exact'
+      AND id IN (
+      '91000000-0000-4000-8000-000000000016'::uuid,
       '91000000-0000-4000-8000-000000000021'::uuid,
       '91000000-0000-4000-8000-000000000022'::uuid,
       '91000000-0000-4000-8000-000000000023'::uuid,
@@ -378,19 +399,21 @@ BEGIN
       '91000000-0000-4000-8000-000000000027'::uuid
     )
   ) THEN
-    RAISE EXCEPTION 'TEST T10 FAIL: a mismatched exact fixture leaked through a filter';
+    RAISE EXCEPTION 'TEST T10 FAIL: a mismatched fixture leaked into the non-empty exact set';
   END IF;
 
+  -- Related-branch mismatch checks remain.
   IF EXISTS (
     SELECT 1 FROM public.search_listings_v4_exact(
       'v4relbad تسلا', 'JO', 100, 0,
       'motors', 'cars', 100, 200, 'Amman', 'Abdoun', NULL
     )
-    WHERE id = '91000000-0000-4000-8000-000000000028'::uuid
+    WHERE match_kind = 'related'
+      AND id = '91000000-0000-4000-8000-000000000028'::uuid
   ) THEN
     RAISE EXCEPTION 'TEST T10 FAIL: related set ignored market filter';
   END IF;
-  RAISE NOTICE 'PASS T10: each filter excludes a mismatched row in exact and related';
+  RAISE NOTICE 'PASS T10: non-empty exact set excludes every mismatched filter; related filters hold';
 
   -- T11A: exact exists, offset past end, related candidate exists → empty
   SELECT count(*) INTO v_count

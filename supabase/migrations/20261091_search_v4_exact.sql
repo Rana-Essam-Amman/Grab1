@@ -7,17 +7,6 @@ BEGIN;
 SET LOCAL lock_timeout = '3s';
 SET LOCAL statement_timeout = '15s';
 
-CREATE TABLE IF NOT EXISTS public.search_v4_trace (
-  id bigserial PRIMARY KEY,
-  branch text NOT NULL,
-  created_at timestamptz NOT NULL DEFAULT now()
-);
-
-COMMENT ON TABLE public.search_v4_trace IS
-  'Test instrumentation. Written only when app.v4_trace = on.';
-
-GRANT SELECT, INSERT, DELETE ON public.search_v4_trace TO anon, authenticated;
-
 CREATE OR REPLACE FUNCTION public.search_listings_v4_exact(
   p_query text,
   p_market text DEFAULT NULL,
@@ -116,7 +105,9 @@ BEGIN
     );
 
   IF v_exact_count > 0 THEN
-    IF current_setting('app.v4_trace', true) = 'on' THEN
+    -- Trace table is test-only. It is never created by this migration.
+    IF current_setting('app.v4_trace', true) = 'on'
+       AND to_regclass('public.search_v4_trace') IS NOT NULL THEN
       INSERT INTO public.search_v4_trace(branch) VALUES ('exact');
     END IF;
 
@@ -151,7 +142,8 @@ BEGIN
     RETURN;
   END IF;
 
-  IF current_setting('app.v4_trace', true) = 'on' THEN
+  IF current_setting('app.v4_trace', true) = 'on'
+     AND to_regclass('public.search_v4_trace') IS NOT NULL THEN
     INSERT INTO public.search_v4_trace(branch) VALUES ('related');
   END IF;
 
