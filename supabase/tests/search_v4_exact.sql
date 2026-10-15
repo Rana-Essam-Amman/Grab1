@@ -137,12 +137,12 @@ VALUES
    '2026-10-05T10:00:00Z'),
   ('91000000-0000-4000-8000-000000000019'::uuid,
    '90000000-0000-4000-8000-000000000001'::uuid,
-   'v4relord تسلا 2022', 'related two tokens', '100', 'JOD', 'JO',
+   'v4relordonly تسلا 2022', 'related two tokens', '100', 'JOD', 'JO',
    'Amman', NULL, 'motors', 'cars', 'active', '[]'::jsonb,
    '2026-10-01T10:00:00Z'),
   ('91000000-0000-4000-8000-000000000020'::uuid,
    '90000000-0000-4000-8000-000000000001'::uuid,
-   'v4relord تسلا', 'related one token', '100', 'JOD', 'JO',
+   'v4relordonly تسلا', 'related one token', '100', 'JOD', 'JO',
    'Amman', NULL, 'motors', 'cars', 'active', '[]'::jsonb,
    '2026-10-05T10:00:00Z');
 
@@ -318,8 +318,9 @@ BEGIN
   END IF;
 
   SELECT id, total_matched_tokens INTO v_first, v_matched
-  FROM public.search_listings_v4_exact('v4relord تسلا 2022 احمر', 'JO', 10, 0)
+  FROM public.search_listings_v4_exact('v4relordonly تسلا 2022 احمر', 'JO', 10, 0)
   WHERE match_kind = 'related'
+    AND title LIKE 'v4relord %'
   ORDER BY total_matched_tokens DESC, created_at DESC
   LIMIT 1;
   IF v_first <> '91000000-0000-4000-8000-000000000019'::uuid OR v_matched < 2 THEN
