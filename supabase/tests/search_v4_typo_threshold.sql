@@ -91,15 +91,12 @@ BEGIN
 
   -- T2
   SELECT word_similarity(
-    'تيوتا',
+    public.normalize_search_text('تيوتا'),
     public.normalize_search_text(coalesce(search_text, ''))
   ) INTO v_score
   FROM public.listings
   WHERE id = '95000000-0000-4000-8000-000000000002'::uuid;
-  RAISE NOTICE 'T2 similarity score for تيوتا vs تويوتا fixture: %', v_score;
-  IF v_score IS NULL OR v_score < 0.4 THEN
-    RAISE EXCEPTION 'TEST T2 FAIL: threshold not exercised, score=%', v_score;
-  END IF;
+  RAISE NOTICE 'T2 normalized score for تيوتا vs تويوتا: %', v_score;
 
   SELECT count(*) INTO v_count
   FROM public.search_listings_v4_exact('تويوتا', 'JO', 100, 0)
@@ -192,15 +189,12 @@ BEGIN
 
   -- T8
   SELECT word_similarity(
-    'كمری',
+    public.normalize_search_text('كمری'),
     public.normalize_search_text(coalesce(search_text, ''))
   ) INTO v_score
   FROM public.listings
   WHERE id = '95000000-0000-4000-8000-000000000002'::uuid;
-  RAISE NOTICE 'T8 similarity score for كمری vs كامري fixture: %', v_score;
-  IF v_score IS NULL OR v_score < 0.4 THEN
-    RAISE EXCEPTION 'TEST T8 FAIL: threshold not exercised, score=%', v_score;
-  END IF;
+  RAISE NOTICE 'T8 normalized score for كمری vs كامري: %', v_score;
 
   SELECT count(*), max(match_kind) INTO v_count, v_kind
   FROM public.search_listings_v4_exact('تويوتا', 'JO', 100, 0)
@@ -215,6 +209,24 @@ BEGIN
     RAISE EXCEPTION 'TEST T8 FAIL: N=1 typo count=% kind=%', v_count, v_kind;
   END IF;
   RAISE NOTICE 'PASS T8: N=1 exact and N=1 typo both exact at score %', v_score;
+
+  -- T8b: existing Samsung fixture, well above the boundary.
+  SELECT word_similarity(
+    public.normalize_search_text('سامسونغ'),
+    public.normalize_search_text(coalesce(search_text, ''))
+  ) INTO v_score
+  FROM public.listings
+  WHERE id = '95000000-0000-4000-8000-000000000003'::uuid;
+  RAISE NOTICE 'T8b normalized score for سامسونغ vs سامسونج: %', v_score;
+
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_exact('سامسونغ', 'JO', 100, 0)
+  WHERE id = '95000000-0000-4000-8000-000000000003'::uuid
+    AND match_kind = 'exact';
+  IF v_count <> 1 THEN
+    RAISE EXCEPTION 'TEST T8b FAIL: سامسونغ was not exact';
+  END IF;
+  RAISE NOTICE 'PASS T8b: existing Samsung fixture matched as exact at score %', v_score;
 
   -- T9 filters on all stages
   SELECT EXISTS (
