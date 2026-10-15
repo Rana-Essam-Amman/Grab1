@@ -200,7 +200,7 @@ DECLARE
   v_delegate uuid := '81000000-0000-4000-8000-000000000007'::uuid;
   v_page_a uuid := '81000000-0000-4000-8000-000000000008'::uuid;
   v_page_b uuid := '81000000-0000-4000-8000-000000000009'::uuid;
-  v_t6b_query text := 'v3del a b c d e';
+  v_t6b_query text := 'v3delxx v3delyy v3delzz v3delww v3delvv v3deluu';
   v_v3_ids uuid[];
   v_v2_ids uuid[];
 BEGIN
@@ -279,6 +279,23 @@ BEGIN
   -- T6B: >5 meaningful tokens delegates to v2_intent_typo.
   -- Verified by result-set equality (not by fixture presence),
   -- because v2 requires ALL tokens to match.
+  -- Sanity: this query must have 6 meaningful tokens to exercise
+  -- the delegation branch.
+  SELECT count(*) INTO v_count
+  FROM regexp_split_to_table(
+    public.normalize_search_text('v3delxx v3delyy v3delzz v3delww v3delvv v3deluu'),
+    '[[:space:]]+'
+  ) AS s(token)
+  WHERE length(public.normalize_search_text(s.token)) >= 3
+    AND NOT EXISTS (
+      SELECT 1 FROM public.search_stopwords w
+      WHERE public.normalize_search_text(w.word) =
+            public.normalize_search_text(s.token)
+    );
+  IF v_count < 6 THEN
+    RAISE EXCEPTION 'T6B PREREQ FAIL: only % meaningful tokens', v_count;
+  END IF;
+
   SELECT array_agg(id ORDER BY id) INTO v_v3_ids
   FROM public.search_listings_v3_relaxed(
     v_t6b_query, 'JO', 100, 0,
