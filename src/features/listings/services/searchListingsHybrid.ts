@@ -10,6 +10,7 @@ import {
   detectCategory,
   attrsToJsonbArray,
 } from './searchListingsHybrid.helpers';
+import { searchListingsV4 } from './searchListingsV4';
 
 const MAX_COSINE_DISTANCE = 0.85;
 const FTS_DOMINANT_MIN_RESULTS = 1;
@@ -50,7 +51,7 @@ function checkRateLimit(): boolean {
  */
 export async function searchListingsHybrid(
   params: SearchListingsParams,
-): Promise<{ data: Listing[] | null; error: string | null }> {
+): Promise<{ data: Listing[] | null; error: string | null; matchKind?: string; banner?: string | null; relatedHeader?: string | null }> {
   try {
     if (!checkRateLimit()) {
       return { data: null, error: 'Too many searches. Please wait a moment.' };
@@ -79,31 +80,8 @@ export async function searchListingsHybrid(
       p_attrs: attrsJson,
     };
 
-    const { data: v4Data, error: v4Error } = await supabase.rpc('search_listings_v4_exact', {
-      p_query: trimmed,
-      p_market: market ?? null,
-      p_limit: limit,
-      p_offset: offset,
-      ...filterArgs,
-    });
-
-    if (!v4Error) {
-      const rows = v4Data || [];
-      const exactRows = rows.filter((row: { match_kind?: string }) => row.match_kind === 'exact');
-      const relatedRows = rows.filter((row: { match_kind?: string }) => row.match_kind === 'related');
-
-      if (exactRows.length > 0) {
-        return { data: exactRows.map(rowToListing), error: null };
-      }
-
-      if (relatedRows.length > 0) {
-        // Related is returned only when exact is empty. Labels are a UI
-        // concern: "ما في نتائج مطابقة تمامًا" / "نتائج قريبة قد تهمك".
-        return { data: relatedRows.map(rowToListing), error: null };
-      }
-
-      return { data: [], error: null };
-    }
+    const v4 = await searchListingsV4(trimmed, market, limit, offset, filterArgs);
+    if (v4) return v4;
 
     const { data: ftsData, error: ftsError } = await supabase.rpc('search_listings_v2_intent_typo', {
       p_query: trimmed,

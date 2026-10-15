@@ -7,6 +7,7 @@ import { filterListingsByMarket } from '@/shared/lib/marketGate';
 import { ArrowLeft, ArrowRight, SearchNormal1, Grid1, RowVertical } from 'iconsax-react';
 import { FiltersTriggerBar } from '@/features/explore/components/filters/FiltersTriggerBar';
 import { SearchResultsEmpty } from '../components/SearchResultsEmpty';
+import { SearchRelatedBanner } from '../components/SearchRelatedBanner';
 import { filterListings } from '@/shared/lib/filterListings';
 
 export const SearchResultsScreen: React.FC = () => {
@@ -16,7 +17,7 @@ export const SearchResultsScreen: React.FC = () => {
     minPriceFilter, setMinPriceFilter, maxPriceFilter, setMaxPriceFilter,
     neighborhoodFilter, setNeighborhoodFilter, browseCountryCode, browseCityEn, browseCityAr
   } = useUI();
-  const { listings } = useListings();
+  const { listings, searchBanner, searchRelatedHeader } = useListings();
 
   const { feedLayout, setFeedLayout: setFeedLayoutStore } = useAuth();
   const setFeedLayout = useCallback<Dispatch<SetStateAction<'list' | 'grid'>>>(
@@ -73,6 +74,8 @@ export const SearchResultsScreen: React.FC = () => {
           onFeedLayoutChange={setFeedLayout}
         />
       </div>
+
+      <SearchRelatedBanner banner={searchBanner} relatedHeader={searchRelatedHeader} />
 
       {/* Results Header */}
       <div className="px-4.5 pt-4 pb-2 flex items-center justify-between">

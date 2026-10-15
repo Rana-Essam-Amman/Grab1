@@ -9,6 +9,8 @@ import { ExploreTopSections } from '../components/ExploreTopSections';
 import { ExploreQuotaPaywallModal } from '../components/ExploreQuotaPaywallModal';
 import { FiltersTriggerBar } from '../components/filters/FiltersTriggerBar';
 import { ExploreListingFeed } from '@/features/explore/components/ExploreListingFeed';
+import { SearchRelatedBanner } from '@/features/listings/components/SearchRelatedBanner';
+import { useListings } from '@/hooks/useListings';
 
 function useDebouncedValue<T>(value: T, delayMs: number): T {
   const [debounced, setDebounced] = React.useState(value);
@@ -34,6 +36,7 @@ export const ExploreScreen: React.FC = () => {
     voidedNotice, setVoidedNotice, displayListings, handleResetAllFilters,
     hasMore, isLoadingMore, onLoadMore, hasAnyFilter
   } = useExploreListings();
+  const { searchBanner, searchRelatedHeader } = useListings();
 
   const currentPackage = useMemo(() => {
     return MONETIZATION_MATRIX.packages[browseCountryCode] || MONETIZATION_MATRIX.packages['JO'];
@@ -91,6 +94,8 @@ export const ExploreScreen: React.FC = () => {
       {!isSearchFocused && (
         <ExploreTopSections displayListings={displayListings} />
       )}
+
+      <SearchRelatedBanner banner={searchBanner} relatedHeader={searchRelatedHeader} />
 
       {/* Listings Feed */}
       <ExploreListingFeed

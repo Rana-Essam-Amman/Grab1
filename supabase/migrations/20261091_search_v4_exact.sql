@@ -7,6 +7,17 @@ BEGIN;
 SET LOCAL lock_timeout = '3s';
 SET LOCAL statement_timeout = '15s';
 
+CREATE TABLE IF NOT EXISTS public.search_v4_trace (
+  id bigserial PRIMARY KEY,
+  branch text NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+COMMENT ON TABLE public.search_v4_trace IS
+  'Test instrumentation. Written only when app.v4_trace = on.';
+
+GRANT SELECT, INSERT, DELETE ON public.search_v4_trace TO anon, authenticated;
+
 CREATE OR REPLACE FUNCTION public.search_listings_v4_exact(
   p_query text,
   p_market text DEFAULT NULL,
@@ -46,7 +57,7 @@ RETURNS TABLE (
   total_matched_tokens integer
 )
 LANGUAGE plpgsql
-STABLE
+VOLATILE
 SECURITY DEFINER
 SET search_path = public
 AS $function$
@@ -105,6 +116,10 @@ BEGIN
     );
 
   IF v_exact_count > 0 THEN
+    IF current_setting('app.v4_trace', true) = 'on' THEN
+      INSERT INTO public.search_v4_trace(branch) VALUES ('exact');
+    END IF;
+
     RETURN QUERY
     SELECT
       l.id, l.user_id, l.title, l.description, l.price, l.currency,
@@ -134,6 +149,10 @@ BEGIN
     ORDER BY l.created_at DESC, l.id ASC
     LIMIT v_limit OFFSET v_offset;
     RETURN;
+  END IF;
+
+  IF current_setting('app.v4_trace', true) = 'on' THEN
+    INSERT INTO public.search_v4_trace(branch) VALUES ('related');
   END IF;
 
   RETURN QUERY

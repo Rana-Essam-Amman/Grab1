@@ -144,7 +144,53 @@ VALUES
    '90000000-0000-4000-8000-000000000001'::uuid,
    'v4relordonly تسلا', 'related one token', '100', 'JOD', 'JO',
    'Amman', NULL, 'motors', 'cars', 'active', '[]'::jsonb,
-   '2026-10-05T10:00:00Z');
+   '2026-10-05T10:00:00Z'),
+  -- T10 filter mismatches: each filter excludes a deliberately wrong row.
+  ('91000000-0000-4000-8000-000000000021'::uuid,
+   '90000000-0000-4000-8000-000000000001'::uuid,
+   'v4fltbad تسلا 2022 احمر', 'wrong category', '150', 'JOD', 'JO',
+   'Amman', 'Abdoun', 'electronics', 'cars', 'active',
+   '[{"key":"make","value":"v4fltattr"}]'::jsonb, '2026-10-04T10:00:00Z'),
+  ('91000000-0000-4000-8000-000000000022'::uuid,
+   '90000000-0000-4000-8000-000000000001'::uuid,
+   'v4fltbad تسلا 2022 احمر', 'wrong subcategory', '150', 'JOD', 'JO',
+   'Amman', 'Abdoun', 'motors', 'parts', 'active',
+   '[{"key":"make","value":"v4fltattr"}]'::jsonb, '2026-10-04T10:00:00Z'),
+  ('91000000-0000-4000-8000-000000000023'::uuid,
+   '90000000-0000-4000-8000-000000000001'::uuid,
+   'v4fltbad تسلا 2022 احمر', 'below min', '50', 'JOD', 'JO',
+   'Amman', 'Abdoun', 'motors', 'cars', 'active',
+   '[{"key":"make","value":"v4fltattr"}]'::jsonb, '2026-10-04T10:00:00Z'),
+  ('91000000-0000-4000-8000-000000000024'::uuid,
+   '90000000-0000-4000-8000-000000000001'::uuid,
+   'v4fltbad تسلا 2022 احمر', 'above max', '900', 'JOD', 'JO',
+   'Amman', 'Abdoun', 'motors', 'cars', 'active',
+   '[{"key":"make","value":"v4fltattr"}]'::jsonb, '2026-10-04T10:00:00Z'),
+  ('91000000-0000-4000-8000-000000000025'::uuid,
+   '90000000-0000-4000-8000-000000000001'::uuid,
+   'v4fltbad تسلا 2022 احمر', 'wrong city', '150', 'JOD', 'JO',
+   'Zarqa', 'Abdoun', 'motors', 'cars', 'active',
+   '[{"key":"make","value":"v4fltattr"}]'::jsonb, '2026-10-04T10:00:00Z'),
+  ('91000000-0000-4000-8000-000000000026'::uuid,
+   '90000000-0000-4000-8000-000000000001'::uuid,
+   'v4fltbad تسلا 2022 احمر', 'wrong neighborhood', '150', 'JOD', 'JO',
+   'Amman', 'Jubeiha', 'motors', 'cars', 'active',
+   '[{"key":"make","value":"v4fltattr"}]'::jsonb, '2026-10-04T10:00:00Z'),
+  ('91000000-0000-4000-8000-000000000027'::uuid,
+   '90000000-0000-4000-8000-000000000001'::uuid,
+   'v4fltbad تسلا 2022 احمر', 'wrong attrs', '150', 'JOD', 'JO',
+   'Amman', 'Abdoun', 'motors', 'cars', 'active',
+   '[{"key":"make","value":"other"}]'::jsonb, '2026-10-04T10:00:00Z'),
+  ('91000000-0000-4000-8000-000000000028'::uuid,
+   '90000000-0000-4000-8000-000000000001'::uuid,
+   'v4relbad تسلا ازرق', 'related wrong market', '150', 'SAR', 'SA',
+   'Amman', 'Abdoun', 'motors', 'cars', 'active', '[]'::jsonb,
+   '2026-10-04T10:00:00Z'),
+  ('91000000-0000-4000-8000-000000000029'::uuid,
+   '90000000-0000-4000-8000-000000000001'::uuid,
+   'v4ord تسلا', 'related candidate for T11', '100', 'JOD', 'JO',
+   'Amman', NULL, 'motors', 'cars', 'active', '[]'::jsonb,
+   '2026-10-01T10:00:00Z');
 
 DO $$
 DECLARE
@@ -174,7 +220,10 @@ BEGIN
   END IF;
   RAISE NOTICE 'PASS T0: v4 exists and does not call v2';
 
-  -- T1 motors
+  -- T1 motors + branch instrumentation
+  DELETE FROM public.search_v4_trace;
+  PERFORM set_config('app.v4_trace', 'on', true);
+
   SELECT array_agg(id ORDER BY id) INTO v_exact
   FROM public.search_listings_v4_exact('تسلا 2022 احمر', 'JO', 100, 0)
   WHERE match_kind = 'exact' AND title LIKE 'v4m %';
@@ -188,7 +237,13 @@ BEGIN
   THEN
     RAISE EXCEPTION 'TEST T1 FAIL: exact=% related=%', v_exact, v_related;
   END IF;
-  RAISE NOTICE 'PASS T1: motors exact is A only; related suppressed';
+
+  IF NOT EXISTS (SELECT 1 FROM public.search_v4_trace WHERE branch = 'exact')
+     OR EXISTS (SELECT 1 FROM public.search_v4_trace WHERE branch = 'related')
+  THEN
+    RAISE EXCEPTION 'TEST T1 FAIL: related branch ran while exact existed';
+  END IF;
+  RAISE NOTICE 'PASS T1: exact branch only; related branch was not entered';
 
   -- T2 real estate
   SELECT array_agg(id) INTO v_exact
@@ -226,7 +281,9 @@ BEGIN
   END IF;
   RAISE NOTICE 'PASS T5: electronics exact only';
 
-  -- T6 no exact, has related
+  -- T6 no exact, has related + branch instrumentation
+  DELETE FROM public.search_v4_trace;
+
   SELECT count(*) INTO v_count
   FROM public.search_listings_v4_exact('v4nx تسلا احمر', 'JO', 100, 0)
   WHERE match_kind = 'exact';
@@ -242,7 +299,13 @@ BEGIN
   IF NOT v_found THEN
     RAISE EXCEPTION 'TEST T6 FAIL: related fixture missing';
   END IF;
-  RAISE NOTICE 'PASS T6: no exact, related returned';
+
+  IF NOT EXISTS (SELECT 1 FROM public.search_v4_trace WHERE branch = 'related')
+     OR EXISTS (SELECT 1 FROM public.search_v4_trace WHERE branch = 'exact')
+  THEN
+    RAISE EXCEPTION 'TEST T6 FAIL: related branch was not the path taken';
+  END IF;
+  RAISE NOTICE 'PASS T6: related branch entered only because exact was empty';
 
   -- T7 no exact, no related
   SELECT count(*) INTO v_count
@@ -298,15 +361,52 @@ BEGIN
   IF v_found THEN
     RAISE EXCEPTION 'TEST T10 FAIL: SA fixture leaked into JO filtered exact';
   END IF;
-  RAISE NOTICE 'PASS T10: filters honored';
 
-  -- T11 pagination does not fall through
+  IF EXISTS (
+    SELECT 1 FROM public.search_listings_v4_exact(
+      'v4fltbad تسلا 2022 احمر', 'JO', 100, 0,
+      'motors', 'cars', 100, 200, 'Amman', 'Abdoun',
+      '[{"key":"make","value":"v4fltattr"}]'::jsonb
+    )
+    WHERE id IN (
+      '91000000-0000-4000-8000-000000000021'::uuid,
+      '91000000-0000-4000-8000-000000000022'::uuid,
+      '91000000-0000-4000-8000-000000000023'::uuid,
+      '91000000-0000-4000-8000-000000000024'::uuid,
+      '91000000-0000-4000-8000-000000000025'::uuid,
+      '91000000-0000-4000-8000-000000000026'::uuid,
+      '91000000-0000-4000-8000-000000000027'::uuid
+    )
+  ) THEN
+    RAISE EXCEPTION 'TEST T10 FAIL: a mismatched exact fixture leaked through a filter';
+  END IF;
+
+  IF EXISTS (
+    SELECT 1 FROM public.search_listings_v4_exact(
+      'v4relbad تسلا', 'JO', 100, 0,
+      'motors', 'cars', 100, 200, 'Amman', 'Abdoun', NULL
+    )
+    WHERE id = '91000000-0000-4000-8000-000000000028'::uuid
+  ) THEN
+    RAISE EXCEPTION 'TEST T10 FAIL: related set ignored market filter';
+  END IF;
+  RAISE NOTICE 'PASS T10: each filter excludes a mismatched row in exact and related';
+
+  -- T11A: exact exists, offset past end, related candidate exists → empty
   SELECT count(*) INTO v_count
   FROM public.search_listings_v4_exact('v4ord تسلا 2022 احمر', 'JO', 10, 5);
   IF v_count <> 0 THEN
     RAISE EXCEPTION 'TEST T11 FAIL: offset past exact returned % rows', v_count;
   END IF;
-  RAISE NOTICE 'PASS T11: offset past exact is empty, no related fallthrough';
+
+  -- T11B: related pagination is independent when exact is empty
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_exact('v4relordonly تسلا 2022 احمر', 'JO', 1, 1)
+  WHERE match_kind = 'related';
+  IF v_count <> 1 THEN
+    RAISE EXCEPTION 'TEST T11 FAIL: related pagination returned % rows', v_count;
+  END IF;
+  RAISE NOTICE 'PASS T11: exact page does not fall through; related paginates independently';
 
   -- T12 ordering
   SELECT id INTO v_first
