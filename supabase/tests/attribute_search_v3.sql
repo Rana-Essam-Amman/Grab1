@@ -27,6 +27,9 @@ BEGIN
       '81000000-0000-4000-8000-000000000004'::uuid,
       '81000000-0000-4000-8000-000000000005'::uuid,
       '81000000-0000-4000-8000-000000000006'::uuid,
+      '81000000-0000-4000-8000-000000000007'::uuid,
+      '81000000-0000-4000-8000-000000000008'::uuid,
+      '81000000-0000-4000-8000-000000000009'::uuid,
       '71000000-0000-4000-8000-000000000001'::uuid,
       '71000000-0000-4000-8000-000000000002'::uuid
     )
@@ -115,6 +118,43 @@ VALUES
     '[]'::jsonb
   );
 
+-- T6B fixture: unique marker for >5 token delegation.
+INSERT INTO public.listings (
+  id, user_id, title, description, price, currency, country_code,
+  city, category_slug, status, attributes
+)
+VALUES (
+  '81000000-0000-4000-8000-000000000007'::uuid,
+  '80000000-0000-4000-8000-000000000001'::uuid,
+  'v3delegation test marker',
+  'Delegation fixture for more than five tokens.',
+  '100', 'JOD', 'JO', 'Amman', 'motors', 'active',
+  '[]'::jsonb
+);
+
+-- T10 fixtures: A matches all three page tokens; B matches core+color only.
+INSERT INTO public.listings (
+  id, user_id, title, description, price, currency, country_code,
+  city, category_slug, status, attributes
+)
+VALUES
+  (
+    '81000000-0000-4000-8000-000000000008'::uuid,
+    '80000000-0000-4000-8000-000000000001'::uuid,
+    'v3pagecore v3pagecolor v3pageyear full',
+    'Matches all three pagination tokens.',
+    '100', 'JOD', 'JO', 'Amman', 'motors', 'active',
+    '[]'::jsonb
+  ),
+  (
+    '81000000-0000-4000-8000-000000000009'::uuid,
+    '80000000-0000-4000-8000-000000000001'::uuid,
+    'v3pagecore v3pagecolor partial',
+    'Matches core and color only.',
+    '100', 'JOD', 'JO', 'Amman', 'motors', 'active',
+    '[]'::jsonb
+  );
+
 -- T9 fixtures (same as attribute_search.sql).
 INSERT INTO public.listings (
   id, user_id, title, description, price, currency, country_code,
@@ -157,6 +197,9 @@ DECLARE
   v_expensive uuid := '81000000-0000-4000-8000-000000000004'::uuid;
   v_mix_a uuid := '81000000-0000-4000-8000-000000000005'::uuid;
   v_mix_b uuid := '81000000-0000-4000-8000-000000000006'::uuid;
+  v_delegate uuid := '81000000-0000-4000-8000-000000000007'::uuid;
+  v_page_a uuid := '81000000-0000-4000-8000-000000000008'::uuid;
+  v_page_b uuid := '81000000-0000-4000-8000-000000000009'::uuid;
 BEGIN
   -- T1: both functions exist
   IF NOT EXISTS (
@@ -229,6 +272,20 @@ BEGIN
     RAISE EXCEPTION 'TEST T6 FAIL: >5 tokens produced % subsets', v_count;
   END IF;
   RAISE NOTICE 'PASS T6: more than 5 meaningful tokens yields no subsets';
+
+  -- T6B: v3_relaxed delegates >5 meaningful tokens to v2_intent_typo.
+  SELECT EXISTS (
+    SELECT 1 FROM public.search_listings_v3_relaxed(
+      p_query => 'v3delegation test marker extra1 extra2 extra3',
+      p_market => 'JO',
+      p_limit => 100
+    ) r WHERE r.id = v_delegate
+  ) INTO v_found;
+
+  IF NOT v_found THEN
+    RAISE EXCEPTION 'TEST T6B FAIL: >5 token query did not delegate and return the fixture';
+  END IF;
+  RAISE NOTICE 'PASS T6B: >5 meaningful tokens delegate to v2_intent_typo';
 
   -- T7: market + hard filters preserved
   SELECT EXISTS (
@@ -463,6 +520,46 @@ BEGIN
     RAISE EXCEPTION 'TEST H FAIL: new attribute value not present in search_text';
   END IF;
   RAISE NOTICE 'PASS H: UPDATE trigger regenerated search_text correctly';
+
+  -- T10: pagination does not fall through to a looser subset.
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v3_relaxed(
+    p_query => 'v3pagecore v3pagecolor v3pageyear',
+    p_market => 'JO',
+    p_limit => 10,
+    p_offset => 1
+  ) r;
+
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'TEST T10 FAIL: offset beyond the winning subset returned % rows', v_count;
+  END IF;
+
+  SELECT EXISTS (
+    SELECT 1 FROM public.search_listings_v3_relaxed(
+      p_query => 'v3pagecore v3pagecolor v3pageyear',
+      p_market => 'JO',
+      p_limit => 10,
+      p_offset => 1
+    ) r WHERE r.id = v_page_b
+  ) INTO v_found;
+
+  IF v_found THEN
+    RAISE EXCEPTION 'TEST T10 FAIL: pagination fell through to the looser subset (fixture B)';
+  END IF;
+
+  SELECT EXISTS (
+    SELECT 1 FROM public.search_listings_v3_relaxed(
+      p_query => 'v3pagecore v3pagecolor v3pageyear',
+      p_market => 'JO',
+      p_limit => 10,
+      p_offset => 0
+    ) r WHERE r.id = v_page_a
+  ) INTO v_found;
+
+  IF NOT v_found THEN
+    RAISE EXCEPTION 'TEST T10 FAIL: winning subset did not return fixture A at offset 0';
+  END IF;
+  RAISE NOTICE 'PASS T10: pagination stays in the winning subset';
 
   RAISE NOTICE 'PASS T9: PR #322 assertions A-H preserved, with v3_relaxed on B/F/G';
   RAISE NOTICE 'ALL V3 RELAXED REGRESSION TESTS PASSED';

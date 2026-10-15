@@ -106,7 +106,8 @@ DECLARE
   v_limit integer := greatest(1, least(coalesce(p_limit, 20), 100));
   v_offset integer := greatest(0, coalesce(p_offset, 0));
   v_subset record;
-  v_match_count integer;
+  v_meaningful_count integer;
+  v_has_any boolean;
 BEGIN
   v_norm := btrim(
     public.normalize_search_text(coalesce(p_query, ''))
@@ -116,40 +117,84 @@ BEGIN
     RETURN;
   END IF;
 
-  SELECT count(*) INTO v_match_count
-  FROM public.search_relaxed_subsets(v_norm);
+  -- Count meaningful tokens (>=3 chars, non-stopword) to decide path.
+  SELECT count(*) INTO v_meaningful_count
+  FROM regexp_split_to_table(v_norm, '[[:space:]]+') AS s(token)
+  WHERE length(public.normalize_search_text(s.token)) >= 3
+    AND NOT EXISTS (
+      SELECT 1 FROM public.search_stopwords w
+      WHERE public.normalize_search_text(w.word) =
+            public.normalize_search_text(s.token)
+    );
 
-  IF v_match_count = 0 THEN
+  IF v_meaningful_count = 0 THEN
     RETURN;
   END IF;
 
+  -- >5 meaningful tokens: delegate to existing v2_intent_typo once.
+  IF v_meaningful_count > 5 THEN
+    RETURN QUERY
+    SELECT l.*
+    FROM public.search_listings_v2_intent_typo(
+      p_query, p_market, v_limit, v_offset,
+      p_category_slug, p_subcategory_slug,
+      p_min_price, p_max_price,
+      p_city, p_neighborhood, p_attrs
+    ) AS l;
+    RETURN;
+  END IF;
+
+  -- 1-5 meaningful tokens: progressive relaxation.
   FOR v_subset IN
     SELECT s.attempt_no, s.subset_tokens
     FROM public.search_relaxed_subsets(v_norm) AS s
     ORDER BY s.attempt_no
   LOOP
-    RETURN QUERY
-    SELECT l.*
-    FROM public.listings AS l
-    WHERE l.status = 'active'
-      AND (p_market IS NULL OR l.country_code = upper(p_market))
-      AND public.listing_passes_filters(
-        l, p_category_slug, p_subcategory_slug,
-        p_min_price, p_max_price,
-        p_city, p_neighborhood, p_attrs
-      )
-      AND NOT EXISTS (
-        SELECT 1
-        FROM unnest(v_subset.subset_tokens) AS required(token)
-        WHERE strpos(
-          public.normalize_search_text(coalesce(l.search_text, '')),
-          public.normalize_search_text(required.token)
-        ) = 0
-      )
-    ORDER BY l.created_at DESC, l.id ASC
-    LIMIT v_limit OFFSET v_offset;
+    -- Step A: does this subset have ANY match (ignoring pagination)?
+    SELECT EXISTS (
+      SELECT 1
+      FROM public.listings AS l
+      WHERE l.status = 'active'
+        AND (p_market IS NULL OR l.country_code = upper(p_market))
+        AND public.listing_passes_filters(
+          l, p_category_slug, p_subcategory_slug,
+          p_min_price, p_max_price,
+          p_city, p_neighborhood, p_attrs
+        )
+        AND NOT EXISTS (
+          SELECT 1
+          FROM unnest(v_subset.subset_tokens) AS required(token)
+          WHERE strpos(
+            public.normalize_search_text(coalesce(l.search_text, '')),
+            public.normalize_search_text(required.token)
+          ) = 0
+        )
+    ) INTO v_has_any;
 
-    IF FOUND THEN
+    -- Step B: this is the winning subset. Return its paginated rows.
+    -- Even if pagination yields 0 rows, do NOT fall through.
+    IF v_has_any THEN
+      RETURN QUERY
+      SELECT l.*
+      FROM public.listings AS l
+      WHERE l.status = 'active'
+        AND (p_market IS NULL OR l.country_code = upper(p_market))
+        AND public.listing_passes_filters(
+          l, p_category_slug, p_subcategory_slug,
+          p_min_price, p_max_price,
+          p_city, p_neighborhood, p_attrs
+        )
+        AND NOT EXISTS (
+          SELECT 1
+          FROM unnest(v_subset.subset_tokens) AS required(token)
+          WHERE strpos(
+            public.normalize_search_text(coalesce(l.search_text, '')),
+            public.normalize_search_text(required.token)
+          ) = 0
+        )
+      ORDER BY l.created_at DESC, l.id ASC
+      LIMIT v_limit OFFSET v_offset;
+
       RETURN;
     END IF;
   END LOOP;
