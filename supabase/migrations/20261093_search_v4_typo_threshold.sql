@@ -61,6 +61,8 @@ DECLARE
   v_threshold integer;
 BEGIN
   v_norm := btrim(public.normalize_search_text(coalesce(p_query, '')));
+  -- Fold Persian yeh/kaf so measured typos like كمری match كامري.
+  v_norm := translate(v_norm, 'یک', 'يك');
   IF v_norm = '' OR length(v_norm) < 3 THEN
     RETURN;
   END IF;
