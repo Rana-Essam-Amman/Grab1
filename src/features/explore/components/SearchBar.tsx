@@ -16,6 +16,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   onSubmit,
   onFocusChange,
 }) => {
+  const DEBUG_MODE = new URLSearchParams(window.location.search).has('debug');
   const [focused, setFocused] = useState(false);
 
   useEffect(() => {
@@ -68,7 +69,13 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         className={`w-full h-11 bg-surface border border-border rounded-xl text-sm text-content-primary placeholder:text-content-tertiary focus:outline-none focus:border-primary transition-colors ${
           focused ? 'pl-12 pr-4' : 'px-4'
         }`}
+        style={DEBUG_MODE ? { outline: '3px solid blue' } : undefined}
       />
+      {DEBUG_MODE && (
+        <span style={{position:'absolute',top:'-16px',right:0,background:'blue',color:'white',fontSize:'12px',padding:'1px 4px',zIndex:9999}}>
+          INPUT focused:{String(focused)}
+        </span>
+      )}
       <SearchSuggestions
         query={value}
         onSelect={handleSelect}

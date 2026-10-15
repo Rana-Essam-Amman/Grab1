@@ -12,6 +12,7 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
   onSelect,
   visible,
 }) => {
+  const DEBUG_MODE = new URLSearchParams(window.location.search).has('debug');
   const [items, setItems] = useState<SearchSuggestion[]>([]);
   const [loading, setLoading] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -77,6 +78,7 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
       ref={containerRef}
       className="absolute z-[60] mt-1 w-full max-h-80 overflow-y-auto rounded-lg border border-border bg-surface shadow-lg"
       role="listbox"
+      style={DEBUG_MODE ? { outline: '3px solid green' } : undefined}
     >
       {loading && items.length === 0 && (
         <div className="flex items-center justify-center p-3 text-content-tertiary">

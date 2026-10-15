@@ -22,6 +22,7 @@ function useDebouncedValue<T>(value: T, delayMs: number): T {
 }
 
 export const ExploreScreen: React.FC = () => {
+  const DEBUG_MODE = new URLSearchParams(window.location.search).has('debug');
   const { isArabic, browseCountryCode, navigateTo, setSearchQuery, isSearchFocused, setIsSearchFocused } = useUI();
   const { isQuotaExhausted, setIsQuotaExhausted } = useMonetization();
   const [searchInput, setSearchInput] = useState('');
@@ -84,7 +85,13 @@ export const ExploreScreen: React.FC = () => {
             ? 'fixed top-0 left-0 right-0 z-[100] bg-canvas pt-[env(safe-area-inset-top)] px-4 pb-2'
             : 'bg-canvas pt-3 pb-2 -mx-4 px-4'
         }
+        style={DEBUG_MODE ? { outline: '3px solid red', background: 'rgba(255,0,0,0.1)' } : undefined}
       >
+        {DEBUG_MODE && (
+          <div style={{position:'fixed',top:0,left:0,background:'red',color:'white',fontSize:'12px',padding:'2px 6px',zIndex:9999}}>
+            WRAPPER fixed:true
+          </div>
+        )}
         <SearchBar
           isArabic={isArabic}
           value={searchInput}
