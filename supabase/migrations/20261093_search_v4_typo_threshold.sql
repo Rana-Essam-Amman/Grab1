@@ -159,7 +159,7 @@ BEGIN
     AND word_similarity(
       v_norm,
       public.normalize_search_text(coalesce(l.search_text, ''))
-    ) >= 0.5;
+    ) >= 0.4;
 
   IF v_trigram_count > 0 THEN
     IF current_setting('app.v4_trace', true) = 'on'
@@ -188,7 +188,7 @@ BEGIN
       AND word_similarity(
         v_norm,
         public.normalize_search_text(coalesce(l.search_text, ''))
-      ) >= 0.5
+      ) >= 0.4
     ORDER BY word_similarity(
       v_norm,
       public.normalize_search_text(coalesce(l.search_text, ''))
