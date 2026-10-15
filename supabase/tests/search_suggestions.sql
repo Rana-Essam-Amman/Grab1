@@ -18,7 +18,8 @@ INSERT INTO public.search_subcategory_labels (category_slug, subcategory_slug, n
 VALUES ('real-estate', 'apartments-fixture', 'شقة للبيع', 'Apartment for Sale')
 ON CONFLICT DO NOTHING;
 
--- Temporary listing so token extraction has an 'ايفون' token.
+-- Temporary listing so token extraction has coverage.
+-- Includes unique marker 'زيبولين' (not a keyword) for T6 token-pool assertion.
 INSERT INTO auth.users (
   id, aud, role, email, encrypted_password, email_confirmed_at,
   raw_app_meta_data, raw_user_meta_data
@@ -40,7 +41,7 @@ VALUES (
   '96000000-0000-4000-8000-000000000001'::uuid,
   'ايفون 15 برو', 'token fixture', '100', 'JOD', 'JO',
   'Amman', 'mobiles', 'active',
-  public.normalize_search_text('ايفون 15 برو ماكس')
+  public.normalize_search_text('ايفون 15 برو ماكس زيبولين')
 )
 ON CONFLICT DO NOTHING;
 
@@ -124,19 +125,21 @@ BEGIN
   RAISE NOTICE 'PASS T5: كامري → result';
 END $$;
 
--- T6: 'ايفو' returns token 'ايفون'
+-- T6: unique non-keyword token from fixture listing
+-- 'زيبولين' is not in search_keywords (unlike 'ايفون' which is now a brand_keyword weight 1.0).
+-- Dedup keeps highest weight, so a pure token assertion requires a non-keyword token.
 DO $$
 DECLARE
   found boolean;
 BEGIN
   SELECT EXISTS (
-    SELECT 1 FROM public.search_suggestions('ايفو', 10)
-    WHERE suggestion = 'ايفون' AND suggestion_type = 'token' AND weight = 0.6
+    SELECT 1 FROM public.search_suggestions('زيبو', 10)
+    WHERE suggestion = 'زيبولين' AND suggestion_type = 'token' AND weight = 0.6
   ) INTO found;
   IF NOT found THEN
-    RAISE EXCEPTION 'T6 FAIL: expected token ايفون';
+    RAISE EXCEPTION 'T6 FAIL: expected token زيبولين';
   END IF;
-  RAISE NOTICE 'PASS T6: ايفو → token ايفون';
+  RAISE NOTICE 'PASS T6: زيبو → token زيبولين';
 END $$;
 
 -- T7: Deduplication — same text from 2 sources keeps highest weight
