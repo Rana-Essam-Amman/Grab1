@@ -73,3 +73,6 @@ psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/attribute_search.sql
 
 # v3_relaxed progressive relaxation regression.
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/attribute_search_v3.sql
+
+# v4 exact-first search regression.
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/search_v4_exact.sql
