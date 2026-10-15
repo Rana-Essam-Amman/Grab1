@@ -5,6 +5,19 @@
 
 BEGIN;
 
+-- Temporary keyword so T2 has the expected 'كامري' keyword (rolled back).
+INSERT INTO public.search_keywords (group_key, keyword)
+VALUES ('model_camry', 'كامري')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.search_synonyms (term, expansions)
+VALUES ('عربية', ARRAY['car','auto']::text[])
+ON CONFLICT (term) DO NOTHING;
+
+INSERT INTO public.search_subcategory_labels (category_slug, subcategory_slug, name_ar, name_en)
+VALUES ('real-estate', 'apartments-fixture', 'شقة', 'Apartment')
+ON CONFLICT DO NOTHING;
+
 -- Temporary listing so token extraction has an 'ايفون' token.
 INSERT INTO auth.users (
   id, aud, role, email, encrypted_password, email_confirmed_at,
