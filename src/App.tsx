@@ -76,7 +76,7 @@ const ScreenLoader: React.FC = () => (
 );
 
 const MainNavigator: React.FC = () => {
-  const { isArabic, isSearchFocused } = useUI();
+  const { isArabic } = useUI();
   const { currentScreen, activeTab } = useScreenFromUrl();
   useUrlSync();
   useSearchResultsUrlSync();
@@ -172,7 +172,7 @@ const MainNavigator: React.FC = () => {
   return (
     <div className="min-h-screen bg-canvas flex justify-center selection:bg-brand selection:text-white">
       <div className="w-full max-w-[440px] min-h-screen bg-canvas flex flex-col shadow-2xl relative">
-        {currentScreen === 'main' && !isSearchFocused && <Header />}
+        {currentScreen === 'main' && <Header />}
         {currentScreen === 'main' && showMarketBanner && !bannerDismissed && awayMarketConfig && (
           <MarketContextBanner
             isArabic={isArabic}
