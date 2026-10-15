@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SearchSuggestions } from '@/features/listings/components/SearchSuggestions';
 
 export interface SearchBarProps {
@@ -14,8 +14,13 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   value,
   onChange,
   onSubmit,
+  onFocusChange,
 }) => {
   const [focused, setFocused] = useState(false);
+
+  useEffect(() => {
+    onFocusChange?.(focused);
+  }, [focused, onFocusChange]);
 
   const handleSelect = (suggestion: string) => {
     onChange(suggestion);
@@ -23,22 +28,46 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     setFocused(false);
   };
 
+  const handleClose = () => {
+    setFocused(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      setFocused(false);
+      onSubmit();
+    }
+  };
+
   return (
     <div className="relative flex items-center w-full" data-testid="search-container">
+      {focused && (
+        <button
+          type="button"
+          onClick={handleClose}
+          className="absolute left-2 z-10 flex h-8 w-8 items-center justify-center rounded-full text-content-secondary hover:bg-canvas"
+          aria-label={isArabic ? 'إغلاق البحث' : 'Close search'}
+          data-testid="search-close-btn"
+        >
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12.5 5L7.5 10L12.5 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
+      )}
       <input
         type="text"
         data-testid="search-input"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') onSubmit();
-        }}
+        onKeyDown={handleKeyDown}
         onFocus={() => setFocused(true)}
         onBlur={() => {
           setTimeout(() => setFocused(false), 150);
         }}
         placeholder={isArabic ? 'ابحث في الماركت بليس...' : 'Search marketplace...'}
-        className="w-full h-11 px-4 bg-surface border border-border rounded-xl text-sm text-content-primary placeholder:text-content-tertiary focus:outline-none focus:border-primary transition-colors"
+        className={`w-full h-11 bg-surface border border-border rounded-xl text-sm text-content-primary placeholder:text-content-tertiary focus:outline-none focus:border-primary transition-colors ${
+          focused ? 'pl-12 pr-4' : 'px-4'
+        }`}
       />
       <SearchSuggestions
         query={value}

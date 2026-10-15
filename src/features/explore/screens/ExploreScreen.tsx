@@ -1,6 +1,6 @@
 import { useUI } from '@/hooks/useUI';
 import { useMonetization } from '@/hooks/useMonetization';
-import React, { useMemo, useCallback, useState } from 'react';
+import React, { useMemo, useCallback, useState, useEffect } from 'react';
 import { SearchBar } from '@/features/explore/components/SearchBar';
 import { MONETIZATION_MATRIX } from '@/data/monetization';
 import { useExploreListings } from '../hooks/useExploreListings';
@@ -30,6 +30,18 @@ export const ExploreScreen: React.FC = () => {
   React.useEffect(() => {
     setSearchQuery(debouncedSearch.trim());
   }, [debouncedSearch, setSearchQuery]);
+
+  // Lock body scroll while search takeover is active
+  useEffect(() => {
+    if (isSearchFocused) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isSearchFocused]);
 
   const {
     setFilterMode, feedLayout, setFeedLayout, activeSearchText,
@@ -62,10 +74,17 @@ export const ExploreScreen: React.FC = () => {
 
   return (
     <div
-      className={`max-w-[440px] mx-auto w-full flex flex-col gap-5 pt-0 pb-28 px-4 bg-surface ${isArabic ? 'font-cairo' : ''}`} dir={isArabic ? "rtl" : "ltr"}
+      className={`max-w-[440px] mx-auto w-full flex flex-col gap-5 pt-0 pb-28 px-4 bg-surface ${isArabic ? 'font-cairo' : ''} ${isSearchFocused ? 'overflow-hidden' : ''}`}
+      dir={isArabic ? "rtl" : "ltr"}
       style={{ WebkitOverflowScrolling: 'touch' }}
     >
-      <div className="sticky top-[72px] z-40 bg-canvas pt-3 pb-2 -mx-4 px-4">
+      <div
+        className={
+          isSearchFocused
+            ? 'fixed top-0 left-0 right-0 z-[100] bg-canvas pt-[env(safe-area-inset-top)] px-4 pb-2'
+            : 'bg-canvas pt-3 pb-2 -mx-4 px-4'
+        }
+      >
         <SearchBar
           isArabic={isArabic}
           value={searchInput}
@@ -73,12 +92,14 @@ export const ExploreScreen: React.FC = () => {
           onSubmit={handleSearchSubmit}
           onFocusChange={setIsSearchFocused}
         />
-        <div className="mt-2">
-          <FiltersTriggerBar
-            feedLayout={feedLayout}
-            onFeedLayoutChange={setFeedLayout}
-          />
-        </div>
+        {!isSearchFocused && (
+          <div className="mt-2">
+            <FiltersTriggerBar
+              feedLayout={feedLayout}
+              onFeedLayoutChange={setFeedLayout}
+            />
+          </div>
+        )}
       </div>
 
       {/* Cross-Border Tripwire Void Notice */}
