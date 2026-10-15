@@ -1,14 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { searchSuggestions, type SearchSuggestion } from '../services/searchSuggestions';
 
-const ICONS: Record<SearchSuggestion['suggestionType'], string> = {
-  keyword: '🔍',
-  synonym: '🔄',
-  category: '📁',
-  subcategory: '📂',
-  token: '⭐',
-};
-
 interface SearchSuggestionsProps {
   readonly query: string;
   readonly onSelect: (s: string) => void;
@@ -103,7 +95,6 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
           onClick={() => onSelect(item.suggestion)}
           onMouseEnter={() => setActiveIndex(idx)}
         >
-          <span aria-hidden="true">{ICONS[item.suggestionType] ?? '🔍'}</span>
           <span className="flex-1 truncate">{item.suggestion}</span>
         </button>
       ))}

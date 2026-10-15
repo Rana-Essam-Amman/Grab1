@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { CloseCircle } from 'iconsax-react';
-import { Icon } from '@iconify/react';
 import { SearchSuggestions } from '@/features/listings/components/SearchSuggestions';
 
 interface SearchBarProps {
@@ -39,7 +38,6 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         id="search-bar-container"
         className="rounded-full bg-surface border border-line h-12 flex items-center gap-2 px-4"
       >
-        <Icon icon="fluent-emoji:magnifying-glass-tilted-right" width={20} height={20} />
         <input
           id="search-bar-input"
           type="text"
