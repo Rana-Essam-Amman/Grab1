@@ -102,3 +102,6 @@ run_sql supabase/tests/attribute_search_v3.sql
 
 # v4 exact-first search regression.
 run_sql supabase/tests/search_v4_exact.sql
+
+# v4 rollback idempotence — run twice, then assert function is gone.
+run_sql supabase/tests/search_v4_rollback_idempotence.sql

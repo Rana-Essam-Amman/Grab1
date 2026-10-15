@@ -402,7 +402,40 @@ BEGIN
     RAISE EXCEPTION 'TEST T10 FAIL: a mismatched fixture leaked into the non-empty exact set';
   END IF;
 
-  -- Related-branch mismatch checks remain.
+  -- Related-branch exclusions for every filter dimension.
+  -- extraunmatched makes the exact set empty so related is computed.
+  IF EXISTS (
+    SELECT 1 FROM public.search_listings_v4_exact(
+      'v4flt تسلا 2022 احمر extraunmatched', 'JO', 100, 0,
+      'motors', 'cars', 100, 200, 'Amman', 'Abdoun',
+      '[{"key":"make","value":"v4fltattr"}]'::jsonb
+    )
+    WHERE match_kind = 'exact'
+  ) THEN
+    RAISE EXCEPTION 'TEST T10 FAIL: related-branch query unexpectedly had exact rows';
+  END IF;
+
+  IF EXISTS (
+    SELECT 1 FROM public.search_listings_v4_exact(
+      'v4flt تسلا 2022 احمر extraunmatched', 'JO', 100, 0,
+      'motors', 'cars', 100, 200, 'Amman', 'Abdoun',
+      '[{"key":"make","value":"v4fltattr"}]'::jsonb
+    )
+    WHERE match_kind = 'related'
+      AND id IN (
+      '91000000-0000-4000-8000-000000000021'::uuid,
+      '91000000-0000-4000-8000-000000000022'::uuid,
+      '91000000-0000-4000-8000-000000000023'::uuid,
+      '91000000-0000-4000-8000-000000000024'::uuid,
+      '91000000-0000-4000-8000-000000000025'::uuid,
+      '91000000-0000-4000-8000-000000000026'::uuid,
+      '91000000-0000-4000-8000-000000000027'::uuid
+    )
+  ) THEN
+    RAISE EXCEPTION 'TEST T10 FAIL: a mismatched fixture leaked into the related set';
+  END IF;
+
+  -- Related-branch market check on ...0028.
   IF EXISTS (
     SELECT 1 FROM public.search_listings_v4_exact(
       'v4relbad تسلا', 'JO', 100, 0,
@@ -413,7 +446,7 @@ BEGIN
   ) THEN
     RAISE EXCEPTION 'TEST T10 FAIL: related set ignored market filter';
   END IF;
-  RAISE NOTICE 'PASS T10: non-empty exact set excludes every mismatched filter; related filters hold';
+  RAISE NOTICE 'PASS T10: exact and related sets exclude all seven filter mismatches';
 
   -- T11A: exact exists, offset past end, related candidate exists → empty
   SELECT count(*) INTO v_count
