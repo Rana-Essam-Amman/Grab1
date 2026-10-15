@@ -19,7 +19,9 @@ VALUES ('real-estate', 'apartments-fixture', 'شقة للبيع', 'Apartment for
 ON CONFLICT DO NOTHING;
 
 -- Temporary listing so token extraction has coverage.
--- Includes unique marker 'زيبولين' (not a keyword) for T6 token-pool assertion.
+-- Marker 'زيبولين' is placed in description (a source field the
+-- BEFORE INSERT set_listings_search_text_trigger reads). Do not set
+-- search_text directly — the trigger rebuilds it and would overwrite.
 INSERT INTO auth.users (
   id, aud, role, email, encrypted_password, email_confirmed_at,
   raw_app_meta_data, raw_user_meta_data
@@ -34,14 +36,15 @@ ON CONFLICT DO NOTHING;
 
 INSERT INTO public.listings (
   id, user_id, title, description, price, currency, country_code,
-  city, category_slug, status, search_text
+  city, category_slug, status
 )
 VALUES (
   '97000000-0000-4000-8000-000000000001'::uuid,
   '96000000-0000-4000-8000-000000000001'::uuid,
-  'ايفون 15 برو', 'token fixture', '100', 'JOD', 'JO',
-  'Amman', 'mobiles', 'active',
-  public.normalize_search_text('ايفون 15 برو ماكس زيبولين')
+  'fixture iphone listing',
+  'fixture description with unique token زيبولين',
+  '100', 'JOD', 'JO',
+  'Amman', 'mobiles', 'active'
 )
 ON CONFLICT DO NOTHING;
 
