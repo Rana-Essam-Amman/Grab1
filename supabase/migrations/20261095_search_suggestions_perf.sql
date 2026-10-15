@@ -36,9 +36,10 @@ BEGIN
   ) t
   WHERE length(word) >= 3
     -- Match Unicode letters and digits only.
-    -- PostgreSQL POSIX classes handle Arabic under UTF-8.
-    -- Do NOT use \uXXXX escapes — not supported by PG regex.
-    AND word ~ '^[[:alpha:][:digit:]]+$'
+    -- Use E-string for \uXXXX escapes (PostgreSQL requires E prefix).
+    -- Do NOT use [[:alpha:]] — not UTF-8-compliant for Arabic.
+    -- Arabic Unicode block: U+0600 to U+06FF.
+    AND word ~ E'^[a-zA-Z0-9\u0600-\u06FF]+$'
   GROUP BY word;
 END;
 $function$;

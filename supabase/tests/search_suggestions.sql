@@ -125,6 +125,37 @@ BEGIN
   RAISE NOTICE 'PASS T5: كامري → result';
 END $$;
 
+-- DIAG: fixture search_text and trigger/pool state before T6
+DO $$
+DECLARE
+  v_search text;
+  v_count int;
+  v_has_marker int;
+  v_min_word text;
+  v_max_word text;
+BEGIN
+  SELECT search_text INTO v_search
+    FROM public.listings
+    WHERE id = '97000000-0000-4000-8000-000000000001'::uuid;
+  RAISE NOTICE 'DIAG: fixture search_text = %', v_search;
+
+  SELECT count(*) INTO v_count FROM public.search_suggestion_tokens;
+  SELECT count(*) INTO v_has_marker
+    FROM public.search_suggestion_tokens
+    WHERE word = 'زيبولين';
+  SELECT min(word), max(word) INTO v_min_word, v_max_word
+    FROM public.search_suggestion_tokens;
+
+  RAISE NOTICE 'DIAG: token_pool_count=% min=% max=% has_zippolin=%',
+    v_count, v_min_word, v_max_word, v_has_marker;
+
+  IF v_has_marker = 0 THEN
+    RAISE NOTICE 'DIAG: trigger did NOT refresh pool after insert (or marker filtered)';
+  ELSE
+    RAISE NOTICE 'DIAG: trigger refreshed pool, marker present';
+  END IF;
+END $$;
+
 -- T6: unique non-keyword token from fixture listing
 -- 'زيبولين' is not in search_keywords (unlike 'ايفون' which is now a brand_keyword weight 1.0).
 -- Dedup keeps highest weight, so a pure token assertion requires a non-keyword token.
