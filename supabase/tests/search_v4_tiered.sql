@@ -63,16 +63,22 @@ VALUES
    '96000000-0000-4000-8000-000000000001'::uuid,
    'كامري ايفون', 'mixed for ordering', '150', 'JOD', 'JO',
    'Amman', NULL, 'electronics', NULL, 'active', '[]'::jsonb,
-   '2026-10-01T10:00:00Z');
+   '2026-10-01T10:00:00Z'),
+  -- T9: non-contiguous tokens (كامري ... تويوتا)
+  ('97000000-0000-4000-8000-000000000006'::uuid,
+   '96000000-0000-4000-8000-000000000001'::uuid,
+   'كامري 2018 تويوتا', 'non-contiguous exact', '100', 'JOD', 'JO',
+   'Amman', NULL, 'motors', 'cars', 'active', '[]'::jsonb,
+   '2026-10-06T10:00:00Z');
 
 DO $$
 DECLARE
   v_tier integer;
   v_reason text;
   v_count integer;
-  v_v4_count integer;
   v_prev_tier integer;
   v_row record;
+  v_diff integer;
 BEGIN
   -- T1: Query "ايفون" against listing whose search_text contains it
   SELECT tier, tier_reason INTO v_tier, v_reason
@@ -101,22 +107,33 @@ BEGIN
   END IF;
   RAISE NOTICE 'PASS T3: كامري tier=1';
 
-  -- T4: Wrapper returns the SAME count of rows as v4_exact
-  SELECT count(*) INTO v_v4_count
-  FROM public.search_listings_v4_exact('ايفون', 'JO', 100, 0);
-  SELECT count(*) INTO v_count
-  FROM public.search_listings_v4_tiered('ايفون', 'JO', 100, 0);
-  IF v_count IS DISTINCT FROM v_v4_count THEN
-    RAISE EXCEPTION 'TEST T4 FAIL: wrapper count=% v4 count=%', v_count, v_v4_count;
+  -- T4: Wrapper returns the SAME set of IDs as v4_exact (no drops, no substitutions)
+  SELECT count(*) INTO v_diff
+  FROM (
+    SELECT id FROM public.search_listings_v4_exact('ايفون', 'JO', 100, 0)
+    EXCEPT
+    SELECT id FROM public.search_listings_v4_tiered('ايفون', 'JO', 100, 0)
+  ) AS only_in_v4;
+  IF v_diff <> 0 THEN
+    RAISE EXCEPTION 'TEST T4 FAIL: % IDs only in v4_exact', v_diff;
   END IF;
-  RAISE NOTICE 'PASS T4: same row count as v4_exact';
+  SELECT count(*) INTO v_diff
+  FROM (
+    SELECT id FROM public.search_listings_v4_tiered('ايفون', 'JO', 100, 0)
+    EXCEPT
+    SELECT id FROM public.search_listings_v4_exact('ايفون', 'JO', 100, 0)
+  ) AS only_in_tiered;
+  IF v_diff <> 0 THEN
+    RAISE EXCEPTION 'TEST T4 FAIL: % IDs only in v4_tiered', v_diff;
+  END IF;
+  RAISE NOTICE 'PASS T4: identical ID sets (no drops, no substitutions)';
 
   -- T5: Within a page, all tier=1 rows appear BEFORE tier=2 rows
+  -- (function return order, no client-side ORDER BY)
   v_prev_tier := 0;
   FOR v_row IN
     SELECT tier
     FROM public.search_listings_v4_tiered('كامري ايفون', 'JO', 100, 0)
-    ORDER BY 1  -- already ordered by the function, but re-confirm sequence
   LOOP
     IF v_prev_tier = 2 AND v_row.tier = 1 THEN
       RAISE EXCEPTION 'TEST T5 FAIL: tier 1 appeared after tier 2';
@@ -149,6 +166,15 @@ BEGIN
     RAISE EXCEPTION 'TEST T8 FAIL: no-match query returned % rows', v_count;
   END IF;
   RAISE NOTICE 'PASS T8: no matches returns 0 rows';
+
+  -- T9: multi-token non-contiguous → Tier 1
+  SELECT tier, tier_reason INTO v_tier, v_reason
+  FROM public.search_listings_v4_tiered('تويوتا كامري', 'JO', 100, 0)
+  WHERE id = '97000000-0000-4000-8000-000000000006'::uuid;
+  IF v_tier IS DISTINCT FROM 1 OR v_reason IS DISTINCT FROM 'exact_substring' THEN
+    RAISE EXCEPTION 'TEST T9 FAIL: non-contiguous tier=% reason=%', v_tier, v_reason;
+  END IF;
+  RAISE NOTICE 'PASS T9: non-contiguous tokens classified as Tier 1';
 
   RAISE NOTICE 'ALL V4 TIERED WRAPPER TESTS PASSED';
 END $$;

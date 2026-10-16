@@ -1,9 +1,11 @@
 -- 20261098_search_v4_tiered.sql
 -- Wrapper around search_listings_v4_exact.
 -- Reclassifies trigram fallback (currently labelled match_kind='exact')
--- and related results into Tier 2. True exact-substring matches stay Tier 1.
+-- and related results into Tier 2. True exact matches (every meaningful
+-- token present as substring) stay Tier 1.
 -- v4 itself is unchanged. No rows are dropped.
 -- Tier ordering is PAGE-LOCAL ONLY (guaranteed within a page, not across pages).
+-- Within each tier, v4's emitted row order is preserved via ORDINALITY.
 
 BEGIN;
 
@@ -57,6 +59,7 @@ SET search_path = public
 AS $func$
 DECLARE
   v_norm_query text;
+  v_tokens text[];
 BEGIN
   -- Normalize query EXACTLY as v4 does (Constraint 1).
   -- Copied from 20261093_search_v4_typo_threshold.sql lines 47-50.
@@ -64,15 +67,34 @@ BEGIN
   -- Fold Persian yeh/kaf so measured typos like كمری match كامري.
   v_norm_query := translate(v_norm_query, 'یک', 'يك');
 
+  -- Extract meaningful tokens exactly as v4's exact stage does
+  -- (lines 55-70 of 20261093). Length >= 3, not stopword.
+  SELECT array_agg(t.token ORDER BY t.ordinality)
+  INTO v_tokens
+  FROM (
+    SELECT
+      s.ordinality,
+      public.normalize_search_text(s.token) AS token
+    FROM regexp_split_to_table(v_norm_query, '[[:space:]]+')
+         WITH ORDINALITY AS s(token, ordinality)
+  ) AS t
+  WHERE t.token <> ''
+    AND length(t.token) >= 3
+    AND NOT EXISTS (
+      SELECT 1 FROM public.search_stopwords w
+      WHERE public.normalize_search_text(w.word) = t.token
+    );
+
   RETURN QUERY
   WITH v4r AS (
-    SELECT *
+    SELECT *,
+           ordinality AS v4_order
     FROM public.search_listings_v4_exact(
       p_query, p_market, p_limit, p_offset,
       p_category_slug, p_subcategory_slug,
       p_min_price, p_max_price,
       p_city, p_neighborhood, p_attrs
-    )
+    ) WITH ORDINALITY
   )
   SELECT
     v4r.id,
@@ -99,37 +121,55 @@ BEGIN
     v4r.matched_tokens,
     v4r.total_matched_tokens,
     CASE
-      WHEN strpos(
-        public.normalize_search_text(coalesce(l.search_text, '')),
-        v_norm_query
-      ) > 0 THEN 1
+      -- Tier 1: every meaningful token appears as substring
+      -- (same check as v4 exact stage, lines 88-104).
+      WHEN v_tokens IS NOT NULL
+           AND cardinality(v_tokens) > 0
+           AND NOT EXISTS (
+             SELECT 1
+             FROM unnest(v_tokens) AS required(token)
+             WHERE strpos(
+               public.normalize_search_text(coalesce(l.search_text, '')),
+               required.token
+             ) = 0
+           ) THEN 1
       WHEN v4r.match_kind = 'related' THEN 2
       ELSE 2
     END AS tier,
     CASE
-      WHEN strpos(
-        public.normalize_search_text(coalesce(l.search_text, '')),
-        v_norm_query
-      ) > 0 THEN 'exact_substring'
+      WHEN v_tokens IS NOT NULL
+           AND cardinality(v_tokens) > 0
+           AND NOT EXISTS (
+             SELECT 1
+             FROM unnest(v_tokens) AS required(token)
+             WHERE strpos(
+               public.normalize_search_text(coalesce(l.search_text, '')),
+               required.token
+             ) = 0
+           ) THEN 'exact_substring'
       WHEN v4r.match_kind = 'related' THEN 'related'
       ELSE 'trigram_fuzzy'
     END AS tier_reason
   FROM v4r
   JOIN public.listings AS l ON l.id = v4r.id
-  -- Order: Tier 1 first, then Tier 2, preserving relative order within tiers
-  -- via created_at DESC, id ASC. PAGE-LOCAL ONLY (Constraint 2).
-  -- Guaranteed within a single page returned by the LIMIT/OFFSET of v4;
-  -- not guaranteed across pages.
+  -- Order: Tier 1 first, then Tier 2.
+  -- Within each tier preserve the order v4 emitted (v4_order).
+  -- PAGE-LOCAL ONLY (Constraint 2).
   ORDER BY
     (CASE
-      WHEN strpos(
-        public.normalize_search_text(coalesce(l.search_text, '')),
-        v_norm_query
-      ) > 0 THEN 1
+      WHEN v_tokens IS NOT NULL
+           AND cardinality(v_tokens) > 0
+           AND NOT EXISTS (
+             SELECT 1
+             FROM unnest(v_tokens) AS required(token)
+             WHERE strpos(
+               public.normalize_search_text(coalesce(l.search_text, '')),
+               required.token
+             ) = 0
+           ) THEN 1
       ELSE 2
     END) ASC,
-    v4r.created_at DESC,
-    v4r.id ASC;
+    v4r.v4_order ASC;
 END;
 $func$;
 
