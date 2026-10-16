@@ -8,6 +8,13 @@ export const AUTH_PROVIDERS: readonly AuthProviderDef[] = [
     id: 'google',
     labelAr: 'تابع باستخدام Google',
     labelEn: 'Continue with Google',
+    status: 'available',
+    platforms: ALL_PLATFORMS,
+  },
+  {
+    id: 'facebook',
+    labelAr: 'تابع باستخدام Facebook',
+    labelEn: 'Continue with Facebook',
     status: 'coming_soon',
     platforms: ALL_PLATFORMS,
   },
@@ -22,6 +29,13 @@ export const AUTH_PROVIDERS: readonly AuthProviderDef[] = [
     id: 'email',
     labelAr: 'تابع بالبريد الإلكتروني',
     labelEn: 'Continue with Email',
+    status: 'available',
+    platforms: ALL_PLATFORMS,
+  },
+  {
+    id: 'biometrics',
+    labelAr: 'تابع بالبصمة',
+    labelEn: 'Continue with Biometrics',
     status: 'coming_soon',
     platforms: ALL_PLATFORMS,
   },
@@ -51,4 +65,6 @@ export const AUTH_PROVIDERS: readonly AuthProviderDef[] = [
 export const getProvidersByPlatform = (
   platform: 'web' | 'ios' | 'android',
 ): readonly AuthProviderDef[] =>
-  AUTH_PROVIDERS.filter((p) => p.platforms.includes(platform));
+  AUTH_PROVIDERS.filter((provider) =>
+    provider.platforms.includes(platform),
+  );

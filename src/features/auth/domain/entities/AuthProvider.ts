@@ -1,12 +1,17 @@
 export type AuthProviderId =
   | 'google'
+  | 'facebook'
   | 'apple'
   | 'email'
+  | 'biometrics'
   | 'whatsapp'
   | 'sms'
   | 'guest';
 
-export type AuthProviderStatus = 'available' | 'coming_soon' | 'unavailable';
+export type AuthProviderStatus =
+  | 'available'
+  | 'coming_soon'
+  | 'unavailable';
 
 export interface AuthProviderDef {
   readonly id: AuthProviderId;
