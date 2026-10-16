@@ -434,7 +434,8 @@ BEGIN
     RETURN;
   END IF;
 
-  -- Trigram stage uses strict_word_similarity >= 0.35 (unchanged from 20261100).
+  -- Trigram fallback is for single-token typos only.
+  IF v_n = 1 THEN
   SELECT count(*) INTO v_trigram_count
   FROM public.listings AS l
   WHERE l.status = 'active'
@@ -483,6 +484,7 @@ BEGIN
     ) DESC, l.created_at DESC, l.id ASC
     LIMIT v_limit OFFSET v_offset;
     RETURN;
+  END IF;
   END IF;
 
   -- Related threshold. N=1 is never related.
