@@ -1,5 +1,5 @@
 -- 20261100_search_v4_strict_trigram.sql
--- Switch v4 trigram stage from word_similarity to strict_word_similarity >= 0.4.
+-- Switch v4 trigram stage from word_similarity to strict_word_similarity >= 0.35.
 -- Exact stage and related stage are untouched. Signature, volatility, and
 -- security attributes are unchanged from 20261093.
 --
@@ -164,7 +164,7 @@ BEGIN
     AND strict_word_similarity(
       v_norm,
       public.normalize_search_text(coalesce(l.search_text, ''))
-    ) >= 0.4;
+    ) >= 0.35;
 
   IF v_trigram_count > 0 THEN
     IF current_setting('app.v4_trace', true) = 'on'
@@ -193,7 +193,7 @@ BEGIN
       AND strict_word_similarity(
         v_norm,
         public.normalize_search_text(coalesce(l.search_text, ''))
-      ) >= 0.4
+      ) >= 0.35
     ORDER BY strict_word_similarity(
       v_norm,
       public.normalize_search_text(coalesce(l.search_text, ''))
