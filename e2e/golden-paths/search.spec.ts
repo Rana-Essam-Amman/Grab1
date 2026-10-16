@@ -509,7 +509,16 @@ test.describe('Search — inline on Home', () => {
     const after = await stickyWrapper.boundingBox();
     expect(after).not.toBeNull();
     expect(Math.abs((after?.y ?? 0) - (before?.y ?? 0))).toBeLessThanOrEqual(2);
-    await expect(page.locator('header')).toBeVisible();
+
+    // Header must remain visible above the sticky wrapper (no overlap)
+    const header = page.locator('header');
+    await expect(header).toBeVisible();
+    const headerBox = await header.boundingBox();
+    expect(headerBox).not.toBeNull();
+    if (headerBox && after) {
+      // Sticky wrapper's top must be at or below the header's bottom edge
+      expect(after.y).toBeGreaterThanOrEqual(headerBox.y + headerBox.height - 2);
+    }
   });
 });
 
