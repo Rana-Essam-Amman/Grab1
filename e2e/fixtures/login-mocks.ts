@@ -65,7 +65,7 @@ export async function installLoginMocks(page: Page): Promise<void> {
           body: JSON.stringify({
             error: 'invalid_grant',
             error_description: 'Invalid login credentials',
-            code: 'invalid_credentials',
+            error_code: 'invalid_credentials',
           }),
         });
       }
