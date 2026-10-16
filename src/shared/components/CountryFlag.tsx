@@ -43,7 +43,7 @@ export const CountryFlag: React.FC<Props> = ({ code, onClick, ariaLabel }) => {
   const interactive = Boolean(onClick);
   return (
     <div
-      className={`absolute top-1/2 -translate-y-1/2 ${FLAG_END_CLASS} z-10 ${
+      className={`absolute top-[calc(50%-8px)] -translate-y-1/2 ${FLAG_END_CLASS} z-10 ${
         interactive
           ? 'pointer-events-auto cursor-pointer active:scale-95 transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-full'
           : 'pointer-events-none'
