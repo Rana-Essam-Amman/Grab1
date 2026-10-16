@@ -11,6 +11,7 @@ import { FiltersTriggerBar } from '../components/filters/FiltersTriggerBar';
 import { ExploreListingFeed } from '@/features/explore/components/ExploreListingFeed';
 import { SearchRelatedBanner } from '@/features/listings/components/SearchRelatedBanner';
 import { useListings } from '@/hooks/useListings';
+import { SectionHeader } from '../components/SectionHeader';
 
 function useDebouncedValue<T>(value: T, delayMs: number): T {
   const [debounced, setDebounced] = React.useState(value);
@@ -36,7 +37,7 @@ export const ExploreScreen: React.FC = () => {
     voidedNotice, setVoidedNotice, displayListings, handleResetAllFilters,
     hasMore, isLoadingMore, onLoadMore, hasAnyFilter
   } = useExploreListings();
-  const { searchBanner, searchRelatedHeader } = useListings();
+  const { searchBanner, searchRelatedHeader, tier2Listings } = useListings();
 
   const currentPackage = useMemo(() => {
     return MONETIZATION_MATRIX.packages[browseCountryCode] || MONETIZATION_MATRIX.packages['JO'];
@@ -59,6 +60,9 @@ export const ExploreScreen: React.FC = () => {
     if (!searchInput.trim()) return;
     setSearchQuery(searchInput.trim());
   }, [searchInput, setSearchQuery]);
+
+  const showTier2 = tier2Listings.length >= 2;
+  const hasTier1 = displayListings.length > 0;
 
   return (
     <div
@@ -98,18 +102,51 @@ export const ExploreScreen: React.FC = () => {
       <SearchRelatedBanner banner={searchBanner} relatedHeader={searchRelatedHeader} />
 
       {/* Listings Feed */}
-      <ExploreListingFeed
-        listings={displayListings}
-        feedLayout={feedLayout}
-        hasActiveFilters={hasAnyFilter}
-        onResetFilters={handleResetAllFilters}
-        activeSearchText={activeSearchText}
-        onPostWithSearch={handlePostWithSearch}
-        onExpandSearch={handleExpandSearch}
-        hasMore={hasMore}
-        isLoadingMore={isLoadingMore}
-        onLoadMore={onLoadMore}
-      />
+      {hasTier1 ? (
+        <ExploreListingFeed
+          listings={displayListings}
+          feedLayout={feedLayout}
+          hasActiveFilters={hasAnyFilter}
+          onResetFilters={handleResetAllFilters}
+          activeSearchText={activeSearchText}
+          onPostWithSearch={handlePostWithSearch}
+          onExpandSearch={handleExpandSearch}
+          hasMore={hasMore}
+          isLoadingMore={isLoadingMore}
+          onLoadMore={onLoadMore}
+        />
+      ) : showTier2 ? null : (
+        <ExploreListingFeed
+          listings={displayListings}
+          feedLayout={feedLayout}
+          hasActiveFilters={hasAnyFilter}
+          onResetFilters={handleResetAllFilters}
+          activeSearchText={activeSearchText}
+          onPostWithSearch={handlePostWithSearch}
+          onExpandSearch={handleExpandSearch}
+          hasMore={hasMore}
+          isLoadingMore={isLoadingMore}
+          onLoadMore={onLoadMore}
+        />
+      )}
+
+      {showTier2 && (
+        <section data-testid="tier2-section" className="mt-4">
+          <SectionHeader title={isArabic ? 'قد يهمك' : 'You may also like'} />
+          <ExploreListingFeed
+            listings={tier2Listings}
+            feedLayout={feedLayout}
+            hasActiveFilters={hasAnyFilter}
+            onResetFilters={handleResetAllFilters}
+            activeSearchText={activeSearchText}
+            onPostWithSearch={handlePostWithSearch}
+            onExpandSearch={handleExpandSearch}
+            hasMore={false}
+            isLoadingMore={false}
+            onLoadMore={() => {}}
+          />
+        </section>
+      )}
 
       {/* The Native Quota Exhaustion Paywall Modal */}
       <ExploreQuotaPaywallModal

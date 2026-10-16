@@ -9,6 +9,7 @@ import { FiltersTriggerBar } from '@/features/explore/components/filters/Filters
 import { SearchResultsEmpty } from '../components/SearchResultsEmpty';
 import { SearchRelatedBanner } from '../components/SearchRelatedBanner';
 import { filterListings } from '@/shared/lib/filterListings';
+import { SectionHeader } from '../../explore/components/SectionHeader';
 
 export const SearchResultsScreen: React.FC = () => {
   const {
@@ -17,7 +18,7 @@ export const SearchResultsScreen: React.FC = () => {
     minPriceFilter, setMinPriceFilter, maxPriceFilter, setMaxPriceFilter,
     neighborhoodFilter, setNeighborhoodFilter, browseCountryCode, browseCityEn, browseCityAr
   } = useUI();
-  const { listings, searchBanner, searchRelatedHeader } = useListings();
+  const { listings, searchBanner, searchRelatedHeader, tier2Listings } = useListings();
 
   const { feedLayout, setFeedLayout: setFeedLayoutStore } = useAuth();
   const setFeedLayout = useCallback<Dispatch<SetStateAction<'list' | 'grid'>>>(
@@ -50,6 +51,9 @@ export const SearchResultsScreen: React.FC = () => {
       filterMode: searchQuery.trim() ? 'all' : filterMode,
     });
   }, [marketListings, browseCountryCode, searchQuery, categoryFilter, subcategoryFilter, minPriceFilter, maxPriceFilter, neighborhoodFilter, browseCityAr, browseCityEn, filterMode]);
+
+  const showTier2 = tier2Listings.length >= 2;
+  const hasTier1 = results.length > 0;
 
   return (
     <div className="flex flex-col min-h-screen bg-canvas pb-16" dir={isArabic ? 'rtl' : 'ltr'} data-testid="search-results">
@@ -95,12 +99,21 @@ export const SearchResultsScreen: React.FC = () => {
 
       {/* Results List */}
       <div className="p-4.5 flex-1">
-        {results.length === 0 ? (
-          <SearchResultsEmpty isArabic={isArabic} />
-        ) : (
+        {hasTier1 ? (
           <div className={feedLayout === 'grid' ? "grid grid-cols-2 gap-3.5" : "flex flex-col gap-3.5"}>
             {results.map((item) => <ListingCard key={item.id} listing={item} layout={feedLayout === 'list' ? 'horizontal' : 'grid'} />)}
           </div>
+        ) : showTier2 ? null : (
+          <SearchResultsEmpty isArabic={isArabic} />
+        )}
+
+        {showTier2 && (
+          <section data-testid="tier2-section" className="mt-4">
+            <SectionHeader title={isArabic ? 'قد يهمك' : 'You may also like'} />
+            <div className={feedLayout === 'grid' ? "grid grid-cols-2 gap-3.5" : "flex flex-col gap-3.5"}>
+              {tier2Listings.map((item) => <ListingCard key={item.id} listing={item} layout={feedLayout === 'list' ? 'horizontal' : 'grid'} />)}
+            </div>
+          </section>
         )}
       </div>
     </div>
