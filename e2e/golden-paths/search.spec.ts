@@ -496,14 +496,13 @@ test.describe('Search — inline on Home', () => {
       throw new Error('Document is not scrollable; extraListings did not produce enough content');
     }
 
-    const stickyWrapper = page.locator('div.sticky.top-\\[72px\\].z-40.bg-canvas').first();
+    const stickyWrapper = page.locator('div.sticky.top-\\[73px\\].z-40.bg-canvas').first();
     await expect(stickyWrapper).toBeVisible();
     const before = await stickyWrapper.boundingBox();
     expect(before).not.toBeNull();
 
     await page.evaluate(() => window.scrollTo(0, 500));
-    const scrollY = await page.evaluate(() => window.scrollY);
-    expect(scrollY).toBeGreaterThan(200);
+    await page.waitForFunction(() => window.scrollY > 200);
 
     await expect(stickyWrapper).toBeInViewport();
     const after = await stickyWrapper.boundingBox();
@@ -516,8 +515,9 @@ test.describe('Search — inline on Home', () => {
     const headerBox = await header.boundingBox();
     expect(headerBox).not.toBeNull();
     if (headerBox && after) {
-      // Sticky wrapper's top must be at or below the header's bottom edge
-      expect(after.y).toBeGreaterThanOrEqual(headerBox.y + headerBox.height - 2);
+      // Sticky wrapper must start at or below the header's bottom edge
+      // (zero tolerance — the previous -2 allowed 1px overlap)
+      expect(after.y).toBeGreaterThanOrEqual(headerBox.y + headerBox.height);
     }
   });
 });
