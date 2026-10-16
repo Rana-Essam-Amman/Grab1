@@ -23,6 +23,7 @@ import { Toaster } from 'sonner';
 import { OfflineBanner } from '@/shared/ui/OfflineBanner';
 import { GlobalPhoneCaptureMount } from '@/shared/components/GlobalPhoneCaptureMount';
 import { BuildBadge } from '@/shared/components/BuildBadge';
+import { AdminScreen } from '@/features/admin/AdminScreen';
 import { useBootMigrations } from '@/shared/hooks/useBootMigrations';
 import { useSupabaseListingsSync } from '@/features/listings';
 import { useSupabaseWishlistSync } from '@/features/listings/hooks/useSupabaseWishlistSync';
@@ -138,6 +139,7 @@ const MainNavigator: React.FC = () => {
       case 'seller-profile': return r('seller-profile', SellerProfileScreen);
       case 'search-results': return r('search-results', SearchResultsScreen);
       case 'settings': return r('settings', SettingsScreen);
+      case 'admin': return r('admin', AdminScreen);
       case 'register': return r('register', RegisterScreen);
       case 'confirm': return r('confirm', ConfirmScreen);
       case 'terms': return r('terms', TermsScreen);

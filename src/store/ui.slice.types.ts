@@ -36,7 +36,8 @@ export type ScreenType =
   | 'login'
   | 'register'
   | 'confirm'
-  | 'post-publish-success';
+  | 'post-publish-success'
+  | 'admin';
 
 export type TabType = 'explore' | 'search' | 'post' | 'activity' | 'profile' | 'messages' | 'my-ads' | 'categories';
 
