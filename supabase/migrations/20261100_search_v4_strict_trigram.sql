@@ -194,7 +194,7 @@ BEGIN
         v_norm,
         public.normalize_search_text(coalesce(l.search_text, ''))
       ) >= 0.4
-    ORDER BY word_similarity(
+    ORDER BY strict_word_similarity(
       v_norm,
       public.normalize_search_text(coalesce(l.search_text, ''))
     ) DESC, l.created_at DESC, l.id ASC
