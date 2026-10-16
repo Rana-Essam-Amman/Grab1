@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { installLoginMocks } from '../fixtures/login-mocks';
 import { goToLogin, goToHome } from '../helpers/navigation';
 
-const SEEDED_PHONE = '791234567';
+const SEEDED_EMAIL = 'demo@example.com';
 const SEEDED_PASSWORD = 'password123';
 
 async function performLogin(
@@ -10,7 +10,7 @@ async function performLogin(
   password: string,
 ): Promise<void> {
   await goToLogin(page);
-  await page.locator('input[placeholder="791234567"]').first().fill(SEEDED_PHONE);
+  await page.locator('input[type="email"]').first().fill(SEEDED_EMAIL);
   await page.locator('input[type="password"]').first().fill(password);
   await page.locator('button[type="submit"]').first().click();
 }
@@ -30,10 +30,13 @@ test.describe('Golden Path — J4 Login + Access Account', () => {
   test('invalid password shows error and does not log in', async ({ page }) => {
     await performLogin(page, 'wrongpass123');
     await expect(
-      page.getByText('رقم الهاتف أو كلمة المرور غير صحيحة', { exact: true })
+      page.getByText('البريد أو كلمة المرور غير صحيحة', { exact: true })
     ).toBeVisible({ timeout: 5000 });
-    const token = await page.evaluate(() => window.localStorage.getItem('catch_token'));
-    expect(token).toBeNull();
+    const token = await page.evaluate(() =>
+      window.localStorage.getItem('catch_auth'),
+    );
+    const parsed = token ? JSON.parse(token) : null;
+    expect(parsed?.state?.sessionToken ?? null).toBeNull();
   });
 
   test('session persists across reload', async ({ page }) => {
@@ -45,12 +48,15 @@ test.describe('Golden Path — J4 Login + Access Account', () => {
     await page.reload();
     await page.waitForSelector('#root', { state: 'visible' });
 
-    const token = await page.evaluate(() => window.localStorage.getItem('catch_token'));
-    const raw = await page.evaluate(() => window.localStorage.getItem('catch_user'));
-    expect(token).toBeTruthy();
+    const raw = await page.evaluate(() =>
+      window.localStorage.getItem('catch_auth'),
+    );
     expect(raw).toBeTruthy();
-    const user = JSON.parse(raw as string) as { firstName?: string };
-    expect(user.firstName).toBe('Demo');
+    const parsed = JSON.parse(raw as string) as {
+      state?: { sessionToken?: string; user?: { email?: string } };
+    };
+    expect(parsed.state?.sessionToken).toBeTruthy();
+    expect(parsed.state?.user?.email).toBe(SEEDED_EMAIL);
   });
 
   test('authenticated user reaches profile from header menu', async ({ page }) => {
