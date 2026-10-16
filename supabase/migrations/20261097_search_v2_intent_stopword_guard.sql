@@ -124,6 +124,7 @@ begin
   end if;
 
   -- Intent detected: always apply the contradiction filter.
+  -- Fetch deeper from v2 to compensate for filtered-out rows.
   v_fetch_limit := least(greatest(v_limit * 5, 30), 100);
 
   return query
@@ -144,7 +145,7 @@ $function$;
 comment on function public.search_listings_v2_intent(
   text, text, integer, integer, text, text, numeric, numeric, text, text, jsonb
 ) is
-  'Wrapper around search_listings_v2. Returns zero rows on zero meaningful tokens. Applies intent hard filter whenever an intent is detected.';
+  'Wrapper around search_listings_v2. Applies intent hard filter whenever an intent is detected, regardless of stopword presence. v1 and v2 untouched.';
 
 commit;
 
