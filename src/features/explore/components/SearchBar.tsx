@@ -24,7 +24,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   return (
-    <div className="relative flex items-center w-full" data-testid="search-container">
+    <div className="relative w-full" data-testid="search-container">
       <input
         type="text"
         data-testid="search-input"
