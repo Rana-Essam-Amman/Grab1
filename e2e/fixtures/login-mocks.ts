@@ -33,6 +33,13 @@ function sessionResponse() {
   };
 }
 
+function readGrant(body: Record<string, unknown>, url: URL): string | null {
+  const fromUrl = url.searchParams.get('grant_type');
+  if (fromUrl) return fromUrl;
+  const fromBody = body.grant_type;
+  return typeof fromBody === 'string' ? fromBody : null;
+}
+
 export async function installLoginMocks(page: Page): Promise<void> {
   await page.route('**/auth/v1/**', async (route: Route) => {
     const req = route.request();
@@ -41,17 +48,26 @@ export async function installLoginMocks(page: Page): Promise<void> {
     const path = url.pathname;
 
     if (path.endsWith('/token') && method === 'POST') {
-      const grant = url.searchParams.get('grant_type');
-
-      if (grant === 'password') {
-        let body: { email?: string; password?: string } = {};
-        try {
-          body = JSON.parse(req.postData() || '{}');
-        } catch {
-          body = {};
+      let body: Record<string, unknown> = {};
+      try {
+        const raw = req.postData() || '{}';
+        // Supabase sends JSON, but may also send form-encoded
+        if (raw.startsWith('{')) {
+          body = JSON.parse(raw);
+        } else {
+          for (const [k, v] of new URLSearchParams(raw)) body[k] = v;
         }
+      } catch {
+        body = {};
+      }
 
-        if (body.email === SEEDED_EMAIL && body.password === SEEDED_PASSWORD) {
+      const grant = readGrant(body, url);
+
+      if (grant === 'password' || (grant === null && body.email !== undefined)) {
+        const email = typeof body.email === 'string' ? body.email : '';
+        const password = typeof body.password === 'string' ? body.password : '';
+
+        if (email === SEEDED_EMAIL && password === SEEDED_PASSWORD) {
           return route.fulfill({
             status: 200,
             contentType: 'application/json',
@@ -71,6 +87,15 @@ export async function installLoginMocks(page: Page): Promise<void> {
       }
 
       if (grant === 'refresh_token') {
+        return route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(sessionResponse()),
+        });
+      }
+
+      // Fallback: treat unknown POST /token as password attempt
+      if (body.email !== undefined || grant === null) {
         return route.fulfill({
           status: 200,
           contentType: 'application/json',
