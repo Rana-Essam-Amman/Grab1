@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SearchSuggestions } from '@/features/listings/components/SearchSuggestions';
 
 export interface SearchBarProps {
@@ -14,8 +14,13 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   value,
   onChange,
   onSubmit,
+  onFocusChange,
 }) => {
   const [focused, setFocused] = useState(false);
+
+  useEffect(() => {
+    onFocusChange?.(focused);
+  }, [focused, onFocusChange]);
 
   const handleSelect = (suggestion: string) => {
     onChange(suggestion);
