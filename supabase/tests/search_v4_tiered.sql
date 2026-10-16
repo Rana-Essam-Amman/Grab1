@@ -69,7 +69,31 @@ VALUES
    '96000000-0000-4000-8000-000000000001'::uuid,
    'كامري 2018 تويوتا', 'non-contiguous exact', '100', 'JOD', 'JO',
    'Amman', NULL, 'motors', 'cars', 'active', '[]'::jsonb,
-   '2026-10-06T10:00:00Z');
+   '2026-10-06T10:00:00Z'),
+  -- T10: Tesla (search_text populated by trigger from title containing تسلا)
+  ('97000000-0000-4000-8000-000000000007'::uuid,
+   '96000000-0000-4000-8000-000000000001'::uuid,
+   'تسلا موديل 3 2023', 'tesla model 3', '100', 'JOD', 'JO',
+   'Amman', NULL, 'motors', 'cars', 'active', '[]'::jsonb,
+   '2026-10-07T10:00:00Z'),
+  -- T10: Kia false-positive candidate
+  ('97000000-0000-4000-8000-000000000008'::uuid,
+   '96000000-0000-4000-8000-000000000001'::uuid,
+   'كيا سبورتاج 2022', 'kia sportage', '100', 'JOD', 'JO',
+   'Amman', NULL, 'motors', 'cars', 'active', '[]'::jsonb,
+   '2026-10-08T10:00:00Z'),
+  -- T10: Hyundai false-positive candidate
+  ('97000000-0000-4000-8000-000000000009'::uuid,
+   '96000000-0000-4000-8000-000000000001'::uuid,
+   'هيونداي افانتي 2020', 'hyundai avante', '100', 'JOD', 'JO',
+   'Amman', NULL, 'motors', 'cars', 'active', '[]'::jsonb,
+   '2026-10-09T10:00:00Z'),
+  -- T10: Lawn mower false-positive candidate
+  ('97000000-0000-4000-8000-000000000010'::uuid,
+   '96000000-0000-4000-8000-000000000001'::uuid,
+   'ماكينة قص حشائش', 'lawn mower', '50', 'JOD', 'JO',
+   'Amman', NULL, 'home-garden', NULL, 'active', '[]'::jsonb,
+   '2026-10-10T10:00:00Z');
 
 DO $$
 DECLARE
@@ -175,6 +199,23 @@ BEGIN
     RAISE EXCEPTION 'TEST T9 FAIL: non-contiguous tier=% reason=%', v_tier, v_reason;
   END IF;
   RAISE NOTICE 'PASS T9: non-contiguous tokens classified as Tier 1';
+
+  -- T10: 'تسله' returns Tesla as tier=2, excludes Kia/Hyundai/Lawn
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_tiered_v2('تسله', 'JO', 20, 0)
+  WHERE tier = 2 AND title ILIKE '%تسلا%';
+  IF v_count < 1 THEN
+    RAISE EXCEPTION 'T10 FAIL: Tesla not in tier 2 for تسله';
+  END IF;
+
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_tiered_v2('تسله', 'JO', 20, 0)
+  WHERE title ILIKE '%كيا%' OR title ILIKE '%هيونداي%' OR title ILIKE '%حشائش%';
+  IF v_count > 0 THEN
+    RAISE EXCEPTION 'T10 FAIL: Kia/Hyundai/Lawn still in results (%)', v_count;
+  END IF;
+
+  RAISE NOTICE 'PASS T10: strict trigram excludes false positives, keeps Tesla';
 
   RAISE NOTICE 'ALL V4 TIERED WRAPPER TESTS PASSED';
 END $$;
