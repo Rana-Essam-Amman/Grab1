@@ -59,6 +59,7 @@ export const useListings = () => {
     activeSearchQuery: store.activeSearchQuery,
     searchBanner: store.searchBanner,
     searchRelatedHeader: store.searchRelatedHeader,
+    tier2Listings: store.tier2Listings,
   };
 };
 

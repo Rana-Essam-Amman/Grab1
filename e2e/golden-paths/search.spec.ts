@@ -68,6 +68,18 @@ const SAMSUNG_FIXTURE = {
 
 type SearchResultsByQuery = Record<string, unknown[]>;
 
+function makeTieredRow(fixture: typeof TOYOTA_FIXTURE, tier: 1 | 2) {
+  return {
+    ...fixture,
+    tier,
+    tier_reason: tier === 1 ? 'exact_substring' : 'similar_category',
+    rank_in_tier: 1,
+    match_kind: tier === 1 ? 'exact' : null,
+    matched_tokens: tier === 1 ? ['x'] : null,
+    total_matched_tokens: tier === 1 ? 1 : 0,
+  };
+}
+
 async function installSearchMock(
   page: Page,
   resultsByQuery: SearchResultsByQuery,
@@ -104,12 +116,19 @@ async function installSearchMock(
   const fulfillV4Results = async (route: import('@playwright/test').Route) => {
     const body = route.request().postDataJSON() as { p_query?: string };
     const query = body.p_query ?? '';
-    const results = (resultsByQuery[query] ?? []).map((row) => ({
-      ...(row as Record<string, unknown>),
-      match_kind: 'exact',
-      matched_tokens: query.split(/\s+/).filter(Boolean),
-      total_matched_tokens: query.split(/\s+/).filter(Boolean).length,
-    }));
+    const results = (resultsByQuery[query] ?? []).map((row) => {
+      const r = row as Record<string, unknown>;
+      if ('tier' in r) return r;
+      return {
+        ...r,
+        tier: 1,
+        tier_reason: 'exact_substring',
+        rank_in_tier: 1,
+        match_kind: 'exact',
+        matched_tokens: query.split(/\s+/).filter(Boolean),
+        total_matched_tokens: query.split(/\s+/).filter(Boolean).length,
+      };
+    });
 
     await route.fulfill({
       status: 200,
@@ -119,7 +138,7 @@ async function installSearchMock(
   };
 
   await page.route(
-    '**/rest/v1/rpc/search_listings_v4_exact**',
+    '**/rest/v1/rpc/search_listings_v4_tiered_v2**',
     fulfillV4Results,
   );
 
@@ -228,6 +247,54 @@ test.describe('Golden Path — Search quality UI', () => {
     await expect(
       page.getByText(HONDA_FIXTURE.title, { exact: true }),
     ).toHaveCount(0);
+  });
+
+  test('both tiers show two sections', async ({ page }) => {
+    await installSearchMock(page, {
+      سيارة: [
+        makeTieredRow(TOYOTA_FIXTURE, 1),
+        makeTieredRow(HONDA_FIXTURE, 2),
+        makeTieredRow(KIA_FIXTURE, 2),
+      ],
+    });
+    await page.goto('/');
+
+    await searchFromHome(page, 'سيارة');
+
+    await expect(page.getByTestId('tier2-section')).toBeVisible();
+    await expect(page.getByText('قد يهمك')).toBeVisible();
+    await expect(page.getByText(TOYOTA_FIXTURE.title, { exact: true }).first()).toBeVisible();
+  });
+
+  test('only tier1 shows one section', async ({ page }) => {
+    await installSearchMock(page, {
+      سيارة: [makeTieredRow(TOYOTA_FIXTURE, 1)],
+    });
+    await page.goto('/');
+
+    await searchFromHome(page, 'سيارة');
+
+    await expect(page.getByTestId('tier2-section')).toHaveCount(0);
+    await expect(page.getByText('قد يهمك')).toHaveCount(0);
+    await expect(page.getByText(TOYOTA_FIXTURE.title, { exact: true }).first()).toBeVisible();
+  });
+
+  test('only tier2 shows recommendations without empty state', async ({ page }) => {
+    await installSearchMock(page, {
+      سيارة: [
+        makeTieredRow(HONDA_FIXTURE, 2),
+        makeTieredRow(KIA_FIXTURE, 2),
+      ],
+    });
+    await page.goto('/');
+
+    await searchFromHome(page, 'سيارة');
+
+    await expect(page.getByTestId('tier2-section')).toBeVisible();
+    await expect(page.getByText(HONDA_FIXTURE.title, { exact: true }).first()).toBeVisible();
+    await expect(page.getByText(KIA_FIXTURE.title, { exact: true }).first()).toBeVisible();
+    await expect(page.getByText(/لا نتائج/)).toHaveCount(0);
+    await expect(page.getByTestId('search-empty')).toHaveCount(0);
   });
 });
 

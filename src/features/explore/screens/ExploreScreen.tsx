@@ -8,7 +8,7 @@ import { ExploreVoidedNoticeBanner } from '../components/ExploreVoidedNoticeBann
 import { ExploreTopSections } from '../components/ExploreTopSections';
 import { ExploreQuotaPaywallModal } from '../components/ExploreQuotaPaywallModal';
 import { FiltersTriggerBar } from '../components/filters/FiltersTriggerBar';
-import { ExploreListingFeed } from '@/features/explore/components/ExploreListingFeed';
+import { ExploreListingsSections } from '../components/ExploreListingsSections';
 import { SearchRelatedBanner } from '@/features/listings/components/SearchRelatedBanner';
 import { useListings } from '@/hooks/useListings';
 
@@ -36,7 +36,7 @@ export const ExploreScreen: React.FC = () => {
     voidedNotice, setVoidedNotice, displayListings, handleResetAllFilters,
     hasMore, isLoadingMore, onLoadMore, hasAnyFilter
   } = useExploreListings();
-  const { searchBanner, searchRelatedHeader } = useListings();
+  const { searchBanner, searchRelatedHeader, tier2Listings } = useListings();
 
   const currentPackage = useMemo(() => {
     return MONETIZATION_MATRIX.packages[browseCountryCode] || MONETIZATION_MATRIX.packages['JO'];
@@ -59,6 +59,9 @@ export const ExploreScreen: React.FC = () => {
     if (!searchInput.trim()) return;
     setSearchQuery(searchInput.trim());
   }, [searchInput, setSearchQuery]);
+
+  const showTier2 = tier2Listings.length >= 2;
+  const hasTier1 = displayListings.length > 0;
 
   return (
     <div
@@ -97,18 +100,24 @@ export const ExploreScreen: React.FC = () => {
 
       <SearchRelatedBanner banner={searchBanner} relatedHeader={searchRelatedHeader} />
 
-      {/* Listings Feed */}
-      <ExploreListingFeed
-        listings={displayListings}
-        feedLayout={feedLayout}
-        hasActiveFilters={hasAnyFilter}
-        onResetFilters={handleResetAllFilters}
-        activeSearchText={activeSearchText}
-        onPostWithSearch={handlePostWithSearch}
-        onExpandSearch={handleExpandSearch}
-        hasMore={hasMore}
-        isLoadingMore={isLoadingMore}
-        onLoadMore={onLoadMore}
+      {/* Listings Feed + Tier 2 Section */}
+      <ExploreListingsSections
+        primaryFeedProps={{
+          listings: displayListings,
+          feedLayout,
+          hasActiveFilters: hasAnyFilter,
+          onResetFilters: handleResetAllFilters,
+          activeSearchText,
+          onPostWithSearch: handlePostWithSearch,
+          onExpandSearch: handleExpandSearch,
+          hasMore,
+          isLoadingMore,
+          onLoadMore,
+        }}
+        tier2Listings={tier2Listings}
+        isArabic={isArabic}
+        showTier2={showTier2}
+        hasTier1={hasTier1}
       />
 
       {/* The Native Quota Exhaustion Paywall Modal */}

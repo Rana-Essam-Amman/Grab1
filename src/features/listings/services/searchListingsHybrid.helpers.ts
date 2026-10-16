@@ -71,4 +71,23 @@ export function attrsToJsonbArray(
   const entries = Object.entries(attrs).filter(([k, v]) => k && v);
   if (entries.length === 0) return null;
   return entries.map(([key, value]) => ({ key, value }));
-    }
+}
+
+// Frontend rate limit: max 30 searches per rolling 60-second window.
+// Module-level so all calls share state per browser tab. Blocks
+// accidental loops and typing spam. Not a security boundary — bots
+// bypass via direct RPC (WAF concern, deferred).
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX = 30;
+const searchTimestamps: number[] = [];
+
+export function checkRateLimit(): boolean {
+  const now = Date.now();
+  const cutoff = now - RATE_LIMIT_WINDOW_MS;
+  while (searchTimestamps.length > 0 && searchTimestamps[0] < cutoff) {
+    searchTimestamps.shift();
+  }
+  if (searchTimestamps.length >= RATE_LIMIT_MAX) return false;
+  searchTimestamps.push(now);
+  return true;
+}

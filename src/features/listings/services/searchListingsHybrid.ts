@@ -9,30 +9,12 @@ import {
   fetchQueryVector,
   detectCategory,
   attrsToJsonbArray,
+  checkRateLimit,
 } from './searchListingsHybrid.helpers';
 import { searchListingsV4 } from './searchListingsV4';
 
 const MAX_COSINE_DISTANCE = 0.85;
 const FTS_DOMINANT_MIN_RESULTS = 1;
-
-// Frontend rate limit: max 30 searches per rolling 60-second window.
-// Module-level so all calls share state per browser tab. Blocks
-// accidental loops and typing spam. Not a security boundary — bots
-// bypass via direct RPC (WAF concern, deferred).
-const RATE_LIMIT_WINDOW_MS = 60_000;
-const RATE_LIMIT_MAX = 30;
-const searchTimestamps: number[] = [];
-
-function checkRateLimit(): boolean {
-  const now = Date.now();
-  const cutoff = now - RATE_LIMIT_WINDOW_MS;
-  while (searchTimestamps.length > 0 && searchTimestamps[0] < cutoff) {
-    searchTimestamps.shift();
-  }
-  if (searchTimestamps.length >= RATE_LIMIT_MAX) return false;
-  searchTimestamps.push(now);
-  return true;
-}
 
 /**
  * FTS-dominant hybrid search with query-intent category + full filters.
@@ -51,7 +33,15 @@ function checkRateLimit(): boolean {
  */
 export async function searchListingsHybrid(
   params: SearchListingsParams,
-): Promise<{ data: Listing[] | null; error: string | null; matchKind?: string; banner?: string | null; relatedHeader?: string | null }> {
+): Promise<{
+  data: Listing[] | null;
+  error: string | null;
+  matchKind?: string;
+  banner?: string | null;
+  relatedHeader?: string | null;
+  tier1Data?: Listing[];
+  tier2Data?: Listing[];
+}> {
   try {
     if (!checkRateLimit()) {
       return { data: null, error: 'Too many searches. Please wait a moment.' };
@@ -82,9 +72,15 @@ export async function searchListingsHybrid(
 
     const v4 = await searchListingsV4(trimmed, market, limit, offset, filterArgs);
     if (v4) {
-      if (v4.data && v4.data.length > 0) return v4;
+      const hasTier1 = v4.tier1Data.length > 0;
+      // Match the UI threshold: Tier 2 is only "shippable" when >= 2.
+      // A single Tier 2 row would be hidden by the UI and would
+      // otherwise suppress the v2_typo fallback.
+      const hasTier2ForDisplay = v4.tier2Data.length >= 2;
+      if (hasTier1 || hasTier2ForDisplay) return v4;
       if (offset > 0) return v4;
-      // fall through to v2 typo fallback
+      // fall through to v2 typo fallback only when:
+      //   - tier1 empty AND tier2 < 2 AND offset == 0
     }
 
     const { data: ftsData, error: ftsError } = await supabase.rpc('search_listings_v2_intent_typo', {

@@ -22,6 +22,7 @@ export interface ListingsState {
   page: number;
   hasMore: boolean;
   isLoadingMore: boolean;
+  tier2Listings: Listing[];
 
   // Actions
   initialize: () => void;
