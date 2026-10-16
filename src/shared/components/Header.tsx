@@ -18,7 +18,7 @@ const DEFAULT_CAPITALS: Record<string, { en: string; ar: string; cityEn?: string
 };
 
 export const Header: React.FC = () => {
-  const { isArabic, setLocale, browseCountry, browseCityEn, browseCityAr, activeCurrency, setActiveCurrency, setBrowseLocation, navigateTo, setIsCountrySheetOpen, setSearchQuery } = useUI();
+  const { isArabic, setLocale, browseCountry, browseCityEn, browseCityAr, activeCurrency, setActiveCurrency, setBrowseLocation, navigateTo, setIsCountrySheetOpen } = useUI();
   const { user, authStatus } = useAuth();
   const { wishlist } = useListings();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -59,10 +59,6 @@ export const Header: React.FC = () => {
     },
     [setActiveCurrency]
   );
-  const handleSearchNav = useCallback(() => {
-    setSearchQuery('');
-    navigateTo('search-results');
-  }, [setSearchQuery, navigateTo]);
 
   const isValidCity = useMemo(() => {
     const validAr = Object.keys(locationsAr[countryCode] || {});
@@ -140,7 +136,6 @@ export const Header: React.FC = () => {
           activeCurrency={activeCurrency}
           handleCurrencySelect={handleCurrencySelect}
           setIsCountrySheetOpen={setIsCountrySheetOpen}
-          handleSearchNav={handleSearchNav}
         />
       )}
     </header>
