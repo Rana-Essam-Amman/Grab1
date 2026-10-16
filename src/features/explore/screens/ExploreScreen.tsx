@@ -8,10 +8,9 @@ import { ExploreVoidedNoticeBanner } from '../components/ExploreVoidedNoticeBann
 import { ExploreTopSections } from '../components/ExploreTopSections';
 import { ExploreQuotaPaywallModal } from '../components/ExploreQuotaPaywallModal';
 import { FiltersTriggerBar } from '../components/filters/FiltersTriggerBar';
-import { ExploreListingFeed } from '@/features/explore/components/ExploreListingFeed';
+import { ExploreListingsSections } from '../components/ExploreListingsSections';
 import { SearchRelatedBanner } from '@/features/listings/components/SearchRelatedBanner';
 import { useListings } from '@/hooks/useListings';
-import { SectionHeader } from '../components/SectionHeader';
 
 function useDebouncedValue<T>(value: T, delayMs: number): T {
   const [debounced, setDebounced] = React.useState(value);
@@ -101,52 +100,25 @@ export const ExploreScreen: React.FC = () => {
 
       <SearchRelatedBanner banner={searchBanner} relatedHeader={searchRelatedHeader} />
 
-      {/* Listings Feed */}
-      {hasTier1 ? (
-        <ExploreListingFeed
-          listings={displayListings}
-          feedLayout={feedLayout}
-          hasActiveFilters={hasAnyFilter}
-          onResetFilters={handleResetAllFilters}
-          activeSearchText={activeSearchText}
-          onPostWithSearch={handlePostWithSearch}
-          onExpandSearch={handleExpandSearch}
-          hasMore={hasMore}
-          isLoadingMore={isLoadingMore}
-          onLoadMore={onLoadMore}
-        />
-      ) : showTier2 ? null : (
-        <ExploreListingFeed
-          listings={displayListings}
-          feedLayout={feedLayout}
-          hasActiveFilters={hasAnyFilter}
-          onResetFilters={handleResetAllFilters}
-          activeSearchText={activeSearchText}
-          onPostWithSearch={handlePostWithSearch}
-          onExpandSearch={handleExpandSearch}
-          hasMore={hasMore}
-          isLoadingMore={isLoadingMore}
-          onLoadMore={onLoadMore}
-        />
-      )}
-
-      {showTier2 && (
-        <section data-testid="tier2-section" className="mt-4">
-          <SectionHeader title={isArabic ? 'قد يهمك' : 'You may also like'} />
-          <ExploreListingFeed
-            listings={tier2Listings}
-            feedLayout={feedLayout}
-            hasActiveFilters={hasAnyFilter}
-            onResetFilters={handleResetAllFilters}
-            activeSearchText={activeSearchText}
-            onPostWithSearch={handlePostWithSearch}
-            onExpandSearch={handleExpandSearch}
-            hasMore={false}
-            isLoadingMore={false}
-            onLoadMore={() => {}}
-          />
-        </section>
-      )}
+      {/* Listings Feed + Tier 2 Section */}
+      <ExploreListingsSections
+        primaryFeedProps={{
+          listings: displayListings,
+          feedLayout,
+          hasActiveFilters: hasAnyFilter,
+          onResetFilters: handleResetAllFilters,
+          activeSearchText,
+          onPostWithSearch: handlePostWithSearch,
+          onExpandSearch: handleExpandSearch,
+          hasMore,
+          isLoadingMore,
+          onLoadMore,
+        }}
+        tier2Listings={tier2Listings}
+        isArabic={isArabic}
+        showTier2={showTier2}
+        hasTier1={hasTier1}
+      />
 
       {/* The Native Quota Exhaustion Paywall Modal */}
       <ExploreQuotaPaywallModal
