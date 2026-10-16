@@ -19,7 +19,7 @@ ON CONFLICT (word) DO NOTHING;
 -- Same signature type (text), same name.
 -- ============================================================
 CREATE OR REPLACE FUNCTION public.query_has_meaningful_tokens(
-  p_raw_query text
+  p_norm_query text
 )
 RETURNS boolean
 LANGUAGE sql
@@ -30,7 +30,7 @@ AS $func$
   SELECT EXISTS (
     SELECT 1
     FROM regexp_split_to_table(
-      btrim(coalesce(p_raw_query, '')),
+      btrim(coalesce(p_norm_query, '')),
       '[[:space:]]+'
     ) AS tok(raw_token)
     WHERE tok.raw_token <> ''
@@ -791,6 +791,6 @@ COMMIT;
 -- 3. Re-apply 20261099 to restore search_listings_v4_tiered_v2.
 -- 4. Re-apply 20261056 to restore search_listings_v2_intent_typo.
 -- 5. DROP FUNCTION IF EXISTS public.search_text_has_all_tokens_strict(text, text, float8);
--- 6. DELETE FROM public.search_stopwords WHERE word = 'على' 
+-- 6. DELETE FROM public.search_stopwords WHERE word = 'على'
 --    (only if confirmed inserted by this migration and no prior existence).
 -- 7. Verify 'علي' was never added.
