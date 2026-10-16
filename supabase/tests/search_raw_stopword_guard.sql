@@ -4,6 +4,57 @@
 
 BEGIN;
 
+-- ============================================================
+-- Transaction-local fixtures for T7/T8
+-- ============================================================
+-- Match the fixture schema used by search_v4_exact.sql and
+-- search_v4_tiered.sql. search_text is populated by its trigger.
+-- All inserted rows are rolled back at the end of this test.
+
+DO $fixture_precheck$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM auth.users
+    WHERE id = '77000000-0000-4000-8000-000000000001'::uuid
+  ) THEN
+    RAISE EXCEPTION 'PREREQ FAIL: fixture user exists';
+  END IF;
+
+  IF EXISTS (
+    SELECT 1 FROM public.listings
+    WHERE id = '78000000-0000-4000-8000-000000000001'::uuid
+  ) THEN
+    RAISE EXCEPTION 'PREREQ FAIL: fixture listing exists';
+  END IF;
+END
+$fixture_precheck$;
+
+INSERT INTO auth.users (
+  id, aud, role, email, encrypted_password, email_confirmed_at,
+  raw_app_meta_data, raw_user_meta_data
+)
+VALUES (
+  '77000000-0000-4000-8000-000000000001'::uuid,
+  'authenticated', 'authenticated',
+  'raw-stopword-77000000@example.invalid',
+  '', now(), '{}'::jsonb, '{}'::jsonb
+);
+
+INSERT INTO public.listings (
+  id, user_id, title, description, price, currency, country_code,
+  city, neighborhood, category_slug, subcategory_slug, status,
+  attributes, created_at
+)
+VALUES (
+  '78000000-0000-4000-8000-000000000001'::uuid,
+  '77000000-0000-4000-8000-000000000001'::uuid,
+  'تويوتا كامري 2018 بحالة ممتازة',
+  'Transactional fixture for raw stopword guard search tests',
+  '12000', 'JOD', 'JO',
+  'Amman', 'Abdoun', 'motors', 'cars', 'active',
+  '[]'::jsonb, now()
+);
+
 DO $test$
 DECLARE
   v_count integer;
