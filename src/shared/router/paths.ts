@@ -64,6 +64,7 @@ const STATIC_SCREEN_TO_PATH: Record<Exclude<ScreenType, 'listing-detail' | 'sell
   'safety': '/safety',
   'about': '/about',
   'filters': '/filters',
+  'admin': '/admin',
 };
 
 const STATIC_PATH_TO_SCREEN: Record<string, ScreenType> = Object.fromEntries(
