@@ -81,7 +81,11 @@ export async function searchListingsHybrid(
     };
 
     const v4 = await searchListingsV4(trimmed, market, limit, offset, filterArgs);
-    if (v4) return v4;
+    if (v4) {
+      if (v4.data && v4.data.length > 0) return v4;
+      if (offset > 0) return v4;
+      // fall through to v2 typo fallback
+    }
 
     const { data: ftsData, error: ftsError } = await supabase.rpc('search_listings_v2_intent_typo', {
       p_query: trimmed,
