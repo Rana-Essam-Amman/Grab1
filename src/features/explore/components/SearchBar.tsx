@@ -31,7 +31,10 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === 'Enter') onSubmit();
+          if (e.key === 'Enter') {
+            setFocused(false);
+            onSubmit();
+          }
         }}
         onFocus={() => setFocused(true)}
         onBlur={() => {
