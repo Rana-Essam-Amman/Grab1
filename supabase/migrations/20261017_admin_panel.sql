@@ -111,7 +111,7 @@ AS $
       'recent_reports', v_recent
     );
   END;
-$;
+$$;
 
 -- FUNCTION 2: admin_list_reports
 CREATE OR REPLACE FUNCTION public.admin_list_reports(p_country_code text, p_status text)
@@ -178,7 +178,7 @@ AS $
 
     RETURN v_res;
   END;
-$;
+$$;
 
 -- FUNCTION 3: admin_list_listings
 CREATE OR REPLACE FUNCTION public.admin_list_listings(p_country_code text, p_filter text)
@@ -246,7 +246,7 @@ AS $
 
     RETURN v_res;
   END;
-$;
+$$;
 
 -- FUNCTION 4: admin_list_users
 CREATE OR REPLACE FUNCTION public.admin_list_users(p_country_code text)
@@ -303,7 +303,7 @@ AS $
 
     RETURN v_res;
   END;
-$;
+$$;
 
 -- FUNCTION 5: admin_action_report
 CREATE OR REPLACE FUNCTION public.admin_action_report(p_report_id uuid, p_action text)
@@ -373,7 +373,7 @@ AS $
 
     RETURN jsonb_build_object('success', true, 'report_id', p_report_id, 'action', p_action);
   END;
-$;
+$$;
 
 -- FUNCTION 6: admin_hide_listing
 CREATE OR REPLACE FUNCTION public.admin_hide_listing(p_listing_id uuid)
@@ -538,7 +538,7 @@ AS $
 
     RETURN jsonb_build_object('success', true, 'transaction_id', v_tx_id, 'applied', true);
   END;
-$;
+$$;
 
 COMMIT;
 
