@@ -76,7 +76,8 @@ BEGIN
   v_tier2_limit_clamped := least(greatest(coalesce(p_tier2_limit, 5), 0), 5);
 
   -- 2. Materialize C1 results into temp table (preserves order via ordinality)
-  CREATE TEMP TABLE IF NOT EXISTS _c2_c1_rows (
+  DROP TABLE IF EXISTS pg_temp._c2_c1_rows;
+  CREATE TEMP TABLE _c2_c1_rows (
     id uuid,
     user_id uuid,
     title text,
