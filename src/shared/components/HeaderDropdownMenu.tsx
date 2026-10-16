@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Global, Heart, Notification, MessageQuestion, Setting2, SearchNormal1 } from 'iconsax-react';
+import { User, Global, Heart, Notification, MessageQuestion, Setting2 } from 'iconsax-react';
 import { MARKETS } from '@/data/markets/config';
 import type { MarketCode } from '@/data/markets/types';
 import { useUI } from '@/hooks/useUI';
@@ -19,7 +19,6 @@ interface HeaderDropdownMenuProps {
   activeCurrency: string;
   handleCurrencySelect: (code: string) => void;
   setIsCountrySheetOpen: (open: boolean) => void;
-  handleSearchNav: () => void;
 }
 
 export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
@@ -31,7 +30,6 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
   wishlistLength,
   handleNotificationsNav,
   setIsCountrySheetOpen,
-  handleSearchNav,
 }) => {
   const { browseCountryCode, isArabic } = useUI();
   const market = MARKETS[browseCountryCode as MarketCode];
@@ -63,17 +61,6 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
               <span>{isArabic ? market.nameAr : market.nameEn}</span>
             </span>
             <Global variant="Bold" size={22} color="#0EA5E9" className="shrink-0" />
-          </button>
-          <button
-            type="button"
-            data-testid="header-search-row"
-            onClick={() => { handleSearchNav(); handleMenuClose(); }}
-            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-canvas/40 active:bg-canvas/60"
-          >
-            <span className="text-sm font-bold text-ink">
-              {isArabic ? 'بحث' : 'Search'}
-            </span>
-            <SearchNormal1 variant="Bold" size={22} color="#0EA5E9" className="shrink-0" />
           </button>
           <button
             onClick={() => { handleProfileNav(); handleMenuClose(); }}
