@@ -9,21 +9,11 @@ export interface LoginFormProps {
   onToast: (msg: string) => void;
 }
 
-export const LoginForm: React.FC<LoginFormProps> = ({
-  onSwitchToRegister,
-  onToast,
-}) => {
+export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister, onToast }) => {
   const {
-    email,
-    handleEmailChange,
-    password,
-    handlePasswordChange,
-    showPassword,
-    handleToggleShowPassword,
-    error,
-    loading,
-    handleLoginSubmit,
-    isArabic,
+    email, handleEmailChange, password, handlePasswordChange,
+    showPassword, handleToggleShowPassword, error, loading,
+    handleLoginSubmit, isArabic,
   } = useLoginForm({ onToast });
 
   return (
@@ -33,9 +23,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           {isArabic ? 'تسجيل الدخول' : 'Welcome Back'}
         </h2>
         <p className="text-sm text-ink-muted mt-1">
-          {isArabic
-            ? 'أدخل بريدك الإلكتروني وكلمة المرور للمتابعة'
-            : 'Enter your email and password to continue'}
+          {isArabic ? 'أدخل بريدك الإلكتروني وكلمة المرور للمتابعة' : 'Enter your email and password to continue'}
         </p>
       </div>
 
@@ -64,12 +52,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         </div>
 
         <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <label className="block text-xs font-bold text-ink flex items-center gap-1.5">
-              <Lock1 size={14} variant="Linear" color="#E57E25" />
-              {isArabic ? 'كلمة المرور *' : 'Password *'}
-            </label>
-          </div>
+          <label className="block text-xs font-bold text-ink mb-1.5 flex items-center gap-1.5">
+            <Lock1 size={14} variant="Linear" color="#E57E25" />
+            {isArabic ? 'كلمة المرور *' : 'Password *'}
+          </label>
           <div className="relative">
             <Input
               type={showPassword ? 'text' : 'password'}
@@ -83,11 +69,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
               onClick={handleToggleShowPassword}
               className="absolute inset-y-0 end-0 px-3 flex items-center text-ink-muted hover:text-ink cursor-pointer"
             >
-              {showPassword ? (
-                <EyeSlash size={16} variant="Linear" color="#94A3B8" />
-              ) : (
-                <Eye size={16} variant="Linear" color="#94A3B8" />
-              )}
+              {showPassword ? <EyeSlash size={16} variant="Linear" color="#94A3B8" /> : <Eye size={16} variant="Linear" color="#94A3B8" />}
             </button>
           </div>
         </div>
@@ -99,9 +81,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           disabled={loading}
           className="w-full mt-2 cursor-pointer"
         >
-          {loading
-            ? (isArabic ? 'جار تسجيل الدخول...' : 'Signing in...')
-            : (isArabic ? 'تسجيل الدخول' : 'Sign In')}
+          {loading ? (isArabic ? 'جار تسجيل الدخول...' : 'Signing in...') : (isArabic ? 'تسجيل الدخول' : 'Sign In')}
         </Button>
       </form>
 
