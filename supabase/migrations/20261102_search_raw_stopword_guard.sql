@@ -16,7 +16,6 @@ ON CONFLICT (word) DO NOTHING;
 
 -- ============================================================
 -- PART 2: Replace helper with raw-token semantics
--- Same signature type (text), same name.
 -- ============================================================
 CREATE OR REPLACE FUNCTION public.query_has_meaningful_tokens(
   p_norm_query text
@@ -82,14 +81,12 @@ BEGIN
   v_norm := btrim(public.normalize_search_text(coalesce(p_query, '')));
   IF v_norm = '' OR length(v_norm) < 3 THEN RETURN; END IF;
 
-  -- Guard: zero meaningful raw tokens (stopwords or short).
   IF NOT public.query_has_meaningful_tokens(coalesce(p_query, '')) THEN
     RETURN;
   END IF;
 
   v_intent := public.detect_query_intent(v_norm);
 
-  -- No intent: delegate to v2 unchanged.
   IF v_intent IS NULL THEN
     RETURN QUERY
       SELECT l.* FROM public.search_listings_v2(
@@ -109,7 +106,6 @@ BEGIN
     ELSE NULL
   END;
 
-  -- Intent but unknown contradiction kind: delegate to v2 unchanged.
   IF v_contradiction IS NULL THEN
     RETURN QUERY
       SELECT l.* FROM public.search_listings_v2(
@@ -121,7 +117,6 @@ BEGIN
     RETURN;
   END IF;
 
-  -- Intent detected: always apply the contradiction filter.
   v_fetch_limit := least(greatest(v_limit * 5, 30), 100);
 
   RETURN QUERY
@@ -149,7 +144,7 @@ GRANT EXECUTE ON FUNCTION public.search_listings_v2_intent(
 ) TO anon, authenticated;
 
 -- ============================================================
--- PART 4: Strict fuzzy helper (does not replace fuzzy)
+-- PART 4: Strict fuzzy helper
 -- ============================================================
 CREATE OR REPLACE FUNCTION public.search_text_has_all_tokens_strict(
   p_search_text text,
@@ -195,7 +190,7 @@ GRANT EXECUTE ON FUNCTION public.search_text_has_all_tokens_strict(text, text, f
   TO anon, authenticated;
 
 -- ============================================================
--- PART 5: Update search_listings_v2_intent_typo to use strict + raw guard
+-- PART 5: Update search_listings_v2_intent_typo
 -- ============================================================
 CREATE OR REPLACE FUNCTION public.search_listings_v2_intent_typo(
   p_query text,
@@ -224,12 +219,10 @@ BEGIN
   v_norm := btrim(public.normalize_search_text(coalesce(p_query, '')));
   IF v_norm = '' OR length(v_norm) < 3 THEN RETURN; END IF;
 
-  -- Raw stopword guard before any fallback.
   IF NOT public.query_has_meaningful_tokens(coalesce(p_query, '')) THEN
     RETURN;
   END IF;
 
-  -- Path 1: existing v2_intent behavior.
   RETURN QUERY
     SELECT * FROM public.search_listings_v2_intent(
       p_query, p_market, v_limit, v_offset,
@@ -242,7 +235,6 @@ BEGIN
     RETURN;
   END IF;
 
-  -- Path 2: strict fuzzy fallback. Ranked by best per-token strict_word_similarity.
   RETURN QUERY
   SELECT l.*
   FROM public.listings l
@@ -287,11 +279,7 @@ GRANT EXECUTE ON FUNCTION public.search_listings_v2_intent_typo(
 
 -- ============================================================
 -- PART 6: Add raw guard to search_listings_v4_exact
--- (body otherwise identical to 20261100)
 -- ============================================================
--- NOTE: Full body copied from 20261100 with single early raw guard inserted
--- after the length check. All other logic preserved.
-
 CREATE OR REPLACE FUNCTION public.search_listings_v4_exact(
   p_query text,
   p_market text DEFAULT NULL,
@@ -346,13 +334,11 @@ DECLARE
   v_threshold integer;
 BEGIN
   v_norm := btrim(public.normalize_search_text(coalesce(p_query, '')));
-  -- Fold Persian yeh/kaf so measured typos like كمری match كامري.
   v_norm := translate(v_norm, 'یک', 'يك');
   IF v_norm = '' OR length(v_norm) < 3 THEN
     RETURN;
   END IF;
 
-  -- Raw stopword guard (before normalized token extraction).
   IF NOT public.query_has_meaningful_tokens(coalesce(p_query, '')) THEN
     RETURN;
   END IF;
@@ -487,7 +473,6 @@ BEGIN
   END IF;
   END IF;
 
-  -- Related threshold. N=1 is never related.
   v_threshold := CASE
     WHEN v_n <= 1 THEN NULL
     WHEN v_n = 2 THEN 2
@@ -561,12 +546,8 @@ GRANT EXECUTE ON FUNCTION public.search_listings_v4_exact(
 ) TO anon, authenticated;
 
 -- ============================================================
--- PART 7: Early raw guard on search_listings_v4_tiered_v2
--- (delegates to C1/v4_exact; guard prevents lossy normalize)
+-- PART 7: Early raw guard + category precedence
 -- ============================================================
--- Minimal change: insert guard immediately after BEGIN, before normalize.
--- Full body otherwise identical to 20261099.
-
 CREATE OR REPLACE FUNCTION public.search_listings_v4_tiered_v2(
   p_query text,
   p_market text DEFAULT NULL,
@@ -626,21 +607,16 @@ DECLARE
   v_median_tier1_price numeric;
   v_has_tier1 boolean := false;
   v_tier2_limit_clamped integer;
-  v_c1_tier2_max_rank integer := 0;
 BEGIN
-  -- Raw stopword guard before any normalization or delegation.
   IF NOT public.query_has_meaningful_tokens(coalesce(p_query, '')) THEN
     RETURN;
   END IF;
 
-  -- 1. Normalize query (same as v4 / C1)
   v_norm_query := btrim(public.normalize_search_text(coalesce(p_query, '')));
   v_norm_query := translate(v_norm_query, 'یک', 'يك');
 
-  -- Clamp p_tier2_limit: 0..5
   v_tier2_limit_clamped := least(greatest(coalesce(p_tier2_limit, 5), 0), 5);
 
-  -- 2. Materialize C1 results into temp table (preserves order via ordinality)
   DROP TABLE IF EXISTS pg_temp._c2_c1_rows;
   CREATE TEMP TABLE _c2_c1_rows (
     id uuid,
@@ -695,7 +671,6 @@ BEGIN
     p_city, p_neighborhood, p_attrs
   ) AS c;
 
-  -- Collect tier IDs
   SELECT array_agg(id) FILTER (WHERE tier = 1) INTO v_tier1_ids FROM _c2_c1_rows;
   SELECT array_agg(id) FILTER (WHERE tier = 2) INTO v_tier2_ids_c1 FROM _c2_c1_rows;
   v_tier1_ids := coalesce(v_tier1_ids, ARRAY[]::uuid[]);
@@ -703,29 +678,34 @@ BEGIN
   v_excluded_ids := v_tier1_ids || v_tier2_ids_c1;
   v_has_tier1 := cardinality(v_tier1_ids) > 0;
 
-  IF v_has_tier1 THEN
+  -- Category precedence: user filter > top tier-1 category > detect_query_category.
+  IF p_category_slug IS NOT NULL THEN
+    v_tier2_category := p_category_slug;
+    IF v_has_tier1 THEN
+      SELECT subcategory_slug, city
+      INTO v_top_tier1_subcategory, v_top_tier1_city
+      FROM _c2_c1_rows
+      WHERE tier = 1
+      ORDER BY c1_order
+      LIMIT 1;
+    END IF;
+  ELSIF v_has_tier1 THEN
     SELECT category_slug, subcategory_slug, city
     INTO v_tier2_category, v_top_tier1_subcategory, v_top_tier1_city
     FROM _c2_c1_rows
     WHERE tier = 1
     ORDER BY c1_order
     LIMIT 1;
-
-    SELECT percentile_cont(0.5) WITHIN GROUP (ORDER BY price::numeric)
-    INTO v_median_tier1_price
-    FROM _c2_c1_rows
-    WHERE tier = 1 AND price ~ '^[0-9.]+$';
+  ELSE
+    v_tier2_category := public.detect_query_category(v_norm_query);
   END IF;
 
-  SELECT coalesce(max(rank_in_tier), 0) INTO v_c1_tier2_max_rank
-  FROM (
-    SELECT row_number() OVER (PARTITION BY tier ORDER BY c1_order)::integer AS rank_in_tier
-    FROM _c2_c1_rows
-    WHERE tier = 2
-  ) t;
+  SELECT percentile_cont(0.5) WITHIN GROUP (ORDER BY price::numeric)
+  INTO v_median_tier1_price
+  FROM _c2_c1_rows
+  WHERE tier = 1 AND price ~ '^[0-9.]+$';
 
-  -- Independent same-category recommendations (Tier 2)
-  IF v_has_tier1 AND v_tier2_category IS NOT NULL AND v_tier2_limit_clamped > 0 THEN
+  IF v_tier2_category IS NOT NULL AND v_tier2_limit_clamped > 0 THEN
     INSERT INTO _c2_c1_rows (
       id, user_id, title, description, price, currency, country_code,
       city, neighborhood, category_slug, subcategory_slug, images,
@@ -747,7 +727,7 @@ BEGIN
       AND l.category_slug = v_tier2_category
       AND NOT (l.id = ANY(v_excluded_ids))
       AND public.listing_passes_filters(
-        l, NULL, NULL,  -- category already filtered
+        l, NULL, NULL,
         p_min_price, p_max_price,
         p_city, p_neighborhood, p_attrs
       )
@@ -760,7 +740,6 @@ BEGIN
     LIMIT v_tier2_limit_clamped;
   END IF;
 
-  -- Final return: C1 rows + recommendations, ranked
   RETURN QUERY
   SELECT
     r.id, r.user_id, r.title, r.description, r.price, r.currency, r.country_code,
