@@ -1,6 +1,7 @@
 import { useUI } from '@/hooks/useUI';
 import { useAuth } from '@/hooks/useAuth';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/shared/lib/supabase';
 import { Button } from '@/shared/ui/Button';
 import { ArrowLeft, ArrowRight, Global, Location, ArrowRight2, ArrowLeft2 } from 'iconsax-react';
 import { SettingsProfileCard } from '../components/SettingsProfileCard';
@@ -17,6 +18,14 @@ export const SettingsScreen: React.FC = () => {
   const { user, logout, registered } = useAuth();
   const [showNicknameModal, setShowNicknameModal] = useState(false);
   const [showChangeMarket, setShowChangeMarket] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session?.user?.email?.toLowerCase() === 'sufyanyounis83@gmail.com') {
+        setIsAdmin(true);
+      }
+    });
+  }, []);
   const authUserId = useAuthStore((s) => s.user?.id ?? null);
   const updateUser = useAuthStore((s) => s.updateUser);
 
@@ -50,6 +59,15 @@ export const SettingsScreen: React.FC = () => {
         <SettingsThemeSection isArabic={isArabic} />
         <div className="bg-surface rounded-2xl border border-border overflow-hidden shadow-xs">
           <div className="p-3 bg-background/40 border-b border-border text-xs font-bold text-ink uppercase tracking-wider">{isArabic ? 'التفضيلات العامة' : 'General Preferences'}</div>
+          {isAdmin && (
+            <div onClick={() => navigateTo('admin')} className="p-3.5 flex items-center justify-between cursor-pointer hover:bg-surface transition-colors border-b border-border/60">
+              <div className="flex items-center gap-3">
+                <span className="text-lg">⚙️</span>
+                <span className="text-sm font-semibold text-ink">{isArabic ? 'لوحة التحكم' : 'Admin Panel'}</span>
+              </div>
+              <ChevronIcon size={18} variant="Linear" className="text-ink-muted" />
+            </div>
+          )}
           <div onClick={handleLanguageToggle} className="p-3.5 flex items-center justify-between cursor-pointer hover:bg-surface border-b border-border/60 transition-colors">
             <div className="flex items-center gap-3">
               <Global size={18} variant="Linear" color="currentColor" className="text-primary" />
