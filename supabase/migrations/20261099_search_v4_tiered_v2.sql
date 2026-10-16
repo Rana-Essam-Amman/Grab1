@@ -215,19 +215,14 @@ BEGIN
         'similar_category'::text AS tier_reason,
         (v_c1_tier2_max_rank + row_number() OVER (
           ORDER BY
-            CASE WHEN v_has_tier1 THEN
-              (l.subcategory_slug = v_top_tier1_subcategory) DESC NULLS LAST,
-              abs(
-                CASE WHEN l.price ~ '^[0-9]+(\.[0-9]+)?$' THEN l.price::numeric ELSE NULL END
-                - v_median_tier1_price
-              ) ASC NULLS LAST,
-              (l.city = v_top_tier1_city) DESC NULLS LAST,
-              l.created_at DESC,
-              l.id ASC
-            ELSE
-              l.created_at DESC,
-              l.id ASC
-            END
+            CASE WHEN v_has_tier1 THEN (l.subcategory_slug = v_top_tier1_subcategory)::int ELSE 0 END DESC NULLS LAST,
+            CASE WHEN v_has_tier1 THEN abs(
+              CASE WHEN l.price ~ '^[0-9]+(\.[0-9]+)?$' THEN l.price::numeric ELSE NULL END
+              - COALESCE(v_median_tier1_price, 0)
+            ) ELSE 0 END ASC NULLS LAST,
+            CASE WHEN v_has_tier1 THEN (l.city = v_top_tier1_city)::int ELSE 0 END DESC NULLS LAST,
+            l.created_at DESC,
+            l.id ASC
         )) AS rank_in_tier
       FROM public.listings l
       WHERE l.status = 'active'
