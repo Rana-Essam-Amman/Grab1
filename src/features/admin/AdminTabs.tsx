@@ -70,7 +70,7 @@ export const AdminTabs: React.FC<{ market: MarketCode; actions: any; actionLoadi
             </select>
             <input type="number" step="0.01" placeholder="المبلغ" value={payForm.amount} onChange={(e) => setPayForm({ ...payForm, amount: e.target.value })} className="p-2 border rounded border-border bg-background w-24" required />
             <select value={payForm.currency} onChange={(e) => setPayForm({ ...payForm, currency: e.target.value })} className="p-2 border rounded border-border bg-background w-20">
-              {[JOD', 'SAR', 'USD', 'ILS', 'SYP'].map(c => <option key={c} value={c}>{c}</option>)}
+              {['JOD', 'SAR', 'USD', 'ILS', 'SYP'].map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
           <button type="submit" disabled={actionLoading} className="py-2 bg-primary text-white rounded font-bold cursor-pointer hover:opacity-90 disabled:opacity-50">تسجيل وتفعيل</button>
