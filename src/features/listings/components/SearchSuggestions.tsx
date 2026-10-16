@@ -75,7 +75,7 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
   return (
     <div
       ref={containerRef}
-      className="absolute z-[60] mt-1 w-full max-h-80 overflow-y-auto rounded-lg border border-border bg-surface shadow-lg"
+      className="relative mt-1 w-full max-h-80 overflow-y-auto rounded-lg border border-border bg-surface shadow-lg"
       role="listbox"
     >
       {loading && items.length === 0 && (
