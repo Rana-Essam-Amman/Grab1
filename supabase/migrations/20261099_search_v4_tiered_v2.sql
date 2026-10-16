@@ -202,7 +202,7 @@ BEGIN
     WITH c1_ranked AS (
       SELECT
         r.*,
-        row_number() OVER (PARTITION BY r.tier ORDER BY r.c1_order) AS rank_in_tier
+        row_number() OVER (PARTITION BY r.tier ORDER BY r.c1_order)::integer AS rank_in_tier
       FROM _c2_c1_rows r
     ),
     independent AS (
@@ -243,7 +243,7 @@ BEGIN
               CASE WHEN v_has_tier1 THEN (l.city = v_top_tier1_city)::int ELSE 0 END DESC NULLS LAST,
               l.created_at DESC,
               l.id ASC
-          )) AS rank_in_tier
+          ))::integer AS rank_in_tier
         FROM public.listings l
         WHERE l.status = 'active'
           AND l.country_code = upper(coalesce(p_market, 'JO'))
@@ -275,7 +275,7 @@ BEGIN
       city, neighborhood, category_slug, subcategory_slug, images,
       attributes, status, views, seller_name, seller_phone,
       created_at, updated_at, is_demo, match_kind, matched_tokens,
-      total_matched_tokens, tier, tier_reason, rank_in_tier
+      total_matched_tokens, tier, tier_reason, rank_in_tier::integer
     FROM c1_ranked
     UNION ALL
     SELECT
@@ -283,7 +283,7 @@ BEGIN
       city, neighborhood, category_slug, subcategory_slug, images,
       attributes, status, views, seller_name, seller_phone,
       created_at, updated_at, is_demo, match_kind, matched_tokens,
-      total_matched_tokens, tier, tier_reason, rank_in_tier
+      total_matched_tokens, tier, tier_reason, rank_in_tier::integer
     FROM independent
     ORDER BY tier ASC, rank_in_tier ASC;
   ELSE
