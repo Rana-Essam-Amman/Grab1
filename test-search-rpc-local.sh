@@ -109,6 +109,9 @@ run_sql supabase/tests/search_v2_intent_stopword_guard.sql
 # v4 exact-first search regression.
 run_sql supabase/tests/search_v4_exact.sql
 
+# v4 tiered wrapper reclassification.
+run_sql supabase/tests/search_v4_tiered.sql
+
 # Attribute-key expansion regression. Must run before the v4 rollback.
 run_sql supabase/tests/search_attribute_keys.sql
 
