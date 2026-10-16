@@ -463,7 +463,7 @@ BEGIN
       l.subcategory_slug, l.images, l.attributes, l.status, l.views,
       l.seller_name, l.seller_phone, l.created_at, l.updated_at,
       l.is_demo,
-      'trigram'::text,
+      'exact'::text,
       v_tokens,
       v_n
     FROM public.listings AS l
@@ -739,7 +739,7 @@ BEGIN
       l.subcategory_slug, l.images, l.attributes, l.status, l.views,
       l.seller_name, l.seller_phone, l.created_at, l.updated_at,
       l.is_demo, 'related'::text, NULL::text[], 0,
-      2, 'same_category_recommendation',
+      2, 'similar_category',
       10000 + row_number() OVER ()::integer
     FROM public.listings l
     WHERE l.status = 'active'
