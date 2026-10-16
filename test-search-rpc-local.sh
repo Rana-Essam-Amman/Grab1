@@ -103,6 +103,9 @@ run_sql supabase/tests/attribute_search_v3.sql
 # Fuzzy token guard: returns FALSE on zero meaningful tokens.
 run_sql supabase/tests/search_typo_fuzzy_guard.sql
 
+# v2_intent stopword-only guard: returns zero rows when no meaningful tokens.
+run_sql supabase/tests/search_v2_intent_stopword_guard.sql
+
 # v4 exact-first search regression.
 run_sql supabase/tests/search_v4_exact.sql
 
