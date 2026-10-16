@@ -69,7 +69,7 @@ export const ExploreScreen: React.FC = () => {
       dir={isArabic ? "rtl" : "ltr"}
       style={{ WebkitOverflowScrolling: 'touch' }}
     >
-      <div className="sticky top-[72px] z-40 bg-canvas pt-3 pb-2 -mx-4 px-4">
+      <div className="sticky top-[73px] z-40 bg-canvas pt-3 pb-2 -mx-4 px-4">
         <SearchBar
           isArabic={isArabic}
           value={searchInput}

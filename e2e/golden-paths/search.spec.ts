@@ -68,6 +68,12 @@ const SAMSUNG_FIXTURE = {
 
 type SearchResultsByQuery = Record<string, unknown[]>;
 
+type SearchMockOptions = {
+  emptyV4?: boolean;
+  v4Error?: boolean;
+  extraListings?: Array<typeof TOYOTA_FIXTURE>;
+};
+
 function makeTieredRow(fixture: typeof TOYOTA_FIXTURE, tier: 1 | 2) {
   return {
     ...fixture,
@@ -83,13 +89,15 @@ function makeTieredRow(fixture: typeof TOYOTA_FIXTURE, tier: 1 | 2) {
 async function installSearchMock(
   page: Page,
   resultsByQuery: SearchResultsByQuery,
+  options?: SearchMockOptions,
 ): Promise<void> {
   await page.route(/\/rest\/v1\/listings(\?|$)/, async (route) => {
     if (route.request().method() !== 'GET') return route.continue();
+    const body = options?.extraListings ?? [];
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify([]),
+      body: JSON.stringify(body),
     });
   });
 
@@ -114,6 +122,14 @@ async function installSearchMock(
   };
 
   const fulfillV4Results = async (route: import('@playwright/test').Route) => {
+    if (options?.v4Error) {
+      await route.fulfill({ status: 500, contentType: 'application/json', body: '{}' });
+      return;
+    }
+    if (options?.emptyV4) {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
+      return;
+    }
     const body = route.request().postDataJSON() as { p_query?: string };
     const query = body.p_query ?? '';
     const results = (resultsByQuery[query] ?? []).map((row) => {
@@ -157,6 +173,24 @@ async function installSearchMock(
       status: 503,
       contentType: 'text/plain',
       body: 'E2E: embeddings disabled',
+    });
+  });
+}
+
+async function installSuggestionsMock(
+  page: Page,
+  suggestions: Array<{
+    suggestion: string;
+    suggestion_type: string;
+    weight: number;
+    category_slug: string | null;
+  }>,
+): Promise<void> {
+  await page.route('**/rest/v1/rpc/search_suggestions**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(suggestions),
     });
   });
 }
@@ -296,6 +330,51 @@ test.describe('Golden Path — Search quality UI', () => {
     await expect(page.getByText(/لا نتائج/)).toHaveCount(0);
     await expect(page.getByTestId('search-empty')).toHaveCount(0);
   });
+
+  test('searchFallbackRunsWhenPrimaryReturnsEmpty', async ({ page }) => {
+    let v4Calls = 0;
+    let v2TypoCalls = 0;
+
+    await page.route('**/rest/v1/rpc/search_listings_v4_tiered_v2**', async (route) => {
+      v4Calls++;
+      await route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
+    });
+
+    await page.route('**/rest/v1/rpc/search_listings_v2_intent_typo**', async (route) => {
+      v2TypoCalls++;
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([TOYOTA_FIXTURE]),
+      });
+    });
+
+    await page.route(/\/rest\/v1\/listings(\?|$)/, async (route) => {
+      if (route.request().method() !== 'GET') return route.continue();
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([]),
+      });
+    });
+
+    await page.route('**/rest/v1/rpc/detect_query_category**', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: 'null',
+      });
+    });
+
+    await page.goto('/');
+    await page.getByTestId('search-input').fill('تويوتا كمرى');
+    await page.getByTestId('search-input').press('Enter');
+
+    await expect(page.getByText(TOYOTA_FIXTURE.title).first()).toBeVisible();
+    expect(v4Calls).toBeGreaterThanOrEqual(1);
+    expect(v2TypoCalls).toBe(1);
+    expect(page.url()).not.toContain('/search?q=');
+  });
 });
 
 test.describe('Search — inline on Home', () => {
@@ -362,6 +441,84 @@ test.describe('Search — inline on Home', () => {
     await expect(
       page.getByRole('heading', { name: TOYOTA_FIXTURE.title }).first(),
     ).toBeVisible({ timeout: 5000 });
+  });
+
+  test('enterClosesSearchSuggestions', async ({ page }) => {
+    await installSearchMock(page, {});
+    await installSuggestionsMock(page, [{
+      suggestion: 'تويوتا كامري',
+      suggestion_type: 'keyword',
+      weight: 1,
+      category_slug: 'motors',
+    }]);
+
+    await page.goto('/');
+    await page.getByTestId('search-input').fill('توي');
+    await expect(page.getByRole('option', { name: 'تويوتا كامري' })).toBeVisible();
+    await page.getByTestId('search-input').press('Enter');
+
+    await expect(page.getByRole('listbox')).toHaveCount(0);
+    await expect(page.getByTestId('search-input')).toHaveValue('توي');
+    expect(page.url()).not.toContain('/search?q=');
+  });
+
+  test('onFocusChangeHidesTopSections', async ({ page }) => {
+    await installSearchMock(page, {});
+    await page.goto('/');
+
+    // TrustSignal is always rendered inside ExploreTopSections (no conditional).
+    // Locator uses its unique "active listings" text (Arabic or English).
+    const topSectionLocator = page.getByText(/إعلان نشط اليوم|active listings/);
+    await expect(topSectionLocator).toBeVisible();
+
+    await page.getByTestId('search-input').focus();
+
+    await expect(topSectionLocator).toHaveCount(0);
+    await expect(page.getByTestId('search-input')).toBeVisible();
+  });
+
+  test('stickySearchStaysBelowHeaderOnScroll', async ({ page }) => {
+    const extraListings = Array.from({ length: 15 }, (_, i) => ({
+      ...TOYOTA_FIXTURE,
+      id: `e2e-scroll-${i}`,
+      title: `Listing for scroll test ${i} — long enough title to occupy space`,
+      description: 'Description text to help ensure the page is scrollable with multiple cards.',
+    }));
+
+    await installSearchMock(page, {}, { extraListings });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/');
+
+    // Wait for content and confirm scrollability
+    await expect(page.getByText(/Listing for scroll test/).first()).toBeVisible({ timeout: 5000 });
+    const isScrollable = await page.evaluate(() => document.documentElement.scrollHeight > window.innerHeight);
+    if (!isScrollable) {
+      throw new Error('Document is not scrollable; extraListings did not produce enough content');
+    }
+
+    const stickyWrapper = page.locator('div.sticky.top-\\[73px\\].z-40.bg-canvas').first();
+    await expect(stickyWrapper).toBeVisible();
+    const before = await stickyWrapper.boundingBox();
+    expect(before).not.toBeNull();
+
+    await page.evaluate(() => window.scrollTo(0, 500));
+    await page.waitForFunction(() => window.scrollY > 200);
+
+    await expect(stickyWrapper).toBeInViewport();
+    const after = await stickyWrapper.boundingBox();
+    expect(after).not.toBeNull();
+    expect(Math.abs((after?.y ?? 0) - (before?.y ?? 0))).toBeLessThanOrEqual(2);
+
+    // Header must remain visible above the sticky wrapper (no overlap)
+    const header = page.locator('header');
+    await expect(header).toBeVisible();
+    const headerBox = await header.boundingBox();
+    expect(headerBox).not.toBeNull();
+    if (headerBox && after) {
+      // Sticky wrapper must start at or below the header's bottom edge
+      // (zero tolerance — the previous -2 allowed 1px overlap)
+      expect(after.y).toBeGreaterThanOrEqual(headerBox.y + headerBox.height);
+    }
   });
 });
 
