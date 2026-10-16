@@ -9,30 +9,12 @@ import {
   fetchQueryVector,
   detectCategory,
   attrsToJsonbArray,
+  checkRateLimit,
 } from './searchListingsHybrid.helpers';
 import { searchListingsV4 } from './searchListingsV4';
 
 const MAX_COSINE_DISTANCE = 0.85;
 const FTS_DOMINANT_MIN_RESULTS = 1;
-
-// Frontend rate limit: max 30 searches per rolling 60-second window.
-// Module-level so all calls share state per browser tab. Blocks
-// accidental loops and typing spam. Not a security boundary — bots
-// bypass via direct RPC (WAF concern, deferred).
-const RATE_LIMIT_WINDOW_MS = 60_000;
-const RATE_LIMIT_MAX = 30;
-const searchTimestamps: number[] = [];
-
-function checkRateLimit(): boolean {
-  const now = Date.now();
-  const cutoff = now - RATE_LIMIT_WINDOW_MS;
-  while (searchTimestamps.length > 0 && searchTimestamps[0] < cutoff) {
-    searchTimestamps.shift();
-  }
-  if (searchTimestamps.length >= RATE_LIMIT_MAX) return false;
-  searchTimestamps.push(now);
-  return true;
-}
 
 /**
  * FTS-dominant hybrid search with query-intent category + full filters.
