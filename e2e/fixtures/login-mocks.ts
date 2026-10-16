@@ -33,18 +33,6 @@ function sessionResponse() {
   };
 }
 
-/**
- * J4 Login fixtures (Supabase email/password).
- *
- * Mocks Supabase Auth endpoints so the real signInWithPassword flow can be
- * exercised in E2E:
- *   - POST /auth/v1/token?grant_type=password  → session or invalid_credentials
- *   - POST /auth/v1/token?grant_type=refresh_token → session
- *   - GET  /auth/v1/user                       → current user
- *   - POST /auth/v1/logout                     → 204
- *
- * Credentials: demo@example.com / password123
- */
 export async function installLoginMocks(page: Page): Promise<void> {
   await page.route('**/auth/v1/**', async (route: Route) => {
     const req = route.request();
