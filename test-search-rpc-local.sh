@@ -112,6 +112,9 @@ run_sql supabase/tests/search_v4_exact.sql
 # v4 tiered wrapper reclassification.
 run_sql supabase/tests/search_v4_tiered.sql
 
+# C2 tiered v2: independent same-category recommendations.
+run_sql supabase/tests/search_v4_tiered_v2.sql
+
 # Attribute-key expansion regression. Must run before the v4 rollback.
 run_sql supabase/tests/search_attribute_keys.sql
 
