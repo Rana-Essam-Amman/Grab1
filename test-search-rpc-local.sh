@@ -120,6 +120,7 @@ run_sql supabase/tests/search_attribute_keys.sql
 
 # v4 trigram fallback + related threshold.
 run_sql supabase/tests/search_v4_typo_threshold.sql
+run_sql supabase/tests/search_raw_stopword_guard.sql
 
 # v4 rollback idempotence — run twice, then assert function is gone.
 run_sql supabase/tests/search_v4_rollback_idempotence.sql
