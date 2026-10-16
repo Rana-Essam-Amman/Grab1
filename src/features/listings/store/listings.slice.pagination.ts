@@ -18,6 +18,7 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
   searchBanner: null,
   searchRelatedHeader: null,
   activeFilterArgs: initialFilterArgs,
+  tier2Listings: [],
 
   syncFromSupabase: async (market?: string) => {
     const targetMarket = market ?? get().activeMarket ?? undefined;
@@ -36,6 +37,7 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
           s.searchBanner = null;
           s.searchRelatedHeader = null;
           s.activeFilterArgs = null;
+          s.tier2Listings = [];
           s.page = 0;
           s.hasMore = result.listings.length === LISTINGS_PAGE_SIZE;
           saveListingsToStorage(s.listings);
@@ -87,7 +89,10 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
 
   searchFromSupabase: async (params: SearchListingsParams) => {
     const trimmed = params.query.trim();
-    set((s) => { s.isSyncing = true; });
+    set((s) => {
+      s.isSyncing = true;
+      s.tier2Listings = [];
+    });
     try {
       if (trimmed.length === 0) {
         const targetMarket = params.market ?? get().activeMarket ?? undefined;
@@ -104,6 +109,7 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
             s.searchBanner = null;
             s.searchRelatedHeader = null;
             s.activeFilterArgs = null;
+            s.tier2Listings = [];
             s.page = 0;
             s.hasMore = result.listings.length === LISTINGS_PAGE_SIZE;
             saveListingsToStorage(s.listings);
@@ -123,6 +129,7 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
       const hybrid = await searchListingsHybrid(callParams);
       set((s) => {
         s.listings = hybrid.data ?? [];
+        s.tier2Listings = hybrid.tier2Data ?? [];
         s.activeMarket = targetMarket ?? null;
         s.activeSearchQuery = trimmed;
         s.searchBanner = hybrid.banner ?? null;

@@ -51,7 +51,15 @@ function checkRateLimit(): boolean {
  */
 export async function searchListingsHybrid(
   params: SearchListingsParams,
-): Promise<{ data: Listing[] | null; error: string | null; matchKind?: string; banner?: string | null; relatedHeader?: string | null }> {
+): Promise<{
+  data: Listing[] | null;
+  error: string | null;
+  matchKind?: string;
+  banner?: string | null;
+  relatedHeader?: string | null;
+  tier1Data?: Listing[];
+  tier2Data?: Listing[];
+}> {
   try {
     if (!checkRateLimit()) {
       return { data: null, error: 'Too many searches. Please wait a moment.' };
@@ -82,9 +90,11 @@ export async function searchListingsHybrid(
 
     const v4 = await searchListingsV4(trimmed, market, limit, offset, filterArgs);
     if (v4) {
-      if (v4.data && v4.data.length > 0) return v4;
+      const hasTier1 = v4.tier1Data.length > 0;
+      const hasTier2 = v4.tier2Data.length > 0;
+      if (hasTier1 || hasTier2) return v4;
       if (offset > 0) return v4;
-      // fall through to v2 typo fallback
+      // fall through to v2 typo fallback only when both tiers empty on page 1
     }
 
     const { data: ftsData, error: ftsError } = await supabase.rpc('search_listings_v2_intent_typo', {
