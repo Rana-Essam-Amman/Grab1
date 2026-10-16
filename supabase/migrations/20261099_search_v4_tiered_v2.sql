@@ -55,6 +55,7 @@ VOLATILE
 SECURITY DEFINER
 SET search_path = public
 AS $func$
+#variable_conflict use_column
 DECLARE
   v_norm_query text;
   v_tier1_ids uuid[] := ARRAY[]::uuid[];
