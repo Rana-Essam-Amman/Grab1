@@ -4,6 +4,7 @@ import { useUI } from '@/hooks/useUI';
 import { signInWithEmailPassword } from '../services/authService';
 import { validateEmail } from '../helpers/registerValidation';
 import { publishDraftAfterAuth } from '../helpers/publishDraftAfterAuth';
+import { waitForSession } from '../helpers/waitForSession';
 
 export interface UseLoginFormOptions {
   onToast?: (msg: string) => void;
@@ -35,141 +36,82 @@ export const useLoginForm = (
 
   useEffect(() => {
     mountedRef.current = true;
-    return () => {
-      mountedRef.current = false;
-    };
+    return () => { mountedRef.current = false; };
   }, []);
 
-  const handleEmailChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setEmail(e.target.value);
-      setError('');
-    },
-    []
-  );
+  const handleEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    setError('');
+  }, []);
 
-  const handlePasswordChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setPassword(e.target.value);
-      setError('');
-    },
-    []
-  );
+  const handlePasswordChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+    setError('');
+  }, []);
 
   const handleToggleShowPassword = useCallback(() => {
     setShowPassword((prev) => !prev);
   }, []);
 
-  const waitForSession = useCallback(
-    (userId: string): Promise<boolean> =>
-      new Promise((resolve) => {
-        let settled = false;
-        let unsubscribe = () => {};
-        const finish = (matched: boolean) => {
-          if (settled) return;
-          settled = true;
-          clearTimeout(timeout);
-          unsubscribe();
-          resolve(matched);
-        };
-        const timeout = setTimeout(() => finish(false), 3000);
-        const hasSession = () => {
-          const state = useAuthStore.getState();
-          return Boolean(state.sessionToken && state.user?.id === userId);
-        };
+  const handleLoginSubmit = useCallback(async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
 
-        unsubscribe = useAuthStore.subscribe(() => {
-          if (hasSession()) finish(true);
-        });
-        if (hasSession()) finish(true);
-      }),
-    []
-  );
+    const emailError = validateEmail(email, isArabic);
+    if (emailError) { setError(emailError); return; }
+    if (!password) {
+      setError(isArabic ? 'يرجى إدخال كلمة المرور' : 'Please enter your password');
+      return;
+    }
 
-  const handleLoginSubmit = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
-      setError('');
-
-      const emailError = validateEmail(email, isArabic);
-      if (emailError) {
-        setError(emailError);
-        return;
-      }
-
-      if (!password) {
-        setError(isArabic ? 'يرجى إدخال كلمة المرور' : 'Please enter your password');
-        return;
-      }
-
-      setLoading(true);
-      try {
-        const result = await signInWithEmailPassword(email, password);
-        if (!result.success || !result.userId) {
-          if (mountedRef.current) {
-            setError(
-              isArabic
-                ? result.errorMessageAr || 'حدث خطأ. حاول مرة أخرى'
-                : result.errorMessageEn || 'Something went wrong. Please try again'
-            );
-          }
-          return;
+    setLoading(true);
+    try {
+      const result = await signInWithEmailPassword(email, password);
+      if (!result.success || !result.userId) {
+        if (mountedRef.current) {
+          setError(isArabic
+            ? result.errorMessageAr || 'حدث خطأ. حاول مرة أخرى'
+            : result.errorMessageEn || 'Something went wrong. Please try again');
         }
+        return;
+      }
 
-        const state = useAuthStore.getState();
-        const alreadySignedIn = Boolean(
-          state.sessionToken && state.user?.id === result.userId
+      const state = useAuthStore.getState();
+      const alreadySignedIn = Boolean(state.sessionToken && state.user?.id === result.userId);
+      const sessionReady = alreadySignedIn || await waitForSession(result.userId);
+      if (!sessionReady) {
+        if (mountedRef.current) {
+          setError(isArabic
+            ? 'تعذر إكمال تسجيل الدخول. حاول مرة أخرى'
+            : 'Could not complete sign in. Please try again');
+        }
+        return;
+      }
+
+      const user = useAuthStore.getState().user;
+      if (user?.phone) {
+        publishDraftAfterAuth(
+          user.phone,
+          user.firstName || 'Seller',
+          user.countryCode || browseCountryCode || 'JO'
         );
-        const sessionReady = alreadySignedIn || await waitForSession(result.userId);
-
-        if (!sessionReady) {
-          if (mountedRef.current) {
-            setError(
-              isArabic
-                ? 'تعذر إكمال تسجيل الدخول. حاول مرة أخرى'
-                : 'Could not complete sign in. Please try again'
-            );
-          }
-          return;
-        }
-
-        const user = useAuthStore.getState().user;
-        if (user?.phone) {
-          publishDraftAfterAuth(
-            user.phone,
-            user.firstName || 'Seller',
-            user.countryCode || browseCountryCode || 'JO'
-          );
-        }
-
-        if (mountedRef.current) {
-          onToast?.(isArabic ? 'تم تسجيل الدخول بنجاح' : 'Logged in successfully');
-        }
-      } catch {
-        if (mountedRef.current) {
-          setError(
-            isArabic
-              ? 'حدث خطأ. حاول مرة أخرى'
-              : 'Something went wrong. Please try again'
-          );
-        }
-      } finally {
-        if (mountedRef.current) setLoading(false);
       }
-    },
-    [email, password, isArabic, browseCountryCode, onToast, waitForSession]
-  );
+      if (mountedRef.current) {
+        onToast?.(isArabic ? 'تم تسجيل الدخول بنجاح' : 'Logged in successfully');
+      }
+    } catch {
+      if (mountedRef.current) {
+        setError(isArabic ? 'حدث خطأ. حاول مرة أخرى' : 'Something went wrong. Please try again');
+      }
+    } finally {
+      if (mountedRef.current) setLoading(false);
+    }
+  }, [email, password, isArabic, browseCountryCode, onToast]);
 
   return {
-    email,
-    handleEmailChange,
-    password,
-    handlePasswordChange,
-    showPassword,
-    handleToggleShowPassword,
-    error,
-    loading,
-    handleLoginSubmit,
-    isArabic,
+    email, handleEmailChange,
+    password, handlePasswordChange,
+    showPassword, handleToggleShowPassword,
+    error, loading, handleLoginSubmit, isArabic,
   };
 };
