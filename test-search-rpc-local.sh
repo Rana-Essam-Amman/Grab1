@@ -100,6 +100,9 @@ run_sql supabase/tests/attribute_search.sql
 # v3_relaxed progressive relaxation regression.
 run_sql supabase/tests/attribute_search_v3.sql
 
+# Fuzzy token guard: returns FALSE on zero meaningful tokens.
+run_sql supabase/tests/search_typo_fuzzy_guard.sql
+
 # v4 exact-first search regression.
 run_sql supabase/tests/search_v4_exact.sql
 
