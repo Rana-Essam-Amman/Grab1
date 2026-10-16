@@ -91,10 +91,14 @@ export async function searchListingsHybrid(
     const v4 = await searchListingsV4(trimmed, market, limit, offset, filterArgs);
     if (v4) {
       const hasTier1 = v4.tier1Data.length > 0;
-      const hasTier2 = v4.tier2Data.length > 0;
-      if (hasTier1 || hasTier2) return v4;
+      // Match the UI threshold: Tier 2 is only "shippable" when >= 2.
+      // A single Tier 2 row would be hidden by the UI and would
+      // otherwise suppress the v2_typo fallback.
+      const hasTier2ForDisplay = v4.tier2Data.length >= 2;
+      if (hasTier1 || hasTier2ForDisplay) return v4;
       if (offset > 0) return v4;
-      // fall through to v2 typo fallback only when both tiers empty on page 1
+      // fall through to v2 typo fallback only when:
+      //   - tier1 empty AND tier2 < 2 AND offset == 0
     }
 
     const { data: ftsData, error: ftsError } = await supabase.rpc('search_listings_v2_intent_typo', {
