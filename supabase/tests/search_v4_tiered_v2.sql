@@ -34,7 +34,7 @@ INSERT INTO public.listings (
   attributes, created_at
 )
 VALUES
-  -- motors/cars (3)
+  -- motors/cars (6 total for clamp test)
   ('99000000-0000-4000-8000-000000000001'::uuid,
    '98000000-0000-4000-8000-000000000001'::uuid,
    'تويوتا كامري 2020', 'exact toyota', '15000', 'JOD', 'JO',
@@ -50,6 +50,21 @@ VALUES
    'هيونداي إلانترا 2018', 'another motor', '10000', 'JOD', 'JO',
    'Zarqa', NULL, 'motors', 'cars', 'active', '[]'::jsonb,
    '2026-10-08T10:00:00Z'),
+  ('99000000-0000-4000-8000-000000000007'::uuid,
+   '98000000-0000-4000-8000-000000000001'::uuid,
+   'نيسان صني 2017', 'nissan motor', '9000', 'JOD', 'JO',
+   'Amman', NULL, 'motors', 'cars', 'active', '[]'::jsonb,
+   '2026-10-04T10:00:00Z'),
+  ('99000000-0000-4000-8000-000000000008'::uuid,
+   '98000000-0000-4000-8000-000000000001'::uuid,
+   'ميتسوبيشي لانسر 2016', 'mitsubishi', '8000', 'JOD', 'JO',
+   'Amman', NULL, 'motors', 'cars', 'active', '[]'::jsonb,
+   '2026-10-03T10:00:00Z'),
+  ('99000000-0000-4000-8000-000000000009'::uuid,
+   '98000000-0000-4000-8000-000000000001'::uuid,
+   'مرسيدس بنز 2015', 'mercedes', '20000', 'JOD', 'JO',
+   'Amman', NULL, 'motors', 'cars', 'active', '[]'::jsonb,
+   '2026-10-02T10:00:00Z'),
   -- real-estate/for-sale (2)
   ('99000000-0000-4000-8000-000000000004'::uuid,
    '98000000-0000-4000-8000-000000000001'::uuid,
@@ -66,7 +81,13 @@ VALUES
    '98000000-0000-4000-8000-000000000001'::uuid,
    'تلفزيون سامسونج', 'tv', '400', 'JOD', 'JO',
    'Amman', NULL, 'electronics', 'tv', 'active', '[]'::jsonb,
-   '2026-10-05T10:00:00Z');
+   '2026-10-05T10:00:00Z'),
+  -- fuzzy candidate for C1 tier 2
+  ('99000000-0000-4000-8000-000000000010'::uuid,
+   '98000000-0000-4000-8000-000000000001'::uuid,
+   'تسلا موديل 3', 'fuzzy tesla', '25000', 'JOD', 'JO',
+   'Amman', NULL, 'motors', 'cars', 'active', '[]'::jsonb,
+   '2026-10-01T10:00:00Z');
 
 DO $$
 DECLARE
@@ -78,7 +99,7 @@ DECLARE
   v_intersect integer;
 BEGIN
   -- T1: query "تويوتا" (exact match to one fixture) →
-  --     Tier 1 has that fixture; Tier 2 has 2 other motors (not the Tier 1)
+  --     Tier 1 has that fixture; Tier 2 has other motors (not the Tier 1)
   SELECT count(*) INTO v_count
   FROM public.search_listings_v4_tiered_v2('تويوتا', 'JO', 20, 0)
   WHERE tier = 1 AND id = '99000000-0000-4000-8000-000000000001'::uuid;
@@ -138,14 +159,14 @@ BEGIN
   END IF;
   RAISE NOTICE 'PASS T5: p_tier2_limit=0 suppresses independent Tier 2';
 
-  -- T6: p_tier2_limit=10 → clamped to 5
+  -- T6: p_tier2_limit=10 → clamped to 5 (exactly 5 with ≥5 eligible)
   SELECT count(*) INTO v_count
   FROM public.search_listings_v4_tiered_v2('سيارة', 'JO', 20, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 10)
   WHERE tier_reason = 'similar_category';
-  IF v_count > 5 THEN
-    RAISE EXCEPTION 'TEST T6 FAIL: p_tier2_limit=10 not clamped, got %', v_count;
+  IF v_count <> 5 THEN
+    RAISE EXCEPTION 'TEST T6 FAIL: p_tier2_limit=10 not clamped to exactly 5, got %', v_count;
   END IF;
-  RAISE NOTICE 'PASS T6: p_tier2_limit clamped to 5';
+  RAISE NOTICE 'PASS T6: p_tier2_limit clamped to exactly 5';
 
   -- T7: p_category_slug='real-estate' + query with motors exact matches
   --     → user filter wins; Tier 2 only from real-estate
@@ -163,9 +184,29 @@ BEGIN
   END IF;
   RAISE NOTICE 'PASS T7: p_category_slug wins for Tier 2 category';
 
-  -- T8: v4 exact + C1 tier 2 + independent tier 2 (mixed) → all present,
-  --     rank_in_tier unique per tier
-  -- (Using a query that produces mixed; ranks are unique within tier by construction)
+  -- T8a: mixed groups on toyota query (exact + similar_category)
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_tiered_v2('تويوتا', 'JO', 20, 0)
+  WHERE tier = 1 AND tier_reason = 'exact_substring';
+  IF v_count < 1 THEN
+    RAISE EXCEPTION 'TEST T8a FAIL: missing tier=1 exact_substring';
+  END IF;
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_tiered_v2('تويوتا', 'JO', 20, 0)
+  WHERE tier = 2 AND tier_reason = 'similar_category';
+  IF v_count < 1 THEN
+    RAISE EXCEPTION 'TEST T8a FAIL: missing tier=2 similar_category';
+  END IF;
+
+  -- T8b: C1 non-exact tier 2 (trigram/related) via fuzzy query
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_tiered_v2('تسله', 'JO', 20, 0)
+  WHERE tier = 2 AND tier_reason IN ('related', 'trigram_fuzzy');
+  IF v_count < 1 THEN
+    RAISE EXCEPTION 'TEST T8b FAIL: missing C1 non-exact tier 2';
+  END IF;
+
+  -- T8c: rank_in_tier unique within each tier (on a mixed query)
   SELECT count(*) INTO v_count
   FROM (
     SELECT tier, rank_in_tier, count(*)
@@ -174,9 +215,9 @@ BEGIN
     HAVING count(*) > 1
   ) dups;
   IF v_count <> 0 THEN
-    RAISE EXCEPTION 'TEST T8 FAIL: duplicate rank_in_tier within a tier';
+    RAISE EXCEPTION 'TEST T8c FAIL: duplicate rank_in_tier within a tier';
   END IF;
-  RAISE NOTICE 'PASS T8: rank_in_tier unique per tier';
+  RAISE NOTICE 'PASS T8: mixed groups present and ranks unique per tier';
 
   RAISE NOTICE 'ALL V4 TIERED V2 TESTS PASSED';
 END $$;
