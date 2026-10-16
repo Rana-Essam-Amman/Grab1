@@ -20,7 +20,7 @@ RETURNS jsonb
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
-AS $
+AS $$
   DECLARE
     v_uid uuid;
     v_email text;
@@ -119,7 +119,7 @@ RETURNS jsonb
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
-AS $
+AS $$
   DECLARE
     v_uid uuid;
     v_email text;
@@ -186,7 +186,7 @@ RETURNS jsonb
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
-AS $
+AS $$
   DECLARE
     v_uid uuid;
     v_email text;
@@ -254,7 +254,7 @@ RETURNS jsonb
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
-AS $
+AS $$
   DECLARE
     v_uid uuid;
     v_email text;
@@ -311,7 +311,7 @@ RETURNS jsonb
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
-AS $
+AS $$
   DECLARE
     v_uid uuid;
     v_email text;
@@ -460,7 +460,7 @@ RETURNS jsonb
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
-AS $
+AS $$
   DECLARE
     v_uid uuid;
     v_email text;
