@@ -8,14 +8,12 @@ import { setPendingPublish } from '../helpers/pendingPublishFlags';
 import { resolvePostDetailsFields, preparePublish } from '../helpers/postDetailsHelpers';
 import { buildDraftData } from '../helpers/buildDraftData';
 import { getCurrentUser, requirePhoneForPublish } from '@/features/auth/helpers/publishPhoneGuard';
-
 export function usePostDetails() {
   const { postDraft, updatePostDraft } = usePostWizard();
   const { resetPostDraft } = useDraft();
   const { authStatus, isAnonymous } = useAuth();
   const { publishListing } = useListings();
   const { isArabic, navigateTo, setActiveTab, browseCountryCode, activeCurrency } = useUI();
-
   const [title, setTitle] = useState(postDraft.title || '');
   const [price, setPrice] = useState(postDraft.price || '');
   const [description, setDescription] = useState(postDraft.description || '');
