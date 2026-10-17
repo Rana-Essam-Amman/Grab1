@@ -19,6 +19,7 @@ import { useSupabaseWishlistSync } from '@/features/listings/hooks/useSupabaseWi
 import { useSupabaseChatSync, useOnlinePresence } from '@/features/chat';
 import { useSupabaseNotificationsSync } from '@/features/notifications';
 import { useMarketSync } from '@/features/markets/hooks/useMarketSync';
+import { useGeoLocation } from '@/features/markets/hooks/useGeoLocation';
 import { RouterProvider } from '@/shared/router/RouterProvider';
 import { MainNavigator } from '@/shared/router/MainNavigator';
 
@@ -36,6 +37,7 @@ export default function App() {
   useSupabaseChatSync();
   useSupabaseNotificationsSync();
   useMarketSync();
+  useGeoLocation();
   useOnlinePresence(currentUserId);
   useBootMigrations(locale);
 
