@@ -1,23 +1,15 @@
-import React, {
-  useCallback,
-  useState,
-  useRef,
-  useEffect,
-} from 'react';
+import React, { useCallback } from 'react';
 import { GuestCountrySelect } from './GuestCountrySelect';
 import { LoginGatewayContent } from './LoginGatewayContent';
 import { getLoginProviderButtons } from '../helpers/providerButtonConfig';
 import { useGoogleSignIn } from '../hooks/useGoogleSignIn';
 import { useFacebookSignIn } from '../hooks/useFacebookSignIn';
+import { useComingSoonToast } from '../hooks/useComingSoonToast';
 
 interface LoginGatewayProps {
   isArabic: boolean;
   onOpenDemoPicker: () => void;
-  onGuestCountrySelect: (
-    code: string,
-    cityEn: string,
-    cityAr: string,
-  ) => void;
+  onGuestCountrySelect: (code: string, cityEn: string, cityAr: string) => void;
   guestCountrySelectOpen: boolean;
   onToggleGuestCountrySelect: () => void;
 }
@@ -29,87 +21,36 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
   guestCountrySelectOpen,
   onToggleGuestCountrySelect,
 }) => {
-  const [toast, setToast] = useState<string | null>(null);
-  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
-
-  const {
-    isLoading: isGoogleLoading,
-    error: googleError,
-    signIn: signInWithGoogle,
-    clearError: clearGoogleError,
-  } = useGoogleSignIn();
-
-  const {
-    isLoading: isFacebookLoading,
-    error: facebookError,
-    signIn: signInWithFacebook,
-    clearError: clearFacebookError,
-  } = useFacebookSignIn();
-
-  const isLoading = isGoogleLoading || isFacebookLoading;
-  const error = googleError || facebookError;
-
-  const loadingProvider: 'google' | 'facebook' | null =
-    isGoogleLoading
-      ? 'google'
-      : isFacebookLoading
-        ? 'facebook'
-        : null;
-
+  const { toast, showToast } = useComingSoonToast(isArabic);
+  const google = useGoogleSignIn();
+  const facebook = useFacebookSignIn();
+  
+  const isLoading = google.isLoading || facebook.isLoading;
+  const error = google.error || facebook.error;
+  const loadingProvider = google.isLoading ? 'google' : facebook.isLoading ? 'facebook' : null;
   const providers = getLoginProviderButtons(isArabic);
 
-  useEffect(() => {
-    return () => {
-      if (toastTimer.current) {
-        clearTimeout(toastTimer.current);
-      }
-    };
-  }, []);
-
   const handleProviderTap = useCallback(
-    (providerId: string): void => {
-      if (isLoading) {
-        return;
-      }
+    (providerId: string) => {
+      if (isLoading) return;
 
       if (providerId === 'google') {
-        clearGoogleError();
-        clearFacebookError();
-        void signInWithGoogle();
+        google.clearError();
+        facebook.clearError();
+        void google.signIn();
         return;
       }
 
       if (providerId === 'facebook') {
-        clearGoogleError();
-        clearFacebookError();
-        void signInWithFacebook();
+        google.clearError();
+        facebook.clearError();
+        void facebook.signIn();
         return;
       }
 
-      setToast(
-        isArabic
-          ? 'هذه الميزة ستكون متاحة قريباً'
-          : 'This feature is coming soon',
-      );
-
-      if (toastTimer.current) {
-        clearTimeout(toastTimer.current);
-      }
-
-      toastTimer.current = setTimeout(() => {
-        setToast(null);
-      }, 2200);
+      showToast();
     },
-    [
-      isArabic,
-      isLoading,
-      signInWithGoogle,
-      signInWithFacebook,
-      clearGoogleError,
-      clearFacebookError,
-    ],
+    [isLoading, google, facebook, showToast]
   );
 
   if (guestCountrySelectOpen) {
