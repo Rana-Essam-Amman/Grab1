@@ -17,8 +17,6 @@ interface LoginGatewayProps {
 
 export const LoginGateway: React.FC<LoginGatewayProps> = ({
   isArabic,
-  onGoToLogin,
-  onGoToRegister,
   onOpenDemoPicker,
   onGuestCountrySelect,
   guestCountrySelectOpen,
@@ -67,10 +65,8 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
         void signInWithFacebook();
         return;
       }
-      if (providerId === 'email') {
-        onGoToLogin();
-        return;
-      }
+      
+      // Email branch removed. Everything else shows coming soon.
       setToast(isArabic ? 'هذه الميزة ستكون متاحة قريباً' : 'This feature is coming soon');
       if (toastTimer.current) clearTimeout(toastTimer.current);
       toastTimer.current = setTimeout(() => setToast(null), 2200);
@@ -78,7 +74,6 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
     [
       isArabic,
       isLoading,
-      onGoToLogin,
       signInWithFacebook,
       signInWithGoogle,
       clearFacebookError,
@@ -105,8 +100,6 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
       loadingProvider={loadingProvider}
       toast={toast}
       onProviderTap={handleProviderTap}
-      onGoToLogin={onGoToLogin}
-      onGoToRegister={onGoToRegister}
       onOpenDemoPicker={onOpenDemoPicker}
       onToggleGuestCountrySelect={onToggleGuestCountrySelect}
     />
