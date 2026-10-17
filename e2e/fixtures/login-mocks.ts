@@ -50,6 +50,7 @@ export async function installLoginMocks(page: Page): Promise<void> {
       let body: Record<string, unknown> = {};
       try {
         const raw = req.postData() || '{}';
+        // Supabase sends JSON, but may also send form-encoded
         if (raw.startsWith('{')) {
           body = JSON.parse(raw);
         } else {
@@ -61,7 +62,11 @@ export async function installLoginMocks(page: Page): Promise<void> {
 
       const grant = readGrant(body, url);
 
-      if (grant === 'refresh_token') {
+      if (
+        grant === 'refresh_token' ||
+        grant === 'pkce' ||
+        grant === 'authorization_code'
+      ) {
         return route.fulfill({
           status: 200,
           contentType: 'application/json',
