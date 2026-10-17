@@ -29,7 +29,6 @@ the CI Gate runs **every** Protected E2E — not just the ones for that feature.
 | Wishlist | `e2e/golden-paths/wishlist.spec.ts` | add, remove, sync |
 | Chat | `e2e/golden-paths/chat.spec.ts` | golden path via mocked Supabase routes |
 | Post Ad | `e2e/golden-paths/post-ad.spec.ts` | wizard, category pick, publish |
-| Register | `e2e/golden-paths/register.spec.ts` | signup flow |
 | App boot | `e2e/smoke.spec.ts` | root renders |
 | Production health | `e2e/prod-smoke.spec.ts` | deployed app reachable |
 | Multi-Market Isolation | `e2e/golden-paths/multi-market.spec.ts` | default JO scope, switch SA/LB via CountrySheet |
@@ -50,7 +49,6 @@ here requires an explicit REGISTRY.md update in the same PR.
 | Wishlist | `src/features/listings/hooks/useSupabaseWishlistSync.ts`, `src/features/listings/services/wishlistService.ts` | `supabase/migrations/20261009_create_wishlists.sql` |
 | Chat | `src/features/chat/hooks/useSupabaseChatSync.ts`, `src/features/chat/services/chatService.ts`, `src/features/chat/store/chat.slice.ts` | `supabase/migrations/20261006_create_chat_tables.sql` |
 | Post Ad | `src/features/post-wizard/hooks/usePostWizard.ts`, `src/features/post-wizard/helpers/buildNewListingPayload.ts`, `src/features/post-wizard/store/draft.slice.ts` | — |
-| Register | `src/features/auth/services/authService.ts`, `src/features/auth/hooks/useRegisterStep1.ts`, `src/features/auth/store/auth.slice.ts` | — |
 | App boot | `src/App.tsx`, `src/main.tsx` | — |
 | Production health | NEEDS CONFIRMATION: prod-smoke.spec.ts not wired into any CI workflow | — |
 | Multi-Market Isolation | `src/store/ui.slice.actions.ts`, `src/store/ui.slice.helpers.ts`, `src/features/markets/components/CountrySheet.tsx`, `src/features/listings/hooks/useSupabaseListingsSync.ts`, `src/features/listings/services/listingsService.ts`, `src/features/listings/domain/rules/canViewListing.ts`, `src/shared/lib/marketStorage.ts` | — |

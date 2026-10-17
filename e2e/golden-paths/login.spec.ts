@@ -1,81 +1,54 @@
-import { test, expect } from '@playwright/test';
-import { installLoginMocks } from '../fixtures/login-mocks';
-import { goToLogin, goToHome } from '../helpers/navigation';
+import { test, expect } from '../fixtures';
+import { goToAuthGateway } from '../helpers/navigation';
 
-const SEEDED_EMAIL = 'demo@example.com';
-const SEEDED_PASSWORD = 'password123';
-
-async function performLogin(
-  page: Parameters<typeof goToLogin>[0],
-  password: string,
-): Promise<void> {
-  await goToLogin(page);
-  await page.locator('input[type="email"]').first().fill(SEEDED_EMAIL);
-  await page.locator('input[type="password"]').first().fill(password);
-  await page.locator('button[type="submit"]').first().click();
-}
-
-test.describe('Golden Path — J4 Login + Access Account', () => {
-  test.beforeEach(async ({ page }) => {
-    await installLoginMocks(page);
-  });
-
-  test('registered user can log in with valid credentials', async ({ page }) => {
-    await performLogin(page, SEEDED_PASSWORD);
-    await expect(page.getByText('تم تسجيل الدخول بنجاح', { exact: true })).toBeVisible({
-      timeout: 5000,
-    });
-  });
-
-  test('invalid password shows error and does not log in', async ({ page }) => {
-    await performLogin(page, 'wrongpass123');
-    await expect(
-      page.getByText('البريد أو كلمة المرور غير صحيحة', { exact: true })
-    ).toBeVisible({ timeout: 5000 });
-    const token = await page.evaluate(() =>
-      window.localStorage.getItem('catch_auth'),
-    );
-    const parsed = token ? JSON.parse(token) : null;
-    expect(parsed?.state?.sessionToken ?? null).toBeNull();
-  });
-
-  test('session persists across reload', async ({ page }) => {
-    await performLogin(page, SEEDED_PASSWORD);
-    await expect(page.getByText('تم تسجيل الدخول بنجاح', { exact: true })).toBeVisible({
-      timeout: 5000,
-    });
-
-    await page.reload();
-    await page.waitForSelector('#root', { state: 'visible' });
-
-    const raw = await page.evaluate(() =>
-      window.localStorage.getItem('catch_auth'),
-    );
-    expect(raw).toBeTruthy();
-    const parsed = JSON.parse(raw as string) as {
-      state?: { sessionToken?: string; user?: { email?: string } };
-    };
-    expect(parsed.state?.sessionToken).toBeTruthy();
-    expect(parsed.state?.user?.email).toBe(SEEDED_EMAIL);
-  });
-
-  test('authenticated user reaches profile from header menu', async ({ page }) => {
-    await performLogin(page, SEEDED_PASSWORD);
-    await expect(page.getByText('تم تسجيل الدخول بنجاح', { exact: true })).toBeVisible({
-      timeout: 5000,
-    });
-
-    await goToHome(page);
-    const menuBtn = page.locator('[data-testid="header-menu-btn"]').first();
-    await expect(menuBtn).toBeVisible({ timeout: 5000 });
-    await menuBtn.click();
-
-    const profileItem = page.getByText('الملف الشخصي', { exact: true }).first();
-    await expect(profileItem).toBeVisible({ timeout: 5000 });
-    await profileItem.click();
+test.describe('Golden Path — OAuth Login Gateway', () => {
+  test('Google and Facebook sign-in buttons are visible', async ({ page }) => {
+    await goToAuthGateway(page);
 
     await expect(
-      page.getByRole('heading', { name: 'الملف الشخصي', exact: true })
-    ).toBeVisible({ timeout: 5000 });
+      page.getByRole('button', {
+        name: /تابع باستخدام Google|Continue with Google/i,
+      }),
+    ).toBeVisible();
+
+    await expect(
+      page.getByRole('button', {
+        name: /تابع باستخدام Facebook|Continue with Facebook/i,
+      }),
+    ).toBeVisible();
+  });
+
+  test('Apple and WhatsApp show as coming soon providers', async ({ page }) => {
+    await goToAuthGateway(page);
+
+    await expect(
+      page.getByRole('button', {
+        name: /تابع باستخدام Apple|Continue with Apple/i,
+      }),
+    ).toBeVisible();
+
+    await expect(
+      page.getByRole('button', {
+        name: /تابع باستخدام WhatsApp|Continue with WhatsApp/i,
+      }),
+    ).toBeVisible();
+  });
+
+  test('Quick Demo button is visible', async ({ page }) => {
+    await goToAuthGateway(page);
+
+    await expect(
+      page.getByTestId('demo-login-btn'),
+    ).toBeVisible();
+  });
+
+  test('guest browsing action is visible', async ({ page }) => {
+    await goToAuthGateway(page);
+
+    await expect(
+      page.getByRole('button', {
+        name: /تصفح كضيف|Browse as Guest/i,
+      }),
+    ).toBeVisible();
   });
 });

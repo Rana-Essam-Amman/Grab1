@@ -17,7 +17,6 @@ interface LoginScreenBodyProps {
   secureToken: string;
   handleSwitchToLogin: () => void;
   handleSwitchToRegister: () => void;
-
   handleQuickDemoAuth: () => void;
   handleSelectBrowseCountry: (code: string, cityEn: string, cityAr: string) => void;
   handleGuestCountryClose: () => void;
@@ -38,7 +37,6 @@ export const LoginScreenBody: React.FC<LoginScreenBodyProps> = ({
   secureToken,
   handleSwitchToLogin,
   handleSwitchToRegister,
-
   handleQuickDemoAuth,
   handleSelectBrowseCountry,
   handleGuestCountryClose,
@@ -50,8 +48,6 @@ export const LoginScreenBody: React.FC<LoginScreenBodyProps> = ({
     return (
       <LoginGateway
         isArabic={isArabic}
-        onGoToLogin={handleSwitchToLogin}
-        onGoToRegister={handleSwitchToRegister}
         onOpenDemoPicker={handleQuickDemoAuth}
         onGuestCountrySelect={handleSelectBrowseCountry}
         guestCountrySelectOpen={guestCountrySelect}
@@ -93,7 +89,6 @@ export const LoginScreenBody: React.FC<LoginScreenBodyProps> = ({
       </div>
     );
   }
-
 
   return null;
 };
