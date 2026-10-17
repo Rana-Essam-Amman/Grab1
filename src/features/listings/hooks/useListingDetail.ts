@@ -96,4 +96,4 @@ export function useListingDetail(): UseListingDetailReturn {
     handleStartChat, handleCall, handleWhatsApp, handleWhatsAppClick, handleWhatsAppIntent,
     handleDelete, handleSelectSeller, isAuthenticated, isOwner, isArabic, goBack, navigateTo,
   };
-                                         }
+  }
