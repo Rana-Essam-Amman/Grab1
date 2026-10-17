@@ -48,6 +48,79 @@ begin
 end $$;
 
 -- =========================================================================
+-- A0: phone setup for authenticated listing-insert policy tests
+-- Run before SET LOCAL ROLE authenticated so the test setup can update
+-- profile phone values without being restricted by authenticated grants.
+-- User A has a phone; user B intentionally has no phone.
+-- =========================================================================
+do $$
+begin
+  update public.profiles
+  set phone = 'rls-test-phone-a'
+  where id = '20000000-0000-4000-8000-000000000001'::uuid;
+
+  if not found then
+    raise exception 'A0 SETUP FAIL: user A profile missing';
+  end if;
+
+  update public.profiles
+  set phone = null
+  where id = '20000000-0000-4000-8000-000000000002'::uuid;
+
+  if not found then
+    raise exception 'A0 SETUP FAIL: user B profile missing';
+  end if;
+end $$;
+
+-- =========================================================================
+-- A0.1: authenticated user without a phone inserts own listing → denied
+-- Must fail with SQLSTATE 42501 (insufficient_privilege / RLS denial).
+-- =========================================================================
+set local role authenticated;
+set local request.jwt.claims = '{"sub":"20000000-0000-4000-8000-000000000002","is_anonymous":false}';
+
+do $$
+declare
+  v_sqlstate text;
+  v_msg text;
+  v_uid uuid;
+  v_country text := current_setting('fox.country_b', true);
+begin
+  v_uid := auth.uid();
+
+  if v_uid is distinct from '20000000-0000-4000-8000-000000000002'::uuid then
+    raise exception 'A0.1 FAIL: unexpected auth.uid()=%', v_uid;
+  end if;
+
+  if v_country is null then
+    raise exception 'A0.1 FAIL: country_b not set';
+  end if;
+
+  begin
+    insert into public.listings (
+      user_id, title, description, price, country_code,
+      city, category_slug
+    ) values (
+      v_uid, 'A0.1 No Phone Insert', 'auth rls test', '1', v_country,
+      'Amman', 'cars'
+    );
+
+    raise exception 'A0.1 FAIL: insert without phone succeeded';
+  exception
+    when sqlstate '42501' then
+      raise notice 'PASS A0.1: insert without phone denied with SQLSTATE 42501 (RLS)';
+    when others then
+      get stacked diagnostics
+        v_sqlstate = returned_sqlstate,
+        v_msg = message_text;
+      raise exception 'A0.1 FAIL: unexpected sqlstate=% msg=%', v_sqlstate, v_msg;
+  end;
+end $$;
+
+reset role;
+reset request.jwt.claims;
+
+-- =========================================================================
 -- A1: authenticated user inserts own listing → succeeds
 -- Note: `status` is not in the INSERT grant (20261068) — rely on DEFAULT.
 -- =========================================================================
