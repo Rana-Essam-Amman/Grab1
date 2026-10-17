@@ -1,5 +1,5 @@
 import React from 'react';
-import { GoogleIcon, FacebookIcon, AppleIcon, WhatsAppIcon } from '../components/ProviderLogos';
+import { GoogleIcon, AppleIcon, WhatsAppIcon } from '../components/ProviderLogos';
 
 export interface ProviderButtonConfig {
   readonly providerId: string;
@@ -16,13 +16,6 @@ export function getLoginProviderButtons(isArabic: boolean): ProviderButtonConfig
       label: isArabic ? 'تابع باستخدام Google' : 'Continue with Google',
       icon: React.createElement(GoogleIcon),
       brandColor: '#EA4335',
-      comingSoon: false,
-    },
-    {
-      providerId: 'facebook',
-      label: isArabic ? 'تابع باستخدام Facebook' : 'Continue with Facebook',
-      icon: React.createElement(FacebookIcon),
-      brandColor: '#1877F2',
       comingSoon: false,
     },
     {
