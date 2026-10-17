@@ -30,17 +30,19 @@ export const test = base.extend<Fixtures>({
   },
 
   loggedInPage: async ({ page }, use) => {
-    await page.addInitScript(() => {
+    const fakeUser = {
+      id: 'e2e00000-0000-0000-0000-000000000002',
+      firstName: 'E2E',
+      lastName: 'LoggedIn',
+      email: 'loggedin@example.com',
+      phone: '0790000000',
+      countryCode: 'JO',
+    };
+    
+    await page.addInitScript((user) => {
       const fakeAuth = {
         state: {
-          user: {
-            id: 'e2e00000-0000-0000-0000-000000000002',
-            firstName: 'E2E',
-            lastName: 'LoggedIn',
-            email: 'loggedin@example.com',
-            phone: '0790000000',
-            countryCode: 'JO',
-          },
+          user,
           sessionToken: 'e2e-logged-in-token',
           authStatus: 'authenticated',
           isAnonymous: false,
@@ -48,13 +50,20 @@ export const test = base.extend<Fixtures>({
         version: 0,
       };
       localStorage.setItem('catch_auth', JSON.stringify(fakeAuth));
-      localStorage.setItem('catch_user', JSON.stringify(fakeAuth.state.user));
-      localStorage.setItem('catch_token', fakeAuth.state.sessionToken);
+      localStorage.setItem('catch_user', JSON.stringify(user));
+      localStorage.setItem('catch_token', 'e2e-logged-in-token');
       localStorage.setItem('catch_browse_country', 'JO');
-    });
+    }, fakeUser);
     
-    // ✅ إضافة الاعتراض عشان نمنع أخطاء 401
     await installChatMocks(page); 
+    
+    // ✅ اعتراض طلبات Auth عشان نرجع بيانات المستخدم بدل null
+    await page.route('**/auth/v1/user*', route => 
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(fakeUser) })
+    );
+    await page.route('**/auth/v1/token*', route => 
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ access_token: 'e2e-token', user: fakeUser }) })
+    );
     
     await page.goto('/');
     await page.waitForSelector('#root', { state: 'visible' });
