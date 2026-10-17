@@ -52,6 +52,10 @@ export const test = base.extend<Fixtures>({
       localStorage.setItem('catch_token', fakeAuth.state.sessionToken);
       localStorage.setItem('catch_browse_country', 'JO');
     });
+    
+    // ✅ إضافة الاعتراض عشان نمنع أخطاء 401
+    await installChatMocks(page); 
+    
     await page.goto('/');
     await page.waitForSelector('#root', { state: 'visible' });
     await use(page);
