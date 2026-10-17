@@ -47,7 +47,6 @@ const ListingDetailScreen = lazy(() => import('@/features/listings/screens/Listi
 const SellerProfileScreen = lazy(() => import('@/features/listings/screens/SellerProfileScreen').then((m) => ({ default: m.SellerProfileScreen })));
 const SearchResultsScreen = lazy(() => import('@/features/listings/screens/SearchResultsScreen').then((m) => ({ default: m.SearchResultsScreen })));
 const SettingsScreen = lazy(() => import('@/features/profile/screens/SettingsScreen').then((m) => ({ default: m.SettingsScreen })));
-const RegisterScreen = lazy(() => import('@/features/auth/screens/RegisterScreen').then((m) => ({ default: m.RegisterScreen })));
 const ConfirmScreen = lazy(() => import('@/features/auth/screens/ConfirmScreen').then((m) => ({ default: m.ConfirmScreen })));
 const TermsScreen = lazy(() => import('@/features/auth/screens/TermsScreen').then((m) => ({ default: m.TermsScreen })));
 const PricingScreen = lazy(() => import('@/features/pricing/screens/PricingScreen').then((m) => ({ default: m.PricingScreen })));
@@ -140,7 +139,7 @@ const MainNavigator: React.FC = () => {
       case 'search-results': return r('search-results', SearchResultsScreen);
       case 'settings': return r('settings', SettingsScreen);
       case 'admin': return r('admin', AdminScreen);
-      case 'register': return r('register', RegisterScreen);
+      case 'register': return <LoginScreen />;
       case 'confirm': return r('confirm', ConfirmScreen);
       case 'terms': return r('terms', TermsScreen);
       case 'pricing': return r('pricing', PricingScreen);
