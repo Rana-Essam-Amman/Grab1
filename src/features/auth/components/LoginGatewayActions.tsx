@@ -20,10 +20,14 @@ export const LoginGatewayActions: React.FC<LoginGatewayActionsProps> = ({
       >
         {isArabic ? 'تصفح كضيف' : 'Browse as Guest'}
       </button>
-      {/* Demo picker remains but is hidden behind existing logic */}
-      {false && (
-        <button onClick={onOpenDemoPicker} className="hidden">Demo</button>
-      )}
+      <button
+        type="button"
+        onClick={onOpenDemoPicker}
+        className="text-sm text-ink-muted hover:underline font-cairo"
+        data-testid="demo-login-btn"
+      >
+        {isArabic ? 'الدخول كحساب تجريبي' : 'Bypass with Quick Demo'}
+      </button>
     </div>
   );
 };
