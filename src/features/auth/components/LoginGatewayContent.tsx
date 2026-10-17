@@ -12,8 +12,6 @@ interface LoginGatewayContentProps {
   toast: string | null;
   loadingProvider: 'google' | 'facebook' | null;
   onProviderTap: (id: string) => void;
-  onGoToLogin: () => void;
-  onGoToRegister: () => void;
   onOpenDemoPicker: () => void;
   onToggleGuestCountrySelect: () => void;
 }
@@ -26,8 +24,6 @@ export const LoginGatewayContent: React.FC<LoginGatewayContentProps> = ({
   toast,
   loadingProvider,
   onProviderTap,
-  onGoToLogin,
-  onGoToRegister,
   onOpenDemoPicker,
   onToggleGuestCountrySelect,
 }) => (
@@ -52,13 +48,9 @@ export const LoginGatewayContent: React.FC<LoginGatewayContentProps> = ({
       {providers.map((provider) => (
         <AuthProviderButton
           key={provider.providerId}
-          providerId={provider.providerId}
-          label={provider.label}
-          icon={provider.icon}
+          provider={provider}
           isArabic={isArabic}
           onTap={onProviderTap}
-          brandColor={provider.brandColor}
-          comingSoon={provider.comingSoon}
         />
       ))}
       {isLoading && loadingProvider && (
@@ -79,8 +71,6 @@ export const LoginGatewayContent: React.FC<LoginGatewayContentProps> = ({
       )}
       <LoginGatewayActions
         isArabic={isArabic}
-        onGoToLogin={onGoToLogin}
-        onGoToRegister={onGoToRegister}
         onOpenDemoPicker={onOpenDemoPicker}
         onToggleGuestCountrySelect={onToggleGuestCountrySelect}
       />
