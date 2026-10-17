@@ -44,6 +44,7 @@ export function useGeoLocation(): void {
         // 🛡️ Race Condition Guard: Ignore IP result if user made a choice during fetch
         const latestStore = useUIStore.getState();
         if (latestStore.browseMarketOverride) return;
+        if (hasStoredCountry()) return; // ✅ السطر الجديد اللي اتضاف
 
         const code = (text || '').trim().toUpperCase();
         if (!isValidMarket(code)) return;
