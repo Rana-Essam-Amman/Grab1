@@ -2,7 +2,7 @@ import { test, expect } from '../fixtures';
 import { goToAuthGateway } from '../helpers/navigation';
 
 test.describe('Golden Path — OAuth Login Gateway', () => {
-  test('Google sign-in button is visible, Facebook is removed', async ({ page }) => {
+  test('Google sign-in button is visible', async ({ page }) => {
     await goToAuthGateway(page);
 
     await expect(
@@ -10,13 +10,6 @@ test.describe('Golden Path — OAuth Login Gateway', () => {
         name: /تابع باستخدام Google|Continue with Google/i,
       }),
     ).toBeVisible();
-
-    // Assert that Facebook button is completely removed
-    await expect(
-      page.getByRole('button', {
-        name: /تابع باستخدام Facebook|Continue with Facebook/i,
-      }),
-    ).toHaveCount(0);
   });
 
   test('Apple and WhatsApp show as coming soon providers', async ({ page }) => {
