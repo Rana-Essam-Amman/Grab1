@@ -41,10 +41,15 @@ export function useGeoLocation(): void {
     fetch(GEO_API_URL, { signal: controller.signal })
       .then((res) => (res.ok ? res.text() : Promise.reject(new Error('geo-fetch-failed'))))
       .then((text) => {
+        // 🛡️ Race Condition Guard: Ignore IP result if user made a choice during fetch
+        const latestStore = useUIStore.getState();
+        if (latestStore.browseMarketOverride) return;
+
         const code = (text || '').trim().toUpperCase();
         if (!isValidMarket(code)) return;
+        
         useUIStore.setState({ geoCountryCode: code });
-        useUIStore.getState().setBrowseLocation(code, '', '');
+        latestStore.setBrowseLocation(code, '', '');
       })
       .catch(() => {
         /* silent — default JO fallback stays */
