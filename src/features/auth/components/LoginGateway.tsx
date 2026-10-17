@@ -7,8 +7,6 @@ import { useFacebookSignIn } from '../hooks/useFacebookSignIn';
 
 interface LoginGatewayProps {
   isArabic: boolean;
-  onGoToLogin: () => void;
-  onGoToRegister: () => void;
   onOpenDemoPicker: () => void;
   onGuestCountrySelect: (code: string, cityEn: string, cityAr: string) => void;
   guestCountrySelectOpen: boolean;
@@ -53,7 +51,7 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
 
   const handleProviderTap = useCallback(
     (providerId: string) => {
-      if (isLoading) return; // Prevent overlapping OAuth attempts
+      if (isLoading) return;
 
       if (providerId === 'google') {
         clearFacebookError();
@@ -66,7 +64,6 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
         return;
       }
       
-      // Email branch removed. Everything else shows coming soon.
       setToast(isArabic ? 'هذه الميزة ستكون متاحة قريباً' : 'This feature is coming soon');
       if (toastTimer.current) clearTimeout(toastTimer.current);
       toastTimer.current = setTimeout(() => setToast(null), 2200);
