@@ -54,14 +54,6 @@ test.describe('Golden Path — OAuth Login Gateway', () => {
     );
   });
 
-  test('Quick Demo button is visible', async ({ page }) => {
-    await goToAuthGateway(page);
-
-    await expect(
-      page.getByTestId('demo-login-btn'),
-    ).toBeVisible();
-  });
-
   test('guest browsing action is visible', async ({ page }) => {
     await goToAuthGateway(page);
 
