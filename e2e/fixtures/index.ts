@@ -38,7 +38,6 @@ export const test = base.extend<Fixtures>({
   },
 
   chatReadyPage: async ({ page }, use) => {
-    // Seed an authenticated user with an id BEFORE the app boots.
     await page.addInitScript(() => {
       const fakeAuth = {
         state: {
@@ -52,15 +51,12 @@ export const test = base.extend<Fixtures>({
           },
           sessionToken: 'e2e-fake-token',
           authStatus: 'authenticated',
-          registeredUsers: [],
         },
         version: 0,
       };
       localStorage.setItem('catch_auth', JSON.stringify(fakeAuth));
     });
 
-    // installChatMocks also blocks /auth/v1/** so no SIGNED_IN overwrites
-    // the seeded user during boot.
     await installChatMocks(page);
     await page.goto('/');
     await page.waitForSelector('#root', { state: 'visible' });

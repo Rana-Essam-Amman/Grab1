@@ -21,16 +21,12 @@ describe('Real User Flow Integration Test Suite (Sprint T3 Ultra)', () => {
   beforeEach(() => {
     localStorage.clear();
 
-    // Reset Auth
     useAuthStore.setState({
       authStatus: 'unauthenticated',
       user: null,
       sessionToken: null,
-      registrationPendingUser: null,
-      registeredUsers: [],
     });
 
-    // Reset UI
     useUIStore.setState({
       locale: 'ar',
       isArabic: true,
@@ -53,7 +49,6 @@ describe('Real User Flow Integration Test Suite (Sprint T3 Ultra)', () => {
       isCountrySheetOpen: false,
     });
 
-    // Reset Listings
     useListingsStore.setState({
       listings: [],
       wishlist: [],
@@ -62,12 +57,10 @@ describe('Real User Flow Integration Test Suite (Sprint T3 Ultra)', () => {
       isQuotaExhausted: false,
     });
 
-    // Reset Chat
     useChatStore.setState({
       conversations: [],
     });
 
-    // Reset Draft
     useDraftStore.setState({
       postDraft: {
         categorySlug: 'motors',
@@ -86,14 +79,10 @@ describe('Real User Flow Integration Test Suite (Sprint T3 Ultra)', () => {
     expect(authState.authStatus).toBe('unauthenticated');
     expect(authState.user).toBeNull();
 
-    // Guest tries to navigate to post screen
     useUIStore.getState().navigateTo('post-category');
     expect(useUIStore.getState().currentScreen).toBe('post-category');
 
-    // Trying to save a listing with missing activeCountry or unverified session throws
     expect(() => {
-      // Intentional invalid input — empty countryCode + empty activeCountry 
-      // must throw "Market Isolation Violation". Cast to never for this test.
       useListingsStore.getState().addListing(createMockListing({ countryCode: '' as never }), '');
     }).toThrow(/Market Isolation Violation/i);
   });
@@ -112,17 +101,14 @@ describe('Real User Flow Integration Test Suite (Sprint T3 Ultra)', () => {
   });
 
   it('Flow 3: Authenticated user browses freely across markets', () => {
-    // New design: browse is free across markets for authenticated users.
     useAuthStore.setState({
       authStatus: 'authenticated',
       user: createMockUser({ countryCode: 'JO' }),
       sessionToken: 'valid-session-jwt',
     });
 
-    // Try switching to Saudi Arabia
     useUIStore.getState().setBrowseLocation('SA', 'Riyadh', 'الرياض');
 
-    // Reflects last explicit setBrowseLocation
     const uiState = useUIStore.getState();
     expect(uiState.browseCountryCode).toBe('SA');
     expect(uiState.activeCurrency).toBe('SAR');
@@ -174,19 +160,15 @@ describe('Real User Flow Integration Test Suite (Sprint T3 Ultra)', () => {
   it('Flow 6: Wishlist isolation persists separately per regional country market', () => {
     const { toggleWishlist, setWishlistForCountry } = useListingsStore.getState();
 
-    // Add item to JO wishlist
     toggleWishlist('jo-item-1', 'JO');
     expect(useListingsStore.getState().wishlist).toContain('jo-item-1');
 
-    // Switch to SA wishlist
     setWishlistForCountry('SA');
     expect(useListingsStore.getState().activeWishlistCountry).toBe('SA');
 
-    // Add item to SA wishlist
     toggleWishlist('sa-item-1', 'SA');
     expect(useListingsStore.getState().wishlist).toContain('sa-item-1');
 
-    // Switch back to JO
     setWishlistForCountry('JO');
     expect(useListingsStore.getState().wishlist).toContain('jo-item-1');
     expect(useListingsStore.getState().wishlist).not.toContain('sa-item-1');
@@ -202,12 +184,10 @@ describe('Real User Flow Integration Test Suite (Sprint T3 Ultra)', () => {
     useListingsStore.getState().addListing(createMockListing({ id: 'persisted-1' }), 'JO');
     expect(useListingsStore.getState().listings).toHaveLength(1);
 
-    // Logout
     useAuthStore.getState().logout();
     expect(useAuthStore.getState().authStatus).toBe('unauthenticated');
     expect(useAuthStore.getState().user).toBeNull();
 
-    // Listings still exist
     expect(useListingsStore.getState().listings).toHaveLength(1);
     expect(useListingsStore.getState().listings[0].id).toBe('persisted-1');
   });
@@ -217,13 +197,11 @@ describe('Real User Flow Integration Test Suite (Sprint T3 Ultra)', () => {
     expect(useUIStore.getState().browseCountryCode).toBe('SA');
     expect(useUIStore.getState().activeCurrency).toBe('SAR');
 
-    // Switch locale to English
     useUIStore.getState().setLocale('en');
     expect(useUIStore.getState().locale).toBe('en');
     expect(useUIStore.getState().browseCountryCode).toBe('SA');
     expect(useUIStore.getState().activeCurrency).toBe('SAR');
 
-    // Switch back to Arabic
     useUIStore.getState().setLocale('ar');
     expect(useUIStore.getState().locale).toBe('ar');
     expect(useUIStore.getState().browseCountryCode).toBe('SA');
@@ -236,7 +214,6 @@ describe('Real User Flow Integration Test Suite (Sprint T3 Ultra)', () => {
 
     expect(useListingsStore.getState().wishlist).toContain('target-listing');
 
-    // Delete listing
     await useListingsStore.getState().deleteListing('target-listing');
 
     expect(useListingsStore.getState().listings.find((l) => l.id === 'target-listing')).toBeUndefined();
@@ -246,7 +223,6 @@ describe('Real User Flow Integration Test Suite (Sprint T3 Ultra)', () => {
   it('Flow 10: Quota limits are enforced based on category and country matrix', () => {
     const userId = 'quota-tester';
 
-    // Add 3 motors listings (the free limit for motors is 3)
     useListingsStore.getState().addListing(
       createMockListing({ id: 'm1', sellerPhone: userId, countryCode: 'JO', categorySlug: 'motors' }),
       'JO'
@@ -264,7 +240,6 @@ describe('Real User Flow Integration Test Suite (Sprint T3 Ultra)', () => {
     expect(isAvailable).toBe(false);
     expect(useListingsStore.getState().isQuotaExhausted).toBe(true);
 
-    // Electronics category has limit of 10 -> still available
     const isElecAvailable = useListingsStore.getState().validateAdQuotaAvailability('electronics', userId, 'JO', false);
     expect(isElecAvailable).toBe(true);
   });
@@ -276,7 +251,6 @@ describe('Real User Flow Integration Test Suite (Sprint T3 Ultra)', () => {
       neighborhood: 'Dabouq',
     });
 
-    // Navigate to multiple screens
     useUIStore.getState().navigateTo('settings');
     useUIStore.getState().navigateTo('wishlist');
     useUIStore.getState().navigateTo('main');

@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { AuthState } from './auth.slice.types';
-import { getInitialSession, getInitialRegisteredUsers } from './auth.slice.helpers';
+import { getInitialSession } from './auth.slice.helpers';
 import { createAuthActions } from './auth.slice.actions';
 import { fetchOwnProfile } from '@/shared/lib/profilesFetchService';
 
@@ -10,7 +10,6 @@ export const useAuthStore = create<AuthState>()(
   persist(
     immer((set, get) => {
       const initialSession = getInitialSession();
-      const initialUsers = getInitialRegisteredUsers();
 
       return {
         authStatus: initialSession.authStatus,
@@ -19,14 +18,6 @@ export const useAuthStore = create<AuthState>()(
         user: initialSession.user,
         sessionToken: initialSession.sessionToken,
         feedLayout: 'list',
-        registrationPendingUser: null,
-        registeredUsers: initialUsers,
-
-        beginRegistration: (userData) => {
-          set((state) => {
-            state.registrationPendingUser = userData;
-          });
-        },
 
         updateUser: (updates) => {
           set((state) => {
@@ -57,9 +48,7 @@ export const useAuthStore = create<AuthState>()(
         },
 
         ...createAuthActions(
-          // Necessary: bypass zustand's internal typing
           set as unknown as (fn: (state: AuthState) => void) => void,
-          // Necessary: bypass zustand's internal typing
           get as unknown as () => AuthState
         ),
       };
@@ -71,16 +60,11 @@ export const useAuthStore = create<AuthState>()(
         sessionToken: state.sessionToken,
         feedLayout: state.feedLayout,
         authStatus: state.authStatus,
-        registeredUsers: state.registeredUsers,
       }),
     }
   )
 );
 
-/**
- * Hydrate local state with phone/nickname/preferences after sign-in.
- * Skips phone on RPC failure. Idempotent. profileHydrated set in finally.
- */
 export async function hydrateProfile(): Promise<void> {
   try {
     const current = useAuthStore.getState().user;

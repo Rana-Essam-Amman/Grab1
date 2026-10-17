@@ -1,5 +1,5 @@
 import { useAuthStore } from '@/features/auth/store/auth.slice';
-import { UserProfile, RegisteredAccount } from '../types';
+import { UserProfile } from '../types';
 
 export interface AuthContextType {
   authStatus: 'initializing' | 'authenticated' | 'unauthenticated';
@@ -7,14 +7,9 @@ export interface AuthContextType {
   user: UserProfile | null;
   registered: boolean;
   sessionToken: string | null;
-  registrationPendingUser: Partial<UserProfile> | null;
-  registeredUsers: RegisteredAccount[];
-  beginRegistration: (userData: Partial<UserProfile>) => void;
-  confirmRegistration: (fallbackCountryCode?: string) => void;
   logout: () => void;
   loginDirectly: (email: string, phone?: string, countryCode?: string, firstName?: string) => void;
   verifySession: () => Promise<boolean>;
-  registerNewUser: (userData: RegisteredAccount) => void;
   updateUser: (updates: Partial<UserProfile>) => void;
   updateAvatar: (dataUrl: string | null) => void;
   feedLayout: 'list' | 'grid';
@@ -31,14 +26,9 @@ export const useAuth = (): AuthContextType => {
     user: store.user,
     registered,
     sessionToken: store.sessionToken,
-    registrationPendingUser: store.registrationPendingUser,
-    registeredUsers: store.registeredUsers,
-    beginRegistration: store.beginRegistration,
-    confirmRegistration: store.confirmRegistration,
     logout: store.logout,
     loginDirectly: store.loginDirectly,
     verifySession: store.verifySession,
-    registerNewUser: store.registerNewUser,
     updateUser: store.updateUser,
     updateAvatar: store.updateAvatar,
     feedLayout: store.feedLayout,
@@ -52,4 +42,3 @@ export const useUser = () => {
 
   return { user, authStatus };
 };
-

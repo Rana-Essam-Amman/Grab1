@@ -10,17 +10,6 @@ export const SELECTORS = {
       haveAccountBtn: 'button:has-text("Sign In"), button:has-text("دخول")',
       quickDemoBtn: 'button:has-text("Quick Demo")',
     },
-    register: {
-      firstNameInput: 'input[placeholder*="First Name"], input[placeholder*="الأول"]',
-      phoneInput: 'input[placeholder="07xxxxxxxx"]',
-      emailInput: 'input[type="email"]',
-      passwordInput: 'input[type="password"]',
-      countrySelector: 'select',
-      submitButton: 'button[type="submit"]',
-      errorBanner: '[data-testid="register-error-banner"]',
-      step2Header: 'h2:has-text("Check your Email"), h2:has-text("تحقق من بريدك")',
-      activateBtn: 'button:has-text("Verify Link & Activate Account"), button:has-text("تأكيد الرابط وتفعيل الحساب الآن")',
-    },
   },
   postAd: {
     fabButton: 'button[aria-label="Post ad"], button[aria-label="أضف إعلان"]',

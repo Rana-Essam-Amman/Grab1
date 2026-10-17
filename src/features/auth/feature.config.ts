@@ -8,11 +8,6 @@ export default defineFeature({
       component: () => import('./screens/LoginScreen').then((m) => ({ default: m.LoginScreen })),
       guard: 'guest',
     },
-    'confirm': {
-      name: 'confirm',
-      component: () => import('./screens/ConfirmScreen').then((m) => ({ default: m.ConfirmScreen })),
-      guard: 'guest',
-    },
     'terms': {
       name: 'terms',
       component: () => import('./screens/TermsScreen').then((m) => ({ default: m.TermsScreen })),

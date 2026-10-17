@@ -1,7 +1,6 @@
 import type { Page, Route } from '@playwright/test';
 
 const SEEDED_EMAIL = 'demo@example.com';
-const SEEDED_PASSWORD = 'password123';
 const SEEDED_USER_ID = 'e2e-login-user';
 const ACCESS_TOKEN = 'e2e-access-token';
 const REFRESH_TOKEN = 'e2e-refresh-token';
@@ -51,7 +50,6 @@ export async function installLoginMocks(page: Page): Promise<void> {
       let body: Record<string, unknown> = {};
       try {
         const raw = req.postData() || '{}';
-        // Supabase sends JSON, but may also send form-encoded
         if (raw.startsWith('{')) {
           body = JSON.parse(raw);
         } else {
@@ -63,39 +61,7 @@ export async function installLoginMocks(page: Page): Promise<void> {
 
       const grant = readGrant(body, url);
 
-      if (grant === 'password' || (grant === null && body.email !== undefined)) {
-        const email = typeof body.email === 'string' ? body.email : '';
-        const password = typeof body.password === 'string' ? body.password : '';
-
-        if (email === SEEDED_EMAIL && password === SEEDED_PASSWORD) {
-          return route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify(sessionResponse()),
-          });
-        }
-
-        return route.fulfill({
-          status: 400,
-          contentType: 'application/json',
-          body: JSON.stringify({
-            error: 'invalid_grant',
-            error_description: 'Invalid login credentials',
-            error_code: 'invalid_credentials',
-          }),
-        });
-      }
-
       if (grant === 'refresh_token') {
-        return route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(sessionResponse()),
-        });
-      }
-
-      // Fallback: treat unknown POST /token as password attempt
-      if (body.email !== undefined || grant === null) {
         return route.fulfill({
           status: 200,
           contentType: 'application/json',
