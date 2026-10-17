@@ -8,7 +8,7 @@ Rule 14 Limit: Max 100 lines.
 - Return a strongly typed return object.
 
 ## Skeleton Template
-\`\`\`ts
+```ts
 import { useState, useCallback } from 'react';
 import { useUI } from '@/hooks/useUI';
 
@@ -34,7 +34,3 @@ export const useMyFeature = (): UseMyFeatureReturn => {
     isArabic,
   };
 };
-\`\`\`
-
-## Reference
-- See `src/features/auth/hooks/useDemoAuth.ts`.
