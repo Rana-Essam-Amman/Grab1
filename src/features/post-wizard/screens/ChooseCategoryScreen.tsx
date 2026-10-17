@@ -12,10 +12,10 @@ import { ArrowLeft, ArrowRight } from 'iconsax-react';
 export const ChooseCategoryScreen: React.FC = () => {
   const { isArabic, goBack, navigateTo } = useUI();
   const { updatePostDraft } = usePostWizard();
-  const { authStatus } = useAuth();
+  const { authStatus, isAnonymous } = useAuth(); // ✅ أضفنا isAnonymous
   const [query, setQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  
+
   const isSearching = query.trim().length > 0;
   const matches = useMemo(() => (isSearching ? searchCategories(query) : []), [query, isSearching]);
   const noMatch = isSearching && matches.length === 0;
@@ -23,10 +23,10 @@ export const ChooseCategoryScreen: React.FC = () => {
 
   // Protect listing creation with a session guard redirect
   useEffect(() => {
-    if (authStatus === 'unauthenticated') {
+    if (authStatus === 'unauthenticated' || isAnonymous) { // ✅ أضفنا الشرط
       navigateTo('login');
     }
-  }, [authStatus, navigateTo]);
+  }, [authStatus, isAnonymous, navigateTo]);
 
   const handleCategorySelect = useCallback(
     (categorySlug: string) => {
@@ -34,7 +34,6 @@ export const ChooseCategoryScreen: React.FC = () => {
         setSelectedCategory(null);
       } else {
         setSelectedCategory(categorySlug);
-        // Clear query when expanding a category to show its full subcategories
         if (isSearching) setQuery('');
       }
     },
@@ -43,7 +42,7 @@ export const ChooseCategoryScreen: React.FC = () => {
 
   const handleSubcategorySelect = useCallback(
     (categorySlug: string, subcategorySlug: string) => {
-      updatePostDraft({ 
+      updatePostDraft({
         categorySlug,
         subcategorySlug,
       });
@@ -57,7 +56,7 @@ export const ChooseCategoryScreen: React.FC = () => {
       'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60"><rect width="60" height="60" fill="%23E5E7EB"/></svg>';
   }, []);
 
-  if (authStatus === 'unauthenticated') {
+  if (authStatus === 'unauthenticated' || isAnonymous) { // ✅ أضفنا الشرط
     return null; // completely block render during redirection
   }
 
@@ -79,7 +78,7 @@ export const ChooseCategoryScreen: React.FC = () => {
             {isArabic ? <ArrowRight size={20} /> : <ArrowLeft size={20} />}
             <span>{isArabic ? 'العودة للأقسام' : 'Back to categories'}</span>
           </button>
-          
+
           <div className="bg-surface rounded-3xl border border-line overflow-hidden">
             <div className="p-4 bg-canvas/30 border-b border-line flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-surface border border-line flex items-center justify-center overflow-hidden">
@@ -87,7 +86,7 @@ export const ChooseCategoryScreen: React.FC = () => {
               </div>
               <span className="font-bold text-ink">{isArabic ? categories.find(c => c.slug === selectedCategory)?.nameAr : categories.find(c => c.slug === selectedCategory)?.nameEn}</span>
             </div>
-            
+
             <div className="divide-y divide-line">
               {subcategories.map(sub => (
                 <button
