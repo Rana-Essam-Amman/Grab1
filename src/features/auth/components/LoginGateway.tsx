@@ -55,6 +55,8 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
 
   const handleProviderTap = useCallback(
     (providerId: string) => {
+      if (isLoading) return; // Prevent overlapping OAuth attempts
+
       if (providerId === 'google') {
         clearFacebookError();
         void signInWithGoogle();
@@ -73,7 +75,15 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
       if (toastTimer.current) clearTimeout(toastTimer.current);
       toastTimer.current = setTimeout(() => setToast(null), 2200);
     },
-    [isArabic, onGoToLogin, signInWithFacebook, signInWithGoogle, clearFacebookError, clearGoogleError],
+    [
+      isArabic,
+      isLoading,
+      onGoToLogin,
+      signInWithFacebook,
+      signInWithGoogle,
+      clearFacebookError,
+      clearGoogleError,
+    ],
   );
 
   if (guestCountrySelectOpen) {
