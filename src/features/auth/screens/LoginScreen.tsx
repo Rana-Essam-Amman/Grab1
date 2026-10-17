@@ -5,23 +5,27 @@ import { DemoCountryPicker } from '../components/DemoCountryPicker';
 import { AuthTopBar } from '../components/AuthTopBar';
 import { AuthToastBanner } from '../components/AuthToastBanner';
 import { LoginScreenBody } from '../components/LoginScreenBody';
+import type { MarketCode } from '@/shared/lib/marketGate';
 
 export interface LoginScreenProps {
   initialStep?: 'gateway' | 'login' | 'reg-step1' | 'reg-step2'; // Kept for backward compatibility
 }
 
 export const LoginScreen: React.FC<LoginScreenProps> = () => {
-  const { isArabic, goBack, setLocale, handleSelectBrowseCountry: onSelectMarket } = useUI();
-  const { loginDirectly } = useDemoAuth();
+  const { isArabic, goBack, setLocale, setBrowseLocation } = useUI();
+  const { handleQuickDemoAuth: runQuickDemoAuth } = useDemoAuth();
   
   const [guestCountrySelect, setGuestCountrySelect] = useState(false);
   const [toastMsg, setToastMsg] = useState('');
   const [demoCountryPickerOpen, setDemoCountryPickerOpen] = useState(false);
 
-  const handleQuickDemoAuth = useCallback(async (code: string) => {
-    setDemoCountryPickerOpen(false);
-    await loginDirectly(code);
-  }, [loginDirectly]);
+  const handleQuickDemoAuth = useCallback(
+    (code: MarketCode) => {
+      setDemoCountryPickerOpen(false);
+      runQuickDemoAuth(code);
+    },
+    [runQuickDemoAuth],
+  );
 
   const handleBack = useCallback(() => {
     setToastMsg('');
@@ -30,10 +34,13 @@ export const LoginScreen: React.FC<LoginScreenProps> = () => {
 
   const handleClearToast = useCallback(() => setToastMsg(''), []);
 
-  const handleSelectBrowseCountry = useCallback((code: any) => {
-    setGuestCountrySelect(false);
-    onSelectMarket(code);
-  }, [onSelectMarket]);
+  const handleSelectBrowseCountry = useCallback(
+    (code: MarketCode) => {
+      setGuestCountrySelect(false);
+      setBrowseLocation(code, '', '');
+    },
+    [setBrowseLocation],
+  );
 
   const handleGuestCountryOpen = useCallback(() => {
     setGuestCountrySelect(true);
@@ -65,7 +72,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = () => {
 
       {demoCountryPickerOpen && (
         <DemoCountryPicker
-          isOpen={demoCountryPickerOpen}
+          open={demoCountryPickerOpen}
           onClose={() => setDemoCountryPickerOpen(false)}
           onSelect={(code) => handleQuickDemoAuth(code)}
           isArabic={isArabic}
