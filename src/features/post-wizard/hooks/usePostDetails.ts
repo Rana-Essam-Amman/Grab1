@@ -74,6 +74,12 @@ export function usePostDetails() {
     try {
       const result = await publishListing(prepared.newListing, prepared.targetMarket, isArabic);
       if (!result.success) {
+        // 42501 → RLS: user has no phone. Redirect to Profile to add one.
+        if (result.error?.toLowerCase().includes('row-level security')) {
+          setError(isArabic ? 'يجب إضافة رقم هاتف أولاً' : 'Phone required');
+          navigateTo('profile');
+          return;
+        }
         setError(result.error || 'فشل نشر الإعلان');
         return;
       }
