@@ -10,7 +10,7 @@ interface LoginGatewayContentProps {
   isLoading: boolean;
   error: string | null;
   toast: string | null;
-  loadingProvider: 'google' | 'facebook' | null;
+  loadingProvider: 'google' | null;
   onProviderTap: (id: string) => void;
   onOpenDemoPicker: () => void;
   onToggleGuestCountrySelect: () => void;
@@ -56,12 +56,8 @@ export const LoginGatewayContent: React.FC<LoginGatewayContentProps> = ({
       {isLoading && loadingProvider && (
         <p className="text-xs text-ink-muted">
           {isArabic
-            ? (loadingProvider === 'google'
-                ? 'جاري التحويل إلى Google...'
-                : 'جاري التحويل إلى Facebook...')
-            : (loadingProvider === 'google'
-                ? 'Redirecting to Google...'
-                : 'Redirecting to Facebook...')}
+            ? 'جاري التحويل إلى Google...'
+            : 'Redirecting to Google...'}
         </p>
       )}
       {error && (
