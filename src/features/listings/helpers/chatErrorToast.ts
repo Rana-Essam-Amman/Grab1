@@ -13,12 +13,6 @@ export function showChatUnavailable(isArabic: boolean): void {
   );
 }
 
-export function showChatSignInRequired(isArabic: boolean): void {
-  toast.error(
-    isArabic ? 'يرجى تسجيل الدخول لبدء الدردشة' : 'Please sign in to start a chat',
-  );
-}
-
 export function showChatOpenFailed(isArabic: boolean): void {
   toast.error(
     isArabic ? 'تعذر فتح الدردشة — حاول مرة أخرى' : 'Could not open chat — please retry',
