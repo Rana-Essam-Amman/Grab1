@@ -41,7 +41,7 @@ export const createAuthActions = (set: SetState, get: GetState) => ({
       state.user = newUser;
       state.sessionToken = token;
       state.authStatus = 'authenticated';
-      state.isAnonymous = true; // ✅ السطر الجديد: إجبار النظام على معرفة أنه زائر
+      state.isAnonymous = firstName === 'Guest'; // ✅ الحل الجراحي: الزائر فقط هو Anonymous
     });
   },
 
