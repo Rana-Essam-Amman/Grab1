@@ -58,10 +58,8 @@ export async function performQuickDemoLogin(page: Page): Promise<void> {
   await expect(settingsCta).toBeVisible({ timeout: 5000 });
   await settingsCta.click();
 
-  const bypassBtn = page
-    .locator('button')
-    .filter({ hasText: /الدخول كحساب تجريبي|Bypass with Quick Demo/i })
-    .first();
+  // التعديل هنا: استخدام data-testid بدلاً من النص
+  const bypassBtn = page.getByTestId('demo-login-btn');
   await expect(bypassBtn).toBeVisible({ timeout: 5000 });
   await bypassBtn.click();
 
