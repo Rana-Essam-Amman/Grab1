@@ -3,6 +3,7 @@ import { GuestCountrySelect } from './GuestCountrySelect';
 import { LoginGatewayContent } from './LoginGatewayContent';
 import { getLoginProviderButtons } from '../helpers/providerButtonConfig';
 import { useGoogleSignIn } from '../hooks/useGoogleSignIn';
+import { useFacebookSignIn } from '../hooks/useFacebookSignIn';
 
 interface LoginGatewayProps {
   isArabic: boolean;
@@ -25,7 +26,18 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
 }) => {
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const { isLoading, error, signIn } = useGoogleSignIn();
+  const {
+    isLoading: isGoogleLoading,
+    error: googleError,
+    signIn: signInWithGoogle,
+  } = useGoogleSignIn();
+  const {
+    isLoading: isFacebookLoading,
+    error: facebookError,
+    signIn: signInWithFacebook,
+  } = useFacebookSignIn();
+  const isLoading = isGoogleLoading || isFacebookLoading;
+  const error = facebookError || googleError;
   const providers = getLoginProviderButtons(isArabic);
 
   useEffect(() => {
@@ -37,7 +49,11 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
   const handleProviderTap = useCallback(
     (providerId: string) => {
       if (providerId === 'google') {
-        void signIn();
+        void signInWithGoogle();
+        return;
+      }
+      if (providerId === 'facebook') {
+        void signInWithFacebook();
         return;
       }
       if (providerId === 'email') {
@@ -48,7 +64,7 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
       if (toastTimer.current) clearTimeout(toastTimer.current);
       toastTimer.current = setTimeout(() => setToast(null), 2200);
     },
-    [isArabic, onGoToLogin, signIn],
+    [isArabic, onGoToLogin, signInWithFacebook, signInWithGoogle],
   );
 
   if (guestCountrySelectOpen) {
