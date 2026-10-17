@@ -51,3 +51,15 @@ export async function recordPayment(params: PaymentParams) {
     p_currency: params.currency,
   });
 }
+
+// --- NEW PHONE REQUESTS RPCs ---
+
+export async function listPendingPhoneRequests() {
+  return supabase.rpc('admin_list_phone_change_requests');
+}
+
+export async function approvePhoneChangeRequest(requestId: string) {
+  return supabase.rpc('admin_approve_phone_change', {
+    p_request_id: requestId,
+  });
+}
