@@ -12,7 +12,6 @@ interface LoginGatewayContentProps {
   toast: string | null;
   loadingProvider: 'google' | null;
   onProviderTap: (id: string) => void;
-  onOpenDemoPicker: () => void;
   onToggleGuestCountrySelect: () => void;
 }
 
@@ -24,7 +23,6 @@ export const LoginGatewayContent: React.FC<LoginGatewayContentProps> = ({
   toast,
   loadingProvider,
   onProviderTap,
-  onOpenDemoPicker,
   onToggleGuestCountrySelect,
 }) => (
   <div
@@ -67,7 +65,6 @@ export const LoginGatewayContent: React.FC<LoginGatewayContentProps> = ({
       )}
       <LoginGatewayActions
         isArabic={isArabic}
-        onOpenDemoPicker={onOpenDemoPicker}
         onToggleGuestCountrySelect={onToggleGuestCountrySelect}
       />
       <LoginTermsFooter isArabic={isArabic} />
