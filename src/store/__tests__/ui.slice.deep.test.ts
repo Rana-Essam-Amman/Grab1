@@ -10,8 +10,6 @@ describe('useUIStore - Deep Edge Cases & Verification (Sprint T3 Ultra)', () => 
       authStatus: 'unauthenticated',
       user: null,
       sessionToken: null,
-      registrationPendingUser: null,
-      registeredUsers: [],
     });
 
     useUIStore.setState({
@@ -120,7 +118,6 @@ describe('useUIStore - Deep Edge Cases & Verification (Sprint T3 Ultra)', () => 
 
   describe('Market Lock & Browse Location Hardening', () => {
     it('guest can keep browse SY after sign-in if they set it before', () => {
-      // New design: browse is free. Sign-in does not override browse.
       useUIStore.getState().setBrowseLocation('SY', 'Damascus', 'دمشق');
       expect(useUIStore.getState().browseCountryCode).toBe('SY');
 
@@ -143,7 +140,6 @@ describe('useUIStore - Deep Edge Cases & Verification (Sprint T3 Ultra)', () => 
     });
 
     it('authenticated user can switch to LB for browsing', () => {
-      // New design: browse is free. Authenticated user can switch to LB for browsing.
       useAuthStore.setState({
         authStatus: 'authenticated',
         user: {
@@ -256,13 +252,11 @@ describe('useUIStore - Deep Edge Cases & Verification (Sprint T3 Ultra)', () => 
       setActiveCurrency('USD');
       expect(useUIStore.getState().activeCurrency).toBe('USD');
 
-      // Switch to JO where USD is not primary allowed currency -> sanitizes to JOD
       setBrowseLocation('JO', 'Amman', 'عمّان');
       expect(useUIStore.getState().activeCurrency).toBe('JOD');
     });
 
     it('setActiveCurrency falls back to browse market\'s currency', () => {
-      // New design: browse is free. Fallback uses browse country, not user home country.
       useUIStore.getState().setBrowseLocation('SY', 'Damascus', 'دمشق');
 
       useAuthStore.setState({
@@ -402,7 +396,6 @@ describe('useUIStore - Deep Edge Cases & Verification (Sprint T3 Ultra)', () => 
       setIsAiFocused(false);
       expect(useUIStore.getState().isAiFocused).toBe(false);
 
-      // 5 continuous cycles
       for (let i = 0; i < 5; i++) {
         setIsAiFocused(true);
         expect(useUIStore.getState().isAiFocused).toBe(true);
@@ -443,7 +436,6 @@ describe('useUIStore - Deep Edge Cases & Verification (Sprint T3 Ultra)', () => 
       expect(document.documentElement.dir).toBe('ltr');
       expect(document.documentElement.lang).toBe('en');
 
-      // Test undefined state branch safely
       onRehydrate?.(undefined, undefined);
     });
 
@@ -454,23 +446,19 @@ describe('useUIStore - Deep Edge Cases & Verification (Sprint T3 Ultra)', () => 
       localStorage.clear();
       expect(await storage.getItem('catch_locale')).toBeNull();
 
-      // Legacy plain 'en'
       localStorage.setItem('catch_locale', 'en');
       const enResult: any = await storage.getItem('catch_locale');
       expect(enResult?.state?.locale).toBe('en');
 
-      // Legacy plain 'ar'
       localStorage.setItem('catch_locale', 'ar');
       const arResult: any = await storage.getItem('catch_locale');
       expect(arResult?.state?.locale).toBe('ar');
 
-      // Standard JSON
       const standardJson = JSON.stringify({ state: { locale: 'ar' }, version: 0 });
       localStorage.setItem('catch_locale', standardJson);
       const standardResult: any = await storage.getItem('catch_locale');
       expect(standardResult?.state?.locale).toBe('ar');
 
-      // Corrupted non-JSON string
       localStorage.setItem('catch_locale', '{broken_json:');
       expect(await storage.getItem('catch_locale')).toBeNull();
     });
@@ -479,11 +467,9 @@ describe('useUIStore - Deep Edge Cases & Verification (Sprint T3 Ultra)', () => 
       const storage = useUIStore.persist.getOptions().storage;
       if (!storage) throw new Error('Storage not defined');
 
-      // Structured with state.locale
       await storage.setItem('catch_locale', { state: { locale: 'en' }, version: 0 } as any);
       expect(localStorage.getItem('catch_locale')).toBe('en');
 
-      // Removal
       await storage.removeItem('catch_locale');
       expect(localStorage.getItem('catch_locale')).toBeNull();
     });
