@@ -5,14 +5,12 @@ interface AuthProviderButtonProps {
   provider: ProviderButtonConfig;
   isArabic: boolean;
   onTap: (id: string) => void;
-  isLoading?: boolean;
 }
 
 export const AuthProviderButton: React.FC<AuthProviderButtonProps> = ({
   provider,
   isArabic,
   onTap,
-  isLoading,
 }) => {
   const { providerId, label, icon, comingSoon } = provider;
 
