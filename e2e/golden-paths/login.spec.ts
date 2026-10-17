@@ -28,7 +28,8 @@ test.describe('Golden Path — OAuth Login Gateway', () => {
     await expect(appleButton).toBeVisible();
     await expect(appleButton).toContainText(/قريباً جداً|Coming soon/i);
 
-    await appleButton.click();
+    // Use force: true because the button has aria-disabled="true"
+    await appleButton.click({ force: true });
 
     await expect(page.getByRole('status')).toContainText(
       /هذه الميزة ستكون متاحة قريباً|This feature is coming soon/i,
@@ -45,7 +46,8 @@ test.describe('Golden Path — OAuth Login Gateway', () => {
     await expect(whatsappButton).toBeVisible();
     await expect(whatsappButton).toContainText(/قريباً جداً|Coming soon/i);
 
-    await whatsappButton.click();
+    // Use force: true because the button has aria-disabled="true"
+    await whatsappButton.click({ force: true });
 
     await expect(page.getByRole('status')).toContainText(
       /هذه الميزة ستكون متاحة قريباً|This feature is coming soon/i,
