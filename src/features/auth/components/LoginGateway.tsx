@@ -7,7 +7,6 @@ import { useComingSoonToast } from '../hooks/useComingSoonToast';
 
 interface LoginGatewayProps {
   isArabic: boolean;
-  onOpenDemoPicker: () => void;
   onGuestCountrySelect: (code: string, cityEn: string, cityAr: string) => void;
   guestCountrySelectOpen: boolean;
   onToggleGuestCountrySelect: () => void;
@@ -15,14 +14,13 @@ interface LoginGatewayProps {
 
 export const LoginGateway: React.FC<LoginGatewayProps> = ({
   isArabic,
-  onOpenDemoPicker,
   onGuestCountrySelect,
   guestCountrySelectOpen,
   onToggleGuestCountrySelect,
 }) => {
   const { toast, showToast } = useComingSoonToast(isArabic);
   const google = useGoogleSignIn();
-  
+
   const isLoading = google.isLoading;
   const error = google.error;
   const loadingProvider = google.isLoading ? 'google' : null;
@@ -62,7 +60,6 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
       loadingProvider={loadingProvider}
       toast={toast}
       onProviderTap={handleProviderTap}
-      onOpenDemoPicker={onOpenDemoPicker}
       onToggleGuestCountrySelect={onToggleGuestCountrySelect}
     />
   );
