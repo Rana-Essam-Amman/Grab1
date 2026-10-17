@@ -12,13 +12,6 @@ export const AUTH_PROVIDERS: readonly AuthProviderDef[] = [
     platforms: ALL_PLATFORMS,
   },
   {
-    id: 'facebook',
-    labelAr: 'تابع باستخدام Facebook',
-    labelEn: 'Continue with Facebook',
-    status: 'coming_soon',
-    platforms: ALL_PLATFORMS,
-  },
-  {
     id: 'apple',
     labelAr: 'تابع باستخدام Apple',
     labelEn: 'Continue with Apple',
