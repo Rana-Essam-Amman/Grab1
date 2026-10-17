@@ -1,6 +1,5 @@
 export type AuthProviderId =
   | 'google'
-  | 'facebook'
   | 'apple'
   | 'email'
   | 'biometrics'
