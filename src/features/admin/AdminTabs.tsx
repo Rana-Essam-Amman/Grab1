@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import * as rpc from './adminRpc';
 import type { MarketCode } from './adminRpc';
+import { PhoneRequestsTab } from './PhoneRequestsTab';
 
-type Tab = 'reports' | 'listings' | 'users' | 'revenue';
+type Tab = 'reports' | 'listings' | 'users' | 'revenue' | 'phoneRequests';
 
 export const AdminTabs: React.FC<{ market: MarketCode; actions: any; actionLoading: boolean }> = ({ market, actions, actionLoading }) => {
   const [tab, setTab] = useState<Tab>('reports');
@@ -11,6 +12,7 @@ export const AdminTabs: React.FC<{ market: MarketCode; actions: any; actionLoadi
   const [payForm, setPayForm] = useState({ userId: '', listingId: '', product: 'featured' as any, amount: '', currency: 'JOD' });
 
   const loadTab = useCallback(async () => {
+    if (tab === 'phoneRequests') return; // Let the child component handle its own loading
     setLoading(true);
     let res: any;
     if (tab === 'reports') res = await rpc.listReports(market, 'pending');
@@ -42,7 +44,8 @@ export const AdminTabs: React.FC<{ market: MarketCode; actions: any; actionLoadi
           { id: 'reports', label: 'بلاغات' },
           { id: 'listings', label: 'إعلانات' },
           { id: 'users', label: 'مستخدمون' },
-          { id: 'revenue', label: 'الدخل' }
+          { id: 'revenue', label: 'الدخل' },
+          { id: 'phoneRequests', label: 'طلبات الأرقام' }
         ].map((t) => (
           <button
             key={t.id}
@@ -75,6 +78,8 @@ export const AdminTabs: React.FC<{ market: MarketCode; actions: any; actionLoadi
           </div>
           <button type="submit" disabled={actionLoading} className="py-2 bg-primary text-white rounded font-bold cursor-pointer hover:opacity-90 disabled:opacity-50">تسجيل وتفعيل</button>
         </form>
+      ) : tab === 'phoneRequests' ? (
+        <PhoneRequestsTab />
       ) : items.length === 0 ? (
         <div className="py-8 text-center text-xs text-ink-muted">لا توجد بيانات حالياً</div>
       ) : (
