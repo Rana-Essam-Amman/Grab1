@@ -9,7 +9,7 @@ import { ArrowRight, ArrowLeft } from 'iconsax-react';
 const ADMIN_EMAIL = 'sufyanyounis83@gmail.com';
 
 export const AdminScreen: React.FC = () => {
-  const { navigateTo, isArabic } = useUI();
+  const { navigateTo, goBack, isArabic } = useUI();
   const [authorized, setAuthorized] = useState<boolean | null>(null);
   const { market, setMarket, dashboard, loading, error, actionLoading, refresh, ...actions } = useAdmin();
 
@@ -40,7 +40,7 @@ export const AdminScreen: React.FC = () => {
       <div className="sticky top-0 z-10 bg-surface border-b border-border px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button
-            onClick={() => navigateTo('settings')}
+            onClick={goBack}
             className="p-1 text-ink hover:text-primary transition-colors cursor-pointer"
             aria-label="الرجوع"
           >
