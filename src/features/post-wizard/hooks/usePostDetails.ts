@@ -5,7 +5,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { useListings } from '@/hooks/useListings';
 import { useDraft } from '@/hooks/useDraft';
 import { setPendingPublish } from '../helpers/pendingPublishFlags';
-import { resolvePostDetailsFields, buildGeneratedFields, preparePublish } from '../helpers/postDetailsHelpers';
+import { resolvePostDetailsFields, preparePublish } from '../helpers/postDetailsHelpers';
+import { buildDraftData } from '../helpers/buildDraftData';
 import { getCurrentUser, requirePhoneForPublish } from '@/features/auth/helpers/publishPhoneGuard';
 
 export function usePostDetails() {
@@ -42,19 +43,15 @@ export function usePostDetails() {
     setSubmitAttempted(true);
     if (!canContinue || isPublishing) return;
 
-    const t = title.trim();
-    const p = price.trim();
-    const d = description.trim();
-    const draftData = {
-      title: t, price: p, description: d,
-      generated: {
-        title: t, description: d, price: p,
-        categorySlug: postDraft.categorySlug,
-        subcategorySlug: postDraft.subcategorySlug,
-        missing: [] as string[],
-        fields: buildGeneratedFields(fields, values, isArabic),
-      },
-    };
+    const draftData = buildDraftData({
+      title: title.trim(),
+      price: price.trim(),
+      description: description.trim(),
+      postDraft,
+      fields,
+      values,
+      isArabic,
+    });
     updatePostDraft(draftData);
 
     // Visitors must sign in before publishing; resume after sign-in.
