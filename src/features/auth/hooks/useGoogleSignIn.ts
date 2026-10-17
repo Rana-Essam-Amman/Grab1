@@ -12,18 +12,42 @@ export function useGoogleSignIn(): UseGoogleSignInReturn {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const signIn = useCallback(async () => {
+  const signIn = useCallback(async (): Promise<void> => {
+    if (isLoading) return;
+
     setIsLoading(true);
     setError(null);
-    const result = await signInWithGoogle();
-    if (result.error) {
-      setError(result.error);
+
+    try {
+      const result = await signInWithGoogle();
+
+      if (result.error) {
+        setError(result.error);
+        setIsLoading(false);
+        return;
+      }
+
+      // OAuth succeeded. Keep the loading state while the browser
+      // navigates to Google. The page will unload during the redirect.
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'Unable to connect to Google. Please try again.';
+
+      setError(message);
       setIsLoading(false);
     }
-    // On success, browser redirects to Google — no state reset needed.
+  }, [isLoading]);
+
+  const clearError = useCallback((): void => {
+    setError(null);
   }, []);
 
-  const clearError = useCallback(() => setError(null), []);
-
-  return { isLoading, error, signIn, clearError };
+  return {
+    isLoading,
+    error,
+    signIn,
+    clearError,
+  };
 }
