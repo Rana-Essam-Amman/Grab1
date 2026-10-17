@@ -30,9 +30,7 @@ export async function signInWithFacebook(): Promise<{ error: string | null }> {
     const redirectTo = `${window.location.origin}`;
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'facebook',
-      options: {
-        redirectTo,
-      },
+      options: { redirectTo },
     });
     return { error: error ? error.message : null };
   } catch (err) {
