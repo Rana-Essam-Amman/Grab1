@@ -1,30 +1,21 @@
 import React from 'react';
-import type { AuthProviderId } from '../domain/entities/AuthProvider';
-import {
-  GoogleIcon,
-  FacebookIcon,
-  AppleIcon,
-  EmailIcon,
-  BiometricsIcon,
-} from '../components/ProviderLogos';
+import { GoogleIcon, FacebookIcon, AppleIcon, WhatsAppIcon } from '../components/ProviderLogos';
 
 export interface ProviderButtonConfig {
-  providerId: AuthProviderId;
-  label: string;
-  icon: React.ReactNode;
-  brandColor: string;
-  comingSoon: boolean;
+  readonly providerId: string;
+  readonly label: string;
+  readonly icon: React.ReactNode;
+  readonly brandColor: string;
+  readonly comingSoon?: boolean;
 }
 
-export function getLoginProviderButtons(
-  isArabic: boolean,
-): ProviderButtonConfig[] {
+export function getLoginProviderButtons(isArabic: boolean): ProviderButtonConfig[] {
   return [
     {
       providerId: 'google',
       label: isArabic ? 'تابع باستخدام Google' : 'Continue with Google',
       icon: React.createElement(GoogleIcon),
-      brandColor: '#4285F4',
+      brandColor: '#EA4335',
       comingSoon: false,
     },
     {
@@ -42,17 +33,10 @@ export function getLoginProviderButtons(
       comingSoon: true,
     },
     {
-      providerId: 'email',
-      label: isArabic ? 'تابع بالبريد الإلكتروني' : 'Continue with Email',
-      icon: React.createElement(EmailIcon),
-      brandColor: '#E58A2B',
-      comingSoon: false,
-    },
-    {
-      providerId: 'biometrics',
-      label: isArabic ? 'تابع بالبصمة' : 'Continue with Biometrics',
-      icon: React.createElement(BiometricsIcon),
-      brandColor: '#10B981',
+      providerId: 'whatsapp',
+      label: isArabic ? 'تابع باستخدام WhatsApp' : 'Continue with WhatsApp',
+      icon: React.createElement(WhatsAppIcon),
+      brandColor: '#25D366',
       comingSoon: true,
     },
   ];
