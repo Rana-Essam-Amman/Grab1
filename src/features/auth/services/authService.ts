@@ -25,6 +25,21 @@ export async function signInWithGoogle(): Promise<{ error: string | null }> {
   }
 }
 
+export async function signInWithFacebook(): Promise<{ error: string | null }> {
+  try {
+    const redirectTo = `${window.location.origin}`;
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'facebook',
+      options: {
+        redirectTo,
+      },
+    });
+    return { error: error ? error.message : null };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
 export async function signOut(): Promise<{ error: string | null }> {
   try {
     const { error } = await supabase.auth.signOut();
