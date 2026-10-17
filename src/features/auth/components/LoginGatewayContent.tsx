@@ -10,6 +10,7 @@ interface LoginGatewayContentProps {
   isLoading: boolean;
   error: string | null;
   toast: string | null;
+  loadingProvider: 'google' | 'facebook' | null;
   onProviderTap: (id: string) => void;
   onGoToLogin: () => void;
   onGoToRegister: () => void;
@@ -23,6 +24,7 @@ export const LoginGatewayContent: React.FC<LoginGatewayContentProps> = ({
   isLoading,
   error,
   toast,
+  loadingProvider,
   onProviderTap,
   onGoToLogin,
   onGoToRegister,
@@ -59,9 +61,15 @@ export const LoginGatewayContent: React.FC<LoginGatewayContentProps> = ({
           comingSoon={provider.comingSoon}
         />
       ))}
-      {isLoading && (
+      {isLoading && loadingProvider && (
         <p className="text-xs text-ink-muted">
-          {isArabic ? 'جاري التحويل إلى Google...' : 'Redirecting to Google...'}
+          {isArabic
+            ? (loadingProvider === 'google'
+                ? 'جاري التحويل إلى Google...'
+                : 'جاري التحويل إلى Facebook...')
+            : (loadingProvider === 'google'
+                ? 'Redirecting to Google...'
+                : 'Redirecting to Facebook...')}
         </p>
       )}
       {error && (

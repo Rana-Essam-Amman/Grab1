@@ -69,6 +69,13 @@ export function useSupabaseAuthListener(): void {
         });
         void hydrateProfile();
 
+        if (event === 'SIGNED_IN') {
+          const uiState = useUIStore.getState();
+          if (uiState.activeTab !== 'explore') {
+            uiState.setActiveTab('explore');
+          }
+        }
+
         const justLinked = !stillAnon && wasAnon;
         const freshSignIn = !stillAnon && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION');
         if (justLinked || freshSignIn) {

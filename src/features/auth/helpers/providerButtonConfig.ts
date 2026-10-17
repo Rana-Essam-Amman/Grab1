@@ -32,7 +32,7 @@ export function getLoginProviderButtons(
       label: isArabic ? 'تابع باستخدام Facebook' : 'Continue with Facebook',
       icon: React.createElement(FacebookIcon),
       brandColor: '#1877F2',
-      comingSoon: true,
+      comingSoon: false,
     },
     {
       providerId: 'apple',

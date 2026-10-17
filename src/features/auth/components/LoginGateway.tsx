@@ -3,6 +3,7 @@ import { GuestCountrySelect } from './GuestCountrySelect';
 import { LoginGatewayContent } from './LoginGatewayContent';
 import { getLoginProviderButtons } from '../helpers/providerButtonConfig';
 import { useGoogleSignIn } from '../hooks/useGoogleSignIn';
+import { useFacebookSignIn } from '../hooks/useFacebookSignIn';
 
 interface LoginGatewayProps {
   isArabic: boolean;
@@ -25,7 +26,25 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
 }) => {
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const { isLoading, error, signIn } = useGoogleSignIn();
+  const {
+    isLoading: isGoogleLoading,
+    error: googleError,
+    signIn: signInWithGoogle,
+    clearError: clearGoogleError,
+  } = useGoogleSignIn();
+  const {
+    isLoading: isFacebookLoading,
+    error: facebookError,
+    signIn: signInWithFacebook,
+    clearError: clearFacebookError,
+  } = useFacebookSignIn();
+  const isLoading = isGoogleLoading || isFacebookLoading;
+  const error = facebookError || googleError;
+  const loadingProvider: 'google' | 'facebook' | null = isGoogleLoading
+    ? 'google'
+    : isFacebookLoading
+      ? 'facebook'
+      : null;
   const providers = getLoginProviderButtons(isArabic);
 
   useEffect(() => {
@@ -36,8 +55,16 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
 
   const handleProviderTap = useCallback(
     (providerId: string) => {
+      if (isLoading) return; // Prevent overlapping OAuth attempts
+
       if (providerId === 'google') {
-        void signIn();
+        clearFacebookError();
+        void signInWithGoogle();
+        return;
+      }
+      if (providerId === 'facebook') {
+        clearGoogleError();
+        void signInWithFacebook();
         return;
       }
       if (providerId === 'email') {
@@ -48,7 +75,15 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
       if (toastTimer.current) clearTimeout(toastTimer.current);
       toastTimer.current = setTimeout(() => setToast(null), 2200);
     },
-    [isArabic, onGoToLogin, signIn],
+    [
+      isArabic,
+      isLoading,
+      onGoToLogin,
+      signInWithFacebook,
+      signInWithGoogle,
+      clearFacebookError,
+      clearGoogleError,
+    ],
   );
 
   if (guestCountrySelectOpen) {
@@ -67,6 +102,7 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
       providers={providers}
       isLoading={isLoading}
       error={error}
+      loadingProvider={loadingProvider}
       toast={toast}
       onProviderTap={handleProviderTap}
       onGoToLogin={onGoToLogin}
