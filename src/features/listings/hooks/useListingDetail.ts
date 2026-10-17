@@ -10,7 +10,7 @@ import { useListingDerivedData, getWhatsAppUrl } from '../helpers/listingDerived
 import { composeIntentMessage, WhatsAppIntent } from '../helpers/whatsappIntents';
 import { Listing } from '@/types';
 import { ScreenType } from '@/store/ui.slice';
-import { showChatUnavailable, showChatSignInRequired, showChatOpenFailed, showChatCrossMarket } from '../helpers/chatErrorToast';
+import { showChatUnavailable, showChatOpenFailed, showChatCrossMarket } from '../helpers/chatErrorToast';
 
 export interface UseListingDetailReturn {
   listing: Listing | null; activeCountry: string; isCountryMismatch: boolean;
@@ -53,7 +53,7 @@ export function useListingDetail(): UseListingDetailReturn {
   const handleStartChat = useCallback(async () => {
     if (!listing) return;
     if (authStatus === 'unauthenticated') { navigateTo('login'); return; }
-    if (!user?.id) { showChatSignInRequired(isArabic); return; }
+    if (!user?.id) { navigateTo('login'); return; } // ✅ تم التعديل: تحويل مباشر للتسجيل
     if (isOwner) return;
     if (!listing.userId) { showChatUnavailable(isArabic); return; }
     try {
@@ -96,4 +96,4 @@ export function useListingDetail(): UseListingDetailReturn {
     handleStartChat, handleCall, handleWhatsApp, handleWhatsAppClick, handleWhatsAppIntent,
     handleDelete, handleSelectSeller, isAuthenticated, isOwner, isArabic, goBack, navigateTo,
   };
-}
+                                         }
