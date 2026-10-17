@@ -1,5 +1,4 @@
 import { test as base, Page } from '@playwright/test';
-import { performQuickDemoLogin } from '../helpers/navigation';
 import { installChatMocks } from './chat-mocks';
 
 export interface TestUser {
@@ -31,9 +30,30 @@ export const test = base.extend<Fixtures>({
   },
 
   loggedInPage: async ({ page }, use) => {
+    await page.addInitScript(() => {
+      const fakeAuth = {
+        state: {
+          user: {
+            id: 'e2e00000-0000-0000-0000-000000000002',
+            firstName: 'E2E',
+            lastName: 'LoggedIn',
+            email: 'loggedin@example.com',
+            phone: '0790000000',
+            countryCode: 'JO',
+          },
+          sessionToken: 'e2e-logged-in-token',
+          authStatus: 'authenticated',
+          isAnonymous: false,
+        },
+        version: 0,
+      };
+      localStorage.setItem('catch_auth', JSON.stringify(fakeAuth));
+      localStorage.setItem('catch_user', JSON.stringify(fakeAuth.state.user));
+      localStorage.setItem('catch_token', fakeAuth.state.sessionToken);
+      localStorage.setItem('catch_browse_country', 'JO');
+    });
     await page.goto('/');
     await page.waitForSelector('#root', { state: 'visible' });
-    await performQuickDemoLogin(page);
     await use(page);
   },
 
