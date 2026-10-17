@@ -30,14 +30,21 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
     isLoading: isGoogleLoading,
     error: googleError,
     signIn: signInWithGoogle,
+    clearError: clearGoogleError,
   } = useGoogleSignIn();
   const {
     isLoading: isFacebookLoading,
     error: facebookError,
     signIn: signInWithFacebook,
+    clearError: clearFacebookError,
   } = useFacebookSignIn();
   const isLoading = isGoogleLoading || isFacebookLoading;
   const error = facebookError || googleError;
+  const loadingProvider: 'google' | 'facebook' | null = isGoogleLoading
+    ? 'google'
+    : isFacebookLoading
+      ? 'facebook'
+      : null;
   const providers = getLoginProviderButtons(isArabic);
 
   useEffect(() => {
@@ -49,10 +56,12 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
   const handleProviderTap = useCallback(
     (providerId: string) => {
       if (providerId === 'google') {
+        clearFacebookError();
         void signInWithGoogle();
         return;
       }
       if (providerId === 'facebook') {
+        clearGoogleError();
         void signInWithFacebook();
         return;
       }
@@ -64,7 +73,7 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
       if (toastTimer.current) clearTimeout(toastTimer.current);
       toastTimer.current = setTimeout(() => setToast(null), 2200);
     },
-    [isArabic, onGoToLogin, signInWithFacebook, signInWithGoogle],
+    [isArabic, onGoToLogin, signInWithFacebook, signInWithGoogle, clearFacebookError, clearGoogleError],
   );
 
   if (guestCountrySelectOpen) {
@@ -83,6 +92,7 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({
       providers={providers}
       isLoading={isLoading}
       error={error}
+      loadingProvider={loadingProvider}
       toast={toast}
       onProviderTap={handleProviderTap}
       onGoToLogin={onGoToLogin}
