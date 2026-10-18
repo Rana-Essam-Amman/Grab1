@@ -74,7 +74,7 @@ export const EditListingScreen: React.FC = () => {
             />
             <AdminActionsPanel
               listingId={listing.id}
-              currentStatus={listing.status}
+              currentStatus={listing.status || 'active'}
               isPremium={Boolean(listing.isPremium)}
               isArabic={isArabic}
             />
