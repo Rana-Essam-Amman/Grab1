@@ -14,7 +14,7 @@ export const LoginGatewayActions: React.FC<LoginGatewayActionsProps> = ({
       <button
         type="button"
         onClick={onToggleGuestCountrySelect}
-        className="text-sm text-brand hover:underline font-cairo"
+        className="text-sm text-ink font-semibold hover:underline font-cairo transition-colors"
       >
         {isArabic ? 'تصفح كضيف' : 'Browse as Guest'}
       </button>
