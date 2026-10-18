@@ -40,5 +40,5 @@ export interface ListingsState {
   migrateLegacyWishlistIfNeeded: (userId: string) => Promise<void>;
   refreshListings: () => void;
   setIsQuotaExhausted: (exhausted: boolean) => void;
-  validateAdQuotaAvailability: (categorySlug: string, userId?: string, countryCode?: string, isVip?: boolean) => boolean;
+  validateAdQuotaAvailability: (categorySlug: string, userId?: string, countryCode?: string) => boolean;
 }
