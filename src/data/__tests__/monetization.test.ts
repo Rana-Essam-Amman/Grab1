@@ -11,7 +11,7 @@ describe('Data Layer - Monetization & Regional Quota Rules', () => {
     markets.forEach((code) => {
       expect(MONETIZATION_MATRIX.packages[code]).toBeDefined();
       expect(MONETIZATION_MATRIX.packages[code].countryCode).toBe(code);
-      expect(MONETIZATION_MATRIX.packages[code].turboAdCost).toBeGreaterThan(0);
+      expect(MONETIZATION_MATRIX.packages[code].featuredAdCost).toBeGreaterThan(0);
     });
   });
 
