@@ -60,16 +60,10 @@ export function validateAdQuotaAvailability(
   listings: Array<{ countryCode?: string; sellerPhone?: string; userId?: string; categorySlug?: string }>,
   userId: string,
   countryCode: string,
-  _categorySlug: string,
-  isVipShop?: boolean
+  _categorySlug: string
 ): { allowed: boolean; activeCount: number; limit: number } {
-  // VIP Merchant Store Unlimited Bypass Gate
-  if (isVipShop) {
-    return { allowed: true, activeCount: 0, limit: 999 };
-  }
   const limit = MONETIZATION_MATRIX.freeLimits.generalCategoryLimit;
 
-  // Count active listings for this user in this country (matches DB trigger)
   const activeCount = listings.filter((l) => {
     const matchesUser = l.userId === userId || (!l.userId && userId);
     const matchesCountry = (l.countryCode || 'JO') === countryCode;
