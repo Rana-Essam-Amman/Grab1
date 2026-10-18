@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from 'vitest';
 import { useListingDetail } from '../useListingDetail';
 import { useUI } from '@/hooks/useUI';
 import { useListings } from '@/hooks/useListings';
@@ -8,22 +8,12 @@ import { useChat } from '@/hooks/useChat';
 import { supabase } from '@/shared/lib/supabase';
 
 // Mock the hooks
-vi.mock('@/hooks/useUI', () => ({
-  useUI: vi.fn(),
-}));
-vi.mock('@/hooks/useListings', () => ({
-  useListings: vi.fn(),
-}));
-vi.mock('@/hooks/useAuth', () => ({
-  useAuth: vi.fn(),
-}));
-vi.mock('@/hooks/useChat', () => ({
-  useChat: vi.fn(),
-}));
+vi.mock('@/hooks/useUI', () => ({ useUI: vi.fn() }));
+vi.mock('@/hooks/useListings', () => ({ useListings: vi.fn() }));
+vi.mock('@/hooks/useAuth', () => ({ useAuth: vi.fn() }));
+vi.mock('@/hooks/useChat', () => ({ useChat: vi.fn() }));
 vi.mock('@/shared/lib/supabase', () => ({
-  supabase: {
-    rpc: vi.fn(),
-  },
+  supabase: { rpc: vi.fn() },
 }));
 vi.mock('../helpers/listingDerivedData', () => ({
   useListingDerivedData: vi.fn(() => ({
@@ -47,8 +37,22 @@ describe('useListingDetail', () => {
     status: 'active',
   };
 
+  const originalLocation = window.location;
+
+  beforeAll(() => {
+    // Safest way to mock window.location in JSDOM
+    delete (window as any).location;
+    (window as any).location = { href: '' };
+  });
+
+  afterAll(() => {
+    (window as any).location = originalLocation;
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
+    window.location.href = ''; // Reset before each test
+    vi.spyOn(window, 'open').mockImplementation(() => null);
 
     (useUI as any).mockReturnValue({
       isArabic: true,
@@ -68,10 +72,6 @@ describe('useListingDetail', () => {
     (useChat as any).mockReturnValue({
       openConversation: vi.fn(),
     });
-
-    // Mock window.location and window.open
-    vi.stubGlobal('location', { href: '' });
-    vi.stubGlobal('open', vi.fn());
 
     // Mock supabase RPC for phone reveal
     (supabase.rpc as any).mockResolvedValue({
@@ -119,14 +119,13 @@ describe('useListingDetail', () => {
     });
 
     const { result } = renderHook(() => useListingDetail());
-    const spyOpen = vi.spyOn(window, 'open');
-
+    
     await act(async () => {
       await result.current.handleWhatsApp();
     });
 
     expect(supabase.rpc).toHaveBeenCalledWith('get_listing_phone', { p_listing_id: 'item-123' });
-    expect(spyOpen).toHaveBeenCalled();
+    expect(window.open).toHaveBeenCalled();
   });
 
   it('handleWhatsApp with authenticated user opens WhatsApp URL', async () => {
@@ -136,13 +135,12 @@ describe('useListingDetail', () => {
     });
 
     const { result } = renderHook(() => useListingDetail());
-    const spyOpen = vi.spyOn(window, 'open');
 
     await act(async () => {
       await result.current.handleWhatsApp();
     });
 
     expect(supabase.rpc).toHaveBeenCalledWith('get_listing_phone', { p_listing_id: 'item-123' });
-    expect(spyOpen).toHaveBeenCalled();
+    expect(window.open).toHaveBeenCalled();
   });
 });
