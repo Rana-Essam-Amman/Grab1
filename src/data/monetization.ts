@@ -6,7 +6,6 @@ export interface CountryMonetizationPackage {
   countryCode: string;
   currency: string;
   currencySymbol: string;
-  turboAdCost: number;
   featuredAdCost: number;
 }
 
@@ -28,35 +27,30 @@ export const MONETIZATION_MATRIX: MonetizationMatrix = {
       countryCode: "JO",
       currency: "JOD",
       currencySymbol: "دينار",
-      turboAdCost: 0.75,
       featuredAdCost: 2,
     },
     SA: {
       countryCode: "SA",
       currency: "SAR",
       currencySymbol: "ر.س",
-      turboAdCost: 4,
       featuredAdCost: 9,
     },
     PS: {
       countryCode: "PS",
       currency: "ILS",
       currencySymbol: "شيكل",
-      turboAdCost: 2,
       featuredAdCost: 5,
     },
     LB: {
       countryCode: "LB",
       currency: "USD",
       currencySymbol: "$",
-      turboAdCost: 0.69,
       featuredAdCost: 1.49,
     },
     SY: {
       countryCode: "SY",
       currency: "USD",
       currencySymbol: "$",
-      turboAdCost: 0.49,
       featuredAdCost: 0.99,
     },
   },
