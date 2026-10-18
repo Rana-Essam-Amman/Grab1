@@ -220,28 +220,22 @@ describe('Real User Flow Integration Test Suite (Sprint T3 Ultra)', () => {
     expect(useListingsStore.getState().wishlist).not.toContain('target-listing');
   });
 
-  it('Flow 10: Quota limits are enforced based on category and country matrix', () => {
+  it('Flow 10: Quota limits are enforced at 20 active listings per user across categories', () => {
     const userId = 'quota-tester';
 
-    useListingsStore.getState().addListing(
-      createMockListing({ id: 'm1', sellerPhone: userId, countryCode: 'JO', categorySlug: 'motors' }),
-      'JO'
-    );
-    useListingsStore.getState().addListing(
-      createMockListing({ id: 'm2', sellerPhone: userId, countryCode: 'JO', categorySlug: 'motors' }),
-      'JO'
-    );
-    useListingsStore.getState().addListing(
-      createMockListing({ id: 'm3', sellerPhone: userId, countryCode: 'JO', categorySlug: 'motors' }),
-      'JO'
-    );
+    for (let i = 1; i <= 20; i++) {
+      useListingsStore.getState().addListing(
+        createMockListing({ id: `m${i}`, sellerPhone: userId, countryCode: 'JO', categorySlug: 'motors' }),
+        'JO'
+      );
+    }
 
     const isAvailable = useListingsStore.getState().validateAdQuotaAvailability('motors', userId, 'JO', false);
     expect(isAvailable).toBe(false);
     expect(useListingsStore.getState().isQuotaExhausted).toBe(true);
 
     const isElecAvailable = useListingsStore.getState().validateAdQuotaAvailability('electronics', userId, 'JO', false);
-    expect(isElecAvailable).toBe(true);
+    expect(isElecAvailable).toBe(false);
   });
 
   it('Flow 11: Post draft state persists across screen navigations', () => {
