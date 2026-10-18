@@ -225,7 +225,7 @@ BEGIN
   SELECT qual INTO v_qual
   FROM pg_policies
   WHERE schemaname = 'public' AND tablename = 'listings'
-    AND policyname = 'listings_select_public_or_owner';
+    AND policyname = 'listings_select_public_or_owner_or_admin';
 
   IF v_qual IS NULL OR position('is_demo' IN lower(v_qual)) = 0 THEN
     RAISE EXCEPTION 'T10 FAIL: policy qual does not reference is_demo';
