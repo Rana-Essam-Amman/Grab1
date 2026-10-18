@@ -12,13 +12,10 @@ interface MyAdsContentProps {
   readonly activeSubTab: 'my' | 'wishlist';
   readonly sortedMyAds: readonly Listing[];
   readonly wishlistListings: readonly Listing[];
-  readonly bumpCounts: Record<string, number>;
   readonly onNewAd: () => void;
   readonly onEdit: (id: string) => void;
   readonly onMarkSold: (id: string) => void;
   readonly onDelete: (id: string) => void;
-  readonly onBump: (id: string) => void;
-  readonly onPromote: (listing: Listing) => void;
 }
 
 export const MyAdsContent: React.FC<MyAdsContentProps> = ({
@@ -26,13 +23,10 @@ export const MyAdsContent: React.FC<MyAdsContentProps> = ({
   activeSubTab,
   sortedMyAds,
   wishlistListings,
-  bumpCounts,
   onNewAd,
   onEdit,
   onMarkSold,
   onDelete,
-  onBump,
-  onPromote,
 }) => {
   if (activeSubTab === 'my') {
     if (sortedMyAds.length === 0) {
@@ -77,12 +71,9 @@ export const MyAdsContent: React.FC<MyAdsContentProps> = ({
             <ListingActionsBar
               isArabic={isArabic}
               status={listing.status}
-              bumpDisabled={(bumpCounts[listing.id] || 0) >= 3}
               onEdit={() => onEdit(listing.id)}
               onMarkSold={() => onMarkSold(listing.id)}
               onDelete={() => onDelete(listing.id)}
-              onBump={() => onBump(listing.id)}
-              onPromote={() => onPromote(listing)}
             />
           </div>
         ))}
