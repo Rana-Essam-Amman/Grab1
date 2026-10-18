@@ -6,7 +6,7 @@ import { getBrandOptions, getModelOptions } from '@/data/brands';
 
 export function useEditListing() {
   const { selectedListingId, goBack, isArabic } = useUI();
-  const { getListing, updateListing } = useListings();
+  const { getListing, saveListingEdits } = useListings();
   const listing = selectedListingId ? getListing(selectedListingId) : null;
 
   const [title, setTitle] = useState(listing?.title || '');
@@ -22,6 +22,8 @@ export function useEditListing() {
     return out;
   });
   const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const categorySlug = listing?.categorySlug || '';
   const subcategorySlug = listing?.subcategorySlug || '';
@@ -51,23 +53,36 @@ export function useEditListing() {
   const missing = fields.filter((f) => f.required && !(values[f.key] || '').trim()).map((f) => isArabic ? f.labelAr : f.labelEn);
   const canSave = title.trim().length >= 5 && price.trim().length > 0 && description.trim().length >= 10 && missing.length === 0;
 
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     setSubmitAttempted(true);
-    if (!canSave || !listing) return;
-    const attributes = fields
-      .filter((f) => (values[f.key] || '').trim())
-      .map((f) => ({ key: f.key, label: isArabic ? f.labelAr : f.labelEn, value: values[f.key] }));
-    updateListing(listing.id, {
-      title: title.trim(),
-      price: price.trim(),
-      description: description.trim(),
-      attributes,
-    });
-    goBack();
-  }, [canSave, listing, fields, values, isArabic, title, price, description, updateListing, goBack]);
+    if (!canSave || !listing || isSaving) return;
+    setIsSaving(true);
+    setSaveError(null);
+    try {
+      const attributes = fields
+        .filter((f) => (values[f.key] || '').trim())
+        .map((f) => ({ key: f.key, label: isArabic ? f.labelAr : f.labelEn, value: values[f.key] }));
+      const result = await saveListingEdits(listing.id, {
+        title: title.trim(),
+        price: price.trim(),
+        description: description.trim(),
+        attributes,
+      });
+      if (!result.success) {
+        setSaveError(isArabic
+          ? 'تعذّر حفظ التعديلات — جرب مرة ثانية'
+          : 'Failed to save. Please try again.');
+        return;
+      }
+      goBack();
+    } finally {
+      setIsSaving(false);
+    }
+  }, [canSave, listing, isSaving, fields, values, isArabic, title, price, description, saveListingEdits, goBack]);
 
   return {
     listing, title, setTitle, price, setPrice, description, setDescription,
-    values, setField, fields, missingRequired: missing, canSave, handleSave, isArabic, submitAttempted,
+    values, setField, fields, missingRequired: missing, canSave, handleSave,
+    isArabic, submitAttempted, isSaving, saveError,
   };
 }
