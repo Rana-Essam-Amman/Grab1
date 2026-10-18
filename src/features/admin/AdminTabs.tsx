@@ -67,9 +67,6 @@ export const AdminTabs: React.FC<{ market: MarketCode; actions: any; actionLoadi
           <div className="flex gap-2">
             <select value={payForm.product} onChange={(e) => setPayForm({ ...payForm, product: e.target.value as any })} className="p-2 border rounded border-border bg-background flex-1">
               <option value="featured">featured</option>
-              <option value="turbo">turbo</option>
-              <option value="auto_bump">auto_bump</option>
-              <option value="vip_store">vip_store</option>
             </select>
             <input type="number" step="0.01" placeholder="المبلغ" value={payForm.amount} onChange={(e) => setPayForm({ ...payForm, amount: e.target.value })} className="p-2 border rounded border-border bg-background w-24" required />
             <select value={payForm.currency} onChange={(e) => setPayForm({ ...payForm, currency: e.target.value })} className="p-2 border rounded border-border bg-background w-20">
