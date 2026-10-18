@@ -11,6 +11,7 @@ import { composeIntentMessage, WhatsAppIntent } from '../helpers/whatsappIntents
 import { Listing } from '@/types';
 import { ScreenType } from '@/store/ui.slice';
 import { showChatUnavailable, showChatOpenFailed, showChatCrossMarket } from '../helpers/chatErrorToast';
+import { useListingDelete } from './useListingDelete';
 
 export interface UseListingDetailReturn {
   listing: Listing | null; activeCountry: string; isCountryMismatch: boolean;
@@ -20,12 +21,12 @@ export interface UseListingDetailReturn {
   showShare: boolean; setShowShare: (v: boolean) => void; showReport: boolean; setShowReport: (v: boolean) => void; showWhatsAppSheet: boolean; setShowWhatsAppSheet: (v: boolean) => void;
   handleStartChat: () => void | Promise<void>; handleCall: () => void; handleWhatsApp: () => void;
   handleWhatsAppClick: () => void; handleWhatsAppIntent: (intent: WhatsAppIntent) => void;
-  handleDelete: () => Promise<void>; handleEdit: () => void; handleSelectSeller: () => void; isAuthenticated: boolean;
+  handleDelete: () => Promise<void>; handleEdit: () => void; handleSelectSeller: () => void; isAuthenticated: boolean; isDeleting: boolean;
   isOwner: boolean; isArabic: boolean; goBack: () => void; navigateTo: (screen: ScreenType) => void;
 }
 export function useListingDetail(): UseListingDetailReturn {
   const { isArabic, goBack, selectedListingId, setSelectedListingId, setSelectedThreadId, setSelectedSellerPhone, navigateTo, browseCountryCode } = useUI();
-  const { getListing, deleteListing } = useListings();
+  const { getListing } = useListings();
   const { openConversation } = useChat();
   const { authStatus, user } = useAuth();
   const [activePhotoIdx, setActivePhotoIdx] = useState(0);
@@ -85,15 +86,13 @@ export function useListingDetail(): UseListingDetailReturn {
     setShowWhatsAppSheet(false);
     window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: derived.formattedPhone.dialNumber, listingTitle: listing.title, isArabic, customMessage: composeIntentMessage(intent.body, listing, isArabic) }), '_blank');
   }, [listing, derived.formattedPhone.dialNumber, isArabic]);
-  const handleDelete = useCallback(async () => {
-    if (!listing) return;
-    if ((await deleteListing(listing.id)).success) goBack();
-  }, [listing, deleteListing, goBack]);
+  const { handleDelete: handleDeleteRaw, isDeleting } = useListingDelete(isArabic);
+  const handleDelete = useCallback(async () => { if (listing) await handleDeleteRaw(listing.id, goBack); }, [listing, handleDeleteRaw, goBack]);
   const handleEdit = useCallback(() => { if (!listing) return; setSelectedListingId(listing.id); navigateTo('edit-post'); }, [listing, setSelectedListingId, navigateTo]);
   return {
     listing, activeCountry, isCountryMismatch, ...derived, activePhotoIdx, setActivePhotoIdx,
     showShare, setShowShare, showReport, setShowReport, showWhatsAppSheet, setShowWhatsAppSheet,
     handleStartChat, handleCall, handleWhatsApp, handleWhatsAppClick, handleWhatsAppIntent,
-    handleDelete, handleEdit, handleSelectSeller, isAuthenticated, isOwner, isArabic, goBack, navigateTo,
+    handleDelete, handleEdit, handleSelectSeller, isAuthenticated, isOwner, isArabic, goBack, navigateTo, isDeleting,
   };
 }
