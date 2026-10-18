@@ -1,6 +1,6 @@
 import { Listing } from '@/types';
 import { getListingsFromStorage, saveListingsToStorage, getWishlistForMarket, saveWishlistForMarket } from '@/services/listing.service';
-import { deleteListing as deleteListingService } from '@/features/listings/services/listingsService';
+import { deleteListing as deleteListingService, updateListingRemote } from '@/features/listings/services/listingsService';
 import { validateAdQuotaAvailability as validateAdQuotaAvailabilityHelper } from '@/data/monetization';
 import { globalStorage } from '@/shared/lib/marketStorage';
 import { ListingsState } from './listings.slice.types';
@@ -45,6 +45,18 @@ export const createListingsActions = (
       );
       saveListingsToStorage(state.listings);
     });
+  },
+
+  saveListingEdits: async (id: string, updates: Partial<Listing>): Promise<{ success: boolean; error: string | null }> => {
+    const { data, error } = await updateListingRemote(id, updates);
+    if (error || !data) {
+      return { success: false, error: error || 'Save failed' };
+    }
+    set((state) => {
+      state.listings = state.listings.map((item) => (item.id === id ? data : item));
+      saveListingsToStorage(state.listings);
+    });
+    return { success: true, error: null };
   },
 
   deleteListing: async (id: string): Promise<{ success: boolean; error: string | null }> => {
