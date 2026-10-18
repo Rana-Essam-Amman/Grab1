@@ -12,6 +12,7 @@ import { Listing } from '@/types';
 import { ScreenType } from '@/store/ui.slice';
 import { showChatUnavailable, showChatOpenFailed, showChatCrossMarket } from '../helpers/chatErrorToast';
 import { useListingDelete } from './useListingDelete';
+import { useRevealPhone } from './useRevealPhone';
 
 export interface UseListingDetailReturn {
   listing: Listing | null; activeCountry: string; isCountryMismatch: boolean;
@@ -19,10 +20,10 @@ export interface UseListingDetailReturn {
   mapUrl: string; displayCurrency: string; images: string[]; mapQuery: string;
   formattedPhone: FormattedPhone; activePhotoIdx: number; setActivePhotoIdx: (idx: number) => void;
   showShare: boolean; setShowShare: (v: boolean) => void; showReport: boolean; setShowReport: (v: boolean) => void; showWhatsAppSheet: boolean; setShowWhatsAppSheet: (v: boolean) => void;
-  handleStartChat: () => void | Promise<void>; handleCall: () => void; handleWhatsApp: () => void;
+  handleStartChat: () => void | Promise<void>; handleCall: () => void | Promise<void>; handleWhatsApp: () => void | Promise<void>;
   handleWhatsAppClick: () => void; handleWhatsAppIntent: (intent: WhatsAppIntent) => void;
   handleDelete: () => Promise<void>; handleEdit: () => void; handleSelectSeller: () => void; isAuthenticated: boolean; isDeleting: boolean;
-  isOwner: boolean; isArabic: boolean; goBack: () => void; navigateTo: (screen: ScreenType) => void;
+  isOwner: boolean; isArabic: boolean; goBack: () => void; navigateTo: (screen: ScreenType) => void; isRevealingPhone: boolean;
 }
 export function useListingDetail(): UseListingDetailReturn {
   const { isArabic, goBack, selectedListingId, setSelectedListingId, setSelectedThreadId, setSelectedSellerPhone, navigateTo, browseCountryCode } = useUI();
@@ -36,6 +37,8 @@ export function useListingDetail(): UseListingDetailReturn {
   const isCountryMismatch = useMemo(() => Boolean(listing && listing.countryCode !== activeCountry), [listing, activeCountry]);
   devAssertMarketIsolation(listing, activeCountry);
   const derived = useListingDerivedData(listing, isArabic); const isAuthenticated = authStatus === 'authenticated';
+  const { phone: revealedPhone, isRevealing: isRevealingPhone, revealPhone } = useRevealPhone(listing?.id, listing?.sellerPhone, isArabic);
+  
   const isOwner = useMemo(() => {
     if (!user || !listing) return false;
     if (user.id && listing.userId && user.id === listing.userId) return true;
@@ -44,7 +47,6 @@ export function useListingDetail(): UseListingDetailReturn {
   }, [user, listing]);
   const handleSelectSeller = useCallback(() => {
     if (!listing) return;
-    // Prefer userId (stable UUID, safe canonical); fallback to phone for legacy listings (pre-userId).
     const sellerKey = listing.userId || listing.sellerPhone;
     if (!sellerKey) return;
     setSelectedSellerPhone(sellerKey);
@@ -53,7 +55,7 @@ export function useListingDetail(): UseListingDetailReturn {
   const handleStartChat = useCallback(async () => {
     if (!listing) return;
     if (authStatus === 'unauthenticated') { navigateTo('login'); return; }
-    if (!user?.id) { navigateTo('login'); return; } // ✅ تم التعديل: تحويل مباشر للتسجيل
+    if (!user?.id) { navigateTo('login'); return; }
     if (isOwner) return;
     if (!listing.userId) { showChatUnavailable(isArabic); return; }
     try {
@@ -65,34 +67,43 @@ export function useListingDetail(): UseListingDetailReturn {
       const msg = error instanceof Error ? error.message : '';
       if (msg.includes('Cross-market')) showChatCrossMarket(isArabic);
       else showChatOpenFailed(isArabic);
-      console.error('[Chat] Failed:', error);
     }
   }, [listing, authStatus, navigateTo, openConversation, setSelectedThreadId, user, activeCountry, isOwner, isArabic]);
-  const handleCall = useCallback(() => {
-    if (!listing?.sellerPhone) return;
-    window.location.href = `tel:${derived.formattedPhone.dialNumber}`;
-  }, [listing, derived.formattedPhone.dialNumber]);
-  const handleWhatsApp = useCallback(() => {
-    if (!listing?.sellerPhone) return;
-    window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: derived.formattedPhone.dialNumber, listingTitle: listing.title, isArabic }), '_blank');
-  }, [listing, derived.formattedPhone.dialNumber, isArabic]);
+  
+  const handleCall = useCallback(async () => {
+    const num = await revealPhone();
+    if (num) window.location.href = `tel:${num}`;
+  }, [revealPhone]);
+
+  const handleWhatsApp = useCallback(async () => {
+    const num = await revealPhone();
+    if (num && listing) {
+      window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: num, listingTitle: listing.title, isArabic }), '_blank');
+    }
+  }, [revealPhone, listing, isArabic]);
+
   const handleWhatsAppClick = useCallback(() => {
     if (!listing) return;
-    if (!listing.sellerPhone) return;
     setShowWhatsAppSheet(true);
   }, [listing]);
-  const handleWhatsAppIntent = useCallback((intent: WhatsAppIntent) => {
+
+  const handleWhatsAppIntent = useCallback(async (intent: WhatsAppIntent) => {
     if (!listing) return;
     setShowWhatsAppSheet(false);
-    window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: derived.formattedPhone.dialNumber, listingTitle: listing.title, isArabic, customMessage: composeIntentMessage(intent.body, listing, isArabic) }), '_blank');
-  }, [listing, derived.formattedPhone.dialNumber, isArabic]);
+    const num = await revealPhone();
+    if (num) {
+      window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: num, listingTitle: listing.title, isArabic, customMessage: composeIntentMessage(intent.body, listing, isArabic) }), '_blank');
+    }
+  }, [listing, isArabic, revealPhone]);
+  
   const { handleDelete: handleDeleteRaw, isDeleting } = useListingDelete(isArabic);
   const handleDelete = useCallback(async () => { if (listing) await handleDeleteRaw(listing.id, goBack); }, [listing, handleDeleteRaw, goBack]);
   const handleEdit = useCallback(() => { if (!listing) return; setSelectedListingId(listing.id); navigateTo('edit-post'); }, [listing, setSelectedListingId, navigateTo]);
+  
   return {
     listing, activeCountry, isCountryMismatch, ...derived, activePhotoIdx, setActivePhotoIdx,
     showShare, setShowShare, showReport, setShowReport, showWhatsAppSheet, setShowWhatsAppSheet,
     handleStartChat, handleCall, handleWhatsApp, handleWhatsAppClick, handleWhatsAppIntent,
-    handleDelete, handleEdit, handleSelectSeller, isAuthenticated, isOwner, isArabic, goBack, navigateTo, isDeleting,
+    handleDelete, handleEdit, handleSelectSeller, isAuthenticated, isOwner, isArabic, goBack, navigateTo, isDeleting, isRevealingPhone,
   };
-}
+    }
