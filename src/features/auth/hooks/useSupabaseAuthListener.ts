@@ -6,6 +6,7 @@ import { mapSessionToUser, resumePendingNavigation } from './authListenerHelpers
 import { useUIStore } from '@/store/ui.slice';
 import { useListingsStore } from '@/features/listings';
 import { toast } from 'sonner';
+import { globalStorage } from '@/shared/lib/marketStorage'; // 🛡️ Imported for token check
 
 function resumePendingWishlist(): void {
   const ui = useUIStore.getState();
@@ -33,6 +34,13 @@ export function useSupabaseAuthListener(): void {
 
     const { unsubscribe } = onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT') {
+        // 🛡️ FIX: Prevent accidental logout on deployment.
+        // If the user has a local token saved, ignore this event (it's a background blip).
+        const localToken = globalStorage().get<string>('catch_token');
+        if (localToken) {
+          return; 
+        }
+
         useAuthStore.setState({
           user: null,
           sessionToken: null,
