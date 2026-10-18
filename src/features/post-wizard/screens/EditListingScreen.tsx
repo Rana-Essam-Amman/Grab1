@@ -8,6 +8,7 @@ import { useEditListing } from '../hooks/useEditListing';
 import { Lock } from 'iconsax-react';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { AdminImageEditor } from '../components/AdminImageEditor';
+import { AdminActionsPanel } from '../components/AdminActionsPanel';
 
 export const EditListingScreen: React.FC = () => {
   const { isArabic, goBack } = useUI();
@@ -39,7 +40,7 @@ export const EditListingScreen: React.FC = () => {
         onBack={goBack}
       />
 
-      <div className="p-4 flex flex-col gap-3">
+      <div className="p-4 flex flex-col gap-3 pb-8">
         <div className="flex items-center gap-2 rounded-2xl bg-canvas border border-line px-4 py-3">
           <Lock size={16} variant="Bold" className="text-ink-muted shrink-0" />
           <div className="text-xs text-ink-muted">
@@ -64,12 +65,20 @@ export const EditListingScreen: React.FC = () => {
         />
 
         {isAdmin && (
-          <AdminImageEditor
-            images={images}
-            setImages={setImages}
-            ownerUserId={listing.userId}
-            isArabic={isArabic}
-          />
+          <>
+            <AdminImageEditor
+              images={images}
+              setImages={setImages}
+              ownerUserId={listing.userId}
+              isArabic={isArabic}
+            />
+            <AdminActionsPanel
+              listingId={listing.id}
+              currentStatus={listing.status}
+              isPremium={Boolean(listing.isPremium)}
+              isArabic={isArabic}
+            />
+          </>
         )}
 
         <MissingFieldsNotice isArabic={isArabic} fields={missingRequired} />
@@ -85,7 +94,6 @@ export const EditListingScreen: React.FC = () => {
             ? (isArabic ? 'جارٍ الحفظ...' : 'Saving...')
             : (isArabic ? 'حفظ التعديلات' : 'Save Changes')}
         </Button>
-        <div className="h-8"></div>
       </div>
     </div>
   );
