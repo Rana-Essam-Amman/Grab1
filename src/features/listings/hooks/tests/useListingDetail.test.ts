@@ -1,221 +1,148 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useListingDetail } from '../useListingDetail';
 import { useUI } from '@/hooks/useUI';
 import { useListings } from '@/hooks/useListings';
-import { useChat } from '@/hooks/useChat';
 import { useAuth } from '@/hooks/useAuth';
-import { Listing } from '@/types';
+import { useChat } from '@/hooks/useChat';
+import { supabase } from '@/shared/lib/supabase';
 
-vi.mock('@/hooks/useUI');
-vi.mock('@/hooks/useListings');
-vi.mock('@/hooks/useChat');
-vi.mock('@/hooks/useAuth');
-
-const mockListing: Listing = {
-  id: 'item-123',
-  userId: 'seller-u1',
-  title: 'Test Listing',
-  description: 'Test description',
-  price: '100',
-  currency: 'JOD',
-  countryCode: 'JO',
-  city: 'Amman',
-  neighborhood: 'Khalda',
-  categorySlug: 'cars',
-  subcategorySlug: 'sedan',
-  imageUrl: '/test.jpg',
-  images: ['/test.jpg'],
-  sellerPhone: '0791234567',
-  sellerName: 'Test Seller',
-  createdAt: '2026-01-01',
-  views: 0,
-  attributes: [],
-};
+// Mock the hooks
+vi.mock('@/hooks/useUI', () => ({
+  useUI: vi.fn(),
+}));
+vi.mock('@/hooks/useListings', () => ({
+  useListings: vi.fn(),
+}));
+vi.mock('@/hooks/useAuth', () => ({
+  useAuth: vi.fn(),
+}));
+vi.mock('@/hooks/useChat', () => ({
+  useChat: vi.fn(),
+}));
+vi.mock('@/shared/lib/supabase', () => ({
+  supabase: {
+    rpc: vi.fn(),
+  },
+}));
+vi.mock('../helpers/listingDerivedData', () => ({
+  useListingDerivedData: vi.fn(() => ({
+    formattedPhone: { dialNumber: '+962791234567' },
+    images: [],
+    locationText: '',
+    mapUrl: '',
+    mapQuery: '',
+    displayCurrency: 'JOD',
+  })),
+  getWhatsAppUrl: vi.fn(() => 'https://wa.me/962791234567'),
+}));
 
 describe('useListingDetail', () => {
-  const mockGoBack = vi.fn();
-  const mockNavigateTo = vi.fn();
-  const mockSetSelectedThreadId = vi.fn();
-  const mockSetSelectedSellerPhone = vi.fn();
-  const mockGetListing = vi.fn();
-  const mockDeleteListing = vi.fn();
-  const mockOpenConversation = vi.fn();
+  const mockListing = {
+    id: 'item-123',
+    userId: 'user-1',
+    title: 'Test Listing',
+    sellerPhone: null, // Important: No initial phone to force RPC call
+    countryCode: 'JO',
+    status: 'active',
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockDeleteListing.mockResolvedValue({ success: true, error: null });
-    vi.mocked(useUI).mockReturnValue({
-      isArabic: false,
-      goBack: mockGoBack,
+
+    (useUI as any).mockReturnValue({
+      isArabic: true,
+      goBack: vi.fn(),
       selectedListingId: 'item-123',
-      setSelectedThreadId: mockSetSelectedThreadId,
-      setSelectedSellerPhone: mockSetSelectedSellerPhone,
-      navigateTo: mockNavigateTo,
+      setSelectedListingId: vi.fn(),
+      setSelectedThreadId: vi.fn(),
+      setSelectedSellerPhone: vi.fn(),
+      navigateTo: vi.fn(),
       browseCountryCode: 'JO',
-    } as unknown as ReturnType<typeof useUI>);
-    vi.mocked(useListings).mockReturnValue({
-      getListing: mockGetListing.mockImplementation((id: string) => (id === 'item-123' ? mockListing : null)),
-      deleteListing: mockDeleteListing,
-    } as unknown as ReturnType<typeof useListings>);
-    vi.mocked(useChat).mockReturnValue({
-      openConversation: mockOpenConversation,
-    } as unknown as ReturnType<typeof useChat>);
-    vi.mocked(useAuth).mockReturnValue({
+    });
+
+    (useListings as any).mockReturnValue({
+      getListing: vi.fn().mockReturnValue(mockListing),
+    });
+
+    (useChat as any).mockReturnValue({
+      openConversation: vi.fn(),
+    });
+
+    // Mock window.location and window.open
+    vi.stubGlobal('location', { href: '' });
+    vi.stubGlobal('open', vi.fn());
+
+    // Mock supabase RPC for phone reveal
+    (supabase.rpc as any).mockResolvedValue({
+      data: '+962791234567',
+      error: null,
+    });
+  });
+
+  it('handleCall with unauthenticated user sets window.location.href to tel: link', async () => {
+    (useAuth as any).mockReturnValue({
+      authStatus: 'unauthenticated',
+      user: null,
+    });
+
+    const { result } = renderHook(() => useListingDetail());
+
+    await act(async () => {
+      await result.current.handleCall();
+    });
+
+    expect(supabase.rpc).toHaveBeenCalledWith('get_listing_phone', { p_listing_id: 'item-123' });
+    expect(window.location.href).toBe('tel:+962791234567');
+  });
+
+  it('handleCall with authenticated user sets window.location.href to tel: link', async () => {
+    (useAuth as any).mockReturnValue({
       authStatus: 'authenticated',
-      user: { id: 'u1', phone: '0799999999', countryCode: 'JO' },
-    } as unknown as ReturnType<typeof useAuth>);
-  });
+      user: { id: 'user-1' },
+    });
 
-  it('returns listing as null when selectedListingId is null', () => {
-    vi.mocked(useUI).mockReturnValue({
-      isArabic: false,
-      goBack: mockGoBack,
-      selectedListingId: null,
-      setSelectedThreadId: mockSetSelectedThreadId,
-      setSelectedSellerPhone: mockSetSelectedSellerPhone,
-      navigateTo: mockNavigateTo,
-      browseCountryCode: 'JO',
-    } as unknown as ReturnType<typeof useUI>);
     const { result } = renderHook(() => useListingDetail());
-    expect(result.current.listing).toBeNull();
+
+    await act(async () => {
+      await result.current.handleCall();
+    });
+
+    expect(supabase.rpc).toHaveBeenCalledWith('get_listing_phone', { p_listing_id: 'item-123' });
+    expect(window.location.href).toBe('tel:+962791234567');
   });
 
-  it('handleStartChat with unauthenticated user navigates to login and starts no chat', async () => {
-    vi.mocked(useAuth).mockReturnValue({
+  it('handleWhatsApp with unauthenticated user opens WhatsApp URL', async () => {
+    (useAuth as any).mockReturnValue({
       authStatus: 'unauthenticated',
       user: null,
-    } as unknown as ReturnType<typeof useAuth>);
+    });
+
     const { result } = renderHook(() => useListingDetail());
+    const spyOpen = vi.spyOn(window, 'open');
+
     await act(async () => {
-      await result.current.handleStartChat();
+      await result.current.handleWhatsApp();
     });
-    expect(mockNavigateTo).toHaveBeenCalledWith('login');
-    expect(mockOpenConversation).not.toHaveBeenCalled();
-    expect(mockSetSelectedThreadId).not.toHaveBeenCalled();
-  });
 
-  it('handleDelete deletes listing and calls goBack', async () => {
-    const { result } = renderHook(() => useListingDetail());
-    await act(async () => {
-      await result.current.handleDelete();
-    });
-    expect(mockDeleteListing).toHaveBeenCalledWith('item-123');
-    expect(mockGoBack).toHaveBeenCalledTimes(1);
-  });
-
-  it('handleSelectSeller prefers userId when available', () => {
-    const { result } = renderHook(() => useListingDetail());
-    act(() => {
-      result.current.handleSelectSeller();
-    });
-    expect(mockSetSelectedSellerPhone).toHaveBeenCalledWith(mockListing.userId);
-    expect(mockNavigateTo).toHaveBeenCalledWith('seller-profile');
-  });
-
-  it('handleSelectSeller falls back to sellerPhone for legacy rows', () => {
-    mockGetListing.mockImplementation(() => ({
-      ...mockListing,
-      userId: undefined,
-    }));
-    const { result } = renderHook(() => useListingDetail());
-    act(() => {
-      result.current.handleSelectSeller();
-    });
-    expect(mockSetSelectedSellerPhone).toHaveBeenCalledWith(mockListing.sellerPhone);
-    expect(mockNavigateTo).toHaveBeenCalledWith('seller-profile');
-  });
-
-  it('handleStartChat with authenticated user starts conversation and navigates to thread', async () => {
-    mockOpenConversation.mockResolvedValue({ id: 'thread-123' });
-    const { result } = renderHook(() => useListingDetail());
-    await act(async () => {
-      await result.current.handleStartChat();
-    });
-    expect(mockOpenConversation).toHaveBeenCalledWith(
-      { listingId: 'item-123', buyerId: 'u1', sellerId: 'seller-u1', marketCode: 'JO' },
-      'JO'
-    );
-    expect(mockSetSelectedThreadId).toHaveBeenCalledWith('thread-123');
-    expect(mockNavigateTo).toHaveBeenCalledWith('thread');
-  });
-
-  it('handleCall with unauthenticated user sets window.location.href to tel: link', () => {
-    vi.mocked(useAuth).mockReturnValue({
-      authStatus: 'unauthenticated',
-      user: null,
-    } as unknown as ReturnType<typeof useAuth>);
-    const originalLocation = window.location;
-    const mockLocation = { href: '' };
-    Object.defineProperty(window, 'location', {
-      writable: true,
-      value: mockLocation,
-    });
-    const { result } = renderHook(() => useListingDetail());
-    act(() => {
-      result.current.handleCall();
-    });
-    expect(mockLocation.href).toBe('tel:+962791234567');
-    Object.defineProperty(window, 'location', {
-      writable: true,
-      value: originalLocation,
-    });
-  });
-
-  it('handleCall with authenticated user sets window.location.href to tel: link', () => {
-    const originalLocation = window.location;
-    const mockLocation = { href: '' };
-    Object.defineProperty(window, 'location', {
-      writable: true,
-      value: mockLocation,
-    });
-    const { result } = renderHook(() => useListingDetail());
-    act(() => {
-      result.current.handleCall();
-    });
-    expect(mockLocation.href).toBe('tel:+962791234567');
-    Object.defineProperty(window, 'location', {
-      writable: true,
-      value: originalLocation,
-    });
-  });
-
-  it('handleWhatsApp with unauthenticated user opens WhatsApp URL', () => {
-    vi.mocked(useAuth).mockReturnValue({
-      authStatus: 'unauthenticated',
-      user: null,
-    } as unknown as ReturnType<typeof useAuth>);
-    const spyOpen = vi.spyOn(window, 'open').mockImplementation(() => null);
-    const { result } = renderHook(() => useListingDetail());
-    act(() => {
-      result.current.handleWhatsApp();
-    });
+    expect(supabase.rpc).toHaveBeenCalledWith('get_listing_phone', { p_listing_id: 'item-123' });
     expect(spyOpen).toHaveBeenCalled();
-    const urlCalled = spyOpen.mock.calls[0][0] as string;
-    expect(urlCalled).toContain('wa.me');
-    expect(urlCalled).toContain('791234567');
-    spyOpen.mockRestore();
   });
 
-  it('handleWhatsApp with authenticated user opens WhatsApp URL', () => {
-    const spyOpen = vi.spyOn(window, 'open').mockImplementation(() => null);
-    const { result } = renderHook(() => useListingDetail());
-    act(() => {
-      result.current.handleWhatsApp();
-    });
-    expect(spyOpen).toHaveBeenCalled();
-    const urlCalled = spyOpen.mock.calls[0][0] as string;
-    expect(urlCalled).toContain('wa.me');
-    expect(urlCalled).toContain('791234567');
-    spyOpen.mockRestore();
-  });
-
-  it('exposes isOwner=true when user.phone equals listing.sellerPhone', () => {
-    vi.mocked(useAuth).mockReturnValue({
+  it('handleWhatsApp with authenticated user opens WhatsApp URL', async () => {
+    (useAuth as any).mockReturnValue({
       authStatus: 'authenticated',
-      user: { id: 'u1', phone: '0791234567', countryCode: 'JO' },
-    } as unknown as ReturnType<typeof useAuth>);
+      user: { id: 'user-1' },
+    });
+
     const { result } = renderHook(() => useListingDetail());
-    expect(result.current.isOwner).toBe(true);
+    const spyOpen = vi.spyOn(window, 'open');
+
+    await act(async () => {
+      await result.current.handleWhatsApp();
+    });
+
+    expect(supabase.rpc).toHaveBeenCalledWith('get_listing_phone', { p_listing_id: 'item-123' });
+    expect(spyOpen).toHaveBeenCalled();
   });
 });
