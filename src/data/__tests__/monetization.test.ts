@@ -26,15 +26,15 @@ describe('Data Layer - Monetization & Regional Quota Rules', () => {
     expect(MONETIZATION_MATRIX.packages.PS.currency).toBe('ILS');
   });
 
-  it('getFreeAdLimitForCategory returns 2 for premium categories and 5 for general categories', () => {
+  it('getFreeAdLimitForCategory returns 2 for premium categories and 20 for general categories', () => {
     expect(getFreeAdLimitForCategory('motors')).toBe(2);
     expect(getFreeAdLimitForCategory('real-estate')).toBe(2);
     expect(getFreeAdLimitForCategory('سيارات')).toBe(2);
     expect(getFreeAdLimitForCategory('عقارات')).toBe(2);
 
-    expect(getFreeAdLimitForCategory('electronics')).toBe(5);
-    expect(getFreeAdLimitForCategory('fashion')).toBe(5);
-    expect(getFreeAdLimitForCategory('home-appliances')).toBe(5);
+    expect(getFreeAdLimitForCategory('electronics')).toBe(20);
+    expect(getFreeAdLimitForCategory('fashion')).toBe(20);
+    expect(getFreeAdLimitForCategory('home-appliances')).toBe(20);
   });
 
   it('validateAdQuotaAvailability allows user when count is strictly below limit', () => {
@@ -52,7 +52,7 @@ describe('Data Layer - Monetization & Regional Quota Rules', () => {
 
     expect(result.allowed).toBe(true);
     expect(result.activeCount).toBe(2);
-    expect(result.limit).toBe(5);
+    expect(result.limit).toBe(20);
   });
 
   it('validateAdQuotaAvailability blocks user when count reaches free limit', () => {
