@@ -1,7 +1,7 @@
 import type { Listing } from '@/types';
 import { supabase } from '@/shared/lib/supabase';
 import { removeListingImages } from './storageService';
-import { rowToListing, type SupabaseListingRow } from './listingsMapper';
+import { rowToListing, listingToRow, type SupabaseListingRow } from './listingsMapper';
 import type { SearchListingsParams } from './searchListings.types';
 
 export type { SearchListingsParams } from './searchListings.types';
@@ -129,5 +129,27 @@ export async function updateListingStatus(id: string, status: 'active' | 'sold' 
     return { error: error ? error.message : null };
   } catch (err) {
     return { error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
+export async function updateListingRemote(
+  id: string,
+  updates: Partial<Listing>
+): Promise<{ data: Listing | null; error: string | null }> {
+  try {
+    const row = listingToRow(updates);
+    if (Object.keys(row).length === 0) {
+      return { data: null, error: 'No fields to update' };
+    }
+    const { data, error } = await supabase
+      .from('listings')
+      .update(row)
+      .eq('id', id)
+      .select('*')
+      .single();
+    if (error) return { data: null, error: error.message };
+    return { data: rowToListing(data as SupabaseListingRow), error: null };
+  } catch (err) {
+    return { data: null, error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
