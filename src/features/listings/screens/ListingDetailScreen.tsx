@@ -15,6 +15,7 @@ import { ListingNotFound } from '../components/ListingNotFound';
 import { ShareModal, ReportModal, ErrorBoundary } from '@/shared/components';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { DeleteConfirmDialog } from '../components/DeleteConfirmDialog';
+import { ListingIdBadge } from '@/shared/components/ListingIdBadge';
 
 export const ListingDetailScreen: React.FC = () => {
   const detail = useListingDetail();
@@ -59,6 +60,12 @@ export const ListingDetailScreen: React.FC = () => {
         />
 
         <div className="p-4 flex flex-col gap-3">
+          {isAdmin && (
+            <div className="flex justify-end">
+              <ListingIdBadge id={detail.listing.id} isArabic={detail.isArabic} />
+            </div>
+          )}
+
           <ListingMainInfo
             title={detail.listing.title || ''}
             price={detail.listing.price || '0'}
