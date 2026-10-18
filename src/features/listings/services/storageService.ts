@@ -98,22 +98,32 @@ export function extractStoragePath(url: string): string | null {
   return url.slice(idx + marker.length);
 }
 
-export async function removeListingImages(urls: readonly string[]): Promise<number> {
+export interface RemoveImagesResult {
+  readonly deleted: number;
+  readonly failed: number;
+  readonly error: string | null;
+}
+
+export async function removeListingImages(urls: readonly string[]): Promise<RemoveImagesResult> {
   const paths: string[] = [];
   for (const url of urls) {
     const path = extractStoragePath(url);
     if (path) paths.push(path);
   }
-  if (paths.length === 0) return 0;
+  if (paths.length === 0) return { deleted: 0, failed: 0, error: null };
   try {
-    const { error } = await supabase.storage.from(BUCKET).remove(paths);
+    const { data, error } = await supabase.storage.from(BUCKET).remove(paths);
     if (error) {
       // eslint-disable-next-line no-console
       console.warn('[removeListingImages]', error.message);
+      return { deleted: 0, failed: paths.length, error: error.message };
     }
+    const deleted = Array.isArray(data) ? data.length : paths.length;
+    return { deleted, failed: paths.length - deleted, error: null };
   } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Unknown error';
     // eslint-disable-next-line no-console
     console.warn('[removeListingImages] threw', err);
+    return { deleted: 0, failed: paths.length, error: msg };
   }
-  return paths.length;
 }
