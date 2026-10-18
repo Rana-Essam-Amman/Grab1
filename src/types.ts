@@ -157,7 +157,6 @@ export interface UserProfile {
   countryCode: string;
   avatarUrl?: string;
   avatar?: string;
-  isVipShop?: boolean;
   browseMarket?: 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | null;
 }
 
