@@ -82,21 +82,3 @@ export function validateAdQuotaAvailability(
     limit,
   };
 }
-
-export function executeAutoBumpScheduler<T extends { isAutoBumpActive?: boolean; lastBumpedAt?: string; createdAt?: string }>(listings: T[]): T[] {
-  const now = new Date().getTime();
-  const oneDayMs = 24 * 60 * 60 * 1000;
-
-  return listings.map((l) => {
-    if (l.isAutoBumpActive) {
-      const lastBump = l.lastBumpedAt ? new Date(l.lastBumpedAt).getTime() : new Date(l.createdAt || now).getTime();
-      if (now - lastBump > oneDayMs) {
-        return {
-          ...l,
-          lastBumpedAt: new Date().toISOString(),
-        };
-      }
-    }
-    return l;
-  });
-}
