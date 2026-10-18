@@ -60,7 +60,7 @@ export const ListingDetailScreen: React.FC = () => {
         />
 
         <div className="p-4 flex flex-col gap-3">
-          {isAdmin && (
+          {(isAdmin || detail.isOwner) && (
             <div className="flex justify-end">
               <ListingIdBadge id={detail.listing.id} isArabic={detail.isArabic} />
             </div>
