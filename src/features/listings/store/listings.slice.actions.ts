@@ -97,8 +97,8 @@ export const createListingsActions = (
 
   setIsQuotaExhausted: (exhausted: boolean) => set((state) => { state.isQuotaExhausted = exhausted; }),
 
-  validateAdQuotaAvailability: (categorySlug: string, userId = 'guest', countryCode = 'JO', isVip = false) => {
-    const result = validateAdQuotaAvailabilityHelper(get().listings, userId, countryCode, categorySlug, isVip);
+  validateAdQuotaAvailability: (categorySlug: string, userId = 'guest', countryCode = 'JO') => {
+    const result = validateAdQuotaAvailabilityHelper(get().listings, userId, countryCode, categorySlug);
     set((state) => { state.isQuotaExhausted = !result.allowed; });
     return result.allowed;
   },
