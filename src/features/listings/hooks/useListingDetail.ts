@@ -43,8 +43,7 @@ export function useListingDetail(): UseListingDetailReturn {
   }, [user, listing]);
   const handleSelectSeller = useCallback(() => {
     if (!listing) return;
-    // Prefer userId (stable UUID, safe canonical, does not expose phone).
-    // Fallback to phone for legacy listings (pre-userId).
+    // Prefer userId (stable UUID, safe canonical); fallback to phone for legacy listings (pre-userId).
     const sellerKey = listing.userId || listing.sellerPhone;
     if (!sellerKey) return;
     setSelectedSellerPhone(sellerKey);
@@ -97,4 +96,4 @@ export function useListingDetail(): UseListingDetailReturn {
     handleStartChat, handleCall, handleWhatsApp, handleWhatsAppClick, handleWhatsAppIntent,
     handleDelete, handleEdit, handleSelectSeller, isAuthenticated, isOwner, isArabic, goBack, navigateTo,
   };
-  }
+}
