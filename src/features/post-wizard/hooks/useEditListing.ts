@@ -12,6 +12,7 @@ export function useEditListing() {
   const [title, setTitle] = useState(listing?.title || '');
   const [price, setPrice] = useState(listing?.price?.toString() || '');
   const [description, setDescription] = useState(listing?.description || '');
+  const [images, setImages] = useState<string[]>(listing?.images || []);
   const [values, setValues] = useState<Record<string, string>>(() => {
     const out: Record<string, string> = {};
     (listing?.attributes as Array<{ key?: string; label?: string; value?: unknown }> | undefined)?.forEach((a) => {
@@ -67,6 +68,7 @@ export function useEditListing() {
         price: price.trim(),
         description: description.trim(),
         attributes,
+        images,
       });
       if (!result.success) {
         setSaveError(isArabic
@@ -78,10 +80,10 @@ export function useEditListing() {
     } finally {
       setIsSaving(false);
     }
-  }, [canSave, listing, isSaving, fields, values, isArabic, title, price, description, saveListingEdits, goBack]);
+  }, [canSave, listing, isSaving, fields, values, isArabic, title, price, description, images, saveListingEdits, goBack]);
 
   return {
-    listing, title, setTitle, price, setPrice, description, setDescription,
+    listing, title, setTitle, price, setPrice, description, setDescription, images, setImages,
     values, setField, fields, missingRequired: missing, canSave, handleSave,
     isArabic, submitAttempted, isSaving, saveError,
   };
