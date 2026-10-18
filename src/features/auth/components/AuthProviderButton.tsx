@@ -19,7 +19,7 @@ export const AuthProviderButton: React.FC<AuthProviderButtonProps> = ({
       type="button"
       onClick={() => onTap(providerId)}
       aria-disabled={comingSoon ? 'true' : undefined}
-      className={`relative flex w-full items-center justify-center gap-3 rounded-xl border border-border bg-surface px-4 py-3 text-sm font-semibold text-content-primary transition-colors hover:bg-canvas focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+      className={`relative flex w-full items-center justify-center gap-3 rounded-xl border border-border bg-surface px-4 py-3 text-sm font-semibold text-ink transition-colors hover:bg-canvas focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
         comingSoon ? 'opacity-60 cursor-not-allowed' : ''
       }`}
     >
@@ -27,7 +27,7 @@ export const AuthProviderButton: React.FC<AuthProviderButtonProps> = ({
         {icon}
       </span>
       <span>{label}</span>
-      
+
       {comingSoon && (
         <span className="absolute right-3 text-[10px] font-bold text-brand bg-brand/10 px-2 py-0.5 rounded-full">
           {isArabic ? 'قريباً جداً' : 'Coming soon'}
