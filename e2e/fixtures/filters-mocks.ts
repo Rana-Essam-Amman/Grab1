@@ -98,6 +98,21 @@ export async function installFiltersMocks(page: Page): Promise<void> {
       return;
     }
 
+    // PATCH → 200 with merged row (edit flow via updateListingRemote)
+    if (method === 'PATCH') {
+      const idParam = url.searchParams.get('id') ?? '';
+      const id = idParam.replace(/^eq\./, '');
+      const match = seed.find((l) => l.id === id);
+      if (!match) {
+        await route.fulfill({ status: 404, contentType: 'application/json', body: JSON.stringify({ message: 'Listing not found' }) });
+        return;
+      }
+      const patch = JSON.parse(route.request().postData() || '{}');
+      const updated = { ...match, ...patch, updated_at: new Date().toISOString() };
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(updated) });
+      return;
+    }
+
     if (method !== 'GET') return route.continue();
 
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(seed) });
