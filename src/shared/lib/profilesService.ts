@@ -72,21 +72,29 @@ export async function upsertProfile(
   }
 }
 
-export async function setInitialPhone(phone: string): Promise<boolean> {
+export interface SetInitialPhoneResult {
+  readonly ok: boolean;
+  readonly reason?: 'duplicate' | 'invalid' | 'unknown';
+}
+
+export async function setInitialPhone(phone: string): Promise<SetInitialPhoneResult> {
   const trimmed = phone.trim();
-  if (!trimmed) return false;
+  if (!trimmed) return { ok: false, reason: 'invalid' };
   try {
     const { data, error } = await supabase.rpc('set_initial_phone', {
       p_phone: trimmed,
     });
     if (error) {
+      if (error.message?.includes('PHONE_ALREADY_USED')) {
+        return { ok: false, reason: 'duplicate' };
+      }
       console.warn('[profilesService] setInitialPhone error', error.message);
-      return false;
+      return { ok: false, reason: 'unknown' };
     }
-    return data === true;
+    return { ok: data === true };
   } catch (err) {
     console.warn('[profilesService] setInitialPhone threw', err);
-    return false;
+    return { ok: false, reason: 'unknown' };
   }
 }
 
