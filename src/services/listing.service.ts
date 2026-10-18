@@ -5,7 +5,6 @@ import { ListingSchema } from '../schemas/listing.schema';
 import { readValidated, writeValidated } from '../shared/lib/safeStorage';
 import { seedListings } from '../data/seedListings';
 import { isDemoMode, withDemoSeeds } from '../shared/lib/demoMode';
-import { executeAutoBumpScheduler as runBumpScheduler } from '../data/monetization';
 
 const ListingsArraySchema = z.array(ListingSchema);
 const WishlistArraySchema = z.array(z.string());
@@ -19,11 +18,10 @@ const WishlistArraySchema = z.array(z.string());
 export function getListingsFromStorage(): Listing[] {
   const parsed = readValidated<Listing[]>('catch_listings', ListingsArraySchema, []);
   if (isDemoMode()) {
-    return executeAutoBumpScheduler(withDemoSeeds(parsed));
+    return withDemoSeeds(parsed);
   }
   const seedIds = new Set(seedListings.map((s) => s.id));
-  const liveListings = parsed.filter((pl) => pl && !seedIds.has(pl.id));
-  return executeAutoBumpScheduler(liveListings);
+  return parsed.filter((pl) => pl && !seedIds.has(pl.id));
 }
 
 export function saveListingsToStorage(listings: Listing[]): void {
@@ -91,8 +89,4 @@ export function getWishlistForMarket(market: string): string[] {
 
 export function saveWishlistForMarket(market: string, ids: string[]): void {
   writeValidated(getWishlistKey(market), WishlistArraySchema, ids);
-}
-
-export function executeAutoBumpScheduler(listings: Listing[]): Listing[] {
-  return runBumpScheduler(listings);
 }
