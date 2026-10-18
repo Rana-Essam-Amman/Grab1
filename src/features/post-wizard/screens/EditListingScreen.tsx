@@ -12,6 +12,7 @@ export const EditListingScreen: React.FC = () => {
   const {
     listing, title, setTitle, price, setPrice, description, setDescription,
     values, setField, fields, missingRequired, canSave, handleSave, submitAttempted,
+    isSaving, saveError,
   } = useEditListing();
 
   if (!listing) {
@@ -61,8 +62,16 @@ export const EditListingScreen: React.FC = () => {
 
         <MissingFieldsNotice isArabic={isArabic} fields={missingRequired} />
 
-        <Button onClick={handleSave} disabled={!canSave} size="lg" fullWidth>
-          {isArabic ? 'حفظ التعديلات' : 'Save Changes'}
+        {saveError && (
+          <div className="rounded-xl bg-red-50 border border-red-200 px-3 py-2 text-xs text-red-700">
+            {saveError}
+          </div>
+        )}
+
+        <Button onClick={handleSave} disabled={!canSave || isSaving} size="lg" fullWidth>
+          {isSaving
+            ? (isArabic ? 'جاري الحفظ...' : 'Saving...')
+            : (isArabic ? 'حفظ التعديلات' : 'Save Changes')}
         </Button>
         <div className="h-8"></div>
       </div>
