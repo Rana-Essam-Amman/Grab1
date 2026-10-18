@@ -37,7 +37,8 @@ export const LoginGatewayContent: React.FC<LoginGatewayContentProps> = ({
     <h1 className="mb-2 text-2xl font-bold text-ink">
       {isArabic ? 'مرحباً بك في FOX' : 'Welcome to FOX'}
     </h1>
-    <p className="mb-6 max-w-sm text-sm leading-relaxed text-ink-muted">
+    {/* 🎯 FIX: Changed text-ink-muted to text-ink for better visibility in dark mode */}
+    <p className="mb-6 max-w-sm text-sm leading-relaxed text-ink">
       {isArabic
         ? 'سوقك المحلي للعثور على الصفقات المناسبة لك'
         : 'Your local marketplace for finding the right deals'}
