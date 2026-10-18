@@ -11,7 +11,7 @@ export const LoginTermsFooter: React.FC<LoginTermsFooterProps> = ({
   const { navigateTo } = useUI();
 
   return (
-    <p className="mt-6 max-w-sm text-center text-xs leading-6 text-ink-muted">
+    <p className="mt-6 max-w-sm text-center text-xs leading-6 text-ink">
       {isArabic ? 'بالمتابعة، أنت توافق على ' : 'By continuing, you agree to our '}
       <button
         type="button"
