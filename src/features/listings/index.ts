@@ -14,7 +14,6 @@ export {
   fetchListings,
   searchListings,
   LISTINGS_PAGE_SIZE,
-  bumpListing,
 } from './services/listingsService';
 export type {
   FetchListingsParams,
