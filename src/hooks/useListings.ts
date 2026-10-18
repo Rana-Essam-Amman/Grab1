@@ -46,6 +46,7 @@ export const useListings = () => {
     addListing: store.addListing,
     publishListing: store.publishListing,
     updateListing: store.updateListing,
+    saveListingEdits: store.saveListingEdits,
     deleteListing: store.deleteListing,
     getListing,
     getUserListings,
