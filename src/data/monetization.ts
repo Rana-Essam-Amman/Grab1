@@ -1,4 +1,4 @@
-د// RULE-14-EXCEPTION: Pricing matrix
+// RULE-14-EXCEPTION: Pricing matrix
 // Strategic decision 2026-10-08: disruption via impulse pricing + 0% commission.
 // Verified against Haraj (1% commission, 2390 SAR/yr store), OpenSooq (paid
 // promotion), Dubizzle (109 AED / 7-day Featured), Motory (1% cars).
