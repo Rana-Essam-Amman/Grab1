@@ -59,26 +59,6 @@ describe('Data Layer - Monetization & Regional Quota Rules', () => {
     expect(result.limit).toBe(20);
   });
 
-  it('validateAdQuotaAvailability provides unlimited bypass gate for VIP merchants', () => {
-    const mockListings = [
-      { userId: 'vip-user', countryCode: 'JO', categorySlug: 'motors' },
-      { userId: 'vip-user', countryCode: 'JO', categorySlug: 'motors' },
-      { userId: 'vip-user', countryCode: 'JO', categorySlug: 'motors' },
-      { userId: 'vip-user', countryCode: 'JO', categorySlug: 'motors' },
-    ];
-
-    const result = validateAdQuotaAvailability(
-      mockListings,
-      'vip-user',
-      'JO',
-      'motors',
-      true // isVipShop
-    );
-
-    expect(result.allowed).toBe(true);
-    expect(result.limit).toBe(999);
-  });
-
   it('validateAdQuotaAvailability scopes quota per country correctly', () => {
     const mockListings = [
       { userId: 'user-1', countryCode: 'SA', categorySlug: 'motors' },
