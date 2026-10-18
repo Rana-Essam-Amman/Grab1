@@ -15,7 +15,6 @@ export interface CountryMonetizationPackage {
 export interface MonetizationMatrix {
   freeLimits: {
     generalCategoryLimit: number;
-    premiumCategoryLimit: number;
     bumpDailyLimit: number;
     photoLimit: number;
   };
@@ -25,7 +24,6 @@ export interface MonetizationMatrix {
 export const MONETIZATION_MATRIX: MonetizationMatrix = {
   freeLimits: {
     generalCategoryLimit: 20,
-    premiumCategoryLimit: 2,
     bumpDailyLimit: 3,
     photoLimit: 10,
   },
@@ -78,37 +76,24 @@ export const MONETIZATION_MATRIX: MonetizationMatrix = {
   },
 };
 
-export function getFreeAdLimitForCategory(categorySlug: string): number {
-  const premiumCategories = ['motors', 'real-estate', 'سيارات', 'عقارات'];
-  if (premiumCategories.includes(categorySlug.toLowerCase())) {
-    return MONETIZATION_MATRIX.freeLimits.premiumCategoryLimit;
-  }
-  return MONETIZATION_MATRIX.freeLimits.generalCategoryLimit;
-}
-
 export function validateAdQuotaAvailability(
   listings: Array<{ countryCode?: string; sellerPhone?: string; userId?: string; categorySlug?: string }>,
   userId: string,
   countryCode: string,
-  categorySlug: string,
+  _categorySlug: string,
   isVipShop?: boolean
 ): { allowed: boolean; activeCount: number; limit: number } {
   // VIP Merchant Store Unlimited Bypass Gate
   if (isVipShop) {
     return { allowed: true, activeCount: 0, limit: 999 };
   }
-  const limit = getFreeAdLimitForCategory(categorySlug);
+  const limit = MONETIZATION_MATRIX.freeLimits.generalCategoryLimit;
 
-  // Count active listings for this user and country in this category branch
+  // Count active listings for this user in this country (matches DB trigger)
   const activeCount = listings.filter((l) => {
     const matchesUser = l.userId === userId || (!l.userId && userId);
     const matchesCountry = (l.countryCode || 'JO') === countryCode;
-    const isPremiumCat = ['motors', 'real-estate'].includes(categorySlug.toLowerCase());
-    const itemCat = (l.categorySlug || '').toLowerCase();
-    const matchesCategory = isPremiumCat
-      ? ['motors', 'real-estate'].includes(itemCat)
-      : !['motors', 'real-estate'].includes(itemCat);
-    return matchesUser && matchesCountry && matchesCategory;
+    return matchesUser && matchesCountry;
   }).length;
 
   return {
