@@ -1,12 +1,9 @@
 import { useUI } from '@/hooks/useUI';
-import { useMonetization } from '@/hooks/useMonetization';
-import React, { useMemo, useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { SearchBar } from '@/features/explore/components/SearchBar';
-import { MONETIZATION_MATRIX } from '@/data/monetization';
 import { useExploreListings } from '../hooks/useExploreListings';
 import { ExploreVoidedNoticeBanner } from '../components/ExploreVoidedNoticeBanner';
 import { ExploreTopSections } from '../components/ExploreTopSections';
-import { ExploreQuotaPaywallModal } from '../components/ExploreQuotaPaywallModal';
 import { FiltersTriggerBar } from '../components/filters/FiltersTriggerBar';
 import { ExploreListingsSections } from '../components/ExploreListingsSections';
 import { SearchRelatedBanner } from '@/features/listings/components/SearchRelatedBanner';
@@ -23,7 +20,6 @@ function useDebouncedValue<T>(value: T, delayMs: number): T {
 
 export const ExploreScreen: React.FC = () => {
   const { isArabic, browseCountryCode, navigateTo, setSearchQuery, isSearchFocused, setIsSearchFocused } = useUI();
-  const { isQuotaExhausted, setIsQuotaExhausted } = useMonetization();
   const [searchInput, setSearchInput] = useState('');
   const debouncedSearch = useDebouncedValue(searchInput, 600);
 
@@ -37,15 +33,6 @@ export const ExploreScreen: React.FC = () => {
     hasMore, isLoadingMore, onLoadMore, hasAnyFilter
   } = useExploreListings();
   const { searchBanner, searchRelatedHeader, tier2Listings } = useListings();
-
-  const currentPackage = useMemo(() => {
-    return MONETIZATION_MATRIX.packages[browseCountryCode] || MONETIZATION_MATRIX.packages['JO'];
-  }, [browseCountryCode]);
-
-  const handleStartPost = useCallback(() => {
-    setIsQuotaExhausted(false);
-    navigateTo('post-ad-entry');
-  }, [setIsQuotaExhausted, navigateTo]);
 
   const handlePostWithSearch = useCallback(() => {
     navigateTo('post-ad-entry');
@@ -119,16 +106,6 @@ export const ExploreScreen: React.FC = () => {
         isArabic={isArabic}
         showTier2={showTier2}
         hasTier1={hasTier1}
-      />
-
-      {/* The Native Quota Exhaustion Paywall Modal */}
-      <ExploreQuotaPaywallModal
-        isOpen={isQuotaExhausted}
-        onClose={() => setIsQuotaExhausted(false)}
-        onStartPost={handleStartPost}
-        isArabic={isArabic}
-        turboAdCost={currentPackage.turboAdCost}
-        currencySymbol={currentPackage.currencySymbol}
       />
     </div>
   );
