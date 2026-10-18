@@ -55,27 +55,22 @@ begin
   raise notice 'PASS B: messages UPDATE grants locked to deleted_at';
 end $$;
 
--- C. bump_listing enforces a limit
+-- C. bump_listing RPC has been removed (B.3.2 deprecation)
 do $$
 declare
-  v_body text;
+  v_exists boolean;
 begin
-  select prosrc into v_body
-  from pg_proc
-  where proname='bump_listing'
-    and pronamespace='public'::regnamespace;
+  select exists(
+    select 1 from pg_proc
+    where proname='bump_listing'
+      and pronamespace='public'::regnamespace
+  ) into v_exists;
 
-  if v_body is null then
-    raise exception 'FAIL C: bump_listing function missing';
-  end if;
-  if v_body not like '%v_limit%' then
-    raise exception 'FAIL C: bump_listing does not enforce a limit';
-  end if;
-  if v_body not like '%Daily bump limit reached%' then
-    raise exception 'FAIL C: bump_listing missing limit error message';
+  if v_exists then
+    raise exception 'FAIL C: bump_listing should be dropped but still exists';
   end if;
 
-  raise notice 'PASS C: bump_listing enforces daily limit';
+  raise notice 'PASS C: bump_listing RPC was dropped as expected';
 end $$;
 
 rollback;
