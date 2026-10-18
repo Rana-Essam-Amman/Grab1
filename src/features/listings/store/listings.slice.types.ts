@@ -32,6 +32,7 @@ export interface ListingsState {
   publishListing: (listing: Listing, activeCountry: string, isArabic?: boolean) => Promise<PublishResult>;
   addListing: (listing: Listing, activeCountry: string, isArabic?: boolean) => void;
   updateListing: (id: string, updates: Partial<Listing>) => void;
+  saveListingEdits: (id: string, updates: Partial<Listing>) => Promise<{ success: boolean; error: string | null }>;
   deleteListing: (id: string) => Promise<{ success: boolean; error: string | null }>;
   toggleWishlist: (id: string, countryCode?: string) => void;
   clearWishlist: () => void;
