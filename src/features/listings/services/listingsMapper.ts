@@ -66,3 +66,23 @@ export function rowToListing(row: SupabaseListingRow): Listing {
     attributes: attrs as Listing['attributes'],
   };
 }
+
+export function listingToRow(updates: Partial<Listing>): Partial<SupabaseListingRow> {
+  const row: Record<string, unknown> = {};
+  if (updates.title !== undefined) row.title = updates.title;
+  if (updates.description !== undefined) row.description = updates.description;
+  if (updates.price !== undefined) row.price = updates.price;
+  if (updates.currency !== undefined) row.currency = updates.currency;
+  if (updates.countryCode !== undefined) row.country_code = updates.countryCode;
+  if (updates.city !== undefined) row.city = updates.city;
+  if (updates.neighborhood !== undefined) row.neighborhood = updates.neighborhood || null;
+  if (updates.categorySlug !== undefined) row.category_slug = updates.categorySlug;
+  if (updates.subcategorySlug !== undefined) row.subcategory_slug = updates.subcategorySlug || null;
+  if (updates.images !== undefined) row.images = updates.images;
+  if (updates.imageWidth !== undefined) row.image_width = updates.imageWidth ?? null;
+  if (updates.imageHeight !== undefined) row.image_height = updates.imageHeight ?? null;
+  if (updates.attributes !== undefined) row.attributes = updates.attributes;
+  if (updates.sellerName !== undefined) row.seller_name = updates.sellerName || null;
+  if (updates.sellerPhone !== undefined) row.seller_phone = updates.sellerPhone || null;
+  return row as Partial<SupabaseListingRow>;
+}
