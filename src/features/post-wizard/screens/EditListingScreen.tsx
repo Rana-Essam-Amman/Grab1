@@ -6,14 +6,17 @@ import { PostFlowHeader } from '../components/PostFlowHeader';
 import { PostDetailsFormFields } from '../components/PostDetailsFormFields';
 import { useEditListing } from '../hooks/useEditListing';
 import { Lock } from 'iconsax-react';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
+import { AdminImageEditor } from '../components/AdminImageEditor';
 
 export const EditListingScreen: React.FC = () => {
   const { isArabic, goBack } = useUI();
   const {
     listing, title, setTitle, price, setPrice, description, setDescription,
     values, setField, fields, missingRequired, canSave, handleSave, submitAttempted,
-    isSaving, saveError,
+    isSaving, saveError, images, setImages,
   } = useEditListing();
+  const isAdmin = useIsAdmin();
 
   if (!listing) {
     return (
@@ -60,6 +63,15 @@ export const EditListingScreen: React.FC = () => {
           submitAttempted={submitAttempted}
         />
 
+        {isAdmin && (
+          <AdminImageEditor
+            images={images}
+            setImages={setImages}
+            ownerUserId={listing.userId}
+            isArabic={isArabic}
+          />
+        )}
+
         <MissingFieldsNotice isArabic={isArabic} fields={missingRequired} />
 
         {saveError && (
@@ -70,7 +82,7 @@ export const EditListingScreen: React.FC = () => {
 
         <Button onClick={handleSave} disabled={!canSave || isSaving} size="lg" fullWidth>
           {isSaving
-            ? (isArabic ? 'جاري الحفظ...' : 'Saving...')
+            ? (isArabic ? 'جارٍ الحفظ...' : 'Saving...')
             : (isArabic ? 'حفظ التعديلات' : 'Save Changes')}
         </Button>
         <div className="h-8"></div>
