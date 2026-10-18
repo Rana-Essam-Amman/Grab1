@@ -7,15 +7,12 @@ export interface CountryMonetizationPackage {
   currency: string;
   currencySymbol: string;
   turboAdCost: number;
-  autoBumpCost: number;
   featuredAdCost: number;
-  vipStoreMonthlyCost: number;
 }
 
 export interface MonetizationMatrix {
   freeLimits: {
     generalCategoryLimit: number;
-    bumpDailyLimit: number;
     photoLimit: number;
   };
   packages: Record<string, CountryMonetizationPackage>;
@@ -24,7 +21,6 @@ export interface MonetizationMatrix {
 export const MONETIZATION_MATRIX: MonetizationMatrix = {
   freeLimits: {
     generalCategoryLimit: 20,
-    bumpDailyLimit: 3,
     photoLimit: 10,
   },
   packages: {
@@ -33,45 +29,35 @@ export const MONETIZATION_MATRIX: MonetizationMatrix = {
       currency: "JOD",
       currencySymbol: "دينار",
       turboAdCost: 0.75,
-      autoBumpCost: 1,
       featuredAdCost: 2,
-      vipStoreMonthlyCost: 9.9,
     },
     SA: {
       countryCode: "SA",
       currency: "SAR",
       currencySymbol: "ر.س",
       turboAdCost: 4,
-      autoBumpCost: 5,
       featuredAdCost: 9,
-      vipStoreMonthlyCost: 39,
     },
     PS: {
       countryCode: "PS",
       currency: "ILS",
       currencySymbol: "شيكل",
       turboAdCost: 2,
-      autoBumpCost: 3,
       featuredAdCost: 5,
-      vipStoreMonthlyCost: 29,
     },
     LB: {
       countryCode: "LB",
       currency: "USD",
       currencySymbol: "$",
       turboAdCost: 0.69,
-      autoBumpCost: 0.99,
       featuredAdCost: 1.49,
-      vipStoreMonthlyCost: 9.99,
     },
     SY: {
       countryCode: "SY",
       currency: "USD",
       currencySymbol: "$",
       turboAdCost: 0.49,
-      autoBumpCost: 0.79,
       featuredAdCost: 0.99,
-      vipStoreMonthlyCost: 7.99,
     },
   },
 };
