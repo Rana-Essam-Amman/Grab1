@@ -1,5 +1,6 @@
 import { useUI } from '@/hooks/useUI';
 import { useListings } from '@/hooks/useListings';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 import React, { useState, useMemo, useCallback } from 'react';
 import { toast } from 'sonner';
 import { MyAdsHeader } from '../components/MyAdsHeader';
@@ -8,10 +9,11 @@ import { MyAdsContent } from '../components/MyAdsContent';
 
 export const MyAdsScreen: React.FC = () => {
   const { isArabic, navigateTo, setSelectedListingId, setActiveTab } = useUI();
-  const { userListings, wishlistListings, deleteListing, updateListing } = useListings();
+  const { listings, userListings, wishlistListings, deleteListing, updateListing } = useListings();
+  const isAdmin = useIsAdmin();
   const [activeSubTab, setActiveSubTab] = useState<'my' | 'wishlist'>('my');
 
-  const displayedMyAds = useMemo(() => userListings, [userListings]);
+  const displayedMyAds = useMemo(() => isAdmin ? listings : userListings, [isAdmin, listings, userListings]);
 
   const sortedMyAds = useMemo(() => {
     return [...displayedMyAds].sort((a, b) => {

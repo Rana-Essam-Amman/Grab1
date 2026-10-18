@@ -20,11 +20,11 @@ export interface UseListingDetailReturn {
   showShare: boolean; setShowShare: (v: boolean) => void; showReport: boolean; setShowReport: (v: boolean) => void; showWhatsAppSheet: boolean; setShowWhatsAppSheet: (v: boolean) => void;
   handleStartChat: () => void | Promise<void>; handleCall: () => void; handleWhatsApp: () => void;
   handleWhatsAppClick: () => void; handleWhatsAppIntent: (intent: WhatsAppIntent) => void;
-  handleDelete: () => Promise<void>; handleSelectSeller: () => void; isAuthenticated: boolean;
+  handleDelete: () => Promise<void>; handleEdit: () => void; handleSelectSeller: () => void; isAuthenticated: boolean;
   isOwner: boolean; isArabic: boolean; goBack: () => void; navigateTo: (screen: ScreenType) => void;
 }
 export function useListingDetail(): UseListingDetailReturn {
-  const { isArabic, goBack, selectedListingId, setSelectedThreadId, setSelectedSellerPhone, navigateTo, browseCountryCode } = useUI();
+  const { isArabic, goBack, selectedListingId, setSelectedListingId, setSelectedThreadId, setSelectedSellerPhone, navigateTo, browseCountryCode } = useUI();
   const { getListing, deleteListing } = useListings();
   const { openConversation } = useChat();
   const { authStatus, user } = useAuth();
@@ -90,10 +90,11 @@ export function useListingDetail(): UseListingDetailReturn {
     if (!listing) return;
     if ((await deleteListing(listing.id)).success) goBack();
   }, [listing, deleteListing, goBack]);
+  const handleEdit = useCallback(() => { if (!listing) return; setSelectedListingId(listing.id); navigateTo('edit-post'); }, [listing, setSelectedListingId, navigateTo]);
   return {
     listing, activeCountry, isCountryMismatch, ...derived, activePhotoIdx, setActivePhotoIdx,
     showShare, setShowShare, showReport, setShowReport, showWhatsAppSheet, setShowWhatsAppSheet,
     handleStartChat, handleCall, handleWhatsApp, handleWhatsAppClick, handleWhatsAppIntent,
-    handleDelete, handleSelectSeller, isAuthenticated, isOwner, isArabic, goBack, navigateTo,
+    handleDelete, handleEdit, handleSelectSeller, isAuthenticated, isOwner, isArabic, goBack, navigateTo,
   };
   }

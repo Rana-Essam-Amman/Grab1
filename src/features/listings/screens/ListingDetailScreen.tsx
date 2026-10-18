@@ -13,9 +13,11 @@ import { ListingActionBar } from '../components/ListingActionBar';
 import { WhatsAppIntentSheet } from '../components/WhatsAppIntentSheet';
 import { ListingNotFound } from '../components/ListingNotFound';
 import { ShareModal, ReportModal, ErrorBoundary } from '@/shared/components';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 
 export const ListingDetailScreen: React.FC = () => {
   const detail = useListingDetail();
+  const isAdmin = useIsAdmin();
 
   if (!detail.listing) {
     return <ListingNotFound isArabic={detail.isArabic} onGoBack={detail.goBack} />;
@@ -29,8 +31,10 @@ export const ListingDetailScreen: React.FC = () => {
           onBack={detail.goBack}
           onShare={() => detail.setShowShare(true)}
           onReport={() => detail.setShowReport(true)}
+          onEdit={detail.handleEdit}
           onDelete={detail.handleDelete}
           isOwner={detail.isOwner}
+          isAdmin={isAdmin}
           listingId={detail.listing.id}
         />
 

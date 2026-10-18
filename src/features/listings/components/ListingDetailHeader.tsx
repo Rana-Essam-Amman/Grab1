@@ -1,18 +1,20 @@
 import React from 'react';
 import { BookmarkHeartButton } from '@/shared/components';
-import { ArrowLeft, ArrowRight, Share, Warning2, Trash } from 'iconsax-react';
+import { ArrowLeft, ArrowRight, Share, Warning2, Trash, Edit } from 'iconsax-react';
 
 export interface ListingDetailHeaderProps {
   isArabic: boolean;
   onBack: () => void;
   onShare: () => void;
   onReport: () => void;
+  onEdit: () => void;
   onDelete: () => void;
   isOwner: boolean;
+  isAdmin?: boolean;
   listingId: string;
 }
 
-export const ListingDetailHeader: React.FC<ListingDetailHeaderProps> = React.memo(({ isArabic, onBack, onShare, onReport, onDelete, isOwner, listingId }) => {
+export const ListingDetailHeader: React.FC<ListingDetailHeaderProps> = React.memo(({ isArabic, onBack, onShare, onReport, onEdit, onDelete, isOwner, isAdmin = false, listingId }) => {
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
   return (
     <div className="px-4 py-3 bg-brand border-b border-white/10 sticky top-0 z-30 flex items-center justify-between">
@@ -27,6 +29,11 @@ export const ListingDetailHeader: React.FC<ListingDetailHeaderProps> = React.mem
         <button onClick={onReport} className="w-9 h-9 rounded-full bg-surface/15 hover:bg-surface/25 flex items-center justify-center transition-colors cursor-pointer" aria-label={isArabic ? 'إبلاغ' : 'Report'}>
           <Warning2 size={18} variant="Bold" color="#DC2626" />
         </button>
+        {(isOwner || isAdmin) && (
+          <button onClick={onEdit} className="w-9 h-9 rounded-full bg-info/10 flex items-center justify-center text-info hover:bg-info/20 transition-colors cursor-pointer" aria-label={isArabic ? 'تعديل الإعلان' : 'Edit listing'} title={isArabic ? 'تعديل الإعلان' : 'Edit listing'}>
+            <Edit size={18} variant="Bold" color="#FFFFFF" />
+          </button>
+        )}
         {isOwner && (
           <button onClick={onDelete} className="w-9 h-9 rounded-full bg-danger/10 flex items-center justify-center text-danger hover:bg-danger/20 transition-colors cursor-pointer" aria-label={isArabic ? 'حذف الإعلان' : 'Delete listing'} title={isArabic ? 'حذف الإعلان' : 'Delete listing'}>
             <Trash size={18} variant="Bold" color="#FFFFFF" />
