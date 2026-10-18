@@ -230,11 +230,11 @@ describe('Real User Flow Integration Test Suite (Sprint T3 Ultra)', () => {
       );
     }
 
-    const isAvailable = useListingsStore.getState().validateAdQuotaAvailability('motors', userId, 'JO', false);
+    const isAvailable = useListingsStore.getState().validateAdQuotaAvailability('motors', userId, 'JO');
     expect(isAvailable).toBe(false);
     expect(useListingsStore.getState().isQuotaExhausted).toBe(true);
 
-    const isElecAvailable = useListingsStore.getState().validateAdQuotaAvailability('electronics', userId, 'JO', false);
+    const isElecAvailable = useListingsStore.getState().validateAdQuotaAvailability('electronics', userId, 'JO');
     expect(isElecAvailable).toBe(false);
   });
 
