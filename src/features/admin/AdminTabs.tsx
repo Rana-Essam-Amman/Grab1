@@ -103,7 +103,7 @@ export const AdminTabs: React.FC<{ market: MarketCode; actions: any; actionLoadi
           ))}
           {tab === 'users' && items.map((u) => (
             <div key={u.id} className="p-2.5 bg-surface border border-border rounded-xl flex items-center justify-between text-xs">
-              <div className="flex flex-col"><span className="font-bold text-ink">{u.first_name || 'بدون اسم'} {u.last_name || ''}</span><span className="text-ink-muted text-[11px]">{u.phone || 'بدون رقم'} {u.banned && <span className="text-red-500">(محظور)</span>}</span></div>
+              <div className="flex flex-col"><span className="font-bold text-ink">{u.first_name || 'بدون اسم'} {u.last_name || ''}{u.is_anonymous ? <span className="ms-1 px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-500 text-[10px]">زائر</span> : <span className="ms-1 px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 text-[10px]">حقيقي</span>}</span><span className="text-ink-muted text-[11px]">{u.phone || 'بدون رقم'} {u.banned && <span className="text-red-500">(محظور)</span>}</span></div>
               {u.banned ? (
                 <button onClick={async () => { await actions.unbanUser(u.id); loadTab(); }} disabled={actionLoading} className="px-2 py-1 bg-emerald-500/10 text-emerald-600 rounded text-[11px] cursor-pointer">إلغاء الحظر</button>
               ) : (
