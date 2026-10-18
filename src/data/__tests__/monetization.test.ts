@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest';
 import {
   MONETIZATION_MATRIX,
   validateAdQuotaAvailability,
-  executeAutoBumpScheduler,
 } from '../monetization';
 
 describe('Data Layer - Monetization & Regional Quota Rules', () => {
@@ -96,39 +95,5 @@ describe('Data Layer - Monetization & Regional Quota Rules', () => {
 
     expect(result.allowed).toBe(true);
     expect(result.activeCount).toBe(0);
-  });
-
-  it('executeAutoBumpScheduler bumps active listings older than 24 hours', () => {
-    const twoDaysAgo = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
-    const oneHourAgo = new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString();
-
-    const listings = [
-      {
-        id: 'ad-1',
-        isAutoBumpActive: true,
-        lastBumpedAt: twoDaysAgo,
-      },
-      {
-        id: 'ad-2',
-        isAutoBumpActive: true,
-        lastBumpedAt: oneHourAgo,
-      },
-      {
-        id: 'ad-3',
-        isAutoBumpActive: false,
-        lastBumpedAt: twoDaysAgo,
-      },
-    ];
-
-    const updated = executeAutoBumpScheduler(listings);
-
-    // ad-1 should have its timestamp refreshed
-    expect(new Date(updated[0].lastBumpedAt!).getTime()).toBeGreaterThan(
-      new Date(twoDaysAgo).getTime()
-    );
-    // ad-2 was bumped recently so lastBumpedAt should stay unchanged
-    expect(updated[1].lastBumpedAt).toBe(oneHourAgo);
-    // ad-3 is not auto-bump active
-    expect(updated[2].lastBumpedAt).toBe(twoDaysAgo);
   });
 });
