@@ -34,7 +34,7 @@ export const ListingDetailHeader: React.FC<ListingDetailHeaderProps> = React.mem
             <Edit size={18} variant="Bold" color="#FFFFFF" />
           </button>
         )}
-        {isOwner && (
+        {(isOwner || isAdmin) && (
           <button onClick={onDelete} className="w-9 h-9 rounded-full bg-danger/10 flex items-center justify-center text-danger hover:bg-danger/20 transition-colors cursor-pointer" aria-label={isArabic ? 'حذف الإعلان' : 'Delete listing'} title={isArabic ? 'حذف الإعلان' : 'Delete listing'}>
             <Trash size={18} variant="Bold" color="#FFFFFF" />
           </button>
