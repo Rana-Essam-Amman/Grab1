@@ -132,21 +132,12 @@ export async function updateListingStatus(id: string, status: 'active' | 'sold' 
   }
 }
 
-export async function updateListingRemote(
-  id: string,
-  updates: Partial<Listing>
-): Promise<{ data: Listing | null; error: string | null }> {
+export async function updateListingRemote(id: string, updates: Partial<Listing>): Promise<{ data: Listing | null; error: string | null }> {
   try {
     const row = listingToRow(updates);
-    if (Object.keys(row).length === 0) {
-      return { data: null, error: 'No fields to update' };
-    }
+    if (Object.keys(row).length === 0) return { data: null, error: 'No fields to update' };
     const { data, error } = await supabase
-      .from('listings')
-      .update(row)
-      .eq('id', id)
-      .select('*')
-      .single();
+      .from('listings').update(row).eq('id', id).select('*').single();
     if (error) return { data: null, error: error.message };
     return { data: rowToListing(data as SupabaseListingRow), error: null };
   } catch (err) {
