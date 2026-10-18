@@ -11,12 +11,12 @@ export const LoginTermsFooter: React.FC<LoginTermsFooterProps> = ({
   const { navigateTo } = useUI();
 
   return (
-    <p className="mt-6 max-w-sm text-center text-xs leading-6 text-ink">
+    <p className="mt-6 max-w-sm text-center text-xs leading-6 text-white/80">
       {isArabic ? 'بالمتابعة، أنت توافق على ' : 'By continuing, you agree to our '}
       <button
         type="button"
         onClick={() => navigateTo('terms')}
-        className="font-semibold text-brand underline cursor-pointer"
+        className="font-bold text-white underline cursor-pointer"
       >
         {isArabic ? 'شروط الاستخدام' : 'Terms of Service'}
       </button>
@@ -24,7 +24,7 @@ export const LoginTermsFooter: React.FC<LoginTermsFooterProps> = ({
       <button
         type="button"
         onClick={() => navigateTo('privacy')}
-        className="font-semibold text-brand underline cursor-pointer"
+        className="font-bold text-white underline cursor-pointer"
       >
         {isArabic ? 'سياسة الخصوصية' : 'Privacy Policy'}
       </button>
