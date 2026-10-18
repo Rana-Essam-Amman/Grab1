@@ -55,9 +55,11 @@ export function usePhoneCaptureModal({ open, onSaved, onClose }: Params) {
     setSaving(true);
     setError(null);
     try {
-      const saved = await setInitialPhone(v.normalized);
-      if (!saved) {
-        setError(isArabic ? 'تعذّر حفظ الرقم، حاول مرة أخرى' : 'Could not save phone, try again');
+      const result = await setInitialPhone(v.normalized);
+      if (!result.ok) {
+        setError(result.reason === 'duplicate'
+          ? (isArabic ? 'هذا الرقم مستخدم بالفعل. جرّب رقماً آخر.' : 'This phone number is already in use. Try another.')
+          : (isArabic ? 'تعذّر حفظ الرقم، حاول مرة أخرى' : 'Could not save phone, try again'));
         setStep('input');
         return;
       }
