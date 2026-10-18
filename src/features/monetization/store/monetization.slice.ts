@@ -25,9 +25,8 @@ export const useMonetizationStore = create<MonetizationState>()(
       const browseCountryCode = getBrowseCountryCode();
 
       const userId = user?.phone || user?.email || 'guest';
-      const isVip = Boolean(user?.isVipShop);
 
-      const result = validateHelper(listings, userId, browseCountryCode, categorySlug, isVip);
+      const result = validateHelper(listings, userId, browseCountryCode, categorySlug);
 
       set((state) => {
         state.isQuotaExhausted = !result.allowed;
@@ -37,5 +36,3 @@ export const useMonetizationStore = create<MonetizationState>()(
     }
   }))
 );
-
-
