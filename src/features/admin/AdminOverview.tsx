@@ -14,6 +14,7 @@ interface Props {
   onMarketChange: (m: MarketCode) => void;
   metrics?: {
     users: number;
+    guests: number;
     listings: number;
     reports: number;
     revenue_cents: number;
@@ -49,8 +50,13 @@ export const AdminOverview: React.FC<Props> = ({ market, onMarketChange, metrics
 
       <div className="grid grid-cols-2 gap-3">
         <div className="bg-surface border border-border rounded-xl p-3 flex flex-col gap-1">
-          <span className="text-xs text-ink-muted">مستخدمون</span>
-          <span className="text-xl font-bold text-ink">{metrics?.users ?? 0}</span>
+          <span className="text-xs text-ink-muted">مستخدمون / زوار</span>
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-xl font-bold text-ink">{metrics?.users ?? 0}</span>
+            <span className="text-xs text-ink-muted">/</span>
+            <span className="text-xl font-bold text-blue-500">{metrics?.guests ?? 0}</span>
+          </div>
+          <span className="text-[10px] text-ink-muted">حقيقي / زائر</span>
         </div>
         <div className="bg-surface border border-border rounded-xl p-3 flex flex-col gap-1">
           <span className="text-xs text-ink-muted">إعلانات نشطة</span>
