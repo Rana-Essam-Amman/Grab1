@@ -101,22 +101,24 @@ export async function createListing(input: CreateListingInput): Promise<{ data: 
   }
 }
 
-export async function deleteListing(id: string): Promise<{ error: string | null }> {
+export async function deleteListing(id: string): Promise<{ error: string | null; warning: string | null }> {
   try {
     const { data: listing, error: fetchError } = await supabase
       .from('listings')
       .select('images')
       .eq('id', id)
       .maybeSingle();
-    if (fetchError) return { error: fetchError.message };
+    if (fetchError) return { error: fetchError.message, warning: null };
     const images = Array.isArray(listing?.images) ? (listing.images as string[]) : [];
+    let warning: string | null = null;
     if (images.length > 0) {
-      await removeListingImages(images);
+      const result = await removeListingImages(images);
+      if (result.error) warning = `images cleanup failed: ${result.error}`;
     }
     const { error } = await supabase.from('listings').delete().eq('id', id);
-    return { error: error ? error.message : null };
+    return { error: error ? error.message : null, warning };
   } catch (err) {
-    return { error: err instanceof Error ? err.message : 'Unknown error' };
+    return { error: err instanceof Error ? err.message : 'Unknown error', warning: null };
   }
 }
 
