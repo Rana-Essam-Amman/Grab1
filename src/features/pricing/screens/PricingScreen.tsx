@@ -17,11 +17,8 @@ const MarketRow: React.FC<MarketRowProps> = ({ code, isArabic }) => {
   return (
     <div className="flex items-center justify-between py-2 border-b border-border/60 last:border-b-0">
       <span className="text-xs font-bold text-ink">{code}</span>
-      <span className="text-xs text-ink-soft">
-        {isArabic ? `Turbo ${pkg.turboAdCost} ${pkg.currencySymbol}` : `Turbo ${pkg.turboAdCost} ${pkg.currency}`}
-      </span>
       <span className="text-xs font-bold text-primary">
-        {isArabic ? `مميز ${pkg.featuredAdCost} ${pkg.currencySymbol}` : `Featured ${pkg.featuredAdCost} ${pkg.currency}`}
+        {isArabic ? `مميز ${pkg.featuredAdCost} ${pkg.currencySymbol} / 14 يوم` : `Featured ${pkg.featuredAdCost} ${pkg.currency} / 14 days`}
       </span>
     </div>
   );
@@ -71,8 +68,8 @@ export const PricingScreen: React.FC = () => {
               <span className="text-success font-bold">·</span>
               <span>
                 {isArabic
-                  ? `${MONETIZATION_MATRIX.freeLimits.generalCategoryLimit} إعلانات نشطة مجانية (${MONETIZATION_MATRIX.freeLimits.premiumCategoryLimit} للسيارات والعقارات)`
-                  : `${MONETIZATION_MATRIX.freeLimits.generalCategoryLimit} free active ads (${MONETIZATION_MATRIX.freeLimits.premiumCategoryLimit} for motors & real estate)`}
+                  ? `${MONETIZATION_MATRIX.freeLimits.generalCategoryLimit} إعلان نشط مجاناً`
+                  : `${MONETIZATION_MATRIX.freeLimits.generalCategoryLimit} free active ads`}
               </span>
             </li>
             <li className="flex items-start gap-2">
@@ -81,14 +78,6 @@ export const PricingScreen: React.FC = () => {
                 {isArabic
                   ? `حتى ${MONETIZATION_MATRIX.freeLimits.photoLimit} صور لكل إعلان`
                   : `Up to ${MONETIZATION_MATRIX.freeLimits.photoLimit} photos per listing`}
-              </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-success font-bold">·</span>
-              <span>
-                {isArabic
-                  ? `${MONETIZATION_MATRIX.freeLimits.bumpDailyLimit} رفعات يومياً`
-                  : `${MONETIZATION_MATRIX.freeLimits.bumpDailyLimit} bumps per day`}
               </span>
             </li>
           </ul>
