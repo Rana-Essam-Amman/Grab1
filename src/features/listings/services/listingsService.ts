@@ -131,14 +131,3 @@ export async function updateListingStatus(id: string, status: 'active' | 'sold' 
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
-
-/** Increment server-side daily bump counter for listing. Returns count or null. */
-export async function bumpListing(listingId: string): Promise<number | null> {
-  try {
-    const { data, error } = await supabase.rpc('bump_listing', { p_listing_id: listingId });
-    if (error) return null;
-    return typeof data === 'number' ? data : null;
-  } catch {
-    return null;
-  }
-}
