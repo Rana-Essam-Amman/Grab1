@@ -56,7 +56,7 @@ export const AdminActionsPanel: React.FC<Props> = ({ listingId, currentStatus, i
             {isArabic ? 'تمييز (14 يوم)' : 'Feature (14d)'}
           </button>
         ) : (
-          <button type="button" onClick={handleUnfeature} disabled={isProcessing} className="px-3 py-1.5 bg-gray-500/10 text-gray-500 text-xs font-semibold rounded-lg hover:bg-gray-500/20 disabled:opacity-50">
+          <button type="button" onClick={handleUnfeature} disabled={isProcessing} className="px-3 py-1.5 bg-surface border border-line text-ink-muted text-xs font-semibold rounded-lg hover:bg-surface/80 disabled:opacity-50">
             {isArabic ? 'إلغاء التمييز' : 'Unfeature'}
           </button>
         )}
