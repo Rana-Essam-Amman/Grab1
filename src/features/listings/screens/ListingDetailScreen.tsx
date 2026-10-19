@@ -23,133 +23,45 @@ export const ListingDetailScreen: React.FC = () => {
   const isAdmin = useIsAdmin();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  if (!detail.listing) {
-    return <ListingNotFound isArabic={detail.isArabic} onGoBack={detail.goBack} />;
-  }
-
-  const handleDeleteClick = () => setShowDeleteConfirm(true);
-  const handleConfirmDelete = async () => {
-    setShowDeleteConfirm(false);
-    await detail.handleDelete();
-  };
+  if (!detail.listing) return <ListingNotFound isArabic={detail.isArabic} onGoBack={detail.goBack} />;
 
   return (
     <ErrorBoundary>
       <div className="max-w-[440px] mx-auto w-full flex flex-col min-h-screen bg-canvas pb-28 relative shadow-md" dir={detail.isArabic ? 'rtl' : 'ltr'}>
-        <ListingDetailHeader
-          isArabic={detail.isArabic}
-          onBack={detail.goBack}
-          onShare={() => detail.setShowShare(true)}
-          onReport={() => detail.setShowReport(true)}
-          onEdit={detail.handleEdit}
-          onDelete={handleDeleteClick}
-          isOwner={detail.isOwner}
-          isAdmin={isAdmin}
-          listingId={detail.listing.id}
-        />
-
+        <ListingDetailHeader isArabic={detail.isArabic} onBack={detail.goBack} onShare={() => detail.setShowShare(true)} onReport={() => detail.setShowReport(true)} onEdit={detail.handleEdit} onDelete={() => setShowDeleteConfirm(true)} isOwner={detail.isOwner} isAdmin={isAdmin} listingId={detail.listing.id} />
+        
         {detail.isCountryMismatch && <ListingAntiFraudBanner isArabic={detail.isArabic} />}
 
-        <ListingImageSlider
-          images={detail.images}
-          activeIdx={detail.activePhotoIdx}
-          onChangeIdx={detail.setActivePhotoIdx}
-          isArabic={detail.isArabic}
-          onCall={detail.handleCall}
-          onWhatsApp={detail.handleWhatsApp}
-          onStartChat={detail.handleStartChat}
-        />
+        <ListingImageSlider images={detail.images} activeIdx={detail.activePhotoIdx} onChangeIdx={detail.setActivePhotoIdx} isArabic={detail.isArabic} onCall={detail.handleCall} onWhatsApp={detail.handleWhatsApp} onStartChat={detail.handleStartChat} />
 
         <div className="p-4 flex flex-col gap-3">
-          {(isAdmin || detail.isOwner) && (
-            <div className="flex justify-end">
-              <ListingIdBadge id={detail.listing.id} isArabic={detail.isArabic} />
-            </div>
-          )}
+          {(isAdmin || detail.isOwner) && <div className="flex justify-end"><ListingIdBadge id={detail.listing.id} isArabic={detail.isArabic} /></div>}
 
-          <ListingMainInfo
-            title={detail.listing.title || ''}
-            price={detail.listing.price || '0'}
-            currency={detail.displayCurrency}
-            locationText={detail.locationText}
-            attributes={detail.listing.attributes || []}
-            isArabic={detail.isArabic}
-          />
+          <ListingMainInfo title={detail.listing.title || ''} price={detail.listing.price || '0'} currency={detail.displayCurrency} locationText={detail.locationText} attributes={detail.listing.attributes || []} isArabic={detail.isArabic} />
 
-          <ListingSellerCard
-            sellerName={detail.listing.sellerName || ''}
-            sellerPhone={detail.listing.sellerPhone || ''}
-            isArabic={detail.isArabic}
-            onClick={detail.handleSelectSeller}
-          />
-          <ListingRateSellerButton
-            listingId={detail.listing.id}
-            sellerName={detail.listing.sellerName || ''}
-            sellerUserId={detail.listing.userId}
-            sellerPhone={detail.listing.sellerPhone}
-            isArabic={detail.isArabic}
-          />
+          <ListingSellerCard sellerName={detail.listing.sellerName || ''} sellerPhone={detail.listing.sellerPhone || ''} isArabic={detail.isArabic} onClick={detail.handleSelectSeller} />
+          
+          <ListingRateSellerButton listingId={detail.listing.id} sellerName={detail.listing.sellerName || ''} sellerUserId={detail.listing.userId} sellerPhone={detail.listing.sellerPhone} isArabic={detail.isArabic} />
 
           <ListingAttributesCard attributes={detail.listing.attributes || []} isArabic={detail.isArabic} />
 
-          <ListingDescriptionCard
-            description={detail.listing.description || ''}
-            isArabic={detail.isArabic}
-            isAuthenticated={detail.isAuthenticated}
-            onNavigateToLogin={() => detail.navigateTo('login')}
-          />
+          <ListingDescriptionCard description={detail.listing.description || ''} isArabic={detail.isArabic} isAuthenticated={detail.isAuthenticated} onNavigateToLogin={() => detail.navigateTo('login')} />
 
-          <ListingLocationCard
-            mapQuery={detail.mapQuery}
-            locationText={detail.locationText}
-            mapUrl={detail.mapUrl}
-            isArabic={detail.isArabic}
-          />
+          <ListingLocationCard mapQuery={detail.mapQuery} locationText={detail.locationText} mapUrl={detail.mapUrl} isArabic={detail.isArabic} />
         </div>
 
-        <ListingActionBar
-          isArabic={detail.isArabic}
-          countryCode={detail.listing.countryCode}
-          onCall={detail.handleCall}
-          onWhatsAppClick={detail.handleWhatsAppClick}
-          onStartChat={detail.handleStartChat}
-          isCountryMismatch={detail.isCountryMismatch}
-          isAuthenticated={detail.isAuthenticated}
-          isOwner={detail.isOwner}
-          hasPhone={!detail.listing.isDemo}
-          hasSellerAccount={Boolean(detail.listing.userId)}
-        />
+        <ListingActionBar isArabic={detail.isArabic} countryCode={detail.listing.countryCode} onCall={detail.handleCall} onWhatsAppClick={detail.handleWhatsAppClick} onStartChat={detail.handleStartChat} isCountryMismatch={detail.isCountryMismatch} isAuthenticated={detail.isAuthenticated} isOwner={detail.isOwner} hasPhone={!detail.listing.isDemo} hasSellerAccount={Boolean(detail.listing.userId)} />
 
         {detail.showShare && <ShareModal listing={detail.listing} onClose={() => detail.setShowShare(false)} />}
         {detail.showReport && <ReportModal listing={detail.listing} onClose={() => detail.setShowReport(false)} />}
+        
         {detail.showWhatsAppSheet && detail.listing && (
-          <WhatsAppIntentSheet
-            open={detail.showWhatsAppSheet}
-            listing={detail.listing}
-            isArabic={detail.isArabic}
-            onClose={() => detail.setShowWhatsAppSheet(false)}
-            onPick={detail.handleWhatsAppIntent}
-            onWriteOwn={() => {
-              detail.setShowWhatsAppSheet(false);
-              detail.handleWhatsApp();
-            }}
-          />
+          <WhatsAppIntentSheet open={detail.showWhatsAppSheet} listing={detail.listing} isArabic={detail.isArabic} onClose={() => detail.setShowWhatsAppSheet(false)} onPick={detail.handleWhatsAppIntent} onWriteOwn={() => { detail.setShowWhatsAppSheet(false); detail.handleWhatsApp(); }} />
         )}
 
-        <CaptchaModal
-          isOpen={detail.showCaptcha}
-          onClose={() => detail.setShowCaptcha(false)}
-          onVerify={detail.handleCaptchaVerify}
-          isArabic={detail.isArabic}
-        />
+        <CaptchaModal isOpen={detail.showCaptcha} onClose={() => detail.setShowCaptcha(false)} onVerify={detail.handleCaptchaVerify} isArabic={detail.isArabic} />
 
-        <DeleteConfirmDialog
-          isOpen={showDeleteConfirm}
-          isArabic={detail.isArabic}
-          isDeleting={detail.isDeleting}
-          onCancel={() => setShowDeleteConfirm(false)}
-          onConfirm={handleConfirmDelete}
-        />
+        <DeleteConfirmDialog isOpen={showDeleteConfirm} isArabic={detail.isArabic} isDeleting={detail.isDeleting} onCancel={() => setShowDeleteConfirm(false)} onConfirm={async () => { setShowDeleteConfirm(false); await detail.handleDelete(); }} />
       </div>
     </ErrorBoundary>
   );
