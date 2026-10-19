@@ -37,7 +37,7 @@ export function useListingDetail(): UseListingDetailReturn {
   const isCountryMismatch = useMemo(() => Boolean(listing && listing.countryCode !== activeCountry), [listing, activeCountry]);
   devAssertMarketIsolation(listing, activeCountry);
   const derived = useListingDerivedData(listing, isArabic); const isAuthenticated = authStatus === 'authenticated';
-  const { phone: revealedPhone, isRevealing: isRevealingPhone, revealPhone } = useRevealPhone(listing?.id, listing?.sellerPhone, isArabic);
+  const { phone: revealedPhone, isRevealing: isRevealingPhone, revealPhone } = useRevealPhone(listing?.id, listing?.sellerPhone, isArabic, listing?.countryCode);
   const isOwner = useMemo(() => {
     if (!user || !listing) return false;
     if (user.id && listing.userId && user.id === listing.userId) return true;
@@ -63,26 +63,23 @@ export function useListingDetail(): UseListingDetailReturn {
   }, [listing, authStatus, navigateTo, openConversation, setSelectedThreadId, user, activeCountry, isOwner, isArabic]);
 
   const handleCall = useCallback(async () => {
-    if (!isAuthenticated) return navigateTo('login');
     const num = await revealPhone();
     if (num) window.location.href = `tel:${num}`;
-  }, [revealPhone, isAuthenticated, navigateTo]);
+  }, [revealPhone]);
 
   const handleWhatsApp = useCallback(async () => {
-    if (!isAuthenticated) return navigateTo('login');
     const num = await revealPhone();
     if (num && listing) window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: num, listingTitle: listing.title, isArabic }), '_blank');
-  }, [revealPhone, listing, isArabic, isAuthenticated, navigateTo]);
+  }, [revealPhone, listing, isArabic]);
 
-  const handleWhatsAppClick = useCallback(() => { if (!isAuthenticated) return navigateTo('login'); if (listing) setShowWhatsAppSheet(true); }, [listing, isAuthenticated, navigateTo]);
+  const handleWhatsAppClick = useCallback(() => { if (listing) setShowWhatsAppSheet(true); }, [listing]);
 
   const handleWhatsAppIntent = useCallback(async (intent: WhatsAppIntent) => {
     if (!listing) return;
-    if (!isAuthenticated) return navigateTo('login');
     setShowWhatsAppSheet(false);
     const num = await revealPhone();
     if (num) window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: num, listingTitle: listing.title, isArabic, customMessage: composeIntentMessage(intent.body, listing, isArabic) }), '_blank');
-  }, [listing, isArabic, revealPhone, isAuthenticated, navigateTo]);
+  }, [listing, isArabic, revealPhone]);
 
   const { handleDelete: handleDeleteRaw, isDeleting } = useListingDelete(isArabic);
   const handleDelete = useCallback(async () => { if (listing) await handleDeleteRaw(listing.id, goBack); }, [listing, handleDeleteRaw, goBack]);
@@ -94,4 +91,4 @@ export function useListingDetail(): UseListingDetailReturn {
     handleStartChat, handleCall, handleWhatsApp, handleWhatsAppClick, handleWhatsAppIntent,
     handleDelete, handleEdit, handleSelectSeller, isAuthenticated, isOwner, isArabic, goBack, navigateTo, isDeleting, isRevealingPhone,
   };
-      }
+}
