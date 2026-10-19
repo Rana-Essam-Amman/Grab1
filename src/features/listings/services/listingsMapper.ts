@@ -20,7 +20,7 @@ export interface SupabaseListingRow {
   readonly status: string;
   readonly views: number;
   readonly seller_name: string | null;
-  readonly seller_phone: string | null;
+  readonly seller_phone?: string | null;
   readonly created_at: string;
   readonly updated_at: string;
   readonly bumps_today?: number | null;
