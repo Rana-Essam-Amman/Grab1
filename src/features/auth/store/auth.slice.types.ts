@@ -10,7 +10,6 @@ export interface AuthState {
 
   // Actions
   logout: () => void;
-  loginDirectly: (email: string, phone?: string, countryCode?: string, firstName?: string) => void;
   verifySession: () => Promise<boolean>;
   updateUser: (updates: Partial<UserProfile>) => void;
   setUser: (user: UserProfile) => void;
