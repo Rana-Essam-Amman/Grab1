@@ -38,7 +38,6 @@ export function useListingDetail(): UseListingDetailReturn {
   devAssertMarketIsolation(listing, activeCountry);
   const derived = useListingDerivedData(listing, isArabic); const isAuthenticated = authStatus === 'authenticated';
   const { phone: revealedPhone, isRevealing: isRevealingPhone, revealPhone } = useRevealPhone(listing?.id, listing?.sellerPhone, isArabic);
-  
   const isOwner = useMemo(() => {
     if (!user || !listing) return false;
     if (user.id && listing.userId && user.id === listing.userId) return true;
@@ -46,13 +45,11 @@ export function useListingDetail(): UseListingDetailReturn {
   }, [user, listing]);
 
   const handleSelectSeller = useCallback(() => {
-    if (!listing) return; const key = listing.userId || listing.sellerPhone;
-    if (key) { setSelectedSellerPhone(key); navigateTo('seller-profile'); }
+    if (!listing) return; const key = listing.userId || listing.sellerPhone; if (key) { setSelectedSellerPhone(key); navigateTo('seller-profile'); }
   }, [listing, setSelectedSellerPhone, navigateTo]);
 
   const handleStartChat = useCallback(async () => {
-    if (!listing) return;
-    if (authStatus === 'unauthenticated' || !user?.id) { navigateTo('login'); return; }
+    if (!listing) return; if (authStatus === 'unauthenticated' || !user?.id) { navigateTo('login'); return; }
     if (isOwner) return;
     if (!listing.userId) { showChatUnavailable(isArabic); return; }
     try {
@@ -97,4 +94,4 @@ export function useListingDetail(): UseListingDetailReturn {
     handleStartChat, handleCall, handleWhatsApp, handleWhatsAppClick, handleWhatsAppIntent,
     handleDelete, handleEdit, handleSelectSeller, isAuthenticated, isOwner, isArabic, goBack, navigateTo, isDeleting, isRevealingPhone,
   };
-}
+      }
