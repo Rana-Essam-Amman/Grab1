@@ -96,10 +96,10 @@ describe('useListingDetail', () => {
       await result.current.handleCall();
     });
 
-    // Should NOT redirect to login
     expect(navigateToMock).not.toHaveBeenCalledWith('login');
     expect(supabase.rpc).toHaveBeenCalledWith('get_listing_phone', { p_listing_id: 'item-123' });
-    expect(window.location.href).toBe('tel:0791234567');
+    // Now uses international format so it works cross-market
+    expect(window.location.href).toBe('tel:+962791234567');
   });
 
   it('handleCall with authenticated user sets window.location.href to tel: link', async () => {
@@ -115,7 +115,7 @@ describe('useListingDetail', () => {
     });
 
     expect(supabase.rpc).toHaveBeenCalledWith('get_listing_phone', { p_listing_id: 'item-123' });
-    expect(window.location.href).toBe('tel:0791234567');
+    expect(window.location.href).toBe('tel:+962791234567');
   });
 
   it('handleWhatsApp with unauthenticated user (guest) reveals phone and opens WhatsApp', async () => {
