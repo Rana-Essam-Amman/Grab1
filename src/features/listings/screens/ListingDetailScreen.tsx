@@ -16,6 +16,7 @@ import { ShareModal, ReportModal, ErrorBoundary } from '@/shared/components';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { DeleteConfirmDialog } from '../components/DeleteConfirmDialog';
 import { ListingIdBadge } from '@/shared/components/ListingIdBadge';
+import { CaptchaModal } from '@/shared/components/CaptchaModal';
 
 export const ListingDetailScreen: React.FC = () => {
   const detail = useListingDetail();
@@ -134,6 +135,13 @@ export const ListingDetailScreen: React.FC = () => {
             }}
           />
         )}
+
+        <CaptchaModal
+          isOpen={detail.showCaptcha}
+          onClose={() => detail.setShowCaptcha(false)}
+          onVerify={detail.handleCaptchaVerify}
+          isArabic={detail.isArabic}
+        />
 
         <DeleteConfirmDialog
           isOpen={showDeleteConfirm}
