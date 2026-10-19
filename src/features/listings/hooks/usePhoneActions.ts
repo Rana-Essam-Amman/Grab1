@@ -5,7 +5,7 @@ import { composeIntentMessage, WhatsAppIntent } from '../helpers/whatsappIntents
 import { Listing } from '@/types';
 
 export function usePhoneActions(listing: Listing | null, isArabic: boolean) {
-  const { revealPhone } = useRevealPhone(listing?.id, listing?.sellerPhone, isArabic, listing?.countryCode);
+  const { revealPhone, isRevealing } = useRevealPhone(listing?.id, listing?.sellerPhone, isArabic, listing?.countryCode);
   const [showCaptcha, setShowCaptcha] = useState(false);
   const [pendingAction, setPendingAction] = useState<{ type: 'call' | 'whatsapp'; intent?: WhatsAppIntent } | null>(null);
 
@@ -53,5 +53,5 @@ export function usePhoneActions(listing: Listing | null, isArabic: boolean) {
     }
   }, [revealPhone, pendingAction, listing, isArabic]);
 
-  return { handleCall, handleWhatsApp, showCaptcha, setShowCaptcha, handleCaptchaVerify };
+  return { handleCall, handleWhatsApp, showCaptcha, setShowCaptcha, handleCaptchaVerify, isRevealingPhone: isRevealing };
 }
