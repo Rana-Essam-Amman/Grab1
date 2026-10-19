@@ -115,7 +115,7 @@ export const ListingDetailScreen: React.FC = () => {
           isCountryMismatch={detail.isCountryMismatch}
           isAuthenticated={detail.isAuthenticated}
           isOwner={detail.isOwner}
-          hasPhone={Boolean(detail.listing.sellerPhone)}
+          hasPhone={!detail.listing.isDemo}
           hasSellerAccount={Boolean(detail.listing.userId)}
         />
 
