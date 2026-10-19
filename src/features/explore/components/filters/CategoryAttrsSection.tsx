@@ -13,6 +13,7 @@ export interface CategoryAttrsSectionProps {
 const MAX_OPTIONS = 15;
 
 function isEligible(f: ListingField): boolean {
+  if (f.key === 'make') return true;
   if (f.type === 'boolean') return true;
   if (f.type === 'select' && f.options && f.options.length > 1 && f.options.length <= MAX_OPTIONS) return true;
   return false;
@@ -44,29 +45,43 @@ export const CategoryAttrsSection: React.FC<CategoryAttrsSectionProps> = ({
                 value: o.value,
                 label: isArabic ? o.labelAr : o.labelEn,
               }));
+        const useDropdown = field.type === 'select' && chips.length > MAX_OPTIONS;
 
         return (
           <div key={field.key} className="flex flex-col gap-2">
             <span className="text-[11px] font-bold text-ink-muted">{title}</span>
-            <div className="flex flex-wrap gap-2">
-              {chips.map((c) => {
-                const isActive = activeValue === c.value;
-                return (
-                  <button
-                    key={c.value}
-                    type="button"
-                    onClick={() => onChange(field.key, isActive ? null : c.value)}
-                    className={`px-3 py-1.5 rounded-full border text-xs font-bold transition-all ${
-                      isActive
-                        ? 'bg-accent/15 border-accent text-accent'
-                        : 'bg-surface border-border text-ink'
-                    }`}
-                  >
-                    {c.label}
-                  </button>
-                );
-              })}
-            </div>
+            {useDropdown ? (
+              <select
+                value={activeValue}
+                onChange={(event) => onChange(field.key, event.target.value || null)}
+                className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm text-ink"
+              >
+                <option value="">{isArabic ? 'كل الخيارات' : 'All options'}</option>
+                {chips.map((c) => (
+                  <option key={c.value} value={c.value}>{c.label}</option>
+                ))}
+              </select>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {chips.map((c) => {
+                  const isActive = activeValue === c.value;
+                  return (
+                    <button
+                      key={c.value}
+                      type="button"
+                      onClick={() => onChange(field.key, isActive ? null : c.value)}
+                      className={`px-3 py-1.5 rounded-full border text-xs font-bold transition-all ${
+                        isActive
+                          ? 'bg-accent/15 border-accent text-accent'
+                          : 'bg-surface border-border text-ink'
+                      }`}
+                    >
+                      {c.label}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         );
       })}
