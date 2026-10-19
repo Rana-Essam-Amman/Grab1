@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { toast } from 'sonner';
 import { uploadListingImages, removeListingImages } from '@/features/listings/services/storageService';
 
 export function useAdminImageEditor(
@@ -50,10 +51,19 @@ export function useAdminImageEditor(
     setIsProcessing(true);
     setError(null);
     try {
-      await removeListingImages([url]);
+      const result = await removeListingImages([url]);
+      if (result.error || result.failed > 0) {
+        const message = result.error ||
+          (isArabic ? 'حدث خطأ أثناء حذف الصورة' : 'Error deleting image');
+        setError(message);
+        toast.error(message);
+        return;
+      }
       setImages(images.filter((img) => img !== url));
     } catch (err) {
-      setError(isArabic ? 'حدث خطأ أثناء حذف الصورة' : 'Error deleting image');
+      const message = isArabic ? 'حدث خطأ أثناء حذف الصورة' : 'Error deleting image';
+      setError(message);
+      toast.error(message);
     } finally {
       setIsProcessing(false);
     }
