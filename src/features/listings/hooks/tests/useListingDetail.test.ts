@@ -13,7 +13,7 @@ vi.mock('@/hooks/useListings', () => ({ useListings: vi.fn() }));
 vi.mock('@/hooks/useAuth', () => ({ useAuth: vi.fn() }));
 vi.mock('@/hooks/useChat', () => ({ useChat: vi.fn() }));
 vi.mock('@/shared/lib/supabase', () => ({
-  supabase: { rpc: vi.fn() },
+  supabase: { rpc: vi.fn(), auth: { getSession: vi.fn(), signInAnonymously: vi.fn() } },
 }));
 vi.mock('../helpers/listingDerivedData', () => ({
   useListingDerivedData: vi.fn(() => ({
@@ -42,7 +42,6 @@ describe('useListingDetail', () => {
   const originalLocation = window.location;
 
   beforeAll(() => {
-    // Safest way to mock window.location in JSDOM
     delete (window as any).location;
     (window as any).location = { href: '' };
   });
@@ -54,7 +53,7 @@ describe('useListingDetail', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     navigateToMock.mockClear();
-    window.location.href = ''; // Reset before each test
+    window.location.href = '';
     vi.spyOn(window, 'open').mockImplementation(() => null);
 
     (useUI as any).mockReturnValue({
@@ -81,9 +80,11 @@ describe('useListingDetail', () => {
       data: '+962791234567',
       error: null,
     });
+    (supabase.auth.getSession as any).mockResolvedValue({ data: { session: null } });
+    (supabase.auth.signInAnonymously as any).mockResolvedValue({ error: null });
   });
 
-  it('handleCall with unauthenticated user redirects to login', async () => {
+  it('handleCall with unauthenticated user (guest) reveals phone and sets tel: link', async () => {
     (useAuth as any).mockReturnValue({
       authStatus: 'unauthenticated',
       user: null,
@@ -95,8 +96,10 @@ describe('useListingDetail', () => {
       await result.current.handleCall();
     });
 
-    expect(navigateToMock).toHaveBeenCalledWith('login');
-    expect(supabase.rpc).not.toHaveBeenCalled();
+    // Should NOT redirect to login
+    expect(navigateToMock).not.toHaveBeenCalledWith('login');
+    expect(supabase.rpc).toHaveBeenCalledWith('get_listing_phone', { p_listing_id: 'item-123' });
+    expect(window.location.href).toBe('tel:0791234567');
   });
 
   it('handleCall with authenticated user sets window.location.href to tel: link', async () => {
@@ -112,10 +115,10 @@ describe('useListingDetail', () => {
     });
 
     expect(supabase.rpc).toHaveBeenCalledWith('get_listing_phone', { p_listing_id: 'item-123' });
-    expect(window.location.href).toBe('tel:+962791234567');
+    expect(window.location.href).toBe('tel:0791234567');
   });
 
-  it('handleWhatsApp with unauthenticated user redirects to login', async () => {
+  it('handleWhatsApp with unauthenticated user (guest) reveals phone and opens WhatsApp', async () => {
     (useAuth as any).mockReturnValue({
       authStatus: 'unauthenticated',
       user: null,
@@ -127,8 +130,9 @@ describe('useListingDetail', () => {
       await result.current.handleWhatsApp();
     });
 
-    expect(navigateToMock).toHaveBeenCalledWith('login');
-    expect(supabase.rpc).not.toHaveBeenCalled();
+    expect(navigateToMock).not.toHaveBeenCalledWith('login');
+    expect(supabase.rpc).toHaveBeenCalledWith('get_listing_phone', { p_listing_id: 'item-123' });
+    expect(window.open).toHaveBeenCalled();
   });
 
   it('handleWhatsApp with authenticated user opens WhatsApp URL', async () => {
