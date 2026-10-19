@@ -7,21 +7,14 @@ export function isAnonymousUser(user: User | null | undefined): boolean {
 }
 
 export async function ensureAnonymousSession(): Promise<{ created: boolean; error: string | null }> {
-  // Disabled at app level: anonymous sessions had documented Supabase bugs (linkIdentity, USER_UPDATED).
-  // Kept as no-op so the auth listener doesn't create sessions on every page load.
   return { created: false, error: null };
 }
 
-export async function ensureAnonymousSessionForPhone(captchaToken?: string): Promise<{ created: boolean; error: string | null }> {
+export async function ensureAnonymousSessionForPhone(): Promise<{ created: boolean; error: string | null }> {
   try {
     const { data } = await supabase.auth.getSession();
     if (data.session) return { created: false, error: null };
-    
-    // Pass the captcha token if provided
-    const { error } = await supabase.auth.signInAnonymously({
-      options: { captchaToken }
-    });
-    
+    const { error } = await supabase.auth.signInAnonymously();
     if (error) return { created: false, error: error.message };
     return { created: true, error: null };
   } catch (err) {

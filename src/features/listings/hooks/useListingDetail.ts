@@ -6,13 +6,13 @@ import { useChat } from '@/hooks/useChat';
 import { useAuth } from '@/hooks/useAuth';
 import { isValidMarket } from '@/shared/lib/marketGate';
 import { FormattedPhone } from '@/shared/lib/phoneFormatting';
-import { useListingDerivedData } from '../helpers/listingDerivedData';
-import { WhatsAppIntent } from '../helpers/whatsappIntents';
+import { useListingDerivedData, getWhatsAppUrl } from '../helpers/listingDerivedData';
+import { WhatsAppIntent, composeIntentMessage } from '../helpers/whatsappIntents';
 import { Listing } from '@/types';
 import { ScreenType } from '@/store/ui.slice';
 import { showChatUnavailable, showChatOpenFailed, showChatCrossMarket } from '../helpers/chatErrorToast';
 import { useListingDelete } from './useListingDelete';
-import { usePhoneActions } from './usePhoneActions';
+import { useRevealPhone } from './useRevealPhone';
 
 export interface UseListingDetailReturn {
   listing: Listing | null; activeCountry: string; isCountryMismatch: boolean;
@@ -24,7 +24,6 @@ export interface UseListingDetailReturn {
   handleWhatsAppClick: () => void; handleWhatsAppIntent: (intent: WhatsAppIntent) => void;
   handleDelete: () => Promise<void>; handleEdit: () => void; handleSelectSeller: () => void; isAuthenticated: boolean; isDeleting: boolean;
   isOwner: boolean; isArabic: boolean; goBack: () => void; navigateTo: (screen: ScreenType) => void; isRevealingPhone: boolean;
-  showCaptcha: boolean; cancelCaptcha: () => void; handleCaptchaVerify: (token: string) => Promise<void>;
 }
 
 export function useListingDetail(): UseListingDetailReturn {
@@ -40,7 +39,20 @@ export function useListingDetail(): UseListingDetailReturn {
   devAssertMarketIsolation(listing, activeCountry);
   const derived = useListingDerivedData(listing, isArabic); const isAuthenticated = authStatus === 'authenticated';
 
-  const { handleCall, handleWhatsApp: phoneWhatsApp, showCaptcha, cancelCaptcha, handleCaptchaVerify, isRevealingPhone } = usePhoneActions(listing, isArabic);
+  const { revealPhone, isRevealing: isRevealingPhone } = useRevealPhone(listing?.id, listing?.sellerPhone, isArabic, listing?.countryCode);
+
+  const handleCall = useCallback(async () => {
+    const num = await revealPhone();
+    if (num) window.location.href = `tel:${num}`;
+  }, [revealPhone]);
+
+  const handleWhatsAppDirect = useCallback(async (intent?: WhatsAppIntent) => {
+    const num = await revealPhone();
+    if (num && listing) {
+      const customMessage = intent ? composeIntentMessage(intent.body, listing, isArabic) : undefined;
+      window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: num, listingTitle: listing.title, isArabic, customMessage }), '_blank');
+    }
+  }, [revealPhone, listing, isArabic]);
 
   const isOwner = useMemo(() => {
     if (!user || !listing) return false;
@@ -66,9 +78,9 @@ export function useListingDetail(): UseListingDetailReturn {
     }
   }, [listing, authStatus, navigateTo, openConversation, setSelectedThreadId, user, activeCountry, isOwner, isArabic, isAnonymous]);
 
-  const handleWhatsApp = useCallback(() => phoneWhatsApp(), [phoneWhatsApp]);
+  const handleWhatsApp = useCallback(() => handleWhatsAppDirect(), [handleWhatsAppDirect]);
   const handleWhatsAppClick = useCallback(() => { if (listing) setShowWhatsAppSheet(true); }, [listing]);
-  const handleWhatsAppIntent = useCallback(async (intent: WhatsAppIntent) => { setShowWhatsAppSheet(false); await phoneWhatsApp(intent); }, [phoneWhatsApp]);
+  const handleWhatsAppIntent = useCallback(async (intent: WhatsAppIntent) => { setShowWhatsAppSheet(false); await handleWhatsAppDirect(intent); }, [handleWhatsAppDirect]);
 
   const { handleDelete: handleDeleteRaw, isDeleting } = useListingDelete(isArabic);
   const handleDelete = useCallback(async () => { if (listing) await handleDeleteRaw(listing.id, goBack); }, [listing, handleDeleteRaw, goBack]);
@@ -79,6 +91,5 @@ export function useListingDetail(): UseListingDetailReturn {
     showShare, setShowShare, showReport, setShowReport, showWhatsAppSheet, setShowWhatsAppSheet,
     handleStartChat, handleCall, handleWhatsApp, handleWhatsAppClick, handleWhatsAppIntent,
     handleDelete, handleEdit, handleSelectSeller, isAuthenticated, isOwner, isArabic, goBack, navigateTo, isDeleting, isRevealingPhone,
-    showCaptcha, cancelCaptcha, handleCaptchaVerify,
   };
 }

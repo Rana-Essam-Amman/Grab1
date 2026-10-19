@@ -16,7 +16,6 @@ import { ShareModal, ReportModal, ErrorBoundary } from '@/shared/components';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { DeleteConfirmDialog } from '../components/DeleteConfirmDialog';
 import { ListingIdBadge } from '@/shared/components/ListingIdBadge';
-import { CaptchaModal } from '@/shared/components/CaptchaModal';
 
 export const ListingDetailScreen: React.FC = () => {
   const detail = useListingDetail();
@@ -59,7 +58,6 @@ export const ListingDetailScreen: React.FC = () => {
           <WhatsAppIntentSheet open={detail.showWhatsAppSheet} listing={detail.listing} isArabic={detail.isArabic} onClose={() => detail.setShowWhatsAppSheet(false)} onPick={detail.handleWhatsAppIntent} onWriteOwn={() => { detail.setShowWhatsAppSheet(false); detail.handleWhatsApp(); }} />
         )}
 
-        <CaptchaModal isOpen={detail.showCaptcha} onClose={detail.cancelCaptcha} onVerify={detail.handleCaptchaVerify} isArabic={detail.isArabic} />
 
         <DeleteConfirmDialog isOpen={showDeleteConfirm} isArabic={detail.isArabic} isDeleting={detail.isDeleting} onCancel={() => setShowDeleteConfirm(false)} onConfirm={async () => { setShowDeleteConfirm(false); await detail.handleDelete(); }} />
       </div>
