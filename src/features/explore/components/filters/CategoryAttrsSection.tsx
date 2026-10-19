@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { getListingFields } from '@/data/listingFields';
 import type { ListingField } from '@/data/listingFields';
+import { Combobox } from '@/shared/ui/Combobox';
 
 export interface CategoryAttrsSectionProps {
   readonly isArabic: boolean;
@@ -45,22 +46,21 @@ export const CategoryAttrsSection: React.FC<CategoryAttrsSectionProps> = ({
                 value: o.value,
                 label: isArabic ? o.labelAr : o.labelEn,
               }));
-        const useDropdown = field.type === 'select' && chips.length > MAX_OPTIONS;
+        
+        const useCombobox = field.type === 'select' && chips.length > MAX_OPTIONS;
 
         return (
           <div key={field.key} className="flex flex-col gap-2">
             <span className="text-[11px] font-bold text-ink-muted">{title}</span>
-            {useDropdown ? (
-              <select
+            {useCombobox ? (
+              <Combobox
                 value={activeValue}
-                onChange={(event) => onChange(field.key, event.target.value || null)}
-                className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm text-ink"
-              >
-                <option value="">{isArabic ? 'كل الخيارات' : 'All options'}</option>
-                {chips.map((c) => (
-                  <option key={c.value} value={c.value}>{c.label}</option>
-                ))}
-              </select>
+                options={[...chips]}
+                placeholder={isArabic ? 'اختر...' : 'Select...'}
+                searchPlaceholder={isArabic ? 'ابحث...' : 'Search...'}
+                emptyText={isArabic ? 'لا نتائج' : 'No results'}
+                onChange={(val) => onChange(field.key, val || null)}
+              />
             ) : (
               <div className="flex flex-wrap gap-2">
                 {chips.map((c) => {
