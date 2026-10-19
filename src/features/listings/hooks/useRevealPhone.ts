@@ -13,14 +13,18 @@ export function useRevealPhone(
   const [phone, setPhone] = useState<string | null>(initialPhone || null);
   const [isRevealing, setIsRevealing] = useState(false);
 
-  const revealPhone = async (): Promise<string | null> => {
+  const revealPhone = async (captchaToken?: string): Promise<string | null> => {
     if (phone) return phone;
     if (isRevealing || !listingId) return null;
 
     setIsRevealing(true);
     try {
-      const sessionResult = await ensureAnonymousSessionForPhone();
+      const sessionResult = await ensureAnonymousSessionForPhone(captchaToken);
       if (sessionResult.error) {
+        const isCaptchaError = sessionResult.error.toLowerCase().includes('captcha');
+        if (isCaptchaError && !captchaToken) {
+          throw new Error('CAPTCHA_REQUIRED');
+        }
         toast.error(isArabic ? 'فشل الاتصال بالسيرفر.' : 'Connection failed.');
         return null;
       }
@@ -46,6 +50,9 @@ export function useRevealPhone(
       }
       return null;
     } catch (err) {
+      if (err instanceof Error && err.message === 'CAPTCHA_REQUIRED') {
+        throw err; // Re-throw to let the UI handle the captcha modal
+      }
       toast.error(isArabic ? 'حدث خطأ غير متوقع.' : 'Unexpected error.');
       return null;
     } finally {
