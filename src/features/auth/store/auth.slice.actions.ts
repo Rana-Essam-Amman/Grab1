@@ -1,5 +1,4 @@
 import { AuthState } from './auth.slice.types';
-import { UserProfile } from '@/types';
 import { globalStorage } from '@/shared/lib/marketStorage';
 import { signOut } from '../services/authService';
 import { saveFeedLayout } from '@/shared/lib/profilesService';
@@ -19,29 +18,7 @@ export const createAuthActions = (set: SetState, get: GetState) => ({
       state.user = null;
       state.sessionToken = null;
       state.authStatus = 'unauthenticated';
-    });
-  },
-
-  loginDirectly: (email: string, phone?: string, countryCode?: string, firstName?: string) => {
-    const savedBrowseCountry = globalStorage().get<string>('catch_browse_country') || 'JO';
-    const finalCountry = countryCode || savedBrowseCountry;
-    const newUser: UserProfile = {
-      firstName: firstName || 'Test',
-      lastName: 'User',
-      email: email || 'test@example.com',
-      phone: phone || '+962799999999',
-      countryCode: finalCountry,
-    };
-    const token = 'token-' + Date.now();
-
-    globalStorage().set('catch_user', newUser);
-    globalStorage().set('catch_token', token);
-
-    set((state) => {
-      state.user = newUser;
-      state.sessionToken = token;
-      state.authStatus = 'authenticated';
-      state.isAnonymous = firstName === 'Guest'; // ✅ الحل الجراحي: الزائر فقط هو Anonymous
+      state.isAnonymous = false; // Reset anonymous state
     });
   },
 
