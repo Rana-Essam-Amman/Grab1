@@ -47,9 +47,12 @@ export function usePhoneActions(listing: Listing | null, isArabic: boolean) {
           const customMessage = pendingAction.intent ? composeIntentMessage(pendingAction.intent.body, listing, isArabic) : undefined;
           window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: num, listingTitle: listing.title, isArabic, customMessage }), '_blank');
         }
+        setPendingAction(null);
       }
-    } finally {
-      setPendingAction(null);
+    } catch (err) {
+      if (err instanceof Error && err.message !== 'CAPTCHA_REQUIRED') {
+        setPendingAction(null);
+      }
     }
   }, [revealPhone, pendingAction, listing, isArabic]);
 
