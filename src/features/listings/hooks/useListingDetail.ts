@@ -24,7 +24,7 @@ export interface UseListingDetailReturn {
   handleWhatsAppClick: () => void; handleWhatsAppIntent: (intent: WhatsAppIntent) => void;
   handleDelete: () => Promise<void>; handleEdit: () => void; handleSelectSeller: () => void; isAuthenticated: boolean; isDeleting: boolean;
   isOwner: boolean; isArabic: boolean; goBack: () => void; navigateTo: (screen: ScreenType) => void; isRevealingPhone: boolean;
-  showCaptcha: boolean; setShowCaptcha: (v: boolean) => void; handleCaptchaVerify: (token: string) => Promise<void>;
+  showCaptcha: boolean; cancelCaptcha: () => void; handleCaptchaVerify: (token: string) => Promise<void>;
 }
 
 export function useListingDetail(): UseListingDetailReturn {
@@ -39,8 +39,8 @@ export function useListingDetail(): UseListingDetailReturn {
   const isCountryMismatch = useMemo(() => Boolean(listing && listing.countryCode !== activeCountry), [listing, activeCountry]);
   devAssertMarketIsolation(listing, activeCountry);
   const derived = useListingDerivedData(listing, isArabic); const isAuthenticated = authStatus === 'authenticated';
-  
-  const { handleCall, handleWhatsApp: phoneWhatsApp, showCaptcha, setShowCaptcha, handleCaptchaVerify, isRevealingPhone } = usePhoneActions(listing, isArabic);
+
+  const { handleCall, handleWhatsApp: phoneWhatsApp, showCaptcha, cancelCaptcha, handleCaptchaVerify, isRevealingPhone } = usePhoneActions(listing, isArabic);
 
   const isOwner = useMemo(() => {
     if (!user || !listing) return false;
@@ -79,6 +79,6 @@ export function useListingDetail(): UseListingDetailReturn {
     showShare, setShowShare, showReport, setShowReport, showWhatsAppSheet, setShowWhatsAppSheet,
     handleStartChat, handleCall, handleWhatsApp, handleWhatsAppClick, handleWhatsAppIntent,
     handleDelete, handleEdit, handleSelectSeller, isAuthenticated, isOwner, isArabic, goBack, navigateTo, isDeleting, isRevealingPhone,
-    showCaptcha, setShowCaptcha, handleCaptchaVerify,
+    showCaptcha, cancelCaptcha, handleCaptchaVerify,
   };
-         }
+}
