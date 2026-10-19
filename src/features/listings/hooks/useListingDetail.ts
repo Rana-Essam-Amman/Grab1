@@ -6,13 +6,13 @@ import { useChat } from '@/hooks/useChat';
 import { useAuth } from '@/hooks/useAuth';
 import { isValidMarket } from '@/shared/lib/marketGate';
 import { FormattedPhone } from '@/shared/lib/phoneFormatting';
-import { useListingDerivedData, getWhatsAppUrl } from '../helpers/listingDerivedData';
-import { composeIntentMessage, WhatsAppIntent } from '../helpers/whatsappIntents';
+import { useListingDerivedData } from '../helpers/listingDerivedData';
+import { WhatsAppIntent } from '../helpers/whatsappIntents';
 import { Listing } from '@/types';
 import { ScreenType } from '@/store/ui.slice';
 import { showChatUnavailable, showChatOpenFailed, showChatCrossMarket } from '../helpers/chatErrorToast';
 import { useListingDelete } from './useListingDelete';
-import { useRevealPhone } from './useRevealPhone';
+import { usePhoneActions } from './usePhoneActions';
 
 export interface UseListingDetailReturn {
   listing: Listing | null; activeCountry: string; isCountryMismatch: boolean;
@@ -24,7 +24,9 @@ export interface UseListingDetailReturn {
   handleWhatsAppClick: () => void; handleWhatsAppIntent: (intent: WhatsAppIntent) => void;
   handleDelete: () => Promise<void>; handleEdit: () => void; handleSelectSeller: () => void; isAuthenticated: boolean; isDeleting: boolean;
   isOwner: boolean; isArabic: boolean; goBack: () => void; navigateTo: (screen: ScreenType) => void; isRevealingPhone: boolean;
+  showCaptcha: boolean; setShowCaptcha: (v: boolean) => void; handleCaptchaVerify: (token: string) => Promise<void>;
 }
+
 export function useListingDetail(): UseListingDetailReturn {
   const { isArabic, goBack, selectedListingId, setSelectedListingId, setSelectedThreadId, setSelectedSellerPhone, navigateTo, browseCountryCode } = useUI();
   const { getListing } = useListings();
@@ -37,7 +39,9 @@ export function useListingDetail(): UseListingDetailReturn {
   const isCountryMismatch = useMemo(() => Boolean(listing && listing.countryCode !== activeCountry), [listing, activeCountry]);
   devAssertMarketIsolation(listing, activeCountry);
   const derived = useListingDerivedData(listing, isArabic); const isAuthenticated = authStatus === 'authenticated';
-  const { phone: revealedPhone, isRevealing: isRevealingPhone, revealPhone } = useRevealPhone(listing?.id, listing?.sellerPhone, isArabic, listing?.countryCode);
+  
+  const { handleCall, handleWhatsApp: phoneWhatsApp, showCaptcha, setShowCaptcha, handleCaptchaVerify, isRevealingPhone } = usePhoneActions(listing, isArabic);
+
   const isOwner = useMemo(() => {
     if (!user || !listing) return false;
     if (user.id && listing.userId && user.id === listing.userId) return true;
@@ -62,24 +66,9 @@ export function useListingDetail(): UseListingDetailReturn {
     }
   }, [listing, authStatus, navigateTo, openConversation, setSelectedThreadId, user, activeCountry, isOwner, isArabic, isAnonymous]);
 
-  const handleCall = useCallback(async () => {
-    const num = await revealPhone();
-    if (num) window.location.href = `tel:${num}`;
-  }, [revealPhone]);
-
-  const handleWhatsApp = useCallback(async () => {
-    const num = await revealPhone();
-    if (num && listing) window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: num, listingTitle: listing.title, isArabic }), '_blank');
-  }, [revealPhone, listing, isArabic]);
-
+  const handleWhatsApp = useCallback(() => phoneWhatsApp(), [phoneWhatsApp]);
   const handleWhatsAppClick = useCallback(() => { if (listing) setShowWhatsAppSheet(true); }, [listing]);
-
-  const handleWhatsAppIntent = useCallback(async (intent: WhatsAppIntent) => {
-    if (!listing) return;
-    setShowWhatsAppSheet(false);
-    const num = await revealPhone();
-    if (num) window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: num, listingTitle: listing.title, isArabic, customMessage: composeIntentMessage(intent.body, listing, isArabic) }), '_blank');
-  }, [listing, isArabic, revealPhone]);
+  const handleWhatsAppIntent = useCallback(async (intent: WhatsAppIntent) => { setShowWhatsAppSheet(false); await phoneWhatsApp(intent); }, [phoneWhatsApp]);
 
   const { handleDelete: handleDeleteRaw, isDeleting } = useListingDelete(isArabic);
   const handleDelete = useCallback(async () => { if (listing) await handleDeleteRaw(listing.id, goBack); }, [listing, handleDeleteRaw, goBack]);
@@ -90,5 +79,6 @@ export function useListingDetail(): UseListingDetailReturn {
     showShare, setShowShare, showReport, setShowReport, showWhatsAppSheet, setShowWhatsAppSheet,
     handleStartChat, handleCall, handleWhatsApp, handleWhatsAppClick, handleWhatsAppIntent,
     handleDelete, handleEdit, handleSelectSeller, isAuthenticated, isOwner, isArabic, goBack, navigateTo, isDeleting, isRevealingPhone,
+    showCaptcha, setShowCaptcha, handleCaptchaVerify,
   };
-}
+         }
