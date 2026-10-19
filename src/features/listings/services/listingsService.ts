@@ -11,13 +11,16 @@ export interface FetchListingsParams {
   readonly offset?: number;
   readonly limit?: number;
 }
+
 export const LISTINGS_PAGE_SIZE = 20;
+const LISTING_COLUMNS = 'id,user_id,is_demo,title,description,price,currency,country_code,city,neighborhood,category_slug,subcategory_slug,images,image_width,image_height,attributes,status,views,seller_name,created_at,updated_at,bumps_today,bumps_reset_date,is_premium,premium_expires_at,auto_bump_active,auto_bump_expires_at';
+
 export async function fetchListings(params: FetchListingsParams = {}): Promise<{ data: Listing[] | null; error: string | null }> {
   try {
     const { market, offset = 0, limit = LISTINGS_PAGE_SIZE } = params;
     let q = supabase
       .from('listings')
-      .select('*')
+      .select(LISTING_COLUMNS)
       .eq('status', 'active');
     if (market) q = q.eq('country_code', market);
     const { data, error } = await q
@@ -92,7 +95,7 @@ export async function createListing(input: CreateListingInput): Promise<{ data: 
         seller_name: input.sellerName || null,
         seller_phone: input.sellerPhone || null,
       })
-      .select('*')
+      .select(LISTING_COLUMNS)
       .single();
     if (error) return { data: null, error: error.message };
     return { data: rowToListing(data as SupabaseListingRow), error: null };
@@ -139,7 +142,7 @@ export async function updateListingRemote(id: string, updates: Partial<Listing>)
     const row = listingToRow(updates);
     if (Object.keys(row).length === 0) return { data: null, error: 'No fields to update' };
     const { data, error } = await supabase
-      .from('listings').update(row).eq('id', id).select('*').single();
+      .from('listings').update(row).eq('id', id).select(LISTING_COLUMNS).single();
     if (error) return { data: null, error: error.message };
     return { data: rowToListing(data as SupabaseListingRow), error: null };
   } catch (err) {
