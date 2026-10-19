@@ -38,9 +38,11 @@ export function useRevealPhone(
 
       if (data) {
         const formatted = getFormattedLocalPhone(data, countryCode);
-        const localNumber = formatted.displayFormatted || data;
-        setPhone(localNumber);
-        return localNumber;
+        // Return dialable number (+966..., +962...) so tel: works internationally
+        // and WhatsApp works seamlessly.
+        const dialableNumber = formatted.dialNumber || data;
+        setPhone(dialableNumber);
+        return dialableNumber;
       }
       return null;
     } catch (err) {
