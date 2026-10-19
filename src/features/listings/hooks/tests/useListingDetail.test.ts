@@ -28,6 +28,8 @@ vi.mock('../helpers/listingDerivedData', () => ({
 }));
 
 describe('useListingDetail', () => {
+  const navigateToMock = vi.fn();
+  
   const mockListing = {
     id: 'item-123',
     userId: 'user-1',
@@ -51,6 +53,7 @@ describe('useListingDetail', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    navigateToMock.mockClear();
     window.location.href = ''; // Reset before each test
     vi.spyOn(window, 'open').mockImplementation(() => null);
 
@@ -61,7 +64,7 @@ describe('useListingDetail', () => {
       setSelectedListingId: vi.fn(),
       setSelectedThreadId: vi.fn(),
       setSelectedSellerPhone: vi.fn(),
-      navigateTo: vi.fn(),
+      navigateTo: navigateToMock,
       browseCountryCode: 'JO',
     });
 
@@ -80,7 +83,7 @@ describe('useListingDetail', () => {
     });
   });
 
-  it('handleCall with unauthenticated user sets window.location.href to tel: link', async () => {
+  it('handleCall with unauthenticated user redirects to login', async () => {
     (useAuth as any).mockReturnValue({
       authStatus: 'unauthenticated',
       user: null,
@@ -92,8 +95,8 @@ describe('useListingDetail', () => {
       await result.current.handleCall();
     });
 
-    expect(supabase.rpc).toHaveBeenCalledWith('get_listing_phone', { p_listing_id: 'item-123' });
-    expect(window.location.href).toBe('tel:+962791234567');
+    expect(navigateToMock).toHaveBeenCalledWith('login');
+    expect(supabase.rpc).not.toHaveBeenCalled();
   });
 
   it('handleCall with authenticated user sets window.location.href to tel: link', async () => {
@@ -112,7 +115,7 @@ describe('useListingDetail', () => {
     expect(window.location.href).toBe('tel:+962791234567');
   });
 
-  it('handleWhatsApp with unauthenticated user opens WhatsApp URL', async () => {
+  it('handleWhatsApp with unauthenticated user redirects to login', async () => {
     (useAuth as any).mockReturnValue({
       authStatus: 'unauthenticated',
       user: null,
@@ -124,8 +127,8 @@ describe('useListingDetail', () => {
       await result.current.handleWhatsApp();
     });
 
-    expect(supabase.rpc).toHaveBeenCalledWith('get_listing_phone', { p_listing_id: 'item-123' });
-    expect(window.open).toHaveBeenCalled();
+    expect(navigateToMock).toHaveBeenCalledWith('login');
+    expect(supabase.rpc).not.toHaveBeenCalled();
   });
 
   it('handleWhatsApp with authenticated user opens WhatsApp URL', async () => {
