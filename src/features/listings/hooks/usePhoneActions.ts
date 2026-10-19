@@ -47,14 +47,18 @@ export function usePhoneActions(listing: Listing | null, isArabic: boolean) {
           const customMessage = pendingAction.intent ? composeIntentMessage(pendingAction.intent.body, listing, isArabic) : undefined;
           window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: num, listingTitle: listing.title, isArabic, customMessage }), '_blank');
         }
+        // Clear only on success
         setPendingAction(null);
       }
     } catch (err) {
-      if (err instanceof Error && err.message !== 'CAPTCHA_REQUIRED') {
-        setPendingAction(null);
-      }
+      // Do not clear pendingAction on failure so user can retry
     }
   }, [revealPhone, pendingAction, listing, isArabic]);
 
-  return { handleCall, handleWhatsApp, showCaptcha, setShowCaptcha, handleCaptchaVerify, isRevealingPhone: isRevealing };
+  const cancelCaptcha = useCallback(() => {
+    setShowCaptcha(false);
+    setPendingAction(null);
+  }, []);
+
+  return { handleCall, handleWhatsApp, showCaptcha, cancelCaptcha, handleCaptchaVerify, isRevealingPhone: isRevealing };
 }
