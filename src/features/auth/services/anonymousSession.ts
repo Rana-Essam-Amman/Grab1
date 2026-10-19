@@ -12,11 +12,16 @@ export async function ensureAnonymousSession(): Promise<{ created: boolean; erro
   return { created: false, error: null };
 }
 
-export async function ensureAnonymousSessionForPhone(): Promise<{ created: boolean; error: string | null }> {
+export async function ensureAnonymousSessionForPhone(captchaToken?: string): Promise<{ created: boolean; error: string | null }> {
   try {
     const { data } = await supabase.auth.getSession();
     if (data.session) return { created: false, error: null };
-    const { error } = await supabase.auth.signInAnonymously();
+    
+    // Pass the captcha token if provided
+    const { error } = await supabase.auth.signInAnonymously({
+      options: { captchaToken }
+    });
+    
     if (error) return { created: false, error: error.message };
     return { created: true, error: null };
   } catch (err) {
