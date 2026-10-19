@@ -8,7 +8,6 @@ export interface AuthContextType {
   registered: boolean;
   sessionToken: string | null;
   logout: () => void;
-  loginDirectly: (email: string, phone?: string, countryCode?: string, firstName?: string) => void;
   verifySession: () => Promise<boolean>;
   updateUser: (updates: Partial<UserProfile>) => void;
   updateAvatar: (dataUrl: string | null) => void;
@@ -27,7 +26,6 @@ export const useAuth = (): AuthContextType => {
     registered,
     sessionToken: store.sessionToken,
     logout: store.logout,
-    loginDirectly: store.loginDirectly,
     verifySession: store.verifySession,
     updateUser: store.updateUser,
     updateAvatar: store.updateAvatar,
