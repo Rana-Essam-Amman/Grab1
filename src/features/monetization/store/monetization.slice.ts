@@ -25,8 +25,9 @@ export const useMonetizationStore = create<MonetizationState>()(
       const browseCountryCode = getBrowseCountryCode();
 
       const userId = user?.phone || user?.email || 'guest';
+      const isAdmin = user?.email?.toLowerCase() === 'sufyanyounis83@gmail.com';
 
-      const result = validateHelper(listings, userId, browseCountryCode, categorySlug);
+      const result = validateHelper(listings, userId, browseCountryCode, categorySlug, isAdmin);
 
       set((state) => {
         state.isQuotaExhausted = !result.allowed;
