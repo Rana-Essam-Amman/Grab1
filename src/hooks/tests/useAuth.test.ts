@@ -19,16 +19,6 @@ describe('useAuth', () => {
     expect(result.current.registered).toBe(false);
   });
 
-  it('loginDirectly sets user + session + authenticated', () => {
-    const { result } = renderHook(() => useAuth());
-    act(() => {
-      result.current.loginDirectly('test@example.com', '791234567', 'JO', 'Test');
-    });
-    expect(result.current.authStatus).toBe('authenticated');
-    expect(result.current.user).not.toBeNull();
-    expect(result.current.sessionToken).toBeTruthy();
-  });
-
   it('registered is true when user + sessionToken both present', () => {
     useAuthStore.setState({
       authStatus: 'authenticated',

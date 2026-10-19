@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import { useUI } from '@/hooks/useUI';
-import { useAuth } from '@/hooks/useAuth';
 import { AuthTopBar } from '../components/AuthTopBar';
 import { AuthToastBanner } from '../components/AuthToastBanner';
 import { LoginScreenBody } from '../components/LoginScreenBody';
@@ -12,7 +11,6 @@ export interface LoginScreenProps {
 
 export const LoginScreen: React.FC<LoginScreenProps> = () => {
   const { isArabic, goBack, setLocale, setBrowseLocation, navigateTo, setBrowseMarketOverrideLocal } = useUI();
-  const { loginDirectly } = useAuth();
   
   const [guestCountrySelect, setGuestCountrySelect] = useState(false);
   const [toastMsg, setToastMsg] = useState('');
@@ -29,10 +27,9 @@ export const LoginScreen: React.FC<LoginScreenProps> = () => {
       setGuestCountrySelect(false);
       setBrowseMarketOverrideLocal(code);
       setBrowseLocation(code, '', '');
-      loginDirectly('guest@fox.local', undefined, code, 'Guest');
       navigateTo('main');
     },
-    [setBrowseLocation, setBrowseMarketOverrideLocal, loginDirectly, navigateTo],
+    [setBrowseLocation, setBrowseMarketOverrideLocal, navigateTo],
   );
 
   const handleGuestCountryOpen = useCallback(() => {

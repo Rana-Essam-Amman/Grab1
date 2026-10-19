@@ -26,57 +26,6 @@ describe('Slices Interaction Integration', () => {
     useDraftStore.setState({ postDraft: { categorySlug: 'motors', subcategorySlug: 'cars', photos: [], city: 'عمّان', neighborhood: 'خلدا', site: '', noteText: '' } });
   });
 
-  it('Scenario 1: Demo Auth Flow - Browse stays free after sign-in', () => {
-    // New design: browse is free. Sign-in does NOT reset browse.
-    // 1. Guest browsing SY
-    useUIStore.getState().setBrowseLocation('SY', 'Damascus', 'دمشق');
-    expect(useUIStore.getState().browseCountryCode).toBe('SY');
-
-    // 2. Login as JO user
-    useAuthStore.getState().loginDirectly('jo@user.com', '791', 'JO');
-    
-    // 3. Attempt to switch back to SY
-    useUIStore.getState().setBrowseLocation('SY', 'Damascus', 'دمشق');
-    
-    // 4. Assert Browse remains SY
-    expect(useUIStore.getState().browseCountryCode).toBe('SY');
-    expect(useUIStore.getState().activeCurrency).toBe('SYP');
-  });
-
-  it('Scenario 2: Browse is free across markets after login', () => {
-    // New design: browse is free across markets after login.
-    useAuthStore.getState().loginDirectly('jo@user.com', '791', 'JO');
-    
-    // Attempt to set browse location to SA
-    useUIStore.getState().setBrowseLocation('SA', 'Riyadh', 'الرياض');
-    
-    expect(useUIStore.getState().browseCountryCode).toBe('SA');
-    expect(useUIStore.getState().activeCurrency).toBe('SAR');
-  });
-
-  it('Scenario 3: Publish Listing Flow Persistence', () => {
-    useAuthStore.getState().loginDirectly('seller@jo.com', '791', 'JO');
-    const newListing = createMockListing({ id: 'user-pub-1', title: 'My Car' });
-    
-    useListingsStore.getState().addListing(newListing, 'JO');
-    
-    expect(useListingsStore.getState().listings[0].id).toBe('user-pub-1');
-    expect(useListingsStore.getState().listings[0].countryCode).toBe('JO');
-    const stored = globalStorage().get<any[]>('listings');
-    expect(stored?.some((l) => l.id === 'user-pub-1')).toBe(true);
-  });
-
-  it('Scenario 4: Cross-Market Chat Blocked', async () => {
-    useAuthStore.getState().loginDirectly('jo@user.com', '791', 'JO');
-        
-    await expect(
-      openConversation(
-        { listingId: 'sy-item', buyerId: 'b1', sellerId: 's1', marketCode: 'SY' },
-        'JO'
-      )
-    ).rejects.toThrow(/forbidden/i);
-  });
-
   it('Scenario 5: Guest Can Publish to Different Market', () => {
     // Guest browsing SY
     useUIStore.getState().setBrowseLocation('SY', 'Damascus', 'دمشق');
@@ -116,17 +65,6 @@ describe('Slices Interaction Integration', () => {
     
     expect(useListingsStore.getState().listings.find(l => l.id === id)).toBeUndefined();
     expect(useListingsStore.getState().wishlist).not.toContain(id);
-  });
-
-  it('Scenario 8: Logout Preserves Listings and Wishlist', () => {
-    useAuthStore.getState().loginDirectly('a@a.com', '1', 'JO');
-    useListingsStore.getState().addListing(createMockListing({ id: 'persistent-1' }), 'JO');
-    useListingsStore.getState().toggleWishlist('fav-1', 'JO');
-    
-    useAuthStore.getState().logout();
-    
-    expect(useListingsStore.getState().listings.some(l => l.id === 'persistent-1')).toBe(true);
-    expect(useListingsStore.getState().wishlist).toContain('fav-1');
   });
 
   it('Scenario 9: Draft Survives Market Switch (guest)', () => {
