@@ -9,6 +9,7 @@ import type { PublishResult } from './listings.slice.types';
 import { performSupabasePublish } from './listings.slice.supabase';
 import { createWishlistActions } from './listings.slice.wishlist';
 import { createPaginationActions } from './listings.slice.pagination';
+import { getCurrentUser } from '@/shared/store-getters/auth.getter';
 
 export const createListingsActions = (
   set: (fn: (state: ListingsState) => void) => void,
@@ -110,7 +111,9 @@ export const createListingsActions = (
   setIsQuotaExhausted: (exhausted: boolean) => set((state) => { state.isQuotaExhausted = exhausted; }),
 
   validateAdQuotaAvailability: (categorySlug: string, userId = 'guest', countryCode = 'JO') => {
-    const result = validateAdQuotaAvailabilityHelper(get().listings, userId, countryCode, categorySlug);
+    const user = getCurrentUser();
+    const isAdmin = user?.email?.toLowerCase() === 'sufyanyounis83@gmail.com';
+    const result = validateAdQuotaAvailabilityHelper(get().listings, userId, countryCode, categorySlug, isAdmin);
     set((state) => { state.isQuotaExhausted = !result.allowed; });
     return result.allowed;
   },
