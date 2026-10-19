@@ -60,7 +60,8 @@ export function validateAdQuotaAvailability(
   listings: Array<{ countryCode?: string; sellerPhone?: string; userId?: string; categorySlug?: string }>,
   userId: string,
   countryCode: string,
-  _categorySlug: string
+  _categorySlug: string,
+  isAdmin: boolean = false
 ): { allowed: boolean; activeCount: number; limit: number } {
   const limit = MONETIZATION_MATRIX.freeLimits.generalCategoryLimit;
 
@@ -71,7 +72,7 @@ export function validateAdQuotaAvailability(
   }).length;
 
   return {
-    allowed: activeCount < limit,
+    allowed: isAdmin || activeCount < limit,
     activeCount,
     limit,
   };
