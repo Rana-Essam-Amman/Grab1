@@ -66,23 +66,26 @@ export function useListingDetail(): UseListingDetailReturn {
   }, [listing, authStatus, navigateTo, openConversation, setSelectedThreadId, user, activeCountry, isOwner, isArabic]);
 
   const handleCall = useCallback(async () => {
+    if (!isAuthenticated) return navigateTo('login');
     const num = await revealPhone();
     if (num) window.location.href = `tel:${num}`;
-  }, [revealPhone]);
+  }, [revealPhone, isAuthenticated, navigateTo]);
 
   const handleWhatsApp = useCallback(async () => {
+    if (!isAuthenticated) return navigateTo('login');
     const num = await revealPhone();
     if (num && listing) window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: num, listingTitle: listing.title, isArabic }), '_blank');
-  }, [revealPhone, listing, isArabic]);
+  }, [revealPhone, listing, isArabic, isAuthenticated, navigateTo]);
 
-  const handleWhatsAppClick = useCallback(() => { if (listing) setShowWhatsAppSheet(true); }, [listing]);
+  const handleWhatsAppClick = useCallback(() => { if (!isAuthenticated) return navigateTo('login'); if (listing) setShowWhatsAppSheet(true); }, [listing, isAuthenticated, navigateTo]);
 
   const handleWhatsAppIntent = useCallback(async (intent: WhatsAppIntent) => {
     if (!listing) return;
+    if (!isAuthenticated) return navigateTo('login');
     setShowWhatsAppSheet(false);
     const num = await revealPhone();
     if (num) window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: num, listingTitle: listing.title, isArabic, customMessage: composeIntentMessage(intent.body, listing, isArabic) }), '_blank');
-  }, [listing, isArabic, revealPhone]);
+  }, [listing, isArabic, revealPhone, isAuthenticated, navigateTo]);
 
   const { handleDelete: handleDeleteRaw, isDeleting } = useListingDelete(isArabic);
   const handleDelete = useCallback(async () => { if (listing) await handleDeleteRaw(listing.id, goBack); }, [listing, handleDeleteRaw, goBack]);
