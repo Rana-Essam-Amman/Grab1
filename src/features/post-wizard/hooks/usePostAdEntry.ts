@@ -7,6 +7,7 @@ import { isValidMarketCode } from '@/data/markets/config';
 import type { MarketCode } from '@/data/markets/types';
 import { useListings } from '@/hooks/useListings';
 import { MONETIZATION_MATRIX } from '@/data/monetization';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 
 export interface UsePostAdEntryReturn {
   readonly isArabic: boolean;
@@ -30,6 +31,7 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
   const { startPostFlow: draftStartPostFlow } = useDraft();
   const { authStatus, isAnonymous, user } = useAuth();
   const { userListings } = useListings();
+  const isAdmin = useIsAdmin();
 
   useEffect(() => {
     if (authStatus !== 'authenticated' || isAnonymous) {
@@ -63,7 +65,7 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
   const activeCount = userListings.filter(
     (l) => l.status !== 'sold'
   ).length;
-  const freeRemaining = Math.max(0, freeLimit - activeCount);
+  const freeRemaining = isAdmin ? freeLimit : Math.max(0, freeLimit - activeCount);
 
   const handleBack = useCallback(() => {
     setActiveTab('explore');
