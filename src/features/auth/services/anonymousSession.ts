@@ -7,9 +7,21 @@ export function isAnonymousUser(user: User | null | undefined): boolean {
 }
 
 export async function ensureAnonymousSession(): Promise<{ created: boolean; error: string | null }> {
-  // Disabled: anonymous sessions had documented Supabase bugs (linkIdentity, USER_UPDATED).
-  // Flow uses classic signInWithOAuth. Visitors browse with no session.
+  // Disabled at app level: anonymous sessions had documented Supabase bugs (linkIdentity, USER_UPDATED).
+  // Kept as no-op so the auth listener doesn't create sessions on every page load.
   return { created: false, error: null };
+}
+
+export async function ensureAnonymousSessionForPhone(): Promise<{ created: boolean; error: string | null }> {
+  try {
+    const { data } = await supabase.auth.getSession();
+    if (data.session) return { created: false, error: null };
+    const { error } = await supabase.auth.signInAnonymously();
+    if (error) return { created: false, error: error.message };
+    return { created: true, error: null };
+  } catch (err) {
+    return { created: false, error: err instanceof Error ? err.message : 'Unknown error' };
+  }
 }
 
 export async function linkAnonymousToGoogle(): Promise<{ error: string | null }> {
