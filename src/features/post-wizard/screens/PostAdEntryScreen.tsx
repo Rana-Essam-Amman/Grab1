@@ -114,8 +114,12 @@ export const PostAdEntryScreen: React.FC = () => {
             </div>
           )}
         </div>
-        <div className="w-24 h-24 rounded-full bg-brand/10 flex items-center justify-center mb-4">
-          <Icon icon="fluent-emoji:rocket" width={48} height={48} />
+        <div className="w-24 h-24 rounded-full bg-brand/10 flex items-center justify-center mb-4 overflow-hidden border border-border/50 shadow-sm">
+          <img
+            src="/assets/icons/logo.png"
+            alt="FOX"
+            className="w-full h-full object-cover"
+          />
         </div>
         <div className="text-center px-4">
           <h3 className="text-xl font-bold text-ink mb-2">
