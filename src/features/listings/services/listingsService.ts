@@ -6,11 +6,7 @@ import type { SearchListingsParams } from './searchListings.types';
 
 export type { SearchListingsParams } from './searchListings.types';
 
-export interface FetchListingsParams {
-  readonly market?: string;
-  readonly offset?: number;
-  readonly limit?: number;
-}
+export interface FetchListingsParams { readonly market?: string; readonly offset?: number; readonly limit?: number; }
 
 export const LISTINGS_PAGE_SIZE = 20;
 const LISTING_COLUMNS = 'id,user_id,is_demo,title,description,price,currency,country_code,city,neighborhood,category_slug,subcategory_slug,images,image_width,image_height,attributes,status,views,seller_name,created_at,updated_at,bumps_today,bumps_reset_date,is_premium,premium_expires_at,auto_bump_active,auto_bump_expires_at';
