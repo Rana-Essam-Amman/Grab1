@@ -42,34 +42,29 @@ export function useListingDetail(): UseListingDetailReturn {
   const isOwner = useMemo(() => {
     if (!user || !listing) return false;
     if (user.id && listing.userId && user.id === listing.userId) return true;
-    if (user.phone && listing.sellerPhone) return user.phone === listing.sellerPhone;
-    return false;
+    return !!(user.phone && listing.sellerPhone && user.phone === listing.sellerPhone);
   }, [user, listing]);
+
   const handleSelectSeller = useCallback(() => {
-    if (!listing) return;
-    const sellerKey = listing.userId || listing.sellerPhone;
-    if (!sellerKey) return;
-    setSelectedSellerPhone(sellerKey);
-    navigateTo('seller-profile');
+    if (!listing) return; const key = listing.userId || listing.sellerPhone;
+    if (key) { setSelectedSellerPhone(key); navigateTo('seller-profile'); }
   }, [listing, setSelectedSellerPhone, navigateTo]);
+
   const handleStartChat = useCallback(async () => {
     if (!listing) return;
-    if (authStatus === 'unauthenticated') { navigateTo('login'); return; }
-    if (!user?.id) { navigateTo('login'); return; }
+    if (authStatus === 'unauthenticated' || !user?.id) { navigateTo('login'); return; }
     if (isOwner) return;
     if (!listing.userId) { showChatUnavailable(isArabic); return; }
     try {
       const conv = await openConversation({ listingId: listing.id, buyerId: user.id, sellerId: listing.userId, marketCode: listing.countryCode }, activeCountry);
       if (!conv) { showChatOpenFailed(isArabic); return; }
-      setSelectedThreadId(conv.id);
-      navigateTo('thread');
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : '';
-      if (msg.includes('Cross-market')) showChatCrossMarket(isArabic);
+      setSelectedThreadId(conv.id); navigateTo('thread');
+    } catch (err) {
+      if ((err instanceof Error ? err.message : '').includes('Cross-market')) showChatCrossMarket(isArabic);
       else showChatOpenFailed(isArabic);
     }
   }, [listing, authStatus, navigateTo, openConversation, setSelectedThreadId, user, activeCountry, isOwner, isArabic]);
-  
+
   const handleCall = useCallback(async () => {
     const num = await revealPhone();
     if (num) window.location.href = `tel:${num}`;
@@ -77,33 +72,26 @@ export function useListingDetail(): UseListingDetailReturn {
 
   const handleWhatsApp = useCallback(async () => {
     const num = await revealPhone();
-    if (num && listing) {
-      window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: num, listingTitle: listing.title, isArabic }), '_blank');
-    }
+    if (num && listing) window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: num, listingTitle: listing.title, isArabic }), '_blank');
   }, [revealPhone, listing, isArabic]);
 
-  const handleWhatsAppClick = useCallback(() => {
-    if (!listing) return;
-    setShowWhatsAppSheet(true);
-  }, [listing]);
+  const handleWhatsAppClick = useCallback(() => { if (listing) setShowWhatsAppSheet(true); }, [listing]);
 
   const handleWhatsAppIntent = useCallback(async (intent: WhatsAppIntent) => {
     if (!listing) return;
     setShowWhatsAppSheet(false);
     const num = await revealPhone();
-    if (num) {
-      window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: num, listingTitle: listing.title, isArabic, customMessage: composeIntentMessage(intent.body, listing, isArabic) }), '_blank');
-    }
+    if (num) window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: num, listingTitle: listing.title, isArabic, customMessage: composeIntentMessage(intent.body, listing, isArabic) }), '_blank');
   }, [listing, isArabic, revealPhone]);
-  
+
   const { handleDelete: handleDeleteRaw, isDeleting } = useListingDelete(isArabic);
   const handleDelete = useCallback(async () => { if (listing) await handleDeleteRaw(listing.id, goBack); }, [listing, handleDeleteRaw, goBack]);
-  const handleEdit = useCallback(() => { if (!listing) return; setSelectedListingId(listing.id); navigateTo('edit-post'); }, [listing, setSelectedListingId, navigateTo]);
-  
+  const handleEdit = useCallback(() => { if (listing) { setSelectedListingId(listing.id); navigateTo('edit-post'); } }, [listing, setSelectedListingId, navigateTo]);
+
   return {
     listing, activeCountry, isCountryMismatch, ...derived, activePhotoIdx, setActivePhotoIdx,
     showShare, setShowShare, showReport, setShowReport, showWhatsAppSheet, setShowWhatsAppSheet,
     handleStartChat, handleCall, handleWhatsApp, handleWhatsAppClick, handleWhatsAppIntent,
     handleDelete, handleEdit, handleSelectSeller, isAuthenticated, isOwner, isArabic, goBack, navigateTo, isDeleting, isRevealingPhone,
   };
-    }
+}
