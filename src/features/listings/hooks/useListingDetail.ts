@@ -29,7 +29,7 @@ export function useListingDetail(): UseListingDetailReturn {
   const { isArabic, goBack, selectedListingId, setSelectedListingId, setSelectedThreadId, setSelectedSellerPhone, navigateTo, browseCountryCode } = useUI();
   const { getListing } = useListings();
   const { openConversation } = useChat();
-  const { authStatus, user } = useAuth();
+  const { authStatus, user, isAnonymous } = useAuth();
   const [activePhotoIdx, setActivePhotoIdx] = useState(0);
   const [showShare, setShowShare] = useState(false); const [showReport, setShowReport] = useState(false); const [showWhatsAppSheet, setShowWhatsAppSheet] = useState(false);
   const listing = selectedListingId ? getListing(selectedListingId) || null : null;
@@ -49,7 +49,7 @@ export function useListingDetail(): UseListingDetailReturn {
   }, [listing, setSelectedSellerPhone, navigateTo]);
 
   const handleStartChat = useCallback(async () => {
-    if (!listing) return; if (authStatus === 'unauthenticated' || !user?.id) { navigateTo('login'); return; }
+    if (!listing) return; if (authStatus === 'unauthenticated' || !user?.id || isAnonymous) { navigateTo('login'); return; }
     if (isOwner) return;
     if (!listing.userId) { showChatUnavailable(isArabic); return; }
     try {
@@ -60,7 +60,7 @@ export function useListingDetail(): UseListingDetailReturn {
       if ((err instanceof Error ? err.message : '').includes('Cross-market')) showChatCrossMarket(isArabic);
       else showChatOpenFailed(isArabic);
     }
-  }, [listing, authStatus, navigateTo, openConversation, setSelectedThreadId, user, activeCountry, isOwner, isArabic]);
+  }, [listing, authStatus, navigateTo, openConversation, setSelectedThreadId, user, activeCountry, isOwner, isArabic, isAnonymous]);
 
   const handleCall = useCallback(async () => {
     const num = await revealPhone();
