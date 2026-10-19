@@ -6,7 +6,6 @@ import { mapSessionToUser, resumePendingNavigation } from './authListenerHelpers
 import { useUIStore } from '@/store/ui.slice';
 import { useListingsStore } from '@/features/listings';
 import { toast } from 'sonner';
-import { globalStorage } from '@/shared/lib/marketStorage'; // 🛡️ Imported for token check
 
 function resumePendingWishlist(): void {
   const ui = useUIStore.getState();
@@ -31,15 +30,17 @@ function resumePendingWishlist(): void {
 export function useSupabaseAuthListener(): void {
   useEffect(() => {
     void ensureAnonymousSession();
+    let isInitialized = false;
 
     const { unsubscribe } = onAuthStateChange((event, session) => {
+      if (event === 'INITIAL_SESSION') {
+        isInitialized = true;
+      }
+
       if (event === 'SIGNED_OUT') {
-        // 🛡️ FIX: Prevent accidental logout on deployment.
-        // If the user has a local token saved, ignore this event (it's a background blip).
-        const localToken = globalStorage().get<string>('catch_token');
-        if (localToken) {
-          return; 
-        }
+        // 🛡️ Security Fix: Only clear state if Supabase has fully initialized.
+        // If isInitialized is false, this is likely a transient state during load.
+        if (!isInitialized) return;
 
         useAuthStore.setState({
           user: null,
