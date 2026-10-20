@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useListingsStore } from '../store/listings.slice';
 import { useAuthStore } from '@/features/auth';
 import { useUIStore } from '@/store/ui.slice';
+import { isDemoMode } from '@/shared/lib/demoMode';
 
 /**
  * Mounts once at app level. On sign-in (and on market change while
@@ -22,7 +23,7 @@ export function useSupabaseWishlistSync(): void {
   const migratedForUserRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!isInitialized || !userId) return;
+    if (!isInitialized || !userId || isDemoMode()) return;
 
     let cancelled = false;
 
