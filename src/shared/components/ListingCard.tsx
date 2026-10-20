@@ -4,10 +4,11 @@ import { Listing } from '@/types';
 import { Icon } from '@iconify/react';
 import { getSanitizedRegionalLocation } from '@/data/locations';
 import { getSanitizedCurrency } from '@/data/countries';
+import { getListingFields } from '@/data/listingFields';
 import { ListingCardImage } from './ListingCardImage';
 import { ListingCardHorizontal } from './ListingCardHorizontal';
 import { ListingCardSellerRow } from '@/features/listings/components/ListingCardSellerRow';
-import { MotorsSpecsRow } from '@/features/listings/components/MotorsSpecsRow';
+import { RequiredSpecsRow } from '@/features/listings/components/RequiredSpecsRow';
 import { pickSpecs } from '@/features/listings';
 import { ListingSpecsRow } from './ListingSpecsRow';
 
@@ -44,18 +45,15 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
     [sanitizedLoc]
   );
 
-  const motorsAttrs = useMemo(() => {
-    if (listing.categorySlug !== 'motors') return null;
-    const find = (key: string) => listing.attributes?.find((a) => a.key === key)?.value ?? '';
-    return { make: find('make'), model: find('model'), trim: find('trim') };
-  }, [listing.categorySlug, listing.attributes]);
+  const requiredKeys = useMemo(() => {
+    const fields = getListingFields(listing.categorySlug, listing.subcategorySlug);
+    return new Set(fields.filter((f) => f.required).map((f) => f.key));
+  }, [listing.categorySlug, listing.subcategorySlug]);
 
   const specs = useMemo(() => {
-    const attrs = listing.categorySlug === 'motors'
-      ? listing.attributes?.filter((a) => a.key !== 'trim')
-      : listing.attributes;
+    const attrs = listing.attributes?.filter((a) => !requiredKeys.has(a.key));
     return pickSpecs(attrs, 5, listing.title);
-  }, [listing.categorySlug, listing.attributes, listing.title]);
+  }, [listing.attributes, listing.title, requiredKeys]);
 
   const sellerKey = useMemo(
     () => listing.sellerPhone || listing.userId || '',
@@ -112,14 +110,12 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
           <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
           <span className="truncate" dir="auto">{locationText}</span>
         </div>
-        {motorsAttrs && (
-          <MotorsSpecsRow
-            make={motorsAttrs.make}
-            model={motorsAttrs.model}
-            trim={motorsAttrs.trim}
-            isArabic={isArabic}
-          />
-        )}
+        <RequiredSpecsRow
+          categorySlug={listing.categorySlug}
+          subcategorySlug={listing.subcategorySlug}
+          attributes={listing.attributes ?? []}
+          isArabic={isArabic}
+        />
         {specs.length > 0 && <ListingSpecsRow specs={specs} compact />}
         <div className="flex items-center mt-3 pt-2 border-t border-border gap-1.5">
           <div className="price-tag text-base shrink-0">
