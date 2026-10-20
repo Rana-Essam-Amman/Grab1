@@ -1,14 +1,10 @@
 import { supabase } from '@/shared/lib/supabase';
 import { logWarning } from '@/shared/lib/errorLogger';
 import { getListingFields } from '@/data/listingFields';
+import { getModelBySlug } from '@/data/brands/carModels';
 
 const HYBRID_TIMEOUT_MS = 4000;
 
-/**
- * Fetch a 384-dim query embedding via the embed-query edge function.
- * Returns null on any error (network, timeout, bad shape) so the caller
- * can degrade to FTS-only. Never throws.
- */
 export async function fetchQueryVector(query: string): Promise<number[] | null> {
   const supaUrl = import.meta.env.VITE_SUPABASE_URL as string;
   const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
@@ -45,10 +41,6 @@ export async function fetchQueryVector(query: string): Promise<number[] | null> 
   }
 }
 
-/**
- * Map a raw query to its implied category slug via detect_query_category.
- * Returns null when no category match exists or the RPC errors.
- */
 export async function detectCategory(query: string): Promise<string | null> {
   try {
     const { data, error } = await supabase.rpc('detect_query_category', {
@@ -62,13 +54,11 @@ export async function detectCategory(query: string): Promise<string | null> {
 }
 
 /**
- * Convert a UI attribute map into the JSONB array shape the DB expects.
- * Sends the canonical slug as `value`, AND all forms (slug, labelAr, labelEn)
- * as `aliases`. The RPC matches ANY alias against the stored value, so
- * filtering works regardless of how the data was saved (Arabic, English, slug).
- *
- * This is the SINGLE SOURCE OF TRUTH for sending attributes to the DB.
- * No value translation happens here — the server compares against aliases.
+ * Builds p_attrs payload with aliases for select/cascading fields.
+ * - select: aliases from options (value, labelAr, labelEn)
+ * - cascading-model: aliases from CAR_MODELS via getModelBySlug (slug, nameAr, nameEn)
+ * - cascading-trim: case-insensitive variant (LE ↔ le)
+ * Guarantees DB matching regardless of the stored representation.
  */
 export function attrsToJsonbArray(
   attrs: Record<string, string> | undefined,
@@ -80,9 +70,12 @@ export function attrsToJsonbArray(
   if (entries.length === 0) return null;
 
   const fields = categorySlug ? getListingFields(categorySlug, subcategorySlug ?? undefined) : [];
+  const makeSlug = attrs.make ?? attrs.brand ?? '';
 
   return entries.map(([key, value]) => {
     const field = fields.find((f) => f.key === key);
+
+    // Standard select fields: aliases from options
     if (field?.options) {
       const option = field.options.find(
         (o) => o.value === value || o.labelAr === value || o.labelEn === value,
@@ -94,11 +87,28 @@ export function attrsToJsonbArray(
         return { key, value: option.value, aliases };
       }
     }
+
+    // Cascading-model: resolve aliases from CAR_MODELS
+    if (field?.type === 'cascading-model' && makeSlug) {
+      const model = getModelBySlug(makeSlug, value);
+      if (model) {
+        const aliases = Array.from(
+          new Set([model.slug, model.nameAr, model.nameEn].filter(Boolean))
+        );
+        return { key, value: model.slug, aliases };
+      }
+    }
+
+    // Cascading-trim: case-insensitive variant (LE ↔ le)
+    if (field?.type === 'cascading-trim') {
+      const aliases = Array.from(new Set([value, value.toLowerCase()]));
+      return { key, value, aliases };
+    }
+
     return { key, value };
   });
 }
 
-// Frontend rate limit: max 30 searches per rolling 60-second window.
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 30;
 const searchTimestamps: number[] = [];
