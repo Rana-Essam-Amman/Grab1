@@ -33,11 +33,10 @@ function isEligible(f: ListingField): boolean {
 }
 
 export const CategoryAttrsSection: React.FC<CategoryAttrsSectionProps> = ({ isArabic, categorySlug, subcategorySlug, attrs, onChange }) => {
-  if (!ATTRS_FILTERS_ENABLED) return null;
   const showMileageRange = categorySlug === 'motors' && CAR_SUBS.includes(subcategorySlug ?? '');
   const fields = useMemo(() => !categorySlug ? [] : getListingFields(categorySlug, subcategorySlug ?? undefined).filter(isEligible), [categorySlug, subcategorySlug]);
 
-  if (fields.length === 0 && !showMileageRange) return null;
+  if (!ATTRS_FILTERS_ENABLED || (fields.length === 0 && !showMileageRange)) return null;
 
   return (
     <div className="flex flex-col gap-4">
