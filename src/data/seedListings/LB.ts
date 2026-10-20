@@ -20,10 +20,10 @@ export const LB_LISTINGS: Listing[] = [
     createdAt: '2026-09-07',
     views: 188,
     attributes: [
-      { label: 'Brand', value: 'Apple' },
-      { label: 'Processor', value: 'M3 Max' },
-      { label: 'RAM', value: '36 GB' },
-      { label: 'Storage', value: '1 TB SSD' },
+      { key: 'brand', label: 'Brand', value: 'Apple' },
+      { key: 'processor', label: 'Processor', value: 'M3 Max' },
+      { key: 'ram', label: 'RAM', value: '36 GB' },
+      { key: 'storage', label: 'Storage', value: '1 TB SSD' },
     ],
   },
   {
@@ -36,7 +36,7 @@ export const LB_LISTINGS: Listing[] = [
     city: 'بيروت',
     neighborhood: 'الحمرا',
     categorySlug: 'motors',
-    subcategorySlug: 'motorcycles',
+    subcategorySlug: 'motorbikes',
     imageUrl: '/assets/listings/car.jpg',
     images: ['/assets/listings/car.jpg'],
     sellerPhone: '+96170987654',
@@ -44,10 +44,10 @@ export const LB_LISTINGS: Listing[] = [
     createdAt: '2026-09-09',
     views: 142,
     attributes: [
-      { label: 'Make', value: 'Vespa Primavera' },
-      { label: 'Year', value: '2022' },
-      { label: 'Engine', value: '150 cc' },
-      { label: 'Mileage', value: '3,200 km' },
+      { key: 'make', label: 'Make', value: 'Vespa Primavera' },
+      { key: 'year', label: 'Year', value: '2022' },
+      { key: 'engine', label: 'Engine', value: '150 cc' },
+      { key: 'mileage', label: 'Mileage', value: '3,200 km' },
     ],
   },
   {
@@ -68,9 +68,9 @@ export const LB_LISTINGS: Listing[] = [
     createdAt: '2026-09-10',
     views: 210,
     attributes: [
-      { label: 'Type', value: 'Mountain Chalet' },
-      { label: 'Rate', value: 'Per Night' },
-      { label: 'Electricity', value: '24/7 Solar + Genset' },
+      { key: 'type', label: 'Type', value: 'Mountain Chalet' },
+      { key: 'rate', label: 'Rate', value: 'Per Night' },
+      { key: 'electricity', label: 'Electricity', value: '24/7 Solar + Genset' },
     ],
   },
   {
@@ -91,9 +91,9 @@ export const LB_LISTINGS: Listing[] = [
     createdAt: '2026-09-11',
     views: 230,
     attributes: [
-      { label: 'Make / Model', value: 'BMW 330e M-Sport' },
-      { label: 'Year', value: '2021' },
-      { label: 'Fuel', value: 'Plug-in Hybrid' },
+      { key: 'makeModel', label: 'Make / Model', value: 'BMW 330e M-Sport' },
+      { key: 'year', label: 'Year', value: '2021' },
+      { key: 'fuel', label: 'Fuel', value: 'Plug-in Hybrid' },
     ],
     isPremium: true,
   },
@@ -115,9 +115,9 @@ export const LB_LISTINGS: Listing[] = [
     createdAt: '2026-09-09',
     views: 195,
     attributes: [
-      { label: 'Make', value: 'Mercedes-Benz C200' },
-      { label: 'Year', value: '2020' },
-      { label: 'Package', value: 'AMG Line' },
+      { key: 'make', label: 'Make', value: 'Mercedes-Benz C200' },
+      { key: 'year', label: 'Year', value: '2020' },
+      { key: 'package', label: 'Package', value: 'AMG Line' },
     ],
   },
   {
@@ -138,9 +138,9 @@ export const LB_LISTINGS: Listing[] = [
     createdAt: '2026-09-10',
     views: 260,
     attributes: [
-      { label: 'Area', value: '210 sqm' },
-      { label: 'Bedrooms', value: '3 Master' },
-      { label: 'Generator', value: '24/7 Dedicated Power' },
+      { key: 'area', label: 'Area', value: '210 sqm' },
+      { key: 'bedrooms', label: 'Bedrooms', value: '3 Master' },
+      { key: 'generator', label: 'Generator', value: '24/7 Dedicated Power' },
     ],
   },
   {
@@ -161,9 +161,9 @@ export const LB_LISTINGS: Listing[] = [
     createdAt: '2026-09-08',
     views: 312,
     attributes: [
-      { label: 'Type', value: 'Studio' },
-      { label: 'Furnished', value: 'Yes' },
-      { label: 'Internet', value: 'Optic Fiber 300 Mbps' },
+      { key: 'type', label: 'Type', value: 'Studio' },
+      { key: 'furnished', label: 'Furnished', value: 'Yes' },
+      { key: 'internet', label: 'Internet', value: 'Optic Fiber 300 Mbps' },
     ],
   },
   {
@@ -184,9 +184,9 @@ export const LB_LISTINGS: Listing[] = [
     createdAt: '2026-09-11',
     views: 180,
     attributes: [
-      { label: 'Capacity', value: '128 GB' },
-      { label: 'Battery', value: '98%' },
-      { label: 'Color', value: 'Blue Titanium' },
+      { key: 'capacity', label: 'Capacity', value: '128 GB' },
+      { key: 'battery', label: 'Battery', value: '98%' },
+      { key: 'color', label: 'Color', value: 'Blue Titanium' },
     ],
   },
   {
@@ -207,8 +207,8 @@ export const LB_LISTINGS: Listing[] = [
     createdAt: '2026-09-10',
     views: 145,
     attributes: [
-      { label: 'Screen', value: '55 Inch OLED evo' },
-      { label: 'Refresh Rate', value: '120 Hz' },
+      { key: 'screen', label: 'Screen', value: '55 Inch OLED evo' },
+      { key: 'refreshRate', label: 'Refresh Rate', value: '120 Hz' },
     ],
   },
   {
@@ -229,8 +229,8 @@ export const LB_LISTINGS: Listing[] = [
     createdAt: '2026-09-09',
     views: 167,
     attributes: [
-      { label: 'Edition', value: 'Disc Edition' },
-      { label: 'Condition', value: 'Excellent with games' },
+      { key: 'edition', label: 'Edition', value: 'Disc Edition' },
+      { key: 'condition', label: 'Condition', value: 'Excellent with games' },
     ],
   },
   {
@@ -251,8 +251,8 @@ export const LB_LISTINGS: Listing[] = [
     createdAt: '2026-09-08',
     views: 115,
     attributes: [
-      { label: 'Quantity', value: '6 Chairs' },
-      { label: 'Fabric', value: 'Emerald Green Velvet' },
+      { key: 'quantity', label: 'Quantity', value: '6 Chairs' },
+      { key: 'fabric', label: 'Fabric', value: 'Emerald Green Velvet' },
     ],
   },
   {
@@ -273,8 +273,8 @@ export const LB_LISTINGS: Listing[] = [
     createdAt: '2026-09-07',
     views: 89,
     attributes: [
-      { label: 'Wood', value: 'Solid Oak' },
-      { label: 'Dimensions', value: '120x60x45 cm' },
+      { key: 'wood', label: 'Wood', value: 'Solid Oak' },
+      { key: 'dimensions', label: 'Dimensions', value: '120x60x45 cm' },
     ],
   },
   {
@@ -295,8 +295,8 @@ export const LB_LISTINGS: Listing[] = [
     createdAt: '2026-09-09',
     views: 74,
     attributes: [
-      { label: 'Material', value: 'Grade-A Teak' },
-      { label: 'Seating', value: '3 Persons' },
+      { key: 'material', label: 'Material', value: 'Grade-A Teak' },
+      { key: 'seating', label: 'Seating', value: '3 Persons' },
     ],
   },
   {
@@ -317,9 +317,9 @@ export const LB_LISTINGS: Listing[] = [
     createdAt: '2026-09-12',
     views: 280,
     attributes: [
-      { label: 'Brand', value: 'Omega' },
-      { label: 'Diameter', value: '42 mm' },
-      { label: 'Movement', value: 'Calibre 3861' },
+      { key: 'brand', label: 'Brand', value: 'Omega' },
+      { key: 'diameter', label: 'Diameter', value: '42 mm' },
+      { key: 'movement', label: 'Movement', value: 'Calibre 3861' },
     ],
     isPremium: true,
   },
@@ -341,9 +341,9 @@ export const LB_LISTINGS: Listing[] = [
     createdAt: '2026-09-10',
     views: 195,
     attributes: [
-      { label: 'Brand', value: 'Louis Vuitton' },
-      { label: 'Model', value: 'Neverfull MM' },
-      { label: 'Condition', value: '9.5/10' },
+      { key: 'brand', label: 'Brand', value: 'Louis Vuitton' },
+      { key: 'model', label: 'Model', value: 'Neverfull MM' },
+      { key: 'condition', label: 'Condition', value: '9.5/10' },
     ],
   },
   {
@@ -364,8 +364,8 @@ export const LB_LISTINGS: Listing[] = [
     createdAt: '2026-09-11',
     views: 240,
     attributes: [
-      { label: 'Service', value: 'Solar Power Engineering' },
-      { label: 'Coverage', value: 'Greater Beirut & Mount Lebanon' },
+      { key: 'service', label: 'Service', value: 'Solar Power Engineering' },
+      { key: 'coverage', label: 'Coverage', value: 'Greater Beirut & Mount Lebanon' },
     ],
   },
 ];
