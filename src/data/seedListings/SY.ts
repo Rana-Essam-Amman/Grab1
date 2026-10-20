@@ -20,9 +20,9 @@ export const SY_LISTINGS: Listing[] = [
     createdAt: '2026-09-08',
     views: 310,
     attributes: [
-      { label: 'Capacity', value: '5.5 KW Inverter' },
-      { label: 'Battery', value: 'Lithium LiFePO4 100Ah' },
-      { label: 'Panels', value: '6x 550W Mono' },
+      { key: 'capacity', label: 'Capacity', value: '5.5 KW Inverter' },
+      { key: 'battery', label: 'Battery', value: 'Lithium LiFePO4 100Ah' },
+      { key: 'panels', label: 'Panels', value: '6x 550W Mono' },
     ],
   },
   {
@@ -43,9 +43,9 @@ export const SY_LISTINGS: Listing[] = [
     createdAt: '2026-09-10',
     views: 145,
     attributes: [
-      { label: 'Quantity', value: '50 Complete Suits' },
-      { label: 'Fabric', value: 'Italian Wool' },
-      { label: 'Origin', value: 'Aleppo Manufacture' },
+      { key: 'quantity', label: 'Quantity', value: '50 Complete Suits' },
+      { key: 'fabric', label: 'Fabric', value: 'Italian Wool' },
+      { key: 'origin', label: 'Origin', value: 'Aleppo Manufacture' },
     ],
   },
   {
@@ -66,9 +66,9 @@ export const SY_LISTINGS: Listing[] = [
     createdAt: '2026-09-09',
     views: 228,
     attributes: [
-      { label: 'Storage', value: '512 GB' },
-      { label: 'Color', value: 'Titanium Grey' },
-      { label: 'Condition', value: 'Like New' },
+      { key: 'storage', label: 'Storage', value: '512 GB' },
+      { key: 'color', label: 'Color', value: 'Titanium Grey' },
+      { key: 'condition', label: 'Condition', value: 'Like New' },
     ],
   },
   {
@@ -89,9 +89,9 @@ export const SY_LISTINGS: Listing[] = [
     createdAt: '2026-09-11',
     views: 275,
     attributes: [
-      { label: 'Make / Model', value: 'Hyundai Santa Fe' },
-      { label: 'Year', value: '2019' },
-      { label: 'Seats', value: '7 Passengers' },
+      { key: 'make', label: 'Make / Model', value: 'Hyundai Santa Fe' },
+      { key: 'year', label: 'Year', value: '2019' },
+      { key: 'seats', label: 'Seats', value: '7 Passengers' },
     ],
     isPremium: true,
   },
@@ -113,9 +113,9 @@ export const SY_LISTINGS: Listing[] = [
     createdAt: '2026-09-09',
     views: 190,
     attributes: [
-      { label: 'Make', value: 'Kia Cerato' },
-      { label: 'Year', value: '2018' },
-      { label: 'Transmission', value: 'Automatic' },
+      { key: 'make', label: 'Make', value: 'Kia Cerato' },
+      { key: 'year', label: 'Year', value: '2018' },
+      { key: 'transmission', label: 'Transmission', value: 'Automatic' },
     ],
   },
   {
@@ -136,9 +136,9 @@ export const SY_LISTINGS: Listing[] = [
     createdAt: '2026-09-12',
     views: 310,
     attributes: [
-      { label: 'Area', value: '185 sqm' },
-      { label: 'Title', value: 'Green Tabo 2400 Shares' },
-      { label: 'Solar Power', value: 'Fully Wired' },
+      { key: 'area', label: 'Area', value: '185 sqm' },
+      { key: 'title', label: 'Title', value: 'Green Tabo 2400 Shares' },
+      { key: 'solarPower', label: 'Solar Power', value: 'Fully Wired' },
     ],
     isPremium: true,
   },
@@ -160,9 +160,9 @@ export const SY_LISTINGS: Listing[] = [
     createdAt: '2026-09-10',
     views: 220,
     attributes: [
-      { label: 'Bedrooms', value: '2' },
-      { label: 'Furnished', value: 'Yes' },
-      { label: 'Power Backup', value: 'Batteries & Inverter Included' },
+      { key: 'bedrooms', label: 'Bedrooms', value: '2' },
+      { key: 'furnished', label: 'Furnished', value: 'Yes' },
+      { key: 'powerBackup', label: 'Power Backup', value: 'Batteries & Inverter Included' },
     ],
   },
   {
@@ -183,9 +183,9 @@ export const SY_LISTINGS: Listing[] = [
     createdAt: '2026-09-08',
     views: 165,
     attributes: [
-      { label: 'Model', value: 'iPhone 13' },
-      { label: 'Customs', value: 'Officially Registered (مجمرك)' },
-      { label: 'Battery', value: '89%' },
+      { key: 'model', label: 'Model', value: 'iPhone 13' },
+      { key: 'customs', label: 'Customs', value: 'Officially Registered (مجمرك)' },
+      { key: 'battery', label: 'Battery', value: '89%' },
     ],
   },
   {
@@ -206,9 +206,9 @@ export const SY_LISTINGS: Listing[] = [
     createdAt: '2026-09-10',
     views: 240,
     attributes: [
-      { label: 'Type', value: 'LiFePO4 Lithium' },
-      { label: 'Capacity', value: '200 Ah / 12.8V' },
-      { label: 'Cycle Life', value: '4000+ Cycles' },
+      { key: 'type', label: 'Type', value: 'LiFePO4 Lithium' },
+      { key: 'capacity', label: 'Capacity', value: '200 Ah / 12.8V' },
+      { key: 'cycleLife', label: 'Cycle Life', value: '4000+ Cycles' },
     ],
   },
   {
@@ -229,8 +229,8 @@ export const SY_LISTINGS: Listing[] = [
     createdAt: '2026-09-11',
     views: 180,
     attributes: [
-      { label: 'Material', value: 'Walnut Wood & Mother of Pearl' },
-      { label: 'Craft', value: 'Handmade Damascene Mosaic' },
+      { key: 'material', label: 'Material', value: 'Walnut Wood & Mother of Pearl' },
+      { key: 'craft', label: 'Craft', value: 'Handmade Damascene Mosaic' },
     ],
   },
   {
@@ -251,8 +251,8 @@ export const SY_LISTINGS: Listing[] = [
     createdAt: '2026-09-07',
     views: 135,
     attributes: [
-      { label: 'Wood', value: 'Solid Beech Wood' },
-      { label: 'Seats', value: '7 Persons Complete Set' },
+      { key: 'wood', label: 'Wood', value: 'Solid Beech Wood' },
+      { key: 'seats', label: 'Seats', value: '7 Persons Complete Set' },
     ],
   },
   {
@@ -273,8 +273,8 @@ export const SY_LISTINGS: Listing[] = [
     createdAt: '2026-09-09',
     views: 98,
     attributes: [
-      { label: 'Type', value: 'Outdoor Wooden Pergola Set' },
-      { label: 'Durability', value: 'Treated Weatherproof Timber' },
+      { key: 'type', label: 'Type', value: 'Outdoor Wooden Pergola Set' },
+      { key: 'durability', label: 'Durability', value: 'Treated Weatherproof Timber' },
     ],
   },
   {
@@ -295,8 +295,8 @@ export const SY_LISTINGS: Listing[] = [
     createdAt: '2026-09-08',
     views: 82,
     attributes: [
-      { label: 'Power', value: '7 HP Diesel Engine' },
-      { label: 'Inlet/Outlet', value: '3 Inches' },
+      { key: 'power', label: 'Power', value: '7 HP Diesel Engine' },
+      { key: 'inletOutlet', label: 'Inlet/Outlet', value: '3 Inches' },
     ],
   },
   {
@@ -317,9 +317,9 @@ export const SY_LISTINGS: Listing[] = [
     createdAt: '2026-09-10',
     views: 145,
     attributes: [
-      { label: 'Brand', value: 'Seiko 5 Sports' },
-      { label: 'Movement', value: 'Automatic 4R36' },
-      { label: 'Case', value: '42.5 mm Stainless Steel' },
+      { key: 'brand', label: 'Brand', value: 'Seiko 5 Sports' },
+      { key: 'movement', label: 'Movement', value: 'Automatic 4R36' },
+      { key: 'case', label: 'Case', value: '42.5 mm Stainless Steel' },
     ],
   },
   {
@@ -340,8 +340,8 @@ export const SY_LISTINGS: Listing[] = [
     createdAt: '2026-09-11',
     views: 190,
     attributes: [
-      { label: 'Laurel Oil Content', value: '30% Pure Laurel Oil' },
-      { label: 'Weight', value: '10 kg Carton' },
+      { key: 'laurelOilContent', label: 'Laurel Oil Content', value: '30% Pure Laurel Oil' },
+      { key: 'weight', label: 'Weight', value: '10 kg Carton' },
     ],
   },
   {
@@ -362,8 +362,8 @@ export const SY_LISTINGS: Listing[] = [
     createdAt: '2026-09-12',
     views: 160,
     attributes: [
-      { label: 'Service', value: 'PV Solar Maintenance & Cleaning' },
-      { label: 'Area', value: 'Damascus & Rural Damascus' },
+      { key: 'service', label: 'Service', value: 'PV Solar Maintenance & Cleaning' },
+      { key: 'area', label: 'Area', value: 'Damascus & Rural Damascus' },
     ],
   },
 ];
