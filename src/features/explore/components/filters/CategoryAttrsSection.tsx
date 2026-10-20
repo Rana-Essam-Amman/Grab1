@@ -21,13 +21,10 @@ const MILEAGE_OPTIONS = [
   { value: '150000-plus', labelEn: '150,000+ KM', labelAr: '150,000+ كم' },
 ];
 
-// CONTAGION (Session 4): attr filters hidden — DB stores {label,value} but RPC matches {key,value}.
-// Re-enable after Phase 1 (data migration + registry unification).
-const ATTRS_FILTERS_ENABLED = false;
-
 function isEligible(f: ListingField): boolean {
   if (f.key === 'make') return true;
   if (f.type === 'boolean') return true;
+  if (f.type === 'number') return true;
   if (f.type === 'select' && f.options && f.options.length > 1 && f.options.length <= MAX_OPTIONS) return true;
   return false;
 }
@@ -36,7 +33,7 @@ export const CategoryAttrsSection: React.FC<CategoryAttrsSectionProps> = ({ isAr
   const showMileageRange = categorySlug === 'motors' && CAR_SUBS.includes(subcategorySlug ?? '');
   const fields = useMemo(() => !categorySlug ? [] : getListingFields(categorySlug, subcategorySlug ?? undefined).filter(isEligible), [categorySlug, subcategorySlug]);
 
-  if (!ATTRS_FILTERS_ENABLED || (fields.length === 0 && !showMileageRange)) return null;
+  if (fields.length === 0 && !showMileageRange) return null;
 
   return (
     <div className="flex flex-col gap-4">
@@ -62,6 +59,22 @@ export const CategoryAttrsSection: React.FC<CategoryAttrsSectionProps> = ({ isAr
       {fields.map((field) => {
         const activeValue = attrs[field.key] ?? '';
         const title = isArabic ? field.labelAr : field.labelEn;
+
+        if (field.type === 'number') {
+          return (
+            <div key={field.key} className="flex flex-col gap-2">
+              <label className="text-[11px] font-bold text-ink-muted">{title}</label>
+              <input
+                type="number"
+                value={activeValue}
+                onChange={(e) => onChange(field.key, e.target.value || null)}
+                placeholder={isArabic ? 'أدخل رقماً...' : 'Enter a number...'}
+                className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-ink"
+              />
+            </div>
+          );
+        }
+
         const chips = field.type === 'boolean'
           ? [{ value: 'true', label: isArabic ? 'نعم' : 'Yes' }, { value: 'false', label: isArabic ? 'لا' : 'No' }]
           : (field.options ?? []).map((o) => ({ value: o.value, label: isArabic ? o.labelAr : o.labelEn }));
