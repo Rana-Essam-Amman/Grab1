@@ -6,6 +6,7 @@ import type { CarModel } from './carModels.types';
 import { ESTABLISHED_MODELS } from './carModelsEstablished';
 import { CHINESE_MODELS } from './carModelsChinese';
 import { NICHE_MODELS } from './carModelsNiche';
+import { COMMERCIAL_MODELS } from './carModelsCommercial';
 
 export type { CarModel };
 
@@ -13,6 +14,7 @@ export const CAR_MODELS: Record<string, readonly CarModel[]> = {
   ...ESTABLISHED_MODELS,
   ...CHINESE_MODELS,
   ...NICHE_MODELS,
+  ...COMMERCIAL_MODELS,
 };
 
 export function getModelsForMake(makeSlug: string): readonly CarModel[] {
