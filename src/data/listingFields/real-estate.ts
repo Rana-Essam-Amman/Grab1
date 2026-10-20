@@ -37,13 +37,13 @@ const PARKING_OPTIONS: ListingFieldOption[] = [
 ];
 
 const RESIDENTIAL_TYPES: ListingFieldOption[] = [
-  { value: 'apartment', labelAr: 'شقة', labelEn: 'Apartment' }, { value: 'house', labelAr: 'منزل', labelEn: 'House' },
-  { value: 'villa', labelAr: 'فيلا', labelEn: 'Villa' }, { value: 'land', labelAr: 'أرض', labelEn: 'Land' },
+  { value: 'شقة', labelAr: 'شقة', labelEn: 'Apartment' }, { value: 'منزل', labelAr: 'منزل', labelEn: 'House' },
+  { value: 'فيلا', labelAr: 'فيلا', labelEn: 'Villa' }, { value: 'أرض', labelAr: 'أرض', labelEn: 'Land' },
 ];
 
 const RENT_RESIDENTIAL_TYPES: ListingFieldOption[] = [
-  { value: 'apartment', labelAr: 'شقة', labelEn: 'Apartment' }, { value: 'studio', labelAr: 'استديو', labelEn: 'Studio' },
-  { value: 'villa', labelAr: 'فيلا', labelEn: 'Villa' },
+  { value: 'شقة', labelAr: 'شقة', labelEn: 'Apartment' }, { value: 'استديو', labelAr: 'استديو', labelEn: 'Studio' },
+  { value: 'فيلا', labelAr: 'فيلا', labelEn: 'Villa' },
 ];
 
 const RENT_PERIODS: ListingFieldOption[] = [
@@ -104,11 +104,11 @@ const FINISHING_OPTIONS: ListingFieldOption[] = [
 ];
 
 const FOREIGN_PROPERTY_TYPES: ListingFieldOption[] = [
-  { value: 'apartment', labelAr: 'شقة', labelEn: 'Apartment' },
-  { value: 'house', labelAr: 'منزل', labelEn: 'House' },
-  { value: 'villa', labelAr: 'فيلا', labelEn: 'Villa' },
-  { value: 'land', labelAr: 'أرض', labelEn: 'Land' },
-  { value: 'commercial', labelAr: 'تجاري', labelEn: 'Commercial' },
+  { value: 'شقة', labelAr: 'شقة', labelEn: 'Apartment' },
+  { value: 'منزل', labelAr: 'منزل', labelEn: 'House' },
+  { value: 'فيلا', labelAr: 'فيلا', labelEn: 'Villa' },
+  { value: 'أرض', labelAr: 'أرض', labelEn: 'Land' },
+  { value: 'تجاري', labelAr: 'تجاري', labelEn: 'Commercial' },
 ];
 
 const FOREIGN_FURNISHED: ListingFieldOption[] = [
