@@ -58,6 +58,7 @@ export interface UploadBatchResult {
   readonly urls: string[];
   readonly dims: ReadonlyArray<{ readonly width: number; readonly height: number } | null>;
   readonly failedCount: number;
+  readonly lastError?: string; // أضفنا ده عشان نرجع نص الخطأ
 }
 
 export async function uploadListingImages(
@@ -67,6 +68,8 @@ export async function uploadListingImages(
   const urls: string[] = [];
   const dims: Array<{ width: number; height: number } | null> = [];
   let failedCount = 0;
+  let lastError: string | undefined = undefined; // متغير لتخزين الخطأ
+
   for (const src of sources) {
     if (!src.startsWith('data:') && !src.startsWith('blob:')) {
       urls.push(src);
@@ -85,11 +88,11 @@ export async function uploadListingImages(
       urls.push(result.url);
       dims.push({ width: result.width, height: result.height });
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      throw new Error(`STORAGE_ERROR: ${msg}`, { cause: err });
+      failedCount += 1;
+      lastError = err instanceof Error ? err.message : String(err); // سجلنا الخطأ هنا
     }
   }
-  return { urls, dims, failedCount };
+  return { urls, dims, failedCount, lastError };
 }
 
 export function extractStoragePath(url: string): string | null {
