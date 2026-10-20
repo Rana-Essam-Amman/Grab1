@@ -40,10 +40,11 @@ export async function performSupabasePublish(
     );
 
     if (hadPhotos && uploadedImages.length === 0) {
-      return { remoteListing: null, error: `فشل رفع الصور: ${lastError || 'خطأ غير معروف'}` };
+      return { remoteListing: null, error: 'فشل رفع الصور — جرب مرة تانية' };
     }
 
     if (failedCount > 0) {
+      // Partial failure — publish with what we have, log silently.
       console.warn(`[publish] ${failedCount} image(s) failed to upload. Last error: ${lastError}`);
     }
 
