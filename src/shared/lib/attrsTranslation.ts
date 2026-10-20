@@ -27,3 +27,35 @@ export function translateAttrsForDb(
   }
   return result;
 }
+
+/**
+ * Normalizes a raw attribute value to its canonical slug (the option's `value`).
+ * This is used at WRITE time (Wizard) so new listings are stored in a
+ * canonical form that the filter can reliably match against.
+ *
+ * Examples:
+ *   'بايك' → 'baic'
+ *   'BAIC' → 'baic'
+ *   'baic' → 'baic'
+ *   custom text → unchanged
+ */
+export function normalizeValueToSlug(
+  key: string,
+  value: string,
+  categorySlug?: string | null,
+  subcategorySlug?: string | null,
+): string {
+  if (!categorySlug) return value;
+  const fields = getListingFields(categorySlug, subcategorySlug ?? undefined);
+  const field = fields.find((f) => f.key === key);
+  if (!field?.options) return value;
+  const trimmed = value.trim();
+  const lower = trimmed.toLowerCase();
+  const option = field.options.find(
+    (o) =>
+      o.value.toLowerCase() === lower ||
+      o.labelEn.toLowerCase() === lower ||
+      o.labelAr === trimmed,
+  );
+  return option ? option.value : value;
+}
