@@ -21,6 +21,10 @@ const MILEAGE_OPTIONS = [
   { value: '150000-plus', labelEn: '150,000+ KM', labelAr: '150,000+ كم' },
 ];
 
+// CONTAGION (Session 4): attr filters hidden — DB stores {label,value} but RPC matches {key,value}.
+// Re-enable after Phase 1 (data migration + registry unification).
+const ATTRS_FILTERS_ENABLED = false;
+
 function isEligible(f: ListingField): boolean {
   if (f.key === 'make') return true;
   if (f.type === 'boolean') return true;
@@ -29,6 +33,7 @@ function isEligible(f: ListingField): boolean {
 }
 
 export const CategoryAttrsSection: React.FC<CategoryAttrsSectionProps> = ({ isArabic, categorySlug, subcategorySlug, attrs, onChange }) => {
+  if (!ATTRS_FILTERS_ENABLED) return null;
   const showMileageRange = categorySlug === 'motors' && CAR_SUBS.includes(subcategorySlug ?? '');
   const fields = useMemo(() => !categorySlug ? [] : getListingFields(categorySlug, subcategorySlug ?? undefined).filter(isEligible), [categorySlug, subcategorySlug]);
 
