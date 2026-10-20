@@ -299,10 +299,23 @@ export function getModelsForMake(makeSlug: string): readonly CarModel[] {
   return CAR_MODELS[makeSlug] ?? [];
 }
 
+/**
+ * Look up a model by slug OR by its Arabic/English name.
+ * Accepts "camry", "Camry", or "كامري" so callers don't break when
+ * the wizard emits nameEn and the data stores slug.
+ */
 export function getModelBySlug(makeSlug: string, modelSlug: string): CarModel | undefined {
-  return CAR_MODELS[makeSlug]?.find((m) => m.slug === modelSlug);
+  const models = CAR_MODELS[makeSlug];
+  if (!models || !modelSlug) return undefined;
+  const lower = modelSlug.toLowerCase().trim();
+  return models.find(
+    (m) =>
+      m.slug === modelSlug ||
+      m.nameEn.toLowerCase() === lower ||
+      m.nameAr === modelSlug
+  );
 }
 
 export function hasCuratedModels(makeSlug: string): boolean {
   return (CAR_MODELS[makeSlug]?.length ?? 0) > 0;
-  }
+     }
