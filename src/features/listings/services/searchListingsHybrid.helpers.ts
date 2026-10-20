@@ -1,6 +1,6 @@
 import { supabase } from '@/shared/lib/supabase';
 import { logWarning } from '@/shared/lib/errorLogger';
-import { getListingFields } from '@/data/listingFields';
+import { translateAttrsForDb } from '@/shared/lib/attrsTranslation';
 
 const HYBRID_TIMEOUT_MS = 4000;
 
@@ -64,7 +64,7 @@ export async function detectCategory(query: string): Promise<string | null> {
 /**
  * Convert a UI attribute map into the JSONB array shape the DB expects:
  * [{ key: string, value: string }]. Returns null when no usable attrs.
- * Includes a translation layer to map UI values to Arabic DB labels.
+ * Uses the central translation helper to map UI values to Arabic DB labels.
  */
 export function attrsToJsonbArray(
   attrs: Record<string, string> | undefined,
@@ -75,23 +75,8 @@ export function attrsToJsonbArray(
   const entries = Object.entries(attrs).filter(([k, v]) => k && v);
   if (entries.length === 0) return null;
 
-  const fields = categorySlug ? getListingFields(categorySlug, subcategorySlug ?? undefined) : [];
-
-  return entries.map(([key, value]) => {
-    const field = fields.find((f) => f.key === key);
-    let dbValue = value;
-
-    if (field?.options) {
-      const option = field.options.find(
-        (o) => o.value === value || o.labelAr === value || o.labelEn === value
-      );
-      if (option) {
-        dbValue = option.labelAr;
-      }
-    }
-
-    return { key, value: dbValue };
-  });
+  const translated = translateAttrsForDb(attrs, categorySlug, subcategorySlug);
+  return entries.map(([key]) => ({ key, value: translated[key] }));
 }
 
 // Frontend rate limit: max 30 searches per rolling 60-second window.
