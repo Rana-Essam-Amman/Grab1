@@ -20,10 +20,10 @@ export const SA_LISTINGS: Listing[] = [
     createdAt: '2026-09-12',
     views: 245,
     attributes: [
-      { label: 'النوع', value: 'تويوتا لاندكروزر' },
-      { label: 'سنة الصنع', value: '2023' },
-      { label: 'الكيلومترات', value: '12000' },
-      { label: 'الحالة', value: 'ممتازة - وكالة' },
+      { key: 'type', label: 'النوع', value: 'تويوتا لاندكروزر' },
+      { key: 'year', label: 'سنة الصنع', value: '2023' },
+      { key: 'mileage', label: 'الكيلومترات', value: '12000' },
+      { key: 'condition', label: 'الحالة', value: 'ممتازة - وكالة' },
     ],
     isPremium: true,
   },
@@ -45,10 +45,10 @@ export const SA_LISTINGS: Listing[] = [
     createdAt: '2026-09-11',
     views: 188,
     attributes: [
-      { label: 'المساحة', value: '220 م²' },
-      { label: 'عدد الغرف', value: '5 غرف' },
-      { label: 'الحمام', value: '4 حمامات' },
-      { label: 'العمر', value: 'جديد' },
+      { key: 'area', label: 'المساحة', value: '220 م²' },
+      { key: 'bedrooms', label: 'عدد الغرف', value: '5 غرف' },
+      { key: 'bathrooms', label: 'الحمام', value: '4 حمامات' },
+      { key: 'age', label: 'العمر', value: 'جديد' },
     ],
     isPremium: false,
   },
@@ -70,10 +70,10 @@ export const SA_LISTINGS: Listing[] = [
     createdAt: '2026-09-10',
     views: 312,
     attributes: [
-      { label: 'الماركة', value: 'Apple iPhone 15 Pro Max' },
-      { label: 'السعة', value: '512 GB' },
-      { label: 'اللون', value: 'Natural Titanium' },
-      { label: 'الضمان', value: 'سنتين حاسبات العرب' },
+      { key: 'brand', label: 'الماركة', value: 'Apple iPhone 15 Pro Max' },
+      { key: 'storage', label: 'السعة', value: '512 GB' },
+      { key: 'color', label: 'اللون', value: 'Natural Titanium' },
+      { key: 'warranty', label: 'الضمان', value: 'سنتين حاسبات العرب' },
     ],
     isPremium: true,
   },
@@ -95,10 +95,10 @@ export const SA_LISTINGS: Listing[] = [
     createdAt: '2026-09-11',
     views: 310,
     attributes: [
-      { label: 'الماركة والموديل', value: 'Lexus ES 350 DD' },
-      { label: 'سنة الصنع', value: '2022' },
-      { label: 'الممشى', value: '32,000 كم' },
-      { label: 'الوكيل', value: 'عبد اللطيف جميل' },
+      { key: 'brandModel', label: 'الماركة والموديل', value: 'Lexus ES 350 DD' },
+      { key: 'year', label: 'سنة الصنع', value: '2022' },
+      { key: 'mileage', label: 'الممشى', value: '32,000 كم' },
+      { key: 'dealer', label: 'الوكيل', value: 'عبد اللطيف جميل' },
     ],
     isPremium: true,
   },
@@ -120,9 +120,9 @@ export const SA_LISTINGS: Listing[] = [
     createdAt: '2026-09-10',
     views: 195,
     attributes: [
-      { label: 'الماركة', value: 'Hyundai Sonata Smart Plus' },
-      { label: 'الموديل', value: '2023' },
-      { label: 'الممشى', value: '24,000 كم' },
+      { key: 'brand', label: 'الماركة', value: 'Hyundai Sonata Smart Plus' },
+      { key: 'model', label: 'الموديل', value: '2023' },
+      { key: 'mileage', label: 'الممشى', value: '24,000 كم' },
     ],
   },
   {
@@ -143,9 +143,9 @@ export const SA_LISTINGS: Listing[] = [
     createdAt: '2026-09-12',
     views: 420,
     attributes: [
-      { label: 'المساحة', value: '380 م²' },
-      { label: 'عدد الأجنحة', value: '5 أجنحة ماستر' },
-      { label: 'المميزات', value: 'مسبح ومصعد وتكييف مخفي' },
+      { key: 'area', label: 'المساحة', value: '380 م²' },
+      { key: 'bedrooms', label: 'عدد الأجنحة', value: '5 أجنحة ماستر' },
+      { key: 'features', label: 'المميزات', value: 'مسبح ومصعد وتكييف مخفي' },
     ],
     isPremium: true,
   },
@@ -167,9 +167,9 @@ export const SA_LISTINGS: Listing[] = [
     createdAt: '2026-09-09',
     views: 180,
     attributes: [
-      { label: 'نوع الإيجار', value: 'سنوي (دفعات)' },
-      { label: 'الغرف', value: '4 غرف وصالة' },
-      { label: 'الموقع', value: 'الخبر - الشاطئ' },
+      { key: 'rentalType', label: 'نوع الإيجار', value: 'سنوي (دفعات)' },
+      { key: 'bedrooms', label: 'الغرف', value: '4 غرف وصالة' },
+      { key: 'location', label: 'الموقع', value: 'الخبر - الشاطئ' },
     ],
   },
   {
@@ -190,9 +190,9 @@ export const SA_LISTINGS: Listing[] = [
     createdAt: '2026-09-11',
     views: 265,
     attributes: [
-      { label: 'الموديل', value: 'Galaxy S24 Ultra' },
-      { label: 'السعة', value: '1 TB (1024 GB)' },
-      { label: 'الضمان', value: 'سنتين وكيل سامسونج' },
+      { key: 'model', label: 'الموديل', value: 'Galaxy S24 Ultra' },
+      { key: 'storage', label: 'السعة', value: '1 TB (1024 GB)' },
+      { key: 'warranty', label: 'الضمان', value: 'سنتين وكيل سامسونج' },
     ],
   },
   {
@@ -213,9 +213,9 @@ export const SA_LISTINGS: Listing[] = [
     createdAt: '2026-09-10',
     views: 175,
     attributes: [
-      { label: 'المقاس', value: '75 بوصة' },
-      { label: 'التقنية', value: 'Mini LED XR Cognitive' },
-      { label: 'التردد', value: '144 Hz' },
+      { key: 'size', label: 'المقاس', value: '75 بوصة' },
+      { key: 'technology', label: 'التقنية', value: 'Mini LED XR Cognitive' },
+      { key: 'refreshRate', label: 'التردد', value: '144 Hz' },
     ],
   },
   {
@@ -236,9 +236,9 @@ export const SA_LISTINGS: Listing[] = [
     createdAt: '2026-09-12',
     views: 290,
     attributes: [
-      { label: 'الجهاز', value: 'Sony PS5 Pro' },
-      { label: 'المساحة', value: '2 TB SSD' },
-      { label: 'الملحقات', value: '2 يد تحكم وقارئ ديسك' },
+      { key: 'device', label: 'الجهاز', value: 'Sony PS5 Pro' },
+      { key: 'storage', label: 'المساحة', value: '2 TB SSD' },
+      { key: 'accessories', label: 'الملحقات', value: '2 يد تحكم وقارئ ديسك' },
     ],
   },
   {
@@ -259,9 +259,9 @@ export const SA_LISTINGS: Listing[] = [
     createdAt: '2026-09-08',
     views: 210,
     attributes: [
-      { label: 'السعة', value: '10 أشخاص' },
-      { label: 'القماش', value: 'بوكليه فاخر مقاوم للبلل' },
-      { label: 'الطاولات', value: 'رخام طبيعي ستانلس ستيل ذهبي' },
+      { key: 'capacity', label: 'السعة', value: '10 أشخاص' },
+      { key: 'fabric', label: 'القماش', value: 'بوكليه فاخر مقاوم للبلل' },
+      { key: 'tables', label: 'الطاولات', value: 'رخام طبيعي ستانلس ستيل ذهبي' },
     ],
   },
   {
@@ -282,8 +282,8 @@ export const SA_LISTINGS: Listing[] = [
     createdAt: '2026-09-09',
     views: 145,
     attributes: [
-      { label: 'الخشب', value: 'جوز طبيعي أمريكي' },
-      { label: 'عدد المقاعد', value: '8 كراسي جلد' },
+      { key: 'wood', label: 'الخشب', value: 'جوز طبيعي أمريكي' },
+      { key: 'seats', label: 'عدد المقاعد', value: '8 كراسي جلد' },
     ],
   },
   {
@@ -304,8 +304,8 @@ export const SA_LISTINGS: Listing[] = [
     createdAt: '2026-09-07',
     views: 130,
     attributes: [
-      { label: 'المادة', value: 'راتان صناعي عالي المقاومة' },
-      { label: 'المظلة', value: '3x3 متر مجهزة بإضاءة LED' },
+      { key: 'material', label: 'المادة', value: 'راتان صناعي عالي المقاومة' },
+      { key: 'umbrella', label: 'المظلة', value: '3x3 متر مجهزة بإضاءة LED' },
     ],
   },
   {
@@ -326,9 +326,9 @@ export const SA_LISTINGS: Listing[] = [
     createdAt: '2026-09-12',
     views: 380,
     attributes: [
-      { label: 'الماركة', value: 'Rolex Datejust 36' },
-      { label: 'المعدن', value: 'ستيل وذهب أصفر 18 قيراط' },
-      { label: 'السوار', value: 'Jubilee Bracelet' },
+      { key: 'brand', label: 'الماركة', value: 'Rolex Datejust 36' },
+      { key: 'material', label: 'المعدن', value: 'ستيل وذهب أصفر 18 قيراط' },
+      { key: 'bracelet', label: 'السوار', value: 'Jubilee Bracelet' },
     ],
     isPremium: true,
   },
@@ -350,8 +350,8 @@ export const SA_LISTINGS: Listing[] = [
     createdAt: '2026-09-10',
     views: 185,
     attributes: [
-      { label: 'النوع', value: 'بشت حساوي ملكي صوف طبيعي' },
-      { label: 'الزري', value: 'زري ألماني مذهب حر' },
+      { key: 'type', label: 'النوع', value: 'بشت حساوي ملكي صوف طبيعي' },
+      { key: 'zari', label: 'الزري', value: 'زري ألماني مذهب حر' },
     ],
   },
   {
@@ -372,8 +372,8 @@ export const SA_LISTINGS: Listing[] = [
     createdAt: '2026-09-11',
     views: 240,
     attributes: [
-      { label: 'الخدمة', value: 'نقل عفش وتغليف وفك وتركيب' },
-      { label: 'التغطية', value: 'الرياض - جدة - الدمام' },
+      { key: 'service', label: 'الخدمة', value: 'نقل عفش وتغليف وفك وتركيب' },
+      { key: 'coverage', label: 'التغطية', value: 'الرياض - جدة - الدمام' },
     ],
   },
 ];
