@@ -12,7 +12,7 @@ export interface CategoryAttrsSectionProps {
 }
 
 const MAX_OPTIONS = 15;
-const CAR_SUBCATEGORIES = ['cars', 'classic_cars', 'damaged_cars', 'lease_transfer'];
+const CAR_SUBS = ['cars', 'classic_cars', 'damaged_cars', 'lease_transfer'];
 const MILEAGE_OPTIONS = [
   { value: '', labelEn: 'All', labelAr: 'الكل' },
   { value: '0-50000', labelEn: '0 - 50,000 KM', labelAr: '0 - 50,000 كم' },
@@ -28,17 +28,9 @@ function isEligible(f: ListingField): boolean {
   return false;
 }
 
-export const CategoryAttrsSection: React.FC<CategoryAttrsSectionProps> = ({
-  isArabic, categorySlug, subcategorySlug, attrs, onChange,
-}) => {
-  const showMileageRange =
-    categorySlug === 'motors' && CAR_SUBCATEGORIES.includes(subcategorySlug ?? '');
-
-  const fields = useMemo(() => {
-    if (!categorySlug) return [];
-    const all = getListingFields(categorySlug, subcategorySlug ?? undefined);
-    return all.filter(isEligible);
-  }, [categorySlug, subcategorySlug]);
+export const CategoryAttrsSection: React.FC<CategoryAttrsSectionProps> = ({ isArabic, categorySlug, subcategorySlug, attrs, onChange }) => {
+  const showMileageRange = categorySlug === 'motors' && CAR_SUBS.includes(subcategorySlug ?? '');
+  const fields = useMemo(() => !categorySlug ? [] : getListingFields(categorySlug, subcategorySlug ?? undefined).filter(isEligible), [categorySlug, subcategorySlug]);
 
   if (fields.length === 0 && !showMileageRange) return null;
 
@@ -66,16 +58,9 @@ export const CategoryAttrsSection: React.FC<CategoryAttrsSectionProps> = ({
       {fields.map((field) => {
         const activeValue = attrs[field.key] ?? '';
         const title = isArabic ? field.labelAr : field.labelEn;
-        const chips: readonly { readonly value: string; readonly label: string }[] =
-          field.type === 'boolean'
-            ? [
-                { value: 'true', label: isArabic ? 'نعم' : 'Yes' },
-                { value: 'false', label: isArabic ? 'لا' : 'No' },
-              ]
-            : (field.options ?? []).map((o) => ({
-                value: o.value,
-                label: isArabic ? o.labelAr : o.labelEn,
-              }));
+        const chips = field.type === 'boolean'
+          ? [{ value: 'true', label: isArabic ? 'نعم' : 'Yes' }, { value: 'false', label: isArabic ? 'لا' : 'No' }]
+          : (field.options ?? []).map((o) => ({ value: o.value, label: isArabic ? o.labelAr : o.labelEn }));
         const useCombobox = field.type === 'select' && chips.length > MAX_OPTIONS;
         const currentLabel = chips.find((c) => c.value === activeValue)?.label ?? '';
 
@@ -89,25 +74,15 @@ export const CategoryAttrsSection: React.FC<CategoryAttrsSectionProps> = ({
                 placeholder={isArabic ? 'اختر...' : 'Select...'}
                 searchPlaceholder={isArabic ? 'ابحث...' : 'Search...'}
                 emptyText={isArabic ? 'لا نتائج' : 'No results'}
-                onChange={(newLabel) => {
-                  const found = chips.find((c) => c.label === newLabel);
-                  onChange(field.key, found?.value ?? null);
-                }}
+                onChange={(newLabel) => onChange(field.key, chips.find((c) => c.label === newLabel)?.value ?? null)}
               />
             ) : (
               <div className="flex flex-wrap gap-2">
                 {chips.map((c) => {
                   const isActive = activeValue === c.value;
                   return (
-                    <button
-                      key={c.value}
-                      type="button"
-                      onClick={() => onChange(field.key, isActive ? null : c.value)}
-                      className={`px-3 py-1.5 rounded-full border text-xs font-bold transition-all ${
-                        isActive
-                          ? 'bg-accent/15 border-accent text-accent'
-                          : 'bg-surface border-border text-ink'
-                      }`}
+                    <button key={c.value} type="button" onClick={() => onChange(field.key, isActive ? null : c.value)}
+                      className={`px-3 py-1.5 rounded-full border text-xs font-bold transition-all ${isActive ? 'bg-accent/15 border-accent text-accent' : 'bg-surface border-border text-ink'}`}
                     >
                       {c.label}
                     </button>
