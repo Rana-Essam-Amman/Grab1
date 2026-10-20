@@ -94,7 +94,7 @@ const DIGITS_OPTIONS: ListingFieldOption[] = [
 const CARS_FIELDS = [
   { key: 'make', labelAr: 'الماركة', labelEn: 'Make', type: 'select' as const, allowOther: false, required: true, options: getBrandOptions() },
   { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model' as const, dependsOn: 'make', required: true, placeholder: 'Camry, X5...' },
-  { key: 'trim', labelAr: 'الفئة', labelEn: 'Trim', type: 'text' as const, required: false, placeholder: 'LE, SE, Sport...' },
+  { key: 'trim', labelAr: 'الفئة', labelEn: 'Trim', type: 'cascading-trim' as const, dependsOn: 'make', required: true },
   { key: 'year', labelAr: 'السنة', labelEn: 'Year', type: 'select' as const, allowOther: true, required: true, options: CAR_YEAR_OPTIONS },
   { key: 'km', labelAr: 'العداد (كم)', labelEn: 'KM', type: 'number' as const, required: false, placeholder: '50000' },
   { key: 'inspected', labelAr: 'مفحوصة', labelEn: 'Inspected', type: 'boolean' as const, required: false },
