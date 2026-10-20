@@ -8,7 +8,7 @@ export interface ListingField {
   readonly key: string;
   readonly labelAr: string;
   readonly labelEn: string;
-  readonly type: 'text' | 'number' | 'select' | 'boolean' | 'cascading-model';
+  readonly type: 'text' | 'number' | 'select' | 'boolean' | 'cascading-model' | 'cascading-trim';
   readonly required: boolean;
   readonly options?: readonly ListingFieldOption[];
   readonly allowOther?: boolean;
