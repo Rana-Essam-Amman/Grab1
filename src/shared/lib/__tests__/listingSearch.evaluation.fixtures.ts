@@ -48,7 +48,7 @@ export const EVALUATION_LISTINGS: readonly EvaluationListing[] = [
     neighborhood: 'Abdoun',
     make: 'Toyota',
     year: '2018',
-    attributes: [{ label: 'model', value: 'Camry' }, { label: 'year', value: '2018' }],
+    attributes: [{ key: 'model', label: 'model', value: 'Camry' }, { key: 'year', label: 'year', value: '2018' }],
   }),
   listing({
     id: 'jo-toyota-camry-ar',
@@ -123,7 +123,7 @@ export const EVALUATION_LISTINGS: readonly EvaluationListing[] = [
     city: 'Ramallah',
     categorySlug: 'mobiles',
     subcategorySlug: 'phones',
-    attributes: [{ label: 'storage', value: '256GB' }],
+    attributes: [{ key: 'storage', label: 'storage', value: '256GB' }],
   }),
   listing({
     id: 'jo-punctuation',
