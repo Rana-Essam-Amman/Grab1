@@ -145,7 +145,7 @@ export const CHINESE_MODELS: Record<string, readonly CarModel[]> = {
     { slug: 'carrying', nameAr: 'Carrying', nameEn: 'Carrying', trims: ['Standard', 'Comfort'] },
     { slug: 'baodian', nameAr: 'Baodian', nameEn: 'Baodian', trims: ['Standard', 'Comfort'] },
   ],
-  // ─── P3 (15 NEW brands — EV startups + premium Chinese) ─────────────
+  // ─── P3 (15 brands — EV startups + premium Chinese) ─────────────────
   nio: [
     { slug: 'et5', nameAr: 'ET5', nameEn: 'ET5', trims: ['Standard', 'Long Range', 'Performance'] },
     { slug: 'et7', nameAr: 'ET7', nameEn: 'ET7', trims: ['Standard', 'Long Range', 'Executive'] },
@@ -238,5 +238,43 @@ export const CHINESE_MODELS: Record<string, readonly CarModel[]> = {
     { slug: 't77', nameAr: 'T77', nameEn: 'T77', trims: ['Comfort', 'Luxury', 'Flagship'] },
     { slug: 't99', nameAr: 'T99', nameEn: 'T99', trims: ['Comfort', 'Luxury', 'Flagship'] },
     { slug: 'b70', nameAr: 'B70', nameEn: 'B70', trims: ['Comfort', 'Luxury'] },
+  ],
+  // ─── P4 (8 remaining Chinese brands) ────────────────────────────────
+  'rox-motor': [
+    { slug: 'rox-01', nameAr: 'ROX 01', nameEn: 'ROX 01', trims: ['Standard', 'Pro', 'Max'] },
+    { slug: 'rox-02', nameAr: 'ROX 02', nameEn: 'ROX 02', trims: ['Standard', 'Pro'] },
+  ],
+  skyworth: [
+    { slug: 'ev6', nameAr: 'EV6', nameEn: 'EV6', trims: ['Standard', 'Long Range'] },
+    { slug: 'ht-i', nameAr: 'HT-i', nameEn: 'HT-i', trims: ['Standard', 'Long Range'] },
+  ],
+  hyptec: [
+    { slug: 'ht', nameAr: 'HT', nameEn: 'HT', trims: ['Standard', 'Pro', 'Max'] },
+    { slug: 'ssr', nameAr: 'SSR', nameEn: 'SSR', trims: ['Standard', 'Performance'] },
+  ],
+  cowin: [
+    { slug: 'x5', nameAr: 'X5', nameEn: 'X5', trims: ['Comfort', 'Luxury'] },
+    { slug: 'v5', nameAr: 'V5', nameEn: 'V5', trims: ['Comfort', 'Luxury'] },
+    { slug: 'e5', nameAr: 'E5', nameEn: 'E5', trims: ['Standard', 'Comfort'] },
+  ],
+  venucia: [
+    { slug: 'd60', nameAr: 'D60', nameEn: 'D60', trims: ['Comfort', 'Luxury', 'Flagship'] },
+    { slug: 't60', nameAr: 'T60', nameEn: 'T60', trims: ['Comfort', 'Luxury'] },
+    { slug: 'star', nameAr: 'Star', nameEn: 'Star', trims: ['Comfort', 'Luxury'] },
+    { slug: 'v-online', nameAr: 'V-Online', nameEn: 'V-Online', trims: ['Comfort', 'Luxury'] },
+  ],
+  baojun: [
+    { slug: '510', nameAr: '510', nameEn: '510', trims: ['Standard', 'Comfort', 'Luxury'] },
+    { slug: '530', nameAr: '530', nameEn: '530', trims: ['Comfort', 'Luxury'] },
+    { slug: 'rm5', nameAr: 'RM-5', nameEn: 'RM-5', trims: ['Comfort', 'Luxury'] },
+    { slug: 'kiwi-ev', nameAr: 'KiWi EV', nameEn: 'KiWi EV', trims: ['Standard', 'Long Range'] },
+    { slug: 'yep', nameAr: 'Yep', nameEn: 'Yep', trims: ['Standard', 'Long Range'] },
+  ],
+  luxeed: [
+    { slug: 's7', nameAr: 'S7', nameEn: 'S7', trims: ['Standard', 'Pro', 'Max'] },
+  ],
+  icar: [
+    { slug: '03', nameAr: '03', nameEn: '03', trims: ['Standard', 'Pro', 'Max'] },
+    { slug: 'v23', nameAr: 'V23', nameEn: 'V23', trims: ['Standard', 'Pro'] },
   ],
 };
