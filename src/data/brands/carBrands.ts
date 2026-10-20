@@ -4,28 +4,30 @@ export interface CarBrand {
   readonly nameAr: string;
   readonly nameEn: string;
   readonly popular: boolean;
+  /** true = models defined in carModels.ts (dropdown). false/undefined = text fallback. */
+  readonly hasModels?: boolean;
 }
 
 export const CAR_BRANDS: readonly CarBrand[] = [
-  // ── Popular Brands ──
-  { slug: 'toyota', nameAr: 'تويوتا', nameEn: 'Toyota', popular: true },
-  { slug: 'hyundai', nameAr: 'هيونداي', nameEn: 'Hyundai', popular: true },
-  { slug: 'nissan', nameAr: 'نيسان', nameEn: 'Nissan', popular: true },
-  { slug: 'kia', nameAr: 'كيا', nameEn: 'Kia', popular: true },
-  { slug: 'mitsubishi', nameAr: 'ميتسوبيشي', nameEn: 'Mitsubishi', popular: true },
-  { slug: 'honda', nameAr: 'هوندا', nameEn: 'Honda', popular: true },
-  { slug: 'mazda', nameAr: 'مازدا', nameEn: 'Mazda', popular: true },
+  // ── Popular Brands with Curated Models ──
+  { slug: 'toyota', nameAr: 'تويوتا', nameEn: 'Toyota', popular: true, hasModels: true },
+  { slug: 'hyundai', nameAr: 'هيونداي', nameEn: 'Hyundai', popular: true, hasModels: true },
+  { slug: 'nissan', nameAr: 'نيسان', nameEn: 'Nissan', popular: true, hasModels: true },
+  { slug: 'kia', nameAr: 'كيا', nameEn: 'Kia', popular: true, hasModels: true },
+  { slug: 'mitsubishi', nameAr: 'ميتسوبيشي', nameEn: 'Mitsubishi', popular: true, hasModels: true },
+  { slug: 'honda', nameAr: 'هوندا', nameEn: 'Honda', popular: true, hasModels: true },
+  { slug: 'mazda', nameAr: 'مازدا', nameEn: 'Mazda', popular: true, hasModels: true },
   { slug: 'suzuki', nameAr: 'سوزوكي', nameEn: 'Suzuki', popular: true },
   { slug: 'chery', nameAr: 'شيري', nameEn: 'Chery', popular: true },
   { slug: 'mg', nameAr: 'إم جي', nameEn: 'MG', popular: true },
   { slug: 'geely', nameAr: 'جيلي', nameEn: 'Geely', popular: true },
   { slug: 'byd', nameAr: 'بي واي دي', nameEn: 'BYD', popular: true },
-  { slug: 'bmw', nameAr: 'بي إم دبليو', nameEn: 'BMW', popular: true },
-  { slug: 'mercedes', nameAr: 'مرسيدس', nameEn: 'Mercedes-Benz', popular: true },
-  { slug: 'audi', nameAr: 'أودي', nameEn: 'Audi', popular: true },
-  { slug: 'volkswagen', nameAr: 'فولكس فاجن', nameEn: 'Volkswagen', popular: true },
-  { slug: 'ford', nameAr: 'فورد', nameEn: 'Ford', popular: true },
-  { slug: 'chevrolet', nameAr: 'شيفروليه', nameEn: 'Chevrolet', popular: true },
+  { slug: 'bmw', nameAr: 'بي إم دبليو', nameEn: 'BMW', popular: true, hasModels: true },
+  { slug: 'mercedes', nameAr: 'مرسيدس', nameEn: 'Mercedes-Benz', popular: true, hasModels: true },
+  { slug: 'audi', nameAr: 'أودي', nameEn: 'Audi', popular: true, hasModels: true },
+  { slug: 'volkswagen', nameAr: 'فولكس فاجن', nameEn: 'Volkswagen', popular: true, hasModels: true },
+  { slug: 'ford', nameAr: 'فورد', nameEn: 'Ford', popular: true, hasModels: true },
+  { slug: 'chevrolet', nameAr: 'شيفروليه', nameEn: 'Chevrolet', popular: true, hasModels: true },
   { slug: 'jeep', nameAr: 'جيب', nameEn: 'Jeep', popular: true },
   
   // ── Chinese Brands (Expanded) ──
@@ -74,7 +76,7 @@ export const CAR_BRANDS: readonly CarBrand[] = [
   // ── Other International Brands ──
   { slug: 'land-rover', nameAr: 'لاند روفر', nameEn: 'Land Rover', popular: false },
   { slug: 'porsche', nameAr: 'بورش', nameEn: 'Porsche', popular: false },
-  { slug: 'lexus', nameAr: 'لكزس', nameEn: 'Lexus', popular: false },
+  { slug: 'lexus', nameAr: 'لكزس', nameEn: 'Lexus', popular: false, hasModels: true },
   { slug: 'infiniti', nameAr: 'إنفينيتي', nameEn: 'Infiniti', popular: false },
   { slug: 'tesla', nameAr: 'تسلا', nameEn: 'Tesla', popular: false },
   { slug: 'volvo', nameAr: 'فولفو', nameEn: 'Volvo', popular: false },
@@ -135,4 +137,11 @@ export function getBrandOptions() {
     labelAr: b.nameAr,
     labelEn: b.nameEn,
   }));
+}
+
+/**
+ * Get a brand by slug. Returns undefined if not found.
+ */
+export function getBrandBySlug(slug: string): CarBrand | undefined {
+  return CAR_BRANDS.find((b) => b.slug === slug);
 }
