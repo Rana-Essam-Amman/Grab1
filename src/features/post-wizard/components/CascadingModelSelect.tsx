@@ -1,15 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { CAR_BRANDS } from '@/data/brands/carBrands';
-import { MOTOR_BRANDS } from '@/data/brands/motors';
+import { getModelsForMake } from '@/data/brands/carModels';
 import { OtherOptionInput } from './OtherOptionInput';
 import { SearchableDropdown } from '@/shared/ui/SearchableDropdown';
 
 const OTHER_VALUE = '__other__';
 
+/**
+ * Read curated models from CAR_MODELS (single source of truth).
+ * Returns slug as the option value so DB always stores canonical slugs.
+ * Accepts nameEn/nameAr as display labels (bilingual).
+ */
 function getLocalModelOptions(brandSlug: string) {
-  const brand = MOTOR_BRANDS.find((b) => b.id === brandSlug);
-  if (!brand || !brand.models) return [];
-  return brand.models.map(([ar, en]) => ({ value: en, labelAr: ar, labelEn: en }));
+  const models = getModelsForMake(brandSlug);
+  return models.map((m) => ({ value: m.slug, labelAr: m.nameAr, labelEn: m.nameEn }));
+}
+
+/**
+ * Normalize an existing model value (may be nameEn from legacy drafts, or slug)
+ * into the canonical slug. Returns the original if no match (custom text).
+ */
+function normalizeToSlug(brandSlug: string, currentValue: string): string {
+  if (!currentValue) return '';
+  const options = getLocalModelOptions(brandSlug);
+  if (options.length === 0) return currentValue;
+  const match = options.find(
+    (o) =>
+      o.value === currentValue ||
+      o.labelEn.toLowerCase() === currentValue.toLowerCase().trim() ||
+      o.labelAr === currentValue.trim(),
+  );
+  return match ? match.value : currentValue;
 }
 
 interface Props {
@@ -29,16 +50,22 @@ export const CascadingModelSelect: React.FC<Props> = ({
   const [showOtherMake, setShowOtherMake] = useState(isMakeCustom || makeValue === 'other');
   const [customMake, setCustomMake] = useState(isMakeCustom ? makeValue : '');
   const modelOptions = getLocalModelOptions(makeValue);
-  const isModelCustom = Boolean(modelValue && (!modelOptions.length || !modelOptions.some((m) => m.value === modelValue)));
+  const normalizedModel = normalizeToSlug(makeValue, modelValue);
+  const isModelCustom = Boolean(normalizedModel && (!modelOptions.length || !modelOptions.some((m) => m.value === normalizedModel)));
   const [showOtherModel, setShowOtherModel] = useState(isModelCustom || !modelOptions.length);
-  const [customModel, setCustomModel] = useState(isModelCustom ? modelValue : '');
+  const [customModel, setCustomModel] = useState(isModelCustom ? normalizedModel : '');
 
-  useEffect(() => { if (isMakeCustom) { setShowOtherMake(true); setCustomMake(makeValue); } }, [isMakeCustom, makeValue]);
-  useEffect(() => { if (isModelCustom) { setShowOtherModel(true); setCustomModel(modelValue); } }, [isModelCustom, modelValue]);
+  useEffect(() => {
+    if (isMakeCustom) { setShowOtherMake(true); setCustomMake(makeValue); }
+  }, [isMakeCustom, makeValue]);
+
+  useEffect(() => {
+    if (isModelCustom) { setShowOtherModel(true); setCustomModel(normalizedModel); }
+  }, [isModelCustom, normalizedModel]);
 
   const modelTestId = hideMakeField ? testId : (testId ? `${testId}-model` : undefined);
   const otherMakeLabel = isArabic ? 'أخرى — اكتب يدوياً' : 'Other — type manually';
-  const brandOptions = CAR_BRANDS.map((b) => isArabic ? b.nameAr : b.nameEn);
+  const brandOptions = CAR_BRANDS.map((b) => (isArabic ? b.nameAr : b.nameEn));
   const selectedBrand = CAR_BRANDS.find((b) => b.slug === makeValue);
   const selectedBrandLabel = selectedBrand ? (isArabic ? selectedBrand.nameAr : selectedBrand.nameEn) : makeValue;
 
@@ -49,7 +76,7 @@ export const CascadingModelSelect: React.FC<Props> = ({
         <>
           <select
             data-testid={modelTestId}
-            value={showOtherModel ? OTHER_VALUE : modelValue}
+            value={showOtherModel ? OTHER_VALUE : normalizedModel}
             onChange={(e) => {
               const v = e.target.value;
               if (v === OTHER_VALUE) { setShowOtherModel(true); onModelChange(customModel); }
