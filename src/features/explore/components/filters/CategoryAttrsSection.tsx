@@ -1,7 +1,7 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { getListingFields } from '@/data/listingFields';
 import type { ListingField } from '@/data/listingFields';
-import { Combobox } from '@/shared/ui/Combobox';
+import { FilterFieldRenderer } from './FilterFieldRenderer';
 
 export interface CategoryAttrsSectionProps {
   readonly isArabic: boolean;
@@ -22,16 +22,22 @@ const MILEAGE_OPTIONS = [
 ];
 
 function isEligible(f: ListingField): boolean {
-  if (f.key === 'make') return true;
-  if (f.type === 'boolean') return true;
-  if (f.type === 'number') return true;
-  if (f.type === 'select' && f.options && f.options.length > 1) return true;
+  if (f.key === 'make' || f.key === 'model' || f.key === 'trim') return true;
+  if (f.type === 'boolean' || f.type === 'number') return true;
+  if (f.type === 'cascading-model' || f.type === 'cascading-trim') return true;
+  if (f.type === 'select' && f.options && f.options.length > 1 && f.options.length <= MAX_OPTIONS) return true;
   return false;
 }
 
 export const CategoryAttrsSection: React.FC<CategoryAttrsSectionProps> = ({ isArabic, categorySlug, subcategorySlug, attrs, onChange }) => {
   const showMileageRange = categorySlug === 'motors' && CAR_SUBS.includes(subcategorySlug ?? '');
   const fields = useMemo(() => !categorySlug ? [] : getListingFields(categorySlug, subcategorySlug ?? undefined).filter(isEligible), [categorySlug, subcategorySlug]);
+
+  const handleChange = useCallback((key: string, value: string | null) => {
+    onChange(key, value);
+    if (key === 'make') { onChange('model', null); onChange('trim', null); }
+    else if (key === 'model') { onChange('trim', null); }
+  }, [onChange]);
 
   if (fields.length === 0 && !showMileageRange) return null;
 
@@ -42,74 +48,14 @@ export const CategoryAttrsSection: React.FC<CategoryAttrsSectionProps> = ({ isAr
           <label htmlFor="km-range" className="text-[11px] font-bold text-ink-muted">
             {isArabic ? 'نطاق المسافة المقطوعة' : 'Mileage Range'}
           </label>
-          <select
-            id="km-range"
-            value={attrs.km_range ?? ''}
-            onChange={(event) => onChange('km_range', event.target.value || null)}
-            className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-ink"
-          >
-            {MILEAGE_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {isArabic ? option.labelAr : option.labelEn}
-              </option>
-            ))}
+          <select id="km-range" value={attrs.km_range ?? ''} onChange={(e) => onChange('km_range', e.target.value || null)} className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-ink">
+            {MILEAGE_OPTIONS.map((o) => (<option key={o.value} value={o.value}>{isArabic ? o.labelAr : o.labelEn}</option>))}
           </select>
         </div>
       )}
-      {fields.map((field) => {
-        const activeValue = attrs[field.key] ?? '';
-        const title = isArabic ? field.labelAr : field.labelEn;
-
-        if (field.type === 'number') {
-          return (
-            <div key={field.key} className="flex flex-col gap-2">
-              <label className="text-[11px] font-bold text-ink-muted">{title}</label>
-              <input
-                type="number"
-                value={activeValue}
-                onChange={(e) => onChange(field.key, e.target.value || null)}
-                placeholder={isArabic ? 'أدخل رقماً...' : 'Enter a number...'}
-                className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-ink"
-              />
-            </div>
-          );
-        }
-
-        const chips = field.type === 'boolean'
-          ? [{ value: 'true', label: isArabic ? 'نعم' : 'Yes' }, { value: 'false', label: isArabic ? 'لا' : 'No' }]
-          : (field.options ?? []).map((o) => ({ value: o.value, label: isArabic ? o.labelAr : o.labelEn }));
-        const useCombobox = field.type === 'select' && chips.length > MAX_OPTIONS;
-        const currentLabel = chips.find((c) => c.value === activeValue)?.label ?? '';
-
-        return (
-          <div key={field.key} className="flex flex-col gap-2">
-            <span className="text-[11px] font-bold text-ink-muted">{title}</span>
-            {useCombobox ? (
-              <Combobox
-                value={currentLabel}
-                options={chips.map((c) => c.label)}
-                placeholder={isArabic ? 'اختر...' : 'Select...'}
-                searchPlaceholder={isArabic ? 'ابحث...' : 'Search...'}
-                emptyText={isArabic ? 'لا نتائج' : 'No results'}
-                onChange={(newLabel) => onChange(field.key, chips.find((c) => c.label === newLabel)?.value ?? null)}
-              />
-            ) : (
-              <div className="flex flex-wrap gap-2">
-                {chips.map((c) => {
-                  const isActive = activeValue === c.value;
-                  return (
-                    <button key={c.value} type="button" onClick={() => onChange(field.key, isActive ? null : c.value)}
-                      className={`px-3 py-1.5 rounded-full border text-xs font-bold transition-all ${isActive ? 'bg-accent/15 border-accent text-accent' : 'bg-surface border-border text-ink'}`}
-                    >
-                      {c.label}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        );
-      })}
+      {fields.map((field) => (
+        <FilterFieldRenderer key={field.key} field={field} attrs={attrs} isArabic={isArabic} onChange={handleChange} />
+      ))}
     </div>
   );
 };
