@@ -25,7 +25,7 @@ function isEligible(f: ListingField): boolean {
   if (f.key === 'make') return true;
   if (f.type === 'boolean') return true;
   if (f.type === 'number') return true;
-  if (f.type === 'select' && f.options && f.options.length > 1 && f.options.length <= MAX_OPTIONS) return true;
+  if (f.type === 'select' && f.options && f.options.length > 1) return true;
   return false;
 }
 
