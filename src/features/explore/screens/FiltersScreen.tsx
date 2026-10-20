@@ -15,6 +15,7 @@ import type { SortBy } from '@/shared/router/filterParams';
 import { BrandMark } from '@/shared/components/BrandMark';
 import { filterListings } from '@/shared/lib/filterListings';
 import { useListings } from '@/hooks/useListings';
+import { translateAttrsForDb } from '@/shared/lib/attrsTranslation';
 
 export const FiltersScreen: React.FC = () => {
   const {
@@ -41,10 +42,12 @@ export const FiltersScreen: React.FC = () => {
   const locActive = draftNeigh !== null ? 1 : 0;
   const attrsActive = Object.keys(draftAttrs).length;
   const { listings } = useListings();
+  
   const previewCount = useMemo(() => filterListings(listings, {
     market: browseCountryCode, searchQuery: '', categorySlug: draftSub ?? draftCategory, minPrice: draftMin, maxPrice: draftMax,
-    neighborhood: draftNeigh, filterMode: 'all', sortBy: draftSort, attrs: draftAttrs,
+    neighborhood: draftNeigh, filterMode: 'all', sortBy: draftSort, attrs: translateAttrsForDb(draftAttrs, draftCategory, draftSub),
   }).length, [listings, browseCountryCode, draftCategory, draftSub, draftMin, draftMax, draftNeigh, draftSort, draftAttrs]);
+  
   const handleApply = useCallback(() => {
     setCategoryFilter(draftCategory);
     setSubcategoryFilter(draftSub);
@@ -56,6 +59,7 @@ export const FiltersScreen: React.FC = () => {
     setActiveTab('explore');
     navigateTo('main');
   }, [draftCategory, draftSub, draftSort, draftMin, draftMax, draftNeigh, draftAttrs, setCategoryFilter, setSubcategoryFilter, setSortBy, setMinPriceFilter, setMaxPriceFilter, setNeighborhoodFilter, setAttrsFilter, setActiveTab, navigateTo]);
+  
   const handleAttrChange = useCallback((key: string, value: string | null) => {
     setDraftAttrs((prev) => {
       const next = { ...prev };
@@ -64,7 +68,9 @@ export const FiltersScreen: React.FC = () => {
       return next;
     });
   }, []);
+  
   const handleShare = useShareFilters({ isArabic, browseCountryCode, draftCategory, draftSub, draftMin, draftMax, draftNeigh, draftSort, draftAttrs });
+  
   const handleReset = useCallback(() => {
     setDraftCategory(null);
     setDraftSub(null);
