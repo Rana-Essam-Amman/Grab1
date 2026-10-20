@@ -85,6 +85,15 @@ export const CAR_BRANDS: readonly CarBrand[] = [
   { slug: 'smart', nameAr: 'سمارت', nameEn: 'Smart', popular: false },
   { slug: 'polestar', nameAr: 'بولستار', nameEn: 'Polestar', popular: false },
   { slug: 'rivian', nameAr: 'ريفيان', nameEn: 'Rivian', popular: false },
+  { slug: 'baic', nameAr: 'بايك', nameEn: 'Baic', popular: false },
+  { slug: 'tank', nameAr: 'تانك', nameEn: 'Tank', popular: false },
+  { slug: 'foton', nameAr: 'فوتون', nameEn: 'Foton', popular: false },
+  { slug: 'jmc', nameAr: 'جي إم سي', nameEn: 'JMC', popular: false },
+  { slug: 'maxus', nameAr: 'ماكسوس', nameEn: 'Maxus', popular: false },
+  { slug: 'tata', nameAr: 'تاتا', nameEn: 'Tata', popular: false },
+  { slug: 'plymouth', nameAr: 'بلايموث', nameEn: 'Plymouth', popular: false },
+  { slug: 'imperial', nameAr: 'إمبريال', nameEn: 'Imperial', popular: false },
+  { slug: 'ineos', nameAr: 'إينيوس', nameEn: 'Ineos', popular: false },
   { slug: 'other', nameAr: 'أخرى', nameEn: 'Other', popular: false },
 ];
 
