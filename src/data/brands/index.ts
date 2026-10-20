@@ -82,3 +82,12 @@ export function getModelLabel(makeSlug: string, modelSlug: string, isArabic: boo
 export function hasCuratedModels(makeSlug: string): boolean {
   return getModelsForMake(makeSlug).length > 0;
 }
+
+/**
+ * Derived hasModels check — single source of truth is CAR_MODELS.
+ * Prefer this over `brand.hasModels` (legacy metadata in carBrands.ts
+ * which is only set on 14 of 76 curated brands).
+ */
+export function brandHasModels(brandSlug: string): boolean {
+  return hasCuratedModels(brandSlug);
+}
