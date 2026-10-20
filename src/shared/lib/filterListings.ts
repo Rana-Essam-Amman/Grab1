@@ -2,6 +2,8 @@ import type { Listing } from '@/types';
 import { normalizeArabic } from '@/data/arabicNormalize';
 import { filterListingsByMarket, MarketCode } from '@/shared/lib/marketGate';
 import { matchPrice, matchNeighborhood, scoreListing, sortListingsByPriority } from '@/shared/lib/listingSearch';
+import { getListingFields } from '@/data/listingFields';
+import type { ListingFieldOption } from '@/data/listingFields/types';
 
 export interface FilterListingsOptions {
   readonly market: string;
@@ -17,6 +19,24 @@ export interface FilterListingsOptions {
   readonly sortBy?: 'newest' | 'price-asc' | 'price-desc';
   readonly attrs?: Record<string, string>;
   readonly preserveOrder?: boolean;
+}
+
+/**
+ * Universal normalizer: converts any form (slug, Arabic label, English label,
+ * different case) into the canonical slug from the options array.
+ * This makes filtering work regardless of how the data was stored.
+ */
+function normalizeAttrValue(value: string, options?: readonly ListingFieldOption[]): string {
+  const trimmed = String(value).trim();
+  if (!options || options.length === 0) return trimmed.toLowerCase();
+  const lower = trimmed.toLowerCase();
+  const match = options.find(
+    (o) =>
+      o.value.toLowerCase() === lower ||
+      o.labelEn.toLowerCase() === lower ||
+      o.labelAr === trimmed
+  );
+  return match ? match.value.toLowerCase() : lower;
 }
 
 export function filterListings(listings: Listing[], options: FilterListingsOptions): Listing[] {
@@ -41,9 +61,16 @@ export function filterListings(listings: Listing[], options: FilterListingsOptio
       if (neighborhood && !matchNeighborhood(item, neighborhood)) return false;
 
       const list = Array.isArray(item.attributes) ? item.attributes : [];
+      const fields = getListingFields(item.categorySlug, item.subcategorySlug);
+      
       for (const [k, v] of Object.entries(attrs)) {
         if (!v || k === 'km_range') continue;
-        const hasMatch = list.some((a) => a.key === k && String(a.value) === v);
+        const field = fields.find((f) => f.key === k);
+        const filterNorm = normalizeAttrValue(v, field?.options);
+        const hasMatch = list.some((a) => {
+          if (a.key !== k) return false;
+          return normalizeAttrValue(String(a.value), field?.options) === filterNorm;
+        });
         if (!hasMatch) return false;
       }
 
