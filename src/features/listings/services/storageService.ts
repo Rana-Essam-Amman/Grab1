@@ -85,7 +85,8 @@ export async function uploadListingImages(
       urls.push(result.url);
       dims.push({ width: result.width, height: result.height });
     } catch (err) {
-      throw err;
+      const msg = err instanceof Error ? err.message : String(err);
+      throw new Error(`STORAGE_ERROR: ${msg}`);
     }
   }
   return { urls, dims, failedCount };
