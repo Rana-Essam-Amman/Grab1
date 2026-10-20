@@ -2,6 +2,9 @@
 -- This replaces the exact-match logic with alias-aware matching.
 -- It accepts attributes with `value` + optional `aliases` array.
 -- No data is modified. Only the function logic is updated.
+--
+-- IMPORTANT: Preserves `AND p_row.is_demo = false` from migration
+-- 20261087_demo_public_filtering.sql to prevent demo leak to anon users.
 
 CREATE OR REPLACE FUNCTION public.listing_passes_filters(
   p_row listings,
@@ -66,5 +69,7 @@ AS $function$
             )
         )
       )
-    );
+    )
+    -- SECURITY: Prevent demo leak to anon users (from 20261087).
+    AND p_row.is_demo = false;
 $function$;
