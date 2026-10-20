@@ -18,13 +18,9 @@ export async function performSupabasePublish(
   try {
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user) {
-      // No Supabase session (demo mode, E2E, offline) → local-only fallback.
-      // Real visitors are blocked at the UI level BEFORE reaching this function.
       return { remoteListing: null, error: null, fallbackToLocal: true };
     }
 
-    // Publish-lock: the target market is derived from the signed-in user's
-    // profile, NOT from the caller. Prevents cross-market data leakage.
     const { data: profileRow } = await supabase
       .from('profiles')
       .select('country_code')
@@ -38,18 +34,17 @@ export async function performSupabasePublish(
 
     // If user picked photos but none uploaded → block publish.
     const hadPhotos = sanitized.images.length > 0;
-    const { urls: uploadedImages, failedCount } = await uploadListingImages(
+    const { urls: uploadedImages, failedCount, lastError } = await uploadListingImages(
       sanitized.images,
       userData.user.id
     );
 
     if (hadPhotos && uploadedImages.length === 0) {
-      return { remoteListing: null, error: 'فشل رفع الصور — جرب مرة ثانية' };
+      return { remoteListing: null, error: `فشل رفع الصور: ${lastError || 'خطأ غير معروف'}` };
     }
 
     if (failedCount > 0) {
-      // Partial failure — publish with what we have, log silently.
-      console.warn(`[publish] ${failedCount} image(s) failed to upload`);
+      console.warn(`[publish] ${failedCount} image(s) failed to upload. Last error: ${lastError}`);
     }
 
     const { data, error } = await createListing({
