@@ -1,5 +1,6 @@
 import type { PostDraft, Listing, UserProfile } from '@/types';
 import { isOtherValue } from '@/data/locations';
+import { normalizeValueToSlug } from '@/shared/lib/attrsTranslation';
 
 export interface BuildListingParams {
   postDraft: PostDraft;
@@ -49,7 +50,16 @@ export function buildNewListingPayload({
       { key: 'city', label: 'City', value: rawCity },
       ...(postDraft.generated?.fields || [])
         .filter((f) => f.value && String(f.value).trim().length > 0)
-        .map((f) => ({ key: f.key, label: f.label, value: String(f.value) })),
+        .map((f) => ({
+          key: f.key,
+          label: f.label,
+          value: normalizeValueToSlug(
+            f.key,
+            String(f.value),
+            postDraft.categorySlug,
+            postDraft.subcategorySlug,
+          ),
+        })),
     ],
   };
 
