@@ -305,4 +305,4 @@ export function getModelBySlug(makeSlug: string, modelSlug: string): CarModel | 
 
 export function hasCuratedModels(makeSlug: string): boolean {
   return (CAR_MODELS[makeSlug]?.length ?? 0) > 0;
-      }
+  }
