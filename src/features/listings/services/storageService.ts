@@ -84,8 +84,8 @@ export async function uploadListingImages(
       const result = await uploadOne(src, userId);
       urls.push(result.url);
       dims.push({ width: result.width, height: result.height });
-    } catch {
-      failedCount += 1;
+    } catch (err) {
+      throw err;
     }
   }
   return { urls, dims, failedCount };
