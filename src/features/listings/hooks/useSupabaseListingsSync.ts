@@ -42,7 +42,9 @@ export function useSupabaseListingsSync(): void {
       maxPrice: maxPriceFilter,
       city: null,
       neighborhood: null,
-      attrs: attrsFilter,
+      attrs: Object.fromEntries(
+        Object.entries(attrsFilter).filter(([key]) => key !== 'km_range'),
+      ),
     }),
     [
       searchQuery,
