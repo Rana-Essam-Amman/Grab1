@@ -90,25 +90,31 @@ const DIGITS_OPTIONS: ListingFieldOption[] = [
   { value: '4', labelAr: '4 أرقام', labelEn: '4 Digits' }, { value: '5', labelAr: '5 أرقام', labelEn: '5 Digits' }, { value: '6', labelAr: '6 أرقام', labelEn: '6 Digits' },
 ];
 
+// ── Car Fields (Shared by cars, classic_cars, damaged_cars, lease_transfer) ──
+const CARS_FIELDS = [
+  { key: 'make', labelAr: 'الماركة', labelEn: 'Make', type: 'select' as const, allowOther: true, required: true, options: getBrandOptions() },
+  { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model' as const, dependsOn: 'make', required: true, placeholder: 'Camry, X5...' },
+  { key: 'trim', labelAr: 'الفئة', labelEn: 'Trim', type: 'text' as const, required: false, placeholder: 'LE, SE, Sport...' },
+  { key: 'year', labelAr: 'السنة', labelEn: 'Year', type: 'select' as const, allowOther: true, required: true, options: CAR_YEAR_OPTIONS },
+  { key: 'km', labelAr: 'العداد (كم)', labelEn: 'KM', type: 'number' as const, required: false, placeholder: '50000' },
+  { key: 'inspected', labelAr: 'مفحوصة', labelEn: 'Inspected', type: 'boolean' as const, required: false },
+  { key: 'transmission', labelAr: 'ناقل الحركة', labelEn: 'Transmission', type: 'select' as const, allowOther: true, required: false, options: TRANSMISSION_OPTIONS },
+  { key: 'fuel', labelAr: 'الوقود', labelEn: 'Fuel', type: 'select' as const, allowOther: true, required: false, options: FUEL_OPTIONS },
+  { key: 'doors', labelAr: 'الأبواب', labelEn: 'Doors', type: 'select' as const, allowOther: true, required: false, options: DOORS_OPTIONS },
+  { key: 'seats', labelAr: 'المقاعد', labelEn: 'Seats', type: 'select' as const, allowOther: true, required: false, options: SEATS_OPTIONS },
+  { key: 'exteriorColor', labelAr: 'اللون الخارجي', labelEn: 'Exterior Color', type: 'select' as const, allowOther: true, required: false, options: COLOR_OPTIONS },
+  { key: 'interiorColor', labelAr: 'اللون الداخلي', labelEn: 'Interior Color', type: 'select' as const, allowOther: true, required: false, options: INTERIOR_COLOR_OPTIONS },
+  { key: 'bodyType', labelAr: 'نوع الهيكل', labelEn: 'Body Type', type: 'select' as const, allowOther: true, required: false, options: BODY_TYPE_OPTIONS },
+  { key: 'regionalSpecs', labelAr: 'المواصفات الإقليمية', labelEn: 'Regional Specs', type: 'select' as const, allowOther: true, required: false, options: REGIONAL_SPECS_OPTIONS },
+  { key: 'warranty', labelAr: 'تحت الضمان', labelEn: 'Under Warranty', type: 'boolean' as const, required: false },
+  { key: 'installment', labelAr: 'متوفر تقسيط', labelEn: 'Installment Available', type: 'boolean' as const, required: false },
+];
+
 export const MOTORS_FIELDS: CategoryFieldMap = {
-  cars: [
-    { key: 'make', labelAr: 'الماركة', labelEn: 'Make', type: 'select', allowOther: true, required: true, options: getBrandOptions() },
-    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'make', required: true, placeholder: 'Camry, X5...' },
-    { key: 'trim', labelAr: 'الفئة', labelEn: 'Trim', type: 'text', required: false, placeholder: 'LE, SE, Sport...' },
-    { key: 'year', labelAr: 'السنة', labelEn: 'Year', type: 'select', allowOther: true, required: true, options: CAR_YEAR_OPTIONS },
-    { key: 'km', labelAr: 'العداد (كم)', labelEn: 'KM', type: 'number', required: false, placeholder: '50000' },
-    { key: 'inspected', labelAr: 'مفحوصة', labelEn: 'Inspected', type: 'boolean', required: false },
-    { key: 'transmission', labelAr: 'ناقل الحركة', labelEn: 'Transmission', type: 'select', allowOther: true, required: false, options: TRANSMISSION_OPTIONS },
-    { key: 'fuel', labelAr: 'الوقود', labelEn: 'Fuel', type: 'select', allowOther: true, required: false, options: FUEL_OPTIONS },
-    { key: 'doors', labelAr: 'الأبواب', labelEn: 'Doors', type: 'select', allowOther: true, required: false, options: DOORS_OPTIONS },
-    { key: 'seats', labelAr: 'المقاعد', labelEn: 'Seats', type: 'select', allowOther: true, required: false, options: SEATS_OPTIONS },
-    { key: 'exteriorColor', labelAr: 'اللون الخارجي', labelEn: 'Exterior Color', type: 'select', allowOther: true, required: false, options: COLOR_OPTIONS },
-    { key: 'interiorColor', labelAr: 'اللون الداخلي', labelEn: 'Interior Color', type: 'select', allowOther: true, required: false, options: INTERIOR_COLOR_OPTIONS },
-    { key: 'bodyType', labelAr: 'نوع الهيكل', labelEn: 'Body Type', type: 'select', allowOther: true, required: false, options: BODY_TYPE_OPTIONS },
-    { key: 'regionalSpecs', labelAr: 'المواصفات الإقليمية', labelEn: 'Regional Specs', type: 'select', allowOther: true, required: false, options: REGIONAL_SPECS_OPTIONS },
-    { key: 'warranty', labelAr: 'تحت الضمان', labelEn: 'Under Warranty', type: 'boolean', required: false },
-    { key: 'installment', labelAr: 'متوفر تقسيط', labelEn: 'Installment Available', type: 'boolean', required: false },
-  ],
+  cars: CARS_FIELDS,
+  classic_cars: CARS_FIELDS,
+  damaged_cars: CARS_FIELDS,
+  lease_transfer: CARS_FIELDS,
   motorbikes: [
     { key: 'make', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: true, options: MOTORBIKE_BRANDS },
     { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'make', required: true, placeholder: 'CBR, R1...' },
