@@ -4,7 +4,9 @@ import { BookmarkHeartButton } from './BookmarkHeartButton';
 import { Crown } from 'iconsax-react';
 import { Icon } from '@iconify/react';
 import { Badge } from '@/shared/ui/Badge';
+import { getListingFields } from '@/data/listingFields';
 import { pickSpecs } from '@/features/listings';
+import { RequiredSpecsRow } from '@/features/listings/components/RequiredSpecsRow';
 import { ListingSpecsRow } from './ListingSpecsRow';
 import { ListingCardSellerRow } from '@/features/listings/components/ListingCardSellerRow';
 import { toOptimizedImageUrl } from '@/shared/lib/optimizedImage';
@@ -31,7 +33,15 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
   handleClick,
   handleImageError,
 }) => {
-  const specs = useMemo(() => pickSpecs(listing.attributes, 5, listing.title), [listing.attributes, listing.title]);
+  const requiredKeys = useMemo(() => {
+    const fields = getListingFields(listing.categorySlug, listing.subcategorySlug);
+    return new Set(fields.filter((f) => f.required).map((f) => f.key));
+  }, [listing.categorySlug, listing.subcategorySlug]);
+
+  const specs = useMemo(() => {
+    const attrs = listing.attributes?.filter((a) => !requiredKeys.has(a.key));
+    return pickSpecs(attrs, 5, listing.title);
+  }, [listing.attributes, listing.title, requiredKeys]);
 
   const knownRatio =
     listing.imageWidth && listing.imageHeight
@@ -88,6 +98,12 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
               <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
               <span className="truncate" dir="auto">{locationText}</span>
             </div>
+            <RequiredSpecsRow
+              categorySlug={listing.categorySlug}
+              subcategorySlug={listing.subcategorySlug}
+              attributes={listing.attributes ?? []}
+              isArabic={isArabic}
+            />
             {specs.length > 0 && <ListingSpecsRow specs={specs} compact />}
           </div>
           <div className="flex items-center mt-2 gap-1.5">
