@@ -13,6 +13,17 @@ type GetFn = () => ListingsState;
 const initialSearchQuery: string | null = null;
 const initialFilterArgs: SearchListingsParams | null = null;
 
+// SAFETY: Only replace listings when (a) market changed, (b) API returned data, or (c) no local data.
+// Prevents perceived data loss from transient empty API responses (backend down, RPC empty, etc.).
+function shouldApplyApiListings(
+  activeMarket: string | null,
+  targetMarket: string | undefined,
+  localCount: number,
+  apiCount: number,
+): boolean {
+  return activeMarket !== (targetMarket ?? null) || apiCount > 0 || localCount === 0;
+}
+
 export const createPaginationActions = (set: SetFn, get: GetFn) => ({
   activeSearchQuery: initialSearchQuery,
   searchBanner: null,
@@ -31,7 +42,10 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
       });
       set((s) => {
         if (result.listings) {
-          s.listings = withDemoSeeds(result.listings);
+          if (shouldApplyApiListings(s.activeMarket, targetMarket, s.listings.length, result.listings.length)) {
+            s.listings = withDemoSeeds(result.listings);
+            saveListingsToStorage(s.listings);
+          }
           s.activeMarket = targetMarket ?? null;
           s.activeSearchQuery = null;
           s.searchBanner = null;
@@ -40,7 +54,6 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
           s.tier2Listings = [];
           s.page = 0;
           s.hasMore = result.listings.length === LISTINGS_PAGE_SIZE;
-          saveListingsToStorage(s.listings);
         }
       });
     } finally {
@@ -103,7 +116,10 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
         });
         set((s) => {
           if (result.listings) {
-            s.listings = withDemoSeeds(result.listings);
+            if (shouldApplyApiListings(s.activeMarket, targetMarket, s.listings.length, result.listings.length)) {
+              s.listings = withDemoSeeds(result.listings);
+              saveListingsToStorage(s.listings);
+            }
             s.activeMarket = targetMarket ?? null;
             s.activeSearchQuery = null;
             s.searchBanner = null;
@@ -112,7 +128,6 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
             s.tier2Listings = [];
             s.page = 0;
             s.hasMore = result.listings.length === LISTINGS_PAGE_SIZE;
-            saveListingsToStorage(s.listings);
           }
         });
         return;
@@ -128,7 +143,13 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
       };
       const hybrid = await searchListingsHybrid(callParams);
       set((s) => {
-        s.listings = hybrid.data ?? [];
+        // SAFETY: hybrid.data === null means an error (rate limit, network).
+        // In that case, keep the current listings instead of showing a blank screen.
+        // hybrid.data === [] means successful search with no results (legitimate empty).
+        if (hybrid.data !== null) {
+          s.listings = hybrid.data;
+          s.hasMore = hybrid.data.length === LISTINGS_PAGE_SIZE;
+        }
         s.tier2Listings = hybrid.tier2Data ?? [];
         s.activeMarket = targetMarket ?? null;
         s.activeSearchQuery = trimmed;
@@ -136,7 +157,6 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
         s.searchRelatedHeader = hybrid.relatedHeader ?? null;
         s.activeFilterArgs = callParams;
         s.page = 0;
-        s.hasMore = (hybrid.data?.length ?? 0) === LISTINGS_PAGE_SIZE;
       });
     } finally {
       set((s) => { s.isSyncing = false; });
