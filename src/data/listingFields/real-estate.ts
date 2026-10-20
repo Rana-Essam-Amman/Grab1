@@ -1,7 +1,7 @@
 import type { CategoryFieldMap, ListingFieldOption } from './types';
 
 const CURRENT_YEAR = new Date().getFullYear();
-const BUILDING_YEAR_OPTIONS: ListingFieldOption[] = Array.from({ length: 40 }, (_, i) => ({
+const BUILDING_YEAR_OPTIONS: ListingFieldOption[] = Array.from({ length: 80 }, (_, i) => ({
   value: String(CURRENT_YEAR - i), labelAr: String(CURRENT_YEAR - i), labelEn: String(CURRENT_YEAR - i),
 }));
 
@@ -125,10 +125,10 @@ export const REAL_ESTATE_FIELDS: CategoryFieldMap = {
     { key: 'area', labelAr: 'المساحة (م²)', labelEn: 'Area (m²)', type: 'number', required: true },
     { key: 'floor', labelAr: 'الطابق', labelEn: 'Floor', type: 'text', required: false },
     { key: 'totalFloors', labelAr: 'عدد الطوابق', labelEn: 'Total Floors', type: 'number', required: false },
-    { key: 'year', labelAr: 'سنة البناء', labelEn: 'Year Built', type: 'select', allowOther: true, required: false, options: BUILDING_YEAR_OPTIONS },
-    { key: 'amenities', labelAr: 'المميزات والخدمات', labelEn: 'Amenities', type: 'select', multiSelect: true, allowOther: true, required: false, options: RESIDENTIAL_AMENITIES },
+    { key: 'year', labelAr: 'سنة البناء', labelEn: 'Year Built', type: 'select', allowOther: false, required: false, options: BUILDING_YEAR_OPTIONS },
+    { key: 'amenities', labelAr: 'المميزات والخدمات', labelEn: 'Amenities', type: 'select', multiSelect: true, allowOther: false, required: false, options: RESIDENTIAL_AMENITIES },
     { key: 'view', labelAr: 'الإطلالة', labelEn: 'View', type: 'select', allowOther: false, required: false, options: VIEW_OPTIONS },
-    { key: 'parking', labelAr: 'مواقف السيارات', labelEn: 'Parking', type: 'select', allowOther: true, required: false, options: PARKING_OPTIONS },
+    { key: 'parking', labelAr: 'مواقف السيارات', labelEn: 'Parking', type: 'select', allowOther: false, required: false, options: PARKING_OPTIONS },
     { key: 'furnished', labelAr: 'الفرش', labelEn: 'Furnished', type: 'select', allowOther: false, required: false, options: FURNISHED_OPTIONS },
     { key: 'finishingType', labelAr: 'نوع التشطيب', labelEn: 'Finishing Type', type: 'select', allowOther: false, required: false, options: FINISHING_OPTIONS },
     { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: SELLER_TYPE_OPTIONS },
@@ -152,38 +152,38 @@ export const REAL_ESTATE_FIELDS: CategoryFieldMap = {
     { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
     { key: 'floor', labelAr: 'الطابق', labelEn: 'Floor', type: 'text', required: false },
     { key: 'totalFloors', labelAr: 'عدد الطوابق', labelEn: 'Total Floors', type: 'number', required: false },
-    { key: 'amenities', labelAr: 'المميزات والخدمات', labelEn: 'Amenities', type: 'select', multiSelect: true, allowOther: true, required: false, options: RESIDENTIAL_AMENITIES },
+    { key: 'amenities', labelAr: 'المميزات والخدمات', labelEn: 'Amenities', type: 'select', multiSelect: true, allowOther: false, required: false, options: RESIDENTIAL_AMENITIES },
     { key: 'view', labelAr: 'الإطلالة', labelEn: 'View', type: 'select', allowOther: false, required: false, options: VIEW_OPTIONS },
-    { key: 'parking', labelAr: 'مواقف السيارات', labelEn: 'Parking', type: 'select', allowOther: true, required: false, options: PARKING_OPTIONS },
+    { key: 'parking', labelAr: 'مواقف السيارات', labelEn: 'Parking', type: 'select', allowOther: false, required: false, options: PARKING_OPTIONS },
   ],
   commercial: [
     { key: 'propertyType', labelAr: 'نوع العقار التجاري', labelEn: 'Commercial Type', type: 'select', allowOther: false, required: true, options: COMMERCIAL_TYPES },
     { key: 'area', labelAr: 'المساحة (م²)', labelEn: 'Area (m²)', type: 'number', required: true },
     { key: 'floor', labelAr: 'الطابق', labelEn: 'Floor', type: 'text', required: false },
     { key: 'frontage', labelAr: 'عرض الواجهة (متر)', labelEn: 'Frontage (m)', type: 'number', required: false },
-    { key: 'footTraffic', labelAr: 'الحركة والنشاط', labelEn: 'Foot Traffic', type: 'select', allowOther: true, required: false, options: [
+    { key: 'footTraffic', labelAr: 'الحركة والنشاط', labelEn: 'Foot Traffic', type: 'select', allowOther: false, required: false, options: [
       { value: 'low', labelAr: 'منخفضة', labelEn: 'Low' }, { value: 'medium', labelAr: 'متوسطة', labelEn: 'Medium' }, { value: 'high', labelAr: 'عالية', labelEn: 'High' },
     ]},
-    { key: 'rentOrSale', labelAr: 'نوع العرض', labelEn: 'Offer Type', type: 'select', allowOther: true, required: true, options: [
+    { key: 'rentOrSale', labelAr: 'نوع العرض', labelEn: 'Offer Type', type: 'select', allowOther: false, required: true, options: [
       { value: 'for_rent', labelAr: 'للإيجار', labelEn: 'For Rent' }, { value: 'for_sale', labelAr: 'للبيع', labelEn: 'For Sale' },
     ]},
     { key: 'rentPeriod', labelAr: 'فترة الإيجار', labelEn: 'Rent Period', type: 'select', allowOther: false, required: false, options: RENT_PERIODS },
-    { key: 'amenities', labelAr: 'المميزات والخدمات', labelEn: 'Amenities', type: 'select', multiSelect: true, allowOther: true, required: false, options: COMMERCIAL_AMENITIES },
-    { key: 'year', labelAr: 'سنة البناء', labelEn: 'Year Built', type: 'select', allowOther: true, required: false, options: BUILDING_YEAR_OPTIONS },
-    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: false, options: [
+    { key: 'amenities', labelAr: 'المميزات والخدمات', labelEn: 'Amenities', type: 'select', multiSelect: true, allowOther: false, required: false, options: COMMERCIAL_AMENITIES },
+    { key: 'year', labelAr: 'سنة البناء', labelEn: 'Year Built', type: 'select', allowOther: false, required: false, options: BUILDING_YEAR_OPTIONS },
+    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: false, required: false, options: [
       { value: 'new', labelAr: 'جديد', labelEn: 'New' }, { value: 'excellent', labelAr: 'ممتاز', labelEn: 'Excellent' },
       { value: 'good', labelAr: 'جيد', labelEn: 'Good' }, { value: 'needs_renovation', labelAr: 'يحتاج تجديد', labelEn: 'Needs Renovation' },
     ]},
-    { key: 'parking', labelAr: 'مواقف السيارات', labelEn: 'Parking', type: 'select', allowOther: true, required: false, options: PARKING_OPTIONS },
+    { key: 'parking', labelAr: 'مواقف السيارات', labelEn: 'Parking', type: 'select', allowOther: false, required: false, options: PARKING_OPTIONS },
     { key: 'securityDeposit', labelAr: 'مبلغ التأمين', labelEn: 'Security Deposit', type: 'number', required: false },
     { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: SELLER_TYPE_OPTIONS },
     { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
   ],
   lands: [
     { key: 'area', labelAr: 'المساحة (م²)', labelEn: 'Area (m²)', type: 'number', required: true },
-    { key: 'zoning', labelAr: 'نوع التنظيم / الاستخدام', labelEn: 'Zoning', type: 'select', allowOther: true, required: true, options: ZONING_OPTIONS },
+    { key: 'zoning', labelAr: 'نوع التنظيم / الاستخدام', labelEn: 'Zoning', type: 'select', allowOther: false, required: true, options: ZONING_OPTIONS },
     { key: 'frontage', labelAr: 'عرض الواجهة (متر)', labelEn: 'Frontage (m)', type: 'number', required: false },
-    { key: 'orientation', labelAr: 'الاتجاه', labelEn: 'Orientation', type: 'select', allowOther: true, required: false, options: ORIENTATION_OPTIONS },
+    { key: 'orientation', labelAr: 'الاتجاه', labelEn: 'Orientation', type: 'select', allowOther: false, required: false, options: ORIENTATION_OPTIONS },
     { key: 'corner', labelAr: 'قطعة زاوية', labelEn: 'Corner Plot', type: 'boolean', required: false },
     { key: 'readyForBuilding', labelAr: 'جاهزة للبناء', labelEn: 'Ready For Building', type: 'boolean', required: false },
     { key: 'waterAccess', labelAr: 'متوفر ماء', labelEn: 'Water Access', type: 'boolean', required: false },
@@ -195,13 +195,13 @@ export const REAL_ESTATE_FIELDS: CategoryFieldMap = {
     { key: 'rooms', labelAr: 'عدد الغرف', labelEn: 'Rooms', type: 'number', required: true },
     { key: 'bathrooms', labelAr: 'الحمامات', labelEn: 'Bathrooms', type: 'number', required: true },
     { key: 'area', labelAr: 'المساحة (م²)', labelEn: 'Area (m²)', type: 'number', required: true },
-    { key: 'pool', labelAr: 'المسبح', labelEn: 'Pool', type: 'select', allowOther: true, required: false, options: POOL_OPTIONS },
+    { key: 'pool', labelAr: 'المسبح', labelEn: 'Pool', type: 'select', allowOther: false, required: false, options: POOL_OPTIONS },
     { key: 'view', labelAr: 'الإطلالة', labelEn: 'View', type: 'select', allowOther: false, required: false, options: VIEW_OPTIONS },
-    { key: 'amenities', labelAr: 'المميزات والخدمات', labelEn: 'Amenities', type: 'select', multiSelect: true, allowOther: true, required: false, options: CHALET_AMENITIES },
-    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: false, options: CONDITION_OPTIONS },
+    { key: 'amenities', labelAr: 'المميزات والخدمات', labelEn: 'Amenities', type: 'select', multiSelect: true, allowOther: false, required: false, options: CHALET_AMENITIES },
+    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: false, required: false, options: CONDITION_OPTIONS },
     { key: 'furnished', labelAr: 'الفرش', labelEn: 'Furnished', type: 'select', allowOther: false, required: false, options: FURNISHED_OPTIONS },
-    { key: 'parking', labelAr: 'مواقف السيارات', labelEn: 'Parking', type: 'select', allowOther: true, required: false, options: PARKING_OPTIONS },
-    { key: 'minimumStay', labelAr: 'أقل مدة حجز', labelEn: 'Minimum Stay', type: 'select', allowOther: true, required: false, options: [
+    { key: 'parking', labelAr: 'مواقف السيارات', labelEn: 'Parking', type: 'select', allowOther: false, required: false, options: PARKING_OPTIONS },
+    { key: 'minimumStay', labelAr: 'أقل مدة حجز', labelEn: 'Minimum Stay', type: 'select', allowOther: false, required: false, options: [
       { value: 'daily', labelAr: 'يومي', labelEn: 'Daily' }, { value: 'weekly', labelAr: 'أسبوعي', labelEn: 'Weekly' }, { value: 'monthly', labelAr: 'شهري', labelEn: 'Monthly' },
     ]},
     { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: SELLER_TYPE_OPTIONS },
@@ -215,7 +215,7 @@ export const REAL_ESTATE_FIELDS: CategoryFieldMap = {
     { key: 'bedrooms', labelAr: 'غرف النوم', labelEn: 'Bedrooms', type: 'number', required: false },
     { key: 'bathrooms', labelAr: 'الحمامات', labelEn: 'Bathrooms', type: 'number', required: false },
     { key: 'furnished', labelAr: 'الفرش', labelEn: 'Furnished', type: 'select', allowOther: false, required: false, options: FOREIGN_FURNISHED },
-    { key: 'purpose', labelAr: 'الغرض', labelEn: 'Purpose', type: 'select', allowOther: true, required: false, options: [
+    { key: 'purpose', labelAr: 'الغرض', labelEn: 'Purpose', type: 'select', allowOther: false, required: false, options: [
       { value: 'sale', labelAr: 'للبيع', labelEn: 'For Sale' },
       { value: 'rent', labelAr: 'للإيجار', labelEn: 'For Rent' },
       { value: 'investment', labelAr: 'استثمار', labelEn: 'Investment' },
