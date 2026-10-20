@@ -43,16 +43,13 @@ window.addEventListener('unhandledrejection', (e) => {
   } catch {}
 });
 
+// NOTE: Previously wiped catch_listings when serialized size > 200KB.
+// Removed in the data-integrity fix — wiping the local cache caused
+// user listings to disappear on app boot without corresponding deletion
+// from the server. Listings are now merged instead of replaced on sync.
 
-// One-time cleanup: wipe bloated listings from old format
+// Also clear old bloated conversations if too large
 try {
-  const listingsRaw = localStorage.getItem('catch_listings');
-  if (listingsRaw && listingsRaw.length > 200_000) { // >200KB = old bloated
-    console.warn('[CLEANUP] Removing bloated listings, will reload from seed data.');
-    localStorage.removeItem('catch_listings');
-  }
-  
-  // Also clear old bloated conversations if too large
   const convsRaw = localStorage.getItem('catch_conversations');
   if (convsRaw && convsRaw.length > 200_000) {
     console.warn('[CLEANUP] Removing bloated conversations.');
