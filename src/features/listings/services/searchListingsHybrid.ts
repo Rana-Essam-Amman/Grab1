@@ -58,7 +58,7 @@ export async function searchListingsHybrid(
 
     const categoryHint = await detectCategory(trimmed);
     const effectiveCategory = categorySlug ?? categoryHint;
-    const attrsJson = attrsToJsonbArray(attrs);
+    const attrsJson = attrsToJsonbArray(attrs, effectiveCategory, subcategorySlug);
 
     const filterArgs = {
       p_category_slug: effectiveCategory,
