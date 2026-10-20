@@ -1,6 +1,6 @@
 import { supabase } from '@/shared/lib/supabase';
 import { logWarning } from '@/shared/lib/errorLogger';
-import { translateAttrsForDb } from '@/shared/lib/attrsTranslation';
+import { getListingFields } from '@/data/listingFields';
 
 const HYBRID_TIMEOUT_MS = 4000;
 
@@ -62,27 +62,43 @@ export async function detectCategory(query: string): Promise<string | null> {
 }
 
 /**
- * Convert a UI attribute map into the JSONB array shape the DB expects:
- * [{ key: string, value: string }]. Returns null when no usable attrs.
- * Uses the central translation helper to map UI values to Arabic DB labels.
+ * Convert a UI attribute map into the JSONB array shape the DB expects.
+ * Sends the canonical slug as `value`, AND all forms (slug, labelAr, labelEn)
+ * as `aliases`. The RPC matches ANY alias against the stored value, so
+ * filtering works regardless of how the data was saved (Arabic, English, slug).
+ *
+ * This is the SINGLE SOURCE OF TRUTH for sending attributes to the DB.
+ * No value translation happens here — the server compares against aliases.
  */
 export function attrsToJsonbArray(
   attrs: Record<string, string> | undefined,
   categorySlug?: string | null,
   subcategorySlug?: string | null,
-): Array<{ key: string; value: string }> | null {
+): Array<{ key: string; value: string; aliases?: string[] }> | null {
   if (!attrs) return null;
   const entries = Object.entries(attrs).filter(([k, v]) => k && v);
   if (entries.length === 0) return null;
 
-  const translated = translateAttrsForDb(attrs, categorySlug, subcategorySlug);
-  return entries.map(([key]) => ({ key, value: translated[key] }));
+  const fields = categorySlug ? getListingFields(categorySlug, subcategorySlug ?? undefined) : [];
+
+  return entries.map(([key, value]) => {
+    const field = fields.find((f) => f.key === key);
+    if (field?.options) {
+      const option = field.options.find(
+        (o) => o.value === value || o.labelAr === value || o.labelEn === value,
+      );
+      if (option) {
+        const aliases = Array.from(
+          new Set([option.value, option.labelAr, option.labelEn].filter(Boolean))
+        );
+        return { key, value: option.value, aliases };
+      }
+    }
+    return { key, value };
+  });
 }
 
 // Frontend rate limit: max 30 searches per rolling 60-second window.
-// Module-level so all calls share state per browser tab. Blocks
-// accidental loops and typing spam. Not a security boundary — bots
-// bypass via direct RPC (WAF concern, deferred).
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 30;
 const searchTimestamps: number[] = [];
