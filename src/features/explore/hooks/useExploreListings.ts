@@ -7,6 +7,7 @@ import { EXPLORE_CONFIG } from '@/config/explore.config';
 import { UseExploreListingsReturn } from './useExploreListings.types';
 import { countCityListings, computeFilterModeWithCapital } from './useExploreListings.helpers';
 import { filterListings } from '@/shared/lib/filterListings';
+import { translateAttrsForDb } from '@/shared/lib/attrsTranslation';
 
 export function useExploreListings(): UseExploreListingsReturn {
   const {
@@ -66,7 +67,7 @@ export function useExploreListings(): UseExploreListingsReturn {
       cityEn: browseCityEn,
       filterMode,
       sortBy,
-      attrs: attrsFilter,
+      attrs: translateAttrsForDb(attrsFilter, categoryFilter, subcategoryFilter),
       preserveOrder: hasActiveSearch,
     });
   }, [marketListings, browseCountryCode, searchQuery, categoryFilter, subcategoryFilter, minPriceFilter, maxPriceFilter, activeNeighborhood, browseCityAr, browseCityEn, filterMode, sortBy, attrsFilter]);
