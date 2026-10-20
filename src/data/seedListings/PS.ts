@@ -20,9 +20,9 @@ export const PS_LISTINGS: Listing[] = [
     createdAt: '2026-09-09',
     views: 265,
     attributes: [
-      { label: 'Make / Model', value: 'Volkswagen Golf TSI' },
-      { label: 'Year', value: '2021' },
-      { label: 'Transmission', value: 'Automatic DSG' },
+      { key: 'makeModel', label: 'Make / Model', value: 'Volkswagen Golf TSI' },
+      { key: 'year', label: 'Year', value: '2021' },
+      { key: 'transmission', label: 'Transmission', value: 'Automatic DSG' },
     ],
   },
   {
@@ -35,7 +35,7 @@ export const PS_LISTINGS: Listing[] = [
     city: 'نابلس',
     neighborhood: 'رفيديا',
     categorySlug: 'electronics',
-    subcategorySlug: 'industrial',
+    subcategorySlug: 'home-appliances',
     imageUrl: '/assets/icons/electronics.jpg',
     images: ['/assets/icons/electronics.jpg'],
     sellerPhone: '+970598765432',
@@ -43,9 +43,9 @@ export const PS_LISTINGS: Listing[] = [
     createdAt: '2026-09-10',
     views: 118,
     attributes: [
-      { label: 'Type', value: 'Industrial Press Machine' },
-      { label: 'Capacity', value: '2 Tons / Hour' },
-      { label: 'Material', value: '316 Stainless Steel' },
+      { key: 'type', label: 'Type', value: 'Industrial Press Machine' },
+      { key: 'capacity', label: 'Capacity', value: '2 Tons / Hour' },
+      { key: 'material', label: 'Material', value: '316 Stainless Steel' },
     ],
   },
   {
@@ -58,7 +58,7 @@ export const PS_LISTINGS: Listing[] = [
     city: 'رام الله والبيرة',
     neighborhood: 'المصيون',
     categorySlug: 'real-estate',
-    subcategorySlug: 'land',
+    subcategorySlug: 'lands',
     imageUrl: '/assets/icons/real-estate.jpg',
     images: ['/assets/icons/real-estate.jpg'],
     sellerPhone: '+970597112244',
@@ -66,9 +66,9 @@ export const PS_LISTINGS: Listing[] = [
     createdAt: '2026-09-11',
     views: 194,
     attributes: [
-      { label: 'Area', value: '750 sqm' },
-      { label: 'Title', value: 'Tabo / Clean Title Deed' },
-      { label: 'Zoning', value: 'Residential A' },
+      { key: 'area', label: 'Area', value: '750 sqm' },
+      { key: 'title', label: 'Title', value: 'Tabo / Clean Title Deed' },
+      { key: 'zoning', label: 'Zoning', value: 'Residential A' },
     ],
   },
   {
@@ -89,9 +89,9 @@ export const PS_LISTINGS: Listing[] = [
     createdAt: '2026-09-11',
     views: 215,
     attributes: [
-      { label: 'Make', value: 'Hyundai Tucson' },
-      { label: 'Year', value: '2022' },
-      { label: 'Engine', value: '1600 cc Turbo' },
+      { key: 'make', label: 'Make', value: 'Hyundai Tucson' },
+      { key: 'year', label: 'Year', value: '2022' },
+      { key: 'engine', label: 'Engine', value: '1600 cc Turbo' },
     ],
   },
   {
@@ -112,9 +112,9 @@ export const PS_LISTINGS: Listing[] = [
     createdAt: '2026-09-09',
     views: 180,
     attributes: [
-      { label: 'Make / Model', value: 'Skoda Octavia TDI' },
-      { label: 'Fuel', value: 'Diesel' },
-      { label: 'Year', value: '2020' },
+      { key: 'makeModel', label: 'Make / Model', value: 'Skoda Octavia TDI' },
+      { key: 'fuel', label: 'Fuel', value: 'Diesel' },
+      { key: 'year', label: 'Year', value: '2020' },
     ],
   },
   {
@@ -135,9 +135,9 @@ export const PS_LISTINGS: Listing[] = [
     createdAt: '2026-09-11',
     views: 290,
     attributes: [
-      { label: 'Area', value: '160 sqm' },
-      { label: 'Bedrooms', value: '3' },
-      { label: 'Location', value: 'Beit Hanina Jerusalem' },
+      { key: 'area', label: 'Area', value: '160 sqm' },
+      { key: 'bedrooms', label: 'Bedrooms', value: '3' },
+      { key: 'location', label: 'Location', value: 'Beit Hanina Jerusalem' },
     ],
     isPremium: true,
   },
@@ -159,9 +159,9 @@ export const PS_LISTINGS: Listing[] = [
     createdAt: '2026-09-10',
     views: 140,
     attributes: [
-      { label: 'Bedrooms', value: '2' },
-      { label: 'Furnished', value: 'Fully Furnished' },
-      { label: 'Floor', value: '2nd Floor with elevator' },
+      { key: 'bedrooms', label: 'Bedrooms', value: '2' },
+      { key: 'furnished', label: 'Furnished', value: 'Fully Furnished' },
+      { key: 'floor', label: 'Floor', value: '2nd Floor with elevator' },
     ],
   },
   {
@@ -182,9 +182,9 @@ export const PS_LISTINGS: Listing[] = [
     createdAt: '2026-09-08',
     views: 195,
     attributes: [
-      { label: 'Model', value: 'iPhone 14 Pro' },
-      { label: 'Battery', value: '91%' },
-      { label: 'Color', value: 'Deep Purple' },
+      { key: 'model', label: 'Model', value: 'iPhone 14 Pro' },
+      { key: 'battery', label: 'Battery', value: '91%' },
+      { key: 'color', label: 'Color', value: 'Deep Purple' },
     ],
   },
   {
@@ -205,9 +205,9 @@ export const PS_LISTINGS: Listing[] = [
     createdAt: '2026-09-11',
     views: 160,
     attributes: [
-      { label: 'GPU', value: 'NVIDIA RTX 4070' },
-      { label: 'RAM', value: '32 GB DDR5' },
-      { label: 'Display', value: '16 Inch WQXGA 165Hz' },
+      { key: 'gpu', label: 'GPU', value: 'NVIDIA RTX 4070' },
+      { key: 'ram', label: 'RAM', value: '32 GB DDR5' },
+      { key: 'display', label: 'Display', value: '16 Inch WQXGA 165Hz' },
     ],
   },
   {
@@ -228,8 +228,8 @@ export const PS_LISTINGS: Listing[] = [
     createdAt: '2026-09-09',
     views: 110,
     attributes: [
-      { label: 'Brand', value: 'Sony Bravia' },
-      { label: 'Resolution', value: '4K Ultra HD' },
+      { key: 'brand', label: 'Brand', value: 'Sony Bravia' },
+      { key: 'resolution', label: 'Resolution', value: '4K Ultra HD' },
     ],
   },
   {
@@ -250,8 +250,8 @@ export const PS_LISTINGS: Listing[] = [
     createdAt: '2026-09-07',
     views: 130,
     attributes: [
-      { label: 'Type', value: 'Sofa Bed with Storage' },
-      { label: 'Color', value: 'Navy Blue Velvet' },
+      { key: 'type', label: 'Type', value: 'Sofa Bed with Storage' },
+      { key: 'color', label: 'Color', value: 'Navy Blue Velvet' },
     ],
   },
   {
@@ -272,8 +272,8 @@ export const PS_LISTINGS: Listing[] = [
     createdAt: '2026-09-12',
     views: 185,
     attributes: [
-      { label: 'Wood', value: 'Palestinian Olive Wood' },
-      { label: 'Capacity', value: '8 Seats' },
+      { key: 'wood', label: 'Wood', value: 'Palestinian Olive Wood' },
+      { key: 'capacity', label: 'Capacity', value: '8 Seats' },
     ],
     isPremium: true,
   },
@@ -295,8 +295,8 @@ export const PS_LISTINGS: Listing[] = [
     createdAt: '2026-09-08',
     views: 95,
     attributes: [
-      { label: 'Material', value: 'Stainless Steel 304' },
-      { label: 'Type', value: 'Charcoal BBQ Grill' },
+      { key: 'material', label: 'Material', value: 'Stainless Steel 304' },
+      { key: 'type', label: 'Type', value: 'Charcoal BBQ Grill' },
     ],
   },
   {
@@ -317,9 +317,9 @@ export const PS_LISTINGS: Listing[] = [
     createdAt: '2026-09-10',
     views: 140,
     attributes: [
-      { label: 'Brand', value: 'Tissot' },
-      { label: 'Power Reserve', value: '80 Hours' },
-      { label: 'Water Resistance', value: '100m' },
+      { key: 'brand', label: 'Brand', value: 'Tissot' },
+      { key: 'powerReserve', label: 'Power Reserve', value: '80 Hours' },
+      { key: 'waterResistance', label: 'Water Resistance', value: '100m' },
     ],
   },
   {
@@ -340,8 +340,8 @@ export const PS_LISTINGS: Listing[] = [
     createdAt: '2026-09-09',
     views: 210,
     attributes: [
-      { label: 'Embroidery', value: '100% Handmade Silk' },
-      { label: 'Fabric', value: 'Royal Black Linen' },
+      { key: 'embroidery', label: 'Embroidery', value: '100% Handmade Silk' },
+      { key: 'fabric', label: 'Fabric', value: 'Royal Black Linen' },
     ],
   },
   {
@@ -362,8 +362,8 @@ export const PS_LISTINGS: Listing[] = [
     createdAt: '2026-09-11',
     views: 155,
     attributes: [
-      { label: 'Coverage', value: 'West Bank & Jerusalem' },
-      { label: 'Includes', value: 'Packing, Disassembly & Assembly' },
+      { key: 'coverage', label: 'Coverage', value: 'West Bank & Jerusalem' },
+      { key: 'includes', label: 'Includes', value: 'Packing, Disassembly & Assembly' },
     ],
   },
 ];
