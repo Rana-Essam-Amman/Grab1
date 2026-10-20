@@ -1,10 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { CAR_BRANDS } from '@/data/brands/carBrands';
-import { getModelOptions } from '@/data/brands/carModels';
+import { MOTOR_BRANDS } from '@/data/brands/motors';
 import { OtherOptionInput } from './OtherOptionInput';
 import { SearchableDropdown } from '@/shared/ui/SearchableDropdown';
 
 const OTHER_VALUE = '__other__';
+
+function getLocalModelOptions(brandSlug: string) {
+  const brand = MOTOR_BRANDS.find((b) => b.id === brandSlug);
+  if (!brand || !brand.models) return [];
+  return brand.models.map(([ar, en]) => ({
+    value: en,
+    labelAr: ar,
+    labelEn: en,
+  }));
+}
 
 interface Props {
   readonly makeValue: string;
@@ -22,7 +32,7 @@ export const CascadingModelSelect: React.FC<Props> = ({
   const isMakeCustom = Boolean(makeValue && !CAR_BRANDS.some((b) => b.slug === makeValue));
   const [showOtherMake, setShowOtherMake] = useState(isMakeCustom || makeValue === 'other');
   const [customMake, setCustomMake] = useState(isMakeCustom ? makeValue : '');
-  const modelOptions = getModelOptions(makeValue);
+  const modelOptions = getLocalModelOptions(makeValue);
   const isModelCustom = Boolean(
     modelValue && (!modelOptions.length || !modelOptions.some((m) => m.value === modelValue))
   );
@@ -61,7 +71,9 @@ export const CascadingModelSelect: React.FC<Props> = ({
             className="w-full h-11 px-3 rounded-xl border border-line bg-canvas text-ink text-sm font-medium focus:outline-none focus:border-primary cursor-pointer"
           >
             <option value="">{isArabic ? '-- اختر الموديل --' : '-- Select Model --'}</option>
-            {modelOptions.map((m) => (<option key={m.value} value={m.value}>{m.labelAr}</option>))}
+            {modelOptions.map((m) => (
+              <option key={m.value} value={m.value}>{isArabic ? m.labelAr : m.labelEn}</option>
+            ))}
             <option value={OTHER_VALUE}>{otherMakeLabel}</option>
           </select>
           {showOtherModel && (
@@ -92,7 +104,7 @@ export const CascadingModelSelect: React.FC<Props> = ({
               setShowOtherMake(true); setShowOtherModel(true); onMakeChange(customMake);
             } else {
               setShowOtherMake(false); onMakeChange(v);
-              setShowOtherModel(getModelOptions(v).length === 0);
+              setShowOtherModel(getLocalModelOptions(v).length === 0);
             }
           }}
           placeholder={isArabic ? '-- اختر الماركة --' : '-- Select Make --'}
