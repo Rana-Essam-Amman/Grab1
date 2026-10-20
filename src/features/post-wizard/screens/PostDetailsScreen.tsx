@@ -80,11 +80,11 @@ export const PostDetailsScreen: React.FC = () => {
         <div className="rounded-2xl border border-line bg-surface p-4 flex flex-col gap-3">
           <h3 className="text-xs font-bold text-ink-soft uppercase tracking-wider">{isArabic ? 'العنوان والسعر' : 'Title & Price'}</h3>
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-ink-soft">{isArabic ? 'عنوان الإعلان' : 'Listing Title'}</label>
+            <label className="text-xs font-bold text-ink-soft">{isArabic ? 'عنوان الإعلان' : 'Listing Title'} <span className="text-accent">*</span></label>
             <input data-testid="post-details-title-input" type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder={isArabic ? 'أدخل عنواناً جذاباً...' : 'Enter title...'} className="w-full h-11 px-3 rounded-xl border border-line bg-canvas text-ink text-sm font-medium focus:outline-none focus:border-primary" />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-ink-soft">{isArabic ? `السعر (${activeCurrency})` : `Price (${activeCurrency})`}</label>
+            <label className="text-xs font-bold text-ink-soft">{isArabic ? `السعر (${activeCurrency})` : `Price (${activeCurrency})`} <span className="text-accent">*</span></label>
             <input data-testid="post-details-price-input" type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="0" className="w-full h-11 px-3 rounded-xl border border-line bg-canvas text-ink text-sm font-medium focus:outline-none focus:border-primary" />
           </div>
         </div>
@@ -100,12 +100,12 @@ export const PostDetailsScreen: React.FC = () => {
         )}
 
         <div className="rounded-2xl border border-line bg-surface p-4 flex flex-col gap-3">
-          <h3 className="text-xs font-bold text-ink-soft uppercase tracking-wider">{isArabic ? 'الوصف' : 'Description'}</h3>
+          <h3 className="text-xs font-bold text-ink-soft uppercase tracking-wider">{isArabic ? 'الوصف' : 'Description'} <span className="text-[10px] text-ink-muted normal-case tracking-normal font-normal">({isArabic ? 'اختياري' : 'optional'})</span></h3>
           <textarea data-testid="post-details-description" value={description} onChange={(e) => setDescription(e.target.value)} rows={4} placeholder={isArabic ? 'اكتب تفاصيل إضافية عن السلعة...' : 'Write additional details...'} className="w-full p-3 rounded-xl border border-line bg-canvas text-ink text-sm font-medium focus:outline-none focus:border-primary resize-none" />
         </div>
 
         <div className="rounded-2xl border border-line bg-surface p-4 flex flex-col gap-3">
-          <h3 className="text-xs font-bold text-ink-soft uppercase tracking-wider">{isArabic ? 'الموقع' : 'Location'}</h3>
+          <h3 className="text-xs font-bold text-ink-soft uppercase tracking-wider">{isArabic ? 'الموقع' : 'Location'} <span className="text-accent">*</span></h3>
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-ink">{locationLabel}</span>
             <button type="button" onClick={() => setIsCityDrawerOpen(true)} className="text-xs font-bold text-primary hover:underline cursor-pointer">{isArabic ? 'تغيير الموقع' : 'Change Location'}</button>
