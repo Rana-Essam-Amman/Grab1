@@ -27,7 +27,9 @@ export function RequiredSpecsRow({ categorySlug, subcategorySlug, attributes, is
         if (f.key === 'make') return getMakeLabel(raw, isArabic);
         if (f.key === 'model') return makeValue ? getModelLabel(makeValue, raw, isArabic) : raw;
         if (f.type === 'select' && f.options) {
-          const opt = f.options.find((o) => o.value === raw);
+          const opt = f.options.find(
+            (o) => o.value === raw || o.labelAr === raw || o.labelEn === raw
+          );
           return opt ? (isArabic ? opt.labelAr : opt.labelEn) : raw;
         }
         if (f.type === 'number') {
