@@ -10,51 +10,38 @@ import { withDemoSeeds } from '@/shared/lib/demoMode';
 type SetFn = (fn: (state: ListingsState) => void) => void;
 type GetFn = () => ListingsState;
 
-const initialSearchQuery: string | null = null;
-const initialFilterArgs: SearchListingsParams | null = null;
-
-// SAFETY: Only replace listings when (a) market changed, (b) API returned data, or (c) no local data.
-// Prevents perceived data loss from transient empty API responses (backend down, RPC empty, etc.).
-function shouldApplyApiListings(
-  activeMarket: string | null,
-  targetMarket: string | undefined,
-  localCount: number,
-  apiCount: number,
-): boolean {
+// SAFETY: only replace listings when market changed, API returned data, or local is empty.
+// Prevents wipe from transient empty API responses.
+function shouldApplyApiListings(activeMarket: string | null, targetMarket: string | undefined, localCount: number, apiCount: number): boolean {
   return activeMarket !== (targetMarket ?? null) || apiCount > 0 || localCount === 0;
 }
 
 export const createPaginationActions = (set: SetFn, get: GetFn) => ({
-  activeSearchQuery: initialSearchQuery,
+  activeSearchQuery: null as string | null,
   searchBanner: null,
   searchRelatedHeader: null,
-  activeFilterArgs: initialFilterArgs,
+  activeFilterArgs: null as SearchListingsParams | null,
   tier2Listings: [],
 
   syncFromSupabase: async (market?: string) => {
     const targetMarket = market ?? get().activeMarket ?? undefined;
     set((s) => { s.isSyncing = true; });
     try {
-      const result = await performSupabaseSync({
-        market: targetMarket,
-        offset: 0,
-        limit: LISTINGS_PAGE_SIZE,
-      });
+      const result = await performSupabaseSync({ market: targetMarket, offset: 0, limit: LISTINGS_PAGE_SIZE });
       set((s) => {
-        if (result.listings) {
-          if (shouldApplyApiListings(s.activeMarket, targetMarket, s.listings.length, result.listings.length)) {
-            s.listings = withDemoSeeds(result.listings);
-            saveListingsToStorage(s.listings);
-          }
-          s.activeMarket = targetMarket ?? null;
-          s.activeSearchQuery = null;
-          s.searchBanner = null;
-          s.searchRelatedHeader = null;
-          s.activeFilterArgs = null;
-          s.tier2Listings = [];
-          s.page = 0;
-          s.hasMore = result.listings.length === LISTINGS_PAGE_SIZE;
+        if (!result.listings) return;
+        if (shouldApplyApiListings(s.activeMarket, targetMarket, s.listings.length, result.listings.length)) {
+          s.listings = withDemoSeeds(result.listings);
+          saveListingsToStorage(s.listings);
         }
+        s.activeMarket = targetMarket ?? null;
+        s.activeSearchQuery = null;
+        s.searchBanner = null;
+        s.searchRelatedHeader = null;
+        s.activeFilterArgs = null;
+        s.tier2Listings = [];
+        s.page = 0;
+        s.hasMore = result.listings.length === LISTINGS_PAGE_SIZE;
       });
     } finally {
       set((s) => { s.isSyncing = false; });
@@ -69,31 +56,20 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
     try {
       let rows: Listing[] | null = null;
       if (state.activeSearchQuery && state.activeFilterArgs) {
-        const res = await searchListingsHybrid({
-          ...state.activeFilterArgs,
-          offset: nextOffset,
-          limit: LISTINGS_PAGE_SIZE,
-        });
+        const res = await searchListingsHybrid({ ...state.activeFilterArgs, offset: nextOffset, limit: LISTINGS_PAGE_SIZE });
         rows = res.data;
       } else {
-        const res = await performSupabaseSync({
-          market: state.activeMarket ?? undefined,
-          offset: nextOffset,
-          limit: LISTINGS_PAGE_SIZE,
-        });
+        const res = await performSupabaseSync({ market: state.activeMarket ?? undefined, offset: nextOffset, limit: LISTINGS_PAGE_SIZE });
         rows = res.listings;
       }
       set((s) => {
-        if (rows && rows.length > 0) {
-          const existingIds = new Set(s.listings.map((l) => l.id));
-          const fresh = rows!.filter((l) => !existingIds.has(l.id));
-          s.listings = [...s.listings, ...fresh];
-          s.page = s.page + 1;
-          s.hasMore = rows!.length === LISTINGS_PAGE_SIZE;
-          if (!s.activeSearchQuery) saveListingsToStorage(s.listings);
-        } else {
-          s.hasMore = false;
-        }
+        if (!rows || rows.length === 0) { s.hasMore = false; return; }
+        const existingIds = new Set(s.listings.map((l) => l.id));
+        const fresh = rows.filter((l) => !existingIds.has(l.id));
+        s.listings = [...s.listings, ...fresh];
+        s.page = s.page + 1;
+        s.hasMore = rows.length === LISTINGS_PAGE_SIZE;
+        if (!s.activeSearchQuery) saveListingsToStorage(s.listings);
       });
     } finally {
       set((s) => { s.isLoadingMore = false; });
@@ -102,50 +78,33 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
 
   searchFromSupabase: async (params: SearchListingsParams) => {
     const trimmed = params.query.trim();
-    set((s) => {
-      s.isSyncing = true;
-      s.tier2Listings = [];
-    });
+    set((s) => { s.isSyncing = true; s.tier2Listings = []; });
     try {
       if (trimmed.length === 0) {
         const targetMarket = params.market ?? get().activeMarket ?? undefined;
-        const result = await performSupabaseSync({
-          market: targetMarket,
-          offset: 0,
-          limit: LISTINGS_PAGE_SIZE,
-        });
+        const result = await performSupabaseSync({ market: targetMarket, offset: 0, limit: LISTINGS_PAGE_SIZE });
         set((s) => {
-          if (result.listings) {
-            if (shouldApplyApiListings(s.activeMarket, targetMarket, s.listings.length, result.listings.length)) {
-              s.listings = withDemoSeeds(result.listings);
-              saveListingsToStorage(s.listings);
-            }
-            s.activeMarket = targetMarket ?? null;
-            s.activeSearchQuery = null;
-            s.searchBanner = null;
-            s.searchRelatedHeader = null;
-            s.activeFilterArgs = null;
-            s.tier2Listings = [];
-            s.page = 0;
-            s.hasMore = result.listings.length === LISTINGS_PAGE_SIZE;
+          if (!result.listings) return;
+          if (shouldApplyApiListings(s.activeMarket, targetMarket, s.listings.length, result.listings.length)) {
+            s.listings = withDemoSeeds(result.listings);
+            saveListingsToStorage(s.listings);
           }
+          s.activeMarket = targetMarket ?? null;
+          s.activeSearchQuery = null;
+          s.searchBanner = null;
+          s.searchRelatedHeader = null;
+          s.activeFilterArgs = null;
+          s.tier2Listings = [];
+          s.page = 0;
+          s.hasMore = result.listings.length === LISTINGS_PAGE_SIZE;
         });
         return;
       }
-
       const targetMarket = params.market ?? get().activeMarket ?? undefined;
-      const callParams: SearchListingsParams = {
-        ...params,
-        query: trimmed,
-        market: targetMarket,
-        offset: 0,
-        limit: LISTINGS_PAGE_SIZE,
-      };
+      const callParams: SearchListingsParams = { ...params, query: trimmed, market: targetMarket, offset: 0, limit: LISTINGS_PAGE_SIZE };
       const hybrid = await searchListingsHybrid(callParams);
       set((s) => {
-        // SAFETY: hybrid.data === null means an error (rate limit, network).
-        // In that case, keep the current listings instead of showing a blank screen.
-        // hybrid.data === [] means successful search with no results (legitimate empty).
+        // SAFETY: null = error → keep state; [] = real empty result → apply it.
         if (hybrid.data !== null) {
           s.listings = hybrid.data;
           s.hasMore = hybrid.data.length === LISTINGS_PAGE_SIZE;
