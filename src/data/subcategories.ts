@@ -20,6 +20,11 @@ export const subcategories: Record<string, SubcategoryDef[]> = {
     { slug: 'lands', nameEn: 'Lands for Sale', nameAr: 'أراضي للبيع' },
     { slug: 'chalets', nameEn: 'Chalets & Farmhouses', nameAr: 'شاليهات ومزارع' },
     { slug: 'foreign', nameEn: 'Foreign Real Estate', nameAr: 'عقارات بالخارج' },
+    { slug: 'shared-rooms', nameEn: 'Shared Rooms', nameAr: 'غرف مشتركة' },
+    { slug: 'hotel-apartments', nameEn: 'Hotel Apartments & Suites', nameAr: 'شقق فندقية وأجنحة' },
+    { slug: 'whole-buildings', nameEn: 'Whole Buildings', nameAr: 'عمارات كاملة للبيع' },
+    { slug: 'staff-housing', nameEn: 'Staff Housing', nameAr: 'سكن موظفين / عمال' },
+    { slug: 'construction', nameEn: 'Construction & Contracting', nameAr: 'مقاولات وإنشاءات' },
   ],
   mobiles: [
     { slug: 'phones', nameEn: 'Mobile Phones', nameAr: 'هواتف محمولة' },
