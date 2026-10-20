@@ -2,6 +2,7 @@ import { z } from 'zod';
 import type { Listing as TypeScriptListing } from '../types';
 
 export const ListingAttributeSchema = z.object({
+  key: z.string(),
   label: z.string(),
   value: z.string(),
 });
