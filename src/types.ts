@@ -28,7 +28,7 @@ export interface CountryDef {
 }
 
 export interface ListingAttribute {
-  readonly key?: string;
+  readonly key: string;
   readonly label: string;
   readonly value: string;
 }
