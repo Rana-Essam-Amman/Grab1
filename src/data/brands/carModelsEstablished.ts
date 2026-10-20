@@ -253,4 +253,30 @@ export const ESTABLISHED_MODELS: Record<string, readonly CarModel[]> = {
     { slug: 'panda', nameAr: 'Panda', nameEn: 'Panda', trims: ['Standard', 'City', 'Cross'] },
     { slug: 'tipo', nameAr: 'Tipo', nameEn: 'Tipo', trims: ['Standard', 'Comfort', 'Lounge'] },
   ],
+  // ─── P4: 4 European mainstream brands ───────────────────────────
+  opel: [
+    { slug: 'astra', nameAr: 'Astra', nameEn: 'Astra', trims: ['Edition', 'Elegance', 'GS Line', 'Ultimate'] },
+    { slug: 'corsa', nameAr: 'Corsa', nameEn: 'Corsa', trims: ['Edition', 'Elegance', 'GS Line', 'Ultimate'] },
+    { slug: 'insignia', nameAr: 'Insignia', nameEn: 'Insignia', trims: ['Edition', 'Elegance', 'GS Line', 'Ultimate'] },
+    { slug: 'mokka', nameAr: 'Mokka', nameEn: 'Mokka', trims: ['Edition', 'Elegance', 'GS Line', 'Ultimate'] },
+    { slug: 'grandland', nameAr: 'Grandland', nameEn: 'Grandland', trims: ['Edition', 'Elegance', 'GS Line', 'Ultimate'] },
+  ],
+  seat: [
+    { slug: 'ibiza', nameAr: 'Ibiza', nameEn: 'Ibiza', trims: ['Reference', 'Style', 'Xcellence', 'FR'] },
+    { slug: 'leon', nameAr: 'Leon', nameEn: 'Leon', trims: ['Reference', 'Style', 'Xcellence', 'FR', 'Cupra'] },
+    { slug: 'arona', nameAr: 'Arona', nameEn: 'Arona', trims: ['Reference', 'Style', 'Xcellence', 'FR'] },
+    { slug: 'ateca', nameAr: 'Ateca', nameEn: 'Ateca', trims: ['Reference', 'Style', 'Xcellence', 'FR'] },
+    { slug: 'tarraco', nameAr: 'Tarraco', nameEn: 'Tarraco', trims: ['Style', 'Xcellence', 'FR'] },
+  ],
+  saab: [
+    { slug: '9-3', nameAr: '9-3', nameEn: '9-3', trims: ['Linear', 'Arc', 'Vector', 'Aero'] },
+    { slug: '9-5', nameAr: '9-5', nameEn: '9-5', trims: ['Linear', 'Arc', 'Vector', 'Aero'] },
+    { slug: '9-4x', nameAr: '9-4X', nameEn: '9-4X', trims: ['Linear', 'Aero'] },
+  ],
+  ds: [
+    { slug: 'ds3', nameAr: 'DS 3', nameEn: 'DS 3', trims: ['Chic', 'So Chic', 'Performance Line', 'Rivoli'] },
+    { slug: 'ds4', nameAr: 'DS 4', nameEn: 'DS 4', trims: ['Bastille', 'Trocadero', 'Rivoli', 'Performance Line'] },
+    { slug: 'ds7', nameAr: 'DS 7', nameEn: 'DS 7', trims: ['Bastille', 'Trocadero', 'Rivoli', 'Opera'] },
+    { slug: 'ds9', nameAr: 'DS 9', nameEn: 'DS 9', trims: ['Bastille', 'Rivoli', 'Opera'] },
+  ],
 };
