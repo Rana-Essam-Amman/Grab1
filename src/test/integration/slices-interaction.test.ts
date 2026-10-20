@@ -29,10 +29,10 @@ describe('Slices Interaction Integration', () => {
   it('Scenario 5: Guest Can Publish to Different Market', () => {
     // Guest browsing SY
     useUIStore.getState().setBrowseLocation('SY', 'Damascus', 'دمشق');
-    
+
     const listingSY = createMockListing({ id: 'guest-sy-1' });
     useListingsStore.getState().addListing(listingSY, 'SY');
-    
+
     expect(useListingsStore.getState().listings[0].countryCode).toBe('SY');
   });
 
@@ -40,29 +40,29 @@ describe('Slices Interaction Integration', () => {
     // Add to JO wishlist
     useListingsStore.getState().setWishlistForCountry('JO');
     useListingsStore.getState().toggleWishlist('item-jo', 'JO');
-    
+
     // Switch to SY
     useListingsStore.getState().setWishlistForCountry('SY');
     useListingsStore.getState().toggleWishlist('item-sy', 'SY');
-    
-    // SY has a fallback item 'sy-1' from listing.service.ts
+
+    // SY wishlist should only contain item-sy
     expect(useListingsStore.getState().wishlist).toContain('item-sy');
-    expect(useListingsStore.getState().wishlist).toContain('sy-1');
-    
+    expect(useListingsStore.getState().wishlist).not.toContain('item-jo');
+
     // Back to JO
     useListingsStore.getState().setWishlistForCountry('JO');
-    // JO also has fallback 'jo-1'
+    // JO wishlist should only contain item-jo
     expect(useListingsStore.getState().wishlist).toContain('item-jo');
-    expect(useListingsStore.getState().wishlist).toContain('jo-1');
+    expect(useListingsStore.getState().wishlist).not.toContain('item-sy');
   });
 
   it('Scenario 7: Delete Listing Cleans Up', async () => {
     const id = 'cleanup-1';
     useListingsStore.getState().addListing(createMockListing({ id }), 'JO');
     useListingsStore.getState().toggleWishlist(id, 'JO');
-    
+
     await useListingsStore.getState().deleteListing(id);
-    
+
     expect(useListingsStore.getState().listings.find(l => l.id === id)).toBeUndefined();
     expect(useListingsStore.getState().wishlist).not.toContain(id);
   });
@@ -70,17 +70,17 @@ describe('Slices Interaction Integration', () => {
   it('Scenario 9: Draft Survives Market Switch (guest)', () => {
     useUIStore.getState().setBrowseLocation('JO', 'Amman', 'عمان');
     useDraftStore.getState().updatePostDraft({ noteText: 'Guest Draft' });
-    
+
     // Switch market
     useUIStore.getState().setBrowseLocation('SY', 'Damascus', 'دمشق');
-    
+
     expect(useDraftStore.getState().postDraft.noteText).toBe('Guest Draft');
   });
 
   it('Scenario 10: Locale Switch Does Not Affect Market', () => {
     useUIStore.getState().setBrowseLocation('JO', 'Amman', 'عمان');
     useUIStore.getState().setLocale('en');
-    
+
     expect(useUIStore.getState().browseCountryCode).toBe('JO');
     expect(useUIStore.getState().locale).toBe('en');
   });
