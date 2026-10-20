@@ -64,8 +64,10 @@ async function fillDetailsForm(page: Page) {
   await page.locator('[data-testid="post-details-description"]').fill('شقة واسعة بتشطيب حديث');
 
   // Fill required dynamic fields for cars (works with either <select> or SearchableDropdown)
+  // Order matters: make → model → trim (cascade dependency) → year
   await pickFirstNonEmptyOption(page, 'field-make');
   await pickFirstNonEmptyOption(page, 'field-model');
+  await pickFirstNonEmptyOption(page, 'field-trim');
   await pickFirstNonEmptyOption(page, 'field-year');
 
   // Fill a dynamic field if required (e.g. bedrooms)
