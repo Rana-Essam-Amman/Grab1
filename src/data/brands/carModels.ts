@@ -293,6 +293,137 @@ export const CAR_MODELS: Record<string, readonly CarModel[]> = {
     { slug: 'stelvio', nameAr: 'Stelvio', nameEn: 'Stelvio', trims: ['Base', 'Ti', 'Veloce', 'Quadrifoglio'] },
     { slug: 'giulietta', nameAr: 'Giulietta', nameEn: 'Giulietta', trims: ['Base', 'Super', 'Veloce'] },
   ],
+  // ─── P2: 20 popular brands ──────────────────────────────────────
+  baic: [
+    { slug: 'bj40', nameAr: 'BJ40', nameEn: 'BJ40', trims: ['Standard', 'Plus', 'Diamond'] },
+    { slug: 'bj60', nameAr: 'BJ60', nameEn: 'BJ60', trims: ['Comfort', 'Luxury', 'Flagship'] },
+    { slug: 'bj80', nameAr: 'BJ80', nameEn: 'BJ80', trims: ['Standard', 'Premium'] },
+    { slug: 'x35', nameAr: 'X35', nameEn: 'X35', trims: ['Comfort', 'Luxury', 'Flagship'] },
+    { slug: 'x55', nameAr: 'X55', nameEn: 'X55', trims: ['Comfort', 'Luxury', 'Flagship'] },
+    { slug: 'x7', nameAr: 'X7', nameEn: 'X7', trims: ['Comfort', 'Luxury', 'Flagship'] },
+  ],
+  'great-wall': [
+    { slug: 'poer', nameAr: 'Poer', nameEn: 'Poer', trims: ['Comfort', 'Elite', 'Premium'] },
+    { slug: 'cannon', nameAr: 'Cannon', nameEn: 'Cannon', trims: ['Comfort', 'Premium'] },
+    { slug: 'wingle', nameAr: 'Wingle', nameEn: 'Wingle', trims: ['Standard', 'Comfort'] },
+    { slug: 'steed', nameAr: 'Steed', nameEn: 'Steed', trims: ['Standard', 'Elite'] },
+    { slug: 'king-kong', nameAr: 'King Kong', nameEn: 'King Kong', trims: ['Standard', 'Elite'] },
+  ],
+  tank: [
+    { slug: 'tank-300', nameAr: 'Tank 300', nameEn: 'Tank 300', trims: ['Comfort', 'City', 'Off-Road'] },
+    { slug: 'tank-500', nameAr: 'Tank 500', nameEn: 'Tank 500', trims: ['Comfort', 'Luxury', 'Flagship'] },
+    { slug: 'tank-800', nameAr: 'Tank 800', nameEn: 'Tank 800', trims: ['Luxury', 'Flagship'] },
+  ],
+  forthing: [
+    { slug: 't5-evo', nameAr: 'T5 Evo', nameEn: 'T5 Evo', trims: ['Comfort', 'Luxury'] },
+    { slug: 't5', nameAr: 'T5', nameEn: 'T5', trims: ['Comfort', 'Luxury'] },
+    { slug: 's50', nameAr: 'S50', nameEn: 'S50', trims: ['Comfort', 'Luxury'] },
+    { slug: 'm7', nameAr: 'M7', nameEn: 'M7', trims: ['Comfort', 'Luxury', 'Flagship'] },
+  ],
+  wuling: [
+    { slug: 'hongguang', nameAr: 'Hongguang', nameEn: 'Hongguang', trims: ['Standard', 'Comfort'] },
+    { slug: 'hongguang-s3', nameAr: 'Hongguang S3', nameEn: 'Hongguang S3', trims: ['Comfort', 'Luxury'] },
+    { slug: 'air-ev', nameAr: 'Air EV', nameEn: 'Air EV', trims: ['Standard', 'Long Range'] },
+    { slug: 'bingo', nameAr: 'Bingo', nameEn: 'Bingo', trims: ['Standard', 'Long Range'] },
+    { slug: 'mini-ev', nameAr: 'Mini EV', nameEn: 'Mini EV', trims: ['Standard', 'Comfort'] },
+  ],
+  jac: [
+    { slug: 'js3', nameAr: 'JS3', nameEn: 'JS3', trims: ['Comfort', 'Luxury'] },
+    { slug: 'js4', nameAr: 'JS4', nameEn: 'JS4', trims: ['Comfort', 'Luxury'] },
+    { slug: 'js6', nameAr: 'JS6', nameEn: 'JS6', trims: ['Comfort', 'Luxury', 'Flagship'] },
+    { slug: 't6', nameAr: 'T6', nameEn: 'T6', trims: ['Standard', 'Comfort'] },
+    { slug: 't8', nameAr: 'T8', nameEn: 'T8', trims: ['Comfort', 'Luxury'] },
+  ],
+  dongfeng: [
+    { slug: 'ax7', nameAr: 'AX7', nameEn: 'AX7', trims: ['Comfort', 'Luxury', 'Flagship'] },
+    { slug: 'h30', nameAr: 'H30', nameEn: 'H30', trims: ['Comfort', 'Luxury'] },
+    { slug: 'e70', nameAr: 'E70', nameEn: 'E70', trims: ['Standard', 'Long Range'] },
+    { slug: 'rich', nameAr: 'Rich', nameEn: 'Rich', trims: ['Standard', 'Comfort', 'Elite'] },
+    { slug: 'glory-580', nameAr: 'Glory 580', nameEn: 'Glory 580', trims: ['Comfort', 'Luxury'] },
+  ],
+  foton: [
+    { slug: 'tunland', nameAr: 'Tunland', nameEn: 'Tunland', trims: ['Standard', 'Comfort', 'Elite'] },
+    { slug: 'view', nameAr: 'View', nameEn: 'View', trims: ['Standard', 'Comfort'] },
+    { slug: 'gratour', nameAr: 'Gratour', nameEn: 'Gratour', trims: ['Standard', 'Comfort'] },
+    { slug: 'sauvana', nameAr: 'Sauvana', nameEn: 'Sauvana', trims: ['Comfort', 'Luxury'] },
+  ],
+  maxus: [
+    { slug: 't60', nameAr: 'T60', nameEn: 'T60', trims: ['Comfort', 'Elite', 'Premium'] },
+    { slug: 't90', nameAr: 'T90', nameEn: 'T90', trims: ['Comfort', 'Elite', 'Premium'] },
+    { slug: 'd60', nameAr: 'D60', nameEn: 'D60', trims: ['Comfort', 'Luxury'] },
+    { slug: 'g50', nameAr: 'G50', nameEn: 'G50', trims: ['Comfort', 'Luxury'] },
+    { slug: 'v80', nameAr: 'V80', nameEn: 'V80', trims: ['Standard', 'Comfort', 'Luxury'] },
+  ],
+  jmc: [
+    { slug: 'vigus', nameAr: 'Vigus', nameEn: 'Vigus', trims: ['Standard', 'Comfort', 'Elite'] },
+    { slug: 'boarding', nameAr: 'Boarding', nameEn: 'Boarding', trims: ['Standard', 'Comfort'] },
+    { slug: 'carrying', nameAr: 'Carrying', nameEn: 'Carrying', trims: ['Standard', 'Comfort'] },
+    { slug: 'baodian', nameAr: 'Baodian', nameEn: 'Baodian', trims: ['Standard', 'Comfort'] },
+  ],
+  mini: [
+    { slug: 'cooper', nameAr: 'Cooper', nameEn: 'Cooper', trims: ['One', 'Cooper', 'Cooper S', 'JCW'] },
+    { slug: 'countryman', nameAr: 'Countryman', nameEn: 'Countryman', trims: ['Cooper', 'Cooper S', 'JCW'] },
+    { slug: 'clubman', nameAr: 'Clubman', nameEn: 'Clubman', trims: ['Cooper', 'Cooper S', 'JCW'] },
+    { slug: 'convertible', nameAr: 'Convertible', nameEn: 'Convertible', trims: ['Cooper', 'Cooper S'] },
+    { slug: 'john-cooper-works', nameAr: 'John Cooper Works', nameEn: 'John Cooper Works', trims: ['Standard', 'GP'] },
+  ],
+  fiat: [
+    { slug: '500', nameAr: '500', nameEn: '500', trims: ['Pop', 'Lounge', 'Sport'] },
+    { slug: '500x', nameAr: '500X', nameEn: '500X', trims: ['Pop', 'Lounge', 'Sport'] },
+    { slug: '500l', nameAr: '500L', nameEn: '500L', trims: ['Pop', 'Lounge'] },
+    { slug: 'panda', nameAr: 'Panda', nameEn: 'Panda', trims: ['Standard', 'City', 'Cross'] },
+    { slug: 'tipo', nameAr: 'Tipo', nameEn: 'Tipo', trims: ['Standard', 'Comfort', 'Lounge'] },
+  ],
+  subaru: [
+    { slug: 'impreza', nameAr: 'Impreza', nameEn: 'Impreza', trims: ['Base', 'Premium', 'Sport', 'Limited'] },
+    { slug: 'legacy', nameAr: 'Legacy', nameEn: 'Legacy', trims: ['Base', 'Premium', 'Limited', 'Touring'] },
+    { slug: 'outback', nameAr: 'Outback', nameEn: 'Outback', trims: ['Base', 'Premium', 'Limited', 'Touring', 'Wilderness'] },
+    { slug: 'forester', nameAr: 'Forester', nameEn: 'Forester', trims: ['Base', 'Premium', 'Sport', 'Limited', 'Touring'] },
+    { slug: 'crosstrek', nameAr: 'Crosstrek', nameEn: 'Crosstrek', trims: ['Base', 'Premium', 'Sport', 'Limited'] },
+    { slug: 'wrx', nameAr: 'WRX', nameEn: 'WRX', trims: ['Base', 'Premium', 'Limited', 'GT'] },
+  ],
+  dodge: [
+    { slug: 'charger', nameAr: 'Charger', nameEn: 'Charger', trims: ['SXT', 'GT', 'R/T', 'Scat Pack', 'Hellcat'] },
+    { slug: 'challenger', nameAr: 'Challenger', nameEn: 'Challenger', trims: ['SXT', 'GT', 'R/T', 'Scat Pack', 'Hellcat'] },
+    { slug: 'durango', nameAr: 'Durango', nameEn: 'Durango', trims: ['SXT', 'GT', 'R/T', 'Citadel', 'SRT'] },
+    { slug: 'journey', nameAr: 'Journey', nameEn: 'Journey', trims: ['SE', 'SXT', 'Crossroad', 'GT'] },
+  ],
+  chrysler: [
+    { slug: '300', nameAr: '300', nameEn: '300', trims: ['Touring', 'Limited', 'S', 'C'] },
+    { slug: 'pacifica', nameAr: 'Pacifica', nameEn: 'Pacifica', trims: ['Touring', 'Touring L', 'Limited', 'Pinnacle'] },
+    { slug: 'voyager', nameAr: 'Voyager', nameEn: 'Voyager', trims: ['L', 'LX'] },
+  ],
+  acura: [
+    { slug: 'tlx', nameAr: 'TLX', nameEn: 'TLX', trims: ['Base', 'Tech', 'A-Spec', 'Advance', 'Type S'] },
+    { slug: 'rdx', nameAr: 'RDX', nameEn: 'RDX', trims: ['Base', 'Tech', 'A-Spec', 'Advance'] },
+    { slug: 'mdx', nameAr: 'MDX', nameEn: 'MDX', trims: ['Base', 'Tech', 'A-Spec', 'Advance', 'Type S'] },
+    { slug: 'integra', nameAr: 'Integra', nameEn: 'Integra', trims: ['Base', 'A-Spec', 'Type S'] },
+  ],
+  buick: [
+    { slug: 'lacrosse', nameAr: 'LaCrosse', nameEn: 'LaCrosse', trims: ['Base', 'Preferred', 'Essence', 'Avenir'] },
+    { slug: 'regal', nameAr: 'Regal', nameEn: 'Regal', trims: ['Base', 'Preferred', 'Essence', 'Avenir'] },
+    { slug: 'enclave', nameAr: 'Enclave', nameEn: 'Enclave', trims: ['Base', 'Preferred', 'Essence', 'Avenir'] },
+    { slug: 'encore', nameAr: 'Encore', nameEn: 'Encore', trims: ['Base', 'Preferred', 'Sport Touring', 'Essence'] },
+    { slug: 'envision', nameAr: 'Envision', nameEn: 'Envision', trims: ['Base', 'Preferred', 'Essence', 'Avenir'] },
+  ],
+  ram: [
+    { slug: '1500', nameAr: '1500', nameEn: '1500', trims: ['Tradesman', 'Big Horn', 'Laramie', 'Rebel', 'Limited', 'TRX'] },
+    { slug: '2500', nameAr: '2500', nameEn: '2500', trims: ['Tradesman', 'Big Horn', 'Laramie', 'Power Wagon', 'Limited'] },
+    { slug: '3500', nameAr: '3500', nameEn: '3500', trims: ['Tradesman', 'Big Horn', 'Laramie', 'Limited'] },
+    { slug: 'promaster', nameAr: 'ProMaster', nameEn: 'ProMaster', trims: ['1500', '2500', '3500'] },
+  ],
+  isuzu: [
+    { slug: 'd-max', nameAr: 'D-Max', nameEn: 'D-Max', trims: ['LS', 'LS-A', 'LS-M', 'X-Rider'] },
+    { slug: 'mu-x', nameAr: 'MU-X', nameEn: 'MU-X', trims: ['LS-M', 'LS-T', 'LS-U'] },
+    { slug: 'npr', nameAr: 'NPR', nameEn: 'NPR', trims: ['Standard', 'Crew', 'Tipper'] },
+    { slug: 'nqr', nameAr: 'NQR', nameEn: 'NQR', trims: ['Standard', 'Crew'] },
+  ],
+  daihatsu: [
+    { slug: 'terios', nameAr: 'Terios', nameEn: 'Terios', trims: ['Standard', 'Comfort', 'Rugged'] },
+    { slug: 'gran-max', nameAr: 'Gran Max', nameEn: 'Gran Max', trims: ['Standard', 'Comfort', 'Luxury'] },
+    { slug: 'sirion', nameAr: 'Sirion', nameEn: 'Sirion', trims: ['Standard', 'Comfort'] },
+    { slug: 'xenia', nameAr: 'Xenia', nameEn: 'Xenia', trims: ['Standard', 'Comfort', 'Luxury'] },
+  ],
 };
 
 export function getModelsForMake(makeSlug: string): readonly CarModel[] {
@@ -318,4 +449,4 @@ export function getModelBySlug(makeSlug: string, modelSlug: string): CarModel | 
 
 export function hasCuratedModels(makeSlug: string): boolean {
   return (CAR_MODELS[makeSlug]?.length ?? 0) > 0;
-     }
+      }
