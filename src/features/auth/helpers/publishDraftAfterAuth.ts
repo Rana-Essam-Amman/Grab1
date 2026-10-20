@@ -11,12 +11,12 @@ import {
 export function publishDraftAfterAuth(phoneNum: string, fName: string, market: string): void {
   try {
     const draft = getDraftSnapshot();
-    
+
     // 1. If there's a completed draft, publish it
     if (draft?.generated) {
       const gen = draft.generated;
       const currency = getSanitizedCurrency(market);
-      
+
       const newListing: Listing = {
         id: `listing-${crypto.randomUUID()}`,
         title: gen.title,
@@ -36,11 +36,11 @@ export function publishDraftAfterAuth(phoneNum: string, fName: string, market: s
         views: 1,
         status: 'active',
         attributes: [
-          { label: 'Category', value: gen.categorySlug || draft.categorySlug },
-          { label: 'City', value: draft.city || '' },
+          { key: 'category', label: 'Category', value: gen.categorySlug || draft.categorySlug },
+          { key: 'city', label: 'City', value: draft.city || '' },
         ],
       };
-      
+
       addListingFromHelper(newListing, market, true);
       resetDraftFromHelper();
       useUIStore.getState().setActiveTab('my-ads');
