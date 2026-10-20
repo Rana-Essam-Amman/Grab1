@@ -22,10 +22,20 @@ const INTERIOR_COLOR_OPTIONS: ListingFieldOption[] = [
 ];
 
 const BODY_TYPE_OPTIONS: ListingFieldOption[] = [
-  { value: 'sedan', labelAr: 'سيدان', labelEn: 'Sedan' }, { value: 'suv', labelAr: 'SUV', labelEn: 'SUV' },
-  { value: 'hatchback', labelAr: 'هاتشباك', labelEn: 'Hatchback' }, { value: 'coupe', labelAr: 'كوبيه', labelEn: 'Coupe' },
-  { value: 'pickup', labelAr: 'بيك أب', labelEn: 'Pickup' }, { value: 'van', labelAr: 'فان', labelEn: 'Van' },
+  { value: 'sedan', labelAr: 'سيدان', labelEn: 'Sedan' },
+  { value: 'sedan_small', labelAr: 'سيدان صغيرة', labelEn: 'Small Sedan' },
+  { value: 'sedan_luxury', labelAr: 'سيدان فاخرة', labelEn: 'Luxury Sedan' },
+  { value: 'suv', labelAr: 'SUV', labelEn: 'SUV' },
+  { value: 'jeep', labelAr: 'جيوب', labelEn: 'Off-Road / Jeep' },
+  { value: 'suv_luxury', labelAr: 'جيوب فاخرة', labelEn: 'Luxury SUV' },
+  { value: 'hatchback', labelAr: 'هاتشباك', labelEn: 'Hatchback' },
+  { value: 'coupe', labelAr: 'كوبيه', labelEn: 'Coupe' },
+  { value: 'pickup', labelAr: 'بيك أب', labelEn: 'Pickup' },
+  { value: 'pickup_small', labelAr: 'بيك أب صغير', labelEn: 'Small Pickup' },
+  { value: 'pickup_large', labelAr: 'بيك أب كبير', labelEn: 'Large Pickup' },
+  { value: 'van', labelAr: 'فان', labelEn: 'Van' },
   { value: 'wagon', labelAr: 'واغن', labelEn: 'Wagon' },
+  { value: 'classic', labelAr: 'تراثية', labelEn: 'Classic' },
 ];
 
 const REGIONAL_SPECS_OPTIONS: ListingFieldOption[] = [
