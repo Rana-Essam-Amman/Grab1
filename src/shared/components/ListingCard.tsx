@@ -7,6 +7,7 @@ import { getSanitizedCurrency } from '@/data/countries';
 import { ListingCardImage } from './ListingCardImage';
 import { ListingCardHorizontal } from './ListingCardHorizontal';
 import { ListingCardSellerRow } from '@/features/listings/components/ListingCardSellerRow';
+import { MotorsSpecsRow } from '@/features/listings/components/MotorsSpecsRow';
 import { pickSpecs } from '@/features/listings';
 import { ListingSpecsRow } from './ListingSpecsRow';
 
@@ -43,7 +44,18 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
     [sanitizedLoc]
   );
 
-  const specs = useMemo(() => pickSpecs(listing.attributes, 5, listing.title), [listing.attributes, listing.title]);
+  const motorsAttrs = useMemo(() => {
+    if (listing.categorySlug !== 'motors') return null;
+    const find = (key: string) => listing.attributes?.find((a) => a.key === key)?.value ?? '';
+    return { make: find('make'), model: find('model'), trim: find('trim') };
+  }, [listing.categorySlug, listing.attributes]);
+
+  const specs = useMemo(() => {
+    const attrs = listing.categorySlug === 'motors'
+      ? listing.attributes?.filter((a) => a.key !== 'trim')
+      : listing.attributes;
+    return pickSpecs(attrs, 5, listing.title);
+  }, [listing.categorySlug, listing.attributes, listing.title]);
 
   const sellerKey = useMemo(
     () => listing.sellerPhone || listing.userId || '',
@@ -100,6 +112,14 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
           <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
           <span className="truncate" dir="auto">{locationText}</span>
         </div>
+        {motorsAttrs && (
+          <MotorsSpecsRow
+            make={motorsAttrs.make}
+            model={motorsAttrs.model}
+            trim={motorsAttrs.trim}
+            isArabic={isArabic}
+          />
+        )}
         {specs.length > 0 && <ListingSpecsRow specs={specs} compact />}
         <div className="flex items-center mt-3 pt-2 border-t border-border gap-1.5">
           <div className="price-tag text-base shrink-0">
