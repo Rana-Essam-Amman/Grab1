@@ -25,6 +25,14 @@ const CHALET_AMENITIES: ListingFieldOption[] = [
   { value: 'pool', labelAr: 'مسبح', labelEn: 'Pool' },
 ];
 
+const HOTEL_AMENITIES: ListingFieldOption[] = [
+  { value: 'room_service', labelAr: 'خدمة الغرف', labelEn: 'Room Service' }, { value: 'wifi', labelAr: 'واي فاي', labelEn: 'WiFi' },
+  { value: 'gym', labelAr: 'صالة رياضية', labelEn: 'Gym' }, { value: 'pool', labelAr: 'مسبح', labelEn: 'Pool' },
+  { value: 'spa', labelAr: 'سبا', labelEn: 'Spa' }, { value: 'parking', labelAr: 'موقف', labelEn: 'Parking' },
+  { value: 'kitchen', labelAr: 'مطبخ مجهز', labelEn: 'Fully-Equipped Kitchen' }, { value: 'laundry', labelAr: 'خدمة غسيل', labelEn: 'Laundry Service' },
+  { value: 'restaurant', labelAr: 'مطعم', labelEn: 'Restaurant' }, { value: 'reception_24h', labelAr: 'استقبال 24 ساعة', labelEn: '24/7 Reception' },
+];
+
 const VIEW_OPTIONS: ListingFieldOption[] = [
   { value: 'street', labelAr: 'شارع', labelEn: 'Street' }, { value: 'garden', labelAr: 'حديقة', labelEn: 'Garden' },
   { value: 'pool', labelAr: 'مسبح', labelEn: 'Pool' }, { value: 'sea', labelAr: 'بحر', labelEn: 'Sea' },
@@ -115,6 +123,93 @@ const FOREIGN_FURNISHED: ListingFieldOption[] = [
   { value: 'full', labelAr: 'مفروش كامل', labelEn: 'Fully Furnished' },
   { value: 'partial', labelAr: 'مفروش جزئي', labelEn: 'Partially Furnished' },
   { value: 'unfurnished', labelAr: 'غير مفروش', labelEn: 'Unfurnished' },
+];
+
+// ─── New: Shared Rooms ────────────────────────────────────────────────────
+const SHARED_ROOM_TYPES: ListingFieldOption[] = [
+  { value: 'shared_room', labelAr: 'غرفة مشتركة', labelEn: 'Shared Room' },
+  { value: 'private_room', labelAr: 'غرفة خاصة', labelEn: 'Private Room' },
+  { value: 'bed_space', labelAr: 'سرير في غرفة', labelEn: 'Bed Space' },
+  { value: 'studio_shared', labelAr: 'استوديو مشترك', labelEn: 'Shared Studio' },
+];
+
+const GENDER_OPTIONS: ListingFieldOption[] = [
+  { value: 'male', labelAr: 'للذكور', labelEn: 'For Males' },
+  { value: 'female', labelAr: 'للإناث', labelEn: 'For Females' },
+  { value: 'family', labelAr: 'للعائلات', labelEn: 'For Families' },
+  { value: 'mixed', labelAr: 'مختلط', labelEn: 'Mixed' },
+];
+
+// ─── New: Hotel Apartments ────────────────────────────────────────────────
+const HOTEL_APARTMENT_TYPES: ListingFieldOption[] = [
+  { value: 'studio', labelAr: 'استوديو فندقي', labelEn: 'Hotel Studio' },
+  { value: 'one_bedroom', labelAr: 'غرفة وصالة', labelEn: '1BR Suite' },
+  { value: 'two_bedroom', labelAr: 'غرفتين وصالة', labelEn: '2BR Suite' },
+  { value: 'presidential', labelAr: 'سويت رئاسي', labelEn: 'Presidential Suite' },
+];
+
+const STAR_RATING_OPTIONS: ListingFieldOption[] = [
+  { value: '3', labelAr: '3 نجوم', labelEn: '3 Stars' },
+  { value: '4', labelAr: '4 نجوم', labelEn: '4 Stars' },
+  { value: '5', labelAr: '5 نجوم', labelEn: '5 Stars' },
+];
+
+// ─── New: Whole Buildings ─────────────────────────────────────────────────
+const WHOLE_BUILDING_TYPES: ListingFieldOption[] = [
+  { value: 'residential', labelAr: 'عمارة سكنية', labelEn: 'Residential Building' },
+  { value: 'commercial', labelAr: 'عمارة تجارية', labelEn: 'Commercial Building' },
+  { value: 'mixed', labelAr: 'عمارة مختلطة', labelEn: 'Mixed-Use Building' },
+];
+
+// ─── New: Staff Housing ───────────────────────────────────────────────────
+const STAFF_HOUSING_TYPES: ListingFieldOption[] = [
+  { value: 'labor', labelAr: 'سكن عمال', labelEn: 'Labor Housing' },
+  { value: 'staff', labelAr: 'سكن موظفين', labelEn: 'Staff Housing' },
+  { value: 'dormitory', labelAr: 'سكن جماعي', labelEn: 'Dormitory' },
+];
+
+// ─── New: Construction ────────────────────────────────────────────────────
+const CONSTRUCTION_SERVICES: ListingFieldOption[] = [
+  { value: 'new_build', labelAr: 'بناء جديد', labelEn: 'New Construction' },
+  { value: 'renovation', labelAr: 'ترميم وتجديد', labelEn: 'Renovation' },
+  { value: 'finishing', labelAr: 'تشطيب', labelEn: 'Finishing' },
+  { value: 'maintenance', labelAr: 'صيانة عامة', labelEn: 'Maintenance' },
+  { value: 'demolition', labelAr: 'هدم وإزالة', labelEn: 'Demolition' },
+  { value: 'design', labelAr: 'تصميم ومخططات', labelEn: 'Design & Blueprints' },
+];
+
+const CONSTRUCTION_PROJECT_TYPES: ListingFieldOption[] = [
+  { value: 'residential', labelAr: 'سكني', labelEn: 'Residential' },
+  { value: 'commercial', labelAr: 'تجاري', labelEn: 'Commercial' },
+  { value: 'industrial', labelAr: 'صناعي', labelEn: 'Industrial' },
+  { value: 'infrastructure', labelAr: 'بنية تحتية', labelEn: 'Infrastructure' },
+];
+
+const CONSTRUCTION_DURATION: ListingFieldOption[] = [
+  { value: '1_3_months', labelAr: '1-3 أشهر', labelEn: '1-3 Months' },
+  { value: '3_6_months', labelAr: '3-6 أشهر', labelEn: '3-6 Months' },
+  { value: '6_12_months', labelAr: '6-12 شهر', labelEn: '6-12 Months' },
+  { value: 'over_12', labelAr: 'أكثر من سنة', labelEn: 'Over 12 Months' },
+];
+
+const CONSTRUCTION_INCLUDES: ListingFieldOption[] = [
+  { value: 'materials', labelAr: 'مواد بناء', labelEn: 'Materials' },
+  { value: 'labor', labelAr: 'عمالة', labelEn: 'Labor' },
+  { value: 'design', labelAr: 'تصاميم هندسية', labelEn: 'Engineering Design' },
+  { value: 'permits', labelAr: 'تراخيص ورخص', labelEn: 'Permits & Licenses' },
+  { value: 'equipment', labelAr: 'معدات وآليات', labelEn: 'Equipment & Machinery' },
+];
+
+const CONSTRUCTION_PRICE_TYPE: ListingFieldOption[] = [
+  { value: 'per_sqm', labelAr: 'سعر لكل م²', labelEn: 'Price Per SQM' },
+  { value: 'total', labelAr: 'سعر إجمالي للمشروع', labelEn: 'Total Project Price' },
+  { value: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable' },
+];
+
+const CONTRACTOR_TYPE: ListingFieldOption[] = [
+  { value: 'individual', labelAr: 'مقاول فردي', labelEn: 'Individual Contractor' },
+  { value: 'company', labelAr: 'شركة مقاولات', labelEn: 'Construction Company' },
+  { value: 'engineering_office', labelAr: 'مكتب هندسي', labelEn: 'Engineering Office' },
 ];
 
 export const REAL_ESTATE_FIELDS: CategoryFieldMap = {
@@ -220,5 +315,72 @@ export const REAL_ESTATE_FIELDS: CategoryFieldMap = {
       { value: 'rent', labelAr: 'للإيجار', labelEn: 'For Rent' },
       { value: 'investment', labelAr: 'استثمار', labelEn: 'Investment' },
     ]},
+  ],
+  'shared-rooms': [
+    { key: 'propertyType', labelAr: 'نوع الغرفة', labelEn: 'Room Type', type: 'select', allowOther: false, required: true, options: SHARED_ROOM_TYPES },
+    { key: 'rentPeriod', labelAr: 'فترة الإيجار', labelEn: 'Rent Period', type: 'select', allowOther: false, required: true, options: RENT_PERIODS },
+    { key: 'area', labelAr: 'المساحة (م²)', labelEn: 'Area (m²)', type: 'number', required: true },
+    { key: 'bedrooms', labelAr: 'غرف النوم', labelEn: 'Bedrooms', type: 'number', required: false },
+    { key: 'bathrooms', labelAr: 'الحمامات', labelEn: 'Bathrooms', type: 'number', required: false },
+    { key: 'gender', labelAr: 'التخصيص', labelEn: 'Gender', type: 'select', allowOther: false, required: true, options: GENDER_OPTIONS },
+    { key: 'currentOccupants', labelAr: 'عدد الساكنين حالياً', labelEn: 'Current Occupants', type: 'number', required: false },
+    { key: 'furnished', labelAr: 'الفرش', labelEn: 'Furnished', type: 'select', allowOther: false, required: false, options: FURNISHED_OPTIONS },
+    { key: 'utilitiesIncluded', labelAr: 'شامل الفواتير', labelEn: 'Utilities Included', type: 'boolean', required: false },
+    { key: 'amenities', labelAr: 'المميزات والخدمات', labelEn: 'Amenities', type: 'select', multiSelect: true, allowOther: false, required: false, options: RESIDENTIAL_AMENITIES },
+    { key: 'depositAmount', labelAr: 'مبلغ التأمين', labelEn: 'Deposit Amount', type: 'number', required: false },
+    { key: 'availableFrom', labelAr: 'متوفر من تاريخ', labelEn: 'Available From', type: 'text', required: false, placeholder: '2026-01-01' },
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: SELLER_TYPE_OPTIONS },
+    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
+  ],
+  'hotel-apartments': [
+    { key: 'propertyType', labelAr: 'نوع الجناح', labelEn: 'Suite Type', type: 'select', allowOther: false, required: true, options: HOTEL_APARTMENT_TYPES },
+    { key: 'rentPeriod', labelAr: 'فترة الإيجار', labelEn: 'Rent Period', type: 'select', allowOther: false, required: true, options: RENT_PERIODS },
+    { key: 'bedrooms', labelAr: 'غرف النوم', labelEn: 'Bedrooms', type: 'number', required: true },
+    { key: 'bathrooms', labelAr: 'الحمامات', labelEn: 'Bathrooms', type: 'number', required: true },
+    { key: 'area', labelAr: 'المساحة (م²)', labelEn: 'Area (m²)', type: 'number', required: false },
+    { key: 'starRating', labelAr: 'تصنيف النجوم', labelEn: 'Star Rating', type: 'select', allowOther: false, required: false, options: STAR_RATING_OPTIONS },
+    { key: 'amenities', labelAr: 'خدمات الفندق', labelEn: 'Hotel Amenities', type: 'select', multiSelect: true, allowOther: false, required: false, options: HOTEL_AMENITIES },
+    { key: 'view', labelAr: 'الإطلالة', labelEn: 'View', type: 'select', allowOther: false, required: false, options: VIEW_OPTIONS },
+    { key: 'parking', labelAr: 'مواقف السيارات', labelEn: 'Parking', type: 'select', allowOther: false, required: false, options: PARKING_OPTIONS },
+    { key: 'furnished', labelAr: 'الفرش', labelEn: 'Furnished', type: 'select', allowOther: false, required: false, options: FURNISHED_OPTIONS },
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: SELLER_TYPE_OPTIONS },
+    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
+  ],
+  'whole-buildings': [
+    { key: 'propertyType', labelAr: 'نوع المبنى', labelEn: 'Building Type', type: 'select', allowOther: false, required: true, options: WHOLE_BUILDING_TYPES },
+    { key: 'area', labelAr: 'مساحة الأرض (م²)', labelEn: 'Land Area (m²)', type: 'number', required: true },
+    { key: 'builtArea', labelAr: 'المساحة المبنية (م²)', labelEn: 'Built Area (m²)', type: 'number', required: false },
+    { key: 'floors', labelAr: 'عدد الطوابق', labelEn: 'Number of Floors', type: 'number', required: true },
+    { key: 'apartmentsCount', labelAr: 'عدد الوحدات/الشقق', labelEn: 'Number of Units', type: 'number', required: false },
+    { key: 'year', labelAr: 'سنة البناء', labelEn: 'Year Built', type: 'select', allowOther: false, required: false, options: BUILDING_YEAR_OPTIONS },
+    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: false, required: false, options: CONDITION_OPTIONS },
+    { key: 'currentIncome', labelAr: 'الدخل السنوي الحالي', labelEn: 'Current Annual Income', type: 'number', required: false },
+    { key: 'amenities', labelAr: 'المميزات والخدمات', labelEn: 'Amenities', type: 'select', multiSelect: true, allowOther: false, required: false, options: COMMERCIAL_AMENITIES },
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: SELLER_TYPE_OPTIONS },
+    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
+  ],
+  'staff-housing': [
+    { key: 'propertyType', labelAr: 'نوع السكن', labelEn: 'Housing Type', type: 'select', allowOther: false, required: true, options: STAFF_HOUSING_TYPES },
+    { key: 'capacity', labelAr: 'السعة (عدد الأشخاص)', labelEn: 'Capacity (Persons)', type: 'number', required: true },
+    { key: 'rentPeriod', labelAr: 'فترة الإيجار', labelEn: 'Rent Period', type: 'select', allowOther: false, required: true, options: RENT_PERIODS },
+    { key: 'area', labelAr: 'المساحة (م²)', labelEn: 'Area (m²)', type: 'number', required: false },
+    { key: 'bedrooms', labelAr: 'غرف النوم', labelEn: 'Bedrooms', type: 'number', required: false },
+    { key: 'bathrooms', labelAr: 'الحمامات', labelEn: 'Bathrooms', type: 'number', required: false },
+    { key: 'gender', labelAr: 'التخصيص', labelEn: 'Gender', type: 'select', allowOther: false, required: true, options: GENDER_OPTIONS },
+    { key: 'furnished', labelAr: 'الفرش', labelEn: 'Furnished', type: 'select', allowOther: false, required: false, options: FURNISHED_OPTIONS },
+    { key: 'amenities', labelAr: 'المميزات والخدمات', labelEn: 'Amenities', type: 'select', multiSelect: true, allowOther: false, required: false, options: RESIDENTIAL_AMENITIES },
+    { key: 'utilitiesIncluded', labelAr: 'شامل الفواتير', labelEn: 'Utilities Included', type: 'boolean', required: false },
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: SELLER_TYPE_OPTIONS },
+    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
+  ],
+  construction: [
+    { key: 'serviceType', labelAr: 'نوع الخدمة', labelEn: 'Service Type', type: 'select', allowOther: false, required: true, options: CONSTRUCTION_SERVICES },
+    { key: 'projectType', labelAr: 'نوع المشروع', labelEn: 'Project Type', type: 'select', allowOther: false, required: true, options: CONSTRUCTION_PROJECT_TYPES },
+    { key: 'area', labelAr: 'المساحة التقريبية (م²)', labelEn: 'Approx. Area (m²)', type: 'number', required: true },
+    { key: 'duration', labelAr: 'مدة التنفيذ', labelEn: 'Duration', type: 'select', allowOther: false, required: false, options: CONSTRUCTION_DURATION },
+    { key: 'includes', labelAr: 'يشمل', labelEn: 'Includes', type: 'select', multiSelect: true, allowOther: false, required: false, options: CONSTRUCTION_INCLUDES },
+    { key: 'priceType', labelAr: 'طريقة التسعير', labelEn: 'Price Type', type: 'select', allowOther: false, required: true, options: CONSTRUCTION_PRICE_TYPE },
+    { key: 'contractorType', labelAr: 'نوع المنفذ', labelEn: 'Contractor Type', type: 'select', allowOther: false, required: false, options: CONTRACTOR_TYPE },
+    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
   ],
 };
