@@ -11,7 +11,6 @@ export interface CategoryAttrsSectionProps {
   readonly onChange: (key: string, value: string | null) => void;
 }
 
-const MAX_OPTIONS = 15;
 const CAR_SUBS = ['cars', 'classic_cars', 'damaged_cars', 'lease_transfer'];
 const MILEAGE_OPTIONS = [
   { value: '', labelEn: 'All', labelAr: 'الكل' },
@@ -25,7 +24,7 @@ function isEligible(f: ListingField): boolean {
   if (f.key === 'make' || f.key === 'model' || f.key === 'trim') return true;
   if (f.type === 'boolean' || f.type === 'number') return true;
   if (f.type === 'cascading-model' || f.type === 'cascading-trim') return true;
-  if (f.type === 'select' && f.options && f.options.length > 1 && f.options.length <= MAX_OPTIONS) return true;
+  if (f.type === 'select' && f.options && f.options.length > 1) return true;
   return false;
 }
 
