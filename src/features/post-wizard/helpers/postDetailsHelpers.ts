@@ -1,4 +1,4 @@
-import { getFieldsForListing } from '@/data/subcategoryFields';
+import { getListingFields } from '@/data/listingFields';
 import { getBrandOptions, getModelOptions } from '@/data/brands';
 import type { CategoryFieldDef } from '@/data/categoryFields';
 import type { PostDraft, UserProfile, Listing } from '@/types';
@@ -17,19 +17,25 @@ export function resolvePostDetailsFields(params: ResolveFieldsParams): readonly 
   const bOpts = getBrandOptions(categorySlug, isArabic);
   const mOpts = cBrand ? getModelOptions(categorySlug, cBrand, isArabic) : [];
 
-  return getFieldsForListing(categorySlug, subcategorySlug).map(f => {
+  const fields = getListingFields(categorySlug, subcategorySlug);
+
+  return fields.map((f) => {
+    // Bridge: ListingField and CategoryFieldDef are structurally compatible.
+    // The cast is intentional: we keep ONE registry (listingFields) as the source
+    // of truth for both the wizard and the filters.
+    const base = f as unknown as CategoryFieldDef;
     if (f.key === 'make' || f.key === 'brand' || f.key === 'carMake') {
       return bOpts.length > 0
-        ? { ...f, type: 'select' as const, options: bOpts }
-        : { ...f, type: 'text' as const };
+        ? { ...base, type: 'select' as const, options: bOpts }
+        : { ...base, type: 'text' as const };
     }
     if (f.key === 'model') {
       if (!cBrand || cBrand === 'أخرى' || cBrand === 'Other' || mOpts.length === 0) {
-        return { ...f, type: 'text' as const };
+        return { ...base, type: 'text' as const };
       }
-      return { ...f, type: 'select' as const, options: mOpts };
+      return { ...base, type: 'select' as const, options: mOpts };
     }
-    return f;
+    return base;
   });
 }
 
