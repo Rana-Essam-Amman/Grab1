@@ -1,37 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { CAR_BRANDS } from '@/data/brands/carBrands';
-import { getModelsForMake } from '@/data/brands/carModels';
 import { OtherOptionInput } from './OtherOptionInput';
 import { SearchableDropdown } from '@/shared/ui/SearchableDropdown';
+import {
+  getLocalModelOptions,
+  normalizeToSlug,
+  getBrandLabel,
+  isCustomMake,
+} from '../helpers/cascadingModelHelpers';
 
 const OTHER_VALUE = '__other__';
-
-/**
- * Read curated models from CAR_MODELS (single source of truth).
- * Returns slug as the option value so DB always stores canonical slugs.
- * Accepts nameEn/nameAr as display labels (bilingual).
- */
-function getLocalModelOptions(brandSlug: string) {
-  const models = getModelsForMake(brandSlug);
-  return models.map((m) => ({ value: m.slug, labelAr: m.nameAr, labelEn: m.nameEn }));
-}
-
-/**
- * Normalize an existing model value (may be nameEn from legacy drafts, or slug)
- * into the canonical slug. Returns the original if no match (custom text).
- */
-function normalizeToSlug(brandSlug: string, currentValue: string): string {
-  if (!currentValue) return '';
-  const options = getLocalModelOptions(brandSlug);
-  if (options.length === 0) return currentValue;
-  const match = options.find(
-    (o) =>
-      o.value === currentValue ||
-      o.labelEn.toLowerCase() === currentValue.toLowerCase().trim() ||
-      o.labelAr === currentValue.trim(),
-  );
-  return match ? match.value : currentValue;
-}
 
 interface Props {
   readonly makeValue: string;
@@ -43,31 +21,23 @@ interface Props {
   readonly testId?: string;
 }
 
-export const CascadingModelSelect: React.FC<Props> = ({
-  makeValue, modelValue, onMakeChange, onModelChange, isArabic, hideMakeField, testId,
-}) => {
-  const isMakeCustom = Boolean(makeValue && !CAR_BRANDS.some((b) => b.slug === makeValue));
-  const [showOtherMake, setShowOtherMake] = useState(isMakeCustom || makeValue === 'other');
-  const [customMake, setCustomMake] = useState(isMakeCustom ? makeValue : '');
+export const CascadingModelSelect: React.FC<Props> = ({ makeValue, modelValue, onMakeChange, onModelChange, isArabic, hideMakeField, testId }) => {
+  const customMake0 = isCustomMake(makeValue);
+  const [showOtherMake, setShowOtherMake] = useState(customMake0 || makeValue === 'other');
+  const [customMake, setCustomMake] = useState(customMake0 ? makeValue : '');
   const modelOptions = getLocalModelOptions(makeValue);
-  const normalizedModel = normalizeToSlug(makeValue, modelValue);
-  const isModelCustom = Boolean(normalizedModel && (!modelOptions.length || !modelOptions.some((m) => m.value === normalizedModel)));
+  const normModel = normalizeToSlug(makeValue, modelValue);
+  const isModelCustom = Boolean(normModel && (!modelOptions.length || !modelOptions.some((m) => m.value === normModel)));
   const [showOtherModel, setShowOtherModel] = useState(isModelCustom || !modelOptions.length);
-  const [customModel, setCustomModel] = useState(isModelCustom ? normalizedModel : '');
+  const [customModel, setCustomModel] = useState(isModelCustom ? normModel : '');
 
-  useEffect(() => {
-    if (isMakeCustom) { setShowOtherMake(true); setCustomMake(makeValue); }
-  }, [isMakeCustom, makeValue]);
-
-  useEffect(() => {
-    if (isModelCustom) { setShowOtherModel(true); setCustomModel(normalizedModel); }
-  }, [isModelCustom, normalizedModel]);
+  useEffect(() => { if (customMake0) { setShowOtherMake(true); setCustomMake(makeValue); } }, [customMake0, makeValue]);
+  useEffect(() => { if (isModelCustom) { setShowOtherModel(true); setCustomModel(normModel); } }, [isModelCustom, normModel]);
 
   const modelTestId = hideMakeField ? testId : (testId ? `${testId}-model` : undefined);
-  const otherMakeLabel = isArabic ? 'أخرى — اكتب يدوياً' : 'Other — type manually';
+  const otherLabel = isArabic ? 'أخرى — اكتب يدوياً' : 'Other — type manually';
   const brandOptions = CAR_BRANDS.map((b) => (isArabic ? b.nameAr : b.nameEn));
-  const selectedBrand = CAR_BRANDS.find((b) => b.slug === makeValue);
-  const selectedBrandLabel = selectedBrand ? (isArabic ? selectedBrand.nameAr : selectedBrand.nameEn) : makeValue;
+  const selectedBrandLabel = getBrandLabel(makeValue, isArabic);
 
   const renderModelBlock = () => (
     <div className="flex flex-col gap-1.5 py-1.5">
@@ -76,7 +46,7 @@ export const CascadingModelSelect: React.FC<Props> = ({
         <>
           <select
             data-testid={modelTestId}
-            value={showOtherModel ? OTHER_VALUE : normalizedModel}
+            value={showOtherModel ? OTHER_VALUE : normModel}
             onChange={(e) => {
               const v = e.target.value;
               if (v === OTHER_VALUE) { setShowOtherModel(true); onModelChange(customModel); }
@@ -86,12 +56,12 @@ export const CascadingModelSelect: React.FC<Props> = ({
           >
             <option value="">{isArabic ? '-- اختر الموديل --' : '-- Select Model --'}</option>
             {modelOptions.map((m) => (<option key={m.value} value={m.value}>{isArabic ? m.labelAr : m.labelEn}</option>))}
-            <option value={OTHER_VALUE}>{otherMakeLabel}</option>
+            <option value={OTHER_VALUE}>{otherLabel}</option>
           </select>
           {showOtherModel && (<OtherOptionInput value={customModel} onChange={(v) => { setCustomModel(v); onModelChange(v); }} placeholder={isArabic ? 'اكتب اسم الموديل...' : 'Type model name...'} isArabic={isArabic} />)}
         </>
       ) : (
-        <OtherOptionInput value={modelValue} onChange={onModelChange} placeholder={isArabic ? 'اكتب اسم الموديل (مثل: كامري، X5)...' : 'Type model (e.g. Camry, X5)...'} isArabic={isArabic} />
+        <OtherOptionInput value={modelValue} onChange={onModelChange} placeholder={isArabic ? 'اكتب اسم الموديل...' : 'Type model...'} isArabic={isArabic} />
       )}
     </div>
   );
@@ -103,10 +73,10 @@ export const CascadingModelSelect: React.FC<Props> = ({
       <div className="flex flex-col gap-1.5 py-1.5">
         <label className="text-xs font-bold text-ink-soft">{isArabic ? 'الماركة' : 'Make'} <span className="text-accent">*</span></label>
         <SearchableDropdown
-          options={[...brandOptions, otherMakeLabel]}
-          value={showOtherMake ? otherMakeLabel : selectedBrandLabel}
+          options={[...brandOptions, otherLabel]}
+          value={showOtherMake ? otherLabel : selectedBrandLabel}
           onChange={(selected) => {
-            const v = selected === otherMakeLabel ? OTHER_VALUE : CAR_BRANDS.find((b) => (isArabic ? b.nameAr : b.nameEn) === selected)?.slug ?? selected;
+            const v = selected === otherLabel ? OTHER_VALUE : CAR_BRANDS.find((b) => (isArabic ? b.nameAr : b.nameEn) === selected)?.slug ?? selected;
             onModelChange(''); setCustomModel('');
             if (v === OTHER_VALUE) { setShowOtherMake(true); setShowOtherModel(true); onMakeChange(customMake); }
             else { setShowOtherMake(false); onMakeChange(v); setShowOtherModel(getLocalModelOptions(v).length === 0); }
