@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { ListingField } from '@/data/listingFields';
 import { CascadingModelSelect } from './CascadingModelSelect';
+import { CascadingTrimSelect } from './CascadingTrimSelect';
 import { FieldSelectInput } from './FieldSelectInput';
 
 interface DynamicFieldRendererProps {
@@ -47,6 +48,26 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
       <div className="flex flex-col gap-1.5 py-1.5">
         <label className="text-xs font-bold text-ink-soft">{label} {field.required && <span className="text-accent">*</span>}</label>
         <CascadingModelSelect makeValue={parentValue} modelValue={value} onMakeChange={() => { /* handled by make field */ }} onModelChange={(v) => onChange(field.key, v)} isArabic={isArabic} hideMakeField testId={`field-${field.key}`} />
+      </div>
+    );
+  }
+
+  if (field.type === 'cascading-trim') {
+    const makeKey = field.dependsOn ?? '';
+    const modelKey = 'model';
+    const makeValue = allValues?.[makeKey] ?? '';
+    const modelValue = allValues?.[modelKey] ?? '';
+    return (
+      <div className="flex flex-col gap-1.5 py-1.5">
+        <label className="text-xs font-bold text-ink-soft">{label} {field.required && <span className="text-accent">*</span>}</label>
+        <CascadingTrimSelect
+          makeValue={makeValue}
+          modelValue={modelValue}
+          trimValue={value}
+          onTrimChange={(v) => onChange(field.key, v)}
+          isArabic={isArabic}
+          testId={`field-${field.key}`}
+        />
       </div>
     );
   }
