@@ -81,10 +81,10 @@ export function getWishlistForMarket(market: string): string[] {
       return globalFavorites;
     }
 
-    return ['jo-1'];
+    return [];
   }
 
-  return [`${market.toLowerCase()}-1`];
+  return [];
 }
 
 export function saveWishlistForMarket(market: string, ids: string[]): void {
