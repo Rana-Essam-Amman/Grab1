@@ -1,6 +1,8 @@
 import type { ListingField, ListingFieldsMap } from './types';
 import { MOTORS_FIELDS } from './motors';
 import { REAL_ESTATE_FIELDS } from './real-estate';
+import { REAL_ESTATE_COMMERCIAL_FIELDS } from './real-estate-commercial';
+import { REAL_ESTATE_SPECIAL_FIELDS } from './real-estate-special';
 import { MOBILES_FIELDS } from './mobiles';
 import { WATCHES_FIELDS } from './watches';
 import { COMPUTERS_FIELDS } from './computers';
@@ -22,7 +24,11 @@ import { PROJECTS_FIELDS } from './projects';
 
 export const LISTING_FIELDS: ListingFieldsMap = {
   motors: MOTORS_FIELDS,
-  'real-estate': REAL_ESTATE_FIELDS,
+  'real-estate': {
+    ...REAL_ESTATE_FIELDS,
+    ...REAL_ESTATE_COMMERCIAL_FIELDS,
+    ...REAL_ESTATE_SPECIAL_FIELDS,
+  },
   mobiles: MOBILES_FIELDS,
   watches: WATCHES_FIELDS,
   computers: COMPUTERS_FIELDS,
@@ -50,10 +56,17 @@ export function getListingFields(
   if (subcategorySlug) {
     return LISTING_FIELDS[categorySlug]?.[subcategorySlug] ?? [];
   }
+
   const categorySubcats = LISTING_FIELDS[categorySlug];
   if (!categorySubcats) return [];
+
   const firstSubcat = Object.keys(categorySubcats)[0];
   return firstSubcat ? categorySubcats[firstSubcat] ?? [] : [];
 }
 
-export type { ListingField, ListingFieldOption, CategoryFieldMap, ListingFieldsMap } from './types';
+export type {
+  ListingField,
+  ListingFieldOption,
+  CategoryFieldMap,
+  ListingFieldsMap,
+} from './types';
