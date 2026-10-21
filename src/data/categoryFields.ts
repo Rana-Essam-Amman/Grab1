@@ -1,4 +1,4 @@
-export type FieldType = 'text' | 'number' | 'select' | 'textarea';
+export type FieldType = 'text' | 'number' | 'select' | 'textarea' | 'boolean' | 'cascading-model' | 'cascading-trim';
 
 export interface CategoryFieldDef {
   readonly key: string;
@@ -7,8 +7,13 @@ export interface CategoryFieldDef {
   readonly type: FieldType;
   readonly required: boolean;
   readonly options?: readonly string[];
+  readonly richOptions?: readonly { value: string; labelAr: string; labelEn: string }[];
   readonly placeholder?: string;
   readonly disabled?: boolean;
+  readonly allowOther?: boolean;
+  readonly multiSelect?: boolean;
+  readonly placeholderAr?: string;
+  readonly dependsOn?: string;
 }
 
 const OTHER = 'أخرى';
