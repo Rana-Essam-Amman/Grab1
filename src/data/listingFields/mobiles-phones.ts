@@ -1,5 +1,5 @@
 import type { CategoryFieldMap, ListingField } from './types';
-import { PHONE_BRANDS, TABLET_BRANDS, STORAGE_OPTIONS, RAM_OPTIONS, GENERAL_CONDITION, CONDITION_OPTIONS, BATTERY_HEALTH_OPTIONS, REGIONAL_SPECS_OPTIONS, PHONE_SCREEN_SIZES, TABLET_SCREEN_SIZES, NETWORK_TECH, SMARTPHONE_FEATURES, MOBILE_SELLER_TYPE, COLOR_OPTIONS } from './mobiles-options';
+import { PHONE_BRANDS, TABLET_BRANDS, STORAGE_OPTIONS, RAM_OPTIONS, GENERAL_CONDITION, CONDITION_OPTIONS, BATTERY_HEALTH_OPTIONS, REGIONAL_SPECS_OPTIONS, PHONE_SCREEN_SIZES, TABLET_SCREEN_SIZES, NETWORK_TECH, SMARTPHONE_FEATURES, MOBILE_SELLER_TYPE, COLOR_OPTIONS, CARRIER_LOCK_OPTIONS } from './mobiles-options';
 
 export const PHONES_FIELDS: ListingField[] = [
     { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: false, required: true, options: PHONE_BRANDS },
@@ -7,6 +7,8 @@ export const PHONES_FIELDS: ListingField[] = [
     { key: 'ram', labelAr: 'الرام', labelEn: 'RAM', type: 'select', allowOther: false, required: false, options: RAM_OPTIONS },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: false, required: true, options: GENERAL_CONDITION },
     { key: 'battery', labelAr: 'صحة البطارية', labelEn: 'Battery Health', type: 'select', allowOther: false, required: false, options: BATTERY_HEALTH_OPTIONS },
+    { key: 'carrierLock', labelAr: 'قفل الشبكة', labelEn: 'Carrier Lock', type: 'select', allowOther: false, required: false, options: CARRIER_LOCK_OPTIONS },
+    { key: 'imeiVerified', labelAr: 'IMEI موثق', labelEn: 'IMEI Verified', type: 'boolean', required: false },
     { key: 'region', labelAr: 'المواصفات الإقليمية', labelEn: 'Regional Specs', type: 'select', allowOther: false, required: false, options: REGIONAL_SPECS_OPTIONS },
     { key: 'screenSize', labelAr: 'حجم الشاشة', labelEn: 'Screen Size', type: 'select', allowOther: true, required: false, options: PHONE_SCREEN_SIZES },
     { key: 'warranty', labelAr: 'الضمان', labelEn: 'Warranty', type: 'select', allowOther: false, required: false, options: [
@@ -38,6 +40,7 @@ export const TABLETS_FIELDS: ListingField[] = [
     { key: 'color', labelAr: 'اللون', labelEn: 'Color', type: 'select', allowOther: true, required: false, options: COLOR_OPTIONS },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: false, required: false, options: CONDITION_OPTIONS },
     { key: 'battery', labelAr: 'البطارية', labelEn: 'Battery', type: 'select', allowOther: false, required: false, options: BATTERY_HEALTH_OPTIONS },
+    { key: 'imeiVerified', labelAr: 'IMEI موثق', labelEn: 'IMEI Verified', type: 'boolean', required: false },
     { key: 'boxIncluded', labelAr: 'الكرتونة متوفرة', labelEn: 'Box Included', type: 'boolean', required: false },
     { key: 'stylusIncluded', labelAr: 'القلم مشمول', labelEn: 'Stylus Included', type: 'boolean', required: false },
     { key: 'keyboardIncluded', labelAr: 'لوحة المفاتيح مشمولة', labelEn: 'Keyboard Included', type: 'boolean', required: false },

@@ -21,8 +21,10 @@ export const STORAGE_OPTIONS: ListingFieldOption[] = [
 ];
 
 export const BATTERY_HEALTH_OPTIONS: ListingFieldOption[] = [
-  { value: 'excellent', labelAr: 'ممتازة', labelEn: 'Excellent' }, { value: 'good', labelAr: 'جيدة', labelEn: 'Good' },
-  { value: 'fair', labelAr: 'متوسطة', labelEn: 'Fair' }, { value: 'needs_replacement', labelAr: 'تحتاج تغيير', labelEn: 'Needs Replacement' },
+  { value: 'excellent', labelAr: 'ممتازة (95-100٪)', labelEn: 'Excellent (95-100%)' },
+  { value: 'good', labelAr: 'جيدة (85-94٪)', labelEn: 'Good (85-94%)' },
+  { value: 'fair', labelAr: 'متوسطة (75-84٪)', labelEn: 'Fair (75-84%)' },
+  { value: 'needs_replacement', labelAr: 'تحتاج تغيير (أقل من 75٪)', labelEn: 'Needs Replacement (below 75%)' },
 ];
 
 export const PHONE_BRANDS: ListingFieldOption[] = [
@@ -177,4 +179,10 @@ export const ACCESSORY_BRANDS: ListingFieldOption[] = [
   { value: 'spigen', labelAr: 'سبيجن', labelEn: 'Spigen' },
   { value: 'otterbox', labelAr: 'أوتربوكس', labelEn: 'OtterBox' },
   { value: 'huawei', labelAr: 'هواوي', labelEn: 'Huawei' },
+];
+
+export const CARRIER_LOCK_OPTIONS: ListingFieldOption[] = [
+  { value: 'unlocked', labelAr: 'مفتوح على جميع الشبكات', labelEn: 'Unlocked (All Networks)' },
+  { value: 'locked', labelAr: 'مقفل على شبكة محددة', labelEn: 'Carrier Locked' },
+  { value: 'officially_unlocked', labelAr: 'مفتوح رسمي من المشغل', labelEn: 'Officially Unlocked' },
 ];
