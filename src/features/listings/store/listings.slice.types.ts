@@ -14,6 +14,8 @@ export interface ListingsState {
   isInitialized: boolean;
   isSyncing: boolean;
   isQuotaExhausted: boolean;
+  lastSyncAt: number | null;
+  lastSyncFailed: boolean;
   activeMarket: string | null;
   activeSearchQuery: string | null;
   searchBanner: string | null;
