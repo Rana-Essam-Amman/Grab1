@@ -207,7 +207,99 @@ const CONTRACTOR_TYPE: ListingFieldOption[] = [
   { value: 'engineering_office', labelAr: 'مكتب هندسي', labelEn: 'Engineering Office' },
 ];
 
+const APARTMENT_TYPES: ListingFieldOption[] = [
+  { value: 'apartment', labelAr: 'شقة', labelEn: 'Apartment' },
+  { value: 'studio', labelAr: 'استوديو', labelEn: 'Studio' },
+  { value: 'duplex', labelAr: 'دوبلكس', labelEn: 'Duplex' },
+  { value: 'penthouse', labelAr: 'بنتهاوس', labelEn: 'Penthouse' },
+];
+
+const VILLA_TYPES: ListingFieldOption[] = [
+  { value: 'villa', labelAr: 'فيلا', labelEn: 'Villa' },
+  { value: 'palace', labelAr: 'قصر', labelEn: 'Palace' },
+  { value: 'townhouse', labelAr: 'تاون هاوس', labelEn: 'Townhouse' },
+];
+
+const HOUSE_TYPES: ListingFieldOption[] = [
+  { value: 'house', labelAr: 'منزل', labelEn: 'House' },
+  { value: 'traditional', labelAr: 'منزل تراثي', labelEn: 'Traditional House' },
+];
+
 export const REAL_ESTATE_FIELDS: CategoryFieldMap = {
+  'apartments-for-sale': [
+    { key: 'propertyType', labelAr: 'نوع الشقة', labelEn: 'Apartment Type', type: 'select', allowOther: false, required: true, options: APARTMENT_TYPES },
+    { key: 'bedrooms', labelAr: 'غرف النوم', labelEn: 'Bedrooms', type: 'number', required: true },
+    { key: 'bathrooms', labelAr: 'الحمامات', labelEn: 'Bathrooms', type: 'number', required: true },
+    { key: 'area', labelAr: 'المساحة (م²)', labelEn: 'Area (m²)', type: 'number', required: true },
+    { key: 'floor', labelAr: 'الطابق', labelEn: 'Floor', type: 'text', required: false },
+    { key: 'totalFloors', labelAr: 'عدد الطوابق', labelEn: 'Total Floors', type: 'number', required: false },
+    { key: 'year', labelAr: 'سنة البناء', labelEn: 'Year Built', type: 'select', allowOther: false, required: false, options: BUILDING_YEAR_OPTIONS },
+    { key: 'amenities', labelAr: 'المميزات والخدمات', labelEn: 'Amenities', type: 'select', multiSelect: true, allowOther: false, required: false, options: RESIDENTIAL_AMENITIES },
+    { key: 'view', labelAr: 'الإطلالة', labelEn: 'View', type: 'select', allowOther: false, required: false, options: VIEW_OPTIONS },
+    { key: 'parking', labelAr: 'مواقف السيارات', labelEn: 'Parking', type: 'select', allowOther: false, required: false, options: PARKING_OPTIONS },
+    { key: 'furnished', labelAr: 'الفرش', labelEn: 'Furnished', type: 'select', allowOther: false, required: false, options: FURNISHED_OPTIONS },
+    { key: 'finishingType', labelAr: 'نوع التشطيب', labelEn: 'Finishing Type', type: 'select', allowOther: false, required: false, options: FINISHING_OPTIONS },
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: SELLER_TYPE_OPTIONS },
+    { key: 'paymentMethod', labelAr: 'طريقة الدفع', labelEn: 'Payment Method', type: 'select', allowOther: false, required: true, options: [
+      { value: 'cash', labelAr: 'كاش', labelEn: 'Cash' },
+      { value: 'installments', labelAr: 'تقسيط', labelEn: 'Installments' },
+    ]},
+    { key: 'deliveryDate', labelAr: 'حالة التسليم', labelEn: 'Delivery Date', type: 'select', allowOther: false, required: false, options: [
+      { value: 'ready', labelAr: 'جاهز للسكن', labelEn: 'Ready' },
+      { value: 'under_construction', labelAr: 'قيد الإنشاء', labelEn: 'Under Construction' },
+    ]},
+    { key: 'ownershipType', labelAr: 'نوع الملكية', labelEn: 'Ownership Type', type: 'select', allowOther: false, required: false, options: [
+      { value: 'tabu', labelAr: 'طابو', labelEn: 'Tabu' },
+      { value: 'not_tabu', labelAr: 'تسجيل عادي', labelEn: 'Not Tabu' },
+    ]},
+  ],
+  'villas-for-sale': [
+    { key: 'propertyType', labelAr: 'نوع الفيلا', labelEn: 'Villa Type', type: 'select', allowOther: false, required: true, options: VILLA_TYPES },
+    { key: 'bedrooms', labelAr: 'غرف النوم', labelEn: 'Bedrooms', type: 'number', required: true },
+    { key: 'bathrooms', labelAr: 'الحمامات', labelEn: 'Bathrooms', type: 'number', required: true },
+    { key: 'area', labelAr: 'مساحة البناء (م²)', labelEn: 'Built Area (m²)', type: 'number', required: true },
+    { key: 'landArea', labelAr: 'مساحة الأرض (م²)', labelEn: 'Land Area (m²)', type: 'number', required: true },
+    { key: 'floors', labelAr: 'عدد الطوابق', labelEn: 'Floors', type: 'number', required: false },
+    { key: 'year', labelAr: 'سنة البناء', labelEn: 'Year Built', type: 'select', allowOther: false, required: false, options: BUILDING_YEAR_OPTIONS },
+    { key: 'amenities', labelAr: 'المميزات والخدمات', labelEn: 'Amenities', type: 'select', multiSelect: true, allowOther: false, required: false, options: RESIDENTIAL_AMENITIES },
+    { key: 'view', labelAr: 'الإطلالة', labelEn: 'View', type: 'select', allowOther: false, required: false, options: VIEW_OPTIONS },
+    { key: 'parking', labelAr: 'مواقف السيارات', labelEn: 'Parking', type: 'select', allowOther: false, required: false, options: PARKING_OPTIONS },
+    { key: 'furnished', labelAr: 'الفرش', labelEn: 'Furnished', type: 'select', allowOther: false, required: false, options: FURNISHED_OPTIONS },
+    { key: 'finishingType', labelAr: 'نوع التشطيب', labelEn: 'Finishing Type', type: 'select', allowOther: false, required: false, options: FINISHING_OPTIONS },
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: SELLER_TYPE_OPTIONS },
+    { key: 'paymentMethod', labelAr: 'طريقة الدفع', labelEn: 'Payment Method', type: 'select', allowOther: false, required: true, options: [
+      { value: 'cash', labelAr: 'كاش', labelEn: 'Cash' },
+      { value: 'installments', labelAr: 'تقسيط', labelEn: 'Installments' },
+    ]},
+    { key: 'deliveryDate', labelAr: 'حالة التسليم', labelEn: 'Delivery Date', type: 'select', allowOther: false, required: false, options: [
+      { value: 'ready', labelAr: 'جاهز للسكن', labelEn: 'Ready' },
+      { value: 'under_construction', labelAr: 'قيد الإنشاء', labelEn: 'Under Construction' },
+    ]},
+    { key: 'ownershipType', labelAr: 'نوع الملكية', labelEn: 'Ownership Type', type: 'select', allowOther: false, required: false, options: [
+      { value: 'tabu', labelAr: 'طابو', labelEn: 'Tabu' },
+      { value: 'not_tabu', labelAr: 'تسجيل عادي', labelEn: 'Not Tabu' },
+    ]},
+  ],
+  'houses-for-sale': [
+    { key: 'propertyType', labelAr: 'نوع المنزل', labelEn: 'House Type', type: 'select', allowOther: false, required: true, options: HOUSE_TYPES },
+    { key: 'bedrooms', labelAr: 'غرف النوم', labelEn: 'Bedrooms', type: 'number', required: true },
+    { key: 'bathrooms', labelAr: 'الحمامات', labelEn: 'Bathrooms', type: 'number', required: true },
+    { key: 'area', labelAr: 'مساحة البناء (م²)', labelEn: 'Built Area (m²)', type: 'number', required: true },
+    { key: 'landArea', labelAr: 'مساحة الأرض (م²)', labelEn: 'Land Area (m²)', type: 'number', required: true },
+    { key: 'year', labelAr: 'سنة البناء', labelEn: 'Year Built', type: 'select', allowOther: false, required: false, options: BUILDING_YEAR_OPTIONS },
+    { key: 'amenities', labelAr: 'المميزات والخدمات', labelEn: 'Amenities', type: 'select', multiSelect: true, allowOther: false, required: false, options: RESIDENTIAL_AMENITIES },
+    { key: 'parking', labelAr: 'مواقف السيارات', labelEn: 'Parking', type: 'select', allowOther: false, required: false, options: PARKING_OPTIONS },
+    { key: 'finishingType', labelAr: 'نوع التشطيب', labelEn: 'Finishing Type', type: 'select', allowOther: false, required: false, options: FINISHING_OPTIONS },
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: SELLER_TYPE_OPTIONS },
+    { key: 'paymentMethod', labelAr: 'طريقة الدفع', labelEn: 'Payment Method', type: 'select', allowOther: false, required: true, options: [
+      { value: 'cash', labelAr: 'كاش', labelEn: 'Cash' },
+      { value: 'installments', labelAr: 'تقسيط', labelEn: 'Installments' },
+    ]},
+    { key: 'ownershipType', labelAr: 'نوع الملكية', labelEn: 'Ownership Type', type: 'select', allowOther: false, required: false, options: [
+      { value: 'tabu', labelAr: 'طابو', labelEn: 'Tabu' },
+      { value: 'not_tabu', labelAr: 'تسجيل عادي', labelEn: 'Not Tabu' },
+    ]},
+  ],
   'for-sale': [
     { key: 'propertyType', labelAr: 'نوع العقار', labelEn: 'Property Type', type: 'select', allowOther: false, required: true, options: RESIDENTIAL_TYPES },
     { key: 'bedrooms', labelAr: 'غرف النوم', labelEn: 'Bedrooms', type: 'number', required: true },
@@ -234,6 +326,52 @@ export const REAL_ESTATE_FIELDS: CategoryFieldMap = {
     { key: 'ownershipType', labelAr: 'نوع الملكية', labelEn: 'Ownership Type', type: 'select', allowOther: false, required: false, options: [
       { value: 'tabu', labelAr: 'طابو', labelEn: 'Tabu' },
       { value: 'not_tabu', labelAr: 'تسجيل عادي / غير طابو', labelEn: 'Not Tabu' },
+    ]},
+  ],
+  'apartments-for-rent': [
+    { key: 'propertyType', labelAr: 'نوع الشقة', labelEn: 'Apartment Type', type: 'select', allowOther: false, required: true, options: APARTMENT_TYPES },
+    { key: 'rentPeriod', labelAr: 'فترة الإيجار', labelEn: 'Rent Period', type: 'select', allowOther: false, required: true, options: RENT_PERIODS },
+    { key: 'bedrooms', labelAr: 'غرف النوم', labelEn: 'Bedrooms', type: 'number', required: true },
+    { key: 'bathrooms', labelAr: 'الحمامات', labelEn: 'Bathrooms', type: 'number', required: true },
+    { key: 'area', labelAr: 'المساحة (م²)', labelEn: 'Area (m²)', type: 'number', required: true },
+    { key: 'depositAmount', labelAr: 'مبلغ التأمين', labelEn: 'Deposit Amount', type: 'number', required: false },
+    { key: 'utilitiesIncluded', labelAr: 'شامل الفواتير', labelEn: 'Utilities Included', type: 'boolean', required: false },
+    { key: 'petsAllowed', labelAr: 'يسمح بالحيوانات الأليفة', labelEn: 'Pets Allowed', type: 'boolean', required: false },
+    { key: 'furnished', labelAr: 'الفرش', labelEn: 'Furnished', type: 'select', allowOther: false, required: false, options: FURNISHED_OPTIONS },
+    { key: 'cheques', labelAr: 'عدد الشيكات', labelEn: 'Cheques', type: 'select', allowOther: false, required: false, options: CHEQUES_OPTIONS },
+    { key: 'agencyFee', labelAr: 'يوجد عمولة وسيط', labelEn: 'Agency Fee', type: 'boolean', required: false },
+    { key: 'availableFrom', labelAr: 'متوفر من تاريخ', labelEn: 'Available From', type: 'text', required: false, placeholder: '2026-01-01' },
+    { key: 'finishingType', labelAr: 'نوع التشطيب', labelEn: 'Finishing Type', type: 'select', allowOther: false, required: false, options: FINISHING_OPTIONS },
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: SELLER_TYPE_OPTIONS },
+    { key: 'floor', labelAr: 'الطابق', labelEn: 'Floor', type: 'text', required: false },
+    { key: 'totalFloors', labelAr: 'عدد الطوابق', labelEn: 'Total Floors', type: 'number', required: false },
+    { key: 'amenities', labelAr: 'المميزات والخدمات', labelEn: 'Amenities', type: 'select', multiSelect: true, allowOther: false, required: false, options: RESIDENTIAL_AMENITIES },
+    { key: 'view', labelAr: 'الإطلالة', labelEn: 'View', type: 'select', allowOther: false, required: false, options: VIEW_OPTIONS },
+    { key: 'parking', labelAr: 'مواقف السيارات', labelEn: 'Parking', type: 'select', allowOther: false, required: false, options: PARKING_OPTIONS },
+    { key: 'tenantType', labelAr: 'لمن العقار', labelEn: 'Tenant Type', type: 'select', allowOther: false, required: false, options: [
+      { value: 'family', labelAr: 'عائلات', labelEn: 'Families' },
+      { value: 'singles', labelAr: 'عزاب', labelEn: 'Singles' },
+      { value: 'students', labelAr: 'طلاب', labelEn: 'Students' },
+      { value: 'anyone', labelAr: 'الجميع', labelEn: 'Anyone' },
+    ]},
+  ],
+  'villas-for-rent': [
+    { key: 'propertyType', labelAr: 'نوع الفيلا', labelEn: 'Villa Type', type: 'select', allowOther: false, required: true, options: VILLA_TYPES },
+    { key: 'rentPeriod', labelAr: 'فترة الإيجار', labelEn: 'Rent Period', type: 'select', allowOther: false, required: true, options: RENT_PERIODS },
+    { key: 'bedrooms', labelAr: 'غرف النوم', labelEn: 'Bedrooms', type: 'number', required: true },
+    { key: 'bathrooms', labelAr: 'الحمامات', labelEn: 'Bathrooms', type: 'number', required: true },
+    { key: 'area', labelAr: 'مساحة البناء (م²)', labelEn: 'Built Area (m²)', type: 'number', required: true },
+    { key: 'landArea', labelAr: 'مساحة الأرض (م²)', labelEn: 'Land Area (m²)', type: 'number', required: true },
+    { key: 'depositAmount', labelAr: 'مبلغ التأمين', labelEn: 'Deposit Amount', type: 'number', required: false },
+    { key: 'furnished', labelAr: 'الفرش', labelEn: 'Furnished', type: 'select', allowOther: false, required: false, options: FURNISHED_OPTIONS },
+    { key: 'cheques', labelAr: 'عدد الشيكات', labelEn: 'Cheques', type: 'select', allowOther: false, required: false, options: CHEQUES_OPTIONS },
+    { key: 'amenities', labelAr: 'المميزات والخدمات', labelEn: 'Amenities', type: 'select', multiSelect: true, allowOther: false, required: false, options: RESIDENTIAL_AMENITIES },
+    { key: 'view', labelAr: 'الإطلالة', labelEn: 'View', type: 'select', allowOther: false, required: false, options: VIEW_OPTIONS },
+    { key: 'parking', labelAr: 'مواقف السيارات', labelEn: 'Parking', type: 'select', allowOther: false, required: false, options: PARKING_OPTIONS },
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: SELLER_TYPE_OPTIONS },
+    { key: 'tenantType', labelAr: 'لمن العقار', labelEn: 'Tenant Type', type: 'select', allowOther: false, required: false, options: [
+      { value: 'family', labelAr: 'عائلات', labelEn: 'Families' },
+      { value: 'singles', labelAr: 'عزاب', labelEn: 'Singles' },
     ]},
   ],
   'for-rent': [
