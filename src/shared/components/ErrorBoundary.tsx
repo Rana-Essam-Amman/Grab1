@@ -64,7 +64,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
           <p style={{ color: '#6B7280', marginBottom: '24px', maxWidth: '400px' }}>
             The application encountered an unexpected error. We've logged the details for our team.
           </p>
-          
+
           <div style={{ display: 'flex', gap: '12px', marginBottom: '40px' }}>
             <button
               onClick={() => window.location.reload()}
@@ -82,7 +82,10 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
             </button>
             <button
               onClick={() => {
-                localStorage.clear();
+                // 🛡️ Preserve listings — never wipe catch_listings* (they must never vanish).
+                Object.keys(localStorage)
+                  .filter((k) => !k.startsWith('catch_listings'))
+                  .forEach((k) => { try { localStorage.removeItem(k); } catch {} });
                 window.location.reload();
               }}
               style={{
@@ -114,4 +117,3 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     return this.props.children;
   }
 }
-
