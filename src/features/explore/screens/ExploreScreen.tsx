@@ -7,6 +7,7 @@ import { ExploreTopSections } from '../components/ExploreTopSections';
 import { FiltersTriggerBar } from '../components/filters/FiltersTriggerBar';
 import { ExploreListingsSections } from '../components/ExploreListingsSections';
 import { SearchRelatedBanner } from '@/features/listings/components/SearchRelatedBanner';
+import { SyncStatusBanner } from '@/shared/components/SyncStatusBanner';
 import { useListings } from '@/hooks/useListings';
 
 function useDebouncedValue<T>(value: T, delayMs: number): T {
@@ -82,6 +83,9 @@ export const ExploreScreen: React.FC = () => {
           onDismiss={() => setVoidedNotice(null)}
         />
       )}
+
+      {/* Sync Status: stale data / refreshing indicator */}
+      <SyncStatusBanner />
 
       {!isSearchFocused && (
         <ExploreTopSections displayListings={displayListings} />
