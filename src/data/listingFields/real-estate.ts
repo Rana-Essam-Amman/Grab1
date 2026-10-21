@@ -125,7 +125,6 @@ const FOREIGN_FURNISHED: ListingFieldOption[] = [
   { value: 'unfurnished', labelAr: 'غير مفروش', labelEn: 'Unfurnished' },
 ];
 
-// ─── New: Shared Rooms ────────────────────────────────────────────────────
 const SHARED_ROOM_TYPES: ListingFieldOption[] = [
   { value: 'shared_room', labelAr: 'غرفة مشتركة', labelEn: 'Shared Room' },
   { value: 'private_room', labelAr: 'غرفة خاصة', labelEn: 'Private Room' },
@@ -140,7 +139,6 @@ const GENDER_OPTIONS: ListingFieldOption[] = [
   { value: 'mixed', labelAr: 'مختلط', labelEn: 'Mixed' },
 ];
 
-// ─── New: Hotel Apartments ────────────────────────────────────────────────
 const HOTEL_APARTMENT_TYPES: ListingFieldOption[] = [
   { value: 'studio', labelAr: 'استوديو فندقي', labelEn: 'Hotel Studio' },
   { value: 'one_bedroom', labelAr: 'غرفة وصالة', labelEn: '1BR Suite' },
@@ -154,21 +152,18 @@ const STAR_RATING_OPTIONS: ListingFieldOption[] = [
   { value: '5', labelAr: '5 نجوم', labelEn: '5 Stars' },
 ];
 
-// ─── New: Whole Buildings ─────────────────────────────────────────────────
 const WHOLE_BUILDING_TYPES: ListingFieldOption[] = [
   { value: 'residential', labelAr: 'عمارة سكنية', labelEn: 'Residential Building' },
   { value: 'commercial', labelAr: 'عمارة تجارية', labelEn: 'Commercial Building' },
   { value: 'mixed', labelAr: 'عمارة مختلطة', labelEn: 'Mixed-Use Building' },
 ];
 
-// ─── New: Staff Housing ───────────────────────────────────────────────────
 const STAFF_HOUSING_TYPES: ListingFieldOption[] = [
   { value: 'labor', labelAr: 'سكن عمال', labelEn: 'Labor Housing' },
   { value: 'staff', labelAr: 'سكن موظفين', labelEn: 'Staff Housing' },
   { value: 'dormitory', labelAr: 'سكن جماعي', labelEn: 'Dormitory' },
 ];
 
-// ─── New: Construction ────────────────────────────────────────────────────
 const CONSTRUCTION_SERVICES: ListingFieldOption[] = [
   { value: 'new_build', labelAr: 'بناء جديد', labelEn: 'New Construction' },
   { value: 'renovation', labelAr: 'ترميم وتجديد', labelEn: 'Renovation' },
