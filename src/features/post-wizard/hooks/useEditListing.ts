@@ -34,6 +34,11 @@ export function useEditListing() {
   const mOpts = useMemo(() => cBrand ? getModelOptions(categorySlug, cBrand, isArabic) : [], [categorySlug, cBrand, isArabic]);
 
   const fields = useMemo(() => getFieldsForListing(categorySlug, subcategorySlug).map((f) => {
+    // Prefer rich options if present (new registry), fall back to legacy strings
+    if (f.richOptions && f.richOptions.length > 0) {
+      const richOpts = f.richOptions.map((o) => (isArabic ? o.labelAr : o.labelEn));
+      return { ...f, options: richOpts };
+    }
     if (f.key === 'make' || f.key === 'brand' || f.key === 'carMake') {
       // Category has brand catalog → dropdown; otherwise → free text
       return bOpts.length > 0
