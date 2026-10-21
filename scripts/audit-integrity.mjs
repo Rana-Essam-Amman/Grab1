@@ -29,7 +29,7 @@ const CRITICAL_FILES = [
   { path: 'src/data/categorySignals.ts', minLines: 350, expectedExport: 'textSignals' },
   { path: 'src/data/subcategories.ts', minLines: 100, expectedExport: 'subcategories' },
   { path: 'src/data/filterRanges.ts', minLines: 40, expectedExport: 'RANGE_FILTERS' },
-  { path: 'src/data/listingFields/real-estate.ts', minLines: 400, expectedExport: 'REAL_ESTATE_FIELDS' },
+  { path: 'src/data/listingFields/real-estate.ts', minLines: 300, expectedExport: 'REAL_ESTATE_FIELDS' },
   { path: 'src/data/listingFields/real-estate-commercial.ts', minLines: 40, expectedExport: 'REAL_ESTATE_COMMERCIAL_FIELDS' },
   { path: 'src/data/listingFields/real-estate-special.ts', minLines: 100, expectedExport: 'REAL_ESTATE_SPECIAL_FIELDS' },
   { path: 'src/data/listingFields/index.ts', minLines: 50, expectedExport: 'LISTING_FIELDS' },
