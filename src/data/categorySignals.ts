@@ -178,6 +178,10 @@ export const textSignals: Record<string, CategoryHint> = {
   'construction and contracting': { categorySlug: 'real-estate', subcategorySlug: 'construction', labelAr: 'مقاولات وإنشاءات', labelEn: 'Construction & Contracting' },
   'أرض': { categorySlug: 'real-estate', subcategorySlug: 'lands', labelAr: 'أراضي للبيع', labelEn: 'Lands for Sale' },
 
+  // ═══════════ ELECTRONICS (placed before MOBILES to avoid 'سامسونج' shadowing) ═══════════
+  'تلفزيون': { categorySlug: 'electronics', subcategorySlug: 'tv', labelAr: 'تلفزيونات', labelEn: 'TVs' },
+  'tv': { categorySlug: 'electronics', subcategorySlug: 'tv', labelAr: 'تلفزيونات', labelEn: 'TVs' },
+
   // ═══════════ MOBILES ═══════════
   'جوال': { categorySlug: 'mobiles', subcategorySlug: 'phones', labelAr: 'جوالات', labelEn: 'Mobile Phones' },
   'موبايل': { categorySlug: 'mobiles', subcategorySlug: 'phones', labelAr: 'جوالات', labelEn: 'Mobile Phones' },
@@ -499,9 +503,7 @@ export const textSignals: Record<string, CategoryHint> = {
   'clearance': { categorySlug: 'krakeeb', subcategorySlug: 'clearance', labelAr: 'تصفية', labelEn: 'Clearance' },
 
   // ═══════════ ELECTRONICS ═══════════
-  'تلفزيون': { categorySlug: 'electronics', subcategorySlug: 'tv', labelAr: 'تلفزيونات', labelEn: 'TVs' },
   'تلفاز': { categorySlug: 'electronics', subcategorySlug: 'tv', labelAr: 'تلفزيونات', labelEn: 'TVs' },
-  'tv': { categorySlug: 'electronics', subcategorySlug: 'tv', labelAr: 'تلفزيونات', labelEn: 'TVs' },
   'television': { categorySlug: 'electronics', subcategorySlug: 'tv', labelAr: 'تلفزيونات', labelEn: 'TVs' },
   'ثلاجة': { categorySlug: 'electronics', subcategorySlug: 'refrigerators', labelAr: 'ثلاجات', labelEn: 'Refrigerators' },
   'براد': { categorySlug: 'electronics', subcategorySlug: 'refrigerators', labelAr: 'ثلاجات', labelEn: 'Refrigerators' },
