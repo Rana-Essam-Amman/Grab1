@@ -124,17 +124,17 @@ export const textSignals: Record<string, CategoryHint> = {
   'plot': { categorySlug: 'real-estate', subcategorySlug: 'lands', labelAr: 'أراضي للبيع', labelEn: 'Lands for Sale' },
 
   // ═══════════ REAL ESTATE / COMMERCIAL ═══════════
-  'مكتب': { categorySlug: 'real-estate', subcategorySlug: 'commercial', labelAr: 'عقارات تجارية', labelEn: 'Commercial Real Estate' },
-  'محل تجاري': { categorySlug: 'real-estate', subcategorySlug: 'commercial', labelAr: 'عقارات تجارية', labelEn: 'Commercial Real Estate' },
-  'مستودع': { categorySlug: 'real-estate', subcategorySlug: 'commercial', labelAr: 'عقارات تجارية', labelEn: 'Commercial Real Estate' },
-  'office': { categorySlug: 'real-estate', subcategorySlug: 'commercial', labelAr: 'عقارات تجارية', labelEn: 'Commercial Real Estate' },
-  'warehouse': { categorySlug: 'real-estate', subcategorySlug: 'commercial', labelAr: 'عقارات تجارية', labelEn: 'Commercial Real Estate' },
+  'مكتب': { categorySlug: 'real-estate', subcategorySlug: 'commercial-for-sale', labelAr: 'عقارات تجارية للبيع', labelEn: 'Commercial for Sale' },
+  'محل تجاري': { categorySlug: 'real-estate', subcategorySlug: 'commercial-for-sale', labelAr: 'عقارات تجارية للبيع', labelEn: 'Commercial for Sale' },
+  'مستودع': { categorySlug: 'real-estate', subcategorySlug: 'commercial-for-sale', labelAr: 'عقارات تجارية للبيع', labelEn: 'Commercial for Sale' },
+  'office': { categorySlug: 'real-estate', subcategorySlug: 'commercial-for-sale', labelAr: 'عقارات تجارية للبيع', labelEn: 'Commercial for Sale' },
+  'warehouse': { categorySlug: 'real-estate', subcategorySlug: 'commercial-for-sale', labelAr: 'عقارات تجارية للبيع', labelEn: 'Commercial for Sale' },
 
   // ═══════════ REAL ESTATE / CHALETS ═══════════
-  'شاليه': { categorySlug: 'real-estate', subcategorySlug: 'chalets', labelAr: 'شاليهات ومزارع', labelEn: 'Chalets & Farmhouses' },
-  'مزرعة': { categorySlug: 'real-estate', subcategorySlug: 'chalets', labelAr: 'شاليهات ومزارع', labelEn: 'Chalets & Farmhouses' },
-  'استراحة': { categorySlug: 'real-estate', subcategorySlug: 'chalets', labelAr: 'شاليهات ومزارع', labelEn: 'Chalets & Farmhouses' },
-  'chalet': { categorySlug: 'real-estate', subcategorySlug: 'chalets', labelAr: 'شاليهات ومزارع', labelEn: 'Chalets & Farmhouses' },
+  'شاليه': { categorySlug: 'real-estate', subcategorySlug: 'chalets-for-rent', labelAr: 'شاليهات ومزارع للإيجار', labelEn: 'Chalets for Rent' },
+  'مزرعة': { categorySlug: 'real-estate', subcategorySlug: 'chalets-for-rent', labelAr: 'شاليهات ومزارع للإيجار', labelEn: 'Chalets for Rent' },
+  'استراحة': { categorySlug: 'real-estate', subcategorySlug: 'chalets-for-rent', labelAr: 'شاليهات ومزارع للإيجار', labelEn: 'Chalets for Rent' },
+  'chalet': { categorySlug: 'real-estate', subcategorySlug: 'chalets-for-rent', labelAr: 'شاليهات ومزارع للإيجار', labelEn: 'Chalets for Rent' },
 
   // ═══════════ MOBILES ═══════════
   'جوال': { categorySlug: 'mobiles', subcategorySlug: 'phones', labelAr: 'جوالات', labelEn: 'Mobile Phones' },
