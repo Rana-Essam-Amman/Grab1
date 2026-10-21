@@ -1,11 +1,12 @@
 import type { CategoryFieldMap, ListingFieldOption } from './types';
 
 const CURRENT_YEAR = new Date().getFullYear();
-const BUILDING_YEAR_OPTIONS: ListingFieldOption[] = Array.from({ length: 80 }, (_, i) => ({
+
+export const BUILDING_YEAR_OPTIONS: ListingFieldOption[] = Array.from({ length: 80 }, (_, i) => ({
   value: String(CURRENT_YEAR - i), labelAr: String(CURRENT_YEAR - i), labelEn: String(CURRENT_YEAR - i),
 }));
 
-const RESIDENTIAL_AMENITIES: ListingFieldOption[] = [
+export const RESIDENTIAL_AMENITIES: ListingFieldOption[] = [
   { value: 'pool', labelAr: 'مسبح', labelEn: 'Pool' }, { value: 'garden', labelAr: 'حديقة', labelEn: 'Garden' },
   { value: 'elevator', labelAr: 'مصعد', labelEn: 'Elevator' }, { value: 'parking', labelAr: 'موقف سيارة', labelEn: 'Parking' },
   { value: 'security', labelAr: 'أمن 24/7', labelEn: '24/7 Security' }, { value: 'gym', labelAr: 'صالة رياضية', labelEn: 'Gym' },
@@ -13,19 +14,19 @@ const RESIDENTIAL_AMENITIES: ListingFieldOption[] = [
   { value: 'laundry_room', labelAr: 'غرفة غسيل', labelEn: 'Laundry Room' }, { value: 'fitted_kitchen', labelAr: 'مطبخ راكب', labelEn: 'Fitted Kitchen' },
 ];
 
-const COMMERCIAL_AMENITIES: ListingFieldOption[] = [
+export const COMMERCIAL_AMENITIES: ListingFieldOption[] = [
   { value: 'kitchen', labelAr: 'مطبخ', labelEn: 'Kitchen' }, { value: 'bathroom', labelAr: 'حمام', labelEn: 'Bathroom' },
   { value: 'parking', labelAr: 'موقف', labelEn: 'Parking' }, { value: 'storage', labelAr: 'مستودع', labelEn: 'Storage' },
   { value: 'elevator', labelAr: 'مصعد', labelEn: 'Elevator' }, { value: 'ac', labelAr: 'مكيفات', labelEn: 'AC' },
 ];
 
-const CHALET_AMENITIES: ListingFieldOption[] = [
+export const CHALET_AMENITIES: ListingFieldOption[] = [
   { value: 'garden', labelAr: 'حديقة', labelEn: 'Garden' }, { value: 'outdoor_seating', labelAr: 'جلسة خارجية', labelEn: 'Outdoor Seating' },
   { value: 'bbq', labelAr: 'شواية', labelEn: 'BBQ' }, { value: 'playground', labelAr: 'ملعب أطفال', labelEn: 'Playground' },
   { value: 'pool', labelAr: 'مسبح', labelEn: 'Pool' },
 ];
 
-const HOTEL_AMENITIES: ListingFieldOption[] = [
+export const HOTEL_AMENITIES: ListingFieldOption[] = [
   { value: 'room_service', labelAr: 'خدمة الغرف', labelEn: 'Room Service' }, { value: 'wifi', labelAr: 'واي فاي', labelEn: 'WiFi' },
   { value: 'gym', labelAr: 'صالة رياضية', labelEn: 'Gym' }, { value: 'pool', labelAr: 'مسبح', labelEn: 'Pool' },
   { value: 'spa', labelAr: 'سبا', labelEn: 'Spa' }, { value: 'parking', labelAr: 'موقف', labelEn: 'Parking' },
@@ -33,63 +34,63 @@ const HOTEL_AMENITIES: ListingFieldOption[] = [
   { value: 'restaurant', labelAr: 'مطعم', labelEn: 'Restaurant' }, { value: 'reception_24h', labelAr: 'استقبال 24 ساعة', labelEn: '24/7 Reception' },
 ];
 
-const VIEW_OPTIONS: ListingFieldOption[] = [
+export const VIEW_OPTIONS: ListingFieldOption[] = [
   { value: 'street', labelAr: 'شارع', labelEn: 'Street' }, { value: 'garden', labelAr: 'حديقة', labelEn: 'Garden' },
   { value: 'pool', labelAr: 'مسبح', labelEn: 'Pool' }, { value: 'sea', labelAr: 'بحر', labelEn: 'Sea' },
   { value: 'mountain', labelAr: 'جبل', labelEn: 'Mountain' }, { value: 'city', labelAr: 'مدينة', labelEn: 'City' },
 ];
 
-const PARKING_OPTIONS: ListingFieldOption[] = [
+export const PARKING_OPTIONS: ListingFieldOption[] = [
   { value: 'none', labelAr: 'لا يوجد', labelEn: 'None' }, { value: '1', labelAr: '1', labelEn: '1' },
   { value: '2', labelAr: '2', labelEn: '2' }, { value: '3+', labelAr: '3+', labelEn: '3+' },
 ];
 
-const RESIDENTIAL_TYPES: ListingFieldOption[] = [
+export const RESIDENTIAL_TYPES: ListingFieldOption[] = [
   { value: 'شقة', labelAr: 'شقة', labelEn: 'Apartment' }, { value: 'منزل', labelAr: 'منزل', labelEn: 'House' },
   { value: 'فيلا', labelAr: 'فيلا', labelEn: 'Villa' }, { value: 'أرض', labelAr: 'أرض', labelEn: 'Land' },
 ];
 
-const RENT_RESIDENTIAL_TYPES: ListingFieldOption[] = [
+export const RENT_RESIDENTIAL_TYPES: ListingFieldOption[] = [
   { value: 'شقة', labelAr: 'شقة', labelEn: 'Apartment' }, { value: 'استديو', labelAr: 'استديو', labelEn: 'Studio' },
   { value: 'فيلا', labelAr: 'فيلا', labelEn: 'Villa' },
 ];
 
-const RENT_PERIODS: ListingFieldOption[] = [
+export const RENT_PERIODS: ListingFieldOption[] = [
   { value: 'monthly', labelAr: 'شهري', labelEn: 'Monthly' }, { value: 'quarterly', labelAr: 'ربع سنوي', labelEn: 'Quarterly' },
   { value: 'yearly', labelAr: 'سنوي', labelEn: 'Yearly' }, { value: 'daily', labelAr: 'يومي', labelEn: 'Daily' },
 ];
 
-const COMMERCIAL_TYPES: ListingFieldOption[] = [
+export const COMMERCIAL_TYPES: ListingFieldOption[] = [
   { value: 'shop', labelAr: 'محل', labelEn: 'Shop' }, { value: 'office', labelAr: 'مكتب', labelEn: 'Office' },
   { value: 'showroom', labelAr: 'معرض', labelEn: 'Showroom' }, { value: 'warehouse', labelAr: 'مستودع', labelEn: 'Warehouse' },
   { value: 'workshop', labelAr: 'ورشة', labelEn: 'Workshop' }, { value: 'restaurant', labelAr: 'مطعم', labelEn: 'Restaurant' },
   { value: 'cafe', labelAr: 'كافيه', labelEn: 'Cafe' },
 ];
 
-const ZONING_OPTIONS: ListingFieldOption[] = [
+export const ZONING_OPTIONS: ListingFieldOption[] = [
   { value: 'residential', labelAr: 'سكني', labelEn: 'Residential' }, { value: 'commercial', labelAr: 'تجاري', labelEn: 'Commercial' },
   { value: 'agricultural', labelAr: 'زراعي', labelEn: 'Agricultural' }, { value: 'industrial', labelAr: 'صناعي', labelEn: 'Industrial' },
 ];
 
-const ORIENTATION_OPTIONS: ListingFieldOption[] = [
+export const ORIENTATION_OPTIONS: ListingFieldOption[] = [
   { value: 'north', labelAr: 'شمالية', labelEn: 'North' }, { value: 'south', labelAr: 'جنوبية', labelEn: 'South' },
   { value: 'east', labelAr: 'شرقية', labelEn: 'East' }, { value: 'west', labelAr: 'غربية', labelEn: 'West' },
 ];
 
-const POOL_OPTIONS: ListingFieldOption[] = [
+export const POOL_OPTIONS: ListingFieldOption[] = [
   { value: 'private', labelAr: 'خاص', labelEn: 'Private' }, { value: 'shared', labelAr: 'مشترك', labelEn: 'Shared' }, { value: 'none', labelAr: 'لا يوجد', labelEn: 'None' },
 ];
 
-const CONDITION_OPTIONS: ListingFieldOption[] = [
+export const CONDITION_OPTIONS: ListingFieldOption[] = [
   { value: 'new', labelAr: 'جديد', labelEn: 'New' }, { value: 'excellent', labelAr: 'ممتاز', labelEn: 'Excellent' },
   { value: 'good', labelAr: 'جيد', labelEn: 'Good' }, { value: 'fair', labelAr: 'مقبول', labelEn: 'Fair' },
 ];
 
-const FURNISHED_OPTIONS: ListingFieldOption[] = [
+export const FURNISHED_OPTIONS: ListingFieldOption[] = [
   { value: 'full', labelAr: 'كامل', labelEn: 'Full' }, { value: 'partial', labelAr: 'جزئي', labelEn: 'Partial' }, { value: 'unfurnished', labelAr: 'غير مفروش', labelEn: 'Unfurnished' },
 ];
 
-const CHEQUES_OPTIONS: ListingFieldOption[] = [
+export const CHEQUES_OPTIONS: ListingFieldOption[] = [
   { value: '1', labelAr: 'شيك واحد', labelEn: '1 Cheque' },
   { value: '2', labelAr: 'شيكان', labelEn: '2 Cheques' },
   { value: '3', labelAr: '3 شيكات', labelEn: '3 Cheques' },
@@ -98,20 +99,20 @@ const CHEQUES_OPTIONS: ListingFieldOption[] = [
   { value: '12', labelAr: '12 شيكاً', labelEn: '12 Cheques' },
 ];
 
-const SELLER_TYPE_OPTIONS: ListingFieldOption[] = [
+export const SELLER_TYPE_OPTIONS: ListingFieldOption[] = [
   { value: 'owner', labelAr: 'مالك', labelEn: 'Owner' },
   { value: 'broker', labelAr: 'وسيط', labelEn: 'Broker' },
   { value: 'company', labelAr: 'شركة', labelEn: 'Company' },
 ];
 
-const FINISHING_OPTIONS: ListingFieldOption[] = [
+export const FINISHING_OPTIONS: ListingFieldOption[] = [
   { value: 'normal', labelAr: 'تشطيب عادي', labelEn: 'Normal Finish' },
   { value: 'semi', labelAr: 'نصف تشطيب', labelEn: 'Semi-Finished' },
   { value: 'super', labelAr: 'سوبر ديلوكس', labelEn: 'Super Deluxe' },
   { value: 'deluxe', labelAr: 'ديلوكس', labelEn: 'Deluxe' },
 ];
 
-const FOREIGN_PROPERTY_TYPES: ListingFieldOption[] = [
+export const FOREIGN_PROPERTY_TYPES: ListingFieldOption[] = [
   { value: 'شقة', labelAr: 'شقة', labelEn: 'Apartment' },
   { value: 'منزل', labelAr: 'منزل', labelEn: 'House' },
   { value: 'فيلا', labelAr: 'فيلا', labelEn: 'Villa' },
@@ -119,52 +120,52 @@ const FOREIGN_PROPERTY_TYPES: ListingFieldOption[] = [
   { value: 'تجاري', labelAr: 'تجاري', labelEn: 'Commercial' },
 ];
 
-const FOREIGN_FURNISHED: ListingFieldOption[] = [
+export const FOREIGN_FURNISHED: ListingFieldOption[] = [
   { value: 'full', labelAr: 'مفروش كامل', labelEn: 'Fully Furnished' },
   { value: 'partial', labelAr: 'مفروش جزئي', labelEn: 'Partially Furnished' },
   { value: 'unfurnished', labelAr: 'غير مفروش', labelEn: 'Unfurnished' },
 ];
 
-const SHARED_ROOM_TYPES: ListingFieldOption[] = [
+export const SHARED_ROOM_TYPES: ListingFieldOption[] = [
   { value: 'shared_room', labelAr: 'غرفة مشتركة', labelEn: 'Shared Room' },
   { value: 'private_room', labelAr: 'غرفة خاصة', labelEn: 'Private Room' },
   { value: 'bed_space', labelAr: 'سرير في غرفة', labelEn: 'Bed Space' },
   { value: 'studio_shared', labelAr: 'استوديو مشترك', labelEn: 'Shared Studio' },
 ];
 
-const GENDER_OPTIONS: ListingFieldOption[] = [
+export const GENDER_OPTIONS: ListingFieldOption[] = [
   { value: 'male', labelAr: 'للذكور', labelEn: 'For Males' },
   { value: 'female', labelAr: 'للإناث', labelEn: 'For Females' },
   { value: 'family', labelAr: 'للعائلات', labelEn: 'For Families' },
   { value: 'mixed', labelAr: 'مختلط', labelEn: 'Mixed' },
 ];
 
-const HOTEL_APARTMENT_TYPES: ListingFieldOption[] = [
+export const HOTEL_APARTMENT_TYPES: ListingFieldOption[] = [
   { value: 'studio', labelAr: 'استوديو فندقي', labelEn: 'Hotel Studio' },
   { value: 'one_bedroom', labelAr: 'غرفة وصالة', labelEn: '1BR Suite' },
   { value: 'two_bedroom', labelAr: 'غرفتين وصالة', labelEn: '2BR Suite' },
   { value: 'presidential', labelAr: 'سويت رئاسي', labelEn: 'Presidential Suite' },
 ];
 
-const STAR_RATING_OPTIONS: ListingFieldOption[] = [
+export const STAR_RATING_OPTIONS: ListingFieldOption[] = [
   { value: '3', labelAr: '3 نجوم', labelEn: '3 Stars' },
   { value: '4', labelAr: '4 نجوم', labelEn: '4 Stars' },
   { value: '5', labelAr: '5 نجوم', labelEn: '5 Stars' },
 ];
 
-const WHOLE_BUILDING_TYPES: ListingFieldOption[] = [
+export const WHOLE_BUILDING_TYPES: ListingFieldOption[] = [
   { value: 'residential', labelAr: 'عمارة سكنية', labelEn: 'Residential Building' },
   { value: 'commercial', labelAr: 'عمارة تجارية', labelEn: 'Commercial Building' },
   { value: 'mixed', labelAr: 'عمارة مختلطة', labelEn: 'Mixed-Use Building' },
 ];
 
-const STAFF_HOUSING_TYPES: ListingFieldOption[] = [
+export const STAFF_HOUSING_TYPES: ListingFieldOption[] = [
   { value: 'labor', labelAr: 'سكن عمال', labelEn: 'Labor Housing' },
   { value: 'staff', labelAr: 'سكن موظفين', labelEn: 'Staff Housing' },
   { value: 'dormitory', labelAr: 'سكن جماعي', labelEn: 'Dormitory' },
 ];
 
-const CONSTRUCTION_SERVICES: ListingFieldOption[] = [
+export const CONSTRUCTION_SERVICES: ListingFieldOption[] = [
   { value: 'new_build', labelAr: 'بناء جديد', labelEn: 'New Construction' },
   { value: 'renovation', labelAr: 'ترميم وتجديد', labelEn: 'Renovation' },
   { value: 'finishing', labelAr: 'تشطيب', labelEn: 'Finishing' },
@@ -173,21 +174,21 @@ const CONSTRUCTION_SERVICES: ListingFieldOption[] = [
   { value: 'design', labelAr: 'تصميم ومخططات', labelEn: 'Design & Blueprints' },
 ];
 
-const CONSTRUCTION_PROJECT_TYPES: ListingFieldOption[] = [
+export const CONSTRUCTION_PROJECT_TYPES: ListingFieldOption[] = [
   { value: 'residential', labelAr: 'سكني', labelEn: 'Residential' },
   { value: 'commercial', labelAr: 'تجاري', labelEn: 'Commercial' },
   { value: 'industrial', labelAr: 'صناعي', labelEn: 'Industrial' },
   { value: 'infrastructure', labelAr: 'بنية تحتية', labelEn: 'Infrastructure' },
 ];
 
-const CONSTRUCTION_DURATION: ListingFieldOption[] = [
+export const CONSTRUCTION_DURATION: ListingFieldOption[] = [
   { value: '1_3_months', labelAr: '1-3 أشهر', labelEn: '1-3 Months' },
   { value: '3_6_months', labelAr: '3-6 أشهر', labelEn: '3-6 Months' },
   { value: '6_12_months', labelAr: '6-12 شهر', labelEn: '6-12 Months' },
   { value: 'over_12', labelAr: 'أكثر من سنة', labelEn: 'Over 12 Months' },
 ];
 
-const CONSTRUCTION_INCLUDES: ListingFieldOption[] = [
+export const CONSTRUCTION_INCLUDES: ListingFieldOption[] = [
   { value: 'materials', labelAr: 'مواد بناء', labelEn: 'Materials' },
   { value: 'labor', labelAr: 'عمالة', labelEn: 'Labor' },
   { value: 'design', labelAr: 'تصاميم هندسية', labelEn: 'Engineering Design' },
@@ -195,32 +196,32 @@ const CONSTRUCTION_INCLUDES: ListingFieldOption[] = [
   { value: 'equipment', labelAr: 'معدات وآليات', labelEn: 'Equipment & Machinery' },
 ];
 
-const CONSTRUCTION_PRICE_TYPE: ListingFieldOption[] = [
+export const CONSTRUCTION_PRICE_TYPE: ListingFieldOption[] = [
   { value: 'per_sqm', labelAr: 'سعر لكل م²', labelEn: 'Price Per SQM' },
   { value: 'total', labelAr: 'سعر إجمالي للمشروع', labelEn: 'Total Project Price' },
   { value: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable' },
 ];
 
-const CONTRACTOR_TYPE: ListingFieldOption[] = [
+export const CONTRACTOR_TYPE: ListingFieldOption[] = [
   { value: 'individual', labelAr: 'مقاول فردي', labelEn: 'Individual Contractor' },
   { value: 'company', labelAr: 'شركة مقاولات', labelEn: 'Construction Company' },
   { value: 'engineering_office', labelAr: 'مكتب هندسي', labelEn: 'Engineering Office' },
 ];
 
-const APARTMENT_TYPES: ListingFieldOption[] = [
+export const APARTMENT_TYPES: ListingFieldOption[] = [
   { value: 'apartment', labelAr: 'شقة', labelEn: 'Apartment' },
   { value: 'studio', labelAr: 'استوديو', labelEn: 'Studio' },
   { value: 'duplex', labelAr: 'دوبلكس', labelEn: 'Duplex' },
   { value: 'penthouse', labelAr: 'بنتهاوس', labelEn: 'Penthouse' },
 ];
 
-const VILLA_TYPES: ListingFieldOption[] = [
+export const VILLA_TYPES: ListingFieldOption[] = [
   { value: 'villa', labelAr: 'فيلا', labelEn: 'Villa' },
   { value: 'palace', labelAr: 'قصر', labelEn: 'Palace' },
   { value: 'townhouse', labelAr: 'تاون هاوس', labelEn: 'Townhouse' },
 ];
 
-const HOUSE_TYPES: ListingFieldOption[] = [
+export const HOUSE_TYPES: ListingFieldOption[] = [
   { value: 'house', labelAr: 'منزل', labelEn: 'House' },
   { value: 'traditional', labelAr: 'منزل تراثي', labelEn: 'Traditional House' },
 ];
@@ -315,18 +316,6 @@ export const REAL_ESTATE_FIELDS: CategoryFieldMap = {
     { key: 'finishingType', labelAr: 'نوع التشطيب', labelEn: 'Finishing Type', type: 'select', allowOther: false, required: false, options: FINISHING_OPTIONS },
     { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: SELLER_TYPE_OPTIONS },
     { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
-    { key: 'paymentMethod', labelAr: 'طريقة الدفع', labelEn: 'Payment Method', type: 'select', allowOther: false, required: true, options: [
-      { value: 'cash', labelAr: 'كاش', labelEn: 'Cash' },
-      { value: 'installments', labelAr: 'تقسيط', labelEn: 'Installments' },
-    ]},
-    { key: 'deliveryDate', labelAr: 'حالة التسليم', labelEn: 'Delivery Date', type: 'select', allowOther: false, required: false, options: [
-      { value: 'ready', labelAr: 'جاهز للسكن', labelEn: 'Ready' },
-      { value: 'under_construction', labelAr: 'قيد الإنشاء', labelEn: 'Under Construction' },
-    ]},
-    { key: 'ownershipType', labelAr: 'نوع الملكية', labelEn: 'Ownership Type', type: 'select', allowOther: false, required: false, options: [
-      { value: 'tabu', labelAr: 'طابو', labelEn: 'Tabu' },
-      { value: 'not_tabu', labelAr: 'تسجيل عادي / غير طابو', labelEn: 'Not Tabu' },
-    ]},
   ],
   'apartments-for-rent': [
     { key: 'propertyType', labelAr: 'نوع الشقة', labelEn: 'Apartment Type', type: 'select', allowOther: false, required: true, options: APARTMENT_TYPES },
@@ -401,145 +390,5 @@ export const REAL_ESTATE_FIELDS: CategoryFieldMap = {
       { value: 'students', labelAr: 'طلاب', labelEn: 'Students' },
       { value: 'anyone', labelAr: 'الجميع', labelEn: 'Anyone' },
     ]},
-  ],
-  commercial: [
-    { key: 'propertyType', labelAr: 'نوع العقار التجاري', labelEn: 'Commercial Type', type: 'select', allowOther: false, required: true, options: COMMERCIAL_TYPES },
-    { key: 'area', labelAr: 'المساحة (م²)', labelEn: 'Area (m²)', type: 'number', required: true },
-    { key: 'floor', labelAr: 'الطابق', labelEn: 'Floor', type: 'text', required: false },
-    { key: 'frontage', labelAr: 'عرض الواجهة (متر)', labelEn: 'Frontage (m)', type: 'number', required: false },
-    { key: 'footTraffic', labelAr: 'الحركة والنشاط', labelEn: 'Foot Traffic', type: 'select', allowOther: false, required: false, options: [
-      { value: 'low', labelAr: 'منخفضة', labelEn: 'Low' }, { value: 'medium', labelAr: 'متوسطة', labelEn: 'Medium' }, { value: 'high', labelAr: 'عالية', labelEn: 'High' },
-    ]},
-    { key: 'rentOrSale', labelAr: 'نوع العرض', labelEn: 'Offer Type', type: 'select', allowOther: false, required: true, options: [
-      { value: 'for_rent', labelAr: 'للإيجار', labelEn: 'For Rent' }, { value: 'for_sale', labelAr: 'للبيع', labelEn: 'For Sale' },
-    ]},
-    { key: 'rentPeriod', labelAr: 'فترة الإيجار', labelEn: 'Rent Period', type: 'select', allowOther: false, required: false, options: RENT_PERIODS },
-    { key: 'amenities', labelAr: 'المميزات والخدمات', labelEn: 'Amenities', type: 'select', multiSelect: true, allowOther: false, required: false, options: COMMERCIAL_AMENITIES },
-    { key: 'year', labelAr: 'سنة البناء', labelEn: 'Year Built', type: 'select', allowOther: false, required: false, options: BUILDING_YEAR_OPTIONS },
-    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: false, required: false, options: [
-      { value: 'new', labelAr: 'جديد', labelEn: 'New' }, { value: 'excellent', labelAr: 'ممتاز', labelEn: 'Excellent' },
-      { value: 'good', labelAr: 'جيد', labelEn: 'Good' }, { value: 'needs_renovation', labelAr: 'يحتاج تجديد', labelEn: 'Needs Renovation' },
-    ]},
-    { key: 'parking', labelAr: 'مواقف السيارات', labelEn: 'Parking', type: 'select', allowOther: false, required: false, options: PARKING_OPTIONS },
-    { key: 'securityDeposit', labelAr: 'مبلغ التأمين', labelEn: 'Security Deposit', type: 'number', required: false },
-    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: SELLER_TYPE_OPTIONS },
-    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
-    { key: 'businessType', labelAr: 'نوع النشاط', labelEn: 'Business Type', type: 'select', allowOther: false, required: false, options: [
-      { value: 'office', labelAr: 'مكتب', labelEn: 'Office' },
-      { value: 'shop', labelAr: 'محل تجاري', labelEn: 'Shop' },
-      { value: 'warehouse', labelAr: 'مستودع', labelEn: 'Warehouse' },
-      { value: 'clinic', labelAr: 'عيادة', labelEn: 'Clinic' },
-      { value: 'restaurant', labelAr: 'مطعم / كافيه', labelEn: 'Restaurant/Cafe' },
-    ]},
-    { key: 'ceilingHeight', labelAr: 'ارتفاع السقف (متر)', labelEn: 'Ceiling Height (m)', type: 'number', required: false },
-  ],
-  lands: [
-    { key: 'area', labelAr: 'المساحة (م²)', labelEn: 'Area (m²)', type: 'number', required: true },
-    { key: 'zoning', labelAr: 'نوع التنظيم / الاستخدام', labelEn: 'Zoning', type: 'select', allowOther: false, required: true, options: ZONING_OPTIONS },
-    { key: 'frontage', labelAr: 'عرض الواجهة (متر)', labelEn: 'Frontage (m)', type: 'number', required: false },
-    { key: 'orientation', labelAr: 'الاتجاه', labelEn: 'Orientation', type: 'select', allowOther: false, required: false, options: ORIENTATION_OPTIONS },
-    { key: 'corner', labelAr: 'قطعة زاوية', labelEn: 'Corner Plot', type: 'boolean', required: false },
-    { key: 'readyForBuilding', labelAr: 'جاهزة للبناء', labelEn: 'Ready For Building', type: 'boolean', required: false },
-    { key: 'waterAccess', labelAr: 'متوفر ماء', labelEn: 'Water Access', type: 'boolean', required: false },
-    { key: 'electricityAccess', labelAr: 'متوفر كهرباء', labelEn: 'Electricity Access', type: 'boolean', required: false },
-    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: SELLER_TYPE_OPTIONS },
-    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
-  ],
-  chalets: [
-    { key: 'rooms', labelAr: 'عدد الغرف', labelEn: 'Rooms', type: 'number', required: true },
-    { key: 'bathrooms', labelAr: 'الحمامات', labelEn: 'Bathrooms', type: 'number', required: true },
-    { key: 'area', labelAr: 'المساحة (م²)', labelEn: 'Area (m²)', type: 'number', required: true },
-    { key: 'pool', labelAr: 'المسبح', labelEn: 'Pool', type: 'select', allowOther: false, required: false, options: POOL_OPTIONS },
-    { key: 'view', labelAr: 'الإطلالة', labelEn: 'View', type: 'select', allowOther: false, required: false, options: VIEW_OPTIONS },
-    { key: 'amenities', labelAr: 'المميزات والخدمات', labelEn: 'Amenities', type: 'select', multiSelect: true, allowOther: false, required: false, options: CHALET_AMENITIES },
-    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: false, required: false, options: CONDITION_OPTIONS },
-    { key: 'furnished', labelAr: 'الفرش', labelEn: 'Furnished', type: 'select', allowOther: false, required: false, options: FURNISHED_OPTIONS },
-    { key: 'parking', labelAr: 'مواقف السيارات', labelEn: 'Parking', type: 'select', allowOther: false, required: false, options: PARKING_OPTIONS },
-    { key: 'minimumStay', labelAr: 'أقل مدة حجز', labelEn: 'Minimum Stay', type: 'select', allowOther: false, required: false, options: [
-      { value: 'daily', labelAr: 'يومي', labelEn: 'Daily' }, { value: 'weekly', labelAr: 'أسبوعي', labelEn: 'Weekly' }, { value: 'monthly', labelAr: 'شهري', labelEn: 'Monthly' },
-    ]},
-    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: SELLER_TYPE_OPTIONS },
-    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
-  ],
-  foreign: [
-    { key: 'country', labelAr: 'الدولة', labelEn: 'Country', type: 'text', required: true, placeholder: 'Turkey, UAE...' },
-    { key: 'city', labelAr: 'المدينة', labelEn: 'City', type: 'text', required: true },
-    { key: 'propertyType', labelAr: 'نوع العقار', labelEn: 'Property Type', type: 'select', allowOther: false, required: true, options: FOREIGN_PROPERTY_TYPES },
-    { key: 'area', labelAr: 'المساحة (م²)', labelEn: 'Area (m²)', type: 'number', required: true },
-    { key: 'bedrooms', labelAr: 'غرف النوم', labelEn: 'Bedrooms', type: 'number', required: false },
-    { key: 'bathrooms', labelAr: 'الحمامات', labelEn: 'Bathrooms', type: 'number', required: false },
-    { key: 'furnished', labelAr: 'الفرش', labelEn: 'Furnished', type: 'select', allowOther: false, required: false, options: FOREIGN_FURNISHED },
-    { key: 'purpose', labelAr: 'الغرض', labelEn: 'Purpose', type: 'select', allowOther: false, required: false, options: [
-      { value: 'sale', labelAr: 'للبيع', labelEn: 'For Sale' },
-      { value: 'rent', labelAr: 'للإيجار', labelEn: 'For Rent' },
-      { value: 'investment', labelAr: 'استثمار', labelEn: 'Investment' },
-    ]},
-  ],
-  'shared-rooms': [
-    { key: 'propertyType', labelAr: 'نوع الغرفة', labelEn: 'Room Type', type: 'select', allowOther: false, required: true, options: SHARED_ROOM_TYPES },
-    { key: 'rentPeriod', labelAr: 'فترة الإيجار', labelEn: 'Rent Period', type: 'select', allowOther: false, required: true, options: RENT_PERIODS },
-    { key: 'area', labelAr: 'المساحة (م²)', labelEn: 'Area (m²)', type: 'number', required: true },
-    { key: 'bedrooms', labelAr: 'غرف النوم', labelEn: 'Bedrooms', type: 'number', required: false },
-    { key: 'bathrooms', labelAr: 'الحمامات', labelEn: 'Bathrooms', type: 'number', required: false },
-    { key: 'gender', labelAr: 'التخصيص', labelEn: 'Gender', type: 'select', allowOther: false, required: true, options: GENDER_OPTIONS },
-    { key: 'currentOccupants', labelAr: 'عدد الساكنين حالياً', labelEn: 'Current Occupants', type: 'number', required: false },
-    { key: 'furnished', labelAr: 'الفرش', labelEn: 'Furnished', type: 'select', allowOther: false, required: false, options: FURNISHED_OPTIONS },
-    { key: 'utilitiesIncluded', labelAr: 'شامل الفواتير', labelEn: 'Utilities Included', type: 'boolean', required: false },
-    { key: 'amenities', labelAr: 'المميزات والخدمات', labelEn: 'Amenities', type: 'select', multiSelect: true, allowOther: false, required: false, options: RESIDENTIAL_AMENITIES },
-    { key: 'depositAmount', labelAr: 'مبلغ التأمين', labelEn: 'Deposit Amount', type: 'number', required: false },
-    { key: 'availableFrom', labelAr: 'متوفر من تاريخ', labelEn: 'Available From', type: 'text', required: false, placeholder: '2026-01-01' },
-    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: SELLER_TYPE_OPTIONS },
-    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
-  ],
-  'hotel-apartments': [
-    { key: 'propertyType', labelAr: 'نوع الجناح', labelEn: 'Suite Type', type: 'select', allowOther: false, required: true, options: HOTEL_APARTMENT_TYPES },
-    { key: 'rentPeriod', labelAr: 'فترة الإيجار', labelEn: 'Rent Period', type: 'select', allowOther: false, required: true, options: RENT_PERIODS },
-    { key: 'bedrooms', labelAr: 'غرف النوم', labelEn: 'Bedrooms', type: 'number', required: true },
-    { key: 'bathrooms', labelAr: 'الحمامات', labelEn: 'Bathrooms', type: 'number', required: true },
-    { key: 'area', labelAr: 'المساحة (م²)', labelEn: 'Area (m²)', type: 'number', required: false },
-    { key: 'starRating', labelAr: 'تصنيف النجوم', labelEn: 'Star Rating', type: 'select', allowOther: false, required: false, options: STAR_RATING_OPTIONS },
-    { key: 'amenities', labelAr: 'خدمات الفندق', labelEn: 'Hotel Amenities', type: 'select', multiSelect: true, allowOther: false, required: false, options: HOTEL_AMENITIES },
-    { key: 'view', labelAr: 'الإطلالة', labelEn: 'View', type: 'select', allowOther: false, required: false, options: VIEW_OPTIONS },
-    { key: 'parking', labelAr: 'مواقف السيارات', labelEn: 'Parking', type: 'select', allowOther: false, required: false, options: PARKING_OPTIONS },
-    { key: 'furnished', labelAr: 'الفرش', labelEn: 'Furnished', type: 'select', allowOther: false, required: false, options: FURNISHED_OPTIONS },
-    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: SELLER_TYPE_OPTIONS },
-    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
-  ],
-  'whole-buildings': [
-    { key: 'propertyType', labelAr: 'نوع المبنى', labelEn: 'Building Type', type: 'select', allowOther: false, required: true, options: WHOLE_BUILDING_TYPES },
-    { key: 'area', labelAr: 'مساحة الأرض (م²)', labelEn: 'Land Area (m²)', type: 'number', required: true },
-    { key: 'builtArea', labelAr: 'المساحة المبنية (م²)', labelEn: 'Built Area (m²)', type: 'number', required: false },
-    { key: 'floors', labelAr: 'عدد الطوابق', labelEn: 'Number of Floors', type: 'number', required: true },
-    { key: 'apartmentsCount', labelAr: 'عدد الوحدات/الشقق', labelEn: 'Number of Units', type: 'number', required: false },
-    { key: 'year', labelAr: 'سنة البناء', labelEn: 'Year Built', type: 'select', allowOther: false, required: false, options: BUILDING_YEAR_OPTIONS },
-    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: false, required: false, options: CONDITION_OPTIONS },
-    { key: 'currentIncome', labelAr: 'الدخل السنوي الحالي', labelEn: 'Current Annual Income', type: 'number', required: false },
-    { key: 'amenities', labelAr: 'المميزات والخدمات', labelEn: 'Amenities', type: 'select', multiSelect: true, allowOther: false, required: false, options: COMMERCIAL_AMENITIES },
-    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: SELLER_TYPE_OPTIONS },
-    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
-  ],
-  'staff-housing': [
-    { key: 'propertyType', labelAr: 'نوع السكن', labelEn: 'Housing Type', type: 'select', allowOther: false, required: true, options: STAFF_HOUSING_TYPES },
-    { key: 'capacity', labelAr: 'السعة (عدد الأشخاص)', labelEn: 'Capacity (Persons)', type: 'number', required: true },
-    { key: 'rentPeriod', labelAr: 'فترة الإيجار', labelEn: 'Rent Period', type: 'select', allowOther: false, required: true, options: RENT_PERIODS },
-    { key: 'area', labelAr: 'المساحة (م²)', labelEn: 'Area (m²)', type: 'number', required: false },
-    { key: 'bedrooms', labelAr: 'غرف النوم', labelEn: 'Bedrooms', type: 'number', required: false },
-    { key: 'bathrooms', labelAr: 'الحمامات', labelEn: 'Bathrooms', type: 'number', required: false },
-    { key: 'gender', labelAr: 'التخصيص', labelEn: 'Gender', type: 'select', allowOther: false, required: true, options: GENDER_OPTIONS },
-    { key: 'furnished', labelAr: 'الفرش', labelEn: 'Furnished', type: 'select', allowOther: false, required: false, options: FURNISHED_OPTIONS },
-    { key: 'amenities', labelAr: 'المميزات والخدمات', labelEn: 'Amenities', type: 'select', multiSelect: true, allowOther: false, required: false, options: RESIDENTIAL_AMENITIES },
-    { key: 'utilitiesIncluded', labelAr: 'شامل الفواتير', labelEn: 'Utilities Included', type: 'boolean', required: false },
-    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: SELLER_TYPE_OPTIONS },
-    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
-  ],
-  construction: [
-    { key: 'serviceType', labelAr: 'نوع الخدمة', labelEn: 'Service Type', type: 'select', allowOther: false, required: true, options: CONSTRUCTION_SERVICES },
-    { key: 'projectType', labelAr: 'نوع المشروع', labelEn: 'Project Type', type: 'select', allowOther: false, required: true, options: CONSTRUCTION_PROJECT_TYPES },
-    { key: 'area', labelAr: 'المساحة التقريبية (م²)', labelEn: 'Approx. Area (m²)', type: 'number', required: true },
-    { key: 'duration', labelAr: 'مدة التنفيذ', labelEn: 'Duration', type: 'select', allowOther: false, required: false, options: CONSTRUCTION_DURATION },
-    { key: 'includes', labelAr: 'يشمل', labelEn: 'Includes', type: 'select', multiSelect: true, allowOther: false, required: false, options: CONSTRUCTION_INCLUDES },
-    { key: 'priceType', labelAr: 'طريقة التسعير', labelEn: 'Price Type', type: 'select', allowOther: false, required: true, options: CONSTRUCTION_PRICE_TYPE },
-    { key: 'contractorType', labelAr: 'نوع المنفذ', labelEn: 'Contractor Type', type: 'select', allowOther: false, required: false, options: CONTRACTOR_TYPE },
-    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
   ],
 };
