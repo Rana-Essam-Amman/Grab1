@@ -130,7 +130,7 @@ export const LB_LISTINGS: Listing[] = [
     city: 'بيروت',
     neighborhood: 'فردان',
     categorySlug: 'real-estate',
-    subcategorySlug: 'for-sale',
+    subcategorySlug: 'apartments-for-sale',
     imageUrl: '/assets/icons/real-estate.jpg',
     images: ['/assets/icons/real-estate.jpg'],
     sellerPhone: '+9611889900',
@@ -138,6 +138,7 @@ export const LB_LISTINGS: Listing[] = [
     createdAt: '2026-09-10',
     views: 260,
     attributes: [
+      { key: 'propertyType', label: 'Type', value: 'apartment' },
       { key: 'area', label: 'Area', value: '210 sqm' },
       { key: 'bedrooms', label: 'Bedrooms', value: '3 Master' },
       { key: 'generator', label: 'Generator', value: '24/7 Dedicated Power' },
@@ -153,7 +154,7 @@ export const LB_LISTINGS: Listing[] = [
     city: 'بيروت',
     neighborhood: 'مار مخايل',
     categorySlug: 'real-estate',
-    subcategorySlug: 'for-rent',
+    subcategorySlug: 'apartments-for-rent',
     imageUrl: '/assets/icons/real-estate.jpg',
     images: ['/assets/icons/real-estate.jpg'],
     sellerPhone: '+96171556677',
@@ -161,6 +162,7 @@ export const LB_LISTINGS: Listing[] = [
     createdAt: '2026-09-08',
     views: 312,
     attributes: [
+      { key: 'propertyType', label: 'Type', value: 'studio' },
       { key: 'type', label: 'Type', value: 'Studio' },
       { key: 'furnished', label: 'Furnished', value: 'Yes' },
       { key: 'internet', label: 'Internet', value: 'Optic Fiber 300 Mbps' },
