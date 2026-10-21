@@ -29,7 +29,6 @@ function isEligible(f: ListingField): boolean {
     case 'select':
       return Array.isArray(f.options) && f.options.length >= 1;
     case 'text':
-    case 'textarea':
       return false;
     default:
       return false;
