@@ -128,7 +128,7 @@ export const SY_LISTINGS: Listing[] = [
     city: 'دمشق',
     neighborhood: 'كفرسوسة',
     categorySlug: 'real-estate',
-    subcategorySlug: 'for-sale',
+    subcategorySlug: 'apartments-for-sale',
     imageUrl: '/assets/icons/real-estate.jpg',
     images: ['/assets/icons/real-estate.jpg'],
     sellerPhone: '+963933445566',
@@ -136,6 +136,7 @@ export const SY_LISTINGS: Listing[] = [
     createdAt: '2026-09-12',
     views: 310,
     attributes: [
+      { key: 'propertyType', label: 'Type', value: 'apartment' },
       { key: 'area', label: 'Area', value: '185 sqm' },
       { key: 'title', label: 'Title', value: 'Green Tabo 2400 Shares' },
       { key: 'solarPower', label: 'Solar Power', value: 'Fully Wired' },
@@ -152,7 +153,7 @@ export const SY_LISTINGS: Listing[] = [
     city: 'دمشق',
     neighborhood: 'الشعلان',
     categorySlug: 'real-estate',
-    subcategorySlug: 'for-rent',
+    subcategorySlug: 'apartments-for-rent',
     imageUrl: '/assets/icons/real-estate.jpg',
     images: ['/assets/icons/real-estate.jpg'],
     sellerPhone: '+963944889900',
@@ -160,6 +161,7 @@ export const SY_LISTINGS: Listing[] = [
     createdAt: '2026-09-10',
     views: 220,
     attributes: [
+      { key: 'propertyType', label: 'Type', value: 'apartment' },
       { key: 'bedrooms', label: 'Bedrooms', value: '2' },
       { key: 'furnished', label: 'Furnished', value: 'Yes' },
       { key: 'powerBackup', label: 'Power Backup', value: 'Batteries & Inverter Included' },
