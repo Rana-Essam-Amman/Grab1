@@ -127,7 +127,7 @@ export const PS_LISTINGS: Listing[] = [
     city: 'القدس',
     neighborhood: 'بيت حنينا',
     categorySlug: 'real-estate',
-    subcategorySlug: 'for-sale',
+    subcategorySlug: 'apartments-for-sale',
     imageUrl: '/assets/icons/real-estate.jpg',
     images: ['/assets/icons/real-estate.jpg'],
     sellerPhone: '+970529876543',
@@ -135,6 +135,7 @@ export const PS_LISTINGS: Listing[] = [
     createdAt: '2026-09-11',
     views: 290,
     attributes: [
+      { key: 'propertyType', label: 'Type', value: 'apartment' },
       { key: 'area', label: 'Area', value: '160 sqm' },
       { key: 'bedrooms', label: 'Bedrooms', value: '3' },
       { key: 'location', label: 'Location', value: 'Beit Hanina Jerusalem' },
@@ -151,7 +152,7 @@ export const PS_LISTINGS: Listing[] = [
     city: 'رام الله والبيرة',
     neighborhood: 'الطيرة',
     categorySlug: 'real-estate',
-    subcategorySlug: 'for-rent',
+    subcategorySlug: 'apartments-for-rent',
     imageUrl: '/assets/icons/real-estate.jpg',
     images: ['/assets/icons/real-estate.jpg'],
     sellerPhone: '+970599445566',
@@ -159,6 +160,7 @@ export const PS_LISTINGS: Listing[] = [
     createdAt: '2026-09-10',
     views: 140,
     attributes: [
+      { key: 'propertyType', label: 'Type', value: 'apartment' },
       { key: 'bedrooms', label: 'Bedrooms', value: '2' },
       { key: 'furnished', label: 'Furnished', value: 'Fully Furnished' },
       { key: 'floor', label: 'Floor', value: '2nd Floor with elevator' },
