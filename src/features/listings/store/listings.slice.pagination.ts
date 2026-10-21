@@ -29,7 +29,10 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
     try {
       const result = await performSupabaseSync({ market: targetMarket, offset: 0, limit: LISTINGS_PAGE_SIZE });
       set((s) => {
-        if (!result.listings) return;
+        if (!result.listings) {
+          s.lastSyncFailed = true;
+          return;
+        }
         if (shouldApplyApiListings(s.activeMarket, targetMarket, s.listings.length, result.listings.length)) {
           s.listings = withDemoSeeds(result.listings);
           saveListingsToStorage(s.listings);
@@ -42,7 +45,11 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
         s.tier2Listings = [];
         s.page = 0;
         s.hasMore = result.listings.length === LISTINGS_PAGE_SIZE;
+        s.lastSyncAt = Date.now();
+        s.lastSyncFailed = false;
       });
+    } catch {
+      set((s) => { s.lastSyncFailed = true; });
     } finally {
       set((s) => { s.isSyncing = false; });
     }
@@ -84,7 +91,10 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
         const targetMarket = params.market ?? get().activeMarket ?? undefined;
         const result = await performSupabaseSync({ market: targetMarket, offset: 0, limit: LISTINGS_PAGE_SIZE });
         set((s) => {
-          if (!result.listings) return;
+          if (!result.listings) {
+            s.lastSyncFailed = true;
+            return;
+          }
           if (shouldApplyApiListings(s.activeMarket, targetMarket, s.listings.length, result.listings.length)) {
             s.listings = withDemoSeeds(result.listings);
             saveListingsToStorage(s.listings);
@@ -97,6 +107,8 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
           s.tier2Listings = [];
           s.page = 0;
           s.hasMore = result.listings.length === LISTINGS_PAGE_SIZE;
+          s.lastSyncAt = Date.now();
+          s.lastSyncFailed = false;
         });
         return;
       }
@@ -108,6 +120,10 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
         if (hybrid.data !== null) {
           s.listings = hybrid.data;
           s.hasMore = hybrid.data.length === LISTINGS_PAGE_SIZE;
+          s.lastSyncAt = Date.now();
+          s.lastSyncFailed = false;
+        } else {
+          s.lastSyncFailed = true;
         }
         s.tier2Listings = hybrid.tier2Data ?? [];
         s.activeMarket = targetMarket ?? null;
@@ -117,6 +133,8 @@ export const createPaginationActions = (set: SetFn, get: GetFn) => ({
         s.activeFilterArgs = callParams;
         s.page = 0;
       });
+    } catch {
+      set((s) => { s.lastSyncFailed = true; });
     } finally {
       set((s) => { s.isSyncing = false; });
     }
