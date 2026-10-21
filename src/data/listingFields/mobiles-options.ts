@@ -162,3 +162,19 @@ export const MOBILE_SELLER_TYPE: readonly ListingFieldOption[] = [
   { value: 'reseller', labelAr: 'بائع متجول', labelEn: 'Reseller' },
 ];
 
+
+export const ACCESSORY_BRANDS: ListingFieldOption[] = [
+  { value: 'apple', labelAr: 'أبل', labelEn: 'Apple' },
+  { value: 'samsung', labelAr: 'سامسونج', labelEn: 'Samsung' },
+  { value: 'anker', labelAr: 'أنكر', labelEn: 'Anker' },
+  { value: 'baseus', labelAr: 'بيسوس', labelEn: 'Baseus' },
+  { value: 'xiaomi', labelAr: 'شاومي', labelEn: 'Xiaomi' },
+  { value: 'jbl', labelAr: 'JBL', labelEn: 'JBL' },
+  { value: 'sony', labelAr: 'سوني', labelEn: 'Sony' },
+  { value: 'bose', labelAr: 'بوز', labelEn: 'Bose' },
+  { value: 'logitech', labelAr: 'لوجيتك', labelEn: 'Logitech' },
+  { value: 'ugreen', labelAr: 'يوجرين', labelEn: 'UGREEN' },
+  { value: 'spigen', labelAr: 'سبيجن', labelEn: 'Spigen' },
+  { value: 'otterbox', labelAr: 'أوتربوكس', labelEn: 'OtterBox' },
+  { value: 'huawei', labelAr: 'هواوي', labelEn: 'Huawei' },
+];

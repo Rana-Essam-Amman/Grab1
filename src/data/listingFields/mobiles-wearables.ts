@@ -1,5 +1,5 @@
 import type { ListingField } from './types';
-import { WATCH_BRANDS, CONDITION_OPTIONS, BATTERY_HEALTH_OPTIONS, COLOR_OPTIONS, STRAP_OPTIONS, WATCH_SIZES, MOBILE_SELLER_TYPE, ACCESSORY_TYPES, ORIGIN_OPTIONS } from './mobiles-options';
+import { WATCH_BRANDS, CONDITION_OPTIONS, BATTERY_HEALTH_OPTIONS, COLOR_OPTIONS, STRAP_OPTIONS, WATCH_SIZES, MOBILE_SELLER_TYPE, ACCESSORY_TYPES, ORIGIN_OPTIONS, ACCESSORY_BRANDS } from './mobiles-options';
 
 export const MOBILES_WATCHES_FIELDS: ListingField[] = [
     { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: false, required: true, options: WATCH_BRANDS },
@@ -36,11 +36,7 @@ export const MOBILES_WATCHES_FIELDS: ListingField[] = [
 
 export const MOBILES_ACCESSORIES_FIELDS: ListingField[] = [
     { key: 'type', labelAr: 'نوع الإكسسوار', labelEn: 'Accessory Type', type: 'select', allowOther: true, required: true, options: ACCESSORY_TYPES },
-    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: false, required: false, options: [
-      { value: 'apple', labelAr: 'أبل', labelEn: 'Apple' }, { value: 'samsung', labelAr: 'سامسونج', labelEn: 'Samsung' },
-      { value: 'anker', labelAr: 'أنكر', labelEn: 'Anker' }, { value: 'baseus', labelAr: 'بيسوس', labelEn: 'Baseus' },
-      { value: 'xiaomi', labelAr: 'شاومي', labelEn: 'Xiaomi' },
-    ]},
+    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: false, required: false, options: ACCESSORY_BRANDS},
     { key: 'compatibleModel', labelAr: 'الموديل المتوافق', labelEn: 'Compatible Model', type: 'text', required: false },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: false, required: false, options: CONDITION_OPTIONS },
     { key: 'color', labelAr: 'اللون', labelEn: 'Color', type: 'select', allowOther: true, required: false, options: COLOR_OPTIONS },
