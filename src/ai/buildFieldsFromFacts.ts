@@ -7,7 +7,7 @@ export interface FieldItem {
   label: string;
   value: string;
   required?: boolean;
-  type?: 'text' | 'number' | 'select' | 'textarea';
+  type?: 'text' | 'number' | 'select' | 'textarea' | 'boolean' | 'cascading-model' | 'cascading-trim';
   options?: readonly string[];
   placeholder?: string;
   confidence?: Confidence;
