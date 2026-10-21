@@ -1,4 +1,4 @@
-import type { CategoryFieldMap } from './types';
+import type { CategoryFieldMap, ListingFieldOption } from './types';
 import {
   COMMERCIAL_AMENITIES,
   COMMERCIAL_TYPES,
@@ -9,6 +9,13 @@ import {
   WHOLE_BUILDING_TYPES,
   CONDITION_OPTIONS,
 } from './real-estate';
+
+const COMPLEX_TYPES: ListingFieldOption[] = [
+  { value: 'mall', labelAr: 'مول تجاري', labelEn: 'Mall' },
+  { value: 'strip_center', labelAr: 'مجمع محلات', labelEn: 'Strip Center' },
+  { value: 'mixed_use', labelAr: 'مجمع متعدد الاستخدامات', labelEn: 'Mixed-Use Complex' },
+  { value: 'office_tower', labelAr: 'برج مكاتب', labelEn: 'Office Tower' },
+];
 
 export const REAL_ESTATE_COMMERCIAL_FIELDS: CategoryFieldMap = {
   commercial: [
@@ -41,6 +48,122 @@ export const REAL_ESTATE_COMMERCIAL_FIELDS: CategoryFieldMap = {
       { value: 'restaurant', labelAr: 'مطعم / كافيه', labelEn: 'Restaurant/Cafe' },
     ]},
     { key: 'ceilingHeight', labelAr: 'ارتفاع السقف (متر)', labelEn: 'Ceiling Height (m)', type: 'number', required: false },
+  ],
+  'commercial-for-sale': [
+    { key: 'propertyType', labelAr: 'نوع العقار التجاري', labelEn: 'Commercial Type', type: 'select', allowOther: false, required: true, options: COMMERCIAL_TYPES },
+    { key: 'area', labelAr: 'المساحة (م²)', labelEn: 'Area (m²)', type: 'number', required: true },
+    { key: 'floor', labelAr: 'الطابق', labelEn: 'Floor', type: 'text', required: false },
+    { key: 'frontage', labelAr: 'عرض الواجهة (متر)', labelEn: 'Frontage (m)', type: 'number', required: false },
+    { key: 'footTraffic', labelAr: 'الحركة والنشاط', labelEn: 'Foot Traffic', type: 'select', allowOther: false, required: false, options: [
+      { value: 'low', labelAr: 'منخفضة', labelEn: 'Low' },
+      { value: 'medium', labelAr: 'متوسطة', labelEn: 'Medium' },
+      { value: 'high', labelAr: 'عالية', labelEn: 'High' },
+    ]},
+    { key: 'amenities', labelAr: 'المميزات والخدمات', labelEn: 'Amenities', type: 'select', multiSelect: true, allowOther: false, required: false, options: COMMERCIAL_AMENITIES },
+    { key: 'year', labelAr: 'سنة البناء', labelEn: 'Year Built', type: 'select', allowOther: false, required: false, options: BUILDING_YEAR_OPTIONS },
+    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: false, required: false, options: CONDITION_OPTIONS },
+    { key: 'parking', labelAr: 'مواقف السيارات', labelEn: 'Parking', type: 'select', allowOther: false, required: false, options: PARKING_OPTIONS },
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: SELLER_TYPE_OPTIONS },
+    { key: 'businessType', labelAr: 'نوع النشاط', labelEn: 'Business Type', type: 'select', allowOther: false, required: false, options: [
+      { value: 'office', labelAr: 'مكتب', labelEn: 'Office' },
+      { value: 'shop', labelAr: 'محل تجاري', labelEn: 'Shop' },
+      { value: 'warehouse', labelAr: 'مستودع', labelEn: 'Warehouse' },
+      { value: 'clinic', labelAr: 'عيادة', labelEn: 'Clinic' },
+      { value: 'restaurant', labelAr: 'مطعم / كافيه', labelEn: 'Restaurant/Cafe' },
+    ]},
+    { key: 'ceilingHeight', labelAr: 'ارتفاع السقف (متر)', labelEn: 'Ceiling Height (m)', type: 'number', required: false },
+    { key: 'paymentMethod', labelAr: 'طريقة الدفع', labelEn: 'Payment Method', type: 'select', allowOther: false, required: true, options: [
+      { value: 'cash', labelAr: 'كاش', labelEn: 'Cash' },
+      { value: 'installments', labelAr: 'تقسيط', labelEn: 'Installments' },
+    ]},
+    { key: 'deliveryDate', labelAr: 'حالة التسليم', labelEn: 'Delivery Date', type: 'select', allowOther: false, required: false, options: [
+      { value: 'ready', labelAr: 'جاهز', labelEn: 'Ready' },
+      { value: 'under_construction', labelAr: 'قيد الإنشاء', labelEn: 'Under Construction' },
+    ]},
+    { key: 'ownershipType', labelAr: 'نوع الملكية', labelEn: 'Ownership Type', type: 'select', allowOther: false, required: false, options: [
+      { value: 'tabu', labelAr: 'طابو', labelEn: 'Tabu' },
+      { value: 'not_tabu', labelAr: 'تسجيل عادي', labelEn: 'Not Tabu' },
+    ]},
+    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
+  ],
+  'commercial-for-rent': [
+    { key: 'propertyType', labelAr: 'نوع العقار التجاري', labelEn: 'Commercial Type', type: 'select', allowOther: false, required: true, options: COMMERCIAL_TYPES },
+    { key: 'area', labelAr: 'المساحة (م²)', labelEn: 'Area (m²)', type: 'number', required: true },
+    { key: 'floor', labelAr: 'الطابق', labelEn: 'Floor', type: 'text', required: false },
+    { key: 'frontage', labelAr: 'عرض الواجهة (متر)', labelEn: 'Frontage (m)', type: 'number', required: false },
+    { key: 'footTraffic', labelAr: 'الحركة والنشاط', labelEn: 'Foot Traffic', type: 'select', allowOther: false, required: false, options: [
+      { value: 'low', labelAr: 'منخفضة', labelEn: 'Low' },
+      { value: 'medium', labelAr: 'متوسطة', labelEn: 'Medium' },
+      { value: 'high', labelAr: 'عالية', labelEn: 'High' },
+    ]},
+    { key: 'rentPeriod', labelAr: 'فترة الإيجار', labelEn: 'Rent Period', type: 'select', allowOther: false, required: true, options: RENT_PERIODS },
+    { key: 'amenities', labelAr: 'المميزات والخدمات', labelEn: 'Amenities', type: 'select', multiSelect: true, allowOther: false, required: false, options: COMMERCIAL_AMENITIES },
+    { key: 'year', labelAr: 'سنة البناء', labelEn: 'Year Built', type: 'select', allowOther: false, required: false, options: BUILDING_YEAR_OPTIONS },
+    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: false, required: false, options: CONDITION_OPTIONS },
+    { key: 'parking', labelAr: 'مواقف السيارات', labelEn: 'Parking', type: 'select', allowOther: false, required: false, options: PARKING_OPTIONS },
+    { key: 'securityDeposit', labelAr: 'مبلغ التأمين', labelEn: 'Security Deposit', type: 'number', required: false },
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: SELLER_TYPE_OPTIONS },
+    { key: 'businessType', labelAr: 'نوع النشاط', labelEn: 'Business Type', type: 'select', allowOther: false, required: false, options: [
+      { value: 'office', labelAr: 'مكتب', labelEn: 'Office' },
+      { value: 'shop', labelAr: 'محل تجاري', labelEn: 'Shop' },
+      { value: 'warehouse', labelAr: 'مستودع', labelEn: 'Warehouse' },
+      { value: 'clinic', labelAr: 'عيادة', labelEn: 'Clinic' },
+      { value: 'restaurant', labelAr: 'مطعم / كافيه', labelEn: 'Restaurant/Cafe' },
+    ]},
+    { key: 'ceilingHeight', labelAr: 'ارتفاع السقف (متر)', labelEn: 'Ceiling Height (m)', type: 'number', required: false },
+    { key: 'tenantType', labelAr: 'لمن العقار', labelEn: 'Tenant Type', type: 'select', allowOther: false, required: false, options: [
+      { value: 'business', labelAr: 'شركات', labelEn: 'Businesses' },
+      { value: 'individual', labelAr: 'أفراد', labelEn: 'Individuals' },
+      { value: 'anyone', labelAr: 'الجميع', labelEn: 'Anyone' },
+    ]},
+    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
+  ],
+  'commercial-complexes-for-sale': [
+    { key: 'complexType', labelAr: 'نوع المجمع', labelEn: 'Complex Type', type: 'select', allowOther: false, required: true, options: COMPLEX_TYPES },
+    { key: 'area', labelAr: 'مساحة الأرض (م²)', labelEn: 'Land Area (m²)', type: 'number', required: true },
+    { key: 'builtArea', labelAr: 'المساحة المبنية (م²)', labelEn: 'Built Area (m²)', type: 'number', required: false },
+    { key: 'unitCount', labelAr: 'عدد الوحدات', labelEn: 'Unit Count', type: 'number', required: true },
+    { key: 'occupancyRate', labelAr: 'نسبة الإشغال (%)', labelEn: 'Occupancy Rate (%)', type: 'number', required: false },
+    { key: 'currentAnnualIncome', labelAr: 'الدخل السنوي الحالي', labelEn: 'Current Annual Income', type: 'number', required: false },
+    { key: 'year', labelAr: 'سنة البناء', labelEn: 'Year Built', type: 'select', allowOther: false, required: false, options: BUILDING_YEAR_OPTIONS },
+    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: false, required: false, options: CONDITION_OPTIONS },
+    { key: 'amenities', labelAr: 'المميزات والخدمات', labelEn: 'Amenities', type: 'select', multiSelect: true, allowOther: false, required: false, options: COMMERCIAL_AMENITIES },
+    { key: 'parking', labelAr: 'مواقف السيارات', labelEn: 'Parking', type: 'select', allowOther: false, required: false, options: PARKING_OPTIONS },
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: SELLER_TYPE_OPTIONS },
+    { key: 'paymentMethod', labelAr: 'طريقة الدفع', labelEn: 'Payment Method', type: 'select', allowOther: false, required: true, options: [
+      { value: 'cash', labelAr: 'كاش', labelEn: 'Cash' },
+      { value: 'installments', labelAr: 'تقسيط', labelEn: 'Installments' },
+    ]},
+    { key: 'deliveryDate', labelAr: 'حالة التسليم', labelEn: 'Delivery Date', type: 'select', allowOther: false, required: false, options: [
+      { value: 'ready', labelAr: 'جاهز', labelEn: 'Ready' },
+      { value: 'under_construction', labelAr: 'قيد الإنشاء', labelEn: 'Under Construction' },
+    ]},
+    { key: 'ownershipType', labelAr: 'نوع الملكية', labelEn: 'Ownership Type', type: 'select', allowOther: false, required: false, options: [
+      { value: 'tabu', labelAr: 'طابو', labelEn: 'Tabu' },
+      { value: 'not_tabu', labelAr: 'تسجيل عادي', labelEn: 'Not Tabu' },
+    ]},
+    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
+  ],
+  'commercial-complexes-for-rent': [
+    { key: 'complexType', labelAr: 'نوع المجمع', labelEn: 'Complex Type', type: 'select', allowOther: false, required: true, options: COMPLEX_TYPES },
+    { key: 'area', labelAr: 'مساحة الأرض (م²)', labelEn: 'Land Area (m²)', type: 'number', required: true },
+    { key: 'builtArea', labelAr: 'المساحة المبنية (م²)', labelEn: 'Built Area (m²)', type: 'number', required: false },
+    { key: 'unitCount', labelAr: 'عدد الوحدات', labelEn: 'Unit Count', type: 'number', required: true },
+    { key: 'occupancyRate', labelAr: 'نسبة الإشغال (%)', labelEn: 'Occupancy Rate (%)', type: 'number', required: false },
+    { key: 'currentAnnualIncome', labelAr: 'الدخل السنوي الحالي', labelEn: 'Current Annual Income', type: 'number', required: false },
+    { key: 'rentPeriod', labelAr: 'فترة الإيجار', labelEn: 'Rent Period', type: 'select', allowOther: false, required: true, options: RENT_PERIODS },
+    { key: 'year', labelAr: 'سنة البناء', labelEn: 'Year Built', type: 'select', allowOther: false, required: false, options: BUILDING_YEAR_OPTIONS },
+    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: false, required: false, options: CONDITION_OPTIONS },
+    { key: 'amenities', labelAr: 'المميزات والخدمات', labelEn: 'Amenities', type: 'select', multiSelect: true, allowOther: false, required: false, options: COMMERCIAL_AMENITIES },
+    { key: 'parking', labelAr: 'مواقف السيارات', labelEn: 'Parking', type: 'select', allowOther: false, required: false, options: PARKING_OPTIONS },
+    { key: 'depositAmount', labelAr: 'مبلغ التأمين', labelEn: 'Deposit Amount', type: 'number', required: false },
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: SELLER_TYPE_OPTIONS },
+    { key: 'tenantType', labelAr: 'لمن العقار', labelEn: 'Tenant Type', type: 'select', allowOther: false, required: false, options: [
+      { value: 'business', labelAr: 'شركات', labelEn: 'Businesses' },
+      { value: 'individual', labelAr: 'أفراد', labelEn: 'Individuals' },
+      { value: 'anyone', labelAr: 'الجميع', labelEn: 'Anyone' },
+    ]},
+    { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
   ],
   'whole-buildings': [
     { key: 'propertyType', labelAr: 'نوع المبنى', labelEn: 'Building Type', type: 'select', allowOther: false, required: true, options: WHOLE_BUILDING_TYPES },
