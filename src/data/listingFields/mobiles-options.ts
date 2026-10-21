@@ -46,18 +46,42 @@ export const PHONE_BRANDS: ListingFieldOption[] = [
   { value: 'nothing', labelAr: 'ناثينغ', labelEn: 'Nothing' },
   { value: 'asus', labelAr: 'أسوس', labelEn: 'Asus' },
   { value: 'lenovo', labelAr: 'لينوفو', labelEn: 'Lenovo' },
+  { value: 'htc', labelAr: 'إتش تي سي', labelEn: 'HTC' },
+  { value: 'lg', labelAr: 'إل جي', labelEn: 'LG' },
+  { value: 'alcatel', labelAr: 'ألكاتل', labelEn: 'Alcatel' },
+  { value: 'meizu', labelAr: 'ميزو', labelEn: 'Meizu' },
+  { value: 'blackberry', labelAr: 'بلاك بيري', labelEn: 'BlackBerry' },
+  { value: 'sharp', labelAr: 'شارب', labelEn: 'Sharp' },
+  { value: 'panasonic', labelAr: 'باناسونيك', labelEn: 'Panasonic' },
+  { value: 'iqoo', labelAr: 'أيكو', labelEn: 'iQOO' },
+  { value: 'redmi', labelAr: 'ريدمي', labelEn: 'Redmi' },
+  { value: 'poco', labelAr: 'بوكو', labelEn: 'Poco' },
 ];
 
 export const TABLET_BRANDS: ListingFieldOption[] = [
   { value: 'apple', labelAr: 'أبل', labelEn: 'Apple' }, { value: 'samsung', labelAr: 'سامسونج', labelEn: 'Samsung' },
   { value: 'huawei', labelAr: 'هواوي', labelEn: 'Huawei' }, { value: 'lenovo', labelAr: 'لينوفو', labelEn: 'Lenovo' },
   { value: 'xiaomi', labelAr: 'شاومي', labelEn: 'Xiaomi' }, { value: 'microsoft', labelAr: 'مايكروسوفت', labelEn: 'Microsoft' },
+  { value: 'amazon', labelAr: 'أمازون', labelEn: 'Amazon' },
+  { value: 'realme', labelAr: 'ريلمي', labelEn: 'Realme' },
+  { value: 'oppo', labelAr: 'أوبو', labelEn: 'Oppo' },
+  { value: 'honor', labelAr: 'هونر', labelEn: 'Honor' },
+  { value: 'nokia', labelAr: 'نوكيا', labelEn: 'Nokia' },
+  { value: 'tcl', labelAr: 'TCL', labelEn: 'TCL' },
+  { value: 'asus', labelAr: 'أسوس', labelEn: 'Asus' },
+  { value: 'infinix', labelAr: 'إنفينكس', labelEn: 'Infinix' },
 ];
 
 export const WATCH_BRANDS: ListingFieldOption[] = [
   { value: 'apple', labelAr: 'أبل', labelEn: 'Apple' }, { value: 'samsung', labelAr: 'سامسونج', labelEn: 'Samsung' },
   { value: 'huawei', labelAr: 'هواوي', labelEn: 'Huawei' }, { value: 'garmin', labelAr: 'جارمن', labelEn: 'Garmin' },
   { value: 'fitbit', labelAr: 'فيتبيت', labelEn: 'Fitbit' }, { value: 'amazfit', labelAr: 'أمازفيت', labelEn: 'Amazfit' },
+  { value: 'xiaomi', labelAr: 'شاومي', labelEn: 'Xiaomi' },
+  { value: 'oneplus', labelAr: 'ون بلس', labelEn: 'OnePlus' },
+  { value: 'realme', labelAr: 'ريلمي', labelEn: 'Realme' },
+  { value: 'oppo', labelAr: 'أوبو', labelEn: 'Oppo' },
+  { value: 'google', labelAr: 'جوجل', labelEn: 'Google' },
+  { value: 'honor', labelAr: 'هونر', labelEn: 'Honor' },
 ];
 
 export const GENERAL_CONDITION: ListingFieldOption[] = [
