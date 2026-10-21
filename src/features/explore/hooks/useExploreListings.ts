@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback, Dispatch, SetStateAction } from 'react'
 import { useUI } from '@/hooks/useUI';
 import { useListings } from '@/hooks/useListings';
 import { useAuth } from '@/hooks/useAuth';
+import { useListingsStore } from '@/features/listings/store/listings.slice';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
 import { EXPLORE_CONFIG } from '@/config/explore.config';
 import { UseExploreListingsReturn } from './useExploreListings.types';
@@ -20,6 +21,9 @@ export function useExploreListings(): UseExploreListingsReturn {
   const { listings, hasMore, isLoadingMore, loadMore } = useListings();
   const [userFilterMode, setUserFilterMode] = useState<'city' | 'all' | null>('all');
   const { feedLayout, setFeedLayout: setFeedLayoutStore } = useAuth();
+
+  const isInitialLoading = useListingsStore((s) => s.lastSyncAt === null && !s.lastSyncFailed);
+  const lastSyncFailed = useListingsStore((s) => s.lastSyncFailed);
 
   const setFeedLayout = useCallback<Dispatch<SetStateAction<'list' | 'grid'>>>(
     (action) => {
@@ -84,6 +88,8 @@ export function useExploreListings(): UseExploreListingsReturn {
     hasMore,
     isLoadingMore,
     onLoadMore: handleLoadMore,
+    isInitialLoading,
+    lastSyncFailed,
     hasAnyFilter: Boolean(
       categoryFilter || subcategoryFilter || minPriceFilter !== null || maxPriceFilter !== null ||
       activeNeighborhood || searchQuery || Object.keys(attrsFilter).length > 0 || sortBy !== 'newest'
