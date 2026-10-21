@@ -2,7 +2,7 @@ import type { CategoryFieldMap, ListingField } from './types';
 import { PHONE_BRANDS, TABLET_BRANDS, STORAGE_OPTIONS, RAM_OPTIONS, GENERAL_CONDITION, CONDITION_OPTIONS, BATTERY_HEALTH_OPTIONS, REGIONAL_SPECS_OPTIONS, PHONE_SCREEN_SIZES, TABLET_SCREEN_SIZES, NETWORK_TECH, SMARTPHONE_FEATURES, MOBILE_SELLER_TYPE, COLOR_OPTIONS, CARRIER_LOCK_OPTIONS } from './mobiles-options';
 
 export const PHONES_FIELDS: ListingField[] = [
-    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: false, required: true, options: PHONE_BRANDS },
+    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: true, options: PHONE_BRANDS },
     { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'phones', required: true, placeholder: 'iPhone 15 Pro, Galaxy S24...' },
     { key: 'storage', labelAr: 'السعة التخزينية', labelEn: 'Storage', type: 'select', allowOther: false, required: true, options: STORAGE_OPTIONS },
     { key: 'ram', labelAr: 'الرام', labelEn: 'RAM', type: 'select', allowOther: false, required: false, options: RAM_OPTIONS },

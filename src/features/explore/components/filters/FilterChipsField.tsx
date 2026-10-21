@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { ListingField } from '@/data/listingFields';
 import { Combobox } from '@/shared/ui/Combobox';
 
 const MAX_OPTIONS = 15;
+const OTHER_VALUE = '__other__';
 
 export interface FilterChipsFieldProps {
   readonly field: ListingField;
@@ -30,6 +31,25 @@ export const FilterChipsField: React.FC<FilterChipsFieldProps> = ({
         }));
   const useCombobox = field.type === 'select' && chips.length > MAX_OPTIONS;
   const currentLabel = chips.find((c) => c.value === activeValue)?.label ?? '';
+  const otherLabel = isArabic ? 'أخرى — اكتب يدوياً' : 'Other — type manually';
+  const isOtherActive = Boolean(activeValue && !chips.some((c) => c.value === activeValue));
+  const [showOther, setShowOther] = useState(isOtherActive);
+  const [otherText, setOtherText] = useState(isOtherActive ? activeValue : '');
+
+  const handleOtherClick = () => {
+    if (showOther) {
+      setShowOther(false);
+      setOtherText('');
+      onChange(null);
+    } else {
+      setShowOther(true);
+    }
+  };
+
+  const handleOtherInput = (text: string) => {
+    setOtherText(text);
+    onChange(text.trim() ? text : null);
+  };
 
   return (
     <div className="flex flex-col gap-2">
@@ -64,7 +84,29 @@ export const FilterChipsField: React.FC<FilterChipsFieldProps> = ({
               </button>
             );
           })}
+          {field.allowOther && (
+            <button
+              type="button"
+              onClick={handleOtherClick}
+              className={`px-3 py-1.5 rounded-full border text-xs font-bold transition-all ${
+                showOther
+                  ? 'bg-accent/15 border-accent text-accent'
+                  : 'bg-surface border-border text-ink'
+              }`}
+            >
+              {otherLabel}
+            </button>
+          )}
         </div>
+      )}
+      {field.allowOther && showOther && (
+        <input
+          type="text"
+          value={otherText}
+          onChange={(e) => handleOtherInput(e.target.value)}
+          placeholder={isArabic ? 'اكتب...' : 'Type...'}
+          className="w-full h-9 px-3 rounded-lg border border-border bg-surface text-ink text-xs font-medium focus:outline-none focus:border-accent"
+        />
       )}
     </div>
   );
