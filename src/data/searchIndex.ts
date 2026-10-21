@@ -50,6 +50,7 @@ const SYNONYMS: Record<string, string[]> = {
 function add(index: Record<string, Set<string>>, term: string, slug: string): void {
   const norm = normalizeArabic(term);
   if (!norm) return;
+  if (/^\d+$/.test(norm)) return;
   if (!index[norm]) index[norm] = new Set<string>();
   index[norm].add(slug);
 }
