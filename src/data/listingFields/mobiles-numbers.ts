@@ -18,6 +18,6 @@ export const MOBILES_NUMBERS_FIELDS: ListingField[] = [
       { value: 'palindrome', labelAr: 'يُقرأ من الاتجاهين', labelEn: 'Palindrome' },
       { value: 'none', labelAr: 'بدون نمط خاص', labelEn: 'No Special Pattern' },
     ]},
-    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: MOBILE_SELLER_TYPE },
+    { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: true, required: false, options: MOBILE_SELLER_TYPE },
     { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
   ];
