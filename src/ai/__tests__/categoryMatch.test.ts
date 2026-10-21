@@ -42,7 +42,7 @@ describe('matchCategory', () => {
   it('handles real-estate hint', () => {
     const result = matchCategory({ chosenCategory: '', chosenSub: '', note: 'شقة 110 متر بعمان' });
     expect(result.effectiveCategory).toBe('real-estate');
-    expect(result.effectiveSub).toBe('for-sale');
+    expect(result.effectiveSub).toBe('apartments-for-sale');
   });
 
   it('handles mobiles hint', () => {
