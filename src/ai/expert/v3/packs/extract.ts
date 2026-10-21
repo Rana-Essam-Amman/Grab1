@@ -3,7 +3,7 @@ import { resolveLocation } from '../locations';
 
 const NOUN: Record<string, string> = {
   motors: 'مركبة', cars: 'سيارة', motorbikes: 'دراجة', heavy: 'شاحنة', plates: 'لوحة', parts: 'قطعة غيار', boats: 'قارب',
-  'real-estate': 'عقار', 'for-sale': 'شقة', 'for-rent': 'شقة', commercial: 'محل', lands: 'أرض', chalets: 'شاليه', foreign: 'عقار',
+  'real-estate': 'عقار', 'for-sale': 'شقة', 'for-rent': 'شقة', 'apartments-for-sale': 'شقة', 'villas-for-sale': 'فيلا', 'houses-for-sale': 'منزل', 'apartments-for-rent': 'شقة', 'villas-for-rent': 'فيلا', commercial: 'محل', lands: 'أرض', chalets: 'شاليه', foreign: 'عقار',
   mobiles: 'جوال', phones: 'جوال', tablets: 'تابلت', 'smart-watches': 'ساعة', numbers: 'رقم',
   watches: 'ساعة', luxury: 'ساعة', everyday: 'ساعة', 'vintage-watch': 'ساعة', straps: 'سوار',
   computers: 'جهاز', laptops: 'لابتوب', desktops: 'كمبيوتر',
@@ -78,5 +78,5 @@ export function extractFacts(draft: string, categorySlug: string, subcategorySlu
 export function joinAr(items: readonly string[]): string {
   if (items.length === 0) return '';
   if (items.length === 1) return items[0];
-  return `${items.slice(0, -1).join('، ')}، و${items[items.length - 1]}`;
+  return `${items.slice(0, -1).join('، ')} و${items[items.length - 1]}`;
 }
