@@ -23,7 +23,10 @@ export interface FilterListingsOptions {
 }
 
 function extractNumber(value: string): number | null {
-  const num = Number(String(value).replace(/[^\d.-]/g, '').trim());
+  const s = String(value).trim();
+  const m = s.match(/^(\d+(?:\.\d+)?)\s*[x×]\s*\d+(?:\.\d+)?$/i);
+  const raw = m?.[1] ?? s.replace(/[^\d.-]/g, '').trim();
+  const num = Number(raw);
   return Number.isFinite(num) ? num : null;
 }
 
