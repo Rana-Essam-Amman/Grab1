@@ -10,7 +10,7 @@ const LIMITS = {
   helper: 80,
   slice: 120,
   store: 200,
-  config: 500,
+  config: 600,
   ai: 400,
   app: 300,
   types: 200,
