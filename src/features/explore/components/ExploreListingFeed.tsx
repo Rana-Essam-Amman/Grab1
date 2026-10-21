@@ -5,6 +5,7 @@ import { Listing } from '@/types';
 import { ListingCard } from '@/shared/components';
 import { ExploreEmptyFeedState } from './ExploreEmptyFeedState';
 import { FeedLoadMoreSentinel } from './FeedLoadMoreSentinel';
+import { ListingsFeedSkeleton } from './ListingsFeedSkeleton';
 
 interface ExploreListingFeedProps {
   listings: Listing[];
@@ -17,6 +18,8 @@ interface ExploreListingFeedProps {
   readonly hasMore?: boolean;
   readonly isLoadingMore?: boolean;
   readonly onLoadMore?: () => void;
+  readonly isInitialLoading?: boolean;
+  readonly lastSyncFailed?: boolean;
 }
 
 export const ExploreListingFeed: React.FC<ExploreListingFeedProps> = ({
@@ -25,6 +28,7 @@ export const ExploreListingFeed: React.FC<ExploreListingFeedProps> = ({
   hasMore = false,
   isLoadingMore = false,
   onLoadMore = () => {},
+  isInitialLoading = false,
 }) => {
   const { isArabic } = useUI();
   const parentRef = useRef<HTMLDivElement | null>(null);
@@ -39,6 +43,10 @@ export const ExploreListingFeed: React.FC<ExploreListingFeedProps> = ({
   const rowVirtualizer = useVirtualizer({
     count: rowCount, getScrollElement, estimateSize, overscan: 4, enabled: isVirtualized,
   });
+
+  if (isInitialLoading && listings.length === 0) {
+    return <ListingsFeedSkeleton layout={feedLayout} />;
+  }
 
   if (listings.length === 0) {
     return (
