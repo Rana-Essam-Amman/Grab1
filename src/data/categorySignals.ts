@@ -427,9 +427,9 @@ export const textSignals: Record<string, CategoryHint> = {
   'دهانة': { categorySlug: 'handymen', subcategorySlug: 'painting', labelAr: 'دهان', labelEn: 'Painting' },
   'painter': { categorySlug: 'handymen', subcategorySlug: 'painting', labelAr: 'دهان', labelEn: 'Painting' },
 
-  // ═══════════ PROJECTS (Construction/Contracting) ═══════════
-  'مقاول': { categorySlug: 'projects', subcategorySlug: 'contracting', labelAr: 'مقاولات', labelEn: 'Contracting' },
-  'مقاولات': { categorySlug: 'projects', subcategorySlug: 'contracting', labelAr: 'مقاولات', labelEn: 'Contracting' },
-  'بناء': { categorySlug: 'projects', subcategorySlug: 'construction', labelAr: 'بناء وإنشاءات', labelEn: 'Construction' },
-  'تشطيب': { categorySlug: 'projects', subcategorySlug: 'finishing', labelAr: 'تشطيبات', labelEn: 'Finishing' },
+  // ═══════════ PROJECTS (Construction/Contracting → redirected to real-estate) ═══════════
+  'مقاول': { categorySlug: 'real-estate', subcategorySlug: 'construction', labelAr: 'مقاولات', labelEn: 'Contracting' },
+  'مقاولات': { categorySlug: 'real-estate', subcategorySlug: 'construction', labelAr: 'مقاولات', labelEn: 'Contracting' },
+  'بناء': { categorySlug: 'real-estate', subcategorySlug: 'construction', labelAr: 'بناء وإنشاءات', labelEn: 'Construction' },
+  'تشطيب': { categorySlug: 'real-estate', subcategorySlug: 'construction', labelAr: 'تشطيبات', labelEn: 'Finishing' },
 };
