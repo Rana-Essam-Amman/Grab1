@@ -59,7 +59,7 @@ export const JO_LISTINGS: Listing[] = [
     city: 'عمّان',
     neighborhood: 'الشميساني',
     categorySlug: 'real-estate',
-    subcategorySlug: 'apartments-for-sale',
+    subcategorySlug: 'apartments-for-rent',
     imageUrl: '/assets/icons/real-estate.jpg',
     images: ['/assets/icons/real-estate.jpg'],
     sellerPhone: '+962795554433',
@@ -67,6 +67,7 @@ export const JO_LISTINGS: Listing[] = [
     createdAt: '2026-09-08',
     views: 156,
     attributes: [
+      { key: 'propertyType', label: 'Type', value: 'apartment' },
       { key: 'bedrooms', label: 'Bedrooms', value: '2' },
       { key: 'bathrooms', label: 'Bathrooms', value: '2' },
       { key: 'furnished', label: 'Furnished', value: 'Fully Furnished' },
@@ -163,6 +164,7 @@ export const JO_LISTINGS: Listing[] = [
     createdAt: '2026-09-09',
     views: 142,
     attributes: [
+      { key: 'propertyType', label: 'Type', value: 'apartment' },
       { key: 'bedrooms', label: 'Bedrooms', value: '3' },
       { key: 'bathrooms', label: 'Bathrooms', value: '3' },
       { key: 'area', label: 'Area', value: '180 sqm' },
