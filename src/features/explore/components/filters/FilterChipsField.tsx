@@ -55,16 +55,36 @@ export const FilterChipsField: React.FC<FilterChipsFieldProps> = ({
     <div className="flex flex-col gap-2">
       <span className="text-[11px] font-bold text-ink-muted">{title}</span>
       {useCombobox ? (
-        <Combobox
-          value={currentLabel}
-          options={chips.map((c) => c.label)}
-          placeholder={isArabic ? 'اختر...' : 'Select...'}
-          searchPlaceholder={isArabic ? 'ابحث...' : 'Search...'}
-          emptyText={isArabic ? 'لا نتائج' : 'No results'}
-          onChange={(newLabel) =>
-            onChange(chips.find((c) => c.label === newLabel)?.value ?? null)
-          }
-        />
+        <div className="flex flex-col gap-2">
+          <Combobox
+            value={showOther ? otherLabel : currentLabel}
+            options={field.allowOther ? [...chips.map((c) => c.label), otherLabel] : chips.map((c) => c.label)}
+            placeholder={isArabic ? 'اختر...' : 'Select...'}
+            searchPlaceholder={isArabic ? 'ابحث...' : 'Search...'}
+            emptyText={isArabic ? 'لا نتائج' : 'No results'}
+            onChange={(newLabel) => {
+              if (newLabel === otherLabel) {
+                setShowOther(true);
+                setOtherText('');
+                onChange(null);
+              } else {
+                setShowOther(false);
+                setOtherText('');
+                onChange(chips.find((c) => c.label === newLabel)?.value ?? null);
+              }
+            }}
+          />
+          {field.allowOther && showOther && (
+            <input
+              type="text"
+              value={otherText}
+              onChange={(e) => handleOtherInput(e.target.value)}
+              placeholder={isArabic ? 'اكتب...' : 'Type...'}
+              className="w-full h-9 px-3 rounded-lg border border-border bg-surface text-ink text-xs font-medium focus:outline-none focus:border-accent"
+              autoFocus
+            />
+          )}
+        </div>
       ) : (
         <div className="flex flex-wrap gap-2">
           {chips.map((c) => {

@@ -205,6 +205,23 @@ export const textSignals: Record<string, CategoryHint> = {
   'كفر': { categorySlug: 'mobiles', subcategorySlug: 'accessories', labelAr: 'إكسسوارات جوالات', labelEn: 'Phone Accessories' },
   'شاحن': { categorySlug: 'mobiles', subcategorySlug: 'accessories', labelAr: 'إكسسوارات جوالات', labelEn: 'Phone Accessories' },
   'باور بانك': { categorySlug: 'mobiles', subcategorySlug: 'accessories', labelAr: 'إكسسوارات جوالات', labelEn: 'Phone Accessories' },
+  'جراب': { categorySlug: 'mobiles', subcategorySlug: 'accessories', labelAr: 'إكسسوارات جوالات', labelEn: 'Phone Accessories' },
+  'كفرات': { categorySlug: 'mobiles', subcategorySlug: 'accessories', labelAr: 'إكسسوارات جوالات', labelEn: 'Phone Accessories' },
+  'حماية شاشة': { categorySlug: 'mobiles', subcategorySlug: 'accessories', labelAr: 'إكسسوارات جوالات', labelEn: 'Phone Accessories' },
+  'زجاج حماية': { categorySlug: 'mobiles', subcategorySlug: 'accessories', labelAr: 'إكسسوارات جوالات', labelEn: 'Phone Accessories' },
+  'كابل شحن': { categorySlug: 'mobiles', subcategorySlug: 'accessories', labelAr: 'إكسسوارات جوالات', labelEn: 'Phone Accessories' },
+  'كابل': { categorySlug: 'mobiles', subcategorySlug: 'accessories', labelAr: 'إكسسوارات جوالات', labelEn: 'Phone Accessories' },
+  'سماعة': { categorySlug: 'mobiles', subcategorySlug: 'accessories', labelAr: 'إكسسوارات جوالات', labelEn: 'Phone Accessories' },
+  'هيدفون': { categorySlug: 'mobiles', subcategorySlug: 'accessories', labelAr: 'إكسسوارات جوالات', labelEn: 'Phone Accessories' },
+  'airpods': { categorySlug: 'mobiles', subcategorySlug: 'accessories', labelAr: 'إكسسوارات جوالات', labelEn: 'Phone Accessories' },
+  'headphones': { categorySlug: 'mobiles', subcategorySlug: 'accessories', labelAr: 'إكسسوارات جوالات', labelEn: 'Phone Accessories' },
+  'حامل جوال': { categorySlug: 'mobiles', subcategorySlug: 'accessories', labelAr: 'إكسسوارات جوالات', labelEn: 'Phone Accessories' },
+  'ستاند': { categorySlug: 'mobiles', subcategorySlug: 'accessories', labelAr: 'إكسسوارات جوالات', labelEn: 'Phone Accessories' },
+  'شاحن لاسلكي': { categorySlug: 'mobiles', subcategorySlug: 'accessories', labelAr: 'إكسسوارات جوالات', labelEn: 'Phone Accessories' },
+  'شاحن سيارة': { categorySlug: 'mobiles', subcategorySlug: 'accessories', labelAr: 'إكسسوارات جوالات', labelEn: 'Phone Accessories' },
+  'selfie stick': { categorySlug: 'mobiles', subcategorySlug: 'accessories', labelAr: 'إكسسوارات جوالات', labelEn: 'Phone Accessories' },
+  'tripod': { categorySlug: 'mobiles', subcategorySlug: 'accessories', labelAr: 'إكسسوارات جوالات', labelEn: 'Phone Accessories' },
+  'حلقة تثبيت': { categorySlug: 'mobiles', subcategorySlug: 'accessories', labelAr: 'إكسسوارات جوالات', labelEn: 'Phone Accessories' },
 
 
   // ─── MOBILES: Phone brand aliases (Arabic + English + Latin) ───

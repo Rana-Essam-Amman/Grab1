@@ -65,6 +65,26 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({ fiel
             <button key={opt.value} type="button" onClick={() => toggleOpt(opt.value)} className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${selectedVals.includes(opt.value) ? 'bg-primary text-white border-primary shadow-sm' : 'bg-canvas text-ink-soft border-line hover:border-ink-muted'}`}>{isArabic ? opt.labelAr : opt.labelEn}</button>
           ))}
         </div>
+        {field.allowOther && (
+          <input
+            type="text"
+            placeholder={isArabic ? 'قيمة أخرى — اكتب ثم Enter' : 'Other — type and press Enter'}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                const v = (e.target as HTMLInputElement).value.trim();
+                if (v) {
+                  const current = value ? value.split(',').map((s) => s.trim()).filter(Boolean) : [];
+                  if (!current.includes(v)) {
+                    onChange(field.key, [...current, v].join(', '));
+                  }
+                  (e.target as HTMLInputElement).value = '';
+                }
+              }
+            }}
+            className="w-full mt-2 h-10 px-3 rounded-xl border border-line bg-canvas text-ink text-xs font-medium focus:outline-none focus:border-primary"
+          />
+        )}
       </div>
     );
   }
