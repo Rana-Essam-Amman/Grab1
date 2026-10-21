@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { CAR_BRANDS } from '@/data/brands/carBrands';
+import { PHONE_BRANDS_REGISTRY } from '@/data/brands/phoneBrands';
 import { OtherOptionInput } from './OtherOptionInput';
 import { SearchableDropdown } from '@/shared/ui/SearchableDropdown';
-import {
-  getLocalModelOptions,
-  normalizeToSlug,
-  getBrandLabel,
-  isCustomMake,
-} from '../helpers/cascadingModelHelpers';
+import * as carHelpers from '../helpers/cascadingModelHelpers';
+import * as phoneHelpers from '../helpers/phoneModelHelpers';
 
 const OTHER_VALUE = '__other__';
 
@@ -19,9 +16,13 @@ interface Props {
   readonly isArabic: boolean;
   readonly hideMakeField?: boolean;
   readonly testId?: string;
+  readonly dataSource?: 'cars' | 'phones';
 }
 
-export const CascadingModelSelect: React.FC<Props> = ({ makeValue, modelValue, onMakeChange, onModelChange, isArabic, hideMakeField, testId }) => {
+export const CascadingModelSelect: React.FC<Props> = ({ makeValue, modelValue, onMakeChange, onModelChange, isArabic, hideMakeField, testId, dataSource = 'cars' }) => {
+  const helpers = dataSource === 'phones' ? phoneHelpers : carHelpers;
+  const brands = dataSource === 'phones' ? PHONE_BRANDS_REGISTRY : CAR_BRANDS;
+  const { getLocalModelOptions, normalizeToSlug, getBrandLabel, isCustomMake } = helpers;
   const customMake0 = isCustomMake(makeValue);
   const [showOtherMake, setShowOtherMake] = useState(customMake0 || makeValue === 'other');
   const [customMake, setCustomMake] = useState(customMake0 ? makeValue : '');
@@ -36,7 +37,7 @@ export const CascadingModelSelect: React.FC<Props> = ({ makeValue, modelValue, o
 
   const modelTestId = hideMakeField ? testId : (testId ? `${testId}-model` : undefined);
   const otherLabel = isArabic ? 'أخرى — اكتب يدوياً' : 'Other — type manually';
-  const brandOptions = CAR_BRANDS.map((b) => (isArabic ? b.nameAr : b.nameEn));
+  const brandOptions = brands.map((b) => (isArabic ? b.nameAr : b.nameEn));
   const selectedBrandLabel = getBrandLabel(makeValue, isArabic);
 
   const renderModelBlock = () => (
@@ -76,7 +77,7 @@ export const CascadingModelSelect: React.FC<Props> = ({ makeValue, modelValue, o
           options={[...brandOptions, otherLabel]}
           value={showOtherMake ? otherLabel : selectedBrandLabel}
           onChange={(selected) => {
-            const v = selected === otherLabel ? OTHER_VALUE : CAR_BRANDS.find((b) => (isArabic ? b.nameAr : b.nameEn) === selected)?.slug ?? selected;
+            const v = selected === otherLabel ? OTHER_VALUE : brands.find((b) => (isArabic ? b.nameAr : b.nameEn) === selected)?.slug ?? selected;
             onModelChange(''); setCustomModel('');
             if (v === OTHER_VALUE) { setShowOtherMake(true); setShowOtherModel(true); onMakeChange(customMake); }
             else { setShowOtherMake(false); onMakeChange(v); setShowOtherModel(getLocalModelOptions(v).length === 0); }

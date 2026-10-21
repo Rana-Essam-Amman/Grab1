@@ -70,6 +70,7 @@ export const FilterFieldRenderer: React.FC<Props> = ({ field, attrs, isArabic, o
           isArabic={isArabic}
           hideMakeField
           testId={`filter-${field.key}`}
+          dataSource={field.cascadeSource === 'phones' ? 'phones' : 'cars'}
         />
       </div>
     );

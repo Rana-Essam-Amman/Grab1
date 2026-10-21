@@ -1,7 +1,7 @@
 import type { PhoneModel } from './phoneModels.types';
 import { APPLE_MODELS } from './phoneModelsApple';
 import { SAMSUNG_MODELS } from './phoneModelsSamsung';
-import { XIAOMI_MODELS } from './phoneModelsXiaomi';
+import { XIAOMI_MODELS, REDMI_MODELS, POCO_MODELS } from './phoneModelsXiaomi';
 import { OTHER_BRANDS_MODELS } from './phoneModelsOther';
 
 export type { PhoneModel };
@@ -10,6 +10,8 @@ export const PHONE_MODELS: Record<string, readonly PhoneModel[]> = {
   apple: APPLE_MODELS,
   samsung: SAMSUNG_MODELS,
   xiaomi: XIAOMI_MODELS,
+  redmi: REDMI_MODELS,
+  poco: POCO_MODELS,
   ...OTHER_BRANDS_MODELS,
 };
 

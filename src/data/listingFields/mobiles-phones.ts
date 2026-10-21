@@ -3,6 +3,7 @@ import { PHONE_BRANDS, TABLET_BRANDS, STORAGE_OPTIONS, RAM_OPTIONS, GENERAL_COND
 
 export const PHONES_FIELDS: ListingField[] = [
     { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: false, required: true, options: PHONE_BRANDS },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'phones', required: true, placeholder: 'iPhone 15 Pro, Galaxy S24...' },
     { key: 'storage', labelAr: 'السعة التخزينية', labelEn: 'Storage', type: 'select', allowOther: false, required: true, options: STORAGE_OPTIONS },
     { key: 'ram', labelAr: 'الرام', labelEn: 'RAM', type: 'select', allowOther: false, required: false, options: RAM_OPTIONS },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: false, required: true, options: GENERAL_CONDITION },

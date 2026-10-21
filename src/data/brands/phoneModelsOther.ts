@@ -89,6 +89,4 @@ export const OTHER_BRANDS_MODELS: Record<string, readonly PhoneModel[]> = {
     { slug: 'iqoo-neo-9-pro', nameEn: 'Neo 9 Pro', nameAr: 'نيو 9 برو', releaseYear: 2024 },
     { slug: 'iqoo-neo-7', nameEn: 'Neo 7', nameAr: 'نيو 7', releaseYear: 2023 },
   ],
-  redmi: [],
-  poco: [],
 };

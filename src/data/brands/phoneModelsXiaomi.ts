@@ -11,6 +11,9 @@ export const XIAOMI_MODELS: readonly PhoneModel[] = [
   { slug: 'xiaomi-13t', nameEn: 'Xiaomi 13T', nameAr: 'شاومي 13 تي', releaseYear: 2023 },
   { slug: 'xiaomi-12-pro', nameEn: 'Xiaomi 12 Pro', nameAr: 'شاومي 12 برو', releaseYear: 2022 },
   { slug: 'xiaomi-12', nameEn: 'Xiaomi 12', nameAr: 'شاومي 12', releaseYear: 2022 },
+];
+
+export const REDMI_MODELS: readonly PhoneModel[] = [
   { slug: 'redmi-note-13-pro-plus', nameEn: 'Redmi Note 13 Pro+', nameAr: 'ريدمي نوت 13 برو بلس', releaseYear: 2024 },
   { slug: 'redmi-note-13-pro', nameEn: 'Redmi Note 13 Pro', nameAr: 'ريدمي نوت 13 برو', releaseYear: 2024 },
   { slug: 'redmi-note-13', nameEn: 'Redmi Note 13', nameAr: 'ريدمي نوت 13', releaseYear: 2024 },
@@ -19,6 +22,9 @@ export const XIAOMI_MODELS: readonly PhoneModel[] = [
   { slug: 'redmi-13c', nameEn: 'Redmi 13C', nameAr: 'ريدمي 13 سي', releaseYear: 2024 },
   { slug: 'redmi-12c', nameEn: 'Redmi 12C', nameAr: 'ريدمي 12 سي', releaseYear: 2023 },
   { slug: 'redmi-10', nameEn: 'Redmi 10', nameAr: 'ريدمي 10', releaseYear: 2021 },
+];
+
+export const POCO_MODELS: readonly PhoneModel[] = [
   { slug: 'poco-x6-pro', nameEn: 'Poco X6 Pro', nameAr: 'بوكو إكس 6 برو', releaseYear: 2024 },
   { slug: 'poco-x6', nameEn: 'Poco X6', nameAr: 'بوكو إكس 6', releaseYear: 2024 },
   { slug: 'poco-f5-pro', nameEn: 'Poco F5 Pro', nameAr: 'بوكو إف 5 برو', releaseYear: 2023 },

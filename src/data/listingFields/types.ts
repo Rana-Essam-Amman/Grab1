@@ -16,6 +16,7 @@ export interface ListingField {
   readonly placeholder?: string;
   readonly placeholderAr?: string;
   readonly dependsOn?: string;
+  readonly cascadeSource?: string;
   readonly filterable?: boolean;
 }
 
