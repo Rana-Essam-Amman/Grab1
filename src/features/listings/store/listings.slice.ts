@@ -15,6 +15,8 @@ export const useListingsStore = create<ListingsState>()(
       isInitialized: false,
       isSyncing: false,
       isQuotaExhausted: false,
+      lastSyncAt: null,
+      lastSyncFailed: false,
       activeMarket: null,
       page: 0,
       hasMore: false,
