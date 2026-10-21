@@ -106,7 +106,7 @@ export const FilterFieldRenderer: React.FC<Props> = ({ field, attrs, isArabic, o
       field={field}
       activeValue={activeValue}
       isArabic={isArabic}
-      onChange={(v) => onChange(field.key, v)}
+      onChange={(v: string | null) => onChange(field.key, v)}
     />
   );
 };
