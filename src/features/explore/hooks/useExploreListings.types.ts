@@ -27,4 +27,6 @@ export interface UseExploreListingsReturn {
   readonly isLoadingMore: boolean;
   readonly onLoadMore: () => void;
   readonly hasAnyFilter: boolean;
+  readonly isInitialLoading: boolean;
+  readonly lastSyncFailed: boolean;
 }
