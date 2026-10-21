@@ -16,6 +16,7 @@ export interface ListingField {
   readonly placeholder?: string;
   readonly placeholderAr?: string;
   readonly dependsOn?: string;
+  readonly filterable?: boolean;
 }
 
 export type CategoryFieldMap = Record<string, readonly ListingField[]>;
