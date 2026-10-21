@@ -30,7 +30,8 @@ export const ExploreScreen: React.FC = () => {
   const {
     setFilterMode, feedLayout, setFeedLayout, activeSearchText,
     voidedNotice, setVoidedNotice, displayListings, handleResetAllFilters,
-    hasMore, isLoadingMore, onLoadMore, hasAnyFilter
+    hasMore, isLoadingMore, onLoadMore, hasAnyFilter,
+    isInitialLoading, lastSyncFailed,
   } = useExploreListings();
   const { searchBanner, searchRelatedHeader, tier2Listings } = useListings();
 
@@ -101,6 +102,8 @@ export const ExploreScreen: React.FC = () => {
           hasMore,
           isLoadingMore,
           onLoadMore,
+          isInitialLoading,
+          lastSyncFailed,
         }}
         tier2Listings={tier2Listings}
         isArabic={isArabic}
