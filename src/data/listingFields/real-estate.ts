@@ -228,6 +228,18 @@ export const REAL_ESTATE_FIELDS: CategoryFieldMap = {
     { key: 'finishingType', labelAr: 'نوع التشطيب', labelEn: 'Finishing Type', type: 'select', allowOther: false, required: false, options: FINISHING_OPTIONS },
     { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: SELLER_TYPE_OPTIONS },
     { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
+    { key: 'paymentMethod', labelAr: 'طريقة الدفع', labelEn: 'Payment Method', type: 'select', allowOther: false, required: true, options: [
+      { value: 'cash', labelAr: 'كاش', labelEn: 'Cash' },
+      { value: 'installments', labelAr: 'تقسيط', labelEn: 'Installments' },
+    ]},
+    { key: 'deliveryDate', labelAr: 'حالة التسليم', labelEn: 'Delivery Date', type: 'select', allowOther: false, required: false, options: [
+      { value: 'ready', labelAr: 'جاهز للسكن', labelEn: 'Ready' },
+      { value: 'under_construction', labelAr: 'قيد الإنشاء', labelEn: 'Under Construction' },
+    ]},
+    { key: 'ownershipType', labelAr: 'نوع الملكية', labelEn: 'Ownership Type', type: 'select', allowOther: false, required: false, options: [
+      { value: 'tabu', labelAr: 'طابو', labelEn: 'Tabu' },
+      { value: 'not_tabu', labelAr: 'تسجيل عادي / غير طابو', labelEn: 'Not Tabu' },
+    ]},
   ],
   'for-rent': [
     { key: 'propertyType', labelAr: 'نوع العقار', labelEn: 'Property Type', type: 'select', allowOther: false, required: true, options: RENT_RESIDENTIAL_TYPES },
@@ -250,6 +262,12 @@ export const REAL_ESTATE_FIELDS: CategoryFieldMap = {
     { key: 'amenities', labelAr: 'المميزات والخدمات', labelEn: 'Amenities', type: 'select', multiSelect: true, allowOther: false, required: false, options: RESIDENTIAL_AMENITIES },
     { key: 'view', labelAr: 'الإطلالة', labelEn: 'View', type: 'select', allowOther: false, required: false, options: VIEW_OPTIONS },
     { key: 'parking', labelAr: 'مواقف السيارات', labelEn: 'Parking', type: 'select', allowOther: false, required: false, options: PARKING_OPTIONS },
+    { key: 'tenantType', labelAr: 'لمن العقار', labelEn: 'Tenant Type', type: 'select', allowOther: false, required: false, options: [
+      { value: 'family', labelAr: 'عائلات', labelEn: 'Families' },
+      { value: 'singles', labelAr: 'عزاب', labelEn: 'Singles' },
+      { value: 'students', labelAr: 'طلاب', labelEn: 'Students' },
+      { value: 'anyone', labelAr: 'الجميع', labelEn: 'Anyone' },
+    ]},
   ],
   commercial: [
     { key: 'propertyType', labelAr: 'نوع العقار التجاري', labelEn: 'Commercial Type', type: 'select', allowOther: false, required: true, options: COMMERCIAL_TYPES },
@@ -273,6 +291,14 @@ export const REAL_ESTATE_FIELDS: CategoryFieldMap = {
     { key: 'securityDeposit', labelAr: 'مبلغ التأمين', labelEn: 'Security Deposit', type: 'number', required: false },
     { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: false, required: false, options: SELLER_TYPE_OPTIONS },
     { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
+    { key: 'businessType', labelAr: 'نوع النشاط', labelEn: 'Business Type', type: 'select', allowOther: false, required: false, options: [
+      { value: 'office', labelAr: 'مكتب', labelEn: 'Office' },
+      { value: 'shop', labelAr: 'محل تجاري', labelEn: 'Shop' },
+      { value: 'warehouse', labelAr: 'مستودع', labelEn: 'Warehouse' },
+      { value: 'clinic', labelAr: 'عيادة', labelEn: 'Clinic' },
+      { value: 'restaurant', labelAr: 'مطعم / كافيه', labelEn: 'Restaurant/Cafe' },
+    ]},
+    { key: 'ceilingHeight', labelAr: 'ارتفاع السقف (متر)', labelEn: 'Ceiling Height (m)', type: 'number', required: false },
   ],
   lands: [
     { key: 'area', labelAr: 'المساحة (م²)', labelEn: 'Area (m²)', type: 'number', required: true },
