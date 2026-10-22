@@ -8,6 +8,7 @@ import { setPendingPublish } from '../helpers/pendingPublishFlags';
 import { resolvePostDetailsFields, preparePublish } from '../helpers/postDetailsHelpers';
 import { buildDraftData } from '../helpers/buildDraftData';
 import { getCurrentUser, requirePhoneForPublish } from '@/features/auth/helpers/publishPhoneGuard';
+
 export function usePostDetails() {
   const { postDraft, updatePostDraft } = usePostWizard();
   const { resetPostDraft } = useDraft();
@@ -32,67 +33,36 @@ export function usePostDetails() {
   );
 
   const setField = useCallback((k: string, v: string) => setValues(p => ({ ...p, [k]: v })), []);
-
   const missing = fields.filter(f => f.required && !(values[f.key] || '').trim()).map(f => isArabic ? f.labelAr : f.labelEn);
   const hasLocation = Boolean(postDraft.city?.trim());
-  const canContinue = title.trim().length >= 5 && price.trim().length > 0 && missing.length === 0 && hasLocation;
+  const canContinue = title.trim().length >= 5 && price.trim().length > 0 && !isNaN(Number(price)) && missing.length === 0 && hasLocation;
 
   const handleContinue = async () => {
     setSubmitAttempted(true);
     if (!canContinue || isPublishing) return;
-
-    const draftData = buildDraftData({
-      title: title.trim(),
-      price: price.trim(),
-      description: description.trim(),
-      postDraft,
-      fields,
-      values,
-      isArabic,
-    });
+    const draftData = buildDraftData({ title: title.trim(), price: price.trim(), description: description.trim(), postDraft, fields, values, isArabic });
     updatePostDraft(draftData);
-
-    // Visitors must sign in before publishing; resume after sign-in.
-    if (authStatus !== 'authenticated' || isAnonymous) {
-      setPendingPublish(browseCountryCode, 'post-details');
-      navigateTo('login');
-      return;
-    }
-
+    if (authStatus !== 'authenticated' || isAnonymous) { setPendingPublish(browseCountryCode, 'post-details'); navigateTo('login'); return; }
     if (!requirePhoneForPublish(() => void handleContinue())) return;
-
     const prepared = preparePublish({ postDraft, draftData, user: getCurrentUser(), browseCountryCode, activeCurrency });
     if (!prepared) return;
 
-    setIsPublishing(true);
-    setError(null);
+    setIsPublishing(true); setError(null);
     try {
       const result = await publishListing(prepared.newListing, prepared.targetMarket, isArabic);
       if (!result.success) {
-        // 42501 → RLS: user has no phone. Redirect to Profile to add one.
-        if (result.error?.toLowerCase().includes('row-level security')) {
-          setError(isArabic ? 'يجب إضافة رقم هاتف أولاً' : 'Phone required');
-          navigateTo('profile');
-          return;
-        }
-        setError(result.error || 'فشل نشر الإعلان');
-        return;
+        let errorMsg = result.error || (isArabic ? 'فشل نشر الإعلان' : 'Failed to publish');
+        if (errorMsg.includes('Rate limit') || errorMsg.includes('ACTIVE_LISTING_CAP_REACHED')) errorMsg = isArabic ? 'لقد وصلت للحد الأقصى لعدد الإعلانات المسموح بها حالياً. يرجى المحاولة لاحقاً.' : 'You have reached the maximum allowed listings. Please try again later.';
+        else if (errorMsg.toLowerCase().includes('row-level security')) { setError(isArabic ? 'يجب إضافة رقم هاتف أولاً' : 'Phone required'); navigateTo('profile'); return; }
+        setError(errorMsg); return;
       }
-      resetPostDraft();
-      setActiveTab('my-ads');
-      navigateTo('main');
+      resetPostDraft(); setActiveTab('my-ads'); navigateTo('main');
     } catch (err) {
-      console.error('[PUBLISH ERROR]', err);
-      setError('فشل نشر الإعلان');
+      console.error('[PUBLISH ERROR]', err); setError('فشل نشر الإعلان');
     } finally {
       setIsPublishing(false);
     }
   };
 
-  return {
-    title, setTitle, price, setPrice, description, setDescription,
-    values, setField, fields, missingRequired: missing,
-    canContinue, handleContinue, isArabic, submitAttempted,
-    isPublishing, error,
-  };
+  return { title, setTitle, price, setPrice, description, setDescription, values, setField, fields, missingRequired: missing, canContinue, handleContinue, isArabic, submitAttempted, isPublishing, error };
 }
