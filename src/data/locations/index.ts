@@ -25,3 +25,13 @@ export type {
   DefaultRegionalCapitals,
   ReconciledLocation
 } from './types';
+
+// Geo registry (6-level hierarchy) — side-effect imports for registration
+import './JO.geo';
+import './LB.geo';
+import './PS.geo';
+import './SY.geo';
+import './SA.geo';
+
+export * from './types';
+export * from './registry';

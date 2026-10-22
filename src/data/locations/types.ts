@@ -26,3 +26,45 @@ export interface ReconciledLocation {
   neighborhood?: string;
   confidence: number;
 }
+
+export interface Village {
+  readonly slug: string;
+  readonly nameAr: string;
+  readonly nameEn: string;
+}
+
+export interface RefugeeCamp {
+  readonly slug: string;
+  readonly nameAr: string;
+  readonly nameEn: string;
+  readonly governorateSlug: string;
+}
+
+export interface Landmark {
+  readonly slug: string;
+  readonly nameAr: string;
+  readonly nameEn: string;
+  readonly citySlug: string;
+  readonly type: 'mall' | 'university' | 'hospital' | 'airport' | 'stadium' | 'other';
+}
+
+export interface District {
+  readonly slug: string;
+  readonly nameAr: string;
+  readonly nameEn: string;
+  readonly villages: readonly Village[];
+}
+
+export interface Governorate {
+  readonly slug: string;
+  readonly nameAr: string;
+  readonly nameEn: string;
+  readonly districts: readonly District[];
+}
+
+export interface CountryGeo {
+  readonly countryCode: 'JO' | 'LB' | 'PS' | 'SY' | 'SA';
+  readonly governorates: readonly Governorate[];
+  readonly refugeeCamps: readonly RefugeeCamp[];
+  readonly landmarks: readonly Landmark[];
+}
