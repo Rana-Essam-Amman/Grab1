@@ -1,3 +1,4 @@
+// RULE-14-EXCEPTION: Static taxonomy
 import type { CategoryFieldMap, ListingFieldOption } from './types';
 
 const FASHION_BRANDS: ListingFieldOption[] = [
@@ -254,6 +255,7 @@ export const FASHION_FIELDS: CategoryFieldMap = {
     { key: 'dressLength', labelAr: 'طول الفستان / التنورة', labelEn: 'Dress / Skirt Length', type: 'select', allowOther: true, required: false, options: DRESS_LENGTH },
     { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: true, required: false, options: SELLER_TYPE },
     { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
+    { key: 'wholesale', labelAr: 'بيع بالجملة', labelEn: 'Wholesale Available', type: 'boolean', required: false },
   ],
   men: [
     { key: 'clothingType', labelAr: 'نوع الملابس', labelEn: 'Type', type: 'select', allowOther: true, required: true, options: [
@@ -284,6 +286,7 @@ export const FASHION_FIELDS: CategoryFieldMap = {
     { key: 'sleeveLength', labelAr: 'طول الكم', labelEn: 'Sleeve Length', type: 'select', allowOther: true, required: false, options: SLEEVE_LENGTH },
     { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: true, required: false, options: SELLER_TYPE },
     { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
+    { key: 'wholesale', labelAr: 'بيع بالجملة', labelEn: 'Wholesale Available', type: 'boolean', required: false },
   ],
   'watches-jewelry': [
     { key: 'itemType', labelAr: 'نوع القطعة', labelEn: 'Item Type', type: 'select', allowOther: true, required: true, options: [
