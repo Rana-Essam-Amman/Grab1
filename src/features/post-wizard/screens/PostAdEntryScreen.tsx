@@ -19,7 +19,6 @@ export const PostAdEntryScreen = () => {
     startPostFlow,
     canPostInMarket,
     myMarket,
-    freeLimit,
     freeRemaining,
     updateUserMarket,
   } = usePostAdEntry();
@@ -55,7 +54,7 @@ export const PostAdEntryScreen = () => {
         <div className="p-6 flex flex-col gap-5 flex-1 items-center justify-center">
           <div className="text-center px-4 mb-4">
             <h3
-              id="post-ad-blocked-title"
+              id="post-ad-entry-blocked-title"
               className="text-xl font-bold text-ink mb-2"
             >
               {isArabic
@@ -74,7 +73,7 @@ export const PostAdEntryScreen = () => {
             {(['JO', 'SA', 'LB', 'PS', 'SY'] as MarketCode[]).map((m) => (
               <button
                 key={m}
-                onClick={() => updateUserMarket(m)}
+                onClick={() => updateUserMarket?.(m)}
                 className="p-4 border border-border bg-surface rounded-xl font-bold text-ink hover:border-primary hover:text-primary transition-all"
               >
                 {MARKET_NAMES[m]}
