@@ -21,6 +21,7 @@ const chipClass = (active: boolean) =>
 export const LocationFilterSection: React.FC<LocationFilterSectionProps> = ({
   isArabic, countryCode, activeCity, activeNeighborhood, onCityChange, onNeighborhoodChange,
 }) => {
+  const [textFilter, setTextFilter] = React.useState('');
   const cities = useMemo(() => {
     const en = locationsEn[countryCode] || {};
     const arKeys = Object.keys(locationsAr[countryCode] || {});
@@ -43,6 +44,12 @@ export const LocationFilterSection: React.FC<LocationFilterSectionProps> = ({
     return en.map((n, i) => ({ key: n, nameEn: n, nameAr: ar[i] || n }));
   }, [countryCode, activeCity]);
   const neighOptions = useMemo(() => neighborhoods.map((n) => (isArabic ? n.nameAr : n.nameEn)), [neighborhoods, isArabic]);
+  const filteredCities = textFilter.trim()
+    ? cities.filter((c) => (isArabic ? c.cityAr : c.cityEn).toLowerCase().includes(textFilter.toLowerCase()))
+    : cities;
+  const filteredNeighborhoods = textFilter.trim()
+    ? neighborhoods.filter((n) => (isArabic ? n.nameAr : n.nameEn).toLowerCase().includes(textFilter.toLowerCase()))
+    : neighborhoods;
   const activeNeighLabel = neighborhoods.find((n) => n.nameEn === activeNeighborhood);
   const quickNeighs = neighborhoods.slice(0, QUICK_PICK_COUNT);
   const selectNeigh = (label: string) => {
@@ -52,6 +59,14 @@ export const LocationFilterSection: React.FC<LocationFilterSectionProps> = ({
 
   return (
     <div className="flex flex-col gap-3" data-testid="location-filter-section">
+      <input
+        type="text"
+        placeholder={isArabic ? 'ابحث عن مدينة أو حي...' : 'Search city or neighborhood...'}
+        value={textFilter}
+        onChange={(e) => setTextFilter(e.target.value)}
+        className="w-full h-9 px-3 rounded-lg border border-border bg-surface text-ink text-xs font-medium focus:outline-none focus:border-accent mb-2"
+        data-testid="location-text-search"
+      />
       <div>
         <p className="text-[11px] font-bold text-ink-muted mb-2">{isArabic ? 'المدينة' : 'City'}</p>
         <div className="flex flex-wrap gap-2 mb-2" data-testid="location-city-quickpicks">
@@ -63,12 +78,12 @@ export const LocationFilterSection: React.FC<LocationFilterSectionProps> = ({
           ))}
         </div>
         <div data-testid="filter-city-dropdown">
-          <SearchableDropdown options={cityOptions} value={activeCityLabel ? (isArabic ? activeCityLabel.cityAr : activeCityLabel.cityEn) : ''}
+          <SearchableDropdown options={filteredCities.map((c) => (isArabic ? c.cityAr : c.cityEn))} value={activeCityLabel ? (isArabic ? activeCityLabel.cityAr : activeCityLabel.cityEn) : ''}
             onChange={selectCity} placeholder={isArabic ? 'ابحث عن مدينة...' : 'Search city...'} isArabic={isArabic} />
         </div>
       </div>
 
-      {neighborhoods.length > 0 && (
+      {filteredNeighborhoods.length > 0 && (
         <div>
           <p className="text-[11px] font-bold text-ink-muted mb-2">{isArabic ? 'المنطقة' : 'Neighborhood'}</p>
           <div className="flex flex-wrap gap-2 mb-2" data-testid="location-neighborhood-quickpicks">
@@ -85,7 +100,7 @@ export const LocationFilterSection: React.FC<LocationFilterSectionProps> = ({
             ))}
           </div>
           <div data-testid="filter-neighborhood-dropdown">
-            <SearchableDropdown options={neighOptions} value={activeNeighLabel ? (isArabic ? activeNeighLabel.nameAr : activeNeighLabel.nameEn) : ''}
+            <SearchableDropdown options={filteredNeighborhoods.map((n) => (isArabic ? n.nameAr : n.nameEn))} value={activeNeighLabel ? (isArabic ? activeNeighLabel.nameAr : activeNeighLabel.nameEn) : ''}
               onChange={selectNeigh} placeholder={isArabic ? 'ابحث عن حي...' : 'Search neighborhood...'} isArabic={isArabic} />
           </div>
         </div>
