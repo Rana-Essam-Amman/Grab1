@@ -107,6 +107,11 @@ export function detectGeoHint(query: string): GeoHint | null {
         if (dist.nameAr.includes(q) || lower.includes(dist.nameEn.toLowerCase()) || lower.includes(dist.slug)) {
           return { countryCode: code, governorateSlug: gov.slug, cityName: dist.nameEn, campSlug: null, landmarkSlug: null, matchedName: dist.nameAr };
         }
+        for (const v of dist.villages) {
+          if (v.nameAr.includes(q) || lower.includes(v.nameEn.toLowerCase()) || lower.includes(v.slug)) {
+            return { countryCode: code, governorateSlug: gov.slug, cityName: v.nameEn, campSlug: null, landmarkSlug: null, matchedName: v.nameAr };
+          }
+        }
       }
     }
 
