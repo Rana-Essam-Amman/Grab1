@@ -1,20 +1,20 @@
 import { getCountryAliases } from '@/shared/lib/locationAliases';
 import { expandQueryCity } from '@/data/locations/aliases';
 import { getAllGovernorates, getAllCamps, getAllLandmarks } from '@/data/locations/registry';
+import { normalizeArabic } from '@/data/arabicNormalize';
+import { textSignals } from '@/data/categorySignals';
+
 export enum MismatchPolicy {
   silent = 'silent',
   confirm = 'confirm',
 }
-
-import { normalizeArabic } from '@/data/arabicNormalize';
 
 export const mismatchPolicy: MismatchPolicy = MismatchPolicy.confirm;
 
 export type { CategoryHint } from './categoryMatch.types';
 import type { CategoryHint } from './categoryMatch.types';
 
-export { textSignals } from '@/data/categorySignals';
-import { textSignals } from '@/data/categorySignals';
+export { textSignals };
 
 export interface CategoryMatch {
   chosenCategory: string;
@@ -26,13 +26,9 @@ export interface CategoryMatch {
 }
 
 export function hintFromNote(raw: string): CategoryHint | null {
-  // Normalize both sides so hamza/yaa/taa-marbuta variants match.
-  // e.g. "آيفون" and "ايفون" both become "ايفون".
   const t = normalizeArabic(raw);
   for (const [key, val] of Object.entries(textSignals)) {
-    if (t.includes(normalizeArabic(key))) {
-      return val;
-    }
+    if (t.includes(normalizeArabic(key))) return val;
   }
   return null;
 }
@@ -50,42 +46,24 @@ export function matchCategory({
 }): CategoryMatch {
   const hinted = visionHint || hintFromNote(note);
   if (!hinted || hinted.categorySlug === chosenCategory) {
-    return {
-      chosenCategory,
-      chosenSub,
-      effectiveCategory: chosenCategory,
-      effectiveSub: chosenSub,
-      mismatch: false,
-    };
+    return { chosenCategory, chosenSub, effectiveCategory: chosenCategory, effectiveSub: chosenSub, mismatch: false };
   }
 
   const silent = mismatchPolicy === MismatchPolicy.silent;
-
-  // If the user has NO preference, trust the hint (no conflict).
   if (!chosenCategory) {
     return {
-      chosenCategory,
-      chosenSub,
-      effectiveCategory: hinted.categorySlug,
-      effectiveSub: hinted.subcategorySlug,
-      mismatch: false,
-      suggested: hinted,
+      chosenCategory, chosenSub, effectiveCategory: hinted.categorySlug,
+      effectiveSub: hinted.subcategorySlug, mismatch: false, suggested: hinted,
     };
   }
 
-  // User chose something different from the hint.
-  // - silent mode → trust hint (override user choice)
-  // - confirm mode → trust user choice, surface suggested for UI
   return {
-    chosenCategory,
-    chosenSub,
+    chosenCategory, chosenSub,
     effectiveCategory: silent ? hinted.categorySlug : chosenCategory,
     effectiveSub: silent ? hinted.subcategorySlug : chosenSub,
-    mismatch: true,
-    suggested: hinted,
+    mismatch: true, suggested: hinted,
   };
 }
-
 
 const COUNTRY_CODES = ['JO', 'LB', 'PS', 'SY', 'SA'] as const;
 
@@ -93,19 +71,16 @@ export function detectCountryHint(query: string): string | null {
   const q = query.trim().toLowerCase();
   if (!q) return null;
   for (const code of COUNTRY_CODES) {
-    const aliases = getCountryAliases(code);
-    for (const a of aliases) {
+    for (const a of getCountryAliases(code)) {
       if (a && q.includes(a.toLowerCase())) return code;
     }
   }
   return null;
 }
 
-
 export function getLocationQueryVariants(query: string): string[] {
   return expandQueryCity(query);
 }
-
 
 export interface GeoHint {
   readonly countryCode: string;
@@ -125,53 +100,25 @@ export function detectGeoHint(query: string): GeoHint | null {
 
   for (const code of GEO_COUNTRY_CODES) {
     for (const gov of getAllGovernorates(code)) {
-      if (
-        gov.nameAr.includes(q) ||
-        lower.includes(gov.nameEn.toLowerCase()) ||
-        lower.includes(gov.slug)
-      ) {
-        return {
-          countryCode: code,
-          governorateSlug: gov.slug,
-          cityName: gov.nameEn,
-          campSlug: null,
-          landmarkSlug: null,
-          matchedName: gov.nameAr,
-        };
+      if (gov.nameAr.includes(q) || lower.includes(gov.nameEn.toLowerCase()) || lower.includes(gov.slug)) {
+        return { countryCode: code, governorateSlug: gov.slug, cityName: gov.nameEn, campSlug: null, landmarkSlug: null, matchedName: gov.nameAr };
+      }
+      for (const dist of gov.districts) {
+        if (dist.nameAr.includes(q) || lower.includes(dist.nameEn.toLowerCase()) || lower.includes(dist.slug)) {
+          return { countryCode: code, governorateSlug: gov.slug, cityName: dist.nameEn, campSlug: null, landmarkSlug: null, matchedName: dist.nameAr };
+        }
       }
     }
 
     for (const camp of getAllCamps(code)) {
-      if (
-        camp.nameAr.includes(q) ||
-        lower.includes(camp.nameEn.toLowerCase()) ||
-        lower.includes(camp.slug)
-      ) {
-        return {
-          countryCode: code,
-          governorateSlug: camp.governorateSlug,
-          cityName: null,
-          campSlug: camp.slug,
-          landmarkSlug: null,
-          matchedName: camp.nameAr,
-        };
+      if (camp.nameAr.includes(q) || lower.includes(camp.nameEn.toLowerCase()) || lower.includes(camp.slug)) {
+        return { countryCode: code, governorateSlug: camp.governorateSlug, cityName: null, campSlug: camp.slug, landmarkSlug: null, matchedName: camp.nameAr };
       }
     }
 
     for (const lm of getAllLandmarks(code)) {
-      if (
-        lm.nameAr.includes(q) ||
-        lower.includes(lm.nameEn.toLowerCase()) ||
-        lower.includes(lm.slug)
-      ) {
-        return {
-          countryCode: code,
-          governorateSlug: null,
-          cityName: lm.citySlug,
-          campSlug: null,
-          landmarkSlug: lm.slug,
-          matchedName: lm.nameAr,
-        };
+      if (lm.nameAr.includes(q) || lower.includes(lm.nameEn.toLowerCase()) || lower.includes(lm.slug)) {
+        return { countryCode: code, governorateSlug: null, cityName: lm.citySlug, campSlug: null, landmarkSlug: lm.slug, matchedName: lm.nameAr };
       }
     }
   }
