@@ -96,6 +96,26 @@ export const textSignals: Record<string, CategoryHint> = {
   'جنوط': { categorySlug: 'motors', subcategorySlug: 'accessories', labelAr: 'إكسسوارات سيارات', labelEn: 'Car Accessories' },
   'car accessories': { categorySlug: 'motors', subcategorySlug: 'accessories', labelAr: 'إكسسوارات سيارات', labelEn: 'Car Accessories' },
 
+  'كلاسيك': { categorySlug: 'motors', subcategorySlug: 'classic_cars', labelAr: 'سيارات كلاسيك', labelEn: 'Classic Cars' },
+  'تراثي': { categorySlug: 'motors', subcategorySlug: 'classic_cars', labelAr: 'سيارات كلاسيك', labelEn: 'Classic Cars' },
+  'عتيق': { categorySlug: 'motors', subcategorySlug: 'classic_cars', labelAr: 'سيارات كلاسيك', labelEn: 'Classic Cars' },
+  'vintage car': { categorySlug: 'motors', subcategorySlug: 'classic_cars', labelAr: 'سيارات كلاسيك', labelEn: 'Classic Cars' },
+  'classic car': { categorySlug: 'motors', subcategorySlug: 'classic_cars', labelAr: 'سيارات كلاسيك', labelEn: 'Classic Cars' },
+  'oldtimer': { categorySlug: 'motors', subcategorySlug: 'classic_cars', labelAr: 'سيارات كلاسيك', labelEn: 'Classic Cars' },
+
+  'مصدوم': { categorySlug: 'motors', subcategorySlug: 'damaged_cars', labelAr: 'سيارات مصدومة', labelEn: 'Damaged Cars' },
+  'مصدومة': { categorySlug: 'motors', subcategorySlug: 'damaged_cars', labelAr: 'سيارات مصدومة', labelEn: 'Damaged Cars' },
+  'حادث': { categorySlug: 'motors', subcategorySlug: 'damaged_cars', labelAr: 'سيارات مصدومة', labelEn: 'Damaged Cars' },
+  'تالف': { categorySlug: 'motors', subcategorySlug: 'damaged_cars', labelAr: 'سيارات مصدومة', labelEn: 'Damaged Cars' },
+  'damaged car': { categorySlug: 'motors', subcategorySlug: 'damaged_cars', labelAr: 'سيارات مصدومة', labelEn: 'Damaged Cars' },
+  'salvage': { categorySlug: 'motors', subcategorySlug: 'damaged_cars', labelAr: 'سيارات مصدومة', labelEn: 'Damaged Cars' },
+
+  'تنازل': { categorySlug: 'motors', subcategorySlug: 'lease_transfer', labelAr: 'سيارات للتنازل', labelEn: 'Lease Transfer' },
+  'للتنازل': { categorySlug: 'motors', subcategorySlug: 'lease_transfer', labelAr: 'سيارات للتنازل', labelEn: 'Lease Transfer' },
+  'نقل ملكية': { categorySlug: 'motors', subcategorySlug: 'lease_transfer', labelAr: 'سيارات للتنازل', labelEn: 'Lease Transfer' },
+  'lease transfer': { categorySlug: 'motors', subcategorySlug: 'lease_transfer', labelAr: 'سيارات للتنازل', labelEn: 'Lease Transfer' },
+  'lease to own': { categorySlug: 'motors', subcategorySlug: 'lease_transfer', labelAr: 'سيارات للتنازل', labelEn: 'Lease Transfer' },
+
   // ═══════════ REAL ESTATE / FOR SALE ═══════════
   'شقة': { categorySlug: 'real-estate', subcategorySlug: 'apartments-for-sale', labelAr: 'شقق للبيع', labelEn: 'Apartments for Sale' },
   'شقه': { categorySlug: 'real-estate', subcategorySlug: 'apartments-for-sale', labelAr: 'شقق للبيع', labelEn: 'Apartments for Sale' },

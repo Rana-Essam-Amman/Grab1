@@ -92,7 +92,7 @@ const DIGITS_OPTIONS: ListingFieldOption[] = [
 
 // ── Car Fields (Shared by cars, classic_cars, damaged_cars, lease_transfer) ──
 const CARS_FIELDS = [
-  { key: 'make', labelAr: 'الماركة', labelEn: 'Make', type: 'select' as const, allowOther: false, required: true, options: getBrandOptions() },
+  { key: 'make', labelAr: 'الماركة', labelEn: 'Make', type: 'select' as const, allowOther: true, required: true, options: getBrandOptions() },
   { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model' as const, dependsOn: 'make', required: true, placeholder: 'Camry, X5...' },
   { key: 'trim', labelAr: 'الفئة', labelEn: 'Trim', type: 'cascading-trim' as const, dependsOn: 'make', required: true },
   { key: 'year', labelAr: 'السنة', labelEn: 'Year', type: 'select' as const, allowOther: true, required: true, options: CAR_YEAR_OPTIONS },
@@ -116,7 +116,7 @@ export const MOTORS_FIELDS: CategoryFieldMap = {
   damaged_cars: CARS_FIELDS,
   lease_transfer: CARS_FIELDS,
   motorbikes: [
-    { key: 'make', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: false, required: true, options: MOTORBIKE_BRANDS },
+    { key: 'make', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: true, options: MOTORBIKE_BRANDS },
     { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'make', required: true, placeholder: 'CBR, R1...' },
     { key: 'year', labelAr: 'السنة', labelEn: 'Year', type: 'select', allowOther: true, required: true, options: CAR_YEAR_OPTIONS },
     { key: 'km', labelAr: 'العداد (كم)', labelEn: 'KM', type: 'number', required: false, placeholder: '15000' },
@@ -139,7 +139,7 @@ export const MOTORS_FIELDS: CategoryFieldMap = {
   ],
   parts: [
     { key: 'partName', labelAr: 'اسم القطعة', labelEn: 'Part Name', type: 'text', required: true },
-    { key: 'make', labelAr: 'الماركة المتوافقة', labelEn: 'Compatible Make', type: 'select', allowOther: false, required: false, options: getBrandOptions() },
+    { key: 'make', labelAr: 'الماركة المتوافقة', labelEn: 'Compatible Make', type: 'select', allowOther: true, required: false, options: getBrandOptions() },
     { key: 'model', labelAr: 'الموديل المتوافق', labelEn: 'Compatible Model', type: 'cascading-model', dependsOn: 'make', required: false },
     { key: 'year', labelAr: 'سنة الصنع', labelEn: 'Year', type: 'select', allowOther: true, required: false, options: CAR_YEAR_OPTIONS },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: false, required: true, options: [
@@ -159,7 +159,7 @@ export const MOTORS_FIELDS: CategoryFieldMap = {
   ],
   accessories: [
     { key: 'type', labelAr: 'نوع الإكسسوار', labelEn: 'Accessory Type', type: 'text', required: true },
-    { key: 'make', labelAr: 'الماركة المتوافقة', labelEn: 'Compatible Make', type: 'select', allowOther: false, required: false, options: getBrandOptions() },
+    { key: 'make', labelAr: 'الماركة المتوافقة', labelEn: 'Compatible Make', type: 'select', allowOther: true, required: false, options: getBrandOptions() },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: false, required: false, options: CONDITION_OPTIONS },
     { key: 'material', labelAr: 'المادة', labelEn: 'Material', type: 'text', required: false },
     { key: 'color', labelAr: 'اللون', labelEn: 'Color', type: 'select', allowOther: true, required: false, options: COLOR_OPTIONS },

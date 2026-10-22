@@ -30,7 +30,7 @@ export interface RangeFilterDef {
 export const RANGE_FILTERS: readonly RangeFilterDef[] = [
   {
     categorySlug: 'motors',
-    subcategorySlugs: ['cars', 'classic_cars', 'damaged_cars', 'lease_transfer'],
+    subcategorySlugs: ['cars', 'classic_cars', 'damaged_cars', 'lease_transfer', 'motorbikes', 'heavy'],
     attrKey: 'km',
     filterKey: 'km_range',
     labelAr: 'نطاق المسافة المقطوعة',
