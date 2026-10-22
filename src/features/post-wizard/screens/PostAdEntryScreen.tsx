@@ -3,7 +3,7 @@ import { usePostAdEntry } from '../hooks/usePostAdEntry';
 import { Icon } from '@iconify/react';
 import { Button } from '@/shared/ui/Button';
 import type { MarketCode } from '@/data/markets/types';
-import { toast } from 'react-hot-toast'; // Adjust if you use a different toast library (e.g., 'sonner')
+import { toast } from 'sonner';
 
 const MARKET_NAMES: Record<string, string> = {
   JO: 'الأردن',
