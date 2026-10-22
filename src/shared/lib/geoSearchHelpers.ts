@@ -28,6 +28,17 @@ export function matchGeoHierarchy(
         out.push(dist.nameAr, dist.nameEn, gov.nameAr, gov.nameEn);
         break;
       }
+      for (const v of dist.villages) {
+        if (
+          v.nameAr === city || v.nameAr === neighborhood ||
+          v.nameEn.toLowerCase() === city.toLowerCase() ||
+          v.nameEn.toLowerCase() === neighborhood.toLowerCase() ||
+          v.slug === city.toLowerCase() || v.slug === neighborhood.toLowerCase()
+        ) {
+          out.push(v.nameAr, v.nameEn, dist.nameAr, dist.nameEn, gov.nameAr, gov.nameEn);
+          break;
+        }
+      }
     }
   }
 
