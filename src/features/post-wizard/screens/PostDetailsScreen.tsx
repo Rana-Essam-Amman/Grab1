@@ -13,6 +13,7 @@ import { findSubcategoryBySlug } from '@/data/subcategories';
 import { getListingFields } from '@/data/listingFields';
 import { DynamicFieldRenderer } from '../components/DynamicFieldRenderer';
 import { StaticMapPreview } from '../components/StaticMapPreview';
+import { formatPrice } from '@/shared/lib/formatPrice';
 
 export const PostDetailsScreen: React.FC = () => {
   const { isArabic, goBack, activeCurrency, browseCountryCode } = useUI();
@@ -30,6 +31,11 @@ export const PostDetailsScreen: React.FC = () => {
 
   const coverPhoto = photos[0];
   const locationLabel = [neighborhood, city].filter(Boolean).join(', ') || (isArabic ? 'الموقع' : 'Location');
+
+  const formattedPricePreview = useMemo(() => {
+    if (!price || price === '0') return isArabic ? 'السعر غير محدد' : 'Price not set';
+    return formatPrice(price, activeCurrency, isArabic);
+  }, [price, activeCurrency, isArabic]);
 
   const allValues = useMemo(() => {
     const map: Record<string, string> = {};
@@ -67,7 +73,7 @@ export const PostDetailsScreen: React.FC = () => {
             </div>
             <div className="min-w-0 flex-1">
               <h4 className="text-sm font-bold text-ink truncate">{title || (isArabic ? 'عنوان الإعلان' : 'Listing Title')}</h4>
-              <div className="text-xs font-bold text-primary mt-0.5">{price ? `${price} ${activeCurrency}` : (isArabic ? 'السعر غير محدد' : 'Price not set')}</div>
+              <div className="text-xs font-bold text-primary mt-0.5">{formattedPricePreview}</div>
               <div className="text-[11px] text-ink-muted flex items-center gap-1 mt-1 truncate">
                 <Location size={12} variant="Bold" className="text-accent" />
                 <span>{locationLabel}</span>
