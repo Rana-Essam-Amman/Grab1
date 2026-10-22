@@ -15,9 +15,19 @@ export function matchGeoHierarchy(
       gov.nameAr === city ||
       gov.slug === city.toLowerCase()
     ) {
-      out.push(gov.nameAr);
-      out.push(gov.nameEn);
+      out.push(gov.nameAr, gov.nameEn);
       break;
+    }
+    for (const dist of gov.districts) {
+      if (
+        dist.nameAr === city || dist.nameAr === neighborhood ||
+        dist.nameEn.toLowerCase() === city.toLowerCase() ||
+        dist.nameEn.toLowerCase() === neighborhood.toLowerCase() ||
+        dist.slug === city.toLowerCase() || dist.slug === neighborhood.toLowerCase()
+      ) {
+        out.push(dist.nameAr, dist.nameEn, gov.nameAr, gov.nameEn);
+        break;
+      }
     }
   }
 
@@ -29,13 +39,9 @@ export function matchGeoHierarchy(
         camp.nameEn.toLowerCase() === neighborhood.toLowerCase() ||
         camp.slug === neighborhood.toLowerCase()
       ) {
-        out.push(camp.nameAr);
-        out.push(camp.nameEn);
+        out.push(camp.nameAr, camp.nameEn);
         const campGov = governorates.find((g) => g.slug === camp.governorateSlug);
-        if (campGov) {
-          out.push(campGov.nameAr);
-          out.push(campGov.nameEn);
-        }
+        if (campGov) out.push(campGov.nameAr, campGov.nameEn);
         break;
       }
     }
@@ -49,8 +55,7 @@ export function matchGeoHierarchy(
       lm.nameEn.toLowerCase() === neighborhood.toLowerCase() ||
       lm.nameEn.toLowerCase() === city.toLowerCase()
     ) {
-      out.push(lm.nameAr);
-      out.push(lm.nameEn);
+      out.push(lm.nameAr, lm.nameEn);
       break;
     }
   }
