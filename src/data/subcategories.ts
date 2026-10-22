@@ -62,6 +62,7 @@ export const subcategories: Record<string, SubcategoryDef[]> = {
     { slug: 'cameras', nameEn: 'Cameras & Lenses', nameAr: 'كاميرات وعدسات' },
     { slug: 'home-appliances', nameEn: 'Home Appliances', nameAr: 'أجهزة منزلية' },
     { slug: 'solar', nameEn: 'Solar Energy Systems', nameAr: 'منظومات طاقة شمسية' },
+    { slug: 'industrial', nameEn: 'Industrial Equipment', nameAr: 'معدات صناعية' },
   ],
   furniture: [
     { slug: 'living', nameEn: 'Living Room Furniture', nameAr: 'أثاث غرف جلوس' },

@@ -1,4 +1,5 @@
 import { ELECTRONICS_SOLAR_FIELDS } from './electronics-solar';
+import { ELECTRONICS_INDUSTRIAL_FIELDS } from './electronics-industrial';
 import type { CategoryFieldMap, ListingFieldOption } from './types';
 
 const TV_BRANDS: ListingFieldOption[] = [
@@ -269,4 +270,5 @@ export const ELECTRONICS_FIELDS: CategoryFieldMap = {
     { key: 'installationIncluded', labelAr: 'التوصيل والتركيب متوفر', labelEn: 'Installation Available', type: 'boolean', required: false },
   ],
   solar: ELECTRONICS_SOLAR_FIELDS,
+  industrial: ELECTRONICS_INDUSTRIAL_FIELDS,
 };

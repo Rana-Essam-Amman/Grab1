@@ -565,6 +565,15 @@ export const textSignals: Record<string, CategoryHint> = {
   'inverter': { categorySlug: 'electronics', subcategorySlug: 'solar', labelAr: 'طاقة شمسية', labelEn: 'Solar Energy' },
   'solar panels': { categorySlug: 'electronics', subcategorySlug: 'solar', labelAr: 'طاقة شمسية', labelEn: 'Solar Energy' },
 
+  'معدات صناعية': { categorySlug: 'electronics', subcategorySlug: 'industrial', labelAr: 'معدات صناعية', labelEn: 'Industrial Equipment' },
+  'صناعي': { categorySlug: 'electronics', subcategorySlug: 'industrial', labelAr: 'معدات صناعية', labelEn: 'Industrial Equipment' },
+  'خط إنتاج': { categorySlug: 'electronics', subcategorySlug: 'industrial', labelAr: 'معدات صناعية', labelEn: 'Industrial Equipment' },
+  'مصنع': { categorySlug: 'electronics', subcategorySlug: 'industrial', labelAr: 'معدات صناعية', labelEn: 'Industrial Equipment' },
+  'مولد': { categorySlug: 'electronics', subcategorySlug: 'industrial', labelAr: 'معدات صناعية', labelEn: 'Industrial Equipment' },
+  'industrial': { categorySlug: 'electronics', subcategorySlug: 'industrial', labelAr: 'معدات صناعية', labelEn: 'Industrial Equipment' },
+  'factory equipment': { categorySlug: 'electronics', subcategorySlug: 'industrial', labelAr: 'معدات صناعية', labelEn: 'Industrial Equipment' },
+  'production line': { categorySlug: 'electronics', subcategorySlug: 'industrial', labelAr: 'معدات صناعية', labelEn: 'Industrial Equipment' },
+
   // ═══════════ CLEANING ═══════════
   'تنظيف منازل': { categorySlug: 'cleaning', subcategorySlug: 'homes', labelAr: 'تنظيف منازل', labelEn: 'Home Cleaning' },
   'تنظيف شقق': { categorySlug: 'cleaning', subcategorySlug: 'homes', labelAr: 'تنظيف منازل', labelEn: 'Home Cleaning' },
