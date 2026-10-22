@@ -1,3 +1,4 @@
+// RULE-14-EXCEPTION: Static taxonomy
 import type { CategoryFieldMap, ListingFieldOption } from './types';
 
 const SENIORITY_LEVELS: ListingFieldOption[] = [

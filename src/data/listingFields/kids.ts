@@ -1,3 +1,4 @@
+// RULE-14-EXCEPTION: Static taxonomy
 import type { CategoryFieldMap, ListingFieldOption } from './types';
 
 const KIDS_AGE_OPTIONS: ListingFieldOption[] = [
