@@ -8,7 +8,7 @@ import { EXPLORE_CONFIG } from '@/config/explore.config';
 import { UseExploreListingsReturn } from './useExploreListings.types';
 import { countCityListings, computeFilterModeWithCapital } from './useExploreListings.helpers';
 import { filterListings } from '@/shared/lib/filterListings';
-import { detectCountryHint } from '@/ai/categoryMatch';
+import { detectCountryHint, detectGeoHint } from '@/ai/categoryMatch';
 import { translateAttrsForDb } from '@/shared/lib/attrsTranslation';
 
 export function useExploreListings(): UseExploreListingsReturn {
@@ -60,14 +60,14 @@ export function useExploreListings(): UseExploreListingsReturn {
   }, []);
 
   const displayListings = useMemo(() => {
-    const hasActiveSearch = searchQuery.trim().length > 0;
+    const hasActiveSearch = searchQuery.trim().length > 0; const geoHint = hasActiveSearch ? detectGeoHint(searchQuery) : null;
     return filterListings(marketListings, {
-      market: hasActiveSearch ? (detectCountryHint(searchQuery) ?? browseCountryCode) : browseCountryCode,
+      market: geoHint?.countryCode ?? (hasActiveSearch ? (detectCountryHint(searchQuery) ?? browseCountryCode) : browseCountryCode),
       searchQuery: hasActiveSearch ? searchQuery : '',
       categorySlug: subcategoryFilter ?? categoryFilter,
       minPrice: minPriceFilter,
       maxPrice: maxPriceFilter,
-      neighborhood: activeNeighborhood,
+      neighborhood: geoHint?.matchedName ?? activeNeighborhood,
       cityAr: browseCityAr,
       cityEn: browseCityEn,
       filterMode,
