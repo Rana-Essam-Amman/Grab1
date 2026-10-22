@@ -2,8 +2,6 @@ import type { Listing } from '@/types';
 import { normalizeArabic } from '@/data/arabicNormalize';
 import { phoneticKey } from './phoneticKey';
 import { stemText } from './arabicStemmer';
-import { getFullLocationAliases } from './locationAliases';
-import { matchGeoHierarchy } from './geoSearchHelpers';
 import {
   collectSearchStrings,
   getTokenCandidates,
@@ -50,25 +48,6 @@ export const scoreListing = (item: Listing, q: string): number => {
     },
     otherStrings,
   );
-
-  // Add location aliases (AR ↔ EN ↔ country name + governorate + camp + landmark)
-  try {
-    const countryAliases = getFullLocationAliases(
-      item.countryCode || '',
-      item.city || '',
-      item.neighborhood || '',
-    );
-    for (const alias of countryAliases) {
-      if (alias) otherStrings.push(alias);
-    }
-    const geoMatches = matchGeoHierarchy(item.countryCode || '', item.city || '', item.neighborhood || '');
-    for (const name of geoMatches) {
-      if (name) otherStrings.push(name);
-    }
-  } catch {
-    // safe fallback
-  }
-
 
   const other = normalizeArabic(otherStrings.join(' '));
 
