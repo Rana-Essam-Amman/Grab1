@@ -54,38 +54,38 @@ export const LocationFields: React.FC<Props> = ({
     <div className="flex flex-col gap-4">
       <LocationMyLocationButton isArabic={isArabic} preferredCountry={browseCountryCode} onCityChange={onCityChange} onNeighborhoodChange={onNeighborhoodChange} />
       <div>
-        <label className="block text-xs font-bold text-ink mb-1.5">{isArabic ? "المدينة / المحافظة" : "City / Governorate"}</label>
+        <label className="block text-xs font-bold text-ink mb-1.5">{isArabic ? "المحافظة / المدينة" : "Governorate / City"}</label>
         <SearchableDropdown
           options={cities}
           value={selectedCity}
           onChange={onCityChange}
-          placeholder={isArabic ? 'ابحث عن مدينة...' : 'Search city...'}
+          placeholder={isArabic ? 'ابحث عن محافظة...' : 'Search governorate...'}
           isArabic={isArabic}
         />
       </div>
       {isOtherValue(selectedCity) && (
-        <Input label={isArabic ? "اكتب اسم المدينة" : "Type city name"} type="text" value={customCity} onChange={(e) => onCustomCityChange(e.target.value)} placeholder={isArabic ? "مثال: الطفيلة" : "e.g., Tafilah"} className="h-11" />
+        <Input label={isArabic ? "اكتب اسم المدينة أو المحافظة" : "Type city or governorate name"} type="text" value={customCity} onChange={(e) => onCustomCityChange(e.target.value)} placeholder={isArabic ? "مثال: الطفيلة" : "e.g., Tafilah"} className="h-11" />
       )}
 
       {neighborhoods.length > 0 && (
         <div>
-          <label className="block text-xs font-bold text-ink mb-1.5">{isArabic ? "المنطقة / الحي" : "Neighborhood / Area"}</label>
+          <label className="block text-xs font-bold text-ink mb-1.5">{isArabic ? "اللواء / المنطقة / الحي" : "District / Area / Neighborhood"}</label>
           <SearchableDropdown
             options={neighborhoods}
             value={selectedNeighborhood}
             onChange={onNeighborhoodChange}
-            placeholder={isArabic ? 'ابحث عن حي...' : 'Search neighborhood...'}
+            placeholder={isArabic ? 'ابحث عن لواء أو حي...' : 'Search district or neighborhood...'}
             isArabic={isArabic}
           />
 
           {!selectedNeighborhood && (
             <p className="text-xs font-bold text-danger px-1 mt-1">
-              {isArabic ? 'الرجاء اختيار الحي' : 'Please select a neighborhood'}
+              {isArabic ? 'الرجاء اختيار الحي أو اللواء' : 'Please select a district or neighborhood'}
             </p>
           )}
 
           {isOtherValue(selectedNeighborhood) && (
-            <Input label={isArabic ? "اكتب اسم المنطقة" : "Type neighborhood name"} type="text" value={customNeighborhood} onChange={(e) => onCustomNeighborhoodChange(e.target.value)} placeholder={isArabic ? "مثال: الرابية الجديدة" : "e.g., New Rabieh"} className="h-11" />
+            <Input label={isArabic ? "اكتب اسم المنطقة أو الحي" : "Type area or neighborhood name"} type="text" value={customNeighborhood} onChange={(e) => onCustomNeighborhoodChange(e.target.value)} placeholder={isArabic ? "مثال: الرابية الجديدة" : "e.g., New Rabieh"} className="h-11" />
           )}
         </div>
       )}
