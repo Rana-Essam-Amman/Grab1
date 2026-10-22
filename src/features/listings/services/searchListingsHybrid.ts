@@ -11,6 +11,7 @@ import {
   attrsToJsonbArray,
   checkRateLimit,
 } from './searchListingsHybrid.helpers';
+import { expandQueryCity } from '@/data/locations/aliases';
 import { searchListingsV4 } from './searchListingsV4';
 
 const MAX_COSINE_DISTANCE = 0.85;
@@ -56,6 +57,12 @@ export async function searchListingsHybrid(
     const trimmed = query.trim();
     if (trimmed.length === 0) return { data: [], error: null };
 
+    // City name expansion: if query is exactly a known city, add bilingual variants
+    const cityVariants = expandQueryCity(trimmed);
+    const effectiveQuery = cityVariants.length > 1
+      ? cityVariants.join(' ')
+      : trimmed;
+
     const categoryHint = await detectCategory(trimmed);
     const effectiveCategory = categorySlug ?? categoryHint;
     const attrsJson = attrsToJsonbArray(attrs, effectiveCategory, subcategorySlug);
@@ -84,7 +91,7 @@ export async function searchListingsHybrid(
     }
 
     const { data: ftsData, error: ftsError } = await supabase.rpc('search_listings_v2_intent_typo', {
-      p_query: trimmed,
+      p_query: effectiveQuery,
       p_market: market ?? null,
       p_limit: limit,
       p_offset: offset,
@@ -99,7 +106,7 @@ export async function searchListingsHybrid(
 
     if (trimmed.length < 5) {
       const { data, error } = await supabase.rpc('search_listings_hybrid', {
-        p_query: trimmed,
+        p_query: effectiveQuery,
         p_market: market ?? null,
         p_limit: limit,
         p_offset: offset,
@@ -114,7 +121,7 @@ export async function searchListingsHybrid(
     const vector = await fetchQueryVector(trimmed);
 
     const rpcArgs: Record<string, unknown> = {
-      p_query: trimmed,
+      p_query: effectiveQuery,
       p_market: market ?? null,
       p_limit: limit,
       p_offset: offset,

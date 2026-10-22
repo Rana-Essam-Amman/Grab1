@@ -59,7 +59,9 @@ export const LB_EN: CountryLocations = {
     'Bint Jbeil', 'Ainata', 'Aitaroun', 'Yaroun', 'Maroun al-Ras',
     'Tibnin', 'Beit Yahoun', 'Kafra', 'Yater', 'Hanin', 'Srobbine', 'Rmeish'
   ],
-  Other: ['Other']
+  Other: ['Other'],
+  'Mount Lebanon': ['Jounieh', 'Byblos', 'Baabda', 'Aley', 'Broummana', 'Beit Mery', 'Antelias', 'Dbayeh', 'Hazmieh', 'Jamhour'],
+  'North Lebanon': ['Tripoli', 'Mina', 'Zgharta', 'Ehden', 'Batroun', 'Halba', 'Amioun', 'Qoubaiyat'],
 };
 
 export const LB_AR: CountryLocations = {
@@ -119,5 +121,7 @@ export const LB_AR: CountryLocations = {
     'بنت جبيل', 'عيناتا', 'عيترون', 'يارون', 'مارون الراس',
     'تبنين', 'بيت ياحون', 'كفرا', 'ياتر', 'حنين', 'صربين', 'رميش'
   ],
-  'أخرى': ['أخرى']
+  'أخرى': ['أخرى'],
+  'جبل لبنان': ['جونية', 'جبيل', 'بعبدا', 'عاليه', 'برمانا', 'بيت مري', 'انطلياس', 'ضبية', 'حازمية', 'الجمهور'],
+  'لبنان الشمالي': ['طرابلس', 'الميناء', 'زغرتا', 'إهدن', 'البترون', 'حلبا', 'أميون', 'القبيات'],
 };

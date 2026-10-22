@@ -1,4 +1,5 @@
 import { getCountryAliases } from '@/shared/lib/locationAliases';
+import { expandQueryCity } from '@/data/locations/aliases';
 export enum MismatchPolicy {
   silent = 'silent',
   confirm = 'confirm',
@@ -97,4 +98,9 @@ export function detectCountryHint(query: string): string | null {
     }
   }
   return null;
+}
+
+
+export function getLocationQueryVariants(query: string): string[] {
+  return expandQueryCity(query);
 }

@@ -78,7 +78,8 @@ export const PS_EN: CountryLocations = {
     'Rafah', 'Tal al-Sultan', 'Shaboura', 'Yibna Camp', 'Al-Junaina', 'Al-Salam',
     'Al-Brazil', 'Al-Zuhour', 'Al-Nasr', 'Al-Awda', 'Khaled bin Walid'
   ],
-  Other: ['Other']
+  Other: ['Other'],
+  'Ramallah and Al-Bireh': ['Ramallah', 'Al-Bireh', 'Beitunia', 'Mazraa Sharqiya', 'Turmus Ayya', 'Sinjil'],
 };
 
 export const PS_AR: CountryLocations = {
@@ -152,5 +153,6 @@ export const PS_AR: CountryLocations = {
     'رفح', 'تل السلطان', 'شابورة', 'مخيم يبنا', 'الجنينة', 'السلام',
     'البرازيل', 'الزهور', 'النصر', 'العودة', 'خالد بن الوليد'
   ],
-  'أخرى': ['أخرى']
+  'أخرى': ['أخرى'],
+  'رام الله والبيرة': ['رام الله', 'البيرة', 'بيتونيا', 'المزرعة الشرقية', 'ترمسعيا', 'سنجل'],
 };
