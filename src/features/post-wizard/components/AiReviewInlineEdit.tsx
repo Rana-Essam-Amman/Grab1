@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { formatPrice } from '@/shared/lib/formatPrice';
 
 type Variant = 'title' | 'price' | 'description';
 
@@ -8,6 +9,7 @@ interface AiReviewInlineEditProps {
   readonly editing: boolean;
   readonly variant: Variant;
   readonly currency?: string;
+  readonly isArabic?: boolean;
   readonly onChange: (v: string) => void;
   readonly onStartEdit: () => void;
   readonly onStopEdit: () => void;
@@ -33,7 +35,7 @@ const INPUT_ATTRS = {
 };
 
 export const AiReviewInlineEdit: React.FC<AiReviewInlineEditProps> = ({
-  value, placeholder, editing, variant, currency, onChange, onStartEdit, onStopEdit,
+  value, placeholder, editing, variant, currency, isArabic = true, onChange, onStartEdit, onStopEdit,
 }) => {
   const ref = useRef<HTMLInputElement & HTMLTextAreaElement>(null);
 
@@ -105,8 +107,7 @@ export const AiReviewInlineEdit: React.FC<AiReviewInlineEditProps> = ({
     >
       {variant === 'price' && !isEmpty ? (
         <span className={`inline-flex items-baseline gap-2 ${VIEW_CLASS.price}`}>
-          <span>{value}</span>
-          {currency && <span className="text-[12px] font-bold text-ink-muted">{currency}</span>}
+          <span>{formatPrice(value, currency, isArabic)}</span>
         </span>
       ) : (
         <span className={isEmpty ? 'text-ink-muted/40 italic ' + VIEW_CLASS[variant] : VIEW_CLASS[variant]}>

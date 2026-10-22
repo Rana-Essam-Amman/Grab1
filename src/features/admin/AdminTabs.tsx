@@ -3,10 +3,12 @@ import * as rpc from './adminRpc';
 import type { MarketCode } from './adminRpc';
 import { PhoneRequestsTab } from './PhoneRequestsTab';
 import { formatPrice } from '@/shared/lib/formatPrice';
+import { useUI } from '@/hooks/useUI';
 
 type Tab = 'reports' | 'listings' | 'users' | 'revenue' | 'phoneRequests';
 
 export const AdminTabs: React.FC<{ market: MarketCode; actions: any; actionLoading: boolean }> = ({ market, actions, actionLoading }) => {
+  const { isArabic } = useUI();
   const [tab, setTab] = useState<Tab>('reports');
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -95,7 +97,7 @@ export const AdminTabs: React.FC<{ market: MarketCode; actions: any; actionLoadi
           ))}
           {tab === 'listings' && items.map((l) => (
             <div key={l.id} className="p-2.5 bg-surface border border-border rounded-xl flex items-center justify-between text-xs">
-              <div className="flex flex-col"><span className="font-bold text-ink">{l.title}</span><span className="text-ink-muted text-[11px]">{formatPrice(l.price, l.currency, true)}</span></div>
+              <div className="flex flex-col"><span className="font-bold text-ink">{l.title}</span><span className="text-ink-muted text-[11px]">{formatPrice(l.price, l.currency, isArabic)}</span></div>
               <button onClick={async () => { await actions.hideListing(l.id); loadTab(); }} disabled={actionLoading || l.status === 'hidden'} className="px-2 py-1 bg-amber-500/10 text-amber-600 rounded text-[11px] cursor-pointer">{l.status === 'hidden' ? 'مخفي' : 'اخفي الإعلان'}</button>
             </div>
           ))}

@@ -57,11 +57,11 @@ export const AiReviewBody: React.FC<AiReviewBodyProps> = ({
         <AiReviewProgress isArabic={isArabic} completed={completedCount} total={totalCount} />
         
         <AiReviewSectionCard title={isArabic ? 'عنوان الإعلان' : 'Listing Title'}>
-          <AiReviewInlineEdit value={title} placeholder={isArabic ? 'أضف عنواناً' : 'Add a title'} editing={editing === 'title'} variant="title" onChange={onTitleChange} onStartEdit={() => setEditing('title')} onStopEdit={stop} />
+          <AiReviewInlineEdit value={title} placeholder={isArabic ? 'أضف عنواناً' : 'Add a title'} editing={editing === 'title'} variant="title" onChange={onTitleChange} onStartEdit={() => setEditing('title')} onStopEdit={stop} isArabic={isArabic} />
         </AiReviewSectionCard>
 
         <AiReviewSectionCard title={isArabic ? 'السعر' : 'Price'}>
-          <AiReviewInlineEdit value={price} placeholder="0" editing={editing === 'price'} variant="price" currency={currency} onChange={onPriceChange} onStartEdit={() => setEditing('price')} onStopEdit={stop} />
+          <AiReviewInlineEdit value={price} placeholder="0" editing={editing === 'price'} variant="price" currency={currency} onChange={onPriceChange} onStartEdit={() => setEditing('price')} onStopEdit={stop} isArabic={isArabic} />
         </AiReviewSectionCard>
 
         {attributes.length > 0 && (
@@ -71,7 +71,7 @@ export const AiReviewBody: React.FC<AiReviewBodyProps> = ({
         )}
 
         <AiReviewSectionCard title={isArabic ? 'الوصف' : 'Description'}>
-          <AiReviewInlineEdit value={description} placeholder={isArabic ? 'أضف وصفاً...' : 'Add description...'} editing={editing === 'description'} variant="description" onChange={onDescriptionChange} onStartEdit={() => setEditing('description')} onStopEdit={stop} />
+          <AiReviewInlineEdit value={description} placeholder={isArabic ? 'أضف وصفاً...' : 'Add description...'} editing={editing === 'description'} variant="description" onChange={onDescriptionChange} onStartEdit={() => setEditing('description')} onStopEdit={stop} isArabic={isArabic} />
         </AiReviewSectionCard>
 
         <AiReviewSectionCard title={isArabic ? 'الموقع' : 'Location'}>

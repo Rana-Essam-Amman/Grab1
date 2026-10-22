@@ -44,8 +44,7 @@ describe('AiReviewBody — v5 inline-edit architecture', () => {
 
   it('renders price as text and currency separately', () => {
     render(<AiReviewBody {...defaultProps} />);
-    expect(screen.getByText('15000')).toBeInTheDocument();
-    expect(screen.getByText('JOD')).toBeInTheDocument();
+    expect(screen.getByText('15,000 JOD')).toBeInTheDocument();
   });
 
   it('renders city and area as separate chips', () => {
