@@ -9,6 +9,7 @@ import { ListingCardImage } from './ListingCardImage';
 import { ListingCardHorizontal } from './ListingCardHorizontal';
 import { ListingCardSellerRow } from '@/features/listings/components/ListingCardSellerRow';
 import { RequiredSpecsRow } from '@/features/listings/components/RequiredSpecsRow';
+import { TagChips } from '@/features/listings/components/TagChips';
 import { pickSpecs } from '@/features/listings';
 import { ListingSpecsRow } from './ListingSpecsRow';
 
@@ -116,6 +117,7 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
           attributes={listing.attributes ?? []}
           isArabic={isArabic}
         />
+        <TagChips listing={listing} isArabic={isArabic} compact />
         {specs.length > 0 && <ListingSpecsRow specs={specs} compact />}
         <div className="flex items-center mt-3 pt-2 border-t border-border gap-1.5">
           <div className="price-tag text-base shrink-0">
