@@ -109,6 +109,10 @@ describe('marketGate', () => {
       expect(canPostIn('JO', 'LB', 'JO')).toBe(true);
       expect(canPostIn('SA', 'LB', 'JO')).toBe(false);
     });
+
+    it('should allow admins to post in any market regardless of active or user market', () => {
+      expect(canPostIn('SA', 'JO', 'JO', true)).toBe(true);
+    });
   });
 
   describe('getEffectiveMarket', () => {
