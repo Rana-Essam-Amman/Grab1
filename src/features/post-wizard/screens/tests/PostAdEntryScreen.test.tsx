@@ -25,7 +25,10 @@ vi.mock('@/hooks/useUI', () => ({
 vi.mock('../../hooks/usePostAdEntry', () => ({
   usePostAdEntry: () => ({
     isArabic: mockIsArabic,
-    handleBack: mockGoBack,
+    handleBack: () => {
+      mockSetActiveTab('explore');
+      mockGoBack();
+    },
     startPostFlow: mockStartPostFlow,
     canPostInMarket: mockUserCountryCode === mockBrowseCountryCode,
     myMarket: mockUserCountryCode,
