@@ -4,23 +4,77 @@ import type { CountryGeo } from './types';
 const PS_GEO: CountryGeo = {
   countryCode: 'PS',
   governorates: [
-    { slug: 'jenin', nameAr: 'جنين', nameEn: 'Jenin', districts: [] },
-    { slug: 'tubas', nameAr: 'طوباس', nameEn: 'Tubas', districts: [] },
-    { slug: 'tulkarm', nameAr: 'طولكرم', nameEn: 'Tulkarm', districts: [] },
-    { slug: 'nablus', nameAr: 'نابلس', nameEn: 'Nablus', districts: [] },
-    { slug: 'qalqilya', nameAr: 'قلقيلية', nameEn: 'Qalqilya', districts: [] },
-    { slug: 'salfit', nameAr: 'سلفيت', nameEn: 'Salfit', districts: [] },
-    { slug: 'ramallah-and-al-bireh', nameAr: 'رام الله والبيرة', nameEn: 'Ramallah and Al-Bireh', districts: [] },
-    { slug: 'jericho', nameAr: 'أريحا والأغوار', nameEn: 'Jericho and the Jordan Valley', districts: [] },
-    { slug: 'jerusalem', nameAr: 'القدس', nameEn: 'Jerusalem', districts: [] },
-    { slug: 'bethlehem', nameAr: 'بيت لحم', nameEn: 'Bethlehem', districts: [] },
-    { slug: 'hebron', nameAr: 'الخليل', nameEn: 'Hebron', districts: [] },
-    { slug: 'north-gaza', nameAr: 'شمال غزة', nameEn: 'North Gaza', districts: [] },
-    { slug: 'gaza', nameAr: 'غزة', nameEn: 'Gaza', districts: [] },
-    { slug: 'deir-al-balah', nameAr: 'دير البلح', nameEn: 'Deir al-Balah', districts: [] },
-    { slug: 'khan-younis', nameAr: 'خان يونس', nameEn: 'Khan Younis', districts: [] },
-    { slug: 'rafah', nameAr: 'رفح', nameEn: 'Rafah', districts: [] },
+    { slug: 'jenin', nameAr: 'جنين', nameEn: 'Jenin', districts: [
+      { slug: 'jenin-city', nameAr: 'جنين', nameEn: 'Jenin City', villages: [] },
+      { slug: 'qabatiya', nameAr: 'قباطية', nameEn: 'Qabatiya', villages: [] },
+      { slug: 'arrabah', nameAr: 'عرابة', nameEn: 'Arrabah', villages: [] },
+    ]},
+    { slug: 'tubas', nameAr: 'طوباس', nameEn: 'Tubas', districts: [
+      { slug: 'tubas-city', nameAr: 'طوباس', nameEn: 'Tubas City', villages: [] },
+      { slug: 'tammun', nameAr: 'طمون', nameEn: 'Tammun', villages: [] },
+    ]},
+    { slug: 'tulkarm', nameAr: 'طولكرم', nameEn: 'Tulkarm', districts: [
+      { slug: 'tulkarm-city', nameAr: 'طولكرم', nameEn: 'Tulkarm City', villages: [] },
+      { slug: 'anabta', nameAr: 'عنبتا', nameEn: 'Anabta', villages: [] },
+    ]},
+    { slug: 'nablus', nameAr: 'نابلس', nameEn: 'Nablus', districts: [
+      { slug: 'nablus-city', nameAr: 'نابلس', nameEn: 'Nablus City', villages: [] },
+      { slug: 'huwara', nameAr: 'حوارة', nameEn: 'Huwara', villages: [] },
+    ]},
+    { slug: 'qalqilya', nameAr: 'قلقيلية', nameEn: 'Qalqilya', districts: [
+      { slug: 'qalqilya-city', nameAr: 'قلقيلية', nameEn: 'Qalqilya City', villages: [] },
+    ]},
+    { slug: 'salfit', nameAr: 'سلفيت', nameEn: 'Salfit', districts: [
+      { slug: 'salfit-city', nameAr: 'سلفيت', nameEn: 'Salfit City', villages: [] },
+    ]},
+    { slug: 'ramallah-and-al-bireh', nameAr: 'رام الله والبيرة', nameEn: 'Ramallah and Al-Bireh', districts: [
+      { slug: 'ramallah-city', nameAr: 'رام الله', nameEn: 'Ramallah', villages: [] },
+      { slug: 'al-bireh-city', nameAr: 'البيرة', nameEn: 'Al-Bireh', villages: [] },
+      { slug: 'beitunia', nameAr: 'بيتونيا', nameEn: 'Beitunia', villages: [] },
+    ]},
+    { slug: 'jericho', nameAr: 'أريحا والأغوار', nameEn: 'Jericho', districts: [
+      { slug: 'jericho-city', nameAr: 'أريحا', nameEn: 'Jericho City', villages: [] },
+    ]},
+    { slug: 'jerusalem', nameAr: 'القدس', nameEn: 'Jerusalem', districts: [
+      { slug: 'jerusalem-city', nameAr: 'القدس', nameEn: 'Jerusalem City', villages: [] },
+    ]},
+    { slug: 'bethlehem', nameAr: 'بيت لحم', nameEn: 'Bethlehem', districts: [
+      { slug: 'bethlehem-city', nameAr: 'بيت لحم', nameEn: 'Bethlehem City', villages: [] },
+      { slug: 'beit-jala', nameAr: 'بيت جالا', nameEn: 'Beit Jala', villages: [] },
+      { slug: 'beit-sahour', nameAr: 'بيت ساحور', nameEn: 'Beit Sahour', villages: [] },
+    ]},
+    { slug: 'hebron', nameAr: 'الخليل', nameEn: 'Hebron', districts: [
+      { slug: 'hebron-city', nameAr: 'الخليل', nameEn: 'Hebron City', villages: [] },
+      { slug: 'yatta', nameAr: 'يطا', nameEn: 'Yatta', villages: [] },
+      { slug: 'dura', nameAr: 'دورا', nameEn: 'Dura', villages: [] },
+    ]},
+    { slug: 'north-gaza', nameAr: 'شمال غزة', nameEn: 'North Gaza', districts: [
+      { slug: 'jabalia-city', nameAr: 'جباليا', nameEn: 'Jabalia', villages: [] },
+      { slug: 'beit-lahia-city', nameAr: 'بيت لاهيا', nameEn: 'Beit Lahia', villages: [] },
+      { slug: 'beit-hanoun-city', nameAr: 'بيت حانون', nameEn: 'Beit Hanoun', villages: [] },
+    ]},
+    { slug: 'gaza', nameAr: 'غزة', nameEn: 'Gaza', districts: [
+      { slug: 'gaza-city', nameAr: 'مدينة غزة', nameEn: 'Gaza City', villages: [] },
+      { slug: 'al-zahra', nameAr: 'الزهراء', nameEn: 'Al-Zahra', villages: [] },
+      { slug: 'al-mughraqa', nameAr: 'المغراقة', nameEn: 'Al-Mughraqa', villages: [] },
+    ]},
+    { slug: 'deir-al-balah', nameAr: 'دير البلح', nameEn: 'Deir al-Balah', districts: [
+      { slug: 'deir-al-balah-city', nameAr: 'دير البلح', nameEn: 'Deir al-Balah City', villages: [] },
+      { slug: 'al-zawayda', nameAr: 'الزوايدة', nameEn: 'Al-Zawayda', villages: [] },
+    ]},
+    { slug: 'khan-younis', nameAr: 'خان يونس', nameEn: 'Khan Younis', districts: [
+      { slug: 'khan-younis-city', nameAr: 'خان يونس', nameEn: 'Khan Younis City', villages: [] },
+      { slug: 'abasan-al-kabira', nameAr: 'عبسان الكبيرة', nameEn: 'Abasan al-Kabira', villages: [] },
+      { slug: 'bani-suheila', nameAr: 'بني سهيلا', nameEn: 'Bani Suheila', villages: [] },
+      { slug: 'khuzaa', nameAr: 'خزاعة', nameEn: 'Khuzaa', villages: [] },
+    ]},
+    { slug: 'rafah', nameAr: 'رفح', nameEn: 'Rafah', districts: [
+      { slug: 'rafah-city', nameAr: 'رفح', nameEn: 'Rafah City', villages: [] },
+      { slug: 'tel-al-sultan', nameAr: 'تل السلطان', nameEn: 'Tel al-Sultan', villages: [] },
+      { slug: 'al-shuka', nameAr: 'الشوكة', nameEn: 'Al-Shuka', villages: [] },
+    ]},
   ],
+
   refugeeCamps: [
     { slug: 'jenin-camp', nameAr: 'مخيم جنين', nameEn: 'Jenin Camp', governorateSlug: 'jenin' },
     { slug: 'balata-camp', nameAr: 'مخيم بلاطة', nameEn: 'Balata Camp', governorateSlug: 'nablus' },
