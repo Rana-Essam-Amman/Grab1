@@ -55,12 +55,11 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
     : null;
 
   const canPostInMarket =
-    isAdmin ||
-    (authStatus === 'authenticated' &&
-      !isAnonymous &&
-      myMarket !== null &&
-      currentBrowseMarket !== null &&
-      myMarket === currentBrowseMarket);
+    authStatus === 'authenticated' &&
+    !isAnonymous &&
+    myMarket !== null &&
+    currentBrowseMarket !== null &&
+    myMarket === currentBrowseMarket;
 
   const freeLimit = MONETIZATION_MATRIX.freeLimits.generalCategoryLimit;
   const activeCount = userListings.filter(
