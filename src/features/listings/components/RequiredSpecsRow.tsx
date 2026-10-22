@@ -9,6 +9,11 @@ interface Props {
   readonly isArabic: boolean;
 }
 
+const formatNumberValue = (v: string): string => {
+  const num = Number(v);
+  return !isNaN(num) ? new Intl.NumberFormat('en-US').format(num) : v;
+};
+
 /**
  * Renders ALL required attributes for the listing's category, translated to
  * display labels. Used on ListingCard so buyers see mandatory specs at a glance.
@@ -32,9 +37,12 @@ export function RequiredSpecsRow({ categorySlug, subcategorySlug, attributes, is
           );
           return opt ? (isArabic ? opt.labelAr : opt.labelEn) : raw;
         }
-        if (f.type === 'number') {
-          if (f.key === 'area') return `${raw}${isArabic ? ' م²' : ' m²'}`;
-          if (f.key === 'km') return `${raw}${isArabic ? ' كم' : ' km'}`;
+        if (f.type === 'number' || f.key === 'km' || f.key === 'mileage' || f.key === 'area') {
+          if (f.key === 'year') return raw;
+          const formatted = formatNumberValue(raw);
+          if (f.key === 'area') return `${formatted}${isArabic ? ' م²' : ' m²'}`;
+          if (f.key === 'km' || f.key === 'mileage') return `${formatted}${isArabic ? ' كم' : ' KM'}`;
+          return formatted;
         }
         return raw;
       })
