@@ -24,7 +24,7 @@ export interface UsePostAdEntryReturn {
 export const usePostAdEntry = (): UsePostAdEntryReturn => {
   const { isArabic, goBack, navigateTo, setActiveTab, setAiFlowPending, browseCountryCode, setBrowseMarketOverrideLocal } = useUI();
   const { startPostFlow: draftStartPostFlow } = useDraft();
-  const { authStatus, isAnonymous, user } = useAuth();
+  const { authStatus, isAnonymous, user, updateUser } = useAuth();
   const { userListings } = useListings();
   const isAdmin = useIsAdmin();
 
@@ -51,6 +51,9 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
         return false;
       }
       setBrowseMarketOverrideLocal(market);
+      if (updateUser) {
+        updateUser({ countryCode: market });
+      }
       return true;
     } catch (err) {
       console.error('Unexpected error updating market', err);
