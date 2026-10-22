@@ -4,14 +4,49 @@ import type { CountryGeo } from './types';
 const LB_GEO: CountryGeo = {
   countryCode: 'LB',
   governorates: [
-    { slug: 'beirut', nameAr: 'بيروت', nameEn: 'Beirut', districts: [] },
-    { slug: 'mount-lebanon', nameAr: 'جبل لبنان', nameEn: 'Mount Lebanon', districts: [] },
-    { slug: 'north-lebanon', nameAr: 'الشمال', nameEn: 'North Lebanon', districts: [] },
-    { slug: 'akkar', nameAr: 'عكار', nameEn: 'Akkar', districts: [] },
-    { slug: 'baalbek-hermel', nameAr: 'بعلبك الهرمل', nameEn: 'Baalbek-Hermel', districts: [] },
-    { slug: 'bekaa', nameAr: 'البقاع', nameEn: 'Bekaa', districts: [] },
-    { slug: 'nabatieh', nameAr: 'النبطية', nameEn: 'Nabatieh', districts: [] },
-    { slug: 'south-lebanon', nameAr: 'الجنوب', nameEn: 'South Lebanon', districts: [] },
+    { slug: 'beirut', nameAr: 'بيروت', nameEn: 'Beirut', districts: [
+      { slug: 'beirut-city', nameAr: 'بيروت', nameEn: 'Beirut City', villages: [] },
+    ]},
+    { slug: 'mount-lebanon', nameAr: 'جبل لبنان', nameEn: 'Mount Lebanon', districts: [
+      { slug: 'baabda', nameAr: 'بعبدا', nameEn: 'Baabda', villages: [] },
+      { slug: 'metn', nameAr: 'المتن', nameEn: 'Metn', villages: [] },
+      { slug: 'keserwan', nameAr: 'كسروان', nameEn: 'Keserwan', villages: [] },
+      { slug: 'aley', nameAr: 'عاليه', nameEn: 'Aley', villages: [] },
+      { slug: 'chouf', nameAr: 'الشوف', nameEn: 'Chouf', villages: [] },
+      { slug: 'jbeil', nameAr: 'جبيل', nameEn: 'Jbeil', villages: [] },
+    ]},
+    { slug: 'north-lebanon', nameAr: 'الشمال', nameEn: 'North Lebanon', districts: [
+      { slug: 'tripoli', nameAr: 'طرابلس', nameEn: 'Tripoli', villages: [] },
+      { slug: 'zgharta', nameAr: 'زغرتا', nameEn: 'Zgharta', villages: [] },
+      { slug: 'batroun', nameAr: 'البترون', nameEn: 'Batroun', villages: [] },
+      { slug: 'bsharri', nameAr: 'بشري', nameEn: 'Bsharri', villages: [] },
+      { slug: 'koura', nameAr: 'الكورة', nameEn: 'Koura', villages: [] },
+      { slug: 'minieh-danniyeh', nameAr: 'المنية الضنية', nameEn: 'Minieh-Danniyeh', villages: [] },
+    ]},
+    { slug: 'akkar', nameAr: 'عكار', nameEn: 'Akkar', districts: [
+      { slug: 'halba', nameAr: 'حلبا', nameEn: 'Halba', villages: [] },
+      { slug: 'qoubaiyat', nameAr: 'القبيات', nameEn: 'Qoubaiyat', villages: [] },
+    ]},
+    { slug: 'baalbek-hermel', nameAr: 'بعلبك الهرمل', nameEn: 'Baalbek-Hermel', districts: [
+      { slug: 'baalbek', nameAr: 'بعلبك', nameEn: 'Baalbek', villages: [] },
+      { slug: 'hermel', nameAr: 'الهرمل', nameEn: 'Hermel', villages: [] },
+    ]},
+    { slug: 'bekaa', nameAr: 'البقاع', nameEn: 'Bekaa', districts: [
+      { slug: 'zahle', nameAr: 'زحلة', nameEn: 'Zahle', villages: [] },
+      { slug: 'west-bekaa', nameAr: 'البقاع الغربي', nameEn: 'West Bekaa', villages: [] },
+      { slug: 'rashaya', nameAr: 'راشيا', nameEn: 'Rashaya', villages: [] },
+    ]},
+    { slug: 'nabatieh', nameAr: 'النبطية', nameEn: 'Nabatieh', districts: [
+      { slug: 'nabatieh-city', nameAr: 'النبطية', nameEn: 'Nabatieh City', villages: [] },
+      { slug: 'bint-jbeil', nameAr: 'بنت جبيل', nameEn: 'Bint Jbeil', villages: [] },
+      { slug: 'marjayoun', nameAr: 'مرجعيون', nameEn: 'Marjayoun', villages: [] },
+      { slug: 'hasbaya', nameAr: 'حاصبيا', nameEn: 'Hasbaya', villages: [] },
+    ]},
+    { slug: 'south-lebanon', nameAr: 'الجنوب', nameEn: 'South Lebanon', districts: [
+      { slug: 'saida', nameAr: 'صيدا', nameEn: 'Saida', villages: [] },
+      { slug: 'tyre', nameAr: 'صور', nameEn: 'Tyre', villages: [] },
+      { slug: 'jezzine', nameAr: 'جزين', nameEn: 'Jezzine', villages: [] },
+    ]},
   ],
   refugeeCamps: [
     { slug: 'ain-al-hilweh-camp', nameAr: 'مخيم عين الحلوة', nameEn: 'Ain al-Hilweh Camp', governorateSlug: 'south-lebanon' },
