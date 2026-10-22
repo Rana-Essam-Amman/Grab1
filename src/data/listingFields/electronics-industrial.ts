@@ -41,8 +41,8 @@ export const ELECTRONICS_INDUSTRIAL_FIELDS: readonly ListingField[] = [
   { key: 'powerSource', labelAr: 'مصدر الطاقة', labelEn: 'Power Source', type: 'select', allowOther: true, required: false, options: POWER_SOURCE_OPTIONS },
   { key: 'powerKw', labelAr: 'القدرة الكهربائية (kW)', labelEn: 'Power (kW)', type: 'number', required: false },
   { key: 'year', labelAr: 'سنة الصنع', labelEn: 'Year', type: 'number', required: false },
-  { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: false, required: true, options: CONDITION_OPTIONS },
-  { key: 'warranty', labelAr: 'الضمان', labelEn: 'Warranty', type: 'select', allowOther: false, required: false, options: WARRANTY_OPTIONS },
+  { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
+  { key: 'warranty', labelAr: 'الضمان', labelEn: 'Warranty', type: 'select', allowOther: true, required: false, options: WARRANTY_OPTIONS },
   { key: 'installationIncluded', labelAr: 'يشمل التركيب', labelEn: 'Installation Included', type: 'boolean', required: false },
   { key: 'trainingIncluded', labelAr: 'يشمل تدريب', labelEn: 'Training Included', type: 'boolean', required: false },
 ];

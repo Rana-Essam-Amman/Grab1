@@ -122,7 +122,7 @@ export const MOTORS_FIELDS: CategoryFieldMap = {
     { key: 'km', labelAr: 'العداد (كم)', labelEn: 'KM', type: 'number', required: false, placeholder: '15000' },
     { key: 'engineSize', labelAr: 'السعة (سي سي)', labelEn: 'Engine CC', type: 'number', required: false, placeholder: '250' },
     { key: 'color', labelAr: 'اللون', labelEn: 'Color', type: 'select', allowOther: true, required: false, options: COLOR_OPTIONS },
-    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: false, required: false, options: CONDITION_OPTIONS },
+    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: false, options: CONDITION_OPTIONS },
     { key: 'licenseType', labelAr: 'الترخيص', labelEn: 'License Type', type: 'select', allowOther: true, required: false, options: [
       { value: 'licensed', labelAr: 'مطلوب ترخيص / مرخص', labelEn: 'Licensed' }, { value: 'unlicensed', labelAr: 'بدون ترخيص', labelEn: 'Unlicensed' },
     ]},
@@ -133,16 +133,16 @@ export const MOTORS_FIELDS: CategoryFieldMap = {
     { key: 'year', labelAr: 'السنة', labelEn: 'Year', type: 'select', allowOther: true, required: true, options: CAR_YEAR_OPTIONS },
     { key: 'km', labelAr: 'العداد (كم)', labelEn: 'KM', type: 'number', required: false, placeholder: '120000' },
     { key: 'tonnage', labelAr: 'الحمولة (طن)', labelEn: 'Tonnage (tons)', type: 'number', required: false, placeholder: '10' },
-    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: false, required: false, options: CONDITION_OPTIONS },
-    { key: 'fuel', labelAr: 'الوقود', labelEn: 'Fuel', type: 'select', allowOther: false, required: false, options: FUEL_OPTIONS },
-    { key: 'transmission', labelAr: 'ناقل الحركة', labelEn: 'Transmission', type: 'select', allowOther: false, required: false, options: TRANSMISSION_OPTIONS },
+    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: false, options: CONDITION_OPTIONS },
+    { key: 'fuel', labelAr: 'الوقود', labelEn: 'Fuel', type: 'select', allowOther: true, required: false, options: FUEL_OPTIONS },
+    { key: 'transmission', labelAr: 'ناقل الحركة', labelEn: 'Transmission', type: 'select', allowOther: true, required: false, options: TRANSMISSION_OPTIONS },
   ],
   parts: [
     { key: 'partName', labelAr: 'اسم القطعة', labelEn: 'Part Name', type: 'text', required: true },
     { key: 'make', labelAr: 'الماركة المتوافقة', labelEn: 'Compatible Make', type: 'select', allowOther: true, required: false, options: getBrandOptions() },
     { key: 'model', labelAr: 'الموديل المتوافق', labelEn: 'Compatible Model', type: 'cascading-model', dependsOn: 'make', required: false },
     { key: 'year', labelAr: 'سنة الصنع', labelEn: 'Year', type: 'select', allowOther: true, required: false, options: CAR_YEAR_OPTIONS },
-    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: false, required: true, options: [
+    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: [
       { value: 'new', labelAr: 'جديد', labelEn: 'New' }, { value: 'used', labelAr: 'مستعمل', labelEn: 'Used' },
     ]},
     { key: 'origin', labelAr: 'المنشأ', labelEn: 'Origin', type: 'select', allowOther: true, required: false, options: [
@@ -155,12 +155,12 @@ export const MOTORS_FIELDS: CategoryFieldMap = {
     { key: 'year', labelAr: 'السنة', labelEn: 'Year', type: 'select', allowOther: true, required: false, options: CAR_YEAR_OPTIONS },
     { key: 'length', labelAr: 'الطول (قدم)', labelEn: 'Length (ft)', type: 'number', required: false },
     { key: 'engineHours', labelAr: 'ساعات عمل المحرك', labelEn: 'Engine Hours', type: 'number', required: false },
-    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: false, required: false, options: CONDITION_OPTIONS },
+    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: false, options: CONDITION_OPTIONS },
   ],
   accessories: [
     { key: 'type', labelAr: 'نوع الإكسسوار', labelEn: 'Accessory Type', type: 'text', required: true },
     { key: 'make', labelAr: 'الماركة المتوافقة', labelEn: 'Compatible Make', type: 'select', allowOther: true, required: false, options: getBrandOptions() },
-    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: false, required: false, options: CONDITION_OPTIONS },
+    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: false, options: CONDITION_OPTIONS },
     { key: 'material', labelAr: 'المادة', labelEn: 'Material', type: 'text', required: false },
     { key: 'color', labelAr: 'اللون', labelEn: 'Color', type: 'select', allowOther: true, required: false, options: COLOR_OPTIONS },
   ],
