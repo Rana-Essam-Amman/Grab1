@@ -18,7 +18,7 @@ export interface UsePostAdEntryReturn {
   readonly myMarket: MarketCode | null;
   readonly freeLimit: number;
   readonly freeRemaining: number;
-  readonly updateUserMarket?: (market: MarketCode) => Promise<void>;
+  readonly updateUserMarket: (market: MarketCode) => Promise<void>;
 }
 
 export const usePostAdEntry = (): UsePostAdEntryReturn => {
@@ -44,7 +44,7 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
 
   const updateUserMarket = async (market: MarketCode) => {
     if (!user) return;
-    await supabase.from('profiles').update({ country_code: market }).eq('id', user.id);
+    await supabase.from('profiles').update({ country_code: market }).eq('id', user.id); 
     setBrowseMarketOverrideLocal(market);
   };
 
