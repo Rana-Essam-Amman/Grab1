@@ -44,7 +44,11 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
 
   const updateUserMarket = async (market: MarketCode) => {
     if (!user) return;
-    await supabase.from('profiles').update({ country_code: market }).eq('id', user.id); 
+    const { error } = await supabase.from('profiles').update({ country_code: market }).eq('id', user.id);
+    if (error) {
+      console.error('Failed to update market', error);
+      return;
+    }
     setBrowseMarketOverrideLocal(market);
   };
 
