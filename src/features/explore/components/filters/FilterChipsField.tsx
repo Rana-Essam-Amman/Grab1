@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import type { ListingField } from '@/data/listingFields';
 import { Combobox } from '@/shared/ui/Combobox';
+import { FilterOtherField } from './FilterOtherField';
 
 const MAX_OPTIONS = 15;
-const OTHER_VALUE = '__other__';
+const OTHER_LABEL_AR = 'أخرى — اكتب يدوياً';
+const OTHER_LABEL_EN = 'Other — type manually';
 
 export interface FilterChipsFieldProps {
   readonly field: ListingField;
@@ -31,25 +33,9 @@ export const FilterChipsField: React.FC<FilterChipsFieldProps> = ({
         }));
   const useCombobox = field.type === 'select' && chips.length > MAX_OPTIONS;
   const currentLabel = chips.find((c) => c.value === activeValue)?.label ?? '';
-  const otherLabel = isArabic ? 'أخرى — اكتب يدوياً' : 'Other — type manually';
-  const isOtherActive = Boolean(activeValue && !chips.some((c) => c.value === activeValue));
-  const [showOther, setShowOther] = useState(isOtherActive);
-  const [otherText, setOtherText] = useState(isOtherActive ? activeValue : '');
-
-  const handleOtherClick = () => {
-    if (showOther) {
-      setShowOther(false);
-      setOtherText('');
-      onChange(null);
-    } else {
-      setShowOther(true);
-    }
-  };
-
-  const handleOtherInput = (text: string) => {
-    setOtherText(text);
-    onChange(text.trim() ? text : null);
-  };
+  const otherLabel = isArabic ? OTHER_LABEL_AR : OTHER_LABEL_EN;
+  const knownValues = chips.map((c) => c.value);
+  const isOtherActive = Boolean(activeValue && !knownValues.includes(activeValue));
 
   return (
     <div className="flex flex-col gap-2">
@@ -57,31 +43,26 @@ export const FilterChipsField: React.FC<FilterChipsFieldProps> = ({
       {useCombobox ? (
         <div className="flex flex-col gap-2">
           <Combobox
-            value={showOther ? otherLabel : currentLabel}
+            value={isOtherActive ? otherLabel : currentLabel}
             options={field.allowOther ? [...chips.map((c) => c.label), otherLabel] : chips.map((c) => c.label)}
             placeholder={isArabic ? 'اختر...' : 'Select...'}
             searchPlaceholder={isArabic ? 'ابحث...' : 'Search...'}
             emptyText={isArabic ? 'لا نتائج' : 'No results'}
             onChange={(newLabel) => {
               if (newLabel === otherLabel) {
-                setShowOther(true);
-                setOtherText('');
-                onChange(null);
-              } else {
-                setShowOther(false);
-                setOtherText('');
-                onChange(chips.find((c) => c.label === newLabel)?.value ?? null);
+                onChange(' ');
+                return;
               }
+              onChange(chips.find((c) => c.label === newLabel)?.value ?? null);
             }}
           />
-          {field.allowOther && showOther && (
-            <input
-              type="text"
-              value={otherText}
-              onChange={(e) => handleOtherInput(e.target.value)}
-              placeholder={isArabic ? 'اكتب...' : 'Type...'}
-              className="w-full h-9 px-3 rounded-lg border border-border bg-surface text-ink text-xs font-medium focus:outline-none focus:border-accent"
-              autoFocus
+          {field.allowOther && (
+            <FilterOtherField
+              isArabic={isArabic}
+              activeValue={isOtherActive ? activeValue : ''}
+              knownValues={knownValues}
+              onChange={onChange}
+              variant="input-only"
             />
           )}
         </div>
@@ -105,28 +86,15 @@ export const FilterChipsField: React.FC<FilterChipsFieldProps> = ({
             );
           })}
           {field.allowOther && (
-            <button
-              type="button"
-              onClick={handleOtherClick}
-              className={`px-3 py-1.5 rounded-full border text-xs font-bold transition-all ${
-                showOther
-                  ? 'bg-accent/15 border-accent text-accent'
-                  : 'bg-surface border-border text-ink'
-              }`}
-            >
-              {otherLabel}
-            </button>
+            <FilterOtherField
+              isArabic={isArabic}
+              activeValue={activeValue}
+              knownValues={knownValues}
+              onChange={onChange}
+              variant="chip"
+            />
           )}
         </div>
-      )}
-      {field.allowOther && showOther && (
-        <input
-          type="text"
-          value={otherText}
-          onChange={(e) => handleOtherInput(e.target.value)}
-          placeholder={isArabic ? 'اكتب...' : 'Type...'}
-          className="w-full h-9 px-3 rounded-lg border border-border bg-surface text-ink text-xs font-medium focus:outline-none focus:border-accent"
-        />
       )}
     </div>
   );
