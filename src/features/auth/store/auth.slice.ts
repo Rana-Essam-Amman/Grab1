@@ -77,10 +77,11 @@ export async function hydrateProfile(): Promise<void> {
     if (!latest || latest.id !== current.id) return;
 
     const profile = result.profile;
-    const patch: { phone?: string; nickname?: string; browseMarket?: 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | null } = {};
+    const patch: { phone?: string; nickname?: string; browseMarket?: 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | null; countryCode?: string } = {};
     if (!result.phoneError && profile.phone) patch.phone = profile.phone;
     if (profile.nickname) patch.nickname = profile.nickname;
     if (profile.browse_market) patch.browseMarket = profile.browse_market;
+    if (profile.country_code) patch.countryCode = profile.country_code;
 
     if (Object.keys(patch).length > 0) {
       useAuthStore.getState().updateUser(patch);
