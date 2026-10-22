@@ -9,7 +9,6 @@ import {
   SEARCH_STOP_WORDS,
 } from './listingSearch.tokens';
 import { scoreCandidate } from './listingSearch.candidateScore';
-import { matchGeoHierarchy } from './geoSearchHelpers';
 
 export const scoreListing = (item: Listing, q: string): number => {
   const query = (q || '').trim();
@@ -20,7 +19,9 @@ export const scoreListing = (item: Listing, q: string): number => {
   if (queryDigits.length >= 7) {
     const itemObj = item as unknown as Record<string, unknown>;
     const rawPhone = String(item.sellerPhone || itemObj.seller_phone || '').replace(/\D/g, '');
-    if (rawPhone && (rawPhone.includes(queryDigits) || queryDigits.includes(rawPhone))) {
+    const qNorm = queryDigits.replace(/^0+/, '');
+    const rNorm = rawPhone.replace(/^0+/, '');
+    if (rNorm && (rNorm.includes(qNorm) || qNorm.includes(rNorm))) {
       return 100; // Force top match
     }
   }
@@ -53,16 +54,6 @@ export const scoreListing = (item: Listing, q: string): number => {
     },
     otherStrings,
   );
-
-  // Add 6-level geo hierarchy (governorate, district, village, camp, landmark)
-  try {
-    const geoMatches = matchGeoHierarchy(item.countryCode || '', item.city || '', item.neighborhood || '');
-    for (const name of geoMatches) {
-      if (name) otherStrings.push(name);
-    }
-  } catch {
-    // safe fallback
-  }
 
   const other = normalizeArabic(otherStrings.join(' '));
 
