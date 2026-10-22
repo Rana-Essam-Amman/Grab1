@@ -146,7 +146,7 @@ const KEY_SWITCH: ListingFieldOption[] = [
 export const COMPUTERS_FIELDS: CategoryFieldMap = {
   laptops: [
     { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: true, options: COMPUTER_BRANDS },
-    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'text', required: true, placeholder: 'MacBook Pro, ThinkPad X1, XPS 15...', placeholderAr: 'مثال: ماك بوك برو، ثينك باد...' },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'laptops', required: true, placeholder: 'MacBook Pro, ThinkPad X1, XPS 15...' },
     { key: 'cpu', labelAr: 'المعالج (CPU)', labelEn: 'Processor', type: 'select', allowOther: true, required: true, options: CPU_OPTIONS },
     { key: 'ram', labelAr: 'حجم الرام', labelEn: 'RAM Size', type: 'select', allowOther: true, required: true, options: RAM_OPTIONS },
     { key: 'storage', labelAr: 'نوع وحجم التخزين', labelEn: 'Storage', type: 'select', allowOther: true, required: true, options: STORAGE_OPTIONS },

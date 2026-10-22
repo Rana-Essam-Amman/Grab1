@@ -101,7 +101,7 @@ const CAMERA_KIT_CONTENTS: ListingFieldOption[] = [
 export const ELECTRONICS_FIELDS: CategoryFieldMap = {
   tv: [
     { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: true, options: TV_BRANDS },
-    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'text', required: false, placeholder: 'C3, QN90C, C745...', placeholderAr: 'مثال: سي 3، كيو إن 90...' },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'tv', required: false, placeholder: 'C3, QN90C, C745...' },
     { key: 'screenSize', labelAr: 'حجم الشاشة', labelEn: 'Screen Size', type: 'select', allowOther: true, required: true, options: TV_SCREEN_SIZES },
     { key: 'resolution', labelAr: 'دقة الشاشة', labelEn: 'Resolution', type: 'select', allowOther: true, required: true, options: RESOLUTION_OPTIONS },
     { key: 'panelType', labelAr: 'نوع اللوحة والتقنية', labelEn: 'Panel Type', type: 'select', allowOther: true, required: false, options: PANEL_TYPES },
@@ -139,7 +139,7 @@ export const ELECTRONICS_FIELDS: CategoryFieldMap = {
       { value: 'harman_kardon', labelAr: 'هارمان كاردون (Harman Kardon)', labelEn: 'Harman Kardon' },
       { value: 'anker', labelAr: 'أنكر ساوندكور (Anker Soundcore)', labelEn: 'Anker Soundcore' },
     ]},
-    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'text', required: false, placeholder: 'WH-1000XM5, AirPods Pro 2...', placeholderAr: 'مثال: إيربودز برو 2...' },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'audio', required: false, placeholder: 'WH-1000XM5, AirPods Pro 2...' },
     { key: 'connectivity', labelAr: 'نوع الاتصال', labelEn: 'Connectivity', type: 'select', allowOther: true, required: false, options: [
       { value: 'bluetooth', labelAr: 'بلوتوث لاسلكي', labelEn: 'Bluetooth Wireless' },
       { value: 'wired', labelAr: 'سلكي (Aux / 3.5mm)', labelEn: 'Wired 3.5mm' },
@@ -214,7 +214,7 @@ export const ELECTRONICS_FIELDS: CategoryFieldMap = {
       { value: 'panasonic', labelAr: 'باناسونيك (Lumix)', labelEn: 'Panasonic Lumix' },
       { value: 'sigma', labelAr: 'سيجما (Sigma)', labelEn: 'Sigma' },
     ]},
-    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'text', required: true, placeholder: 'A7 IV, EOS R6, Mini 4 Pro...', placeholderAr: 'مثال: الفا 7 4، ار 6، ميني 4 برو...' },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'cameras', required: true, placeholder: 'A7 IV, EOS R6, Mini 4 Pro...' },
     { key: 'megapixels', labelAr: 'دقة الميجابكسل', labelEn: 'Megapixels', type: 'number', required: false, placeholder: '24', placeholderAr: '24' },
     { key: 'videoResolution', labelAr: 'دقة تصوير الفيديو', labelEn: 'Video Resolution', type: 'select', allowOther: true, required: false, options: [
       { value: '4k', labelAr: '4K', labelEn: '4K' },
@@ -257,7 +257,7 @@ export const ELECTRONICS_FIELDS: CategoryFieldMap = {
       { value: 'siemens', labelAr: 'سيمنز (Siemens)', labelEn: 'Siemens' },
       { value: 'dyson', labelAr: 'دايسون (Dyson)', labelEn: 'Dyson' },
     ]},
-    { key: 'model', labelAr: 'الموديل أو السعة', labelEn: 'Model / Capacity', type: 'text', required: false, placeholder: '8kg, 18 Cu Ft, 2 Ton...', placeholderAr: 'مثال: 8 كجم، 2 طن إنفرتر...' },
+    { key: 'model', labelAr: 'الموديل أو السعة', labelEn: 'Model / Capacity', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'appliances', required: false, placeholder: '8kg, 18 Cu Ft, 2 Ton...' },
     { key: 'energyRating', labelAr: 'كفاءة الطاقة', labelEn: 'Energy Rating', type: 'select', allowOther: true, required: false, options: [
       { value: 'a_plus', labelAr: 'A+++ / موفر جداً للكهرباء (Inverter)', labelEn: 'A+++ / Inverter' },
       { value: 'a', labelAr: 'فئة A', labelEn: 'Class A' },
