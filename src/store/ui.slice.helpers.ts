@@ -109,12 +109,16 @@ export async function hydrateCountryFromGeo(): Promise<void> {
   try {
     const { detectCountry } = await import('@/shared/lib/geoDetect');
     const detected = await detectCountry();
-    if (detected.source !== 'ip' && detected.source !== 'timezone' && detected.source !== 'language') return;
-
+    
     const { useUIStore } = await import('./ui.slice');
-    // Always record the geo-detected country for the market resolution logic.
+
+    // Always record the geo-detected country and support status
     useUIStore.setState({ geoCountryCode: detected.country });
     useUIStore.setState({ geoUnsupported: !detected.isSupported });
+
+    // If the source is a fallback (meaning we couldn't detect the country), 
+    // do NOT override the browse country. Let the user choose manually.
+    if (detected.source === 'fallback') return;
 
     // Only override browseCountryCode when the user hasn't chosen one before.
     if (globalStorage().get<string>('catch_browse_country')) return;
