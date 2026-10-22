@@ -8,6 +8,7 @@ import type { MarketCode } from '@/data/markets/types';
 import { useListings } from '@/hooks/useListings';
 import { MONETIZATION_MATRIX } from '@/data/monetization';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
+import { supabase } from '@/shared/lib/supabase'; // Adjust path if needed
 
 export interface UsePostAdEntryReturn {
   readonly isArabic: boolean;
@@ -17,6 +18,7 @@ export interface UsePostAdEntryReturn {
   readonly myMarket: MarketCode | null;
   readonly freeLimit: number;
   readonly freeRemaining: number;
+  readonly updateUserMarket: (market: MarketCode) => Promise<void>;
 }
 
 export const usePostAdEntry = (): UsePostAdEntryReturn => {
@@ -27,6 +29,7 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
     setActiveTab,
     setAiFlowPending,
     browseCountryCode,
+    setBrowseMarketOverrideLocal,
   } = useUI();
   const { startPostFlow: draftStartPostFlow } = useDraft();
   const { authStatus, isAnonymous, user } = useAuth();
@@ -68,6 +71,12 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
   ).length;
   const freeRemaining = isAdmin ? freeLimit : Math.max(0, freeLimit - activeCount);
 
+  const updateUserMarket = async (market: MarketCode) => {
+    if (!user) return;
+    await supabase.from('profiles').update({ country_code: market }).eq('id', user.id);
+    setBrowseMarketOverrideLocal(market);
+  };
+
   const handleBack = useCallback(() => {
     setActiveTab('explore');
     goBack();
@@ -88,5 +97,6 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
     myMarket,
     freeLimit,
     freeRemaining,
+    updateUserMarket,
   };
 };
