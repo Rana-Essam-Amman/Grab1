@@ -35,10 +35,16 @@ export const scoreListing = (item: Listing, q: string): number => {
   const desc = normalizeArabic(item.description || '');
   const catSlug = normalizeArabic(item.categorySlug || '');
   const subSlug = normalizeArabic(item.subcategorySlug || '');
+  const sellerName = normalizeArabic(
+    item.sellerName ||
+    ((item as unknown as Record<string, unknown>).seller_name as string) ||
+    ''
+  );
 
   const itemObj = item as unknown as Record<string, unknown>;
   const otherStrings: string[] = [];
 
+  // Removed sellerName and sellerPhone from generic collection to prevent false positives
   collectSearchStrings(
     {
       city: item.city,
@@ -49,8 +55,6 @@ export const scoreListing = (item: Listing, q: string): number => {
       year: itemObj.year,
       attributes: itemObj.attributes,
       generated: itemObj.generated,
-      sellerName: item.sellerName || itemObj.seller_name,
-      sellerPhone: item.sellerPhone || itemObj.seller_phone,
     },
     otherStrings,
   );
@@ -58,7 +62,7 @@ export const scoreListing = (item: Listing, q: string): number => {
   const other = normalizeArabic(otherStrings.join(' '));
 
   const fields = {
-    title, desc, catSlug, subSlug, other,
+    title, desc, catSlug, subSlug, other, sellerName,
     titlePhon: phoneticKey(item.title || ''),
     descPhon: phoneticKey(item.description || ''),
     otherPhon: phoneticKey(other),
