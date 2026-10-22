@@ -613,6 +613,84 @@ export const textSignals: Record<string, CategoryHint> = {
   'دهانة': { categorySlug: 'handymen', subcategorySlug: 'painter', labelAr: 'دهان', labelEn: 'Painting' },
   'painter': { categorySlug: 'handymen', subcategorySlug: 'painter', labelAr: 'دهان', labelEn: 'Painting' },
 
+  // ─── HANDYMEN — subcategory signals ───
+  'نجار': { categorySlug: 'handymen', subcategorySlug: 'carpenter', labelAr: 'نجار', labelEn: 'Carpenter' },
+  'نجارة': { categorySlug: 'handymen', subcategorySlug: 'carpenter', labelAr: 'نجار', labelEn: 'Carpenter' },
+  'carpenter': { categorySlug: 'handymen', subcategorySlug: 'carpenter', labelAr: 'نجار', labelEn: 'Carpenter' },
+  'خشب': { categorySlug: 'handymen', subcategorySlug: 'carpenter', labelAr: 'نجار', labelEn: 'Carpenter' },
+
+  'حداد': { categorySlug: 'handymen', subcategorySlug: 'blacksmith', labelAr: 'حداد', labelEn: 'Blacksmith' },
+  'حدادة': { categorySlug: 'handymen', subcategorySlug: 'blacksmith', labelAr: 'حداد', labelEn: 'Blacksmith' },
+  'blacksmith': { categorySlug: 'handymen', subcategorySlug: 'blacksmith', labelAr: 'حداد', labelEn: 'Blacksmith' },
+  'حديد': { categorySlug: 'handymen', subcategorySlug: 'blacksmith', labelAr: 'حداد', labelEn: 'Blacksmith' },
+
+  'فني تكييف': { categorySlug: 'handymen', subcategorySlug: 'ac-technician', labelAr: 'فني تكييف', labelEn: 'AC Technician' },
+  'صيانة مكيف': { categorySlug: 'handymen', subcategorySlug: 'ac-technician', labelAr: 'فني تكييف', labelEn: 'AC Technician' },
+  'ac repair': { categorySlug: 'handymen', subcategorySlug: 'ac-technician', labelAr: 'فني تكييف', labelEn: 'AC Technician' },
+
+  'ألمنيوم': { categorySlug: 'handymen', subcategorySlug: 'aluminum', labelAr: 'ألمنيوم', labelEn: 'Aluminum' },
+  'المنيوم': { categorySlug: 'handymen', subcategorySlug: 'aluminum', labelAr: 'ألمنيوم', labelEn: 'Aluminum' },
+  'aluminum': { categorySlug: 'handymen', subcategorySlug: 'aluminum', labelAr: 'ألمنيوم', labelEn: 'Aluminum' },
+  'شبابيك المنيوم': { categorySlug: 'handymen', subcategorySlug: 'aluminum', labelAr: 'ألمنيوم', labelEn: 'Aluminum' },
+
+  'جبصين': { categorySlug: 'handymen', subcategorySlug: 'gypsum', labelAr: 'جبصين وديكور', labelEn: 'Gypsum' },
+  'جبس': { categorySlug: 'handymen', subcategorySlug: 'gypsum', labelAr: 'جبصين وديكور', labelEn: 'Gypsum' },
+  'gypsum': { categorySlug: 'handymen', subcategorySlug: 'gypsum', labelAr: 'جبصين وديكور', labelEn: 'Gypsum' },
+  'ديكور جبس': { categorySlug: 'handymen', subcategorySlug: 'gypsum', labelAr: 'جبصين وديكور', labelEn: 'Gypsum' },
+
+  'بلاط': { categorySlug: 'handymen', subcategorySlug: 'tiles-marble', labelAr: 'بلاط ورخام', labelEn: 'Tiles & Marble' },
+  'رخام': { categorySlug: 'handymen', subcategorySlug: 'tiles-marble', labelAr: 'بلاط ورخام', labelEn: 'Tiles & Marble' },
+  'tiles': { categorySlug: 'handymen', subcategorySlug: 'tiles-marble', labelAr: 'بلاط ورخام', labelEn: 'Tiles & Marble' },
+  'marble': { categorySlug: 'handymen', subcategorySlug: 'tiles-marble', labelAr: 'بلاط ورخام', labelEn: 'Tiles & Marble' },
+
+  'صيانة أجهزة': { categorySlug: 'handymen', subcategorySlug: 'appliance-repair', labelAr: 'صيانة أجهزة', labelEn: 'Appliance Repair' },
+  'تصليح غسالة': { categorySlug: 'handymen', subcategorySlug: 'appliance-repair', labelAr: 'صيانة أجهزة', labelEn: 'Appliance Repair' },
+  'تصليح ثلاجة': { categorySlug: 'handymen', subcategorySlug: 'appliance-repair', labelAr: 'صيانة أجهزة', labelEn: 'Appliance Repair' },
+  'appliance repair': { categorySlug: 'handymen', subcategorySlug: 'appliance-repair', labelAr: 'صيانة أجهزة', labelEn: 'Appliance Repair' },
+
+  'فتح أقفال': { categorySlug: 'handymen', subcategorySlug: 'locksmith', labelAr: 'فتح أقفال', labelEn: 'Locksmith' },
+  'قفل': { categorySlug: 'handymen', subcategorySlug: 'locksmith', labelAr: 'فتح أقفال', labelEn: 'Locksmith' },
+  'locksmith': { categorySlug: 'handymen', subcategorySlug: 'locksmith', labelAr: 'فتح أقفال', labelEn: 'Locksmith' },
+  'مفتاح': { categorySlug: 'handymen', subcategorySlug: 'locksmith', labelAr: 'فتح أقفال', labelEn: 'Locksmith' },
+
+  'زجاج': { categorySlug: 'handymen', subcategorySlug: 'glass', labelAr: 'زجاج ومرايا', labelEn: 'Glass & Mirrors' },
+  'مرايا': { categorySlug: 'handymen', subcategorySlug: 'glass', labelAr: 'زجاج ومرايا', labelEn: 'Glass & Mirrors' },
+  'glass': { categorySlug: 'handymen', subcategorySlug: 'glass', labelAr: 'زجاج ومرايا', labelEn: 'Glass & Mirrors' },
+  'mirror': { categorySlug: 'handymen', subcategorySlug: 'glass', labelAr: 'زجاج ومرايا', labelEn: 'Glass & Mirrors' },
+
+  'تركيب أثاث': { categorySlug: 'handymen', subcategorySlug: 'furniture-assembly', labelAr: 'تركيب أثاث', labelEn: 'Furniture Assembly' },
+  'فك وتركيب': { categorySlug: 'handymen', subcategorySlug: 'furniture-assembly', labelAr: 'تركيب أثاث', labelEn: 'Furniture Assembly' },
+  'furniture assembly': { categorySlug: 'handymen', subcategorySlug: 'furniture-assembly', labelAr: 'تركيب أثاث', labelEn: 'Furniture Assembly' },
+  'تركيب': { categorySlug: 'handymen', subcategorySlug: 'furniture-assembly', labelAr: 'تركيب أثاث', labelEn: 'Furniture Assembly' },
+
+  'صيانة عامة': { categorySlug: 'handymen', subcategorySlug: 'general', labelAr: 'صيانة عامة', labelEn: 'General Maintenance' },
+  'عامل صيانة': { categorySlug: 'handymen', subcategorySlug: 'general', labelAr: 'صيانة عامة', labelEn: 'General Maintenance' },
+  'maintenance': { categorySlug: 'handymen', subcategorySlug: 'general', labelAr: 'صيانة عامة', labelEn: 'General Maintenance' },
+  'صنايعي': { categorySlug: 'handymen', subcategorySlug: 'general', labelAr: 'صيانة عامة', labelEn: 'General Maintenance' },
+
+  'أثاث حدائق': { categorySlug: 'furniture', subcategorySlug: 'outdoor', labelAr: 'أثاث خارجي', labelEn: 'Outdoor Furniture' },
+  'كراسي حدائق': { categorySlug: 'furniture', subcategorySlug: 'outdoor', labelAr: 'أثاث خارجي', labelEn: 'Outdoor Furniture' },
+  'outdoor furniture': { categorySlug: 'furniture', subcategorySlug: 'outdoor', labelAr: 'أثاث خارجي', labelEn: 'Outdoor Furniture' },
+  'برجولة': { categorySlug: 'furniture', subcategorySlug: 'outdoor', labelAr: 'أثاث خارجي', labelEn: 'Outdoor Furniture' },
+
+  'أثاث jardin': { categorySlug: 'home-garden', subcategorySlug: 'garden-furniture', labelAr: 'أثاث حدائق', labelEn: 'Garden Furniture' },
+  'كرسي حديقة': { categorySlug: 'home-garden', subcategorySlug: 'garden-furniture', labelAr: 'أثاث حدائق', labelEn: 'Garden Furniture' },
+  'garden furniture': { categorySlug: 'home-garden', subcategorySlug: 'garden-furniture', labelAr: 'أثاث حدائق', labelEn: 'Garden Furniture' },
+  'تراس': { categorySlug: 'home-garden', subcategorySlug: 'garden-furniture', labelAr: 'أثاث حدائق', labelEn: 'Garden Furniture' },
+
+  'ساعة كلاسيك': { categorySlug: 'watches', subcategorySlug: 'vintage-watch', labelAr: 'ساعات كلاسيكية', labelEn: 'Vintage Watches' },
+  'ساعة قديمة': { categorySlug: 'watches', subcategorySlug: 'vintage-watch', labelAr: 'ساعات كلاسيكية', labelEn: 'Vintage Watches' },
+  'vintage watch': { categorySlug: 'watches', subcategorySlug: 'vintage-watch', labelAr: 'ساعات كلاسيكية', labelEn: 'Vintage Watches' },
+
+  'سوار ساعة': { categorySlug: 'watches', subcategorySlug: 'straps', labelAr: 'أساور وصناديق', labelEn: 'Straps & Boxes' },
+  'watch strap': { categorySlug: 'watches', subcategorySlug: 'straps', labelAr: 'أساور وصناديق', labelEn: 'Straps & Boxes' },
+  'علبة ساعة': { categorySlug: 'watches', subcategorySlug: 'straps', labelAr: 'أساور وصناديق', labelEn: 'Straps & Boxes' },
+
+  'أعمال يدوية': { categorySlug: 'books', subcategorySlug: 'crafts', labelAr: 'أعمال يدوية', labelEn: 'Handicrafts' },
+  'حرف يدوية': { categorySlug: 'books', subcategorySlug: 'crafts', labelAr: 'أعمال يدوية', labelEn: 'Handicrafts' },
+  'handicrafts': { categorySlug: 'books', subcategorySlug: 'crafts', labelAr: 'أعمال يدوية', labelEn: 'Handicrafts' },
+  'فن يدوي': { categorySlug: 'books', subcategorySlug: 'crafts', labelAr: 'أعمال يدوية', labelEn: 'Handicrafts' },
+
   // ═══════════ PROJECTS (Construction/Contracting → redirected to real-estate) ═══════════
   'مقاول': { categorySlug: 'real-estate', subcategorySlug: 'construction', labelAr: 'مقاولات', labelEn: 'Contracting' },
   'مقاولات': { categorySlug: 'real-estate', subcategorySlug: 'construction', labelAr: 'مقاولات', labelEn: 'Contracting' },
