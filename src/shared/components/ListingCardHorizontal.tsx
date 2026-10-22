@@ -11,6 +11,7 @@ import { ListingSpecsRow } from './ListingSpecsRow';
 import { ListingCardSellerRow } from '@/features/listings/components/ListingCardSellerRow';
 import { toOptimizedImageUrl } from '@/shared/lib/optimizedImage';
 import { pickImageFitClass, ratioOf, type ImageFitClass } from '@/shared/lib/imageFit';
+import { formatPrice } from '@/shared/lib/formatPrice';
 
 interface ListingCardHorizontalProps {
   listing: Listing;
@@ -27,7 +28,6 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
   listing,
   isArabic,
   locationText,
-  displayCurrency,
   premiumClasses,
   sellerKey,
   handleClick,
@@ -107,10 +107,8 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
             {specs.length > 0 && <ListingSpecsRow specs={specs} compact />}
           </div>
           <div className="flex items-center mt-2 gap-1.5">
-            <div className="price-tag text-base shrink-0">
-              <span dir="ltr">
-                {listing.price} <span className="text-xs font-bold text-danger">{displayCurrency}</span>
-              </span>
+            <div className="price-tag text-base font-bold text-danger shrink-0">
+              <span>{formatPrice(listing.price, listing.currency, isArabic)}</span>
             </div>
           </div>
         </div>
