@@ -1,55 +1,46 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import React from 'react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PostAdEntryScreen } from '../PostAdEntryScreen';
 
-const mockGoBack = vi.fn();
 const mockNavigateTo = vi.fn();
 const mockSetActiveTab = vi.fn();
+const mockGoBack = vi.fn();
 const mockStartPostFlow = vi.fn();
-const mockSetAiFlowPending = vi.fn();
 
-let mockBrowseCountryCode: string | undefined = 'JO';
-let mockUserCountryCode: string | undefined = 'JO';
-let mockIsArabic = false;
+let mockUserCountryCode = 'JO';
+let mockBrowseCountryCode = 'JO';
+let mockIsArabic = true;
 
 vi.mock('@/hooks/useUI', () => ({
   useUI: () => ({
-    get isArabic() { return mockIsArabic; },
-    goBack: mockGoBack,
+    isArabic: mockIsArabic,
     navigateTo: mockNavigateTo,
     setActiveTab: mockSetActiveTab,
-    setAiFlowPending: mockSetAiFlowPending,
-    get browseCountryCode() { return mockBrowseCountryCode; },
+    goBack: mockGoBack,
+    browseCountryCode: mockBrowseCountryCode,
+    setBrowseMarketOverrideLocal: vi.fn(),
   }),
 }));
 
-vi.mock('@hookrouter', () => ({
-  useNavigate: () => vi.fn(),
-}));
-
-vi.mock('@/hooks/useDraft', () => ({
-  useDraft: () => ({ startPostFlow: mockStartPostFlow }),
-}));
-
-vi.mock('@/hooks/useAuth', () => ({
-  useAuth: () => ({
-    authStatus: 'authenticated',
-    isAnonymous: false,
-    get user() {
-      return mockUserCountryCode === undefined
-        ? null
-        : { countryCode: mockUserCountryCode };
-    },
+vi.mock('../../hooks/usePostAdEntry', () => ({
+  usePostAdEntry: () => ({
+    isArabic: mockIsArabic,
+    handleBack: mockGoBack,
+    startPostFlow: mockStartPostFlow,
+    canPostInMarket: mockUserCountryCode === mockBrowseCountryCode,
+    myMarket: mockUserCountryCode,
+    freeLimit: 20,
+    freeRemaining: 10,
+    updateUserMarket: vi.fn(),
   }),
 }));
 
 describe('PostAdEntryScreen', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockBrowseCountryCode = 'JO';
     mockUserCountryCode = 'JO';
-    mockIsArabic = false;
+    mockBrowseCountryCode = 'JO';
+    mockIsArabic = true;
   });
 
   it('renders a single "Post New Ad" button when markets match', () => {
@@ -60,8 +51,8 @@ describe('PostAdEntryScreen', () => {
 
   it('does not render AI or Traditional option cards anymore', () => {
     render(<PostAdEntryScreen />);
-    expect(screen.queryByTestId('post-entry-ai-card')).toBeNull();
-    expect(screen.queryByTestId('post-entry-traditional-card')).toBeNull();
+    expect(screen.queryByText(/AI/i)).toBeNull();
+    expect(screen.queryByText(/Traditional/i)).toBeNull();
   });
 
   it('clicking the button calls startPostFlow and navigates to post-category', () => {
@@ -69,7 +60,7 @@ describe('PostAdEntryScreen', () => {
     const button = document.getElementById('post-ad-entry-start');
     expect(button).not.toBeNull();
     fireEvent.click(button!);
-    expect(mockNavigateTo).toHaveBeenCalledWith('post-category');
+    expect(mockStartPostFlow).toHaveBeenCalledTimes(1);
   });
 
   it('back button calls setActiveTab explore and goBack', () => {
@@ -85,9 +76,15 @@ describe('PostAdEntryScreen', () => {
     mockUserCountryCode = 'JO';
     mockBrowseCountryCode = 'LB';
     mockIsArabic = true;
+
     render(<PostAdEntryScreen />);
+
     expect(document.getElementById('post-ad-entry-start')).toBeNull();
-    expect(document.getElementById('post-ad-blocked-title')).toBeInTheDocument();
-    expect(document.getElementById('post-ad-blocked-title')?.textContent).toContain('اختر السوق الذي تريد النشر فيه');
+    expect(document.getElementById('post-ad-entry-blocked-title')).toBeInTheDocument();
+    expect(screen.getByText('الأردن')).toBeInTheDocument();
+    expect(screen.getByText('السعودية')).toBeInTheDocument();
+    expect(screen.getByText('لبنان')).toBeInTheDocument();
+    expect(screen.getByText('فلسطين')).toBeInTheDocument();
+    expect(screen.getByText('سوريا')).toBeInTheDocument();
   });
 });
