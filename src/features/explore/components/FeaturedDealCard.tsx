@@ -3,6 +3,7 @@ import type { Listing } from '@/types';
 import { MagicStar } from 'iconsax-react';
 import { Icon } from '@iconify/react';
 import { toOptimizedImageUrl } from '@/shared/lib/optimizedImage';
+import { formatPrice } from '@/shared/lib/formatPrice';
 
 interface FeaturedDealCardProps {
   listing: Listing;
@@ -49,8 +50,7 @@ export const FeaturedDealCard: React.FC<FeaturedDealCardProps> = ({
               <span>{listing.city || (isArabic ? 'موقع' : 'Location')}</span>
             </p>
             <p className="text-accent font-bold text-lg">
-              {listing.price}{' '}
-              <span className="text-xs font-medium text-white/80">{listing.currency}</span>
+              {formatPrice(listing.price, listing.currency, isArabic)}
             </p>
           </div>
         </div>

@@ -3,6 +3,7 @@ import { Eye } from 'iconsax-react';
 import type { Listing } from '@/types';
 import { Icon } from '@iconify/react';
 import { toOptimizedImageUrl } from '@/shared/lib/optimizedImage';
+import { formatPrice } from '@/shared/lib/formatPrice';
 
 interface TrendingSectionProps {
   listings: Listing[];
@@ -53,7 +54,7 @@ export const TrendingSection: React.FC<TrendingSectionProps> = ({
               </h3>
               <div className="flex items-center justify-between text-[10px]">
                 <span className="text-accent font-bold text-sm">
-                  {listing.price}
+                  {formatPrice(listing.price, listing.currency, isArabic)}
                 </span>
                 <span className="flex items-center gap-0.5 text-ink-muted">
                   <Eye variant="Bold" size={10} color="#94A3B8" />

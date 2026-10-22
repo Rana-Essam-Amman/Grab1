@@ -2,6 +2,7 @@ import React from 'react';
 import { CloseCircle, ExportSquare } from 'iconsax-react';
 import { Listing } from '@/types';
 import { Button } from '@/shared/ui/Button';
+import { formatPrice } from '@/shared/lib/formatPrice';
 
 interface ShareModalHeaderProps {
   isArabic: boolean;
@@ -13,7 +14,6 @@ interface ShareModalHeaderProps {
 export const ShareModalHeader: React.FC<ShareModalHeaderProps> = ({
   isArabic,
   listing,
-  displayCurrency,
   onClose,
 }) => {
   return (
@@ -53,7 +53,7 @@ export const ShareModalHeader: React.FC<ShareModalHeaderProps> = ({
           <div className="min-w-0">
             <div className="text-xs font-bold text-ink truncate">{listing.title}</div>
             <div className="text-xs font-extrabold text-danger mt-0.5">
-              {listing.price} {displayCurrency}
+              {formatPrice(listing.price, listing.currency, isArabic)}
             </div>
           </div>
         </div>

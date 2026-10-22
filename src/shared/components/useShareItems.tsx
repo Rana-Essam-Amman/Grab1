@@ -4,6 +4,7 @@ import { Link, TickCircle, ExportSquare } from 'iconsax-react';
 import { getSanitizedCurrency } from '@/data/countries';
 import { SHARE_PLATFORMS } from './sharePlatforms.config';
 import { copyTextToClipboard } from './shareUtils';
+import { formatPrice } from '@/shared/lib/formatPrice';
 
 export interface ShareItem {
   id: string;
@@ -33,7 +34,7 @@ export const useShareItems = (listing: Listing, isArabic: boolean) => {
     [listing.countryCode, listing.currency]
   );
   const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
-  const shareText = `${listing.title} - ${listing.price} ${displayCurrency} ${isArabic ? 'على تطبيق FOX Marketplace' : 'on FOX Marketplace'}`;
+  const shareText = `${listing.title} - ${formatPrice(listing.price, listing.currency, isArabic)} ${isArabic ? 'على تطبيق FOX Marketplace' : 'on FOX Marketplace'}`;
 
   const handleCopyLink = useCallback(async () => {
     await copyTextToClipboard(shareUrl);
