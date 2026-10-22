@@ -489,6 +489,10 @@ export const textSignals: Record<string, CategoryHint> = {
   'camping': { categorySlug: 'sports', subcategorySlug: 'camping', labelAr: 'تخييم', labelEn: 'Camping' },
   'tent': { categorySlug: 'sports', subcategorySlug: 'camping', labelAr: 'تخييم', labelEn: 'Camping' },
 
+  'رياضات مائية': { categorySlug: 'sports', subcategorySlug: 'water-sports', labelAr: 'رياضات مائية', labelEn: 'Water Sports' },
+  'كانو': { categorySlug: 'sports', subcategorySlug: 'water-sports', labelAr: 'رياضات مائية', labelEn: 'Water Sports' },
+  'water sports': { categorySlug: 'sports', subcategorySlug: 'water-sports', labelAr: 'رياضات مائية', labelEn: 'Water Sports' },
+
   // ═══════════ BOOKS ═══════════
   'كتاب': { categorySlug: 'books', subcategorySlug: 'books-magazines', labelAr: 'كتب', labelEn: 'Books' },
   'رواية': { categorySlug: 'books', subcategorySlug: 'books-magazines', labelAr: 'كتب', labelEn: 'Books' },
@@ -602,6 +606,26 @@ export const textSignals: Record<string, CategoryHint> = {
   'تنظيف شقق': { categorySlug: 'cleaning', subcategorySlug: 'homes', labelAr: 'تنظيف منازل', labelEn: 'Home Cleaning' },
   'تنظيف مكاتب': { categorySlug: 'cleaning', subcategorySlug: 'offices', labelAr: 'تنظيف مكاتب', labelEn: 'Office Cleaning' },
 
+  'تنظيف كنب': { categorySlug: 'cleaning', subcategorySlug: 'sofas-carpets', labelAr: 'كنب وسجاد', labelEn: 'Sofas & Carpets' },
+  'تنظيف سجاد': { categorySlug: 'cleaning', subcategorySlug: 'sofas-carpets', labelAr: 'كنب وسجاد', labelEn: 'Sofas & Carpets' },
+  'غسيل كنب': { categorySlug: 'cleaning', subcategorySlug: 'sofas-carpets', labelAr: 'كنب وسجاد', labelEn: 'Sofas & Carpets' },
+
+  'تنظيف خزانات': { categorySlug: 'cleaning', subcategorySlug: 'water-tanks', labelAr: 'خزانات مياه', labelEn: 'Water Tanks' },
+  'غسيل خزان': { categorySlug: 'cleaning', subcategorySlug: 'water-tanks', labelAr: 'خزانات مياه', labelEn: 'Water Tanks' },
+  'water tank cleaning': { categorySlug: 'cleaning', subcategorySlug: 'water-tanks', labelAr: 'خزانات مياه', labelEn: 'Water Tanks' },
+
+  'تنظيف مسابح': { categorySlug: 'cleaning', subcategorySlug: 'pools', labelAr: 'مسابح', labelEn: 'Pools' },
+  'صيانة مسبح': { categorySlug: 'cleaning', subcategorySlug: 'pools', labelAr: 'مسابح', labelEn: 'Pools' },
+  'pool cleaning': { categorySlug: 'cleaning', subcategorySlug: 'pools', labelAr: 'مسابح', labelEn: 'Pools' },
+
+  'تنظيف بعد التشطيب': { categorySlug: 'cleaning', subcategorySlug: 'post-construction', labelAr: 'تنظيف بعد التشطيب', labelEn: 'Post-Construction' },
+  'تنظيف بعد البناء': { categorySlug: 'cleaning', subcategorySlug: 'post-construction', labelAr: 'تنظيف بعد التشطيب', labelEn: 'Post-Construction' },
+  'post construction': { categorySlug: 'cleaning', subcategorySlug: 'post-construction', labelAr: 'تنظيف بعد التشطيب', labelEn: 'Post-Construction' },
+
+  'تنظيف واجهات': { categorySlug: 'cleaning', subcategorySlug: 'windows-facades', labelAr: 'واجهات وزجاج', labelEn: 'Windows & Facades' },
+  'تنظيف زجاج': { categorySlug: 'cleaning', subcategorySlug: 'windows-facades', labelAr: 'واجهات وزجاج', labelEn: 'Windows & Facades' },
+  'window cleaning': { categorySlug: 'cleaning', subcategorySlug: 'windows-facades', labelAr: 'واجهات وزجاج', labelEn: 'Windows & Facades' },
+
   // ═══════════ HANDYMEN ═══════════
   'سباك': { categorySlug: 'handymen', subcategorySlug: 'plumber', labelAr: 'سباكة', labelEn: 'Plumbing' },
   'سباكة': { categorySlug: 'handymen', subcategorySlug: 'plumber', labelAr: 'سباكة', labelEn: 'Plumbing' },
@@ -696,4 +720,45 @@ export const textSignals: Record<string, CategoryHint> = {
   'مقاولات': { categorySlug: 'real-estate', subcategorySlug: 'construction', labelAr: 'مقاولات', labelEn: 'Contracting' },
   'بناء': { categorySlug: 'real-estate', subcategorySlug: 'construction', labelAr: 'بناء وإنشاءات', labelEn: 'Construction' },
   'تشطيب': { categorySlug: 'real-estate', subcategorySlug: 'construction', labelAr: 'تشطيبات', labelEn: 'Finishing' },
+
+  'مطعم للبيع': { categorySlug: 'projects', subcategorySlug: 'restaurant', labelAr: 'مطعم أو كافيه', labelEn: 'Restaurant & Cafe' },
+  'كافيه للبيع': { categorySlug: 'projects', subcategorySlug: 'restaurant', labelAr: 'مطعم أو كافيه', labelEn: 'Restaurant & Cafe' },
+  'restaurant for sale': { categorySlug: 'projects', subcategorySlug: 'restaurant', labelAr: 'مطعم أو كافيه', labelEn: 'Restaurant & Cafe' },
+
+  'محل للبيع': { categorySlug: 'projects', subcategorySlug: 'shop', labelAr: 'محل تجاري', labelEn: 'Shop' },
+  'shop for sale': { categorySlug: 'projects', subcategorySlug: 'shop', labelAr: 'محل تجاري', labelEn: 'Shop' },
+
+  'مصنع للبيع': { categorySlug: 'projects', subcategorySlug: 'factory', labelAr: 'مصنع وورشة', labelEn: 'Factory' },
+  'ورشة للبيع': { categorySlug: 'projects', subcategorySlug: 'factory', labelAr: 'مصنع وورشة', labelEn: 'Factory' },
+  'factory for sale': { categorySlug: 'projects', subcategorySlug: 'factory', labelAr: 'مصنع وورشة', labelEn: 'Factory' },
+
+  'متجر إلكتروني': { categorySlug: 'projects', subcategorySlug: 'online-store', labelAr: 'متجر إلكتروني', labelEn: 'Online Store' },
+  'موقع للبيع': { categorySlug: 'projects', subcategorySlug: 'online-store', labelAr: 'متجر إلكتروني', labelEn: 'Online Store' },
+  'online store': { categorySlug: 'projects', subcategorySlug: 'online-store', labelAr: 'متجر إلكتروني', labelEn: 'Online Store' },
+
+  'حق امتياز': { categorySlug: 'projects', subcategorySlug: 'franchise', labelAr: 'حق امتياز', labelEn: 'Franchise' },
+  'فرانشايز': { categorySlug: 'projects', subcategorySlug: 'franchise', labelAr: 'حق امتياز', labelEn: 'Franchise' },
+  'franchise': { categorySlug: 'projects', subcategorySlug: 'franchise', labelAr: 'حق امتياز', labelEn: 'Franchise' },
+
+  'ترخيص': { categorySlug: 'projects', subcategorySlug: 'licenses', labelAr: 'تراخيص ورخص', labelEn: 'Licenses' },
+  'رخصة تجارية': { categorySlug: 'projects', subcategorySlug: 'licenses', labelAr: 'تراخيص ورخص', labelEn: 'Licenses' },
+  'business license': { categorySlug: 'projects', subcategorySlug: 'licenses', labelAr: 'تراخيص ورخص', labelEn: 'Licenses' },
+
+  'معدات مشروع': { categorySlug: 'projects', subcategorySlug: 'equipment', labelAr: 'معدات ومستلزمات', labelEn: 'Equipment' },
+  'معدات مطعم': { categorySlug: 'projects', subcategorySlug: 'equipment', labelAr: 'معدات ومستلزمات', labelEn: 'Equipment' },
+  'business equipment': { categorySlug: 'projects', subcategorySlug: 'equipment', labelAr: 'معدات ومستلزمات', labelEn: 'Equipment' },
+
+  'شراكة': { categorySlug: 'projects', subcategorySlug: 'partnership', labelAr: 'شراكة ومستثمر', labelEn: 'Partnership' },
+  'مستثمر': { categorySlug: 'projects', subcategorySlug: 'partnership', labelAr: 'شراكة ومستثمر', labelEn: 'Partnership' },
+  'investor': { categorySlug: 'projects', subcategorySlug: 'partnership', labelAr: 'شراكة ومستثمر', labelEn: 'Partnership' },
+
+  'مشروع برمجي': { categorySlug: 'projects', subcategorySlug: 'software', labelAr: 'مشروع برمجي', labelEn: 'Software Project' },
+  'تطبيق للبيع': { categorySlug: 'projects', subcategorySlug: 'software', labelAr: 'مشروع برمجي', labelEn: 'Software Project' },
+  'app for sale': { categorySlug: 'projects', subcategorySlug: 'software', labelAr: 'مشروع برمجي', labelEn: 'Software Project' },
+
+  'مشروع زراعي': { categorySlug: 'projects', subcategorySlug: 'agri', labelAr: 'مشروع زراعي', labelEn: 'Agricultural Project' },
+
+  'مشروع للبيع': { categorySlug: 'projects', subcategorySlug: 'other', labelAr: 'مشاريع أخرى', labelEn: 'Other Projects' },
+  'فرصة استثمارية': { categorySlug: 'projects', subcategorySlug: 'other', labelAr: 'مشاريع أخرى', labelEn: 'Other Projects' },
+  'business for sale': { categorySlug: 'projects', subcategorySlug: 'other', labelAr: 'مشاريع أخرى', labelEn: 'Other Projects' },
 };
