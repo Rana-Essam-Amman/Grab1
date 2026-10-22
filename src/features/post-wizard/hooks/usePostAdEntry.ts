@@ -44,13 +44,18 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
 
   const updateUserMarket = async (market: MarketCode): Promise<boolean> => {
     if (!user) return false;
-    const { error } = await supabase.from('profiles').update({ country_code: market }).eq('id', user.id);
-    if (error) {
-      console.error('Failed to update market', error);
+    try {
+      const { error } = await supabase.from('profiles').update({ country_code: market }).eq('id', user.id);
+      if (error) {
+        console.error('Failed to update market', error);
+        return false;
+      }
+      setBrowseMarketOverrideLocal(market);
+      return true;
+    } catch (err) {
+      console.error('Unexpected error updating market', err);
       return false;
     }
-    setBrowseMarketOverrideLocal(market);
-    return true;
   };
 
   const handleBack = useCallback(() => { setActiveTab('explore'); goBack(); }, [setActiveTab, goBack]);
