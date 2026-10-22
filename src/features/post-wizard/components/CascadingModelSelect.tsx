@@ -5,6 +5,12 @@ import { OtherOptionInput } from './OtherOptionInput';
 import { SearchableDropdown } from '@/shared/ui/SearchableDropdown';
 import * as carHelpers from '../helpers/cascadingModelHelpers';
 import * as phoneHelpers from '../helpers/phoneModelHelpers';
+import { TV_BRANDS, TV_MODELS } from '@/data/brands/tv';
+import { AUDIO_BRANDS, AUDIO_MODELS } from '@/data/brands/audio';
+import { CAMERA_BRANDS, CAMERA_MODELS } from '@/data/brands/cameras';
+import { LAPTOP_BRANDS, LAPTOP_MODELS } from '@/data/brands/laptops';
+import { APPLIANCE_BRANDS, APPLIANCE_MODELS } from '@/data/brands/appliances';
+import { makeModelHelpers } from '../helpers/genericModelHelpers';
 
 const OTHER_VALUE = '__other__';
 
@@ -16,12 +22,30 @@ interface Props {
   readonly isArabic: boolean;
   readonly hideMakeField?: boolean;
   readonly testId?: string;
-  readonly dataSource?: 'cars' | 'phones';
+  readonly dataSource?: 'cars' | 'phones' | 'tv' | 'audio' | 'cameras' | 'laptops' | 'appliances';
 }
 
 export const CascadingModelSelect: React.FC<Props> = ({ makeValue, modelValue, onMakeChange, onModelChange, isArabic, hideMakeField, testId, dataSource = 'cars' }) => {
-  const helpers = dataSource === 'phones' ? phoneHelpers : carHelpers;
-  const brands = dataSource === 'phones' ? PHONE_BRANDS_REGISTRY : CAR_BRANDS;
+  const sources = {
+    cars: carHelpers,
+    phones: phoneHelpers,
+    tv: makeModelHelpers(TV_BRANDS, TV_MODELS),
+    audio: makeModelHelpers(AUDIO_BRANDS, AUDIO_MODELS),
+    cameras: makeModelHelpers(CAMERA_BRANDS, CAMERA_MODELS),
+    laptops: makeModelHelpers(LAPTOP_BRANDS, LAPTOP_MODELS),
+    appliances: makeModelHelpers(APPLIANCE_BRANDS, APPLIANCE_MODELS),
+  };
+  const brandsMap = {
+    cars: CAR_BRANDS,
+    phones: PHONE_BRANDS_REGISTRY,
+    tv: TV_BRANDS,
+    audio: AUDIO_BRANDS,
+    cameras: CAMERA_BRANDS,
+    laptops: LAPTOP_BRANDS,
+    appliances: APPLIANCE_BRANDS,
+  };
+  const helpers = sources[dataSource];
+  const brands = brandsMap[dataSource];
   const { getLocalModelOptions, normalizeToSlug, getBrandLabel, isCustomMake } = helpers;
   const customMake0 = isCustomMake(makeValue);
   const [showOtherMake, setShowOtherMake] = useState(customMake0 || makeValue === 'other');

@@ -38,7 +38,7 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({ fiel
     return (
       <div className="flex flex-col gap-1.5 py-1.5">
         <label className="text-xs font-bold text-ink-soft">{label} {field.required && reqStar}</label>
-        <CascadingModelSelect makeValue={parentValue} modelValue={value} onMakeChange={() => { /* handled by make field */ }} onModelChange={(v) => onChange(field.key, v)} isArabic={isArabic} hideMakeField testId={`field-${field.key}`} dataSource={field.cascadeSource === 'phones' ? 'phones' : 'cars'} />
+        <CascadingModelSelect makeValue={parentValue} modelValue={value} onMakeChange={() => { /* handled by make field */ }} onModelChange={(v) => onChange(field.key, v)} isArabic={isArabic} hideMakeField testId={`field-${field.key}`} dataSource={(field.cascadeSource as 'cars' | 'phones' | 'tv' | 'audio' | 'cameras' | 'laptops' | 'appliances' | undefined) ?? 'cars'} />
       </div>
     );
   }
