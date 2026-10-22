@@ -27,6 +27,7 @@ export const PostAdEntryScreen = () => {
   const header = (
     <div className="flex items-center justify-between p-4 border-b border-border">
       <button
+        id="post-ad-entry-back-btn"
         onClick={handleBack}
         className="p-2 rounded-full hover:bg-surface transition-colors"
       >
@@ -116,6 +117,7 @@ export const PostAdEntryScreen = () => {
         </div>
 
         <Button
+          id="post-ad-entry-start"
           onClick={startPostFlow}
           size="lg"
           className="w-full mt-4"
