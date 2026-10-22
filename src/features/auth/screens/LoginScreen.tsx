@@ -10,9 +10,17 @@ export interface LoginScreenProps {
 }
 
 export const LoginScreen: React.FC<LoginScreenProps> = () => {
-  const { isArabic, goBack, setLocale, setBrowseLocation, navigateTo, setBrowseMarketOverrideLocal } = useUI();
+  const { 
+    isArabic, 
+    goBack, 
+    setLocale, 
+    setBrowseLocation, 
+    navigateTo, 
+    setBrowseMarketOverrideLocal,
+    geoUnsupported 
+  } = useUI();
   
-  const [guestCountrySelect, setGuestCountrySelect] = useState(false);
+  const [guestCountrySelect, setGuestCountrySelect] = useState(geoUnsupported);
   const [toastMsg, setToastMsg] = useState('');
 
   const handleBack = useCallback(() => {
@@ -53,7 +61,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = () => {
 
       <LoginScreenBody
         isArabic={isArabic}
-        guestCountrySelect={guestCountrySelect}
+        guestCountrySelect={guestCountrySelect || geoUnsupported}
         handleSelectBrowseCountry={handleSelectBrowseCountry}
         handleGuestCountryClose={handleGuestCountryClose}
         handleGuestCountryOpen={handleGuestCountryOpen}
