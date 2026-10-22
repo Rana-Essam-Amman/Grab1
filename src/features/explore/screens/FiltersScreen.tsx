@@ -7,6 +7,7 @@ import { CategoryFilterSection } from '../components/filters/CategoryFilterSecti
 import { SortFilterSection } from '../components/filters/SortFilterSection';
 import { PriceRangeFilterSection } from '../components/filters/PriceRangeFilterSection';
 import { LocationFilterSection } from '../components/filters/LocationFilterSection';
+import { LocationHierarchyFilter } from '../components/filters/LocationHierarchyFilter'; import { getAllGovernorates, getAllCamps } from '@/data/locations/registry';
 import { CategoryAttrsSection } from '../components/filters/CategoryAttrsSection';
 import { FiltersFooter } from '../components/filters/FiltersFooter';
 import { useShareFilters } from '../hooks/useShareFilters';
@@ -130,6 +131,7 @@ export const FiltersScreen: React.FC = () => {
             onCityChange={(cityEn, cityAr) => { setDraftCity(cityEn); setBrowseLocation(browseCountryCode, cityEn, cityAr); setDraftNeigh(null); }}
             onNeighborhoodChange={setDraftNeigh}
           />
+          <LocationHierarchyFilter countryCode={browseCountryCode} isArabic={isArabic} selectedGovernorate={null} selectedCity={null} selectedCamp={null} onGovernorateChange={(slug) => { const gov = getAllGovernorates(browseCountryCode).find((g) => g.slug === slug); setDraftNeigh(gov?.nameAr ?? null); }} onCityChange={() => {}} onCampChange={(slug) => { const camp = getAllCamps(browseCountryCode).find((c) => c.slug === slug); setDraftNeigh(camp?.nameAr ?? null); }} />
         </FilterSection>
         <FilterSection isArabic={isArabic} title={isArabic ? 'الترتيب' : 'Sort by'} activeCount={sortActive ? 1 : 0}>
           <SortFilterSection isArabic={isArabic} activeSort={draftSort} onChange={setDraftSort} />
