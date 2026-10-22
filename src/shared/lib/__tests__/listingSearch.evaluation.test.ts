@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import type { Listing } from '@/types';
 import { matchNeighborhood, matchSearch, scoreListing } from '../listingSearch';
 import {
   EVALUATION_CASES,
@@ -315,6 +316,30 @@ describe('listingSearch client-side evaluation', () => {
       // unrelated
       expect(matchNeighborhood(listing, 'Zarqa')).toBe(false);
     });
+  });
+
+  it('matches seller phone numbers regardless of format or country code', () => {
+    const mockItem = {
+      title: 'Test iPhone', description: 'Test', city: 'Amman', neighborhood: '',
+      sellerName: 'Sufyan', sellerPhone: '+962791234567', attributes: [],
+      categorySlug: 'mobiles', subcategorySlug: 'phones',
+    } as unknown as Listing;
+
+    expect(scoreListing(mockItem, '+962 79 123 4567')).toBe(100);
+    expect(scoreListing(mockItem, '0791234567')).toBe(100);
+    expect(scoreListing(mockItem, '791234567')).toBe(100);
+    expect(scoreListing(mockItem, '123')).toBe(0);
+  });
+
+  it('matches seller names in local search', () => {
+    const mockItem = {
+      title: 'iPhone 15', description: 'Test', city: 'Amman', neighborhood: '',
+      sellerName: 'Sufyan Younis', sellerPhone: '0791234567', attributes: [],
+      categorySlug: 'mobiles', subcategorySlug: 'phones',
+    } as unknown as Listing;
+
+    expect(scoreListing(mockItem, 'Sufyan')).toBeGreaterThan(0);
+    expect(scoreListing(mockItem, 'يوسف')).toBe(0);
   });
 
 });
