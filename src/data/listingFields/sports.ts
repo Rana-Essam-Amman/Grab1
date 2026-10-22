@@ -86,6 +86,7 @@ export const SPORTS_FIELDS: CategoryFieldMap = {
       { value: 'under_warranty', labelAr: 'تحت كفالة الوكيل', labelEn: 'Under Warranty' },
       { value: 'expired', labelAr: 'منتهي الضمان', labelEn: 'Expired' },
     ]},
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'sports', required: false },
   ],
   bicycles: [
     { key: 'bikeType', labelAr: 'نوع الدراجة', labelEn: 'Bicycle Type', type: 'select', allowOther: true, required: true, options: [
@@ -122,6 +123,7 @@ export const SPORTS_FIELDS: CategoryFieldMap = {
     ]},
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: SPORT_CONDITION_OPTIONS },
     { key: 'batteryRangeKm', labelAr: 'مدى البطارية بالشحنة (للكهربائية - كم)', labelEn: 'Battery Range (km)', type: 'number', required: false, placeholder: '50', placeholderAr: '50' },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'sports', required: false },
   ],
   camping: [
     { key: 'itemType', labelAr: 'نوع تجهيزات التخييم', labelEn: 'Camping Item Type', type: 'select', allowOther: true, required: true, options: [
@@ -143,6 +145,7 @@ export const SPORTS_FIELDS: CategoryFieldMap = {
     { key: 'waterproof', labelAr: 'مقاوم للماء والأمطار والرياح الشديدة', labelEn: 'Waterproof & Windproof', type: 'boolean', required: false },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: SPORT_CONDITION_OPTIONS },
     { key: 'dimensions', labelAr: 'المقاس والوزن التقريبي', labelEn: 'Dimensions & Weight', type: 'text', required: false, placeholder: 'Weight / Dimensions', placeholderAr: 'مثال: وزن 4 كجم، 2×2 متر' },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'sports', required: false },
   ],
   'water-sports': [
     { key: 'sportType', labelAr: 'نوع الرياضة المائية', labelEn: 'Water Sport Type', type: 'select', allowOther: true, required: true, options: [
@@ -156,5 +159,6 @@ export const SPORTS_FIELDS: CategoryFieldMap = {
     { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: false, options: WATER_SPORTS_BRANDS },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: SPORT_CONDITION_OPTIONS },
     { key: 'safetyGearIncluded', labelAr: 'تشمل حقيبة حفظ أو أحزمة أمان متطابقة', labelEn: 'Safety Gear / Bag Included', type: 'boolean', required: false },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'sports', required: false },
   ],
 };

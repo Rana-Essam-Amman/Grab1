@@ -256,6 +256,7 @@ export const FASHION_FIELDS: CategoryFieldMap = {
     { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: true, required: false, options: SELLER_TYPE },
     { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
     { key: 'wholesale', labelAr: 'بيع بالجملة', labelEn: 'Wholesale Available', type: 'boolean', required: false },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'fashion', required: false },
   ],
   men: [
     { key: 'clothingType', labelAr: 'نوع الملابس', labelEn: 'Type', type: 'select', allowOther: true, required: true, options: [
@@ -287,6 +288,7 @@ export const FASHION_FIELDS: CategoryFieldMap = {
     { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: true, required: false, options: SELLER_TYPE },
     { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
     { key: 'wholesale', labelAr: 'بيع بالجملة', labelEn: 'Wholesale Available', type: 'boolean', required: false },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'fashion', required: false },
   ],
   'watches-jewelry': [
     { key: 'itemType', labelAr: 'نوع القطعة', labelEn: 'Item Type', type: 'select', allowOther: true, required: true, options: [
@@ -339,6 +341,7 @@ export const FASHION_FIELDS: CategoryFieldMap = {
     { key: 'dimensions', labelAr: 'الأبعاد (سم)', labelEn: 'Dimensions', type: 'text', required: false, placeholder: '30x20x10 cm', placeholderAr: 'مثال: 30×20×10 سم' },
     { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: true, required: false, options: SELLER_TYPE },
     { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'fashion', required: false },
   ],
   shoes: [
     { key: 'shoeType', labelAr: 'نوع الحذاء', labelEn: 'Shoe Type', type: 'select', allowOther: true, required: true, options: [
@@ -369,6 +372,7 @@ export const FASHION_FIELDS: CategoryFieldMap = {
     { key: 'closureType', labelAr: 'طريقة الإغلاق', labelEn: 'Closure Type', type: 'select', allowOther: true, required: false, options: SHOE_CLOSURE },
     { key: 'sellerType', labelAr: 'نوع البائع', labelEn: 'Seller Type', type: 'select', allowOther: true, required: false, options: SELLER_TYPE },
     { key: 'negotiable', labelAr: 'قابل للتفاوض', labelEn: 'Negotiable', type: 'boolean', required: false },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'fashion', required: false },
   ],
   perfumes: [
     { key: 'brand', labelAr: 'الماركة ودار العطور', labelEn: 'Brand / House', type: 'select', allowOther: true, required: true, options: PERFUME_BRANDS },

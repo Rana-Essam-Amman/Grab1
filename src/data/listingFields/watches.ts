@@ -92,6 +92,7 @@ export const WATCHES_FIELDS: CategoryFieldMap = {
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
     { key: 'boxIncluded', labelAr: 'العلبة الأصلية متوفرة', labelEn: 'Original Box Included', type: 'boolean', required: false },
     { key: 'papersIncluded', labelAr: 'شهادة الأصالة / الأوراق متوفرة', labelEn: 'Papers / Certificate Included', type: 'boolean', required: false },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'watches', required: false },
   ],
   everyday: [
     { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: true, options: WATCH_BRANDS },
@@ -104,6 +105,7 @@ export const WATCHES_FIELDS: CategoryFieldMap = {
     { key: 'waterResistance', labelAr: 'مقاومة الماء', labelEn: 'Water Resistance', type: 'select', allowOther: true, required: false, options: WATER_RESISTANCE_OPTIONS },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
     { key: 'boxIncluded', labelAr: 'العلبة متوفرة', labelEn: 'Box Included', type: 'boolean', required: false },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'watches', required: false },
   ],
   'vintage-watch': [
     { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: true, options: WATCH_BRANDS },
@@ -116,6 +118,7 @@ export const WATCHES_FIELDS: CategoryFieldMap = {
     { key: 'condition', labelAr: 'الحالة وتعمل أم لا', labelEn: 'Condition & Functionality', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
     { key: 'boxIncluded', labelAr: 'العلبة الأصلية متوفرة', labelEn: 'Original Box Included', type: 'boolean', required: false },
     { key: 'papersIncluded', labelAr: 'أوراق وشهادات متوفرة', labelEn: 'Papers Included', type: 'boolean', required: false },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'watches', required: false },
   ],
   straps: [
     { key: 'material', labelAr: 'مادة السوار', labelEn: 'Material', type: 'select', allowOther: true, required: true, options: STRAP_MATERIALS },

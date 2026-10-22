@@ -112,6 +112,7 @@ export const KIDS_FIELDS: CategoryFieldMap = {
     ]},
     { key: 'quantity', labelAr: 'عدد القطع في العرض', labelEn: 'Pieces Count', type: 'number', required: false, placeholder: '1', placeholderAr: '1' },
     { key: 'tags', labelAr: 'التيكيت والتاغ الأصلي متوفر', labelEn: 'Tags Included', type: 'boolean', required: false },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'kids', required: false },
   ],
   toys: [
     { key: 'toyType', labelAr: 'نوع اللعبة', labelEn: 'Toy Type', type: 'select', allowOther: true, required: true, options: [
@@ -128,6 +129,7 @@ export const KIDS_FIELDS: CategoryFieldMap = {
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: KIDS_CONDITION_OPTIONS },
     { key: 'batteryRequired', labelAr: 'تحتاج بطاريات للتشغيل', labelEn: 'Requires Batteries', type: 'boolean', required: false },
     { key: 'boxIncluded', labelAr: 'الكرتونة الأصلية ودليل التركيب متوفر', labelEn: 'Original Box & Manual Included', type: 'boolean', required: false },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'kids', required: false },
   ],
   strollers: [
     { key: 'strollerType', labelAr: 'نوع التجهيز', labelEn: 'Gear Type', type: 'select', allowOther: true, required: true, options: [
@@ -149,6 +151,7 @@ export const KIDS_FIELDS: CategoryFieldMap = {
     { key: 'foldable', labelAr: 'قابلة للطي بحجم الطائرة (Cabin Size)', labelEn: 'Cabin Size Foldable', type: 'boolean', required: false },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: KIDS_CONDITION_OPTIONS },
     { key: 'accessoriesIncluded', labelAr: 'الملحقات المتوفرة (غطاء مطر، شنطة...)', labelEn: 'Accessories (Raincover, Bag...)', type: 'text', required: false, placeholder: 'Raincover, Cup holder, Bag...', placeholderAr: 'مثال: غطاء مطر، حامل كاسات، شنطة...' },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'kids', required: false },
   ],
   feeding: [
     { key: 'itemType', labelAr: 'نوع المستلزم', labelEn: 'Item Type', type: 'select', allowOther: true, required: true, options: [
@@ -163,5 +166,6 @@ export const KIDS_FIELDS: CategoryFieldMap = {
     { key: 'condition', labelAr: 'الحالة والنظافة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: KIDS_CONDITION_OPTIONS },
     { key: 'bpaFree', labelAr: 'خالٍ من مادة BPA وآمن صحياً', labelEn: 'BPA Free & Safe', type: 'boolean', required: false },
     { key: 'boxIncluded', labelAr: 'مغلف بالكرتونة الأصلية', labelEn: 'Original Box Included', type: 'boolean', required: false },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'kids', required: false },
   ],
 };

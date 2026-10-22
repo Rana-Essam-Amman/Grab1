@@ -133,5 +133,6 @@ export const PETS_FIELDS: CategoryFieldMap = {
       { value: 'used_clean', labelAr: 'مستعمل بحالة نظيفة وممتازة', labelEn: 'Used - Clean' },
     ]},
     { key: 'dimensions', labelAr: 'المقاسات / الأبعاد (إن وجدت)', labelEn: 'Dimensions', type: 'text', required: false, placeholder: 'LxWxH in cm', placeholderAr: 'الطول × العرض × الارتفاع' },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'pets', required: false },
   ],
 };

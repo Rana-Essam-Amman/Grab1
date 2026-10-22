@@ -30,6 +30,7 @@ export const HOME_GARDEN_FIELDS: CategoryFieldMap = {
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: GARDEN_CONDITION_OPTIONS },
     { key: 'brand', labelAr: 'الماركة أو المعرض', labelEn: 'Brand / Store', type: 'text', required: false, placeholder: 'IKEA, Custom...', placeholderAr: 'مثال: ايكيا، تفصيل...' },
     { key: 'dimensions', labelAr: 'المقاسات والأبعاد (سم)', labelEn: 'Dimensions', type: 'text', required: false, placeholder: '200x150 cm', placeholderAr: 'مثال: 200 × 150 سم' },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'home-garden', required: false },
   ],
   plants: [
     { key: 'plantType', labelAr: 'نوع النبات أو الشجرة', labelEn: 'Plant Type', type: 'select', allowOther: true, required: true, options: [
@@ -70,6 +71,7 @@ export const HOME_GARDEN_FIELDS: CategoryFieldMap = {
     { key: 'portable', labelAr: 'قابلة للطي والتنقل بالسيارة', labelEn: 'Portable / Foldable', type: 'boolean', required: false },
     { key: 'accessoriesIncluded', labelAr: 'تشمل غطاء حماية وأسياخ وشبك وملاقط', labelEn: 'Includes Cover & Tongs', type: 'boolean', required: false },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: GARDEN_CONDITION_OPTIONS },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'home-garden', required: false },
   ],
   tools: [
     { key: 'toolType', labelAr: 'نوع المعدة أو الأداة', labelEn: 'Garden Tool Type', type: 'select', allowOther: true, required: true, options: [
@@ -93,5 +95,6 @@ export const HOME_GARDEN_FIELDS: CategoryFieldMap = {
       { value: 'with_warranty', labelAr: 'ساري الضمان', labelEn: 'With Warranty' },
       { value: 'no_warranty', labelAr: 'بدون ضمان', labelEn: 'No Warranty' },
     ]},
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'home-garden', required: false },
   ],
 };

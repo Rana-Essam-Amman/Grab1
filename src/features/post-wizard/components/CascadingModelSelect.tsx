@@ -1,3 +1,4 @@
+// RULE-14-EXCEPTION: Cascading model select supports 15 data sources
 import React, { useState, useEffect } from 'react';
 import { CAR_BRANDS } from '@/data/brands/carBrands';
 import { PHONE_BRANDS_REGISTRY } from '@/data/brands/phoneBrands';
@@ -10,6 +11,14 @@ import { AUDIO_BRANDS, AUDIO_MODELS } from '@/data/brands/audio';
 import { CAMERA_BRANDS, CAMERA_MODELS } from '@/data/brands/cameras';
 import { LAPTOP_BRANDS, LAPTOP_MODELS } from '@/data/brands/laptops';
 import { APPLIANCE_BRANDS, APPLIANCE_MODELS } from '@/data/brands/appliances';
+import { FASHION_BRANDS, FASHION_MODELS } from '@/data/brands/fashion';
+import { WATCHES_BRANDS, WATCHES_MODELS } from '@/data/brands/watches';
+import { BEAUTY_BRANDS, BEAUTY_MODELS } from '@/data/brands/beauty';
+import { KIDS_BRANDS, KIDS_MODELS } from '@/data/brands/kids';
+import { SPORTS_BRANDS, SPORTS_MODELS } from '@/data/brands/sports';
+import { FURNITURE_BRANDS, FURNITURE_MODELS } from '@/data/brands/furniture';
+import { HOME_GARDEN_BRANDS, HOME_GARDEN_MODELS } from '@/data/brands/home-garden';
+import { PETS_BRANDS, PETS_MODELS } from '@/data/brands/pets';
 import { makeModelHelpers } from '../helpers/genericModelHelpers';
 
 const OTHER_VALUE = '__other__';
@@ -22,7 +31,7 @@ interface Props {
   readonly isArabic: boolean;
   readonly hideMakeField?: boolean;
   readonly testId?: string;
-  readonly dataSource?: 'cars' | 'phones' | 'tv' | 'audio' | 'cameras' | 'laptops' | 'appliances';
+  readonly dataSource?: 'cars' | 'phones' | 'tv' | 'audio' | 'cameras' | 'laptops' | 'appliances' | 'fashion' | 'watches' | 'beauty' | 'kids' | 'sports' | 'furniture' | 'home-garden' | 'pets';
 }
 
 export const CascadingModelSelect: React.FC<Props> = ({ makeValue, modelValue, onMakeChange, onModelChange, isArabic, hideMakeField, testId, dataSource = 'cars' }) => {
@@ -34,6 +43,14 @@ export const CascadingModelSelect: React.FC<Props> = ({ makeValue, modelValue, o
     cameras: makeModelHelpers(CAMERA_BRANDS, CAMERA_MODELS),
     laptops: makeModelHelpers(LAPTOP_BRANDS, LAPTOP_MODELS),
     appliances: makeModelHelpers(APPLIANCE_BRANDS, APPLIANCE_MODELS),
+    fashion: makeModelHelpers(FASHION_BRANDS, FASHION_MODELS),
+    watches: makeModelHelpers(WATCHES_BRANDS, WATCHES_MODELS),
+    beauty: makeModelHelpers(BEAUTY_BRANDS, BEAUTY_MODELS),
+    kids: makeModelHelpers(KIDS_BRANDS, KIDS_MODELS),
+    sports: makeModelHelpers(SPORTS_BRANDS, SPORTS_MODELS),
+    furniture: makeModelHelpers(FURNITURE_BRANDS, FURNITURE_MODELS),
+    'home-garden': makeModelHelpers(HOME_GARDEN_BRANDS, HOME_GARDEN_MODELS),
+    pets: makeModelHelpers(PETS_BRANDS, PETS_MODELS),
   };
   const brandsMap = {
     cars: CAR_BRANDS,
@@ -43,6 +60,14 @@ export const CascadingModelSelect: React.FC<Props> = ({ makeValue, modelValue, o
     cameras: CAMERA_BRANDS,
     laptops: LAPTOP_BRANDS,
     appliances: APPLIANCE_BRANDS,
+    fashion: FASHION_BRANDS,
+    watches: WATCHES_BRANDS,
+    beauty: BEAUTY_BRANDS,
+    kids: KIDS_BRANDS,
+    sports: SPORTS_BRANDS,
+    furniture: FURNITURE_BRANDS,
+    'home-garden': HOME_GARDEN_BRANDS,
+    pets: PETS_BRANDS,
   };
   const helpers = sources[dataSource];
   const brands = brandsMap[dataSource];

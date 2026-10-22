@@ -102,6 +102,7 @@ export const BEAUTY_FIELDS: CategoryFieldMap = {
       { value: 'original_100', labelAr: 'أصلي 100% مع باركود', labelEn: '100% Authentic' },
       { value: 'high_copy', labelAr: 'هاي كوبي / بديل ممتاز', labelEn: 'High Copy' },
     ]},
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'beauty', required: false },
   ],
   hair: [
     { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: false, options: HAIRCARE_BRANDS },
@@ -124,6 +125,7 @@ export const BEAUTY_FIELDS: CategoryFieldMap = {
       { value: 'active_warranty', labelAr: 'ساري الضمان', labelEn: 'Active Warranty' },
       { value: 'no_warranty', labelAr: 'بدون ضمان', labelEn: 'No Warranty' },
     ]},
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'beauty', required: false },
   ],
   skin: [
     { key: 'brand', labelAr: 'الماركة الطبية أو التجارية', labelEn: 'Brand', type: 'select', allowOther: true, required: true, options: SKINCARE_BRANDS },
@@ -145,6 +147,7 @@ export const BEAUTY_FIELDS: CategoryFieldMap = {
     { key: 'volume', labelAr: 'الحجم', labelEn: 'Volume', type: 'select', allowOther: true, required: false, options: VOLUME_OPTIONS },
     { key: 'expiry', labelAr: 'تاريخ الانتهاء (MM/YYYY)', labelEn: 'Expiry Date', type: 'text', required: false, placeholder: '06/2026', placeholderAr: 'مثال: 06/2026' },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: BEAUTY_CONDITION_OPTIONS },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'beauty', required: false },
   ],
   care: [
     { key: 'deviceType', labelAr: 'نوع جهاز العناية', labelEn: 'Device Type', type: 'select', allowOther: true, required: true, options: [

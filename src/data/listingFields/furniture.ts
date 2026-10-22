@@ -117,6 +117,7 @@ export const FURNITURE_FIELDS: CategoryFieldMap = {
     { key: 'petFriendly', labelAr: 'مناسب للحيوانات الأليفة', labelEn: 'Pet Friendly', type: 'boolean', required: false },
     { key: 'additionalFeatures', labelAr: 'ميزات إضافية', labelEn: 'Additional Features', type: 'select', multiSelect: true, allowOther: true, required: false, options: FURNITURE_FEATURES },
     { key: 'dimensions', labelAr: 'المقاسات والأبعاد (الطول × العرض)', labelEn: 'Dimensions', type: 'text', required: false, placeholder: '300x200 cm', placeholderAr: 'مثال: 300 × 200 سم' },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'furniture', required: false },
   ],
   bedroom: [
     { key: 'itemType', labelAr: 'نوع قطعة النوم', labelEn: 'Item Type', type: 'select', allowOther: true, required: true, options: [
@@ -145,6 +146,7 @@ export const FURNITURE_FIELDS: CategoryFieldMap = {
     { key: 'wardrobeSubtype', labelAr: 'نوع الخزانة', labelEn: 'Wardrobe Type', type: 'select', allowOther: true, required: false, options: WARDROBE_SUBTYPE },
     { key: 'underBedStorage', labelAr: 'تخزين أسفل السرير', labelEn: 'Under-Bed Storage', type: 'boolean', required: false },
     { key: 'additionalFeatures', labelAr: 'ميزات إضافية', labelEn: 'Additional Features', type: 'select', multiSelect: true, allowOther: true, required: false, options: FURNITURE_FEATURES },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'furniture', required: false },
   ],
   tables: [
     { key: 'tableType', labelAr: 'نوع الطاولة', labelEn: 'Table Type', type: 'select', allowOther: true, required: true, options: [
@@ -173,6 +175,7 @@ export const FURNITURE_FIELDS: CategoryFieldMap = {
     { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: false, options: FURNITURE_BRANDS },
     { key: 'dimensions', labelAr: 'المقاس (سم)', labelEn: 'Dimensions', type: 'text', required: false, placeholder: '200 x 100 cm', placeholderAr: 'مثال: 200 × 100 سم' },
     { key: 'extendable', labelAr: 'قابل للتمديد', labelEn: 'Extendable', type: 'boolean', required: false },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'furniture', required: false },
   ],
   outdoor: [
     { key: 'itemType', labelAr: 'نوع الأثاث الخارجي', labelEn: 'Outdoor Item Type', type: 'select', allowOther: true, required: true, options: [
@@ -199,6 +202,7 @@ export const FURNITURE_FIELDS: CategoryFieldMap = {
     { key: 'cushionsIncluded', labelAr: 'يشمل مخدات ودواسات الجلوس', labelEn: 'Cushions Included', type: 'boolean', required: false },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
     { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: false, options: FURNITURE_BRANDS },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'furniture', required: false },
   ],
   decor: [
     { key: 'decorType', labelAr: 'نوع الديكور', labelEn: 'Decor Type', type: 'select', allowOther: true, required: true, options: [
@@ -216,6 +220,7 @@ export const FURNITURE_FIELDS: CategoryFieldMap = {
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
     { key: 'brand', labelAr: 'الماركة أو المنشأ', labelEn: 'Brand / Origin', type: 'select', allowOther: true, required: false, options: FURNITURE_BRANDS },
     { key: 'originCountry', labelAr: 'المنشأ', labelEn: 'Origin', type: 'select', allowOther: true, required: false, options: DECOR_ORIGIN },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'furniture', required: false },
   ],
   office: [
     { key: 'itemType', labelAr: 'نوع الأثاث المكتبي', labelEn: 'Office Item Type', type: 'select', allowOther: true, required: true, options: [
@@ -233,5 +238,6 @@ export const FURNITURE_FIELDS: CategoryFieldMap = {
     { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'select', allowOther: true, required: false, options: FURNITURE_BRANDS },
     { key: 'chairSubtype', labelAr: 'نوع الكرسي', labelEn: 'Chair Type', type: 'select', allowOther: true, required: false, options: CHAIR_SUBTYPE },
     { key: 'dimensions', labelAr: 'الأبعاد (الطول × العرض × الارتفاع)', labelEn: 'Dimensions', type: 'text', required: false, placeholder: '160x80 cm', placeholderAr: 'مثال: 160 × 80 سم' },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model', dependsOn: 'brand', cascadeSource: 'furniture', required: false },
   ],
 };
