@@ -3,6 +3,7 @@ import { usePostAdEntry } from '../hooks/usePostAdEntry';
 import { Icon } from '@iconify/react';
 import { Button } from '@/shared/ui/Button';
 import type { MarketCode } from '@/data/markets/types';
+import { toast } from 'react-hot-toast'; // Adjust if you use a different toast library (e.g., 'sonner')
 
 const MARKET_NAMES: Record<string, string> = {
   JO: 'الأردن',
@@ -73,7 +74,16 @@ export const PostAdEntryScreen = () => {
             {(['JO', 'SA', 'LB', 'PS', 'SY'] as MarketCode[]).map((m) => (
               <button
                 key={m}
-                onClick={() => updateUserMarket?.(m)}
+                onClick={async () => {
+                  const success = await updateUserMarket?.(m);
+                  if (!success) {
+                    toast.error(
+                      isArabic
+                        ? 'فشل تحديث الدولة، يرجى المحاولة مرة أخرى'
+                        : 'Failed to update market, please try again'
+                    );
+                  }
+                }}
                 className="p-4 border border-border bg-surface rounded-xl font-bold text-ink hover:border-primary hover:text-primary transition-all"
               >
                 {MARKET_NAMES[m]}
