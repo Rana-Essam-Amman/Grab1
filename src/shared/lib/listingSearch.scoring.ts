@@ -2,6 +2,7 @@ import type { Listing } from '@/types';
 import { normalizeArabic } from '@/data/arabicNormalize';
 import { phoneticKey } from './phoneticKey';
 import { stemText } from './arabicStemmer';
+import { getFullLocationAliases } from './locationAliases';
 import {
   collectSearchStrings,
   getTokenCandidates,
@@ -48,6 +49,21 @@ export const scoreListing = (item: Listing, q: string): number => {
     },
     otherStrings,
   );
+
+  // Add location aliases (AR ↔ EN ↔ country name)
+  try {
+    const countryAliases = getFullLocationAliases(
+      item.countryCode || '',
+      item.city || '',
+      item.neighborhood || '',
+    );
+    for (const alias of countryAliases) {
+      if (alias) otherStrings.push(alias);
+    }
+  } catch {
+    // safe fallback if location not found
+  }
+
 
   const other = normalizeArabic(otherStrings.join(' '));
 

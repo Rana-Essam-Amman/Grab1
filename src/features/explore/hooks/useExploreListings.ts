@@ -8,6 +8,7 @@ import { EXPLORE_CONFIG } from '@/config/explore.config';
 import { UseExploreListingsReturn } from './useExploreListings.types';
 import { countCityListings, computeFilterModeWithCapital } from './useExploreListings.helpers';
 import { filterListings } from '@/shared/lib/filterListings';
+import { detectCountryHint } from '@/ai/categoryMatch';
 import { translateAttrsForDb } from '@/shared/lib/attrsTranslation';
 
 export function useExploreListings(): UseExploreListingsReturn {
@@ -61,7 +62,7 @@ export function useExploreListings(): UseExploreListingsReturn {
   const displayListings = useMemo(() => {
     const hasActiveSearch = searchQuery.trim().length > 0;
     return filterListings(marketListings, {
-      market: browseCountryCode,
+      market: hasActiveSearch ? (detectCountryHint(searchQuery) ?? browseCountryCode) : browseCountryCode,
       searchQuery: hasActiveSearch ? searchQuery : '',
       categorySlug: subcategoryFilter ?? categoryFilter,
       minPrice: minPriceFilter,

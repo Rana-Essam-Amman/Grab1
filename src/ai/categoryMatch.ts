@@ -1,3 +1,4 @@
+import { getCountryAliases } from '@/shared/lib/locationAliases';
 export enum MismatchPolicy {
   silent = 'silent',
   confirm = 'confirm',
@@ -81,4 +82,19 @@ export function matchCategory({
     mismatch: true,
     suggested: hinted,
   };
+}
+
+
+const COUNTRY_CODES = ['JO', 'LB', 'PS', 'SY', 'SA'] as const;
+
+export function detectCountryHint(query: string): string | null {
+  const q = query.trim().toLowerCase();
+  if (!q) return null;
+  for (const code of COUNTRY_CODES) {
+    const aliases = getCountryAliases(code);
+    for (const a of aliases) {
+      if (a && q.includes(a.toLowerCase())) return code;
+    }
+  }
+  return null;
 }
