@@ -1,6 +1,7 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PostAdEntryScreen } from '../PostAdEntryScreen';
+import { toast } from 'sonner';
 
 const mockNavigateTo = vi.fn();
 const mockSetActiveTab = vi.fn();
@@ -10,6 +11,13 @@ const mockStartPostFlow = vi.fn();
 let mockUserCountryCode = 'JO';
 let mockBrowseCountryCode = 'JO';
 let mockIsArabic = true;
+
+// Mock Sonner toast to test the error
+vi.mock('sonner', () => ({
+  toast: {
+    error: vi.fn(),
+  },
+}));
 
 vi.mock('@/hooks/useUI', () => ({
   useUI: () => ({
@@ -21,6 +29,9 @@ vi.mock('@/hooks/useUI', () => ({
     setBrowseMarketOverrideLocal: vi.fn(),
   }),
 }));
+
+// We need a dynamic mock for updateUserMarket to test both success and failure
+const mockUpdateUserMarket = vi.fn();
 
 vi.mock('../../hooks/usePostAdEntry', () => ({
   usePostAdEntry: () => ({
@@ -34,7 +45,7 @@ vi.mock('../../hooks/usePostAdEntry', () => ({
     myMarket: mockUserCountryCode,
     freeLimit: 20,
     freeRemaining: 10,
-    updateUserMarket: vi.fn(),
+    updateUserMarket: mockUpdateUserMarket,
   }),
 }));
 
@@ -44,6 +55,7 @@ describe('PostAdEntryScreen', () => {
     mockUserCountryCode = 'JO';
     mockBrowseCountryCode = 'JO';
     mockIsArabic = true;
+    mockUpdateUserMarket.mockResolvedValue(true);
   });
 
   it('renders a single "Post New Ad" button when markets match', () => {
@@ -89,5 +101,40 @@ describe('PostAdEntryScreen', () => {
     expect(screen.getByText('لبنان')).toBeInTheDocument();
     expect(screen.getByText('فلسطين')).toBeInTheDocument();
     expect(screen.getByText('سوريا')).toBeInTheDocument();
+  });
+
+  it('updates the market successfully when a market button is clicked', async () => {
+    mockUserCountryCode = 'JO';
+    mockBrowseCountryCode = 'LB';
+    mockIsArabic = true;
+
+    render(<PostAdEntryScreen />);
+
+    const joBtn = screen.getByText('الأردن');
+    fireEvent.click(joBtn);
+
+    expect(mockUpdateUserMarket).toHaveBeenCalledWith('JO');
+    await waitFor(() => {
+      expect(toast.error).not.toHaveBeenCalled();
+    });
+  });
+
+  it('shows an error toast if the market update fails', async () => {
+    mockUserCountryCode = 'JO';
+    mockBrowseCountryCode = 'LB';
+    mockIsArabic = true;
+    
+    // Force the update to fail
+    mockUpdateUserMarket.mockResolvedValueOnce(false);
+
+    render(<PostAdEntryScreen />);
+
+    const joBtn = screen.getByText('الأردن');
+    fireEvent.click(joBtn);
+
+    await waitFor(() => {
+      expect(mockUpdateUserMarket).toHaveBeenCalledWith('JO');
+      expect(toast.error).toHaveBeenCalledWith('فشل تحديث الدولة، يرجى المحاولة مرة أخرى');
+    });
   });
 });
