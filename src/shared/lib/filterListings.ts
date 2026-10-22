@@ -89,6 +89,8 @@ export function filterListings(listings: Listing[], options: FilterListingsOptio
           continue;
         }
 
+        if (field?.multiSelect) { const fv = v.split(',').map((s) => s.trim().toLowerCase()).filter(Boolean); if (!list.some((a) => a.key === k && fv.includes(String(a.value).toLowerCase()))) return false; continue; }
+
         const filterNorm = normalizeAttrValue(v, field?.options, field?.type);
         const hasMatch = list.some((a) => {
           if (a.key !== k) return false;

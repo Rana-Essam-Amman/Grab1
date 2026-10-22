@@ -32,10 +32,14 @@ export const FilterChipsField: React.FC<FilterChipsFieldProps> = ({
           label: isArabic ? o.labelAr : o.labelEn,
         }));
   const useCombobox = field.type === 'select' && chips.length > MAX_OPTIONS;
-  const currentLabel = chips.find((c) => c.value === activeValue)?.label ?? '';
+  const currentLabel = field.multiSelect
+    ? activeValue.split(',').map((s) => s.trim()).filter(Boolean).map((v) => chips.find((c) => c.value === v)?.label ?? '').filter(Boolean).join(', ')
+    : chips.find((c) => c.value === activeValue)?.label ?? '';
   const otherLabel = isArabic ? OTHER_LABEL_AR : OTHER_LABEL_EN;
   const knownValues = chips.map((c) => c.value);
-  const isOtherActive = Boolean(activeValue && !knownValues.includes(activeValue));
+  const isOtherActive = field.multiSelect
+    ? activeValue.split(',').map((s) => s.trim()).filter(Boolean).some((v) => v && !knownValues.includes(v))
+    : Boolean(activeValue && !knownValues.includes(activeValue));
 
   return (
     <div className="flex flex-col gap-2">
@@ -69,12 +73,24 @@ export const FilterChipsField: React.FC<FilterChipsFieldProps> = ({
       ) : (
         <div className="flex flex-wrap gap-2">
           {chips.map((c) => {
-            const isActive = activeValue === c.value;
+            const isMulti = Boolean(field.multiSelect);
+            const activeList = isMulti ? activeValue.split(',').map((s) => s.trim()).filter(Boolean) : [];
+            const isActive = isMulti ? activeList.includes(c.value) : activeValue === c.value;
+            const toggle = () => {
+              if (!isMulti) {
+                onChange(isActive ? null : c.value);
+                return;
+              }
+              const next = isActive
+                ? activeList.filter((x) => x !== c.value)
+                : [...activeList, c.value];
+              onChange(next.length > 0 ? next.join(',') : null);
+            };
             return (
               <button
                 key={c.value}
                 type="button"
-                onClick={() => onChange(isActive ? null : c.value)}
+                onClick={toggle}
                 className={`px-3 py-1.5 rounded-full border text-xs font-bold transition-all ${
                   isActive
                     ? 'bg-accent/15 border-accent text-accent'
