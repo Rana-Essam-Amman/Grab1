@@ -15,6 +15,16 @@ export const scoreListing = (item: Listing, q: string): number => {
   const query = (q || '').trim();
   if (!query) return 0;
 
+  // Phone number fast-path: if query looks like a phone (7+ digits), compare digits only
+  const queryDigits = query.replace(/\D/g, '');
+  if (queryDigits.length >= 7) {
+    const itemObj = item as unknown as Record<string, unknown>;
+    const rawPhone = String(item.sellerPhone || itemObj.seller_phone || '').replace(/\D/g, '');
+    if (rawPhone && (rawPhone.includes(queryDigits) || queryDigits.includes(rawPhone))) {
+      return 100; // Force top match
+    }
+  }
+
   const rawTokens = query.split(/\s+/).map((t) => normalizeArabic(t)).filter(Boolean);
   const tokens = rawTokens.filter((t) => t.length >= MIN_QUERY_TOKEN_LENGTH && !SEARCH_STOP_WORDS.has(t));
 
