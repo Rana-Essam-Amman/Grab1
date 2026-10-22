@@ -12,6 +12,7 @@ import { ListingCardSellerRow } from '@/features/listings/components/ListingCard
 import { toOptimizedImageUrl } from '@/shared/lib/optimizedImage';
 import { pickImageFitClass, ratioOf, type ImageFitClass } from '@/shared/lib/imageFit';
 import { formatPrice } from '@/shared/lib/formatPrice';
+import { formatRelativeDate } from '@/shared/lib/formatDate';
 
 interface ListingCardHorizontalProps {
   listing: Listing;
@@ -37,6 +38,8 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
     const fields = getListingFields(listing.categorySlug, listing.subcategorySlug);
     return new Set(fields.filter((f) => f.required).map((f) => f.key));
   }, [listing.categorySlug, listing.subcategorySlug]);
+
+  const relativeDate = useMemo(() => formatRelativeDate(listing.createdAt, isArabic), [listing.createdAt, isArabic]);
 
   const specs = useMemo(() => {
     const attrs = listing.attributes?.filter((a) => !requiredKeys.has(a.key));
@@ -94,9 +97,17 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
         <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
           <div>
             <div className="text-[15px] font-bold text-ink line-clamp-2" dir="auto">{listing.title}</div>
-            <div className="flex items-center gap-1 text-xs text-ink-soft font-medium mt-1 mb-2">
-              <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
-              <span className="truncate" dir="auto">{locationText}</span>
+            <div className="flex items-center justify-between gap-1 text-xs text-ink-soft font-medium mt-1 mb-2">
+              <div className="flex items-center gap-1 truncate">
+                <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
+                <span className="truncate" dir="auto">{locationText}</span>
+              </div>
+              {relativeDate && (
+                <div className="flex items-center gap-1 shrink-0 text-[11px] text-ink-muted">
+                  <Icon icon="lucide:clock" width={11} height={11} className="shrink-0" />
+                  <span>{relativeDate}</span>
+                </div>
+              )}
             </div>
             <RequiredSpecsRow
               categorySlug={listing.categorySlug}
@@ -104,7 +115,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
               attributes={listing.attributes ?? []}
               isArabic={isArabic}
             />
-            {specs.length > 0 && <ListingSpecsRow specs={specs} compact />}
+            {specs.length > 0 && <ListingSpecsRow specs={specs} compact isArabic={isArabic} />}
           </div>
           <div className="flex items-center mt-2 gap-1.5">
             <div className="price-tag text-base font-bold text-danger shrink-0">
