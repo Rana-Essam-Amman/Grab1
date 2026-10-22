@@ -552,6 +552,19 @@ export const textSignals: Record<string, CategoryHint> = {
   'ac': { categorySlug: 'electronics', subcategorySlug: 'home-appliances', labelAr: 'مكيفات', labelEn: 'Air Conditioners' },
   'سماعات': { categorySlug: 'electronics', subcategorySlug: 'audio', labelAr: 'صوتيات', labelEn: 'Audio' },
 
+  'طاقة شمسية': { categorySlug: 'electronics', subcategorySlug: 'solar', labelAr: 'طاقة شمسية', labelEn: 'Solar Energy' },
+  'الطاقة الشمسية': { categorySlug: 'electronics', subcategorySlug: 'solar', labelAr: 'طاقة شمسية', labelEn: 'Solar Energy' },
+  'سولار': { categorySlug: 'electronics', subcategorySlug: 'solar', labelAr: 'طاقة شمسية', labelEn: 'Solar Energy' },
+  'ألواح شمسية': { categorySlug: 'electronics', subcategorySlug: 'solar', labelAr: 'طاقة شمسية', labelEn: 'Solar Energy' },
+  'الواح شمسية': { categorySlug: 'electronics', subcategorySlug: 'solar', labelAr: 'طاقة شمسية', labelEn: 'Solar Energy' },
+  'إنفرتر': { categorySlug: 'electronics', subcategorySlug: 'solar', labelAr: 'طاقة شمسية', labelEn: 'Solar Energy' },
+  'انفرتر': { categorySlug: 'electronics', subcategorySlug: 'solar', labelAr: 'طاقة شمسية', labelEn: 'Solar Energy' },
+  'منظومة شمسية': { categorySlug: 'electronics', subcategorySlug: 'solar', labelAr: 'طاقة شمسية', labelEn: 'Solar Energy' },
+  'solar': { categorySlug: 'electronics', subcategorySlug: 'solar', labelAr: 'طاقة شمسية', labelEn: 'Solar Energy' },
+  'solar system': { categorySlug: 'electronics', subcategorySlug: 'solar', labelAr: 'طاقة شمسية', labelEn: 'Solar Energy' },
+  'inverter': { categorySlug: 'electronics', subcategorySlug: 'solar', labelAr: 'طاقة شمسية', labelEn: 'Solar Energy' },
+  'solar panels': { categorySlug: 'electronics', subcategorySlug: 'solar', labelAr: 'طاقة شمسية', labelEn: 'Solar Energy' },
+
   // ═══════════ CLEANING ═══════════
   'تنظيف منازل': { categorySlug: 'cleaning', subcategorySlug: 'homes', labelAr: 'تنظيف منازل', labelEn: 'Home Cleaning' },
   'تنظيف شقق': { categorySlug: 'cleaning', subcategorySlug: 'homes', labelAr: 'تنظيف منازل', labelEn: 'Home Cleaning' },

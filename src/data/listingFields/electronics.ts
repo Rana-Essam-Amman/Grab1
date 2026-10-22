@@ -1,3 +1,4 @@
+import { ELECTRONICS_SOLAR_FIELDS } from './electronics-solar';
 import type { CategoryFieldMap, ListingFieldOption } from './types';
 
 const TV_BRANDS: ListingFieldOption[] = [
@@ -267,4 +268,5 @@ export const ELECTRONICS_FIELDS: CategoryFieldMap = {
     { key: 'capacity', labelAr: 'السعة (لتر / كجم / طن)', labelEn: 'Capacity (L / kg / Ton)', type: 'text', required: false, placeholder: '500L / 8kg / 2 Ton', placeholderAr: 'مثال: 500 لتر، 8 كجم، 2 طن' },
     { key: 'installationIncluded', labelAr: 'التوصيل والتركيب متوفر', labelEn: 'Installation Available', type: 'boolean', required: false },
   ],
+  solar: ELECTRONICS_SOLAR_FIELDS,
 };
