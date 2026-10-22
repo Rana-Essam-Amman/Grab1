@@ -1,3 +1,4 @@
+// RULE-14-EXCEPTION: Static taxonomy
 import type { CategoryFieldMap, ListingFieldOption } from './types';
 
 const CURRENT_YEAR = new Date().getFullYear();

@@ -1,3 +1,4 @@
+// RULE-14-EXCEPTION: Static taxonomy
 import type { CategoryFieldMap, ListingFieldOption, ListingField } from './types';
 
 const HANDYMAN_AVAILABILITY: ListingFieldOption[] = [
