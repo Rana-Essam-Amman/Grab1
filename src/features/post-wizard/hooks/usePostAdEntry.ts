@@ -18,7 +18,7 @@ export interface UsePostAdEntryReturn {
   readonly myMarket: MarketCode | null;
   readonly freeLimit: number;
   readonly freeRemaining: number;
-  readonly updateUserMarket: (market: MarketCode) => Promise<void>;
+  readonly updateUserMarket: (market: MarketCode) => Promise<boolean>;
 }
 
 export const usePostAdEntry = (): UsePostAdEntryReturn => {
@@ -42,14 +42,15 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
   const freeLimit = MONETIZATION_MATRIX.freeLimits.generalCategoryLimit;
   const freeRemaining = isAdmin ? freeLimit : Math.max(0, freeLimit - userListings.filter((l) => l.status !== 'sold').length);
 
-  const updateUserMarket = async (market: MarketCode) => {
-    if (!user) return;
+  const updateUserMarket = async (market: MarketCode): Promise<boolean> => {
+    if (!user) return false;
     const { error } = await supabase.from('profiles').update({ country_code: market }).eq('id', user.id);
     if (error) {
       console.error('Failed to update market', error);
-      return;
+      return false;
     }
     setBrowseMarketOverrideLocal(market);
+    return true;
   };
 
   const handleBack = useCallback(() => { setActiveTab('explore'); goBack(); }, [setActiveTab, goBack]);
