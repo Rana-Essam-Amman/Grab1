@@ -2,7 +2,7 @@
 import { CategoryDef } from '../types';
 
 export const categories: CategoryDef[] = [
-  { slug: 'motors', nameEn: 'Motors', nameAr: 'سيارات ومركبات', asset: '/assets/icons/motors.jpg' },
+  { slug: 'motors', nameEn: 'Motors', nameAr: 'سيارات ومركبات', asset: '/assets/icons/motors.jpg', landingScreen: 'motors-landing' },
   { slug: 'real-estate', nameEn: 'Real Estate', nameAr: 'عقارات', asset: '/assets/icons/real-estate.jpg', landingScreen: 'real-estate-landing' },
   { slug: 'mobiles', nameEn: 'Mobiles & Tablets', nameAr: 'موبايلات وتابلت', asset: '/assets/icons/mobiles.jpg' },
   { slug: 'watches', nameEn: 'Watches', nameAr: 'ساعات وإكسسوار', asset: '/assets/icons/watches.jpg' },
