@@ -4,6 +4,22 @@ const OTHER = 'أخرى';
 const COLORS = ['أبيض', 'أسود', 'فضي', 'رمادي', 'أحمر', 'أزرق', 'بني', 'بيج', 'أخضر', 'أصفر', OTHER];
 const CONDITION = ['جديد', 'مستعمل - ممتاز', 'مستعمل - جيد', 'مستعمل - مقبول', OTHER];
 
+const RENTAL_DURATION = ['يومي', 'أسبوعي', 'شهري', 'سنوي', OTHER];
+const RENTAL_PROVIDER = ['شركة تأجير', 'فرد', OTHER];
+
+const RENTAL_BASE_FIELDS: readonly CategoryFieldDef[] = [
+  { key: 'rentalDuration', labelAr: 'مدة الإيجار', labelEn: 'Rental Duration', type: 'select', required: true, options: RENTAL_DURATION },
+  { key: 'dailyRate', labelAr: 'السعر اليومي', labelEn: 'Daily Rate', type: 'number', required: false },
+  { key: 'weeklyRate', labelAr: 'السعر الأسبوعي', labelEn: 'Weekly Rate', type: 'number', required: false },
+  { key: 'monthlyRate', labelAr: 'السعر الشهري', labelEn: 'Monthly Rate', type: 'number', required: false },
+  { key: 'withDriver', labelAr: 'مع سائق / مشغل', labelEn: 'With Driver', type: 'select', required: false, options: ['مع سائق', 'بدون سائق', 'اختياري', OTHER] },
+  { key: 'kmLimit', labelAr: 'حد الكيلومترات اليومي', labelEn: 'Daily KM Limit', type: 'number', required: false },
+  { key: 'deposit', labelAr: 'مبلغ التأمين المسترد', labelEn: 'Refundable Deposit', type: 'number', required: false },
+  { key: 'deliveryArea', labelAr: 'منطقة التسليم', labelEn: 'Delivery Area', type: 'text', required: false },
+  { key: 'insurance', labelAr: 'تأمين شامل', labelEn: 'Full Insurance', type: 'boolean', required: false },
+  { key: 'rentalProvider', labelAr: 'الجهة المؤجّرة', labelEn: 'Rental Provider', type: 'select', required: false, options: RENTAL_PROVIDER },
+];
+
 export const MOTORS_SUBCATEGORY_FIELDS: Record<string, readonly CategoryFieldDef[]> = {
 
   motorbikes: [
@@ -60,4 +76,66 @@ export const MOTORS_SUBCATEGORY_FIELDS: Record<string, readonly CategoryFieldDef
     { key: 'material', labelAr: 'المادة', labelEn: 'Material', type: 'text', required: false },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', required: true, options: ['جديد', 'مستعمل - ممتاز', 'مستعمل - جيد', OTHER] },
   ],
+
+  cars_for_rent: [
+    { key: 'make', labelAr: 'الماركة', labelEn: 'Make', type: 'select', required: true, options: [] },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'select', required: false, options: [] },
+    { key: 'year', labelAr: 'السنة', labelEn: 'Year', type: 'number', required: true },
+    { key: 'color', labelAr: 'اللون', labelEn: 'Color', type: 'select', required: false, options: COLORS },
+    { key: 'transmission', labelAr: 'ناقل الحركة', labelEn: 'Transmission', type: 'select', required: false, options: ['أوتوماتيك', 'عادي', OTHER] },
+    { key: 'seats', labelAr: 'المقاعد', labelEn: 'Seats', type: 'number', required: false },
+    ...RENTAL_BASE_FIELDS,
+  ],
+
+  buses_for_rent: [
+    { key: 'busType', labelAr: 'نوع الباص', labelEn: 'Bus Type', type: 'select', required: true, options: ['ميني باص', 'كوستر', 'باص كبير', 'فان', 'باص مدرسة', 'باص موظفين', OTHER] },
+    { key: 'make', labelAr: 'الماركة', labelEn: 'Make', type: 'text', required: true },
+    { key: 'year', labelAr: 'السنة', labelEn: 'Year', type: 'number', required: true },
+    { key: 'seats', labelAr: 'عدد المقاعد', labelEn: 'Seats', type: 'number', required: false },
+    { key: 'ac', labelAr: 'مكيف', labelEn: 'AC', type: 'boolean', required: false },
+    ...RENTAL_BASE_FIELDS,
+  ],
+
+  bikes_for_rent: [
+    { key: 'make', labelAr: 'الماركة', labelEn: 'Make', type: 'select', required: true, options: [] },
+    { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'text', required: true },
+    { key: 'year', labelAr: 'السنة', labelEn: 'Year', type: 'number', required: true },
+    { key: 'bikeType', labelAr: 'نوع الدراجة', labelEn: 'Bike Type', type: 'select', required: true, options: ['رياضية', 'كروزر', 'سكوتر', 'طرق وعرة', OTHER] },
+    { key: 'engineCc', labelAr: 'سعة المحرك (cc)', labelEn: 'Engine (cc)', type: 'number', required: false },
+    { key: 'helmetIncluded', labelAr: 'خوذة مشمولة', labelEn: 'Helmet Included', type: 'boolean', required: false },
+    { key: 'licenseRequired', labelAr: 'يتطلب رخصة', labelEn: 'License Required', type: 'boolean', required: false },
+    ...RENTAL_BASE_FIELDS,
+  ],
+
+  heavy_for_rent: [
+    { key: 'equipmentType', labelAr: 'نوع الآلية', labelEn: 'Equipment Type', type: 'select', required: true, options: ['حفارة', 'بلدوزر', 'رافعة', 'كرين', 'جرار', 'لودر', OTHER] },
+    { key: 'make', labelAr: 'الماركة', labelEn: 'Make', type: 'text', required: true },
+    { key: 'year', labelAr: 'السنة', labelEn: 'Year', type: 'number', required: true },
+    { key: 'capacityTons', labelAr: 'الحمولة (طن)', labelEn: 'Capacity (tons)', type: 'number', required: false },
+    { key: 'withOperator', labelAr: 'مع مشغل', labelEn: 'With Operator', type: 'select', required: false, options: ['مع مشغل', 'بدون مشغل', OTHER] },
+    { key: 'siteDelivery', labelAr: 'نقل للموقع', labelEn: 'Site Delivery', type: 'boolean', required: false },
+    ...RENTAL_BASE_FIELDS,
+  ],
+
+  boats_for_rent: [
+    { key: 'boatType', labelAr: 'نوع القارب', labelEn: 'Boat Type', type: 'select', required: true, options: ['قارب', 'يخت', 'جت سكي', 'قارب صيد', OTHER] },
+    { key: 'boatMake', labelAr: 'الماركة', labelEn: 'Make', type: 'text', required: false },
+    { key: 'year', labelAr: 'السنة', labelEn: 'Year', type: 'number', required: false },
+    { key: 'lengthFt', labelAr: 'الطول (قدم)', labelEn: 'Length (ft)', type: 'number', required: false },
+    { key: 'capacity', labelAr: 'سعة الركاب', labelEn: 'Passenger Capacity', type: 'number', required: false },
+    { key: 'withCaptain', labelAr: 'مع قبطان', labelEn: 'With Captain', type: 'boolean', required: false },
+    ...RENTAL_BASE_FIELDS,
+  ],
+
+  atv_buggies: [
+    { key: 'vehicleType', labelAr: 'نوع المركبة', labelEn: 'Vehicle Type', type: 'select', required: true, options: ['ATV', 'UTV', 'باجي', 'دراجة طرق وعرة', OTHER] },
+    { key: 'make', labelAr: 'الماركة', labelEn: 'Make', type: 'text', required: false },
+    { key: 'year', labelAr: 'السنة', labelEn: 'Year', type: 'number', required: false },
+    { key: 'engineCc', labelAr: 'سعة المحرك (cc)', labelEn: 'Engine (cc)', type: 'number', required: false },
+    { key: 'seats', labelAr: 'عدد المقاعد', labelEn: 'Seats', type: 'number', required: false },
+    { key: 'fourWD', labelAr: 'دفع رباعي', labelEn: '4WD', type: 'boolean', required: false },
+    { key: 'streetLegal', labelAr: 'مرخصة للطرق', labelEn: 'Street Legal', type: 'boolean', required: false },
+    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', required: false, options: CONDITION },
+  ],
+
 };
