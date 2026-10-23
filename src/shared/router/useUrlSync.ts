@@ -52,7 +52,7 @@ export function useUrlSync(): void {
     const match = resolvePath(location.pathname);
     const pathCat = match?.params.category ?? null;
     const pathSub = match?.params.subcategory ?? null;
-    if ((match?.screen === 'main' && pathCat) || location.pathname === '/') {
+    if ((match?.screen === 'main' && pathCat && !['categories', 'messages', 'my-ads', 'explore'].includes(pathCat)) || location.pathname === '/') {
       const nextCat = location.pathname === '/' ? null : pathCat;
       const nextSub = location.pathname === '/' ? null : pathSub;
       if (store.categoryFilter !== nextCat || store.subcategoryFilter !== nextSub) {
