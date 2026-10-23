@@ -39,6 +39,11 @@ export default defineFeature({
     'computers-landing': { name: 'computers-landing', component: () => import('./screens/ComputersLandingScreen').then((m) => ({ default: m.ComputersLandingScreen })), guard: 'public' },
     'watches-landing': { name: 'watches-landing', component: () => import('./screens/WatchesLandingScreen').then((m) => ({ default: m.WatchesLandingScreen })), guard: 'public' },
     'sports-landing': { name: 'sports-landing', component: () => import('./screens/SportsLandingScreen').then((m) => ({ default: m.SportsLandingScreen })), guard: 'public' },
+    'furniture-landing': { name: 'furniture-landing', component: () => import('./screens/FurnitureLandingScreen').then((m) => ({ default: m.FurnitureLandingScreen })), guard: 'public' },
+    'fashion-landing': { name: 'fashion-landing', component: () => import('./screens/FashionLandingScreen').then((m) => ({ default: m.FashionLandingScreen })), guard: 'public' },
+    'beauty-landing': { name: 'beauty-landing', component: () => import('./screens/BeautyLandingScreen').then((m) => ({ default: m.BeautyLandingScreen })), guard: 'public' },
+    'cleaning-landing': { name: 'cleaning-landing', component: () => import('./screens/CleaningLandingScreen').then((m) => ({ default: m.CleaningLandingScreen })), guard: 'public' },
+    'home-garden-landing': { name: 'home-garden-landing', component: () => import('./screens/HomeGardenLandingScreen').then((m) => ({ default: m.HomeGardenLandingScreen })), guard: 'public' },
   },
   locales: {
     ar: () => import('./locales/ar.json').then((m) => ({ default: m.default })),
