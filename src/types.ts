@@ -5,6 +5,7 @@ export interface CategoryDef {
   nameEn: string;
   nameAr: string;
   asset: string;
+  landingScreen?: string;
 }
 
 export interface SubcategoryDef {
