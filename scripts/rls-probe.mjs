@@ -8,20 +8,34 @@
  *   3. Non-admin CAN INSERT with country_code = their profile market
  *   4. Non-admin cannot UPDATE country_code on their own listing (F1 trigger)
  *
- * Uses only the anon publishable key. Creates a fresh test user per run
- * (unique email). Exits 1 on any failure so CI turns red.
+ * HOW THE TEST USER IS CREATED:
+ *   We use the Admin API (`auth.admin.createUser` with `email_confirm: true`).
+ *   This bypasses the email confirmation flow entirely — no email is sent,
+ *   so the built-in SMTP rate limit (2 emails/hour) is never touched.
  *
- * NOTE: Supabase rejects reserved TLDs like `.local` and `.test` at signup.
- * We use `example.com` (RFC 2606, real TLD, no deliverability needed).
+ *   The previous signUp() approach failed with "email rate limit exceeded"
+ *   on the second CI run because Supabase's built-in email provider allows
+ *   only ~2 auth emails per hour per project.
+ *
+ * REQUIRED ENV:
+ *   SB_URL                 — Supabase project URL
+ *   SB_ANON                — anon publishable key (for RLS-scoped operations)
+ *   SB_SERVICE_ROLE_KEY    — service_role key (for admin.createUser only)
  */
 
 import { createClient } from '@supabase/supabase-js';
 
 const URL = process.env.SB_URL;
 const ANON = process.env.SB_ANON;
+const SERVICE_ROLE = process.env.SB_SERVICE_ROLE_KEY;
 
 if (!URL || !ANON) {
   console.error('[rls-probe] Missing SB_URL or SB_ANON');
+  process.exit(1);
+}
+if (!SERVICE_ROLE) {
+  console.error('[rls-probe] Missing SB_SERVICE_ROLE_KEY');
+  console.error('Add it as a GitHub Actions secret: Settings → Secrets → Actions');
   process.exit(1);
 }
 
@@ -29,10 +43,17 @@ const runId = process.env.GITHUB_RUN_ID || String(Date.now());
 const email = `rls-probe-${runId}@example.com`;
 const password = `RlsProbe-${runId}-Aa1!`;
 
+// Admin client: used only to create/delete the test user.
+const admin = createClient(URL, SERVICE_ROLE, {
+  auth: { autoRefreshToken: false, persistSession: false },
+});
+
+// User client: used for all RLS-scoped operations (INSERT, UPDATE, DELETE).
 const supabase = createClient(URL, ANON, {
   auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
 });
 
+let userId = null;
 let createdListingId = null;
 let failures = 0;
 
@@ -43,45 +64,30 @@ const fail = (label, detail) => {
   failures += 1;
 };
 
-async function ensureSession() {
-  // Try signup first.
-  const up = await supabase.auth.signUp({ email, password });
-  if (up.error) {
-    // Fall through to sign-in (handles the "already registered" case).
-    console.log(`INFO: signUp returned error, trying sign-in — ${up.error.message}`);
-    const inn = await supabase.auth.signInWithPassword({ email, password });
-    if (inn.error) {
-      throw new Error(`signup+signin both failed — signUp: ${up.error.message}; signIn: ${inn.error.message}`);
-    }
-    if (!inn.data.session) {
-      throw new Error('signIn returned no session — is email confirmation required?');
-    }
-    return inn.data;
-  }
-  if (up.data.session) return up.data;
-
-  // No session from signup — try sign-in (account may already be confirmed).
-  const inn = await supabase.auth.signInWithPassword({ email, password });
-  if (inn.error || !inn.data.session) {
-    throw new Error(
-      `signUp returned no session and signIn failed — ${inn.error?.message || 'no session'}. ` +
-      'Fix: set Supabase Auth → Email → Confirm email = OFF, OR use service_role key.'
-    );
-  }
-  return inn.data;
-}
-
 async function main() {
-  // ---- Setup: sign up (or sign in) a fresh test user ----
-  let auth;
-  try {
-    auth = await ensureSession();
-  } catch (err) {
-    fail('setup: sign up/in', err instanceof Error ? err.message : String(err));
+  // ---- Setup: create user via Admin API (no email sent, no rate limit) ----
+  const createRes = await admin.auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true, // bypass confirmation — no email is sent
+    user_metadata: { source: 'ci-rls-probe' },
+  });
+
+  if (createRes.error) {
+    fail('setup: admin.createUser', createRes.error.message);
     process.exit(1);
   }
-  const userId = auth.user.id;
-  console.log(`INFO: test user = ${userId}`);
+  userId = createRes.data.user.id;
+  console.log(`INFO: test user created = ${userId}`);
+
+  // ---- Setup: sign in to obtain a real user session (anon key) ----
+  const signIn = await supabase.auth.signInWithPassword({ email, password });
+  if (signIn.error || !signIn.data.session) {
+    fail('setup: signIn', signIn.error?.message || 'no session');
+    await admin.auth.admin.deleteUser(userId).catch(() => {});
+    process.exit(1);
+  }
+  console.log('INFO: user session acquired');
 
   // ---- Setup: set phone + country_code on profile ----
   const setup = await supabase
@@ -90,6 +96,7 @@ async function main() {
     .eq('id', userId);
   if (setup.error) {
     fail('setup: profile update', setup.error.message);
+    await admin.auth.admin.deleteUser(userId).catch(() => {});
     process.exit(1);
   }
 
@@ -144,12 +151,14 @@ async function main() {
     fail('UPDATE country_code blocked by trigger', 'No listing created in step 3');
   }
 
-  // ---- Cleanup ----
+  // ---- Cleanup: delete listing, then the user (cascades to profile) ----
   if (createdListingId) {
     const { error } = await supabase.from('listings').delete().eq('id', createdListingId);
-    if (error) console.warn(`WARN: cleanup delete failed — ${error.message}`);
+    if (error) console.warn(`WARN: cleanup listing delete failed — ${error.message}`);
   }
   await supabase.auth.signOut();
+  const del = await admin.auth.admin.deleteUser(userId);
+  if (del.error) console.warn(`WARN: cleanup user delete failed — ${del.error.message}`);
 
   if (failures > 0) {
     console.error(`\n${failures} RLS probe(s) FAILED`);
