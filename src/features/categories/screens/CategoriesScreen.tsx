@@ -13,7 +13,8 @@ export const CategoriesScreen: React.FC = () => {
 
   const handleSelectPrimaryCategory = useCallback((catSlug: string) => {
     setSelectedParentCategory(catSlug);
-    navigateTo('sub-categories');
+    const cat = categories.find((c) => c.slug === catSlug);
+    navigateTo(cat?.landingScreen || 'sub-categories');
   }, [setSelectedParentCategory, navigateTo]);
 
   const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement, Event>) => {
