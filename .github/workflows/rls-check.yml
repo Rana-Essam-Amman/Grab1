@@ -16,10 +16,22 @@ permissions:
 
 jobs:
   rls:
-    name: Anon read blocks
+    name: RLS probes
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
       - name: Anon cannot read non-active listings
         env:
           SB_URL: https://wmchqotsforwcoxilaeo.supabase.co
@@ -84,14 +96,9 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Minimal JPEG magic header so the storage mime check passes
-          # and RLS is the layer that denies. Prevents a false pass where
-          # the request fails earlier for the wrong reason.
           PAYLOAD=$(mktemp)
           printf '\xff\xd8\xff\xe0\x00\x10JFIF' > "$PAYLOAD"
 
-          # Distinct probe path — never a real user folder, so a false
-          # pass cannot collide with real uploads.
           PROBE_PATH="rls-check-ci-probe-${{ github.run_id }}.jpg"
 
           RESP=$(curl -s -w "\n%{http_code}" \
@@ -113,3 +120,9 @@ jobs:
             exit 1
           fi
           echo "PASS: anon blocked from uploading to listing-images (HTTP $CODE)"
+
+      - name: Authenticated market-integrity probes
+        env:
+          SB_URL: https://wmchqotsforwcoxilaeo.supabase.co
+          SB_ANON: sb_publishable_G_g0UzFu8SGDynrUPIF8Qw_TFb3GTTj
+        run: node scripts/rls-probe.mjs
