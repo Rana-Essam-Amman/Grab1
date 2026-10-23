@@ -125,4 +125,5 @@ jobs:
         env:
           SB_URL: https://wmchqotsforwcoxilaeo.supabase.co
           SB_ANON: sb_publishable_G_g0UzFu8SGDynrUPIF8Qw_TFb3GTTj
+          SB_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: node scripts/rls-probe.mjs
