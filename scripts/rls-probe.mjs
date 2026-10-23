@@ -8,15 +8,14 @@
  *   3. Non-admin CAN INSERT with country_code = their profile market
  *   4. Non-admin cannot UPDATE country_code on their own listing (F1 trigger)
  *
- * PROFILE SETUP:
- *   The `profiles` row is created/updated via the ADMIN client (service_role),
- *   not the user session. The profile setup is a FIXTURE, not the thing being
- *   tested. Using service_role avoids depending on the `authenticated` role's
- *   GRANT on the profiles table, which is not guaranteed to exist on every
- *   environment and is unrelated to the listings RLS we actually test.
+ * FIXTURE REQUIREMENTS (schema `public.listings`):
+ *   NOT NULL columns without default: user_id, title, description, price,
+ *   city, category_slug. All six must be supplied by every INSERT or Postgres
+ *   rejects the row before RLS is evaluated.
  *
- *   The listings INSERT/UPDATE probes still run with the USER session (anon key),
- *   so RLS policies on listings are exercised correctly.
+ * PROFILE SETUP:
+ *   The `profiles` row is written via the ADMIN client (service_role), not
+ *   the user session. The profile is a FIXTURE, not the object under test.
  *
  * REQUIRED ENV:
  *   SB_URL                 — Supabase project URL
@@ -92,9 +91,6 @@ async function main() {
   console.log('INFO: user session acquired');
 
   // ---- Setup: upsert the profile row via the ADMIN client ----
-  // Rationale: profile fixture is not what we are testing. Using service_role
-  // avoids depending on `authenticated`'s GRANT on profiles, which we do not
-  // control in this test and which is orthogonal to the listings RLS probes.
   const setup = await admin
     .from('profiles')
     .upsert(
@@ -108,10 +104,14 @@ async function main() {
   }
   console.log('INFO: profile fixture written');
 
+  // All NOT NULL listings columns that have no default must be present.
+  // title is added per-probe for clarity; the rest are stable across probes.
   const base = {
     user_id: userId,
     description: 'RLS probe listing. Auto-created by CI.',
     price: 1,
+    city: 'Amman',
+    category_slug: 'electronics',
   };
 
   // ---- 1: INSERT with NULL country_code → expect 4xx ----
