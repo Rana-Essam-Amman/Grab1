@@ -40,11 +40,13 @@ describe('Button Primitive Component', () => {
   });
 
   it('renders sm, md, and lg sizes correctly', () => {
+    // a11y: sm and md both use h-11 (44px) to meet Apple HIG / Material minimum.
+    // lg remains h-12 (48px) which also meets the minimum.
     const { unmount, rerender } = renderWithProviders(<Button size="sm">Small</Button>);
-    expect(screen.getByRole('button', { name: /small/i })).toHaveClass('h-8');
+    expect(screen.getByRole('button', { name: /small/i })).toHaveClass('h-11');
 
     rerender(<Button size="md">Medium</Button>);
-    expect(screen.getByRole('button', { name: /medium/i })).toHaveClass('h-10');
+    expect(screen.getByRole('button', { name: /medium/i })).toHaveClass('h-11');
 
     rerender(<Button size="lg">Large</Button>);
     expect(screen.getByRole('button', { name: /large/i })).toHaveClass('h-12');
