@@ -154,7 +154,12 @@ export interface UserProfile {
   nickname?: string;
   email: string;
   phone: string;
-  countryCode: string;
+  /**
+   * F5 fix: optional because hydrateProfile may set this to undefined when
+   * the database returns NULL, clearing any stale persisted value. Consumers
+   * must treat it as "unknown" when absent, not as a required market.
+   */
+  countryCode?: string;
   avatarUrl?: string;
   avatar?: string;
   browseMarket?: 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | null;
