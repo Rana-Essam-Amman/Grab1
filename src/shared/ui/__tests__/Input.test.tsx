@@ -97,11 +97,13 @@ describe('Input Primitive Component', () => {
   });
 
   it('renders sm, md, and lg sizes correctly', () => {
+    // a11y: sm and md both use h-11 (44px) to meet Apple HIG / Material minimum.
+    // lg remains h-12 (48px) which also meets the minimum.
     const { rerender } = renderWithProviders(<Input size="sm" placeholder="sm" />);
-    expect(screen.getByPlaceholderText('sm')).toHaveClass('h-8');
+    expect(screen.getByPlaceholderText('sm')).toHaveClass('h-11');
 
     rerender(<Input size="md" placeholder="md" />);
-    expect(screen.getByPlaceholderText('md')).toHaveClass('h-10');
+    expect(screen.getByPlaceholderText('md')).toHaveClass('h-11');
 
     rerender(<Input size="lg" placeholder="lg" />);
     expect(screen.getByPlaceholderText('lg')).toHaveClass('h-12');
