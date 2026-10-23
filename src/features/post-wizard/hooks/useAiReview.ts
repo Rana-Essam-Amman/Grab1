@@ -23,7 +23,7 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
   const [error, setError] = useState<string | null>(null);
   const photos = postDraft.photos || [];
   const neighborhood = postDraft.neighborhood || '';
-  const attributes = useAiReviewAttributes(postDraft.categorySlug, postDraft.generated?.fields || [], isArabic);
+  const attributes = useAiReviewAttributes(postDraft.categorySlug, postDraft.generated?.fields || [], isArabic, postDraft.subcategorySlug);
   const setAttributeValue = (key: string, value: string) => {
     const schema = getListingFields(postDraft.categorySlug, postDraft.subcategorySlug);
     const current = postDraft.generated?.fields ?? schema.map((f) => ({ key: f.key, label: f.labelAr, value: '' }));
