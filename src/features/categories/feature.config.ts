@@ -34,6 +34,11 @@ export default defineFeature({
       component: () => import('./screens/ProjectsLandingScreen').then((m) => ({ default: m.ProjectsLandingScreen })),
       guard: 'public',
     },
+    'mobiles-landing': { name: 'mobiles-landing', component: () => import('./screens/MobilesLandingScreen').then((m) => ({ default: m.MobilesLandingScreen })), guard: 'public' },
+    'electronics-landing': { name: 'electronics-landing', component: () => import('./screens/ElectronicsLandingScreen').then((m) => ({ default: m.ElectronicsLandingScreen })), guard: 'public' },
+    'computers-landing': { name: 'computers-landing', component: () => import('./screens/ComputersLandingScreen').then((m) => ({ default: m.ComputersLandingScreen })), guard: 'public' },
+    'watches-landing': { name: 'watches-landing', component: () => import('./screens/WatchesLandingScreen').then((m) => ({ default: m.WatchesLandingScreen })), guard: 'public' },
+    'sports-landing': { name: 'sports-landing', component: () => import('./screens/SportsLandingScreen').then((m) => ({ default: m.SportsLandingScreen })), guard: 'public' },
   },
   locales: {
     ar: () => import('./locales/ar.json').then((m) => ({ default: m.default })),
