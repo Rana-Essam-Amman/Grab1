@@ -17,17 +17,20 @@ export const WhatsAppIntentSheet: React.FC<WhatsAppIntentSheetProps> = ({
   open, listing, isArabic, onClose, onPick, onWriteOwn,
 }) => {
   const intents = getWhatsAppIntents(listing.countryCode, isArabic);
-  const hasPhone = Boolean(listing.sellerPhone);
   const Arrow = isArabic ? ArrowLeft2 : ArrowRight2;
 
+  // NOTE: seller_phone is intentionally NULL on the client for security.
+  // The real number is fetched via get_listing_phone RPC when the user
+  // taps an intent. Do NOT gate the buttons on listing.sellerPhone —
+  // it will always be empty here and would block all WhatsApp contact.
   return (
     <Sheet open={open} onClose={onClose} title={isArabic ? 'تواصل عبر واتساب' : 'Contact via WhatsApp'}>
       <div className="flex flex-col gap-2.5 pb-2" dir={isArabic ? 'rtl' : 'ltr'}>
-        {/* Trust row */}
+        {/* Trust row — number is revealed server-side on selection */}
         <div className="flex items-center gap-2 text-xs text-ink-muted px-1">
           <span className="flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-success" />
-            <span>{hasPhone ? (isArabic ? 'رقم موثّق' : 'Verified number') : (isArabic ? 'بدون رقم' : 'No number')}</span>
+            <span>{isArabic ? 'الرقم سيُكشف عند اختيار الرسالة' : 'Number revealed when you pick a message'}</span>
           </span>
           {listing.isPremium && (
             <>
@@ -43,8 +46,7 @@ export const WhatsAppIntentSheet: React.FC<WhatsAppIntentSheetProps> = ({
             key={intent.id}
             type="button"
             onClick={() => onPick(intent)}
-            disabled={!hasPhone}
-            className="w-full px-4 py-3.5 rounded-2xl bg-success/10 border border-success/30 hover:bg-success/15 active:scale-[0.99] transition-all text-start flex items-center justify-between gap-3 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            className="w-full px-4 py-3.5 rounded-2xl bg-success/10 border border-success/30 hover:bg-success/15 active:scale-[0.99] transition-all text-start flex items-center justify-between gap-3 cursor-pointer"
           >
             <span className="flex flex-col gap-0.5 min-w-0">
               <span className="text-sm font-bold text-ink">{intent.label}</span>
@@ -58,8 +60,7 @@ export const WhatsAppIntentSheet: React.FC<WhatsAppIntentSheetProps> = ({
         <button
           type="button"
           onClick={onWriteOwn}
-          disabled={!hasPhone}
-          className="w-full px-4 py-3.5 rounded-2xl bg-surface border border-border hover:bg-canvas active:scale-[0.99] transition-all flex items-center justify-between gap-3 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+          className="w-full px-4 py-3.5 rounded-2xl bg-surface border border-border hover:bg-canvas active:scale-[0.99] transition-all flex items-center justify-between gap-3 cursor-pointer"
         >
           <span className="flex items-center gap-2.5">
             <Edit2 size={16} variant="Linear" className="text-ink-muted" />
