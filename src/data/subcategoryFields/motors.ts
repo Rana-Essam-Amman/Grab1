@@ -138,4 +138,30 @@ export const MOTORS_SUBCATEGORY_FIELDS: Record<string, readonly CategoryFieldDef
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', required: false, options: CONDITION },
   ],
 
+  buses: [
+    { key: 'busType', labelAr: 'نوع الباص', labelEn: 'Bus Type', type: 'select', required: true, options: ['ميني باص', 'كوستر', 'باص كبير', 'فان', 'باص مدرسة', 'باص موظفين', OTHER] },
+    { key: 'make', labelAr: 'الماركة', labelEn: 'Make', type: 'text', required: true },
+    { key: 'year', labelAr: 'السنة', labelEn: 'Year', type: 'number', required: true },
+    { key: 'seats', labelAr: 'عدد المقاعد', labelEn: 'Seats', type: 'number', required: false },
+    { key: 'km', labelAr: 'العداد (كم)', labelEn: 'Mileage (km)', type: 'number', required: false },
+    { key: 'ac', labelAr: 'مكيف', labelEn: 'AC', type: 'boolean', required: false },
+    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', required: false, options: CONDITION },
+  ],
+
+  'motorcycle-gear': [
+    { key: 'gearType', labelAr: 'نوع الإكسسوار', labelEn: 'Gear Type', type: 'select', required: true, options: ['خوذة', 'جاكيت', 'قفازات', 'أحذية', 'بنطال', 'إكسسوارات أخرى', OTHER] },
+    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'text', required: false, placeholder: 'Shoei, Alpinestars, Dainese...' },
+    { key: 'size', labelAr: 'المقاس', labelEn: 'Size', type: 'text', required: false },
+    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', required: true, options: CONDITION },
+    { key: 'gender', labelAr: 'النوع', labelEn: 'Gender', type: 'select', required: false, options: ['رجالي', 'نسائي', 'للجنسين', OTHER] },
+  ],
+
+  'heavy-equipment': [
+    { key: 'equipmentType', labelAr: 'نوع المعدة', labelEn: 'Equipment Type', type: 'select', required: true, options: ['حفارة', 'بلدوزر', 'لودر / شيول', 'جريدر', 'رافعة شوكية', 'رافعة / كرين', 'دبابة / قلاب', OTHER] },
+    { key: 'make', labelAr: 'الماركة', labelEn: 'Make', type: 'text', required: true, placeholder: 'Caterpillar, Komatsu...' },
+    { key: 'year', labelAr: 'السنة', labelEn: 'Year', type: 'number', required: true },
+    { key: 'hours', labelAr: 'ساعات العمل', labelEn: 'Working Hours', type: 'number', required: false },
+    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', required: false, options: CONDITION },
+  ],
+
 };
