@@ -56,13 +56,13 @@
     font-weight: 500;
   }
 
-  /* Global utility overrides for exact grey background floor */
-
-
-  /* Arabic font override */
-  [dir="rtl"] {
-    font-family: 'Cairo', 'Tajawal', sans-serif;
-  }
+  /*
+    RTL note: the previous `[dir="rtl"] { font-family: 'Cairo', 'Tajawal' }`
+    override was removed because Cairo/Tajawal are not loaded by index.html.
+    It caused Arabic text to fall back to the system font while IBM Plex Sans
+    Arabic (which IS loaded) was never used. `body` now handles both
+    directions via `--font-arabic`, so Arabic consistently renders in IBM Plex.
+  */
 
   /* Main Section Headers: 18px-19px Bold, Dark Charcoal/Black */
 }
