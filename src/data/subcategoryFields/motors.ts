@@ -7,15 +7,6 @@ const CONDITION = ['جديد', 'مستعمل - ممتاز', 'مستعمل - جي
 const RENTAL_DURATION = ['يومي', 'أسبوعي', 'شهري', 'سنوي', OTHER];
 const RENTAL_PROVIDER = ['شركة تأجير', 'فرد', OTHER];
 
-const CARS_BASE_FIELDS: readonly CategoryFieldDef[] = [
-  { key: 'make', labelAr: 'الماركة', labelEn: 'Make', type: 'select', required: true, options: [] },
-  { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'select', required: false, options: [] },
-  { key: 'year', labelAr: 'السنة', labelEn: 'Year', type: 'number', required: true },
-  { key: 'km', labelAr: 'العداد (كم)', labelEn: 'Mileage (km)', type: 'number', required: true },
-  { key: 'color', labelAr: 'اللون', labelEn: 'Color', type: 'select', required: true, options: COLORS },
-  { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', required: true, options: CONDITION },
-];
-
 const RENTAL_BASE_FIELDS: readonly CategoryFieldDef[] = [
   { key: 'rentalDuration', labelAr: 'مدة الإيجار', labelEn: 'Rental Duration', type: 'select', required: true, options: RENTAL_DURATION },
   { key: 'dailyRate', labelAr: 'السعر اليومي', labelEn: 'Daily Rate', type: 'number', required: false },
@@ -30,11 +21,6 @@ const RENTAL_BASE_FIELDS: readonly CategoryFieldDef[] = [
 ];
 
 export const MOTORS_SUBCATEGORY_FIELDS: Record<string, readonly CategoryFieldDef[]> = {
-
-  cars: CARS_BASE_FIELDS,
-  classic_cars: CARS_BASE_FIELDS,
-  damaged_cars: CARS_BASE_FIELDS,
-  lease_transfer: CARS_BASE_FIELDS,
 
   motorbikes: [
     { key: 'make', labelAr: 'الماركة', labelEn: 'Make', type: 'select', required: true, options: [] },
