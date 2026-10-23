@@ -156,6 +156,35 @@ export const subcategories: Record<string, SubcategoryDef[]> = {
     { slug: 'glass', nameEn: 'Glass & Mirrors', nameAr: 'زجاج ومرايا' },
     { slug: 'furniture-assembly', nameEn: 'Furniture Assembly', nameAr: 'تركيب أثاث' },
     { slug: 'general', nameEn: 'General Maintenance', nameAr: 'صيانة عامة' },
+    { slug: 'car-mechanic', nameEn: 'Car Mechanic', nameAr: 'ميكانيكي سيارات' },
+    { slug: 'car-electrician', nameEn: 'Car Electrician', nameAr: 'كهربائي سيارات' },
+    { slug: 'tire-repair', nameEn: 'Tire & Puncture Repair', nameAr: 'بنشر وإصلاح إطارات' },
+    { slug: 'car-wash-detailing', nameEn: 'Car Wash & Detailing', nameAr: 'غسيل وتلميع سيارات' },
+    { slug: 'cctv-installation', nameEn: 'CCTV & Security', nameAr: 'كاميرات مراقبة وأنظمة أمان' },
+    { slug: 'satellite-dish', nameEn: 'Satellite & Dish', nameAr: 'ستالايت ورسيفر' },
+    { slug: 'network-it', nameEn: 'Network & IT Setup', nameAr: 'شبكات وواي فاي' },
+    { slug: 'elevator-maintenance', nameEn: 'Elevator Maintenance', nameAr: 'صيانة مصاعد' },
+    { slug: 'solar-panels', nameEn: 'Solar Panel Installation', nameAr: 'تركيب وصيانة ألواح شمسية' },
+    { slug: 'generator-repair', nameEn: 'Generator Repair', nameAr: 'صيانة مولدات كهرباء' },
+    { slug: 'curtains-blinds', nameEn: 'Curtains & Blinds', nameAr: 'تركيب ستائر وبرادي' },
+    { slug: 'pest-control', nameEn: 'Pest Control', nameAr: 'مكافحة حشرات' },
+    { slug: 'pool-maintenance', nameEn: 'Pool Maintenance', nameAr: 'صيانة مسابح' },
+    { slug: 'gardening', nameEn: 'Gardening & Landscaping', nameAr: 'بستنة وتقليم أشجار' },
+    { slug: 'phone-repair', nameEn: 'Mobile Phone Repair', nameAr: 'صيانة هواتف محمولة' },
+    { slug: 'computer-repair', nameEn: 'Computer Repair', nameAr: 'صيانة كمبيوتر ولابتوب' },
+    { slug: 'bike-repair', nameEn: 'Bicycle Repair', nameAr: 'صيانة دراجات هوائية' },
+    { slug: 'motorcycle-repair', nameEn: 'Motorcycle Repair', nameAr: 'صيانة دراجات نارية' },
+    { slug: 'wood-oven', nameEn: 'Wood Oven & Taboon', nameAr: 'صيانة أفران حطب وتنور' },
+    { slug: 'waterproofing', nameEn: 'Waterproofing & Roofing', nameAr: 'عزل أسطح وخزانات' },
+    { slug: 'interior-designer', nameEn: 'Interior Design', nameAr: 'ديكور وتصميم داخلي' },
+    { slug: 'mason', nameEn: 'Masonry & Bricklaying', nameAr: 'بنّاء وطوب' },
+    { slug: 'upholstery', nameEn: 'Upholstery & Curtains', nameAr: 'تنجيد كنب وستائر' },
+    { slug: 'tailor', nameEn: 'Tailoring & Alterations', nameAr: 'خياط وتعديل ملابس' },
+    { slug: 'shoe-repair', nameEn: 'Shoe Repair', nameAr: 'إصلاح أحذية' },
+    { slug: 'watch-repair', nameEn: 'Watch Repair', nameAr: 'صيانة ساعات' },
+    { slug: 'sign-maker', nameEn: 'Signs & Banners', nameAr: 'لافتات ولوحات إعلانية' },
+    { slug: 'fire-safety', nameEn: 'Fire Safety Systems', nameAr: 'أنظمة إطفاء وإنذار' },
+    { slug: 'intercom', nameEn: 'Intercom & Smart Locks', nameAr: 'إنتركم وأقفال ذكية' },
   ],
   projects: [
     { slug: 'restaurant', nameEn: 'Restaurant & Cafe', nameAr: 'مطعم أو كافيه' },
@@ -186,4 +215,4 @@ export function findSubcategoryBySlug(slug: string): SubcategoryDef | undefined 
     if (found) return found;
   }
   return undefined;
-}
+                                        }
