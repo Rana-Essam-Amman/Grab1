@@ -46,6 +46,7 @@ const STATIC_SCREEN_TO_PATH: Record<string, string> = {
   'motors-landing': '/motors-landing',
   'handymen-landing': '/handymen-landing',
   'real-estate-landing': '/real-estate-landing',
+  'projects-landing': '/projects-landing',
   'post-ad-entry': '/post-ad',
   'post-category': '/post-ad/category',
   'post-category-pick': '/post-ad/category-pick',
