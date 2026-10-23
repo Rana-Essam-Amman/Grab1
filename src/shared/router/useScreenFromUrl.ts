@@ -1,6 +1,7 @@
 import { useLocation } from 'react-router-dom';
 import { resolvePath } from './paths';
 import { pathToTab } from './tabPaths';
+import { useUIStore } from '@/store/ui.slice';
 import type { ScreenType, TabType } from '@/store/ui.slice.types';
 
 /**
@@ -19,6 +20,7 @@ export function useScreenFromUrl(): {
   readonly activeTab: TabType;
 } {
   const location = useLocation();
+  const storeTab = useUIStore((s) => s.activeTab);
 
   const tab = pathToTab(location.pathname);
   if (tab) {
@@ -27,8 +29,8 @@ export function useScreenFromUrl(): {
 
   const match = resolvePath(location.pathname);
   if (match) {
-    return { currentScreen: match.screen, activeTab: 'explore' };
+    return { currentScreen: match.screen, activeTab: match.screen === 'main' ? storeTab : 'explore' };
   }
 
-  return { currentScreen: 'main', activeTab: 'explore' };
+  return { currentScreen: 'main', activeTab: storeTab };
 }
