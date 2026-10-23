@@ -35,7 +35,13 @@ export function usePostDetails() {
   const setField = useCallback((k: string, v: string) => setValues(p => ({ ...p, [k]: v })), []);
   const missing = fields.filter(f => f.required && !(values[f.key] || '').trim()).map(f => isArabic ? f.labelAr : f.labelEn);
   const hasLocation = Boolean(postDraft.city?.trim());
-  const canContinue = title.trim().length >= 5 && price.trim().length > 0 && !isNaN(Number(price)) && Number(price) > 0 && missing.length === 0 && hasLocation;
+
+  // F7 fix: Number.isFinite subsumes !isNaN and additionally rejects
+  // Infinity / -Infinity / "1e500". A user could previously bypass the
+  // price check with "Infinity" and it would pass `> 0`.
+  const priceNum = Number(price);
+  const isPriceValid = price.trim().length > 0 && Number.isFinite(priceNum) && priceNum > 0;
+  const canContinue = title.trim().length >= 5 && isPriceValid && missing.length === 0 && hasLocation;
 
   const handleContinue = async () => {
     setSubmitAttempted(true);
@@ -65,4 +71,4 @@ export function usePostDetails() {
   };
 
   return { title, setTitle, price, setPrice, description, setDescription, values, setField, fields, missingRequired: missing, canContinue, handleContinue, isArabic, submitAttempted, isPublishing, error };
-                                        }
+                                                                           }
