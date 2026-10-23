@@ -3,6 +3,15 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PostAdEntryScreen } from '../PostAdEntryScreen';
 import { toast } from 'sonner';
 
+// Mock @iconify/react: it schedules async work that touches `window` inside
+// React's scheduler callback (getCurrentEventPriority). That callback fires
+// after Vitest tears down jsdom for this file, producing
+// "ReferenceError: window is not defined" as an unhandled error and failing
+// the Quality job even though all test assertions pass.
+vi.mock('@iconify/react', () => ({
+  Icon: ({ icon }: { icon: string }) => <span data-testid="icon" data-icon={icon} />,
+}));
+
 const mockNavigateTo = vi.fn();
 const mockSetActiveTab = vi.fn();
 const mockGoBack = vi.fn();
@@ -123,7 +132,7 @@ describe('PostAdEntryScreen', () => {
     mockUserCountryCode = 'JO';
     mockBrowseCountryCode = 'LB';
     mockIsArabic = true;
-    
+
     // Force the update to fail
     mockUpdateUserMarket.mockResolvedValueOnce(false);
 
