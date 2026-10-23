@@ -14,6 +14,11 @@ export default defineFeature({
       component: () => import('./screens/SubCategoriesScreen').then((m) => ({ default: m.SubCategoriesScreen })),
       guard: 'public',
     },
+    'handymen-landing': {
+      name: 'handymen-landing',
+      component: () => import('./screens/HandymenLandingScreen').then((m) => ({ default: m.HandymenLandingScreen })),
+      guard: 'public',
+    },
   },
   locales: {
     ar: () => import('./locales/ar.json').then((m) => ({ default: m.default })),
