@@ -5,6 +5,12 @@ export const subcategories: Record<string, SubcategoryDef[]> = {
     { slug: 'cars', nameEn: 'Cars for Sale', nameAr: 'سيارات للبيع' },
     { slug: 'classic_cars', nameEn: 'Classic Cars', nameAr: 'سيارات تراثية (كلاسيك)' },
     { slug: 'damaged_cars', nameEn: 'Damaged Cars', nameAr: 'سيارات مصدومة' },
+    { slug: 'cars_for_rent', nameEn: 'Cars for Rent', nameAr: 'سيارات للإيجار' },
+    { slug: 'buses_for_rent', nameEn: 'Buses & Vans for Rent', nameAr: 'باصات وفانات للإيجار' },
+    { slug: 'bikes_for_rent', nameEn: 'Motorcycles for Rent', nameAr: 'دراجات نارية للإيجار' },
+    { slug: 'heavy_for_rent', nameEn: 'Heavy Equipment for Rent', nameAr: 'آليات ثقيلة للإيجار' },
+    { slug: 'boats_for_rent', nameEn: 'Boats & Jet Skis for Rent', nameAr: 'قوارب وجت سكي للإيجار' },
+    { slug: 'atv_buggies', nameEn: 'ATVs & Buggies', nameAr: 'دراجات رباعية ودبابات' },
     { slug: 'lease_transfer', nameEn: 'Lease Transfer', nameAr: 'سيارات للتنازل (مقسطة)' },
     { slug: 'motorbikes', nameEn: 'Motorcycles & Scooters', nameAr: 'دراجات وسكوتر' },
     { slug: 'heavy', nameEn: 'Heavy Vehicles & Trucks', nameAr: 'شاحنات وآليات ثقيلة' },
@@ -215,4 +221,4 @@ export function findSubcategoryBySlug(slug: string): SubcategoryDef | undefined 
     if (found) return found;
   }
   return undefined;
-                                        }
+    }
