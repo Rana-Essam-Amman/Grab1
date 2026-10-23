@@ -90,7 +90,6 @@ const DIGITS_OPTIONS: ListingFieldOption[] = [
   { value: '4', labelAr: '4 أرقام', labelEn: '4 Digits' }, { value: '5', labelAr: '5 أرقام', labelEn: '5 Digits' }, { value: '6', labelAr: '6 أرقام', labelEn: '6 Digits' },
 ];
 
-// ── Car Fields (Shared by cars, classic_cars, damaged_cars, lease_transfer) ──
 const CARS_FIELDS = [
   { key: 'make', labelAr: 'الماركة', labelEn: 'Make', type: 'select' as const, allowOther: true, required: true, options: getBrandOptions() },
   { key: 'model', labelAr: 'الموديل', labelEn: 'Model', type: 'cascading-model' as const, dependsOn: 'make', required: true, placeholder: 'Camry, X5...' },
@@ -110,7 +109,6 @@ const CARS_FIELDS = [
   { key: 'installment', labelAr: 'متوفر تقسيط', labelEn: 'Installment Available', type: 'boolean' as const, required: false },
 ];
 
-// ── Rental Fields (Shared by all rental subcategories) ──
 const RENTAL_FIELDS = [
   { key: 'rentalDuration', labelAr: 'مدة الإيجار المتاحة', labelEn: 'Available Rental Duration', type: 'select' as const, allowOther: true, multiSelect: true, required: true, options: [
     { value: 'daily', labelAr: 'يومي', labelEn: 'Daily' },
@@ -205,6 +203,55 @@ export const MOTORS_FIELDS: CategoryFieldMap = {
     { key: 'seats', labelAr: 'عدد المقاعد', labelEn: 'Seats', type: 'number', required: false, placeholder: '2' },
     { key: 'fourWD', labelAr: 'دفع رباعي', labelEn: '4WD', type: 'boolean', required: false },
     { key: 'streetLegal', labelAr: 'مرخصة للطرق', labelEn: 'Street Legal', type: 'boolean', required: false },
+    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: false, options: CONDITION_OPTIONS },
+  ],
+  buses: [
+    { key: 'busType', labelAr: 'نوع الباص', labelEn: 'Bus Type', type: 'select', allowOther: true, required: true, options: [
+      { value: 'mini_bus', labelAr: 'ميني باص', labelEn: 'Mini Bus' },
+      { value: 'coaster', labelAr: 'كوستر', labelEn: 'Coaster' },
+      { value: 'large_bus', labelAr: 'باص كبير', labelEn: 'Large Bus' },
+      { value: 'van', labelAr: 'فان', labelEn: 'Van' },
+      { value: 'school_bus', labelAr: 'باص مدرسة', labelEn: 'School Bus' },
+      { value: 'staff_bus', labelAr: 'باص موظفين', labelEn: 'Staff Bus' },
+    ]},
+    { key: 'make', labelAr: 'الماركة', labelEn: 'Make', type: 'text', required: true, placeholder: 'Toyota, Mercedes, Hino...' },
+    { key: 'year', labelAr: 'السنة', labelEn: 'Year', type: 'select', allowOther: true, required: true, options: CAR_YEAR_OPTIONS },
+    { key: 'seats', labelAr: 'عدد المقاعد', labelEn: 'Seats', type: 'number', required: false },
+    { key: 'km', labelAr: 'العداد (كم)', labelEn: 'KM', type: 'number', required: false },
+    { key: 'ac', labelAr: 'مكيف', labelEn: 'AC', type: 'boolean', required: false },
+    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: false, options: CONDITION_OPTIONS },
+  ],
+  'motorcycle-gear': [
+    { key: 'gearType', labelAr: 'نوع الإكسسوار', labelEn: 'Gear Type', type: 'select', allowOther: true, required: true, options: [
+      { value: 'helmet', labelAr: 'خوذة', labelEn: 'Helmet' },
+      { value: 'jacket', labelAr: 'جاكيت', labelEn: 'Jacket' },
+      { value: 'gloves', labelAr: 'قفازات', labelEn: 'Gloves' },
+      { value: 'boots', labelAr: 'أحذية', labelEn: 'Boots' },
+      { value: 'pants', labelAr: 'بنطال', labelEn: 'Pants' },
+      { value: 'accessories', labelAr: 'إكسسوارات أخرى', labelEn: 'Other Accessories' },
+    ]},
+    { key: 'brand', labelAr: 'الماركة', labelEn: 'Brand', type: 'text', required: false, placeholder: 'Shoei, Alpinestars, Dainese...' },
+    { key: 'size', labelAr: 'المقاس', labelEn: 'Size', type: 'text', required: false, placeholder: 'L, XL, 42...' },
+    { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: true, options: CONDITION_OPTIONS },
+    { key: 'gender', labelAr: 'النوع', labelEn: 'Gender', type: 'select', allowOther: true, required: false, options: [
+      { value: 'men', labelAr: 'رجالي', labelEn: 'Men' },
+      { value: 'women', labelAr: 'نسائي', labelEn: 'Women' },
+      { value: 'unisex', labelAr: 'للجنسين', labelEn: 'Unisex' },
+    ]},
+  ],
+  'heavy-equipment': [
+    { key: 'equipmentType', labelAr: 'نوع المعدة', labelEn: 'Equipment Type', type: 'select', allowOther: true, required: true, options: [
+      { value: 'excavator', labelAr: 'حفارة', labelEn: 'Excavator' },
+      { value: 'bulldozer', labelAr: 'بلدوزر', labelEn: 'Bulldozer' },
+      { value: 'loader', labelAr: 'لودر / شيول', labelEn: 'Loader' },
+      { value: 'grader', labelAr: 'جريدر', labelEn: 'Grader' },
+      { value: 'forklift', labelAr: 'رافعة شوكية', labelEn: 'Forklift' },
+      { value: 'crane', labelAr: 'رافعة / كرين', labelEn: 'Crane' },
+      { value: 'dumper', labelAr: 'دبابة / قلاب', labelEn: 'Dumper' },
+    ]},
+    { key: 'make', labelAr: 'الماركة', labelEn: 'Make', type: 'text', required: true, placeholder: 'Caterpillar, Komatsu...' },
+    { key: 'year', labelAr: 'السنة', labelEn: 'Year', type: 'select', allowOther: true, required: true, options: CAR_YEAR_OPTIONS },
+    { key: 'hours', labelAr: 'ساعات العمل', labelEn: 'Working Hours', type: 'number', required: false, placeholder: '5000' },
     { key: 'condition', labelAr: 'الحالة', labelEn: 'Condition', type: 'select', allowOther: true, required: false, options: CONDITION_OPTIONS },
   ],
   lease_transfer: CARS_FIELDS,
