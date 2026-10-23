@@ -3,21 +3,21 @@ import type { SubcategoryDef } from '@/types';
 export const subcategories: Record<string, SubcategoryDef[]> = {
   motors: [
     { slug: 'cars', nameEn: 'Cars for Sale', nameAr: 'سيارات للبيع' },
+    { slug: 'cars_for_rent', nameEn: 'Cars for Rent', nameAr: 'سيارات للإيجار' },
     { slug: 'classic_cars', nameEn: 'Classic Cars', nameAr: 'سيارات تراثية (كلاسيك)' },
     { slug: 'damaged_cars', nameEn: 'Damaged Cars', nameAr: 'سيارات مصدومة' },
-    { slug: 'cars_for_rent', nameEn: 'Cars for Rent', nameAr: 'سيارات للإيجار' },
-    { slug: 'buses_for_rent', nameEn: 'Buses & Vans for Rent', nameAr: 'باصات وفانات للإيجار' },
-    { slug: 'bikes_for_rent', nameEn: 'Motorcycles for Rent', nameAr: 'دراجات نارية للإيجار' },
-    { slug: 'heavy_for_rent', nameEn: 'Heavy Equipment for Rent', nameAr: 'آليات ثقيلة للإيجار' },
-    { slug: 'boats_for_rent', nameEn: 'Boats & Jet Skis for Rent', nameAr: 'قوارب وجت سكي للإيجار' },
-    { slug: 'atv_buggies', nameEn: 'ATVs & Buggies', nameAr: 'دراجات رباعية ودبابات' },
     { slug: 'lease_transfer', nameEn: 'Lease Transfer', nameAr: 'سيارات للتنازل (مقسطة)' },
     { slug: 'motorbikes', nameEn: 'Motorcycles & Scooters', nameAr: 'دراجات وسكوتر' },
+    { slug: 'bikes_for_rent', nameEn: 'Motorcycles for Rent', nameAr: 'دراجات نارية للإيجار' },
+    { slug: 'atv_buggies', nameEn: 'ATVs & Buggies', nameAr: 'دراجات رباعية ودبابات' },
     { slug: 'heavy', nameEn: 'Heavy Vehicles & Trucks', nameAr: 'شاحنات وآليات ثقيلة' },
-    { slug: 'plates', nameEn: 'Car Plates', nameAr: 'لوحات سيارات' },
-    { slug: 'parts', nameEn: 'Auto Spare Parts', nameAr: 'قطع غيار سيارات' },
+    { slug: 'heavy_for_rent', nameEn: 'Heavy Equipment for Rent', nameAr: 'آليات ثقيلة للإيجار' },
+    { slug: 'buses_for_rent', nameEn: 'Buses & Vans for Rent', nameAr: 'باصات وفانات للإيجار' },
     { slug: 'boats', nameEn: 'Boats & Watercraft', nameAr: 'قوارب وجت سكي' },
+    { slug: 'boats_for_rent', nameEn: 'Boats & Jet Skis for Rent', nameAr: 'قوارب وجت سكي للإيجار' },
+    { slug: 'parts', nameEn: 'Auto Spare Parts', nameAr: 'قطع غيار سيارات' },
     { slug: 'accessories', nameEn: 'Car Accessories', nameAr: 'إكسسوارات سيارات' },
+    { slug: 'plates', nameEn: 'Car Plates', nameAr: 'لوحات سيارات' },
   ],
   'real-estate': [
     { slug: 'apartments-for-sale', nameEn: 'Apartments for Sale', nameAr: 'شقق للبيع' },
@@ -221,4 +221,4 @@ export function findSubcategoryBySlug(slug: string): SubcategoryDef | undefined 
     if (found) return found;
   }
   return undefined;
-    }
+}
