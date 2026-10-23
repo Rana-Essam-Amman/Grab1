@@ -1,3 +1,4 @@
+// RULE-14-EXCEPTION: Static route mapping table
 /**
  * Screen ↔ URL mapping.
  *
@@ -122,11 +123,9 @@ export function resolvePath(pathname: string): PathMatch | null {
   }
 
   // 4. Dynamic entity paths
-  // Dynamic: /listing/:id
   const listingMatch = clean.match(/^\/listing\/([^/]+)$/);
   if (listingMatch) return { screen: 'listing-detail', params: { listingId: decodeURIComponent(listingMatch[1]) } };
 
-  // Dynamic: /seller/:phone
   const sellerMatch = clean.match(/^\/seller\/([^/]+)$/);
   if (sellerMatch) return { screen: 'seller-profile', params: { sellerPhone: decodeURIComponent(sellerMatch[1]) } };
 
@@ -135,11 +134,9 @@ export function resolvePath(pathname: string): PathMatch | null {
   if (clean === '/seller') return { screen: 'seller-profile', params: {} };
   if (clean === '/messages/thread') return { screen: 'thread', params: {} };
 
-  // Dynamic: /messages/:id (must come AFTER the /messages/thread check)
   const threadMatch = clean.match(/^\/messages\/([^/]+)$/);
   if (threadMatch) return { screen: 'thread', params: { threadId: decodeURIComponent(threadMatch[1]) } };
 
-  // Dynamic: /post-ad/edit/:id (legacy /post-ad/edit remains static)
   const editMatch = clean.match(/^\/post-ad\/edit\/([^/]+)$/);
   if (editMatch) return { screen: 'edit-post', params: { listingId: decodeURIComponent(editMatch[1]) } };
 
