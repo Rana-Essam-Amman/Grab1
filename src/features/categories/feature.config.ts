@@ -24,6 +24,11 @@ export default defineFeature({
       component: () => import('./screens/RealEstateLandingScreen').then((m) => ({ default: m.RealEstateLandingScreen })),
       guard: 'public',
     },
+    'motors-landing': {
+      name: 'motors-landing',
+      component: () => import('./screens/MotorsLandingScreen').then((m) => ({ default: m.MotorsLandingScreen })),
+      guard: 'public',
+    },
   },
   locales: {
     ar: () => import('./locales/ar.json').then((m) => ({ default: m.default })),
