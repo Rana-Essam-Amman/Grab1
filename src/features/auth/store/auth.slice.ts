@@ -77,15 +77,29 @@ export async function hydrateProfile(): Promise<void> {
     if (!latest || latest.id !== current.id) return;
 
     const profile = result.profile;
-    const patch: { phone?: string; nickname?: string; browseMarket?: 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | null; countryCode?: string } = {};
+    const patch: {
+      phone?: string;
+      nickname?: string;
+      browseMarket?: 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | null;
+      countryCode?: string | undefined;
+    } = {};
+
     if (!result.phoneError && profile.phone) patch.phone = profile.phone;
     if (profile.nickname) patch.nickname = profile.nickname;
     if (profile.browse_market) patch.browseMarket = profile.browse_market;
-    if (profile.country_code) patch.countryCode = profile.country_code;
 
-    if (Object.keys(patch).length > 0) {
-      useAuthStore.getState().updateUser(patch);
-    }
+    // F5 fix: always reflect the DB value for country_code.
+    // - If DB has a value → set it (overrides any stale persisted value).
+    // - If DB is null/empty → set `undefined` explicitly, which clears the
+    //   stale value in the Zustand store (spread with an explicit key
+    //   overrides even when the value is undefined). persist's partialize
+    //   will drop the key on the next serialization.
+    patch.countryCode =
+      profile.country_code && profile.country_code.length > 0
+        ? profile.country_code
+        : undefined;
+
+    useAuthStore.getState().updateUser(patch);
 
     if (profile.feed_layout === 'list' || profile.feed_layout === 'grid') {
       useAuthStore.setState({ feedLayout: profile.feed_layout });
