@@ -8,19 +8,20 @@
  *   3. Non-admin CAN INSERT with country_code = their profile market
  *   4. Non-admin cannot UPDATE country_code on their own listing (F1 trigger)
  *
- * HOW THE TEST USER IS CREATED:
- *   We use the Admin API (`auth.admin.createUser` with `email_confirm: true`).
- *   This bypasses the email confirmation flow entirely — no email is sent,
- *   so the built-in SMTP rate limit (2 emails/hour) is never touched.
+ * PROFILE SETUP:
+ *   The `profiles` row is created/updated via the ADMIN client (service_role),
+ *   not the user session. The profile setup is a FIXTURE, not the thing being
+ *   tested. Using service_role avoids depending on the `authenticated` role's
+ *   GRANT on the profiles table, which is not guaranteed to exist on every
+ *   environment and is unrelated to the listings RLS we actually test.
  *
- *   The previous signUp() approach failed with "email rate limit exceeded"
- *   on the second CI run because Supabase's built-in email provider allows
- *   only ~2 auth emails per hour per project.
+ *   The listings INSERT/UPDATE probes still run with the USER session (anon key),
+ *   so RLS policies on listings are exercised correctly.
  *
  * REQUIRED ENV:
  *   SB_URL                 — Supabase project URL
  *   SB_ANON                — anon publishable key (for RLS-scoped operations)
- *   SB_SERVICE_ROLE_KEY    — service_role key (for admin.createUser only)
+ *   SB_SERVICE_ROLE_KEY    — service_role key (admin.createUser + profile fixture)
  */
 
 import { createClient } from '@supabase/supabase-js';
@@ -43,12 +44,13 @@ const runId = process.env.GITHUB_RUN_ID || String(Date.now());
 const email = `rls-probe-${runId}@example.com`;
 const password = `RlsProbe-${runId}-Aa1!`;
 
-// Admin client: used only to create/delete the test user.
+// Admin client: used only to create/delete the test user and to write the
+// profile fixture row. Never used for listings operations.
 const admin = createClient(URL, SERVICE_ROLE, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
-// User client: used for all RLS-scoped operations (INSERT, UPDATE, DELETE).
+// User client: used for all listings RLS operations (INSERT, UPDATE, DELETE).
 const supabase = createClient(URL, ANON, {
   auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
 });
@@ -69,7 +71,7 @@ async function main() {
   const createRes = await admin.auth.admin.createUser({
     email,
     password,
-    email_confirm: true, // bypass confirmation — no email is sent
+    email_confirm: true,
     user_metadata: { source: 'ci-rls-probe' },
   });
 
@@ -89,16 +91,22 @@ async function main() {
   }
   console.log('INFO: user session acquired');
 
-  // ---- Setup: set phone + country_code on profile ----
-  const setup = await supabase
+  // ---- Setup: upsert the profile row via the ADMIN client ----
+  // Rationale: profile fixture is not what we are testing. Using service_role
+  // avoids depending on `authenticated`'s GRANT on profiles, which we do not
+  // control in this test and which is orthogonal to the listings RLS probes.
+  const setup = await admin
     .from('profiles')
-    .update({ country_code: 'JO', phone: '+962790000000' })
-    .eq('id', userId);
+    .upsert(
+      { id: userId, country_code: 'JO', phone: '+962790000000' },
+      { onConflict: 'id' }
+    );
   if (setup.error) {
-    fail('setup: profile update', setup.error.message);
+    fail('setup: profile upsert (admin)', setup.error.message);
     await admin.auth.admin.deleteUser(userId).catch(() => {});
     process.exit(1);
   }
+  console.log('INFO: profile fixture written');
 
   const base = {
     user_id: userId,
@@ -151,7 +159,7 @@ async function main() {
     fail('UPDATE country_code blocked by trigger', 'No listing created in step 3');
   }
 
-  // ---- Cleanup: delete listing, then the user (cascades to profile) ----
+  // ---- Cleanup ----
   if (createdListingId) {
     const { error } = await supabase.from('listings').delete().eq('id', createdListingId);
     if (error) console.warn(`WARN: cleanup listing delete failed — ${error.message}`);
