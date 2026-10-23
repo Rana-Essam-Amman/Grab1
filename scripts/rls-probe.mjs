@@ -10,6 +10,9 @@
  *
  * Uses only the anon publishable key. Creates a fresh test user per run
  * (unique email). Exits 1 on any failure so CI turns red.
+ *
+ * NOTE: Supabase rejects reserved TLDs like `.local` and `.test` at signup.
+ * We use `example.com` (RFC 2606, real TLD, no deliverability needed).
  */
 
 import { createClient } from '@supabase/supabase-js';
@@ -23,7 +26,7 @@ if (!URL || !ANON) {
 }
 
 const runId = process.env.GITHUB_RUN_ID || String(Date.now());
-const email = `rls-probe-${runId}@fox-marketplace-test.local`;
+const email = `rls-probe-${runId}@example.com`;
 const password = `RlsProbe-${runId}-Aa1!`;
 
 const supabase = createClient(URL, ANON, {
@@ -40,21 +43,44 @@ const fail = (label, detail) => {
   failures += 1;
 };
 
+async function ensureSession() {
+  // Try signup first.
+  const up = await supabase.auth.signUp({ email, password });
+  if (up.error) {
+    // Fall through to sign-in (handles the "already registered" case).
+    console.log(`INFO: signUp returned error, trying sign-in — ${up.error.message}`);
+    const inn = await supabase.auth.signInWithPassword({ email, password });
+    if (inn.error) {
+      throw new Error(`signup+signin both failed — signUp: ${up.error.message}; signIn: ${inn.error.message}`);
+    }
+    if (!inn.data.session) {
+      throw new Error('signIn returned no session — is email confirmation required?');
+    }
+    return inn.data;
+  }
+  if (up.data.session) return up.data;
+
+  // No session from signup — try sign-in (account may already be confirmed).
+  const inn = await supabase.auth.signInWithPassword({ email, password });
+  if (inn.error || !inn.data.session) {
+    throw new Error(
+      `signUp returned no session and signIn failed — ${inn.error?.message || 'no session'}. ` +
+      'Fix: set Supabase Auth → Email → Confirm email = OFF, OR use service_role key.'
+    );
+  }
+  return inn.data;
+}
+
 async function main() {
-  // ---- Setup: sign up a fresh test user ----
-  let auth = await supabase.auth.signUp({ email, password });
-  if (auth.error && /already|exists/i.test(auth.error.message)) {
-    auth = await supabase.auth.signInWithPassword({ email, password });
-  }
-  if (auth.error) {
-    fail('setup: sign up/in', auth.error.message);
+  // ---- Setup: sign up (or sign in) a fresh test user ----
+  let auth;
+  try {
+    auth = await ensureSession();
+  } catch (err) {
+    fail('setup: sign up/in', err instanceof Error ? err.message : String(err));
     process.exit(1);
   }
-  if (!auth.data.session) {
-    fail('setup: session', 'No session returned — is email confirmation required?');
-    process.exit(1);
-  }
-  const userId = auth.data.user.id;
+  const userId = auth.user.id;
   console.log(`INFO: test user = ${userId}`);
 
   // ---- Setup: set phone + country_code on profile ----
