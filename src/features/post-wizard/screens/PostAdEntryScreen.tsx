@@ -1,45 +1,34 @@
 import React from 'react';
+import { ArrowLeft, ArrowRight } from 'iconsax-react';
+import { Button } from '@/shared/ui/Button';
 import { usePostAdEntry } from '../hooks/usePostAdEntry';
 import { Icon } from '@iconify/react';
-import { Button } from '@/shared/ui/Button';
-import type { MarketCode } from '@/data/markets/types';
+import { MARKETS } from '@/data/markets/config';
+import { BrandMark } from '@/shared/components/BrandMark';
 
-const MARKET_NAMES: Record<string, string> = {
-  JO: 'الأردن',
-  SA: 'السعودية',
-  LB: 'لبنان',
-  PS: 'فلسطين',
-  SY: 'سوريا',
-};
-
-export const PostAdEntryScreen = () => {
-  const {
-    isArabic,
-    handleBack,
-    startPostFlow,
-    canPostInMarket,
-    myMarket,
-    freeLimit,
-    freeRemaining,
-    updateUserMarket,
-  } = usePostAdEntry();
+export const PostAdEntryScreen: React.FC = () => {
+  const { isArabic, handleBack, startPostFlow, canPostInMarket, myMarket, freeLimit, freeRemaining } = usePostAdEntry();
+  const BackIcon = isArabic ? ArrowRight : ArrowLeft;
+  const marketNameAr = myMarket && MARKETS[myMarket]
+    ? MARKETS[myMarket].nameAr
+    : '';
 
   const header = (
-    <div className="flex items-center justify-between p-4 border-b border-border">
-      <button
+    <div className="px-4 py-4 border-b border-white/10 flex items-center gap-3 bg-brand sticky top-0 z-20">
+      <Button
         id="post-ad-entry-back-btn"
+        variant="ghost"
+        size="icon"
         onClick={handleBack}
-        className="p-2 rounded-full hover:bg-surface transition-colors"
+        className="w-10 h-10 rounded-full bg-surface/15 text-white hover:bg-surface/25 cursor-pointer flex items-center justify-center p-0"
+        aria-label={isArabic ? 'رجوع' : 'Back'}
       >
-        <Icon
-          icon="lucide:arrow-right"
-          className={isArabic ? '' : 'rotate-180'}
-        />
-      </button>
-      <h2 className="text-lg font-bold text-ink">
-        {isArabic ? 'إضافة إعلان' : 'Post Ad'}
+        <BackIcon size={18} variant="Linear" color="currentColor" className="text-white" />
+      </Button>
+      <h2 className="text-lg font-bold text-white flex-1">
+        {isArabic ? 'نشر إعلان' : 'Post Ad'}
       </h2>
-      <div className="w-10" />
+      <BrandMark isArabic={isArabic} />
     </div>
   );
 
@@ -51,36 +40,34 @@ export const PostAdEntryScreen = () => {
         dir={isArabic ? 'rtl' : 'ltr'}
       >
         {header}
-
         <div className="p-6 flex flex-col gap-5 flex-1 items-center justify-center">
-          <div className="text-center px-4 mb-4">
+          <div className="w-24 h-24 rounded-full bg-danger/10 flex items-center justify-center mb-4">
+            <Icon icon="fluent-emoji:prohibited" width={48} height={48} />
+          </div>
+          <div className="text-center px-4">
             <h3
               id="post-ad-blocked-title"
               className="text-xl font-bold text-ink mb-2"
             >
               {isArabic
-                ? 'اختر السوق الذي تريد النشر فيه'
-                : 'Select the market you want to post in'}
+                ? `لا يمكنك النشر إلا في سوق ${marketNameAr}`
+                : `You can only post in ${myMarket ?? 'your market'}`}
             </h3>
-
             <p className="text-sm text-ink-muted">
               {isArabic
-                ? 'يرجى تحديد الدولة لمتابعة النشر'
-                : 'Please select your country to continue posting'}
+                ? 'تصفح وتواصل بحرية — لكن النشر فقط في سوق حسابك.'
+                : 'Browse and contact freely — publishing only in your account market.'}
             </p>
           </div>
-
-          <div className="grid grid-cols-2 gap-3 w-full max-w-sm">
-            {(['JO', 'SA', 'LB', 'PS', 'SY'] as MarketCode[]).map((m) => (
-              <button
-                key={m}
-                onClick={() => updateUserMarket(m)}
-                className="p-4 border border-border bg-surface rounded-xl font-bold text-ink hover:border-primary hover:text-primary transition-all"
-              >
-                {MARKET_NAMES[m]}
-              </button>
-            ))}
-          </div>
+          <Button
+            id="post-ad-blocked-back"
+            onClick={handleBack}
+            size="lg"
+            className="w-full mt-8"
+            aria-label={isArabic ? 'رجوع إلى السوق' : 'Back to market'}
+          >
+            {isArabic ? 'رجوع' : 'Back'}
+          </Button>
         </div>
       </div>
     );
@@ -93,37 +80,64 @@ export const PostAdEntryScreen = () => {
       dir={isArabic ? 'rtl' : 'ltr'}
     >
       {header}
-
-      <div className="p-6 flex flex-col gap-5 flex-1 items-center justify-center">
-        <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-          <Icon
-            icon="lucide:plus-circle"
-            width={48}
-            height={48}
-            className="text-primary"
+      <div className="p-4 flex flex-col gap-5 flex-1 items-center justify-center">
+        <div
+          id="post-ad-free-remaining"
+          data-testid="post-ad-free-remaining"
+          data-free-remaining={freeRemaining}
+          data-free-limit={freeLimit}
+          className={
+            freeRemaining > 0
+              ? 'w-full max-w-sm rounded-2xl px-5 py-3.5 text-center bg-brand text-white shadow-lg shadow-brand/25'
+              : 'w-full max-w-sm rounded-2xl px-5 py-3.5 text-center bg-danger text-white shadow-lg shadow-danger/25'
+          }
+        >
+          <div className="flex items-center justify-center gap-2">
+            <Icon
+              icon={freeRemaining > 0 ? 'fluent-emoji:sparkles' : 'fluent-emoji:warning'}
+              width={20}
+              height={20}
+            />
+            <span className="text-sm font-black tracking-wide" dir="auto">
+              {freeRemaining > 0
+                ? isArabic
+                  ? `عندك ${freeRemaining} من ${freeLimit} إعلانات مجانية`
+                  : `${freeRemaining} of ${freeLimit} free ads remaining`
+                : isArabic
+                  ? 'استهلكت الإعلانات المجانية'
+                  : 'Free ads used'}
+            </span>
+          </div>
+          {freeRemaining === 0 && (
+            <div className="text-[11px] font-medium opacity-90 mt-0.5">
+              {isArabic ? 'الإعلان القادم مدفوع' : 'Next ad is paid'}
+            </div>
+          )}
+        </div>
+        <div className="w-24 h-24 rounded-full bg-brand/10 flex items-center justify-center mb-4 overflow-hidden border border-border/50 shadow-sm">
+          <img
+            src="/assets/icons/logo.png"
+            alt="FOX"
+            className="w-full h-full object-cover"
           />
         </div>
-
         <div className="text-center px-4">
           <h3 className="text-xl font-bold text-ink mb-2">
-            {isArabic ? 'أضف إعلانك الآن' : 'Post your ad now'}
+            {isArabic ? 'جاهز لنشر إعلانك؟' : 'Ready to post your ad?'}
           </h3>
-
-          <p className="text-sm text-ink-muted mb-6">
+          <p className="text-sm text-ink-muted">
             {isArabic
-              ? `يمكنك نشر ${freeRemaining} إعلانات مجانية متبقية في ${MARKET_NAMES[myMarket || 'JO']}`
-              : `You can post ${freeRemaining} more free ads in ${myMarket || 'JO'}`}
+              ? 'انشر إعلانك في أقل من دقيقة'
+              : 'Post your ad in under a minute'}
           </p>
         </div>
-
         <Button
           id="post-ad-entry-start"
           onClick={startPostFlow}
           size="lg"
-          className="w-full mt-4"
-          disabled={freeRemaining <= 0}
+          className="w-full mt-8"
         >
-          {isArabic ? 'بدء النشر' : 'Start Posting'}
+          {isArabic ? 'نشر إعلان جديد' : 'Post New Ad'}
         </Button>
       </div>
     </div>

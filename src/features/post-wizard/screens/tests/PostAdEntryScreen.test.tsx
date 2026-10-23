@@ -78,9 +78,8 @@ describe('PostAdEntryScreen', () => {
 
   it('back button calls setActiveTab explore and goBack', () => {
     render(<PostAdEntryScreen />);
-    const backBtn = document.getElementById('post-ad-entry-back-btn');
-    expect(backBtn).not.toBeNull();
-    fireEvent.click(backBtn!);
+    const backBtn = screen.getByRole('button', { name: /back/i });
+    fireEvent.click(backBtn);
     expect(mockSetActiveTab).toHaveBeenCalledWith('explore');
     expect(mockGoBack).toHaveBeenCalledTimes(1);
   });
@@ -92,6 +91,6 @@ describe('PostAdEntryScreen', () => {
     render(<PostAdEntryScreen />);
     expect(document.getElementById('post-ad-entry-start')).toBeNull();
     expect(document.getElementById('post-ad-blocked-title')).toBeInTheDocument();
-    expect(document.getElementById('post-ad-blocked-title')?.textContent).toContain('اختر السوق الذي تريد النشر فيه');
+    expect(document.getElementById('post-ad-blocked-title')?.textContent).toContain('الأردن');
   });
 });

@@ -15,7 +15,7 @@ export const AdminTabs: React.FC<{ market: MarketCode; actions: any; actionLoadi
   const [payForm, setPayForm] = useState({ userId: '', listingId: '', product: 'featured' as any, amount: '', currency: 'JOD' });
 
   const loadTab = useCallback(async () => {
-    if (tab === 'phoneRequests') return;
+    if (tab === 'phoneRequests') return; // Let the child component handle its own loading
     setLoading(true);
     let res: any;
     if (tab === 'reports') res = await rpc.listReports(market, 'pending');

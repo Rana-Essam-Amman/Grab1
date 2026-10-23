@@ -43,7 +43,7 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
   }, [listing.categorySlug, listing.subcategorySlug]);
 
   const specs = useMemo(() => pickSpecs(listing.attributes?.filter((a) => !requiredKeys.has(a.key)), 5, listing.title), [listing.attributes, listing.title, requiredKeys]);
-  const sellerKey = useMemo(() => listing.userId || listing.sellerPhone || '', [listing.sellerPhone, listing.userId]);
+  const sellerKey = useMemo(() => listing.sellerPhone || listing.userId || '', [listing.sellerPhone, listing.userId]);
 
   const isVerifiedSeller = useMemo(() => {
     const itemObj = listing as unknown as Record<string, unknown>;

@@ -88,6 +88,6 @@ describe('PostAdEntryScreen', () => {
     render(<PostAdEntryScreen />);
     expect(document.getElementById('post-ad-entry-start')).toBeNull();
     expect(document.getElementById('post-ad-blocked-title')).toBeInTheDocument();
-    expect(document.getElementById('post-ad-blocked-title')?.textContent).toContain('اختر السوق الذي تريد النشر فيه');
+    expect(document.getElementById('post-ad-blocked-title')?.textContent).toContain('الأردن');
   });
 });

@@ -34,11 +34,9 @@ export function canStartChat(
 export function canPostIn(
   targetMarket: MarketCode,
   activeMarket: MarketCode,
-  userCountryCode?: MarketCode,
-  isAdmin?: boolean
+  userCountryCode?: MarketCode
 ): boolean {
   if (!targetMarket) return false;
-  if (isAdmin) return true;
   if (userCountryCode) return targetMarket === userCountryCode;
   return targetMarket === activeMarket;
 }

@@ -24,7 +24,7 @@ export const SellerProfileScreen: React.FC = () => {
     browseCountryCode ?? null,
   );
 
-  const sellerId = sellerAds[0]?.userId ?? (sellerKeyIsUuid ? selectedSellerPhone : null);
+  const sellerId = sellerAds[0]?.userId ?? null;
   const [sellerProfile, setSellerProfile] = useState<PublicProfileRecord | null>(null);
   const [reviews, setReviews] = useState<SellerReview[]>([]);
 
