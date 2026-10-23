@@ -1,11 +1,11 @@
 /**
  * Screen ↔ URL mapping.
  *
- * Phase 2b/2c: entity IDs (listingId, sellerPhone, threadId) travel in the URL so 
+ * Phase 2b/2c: entity IDs (listingId, sellerPhone, threadId) travel in a URL so
  * refresh, share, back, and deep links all restore the correct screen.
  *
- * The store remains the runtime source of truth; useUrlSync keeps the 
- * URL in sync. Callsites keep using navigateTo('screen') after setting 
+ * The store remains the runtime source of truth; useUrlSync keeps the
+ * URL in sync. Callsites keep using navigateTo('screen') after setting
  * setSelectedListingId / setSelectedSellerPhone / setSelectedThreadId.
  */
 
@@ -31,7 +31,7 @@ export interface PathMatch {
 }
 
 /** Static (no-param) path table — single source of truth for both directions. */
-const STATIC_SCREEN_TO_PATH: Record<Exclude<ScreenType, 'listing-detail' | 'seller-profile' | 'thread'>, string> = {
+const STATIC_SCREEN_TO_PATH: Record<string, string> = {
   'main': '/',
   'search-results': '/search',
   'messages': '/messages',
@@ -42,6 +42,9 @@ const STATIC_SCREEN_TO_PATH: Record<Exclude<ScreenType, 'listing-detail' | 'sell
   'edit-profile': '/profile/edit',
   'settings': '/settings',
   'sub-categories': '/categories/sub',
+  'motors-landing': '/motors-landing',
+  'handymen-landing': '/handymen-landing',
+  'real-estate-landing': '/real-estate-landing',
   'post-ad-entry': '/post-ad',
   'post-category': '/post-ad/category',
   'post-category-pick': '/post-ad/category-pick',
@@ -94,6 +97,13 @@ export function resolvePath(pathname: string): PathMatch | null {
   // Strip trailing slash (except root)
   const clean = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
 
+  // 1. Check static exact matches FIRST (protects custom landing screens from being parsed as categories)
+  const staticScreen = STATIC_PATH_TO_SCREEN[clean];
+  if (staticScreen) {
+    return { screen: staticScreen, params: {} };
+  }
+
+  // 2. Dynamic category paths
   const cat = parseCategoryPath(clean);
   if (cat) {
     return {
@@ -102,6 +112,7 @@ export function resolvePath(pathname: string): PathMatch | null {
     };
   }
 
+  // 3. SEO listing paths
   const seoListing = parseListingPath(clean);
   if (seoListing) {
     return {
@@ -110,6 +121,7 @@ export function resolvePath(pathname: string): PathMatch | null {
     };
   }
 
+  // 4. Dynamic entity paths
   // Dynamic: /listing/:id
   const listingMatch = clean.match(/^\/listing\/([^/]+)$/);
   if (listingMatch) return { screen: 'listing-detail', params: { listingId: decodeURIComponent(listingMatch[1]) } };
@@ -134,8 +146,6 @@ export function resolvePath(pathname: string): PathMatch | null {
   const subCatMatch = clean.match(/^\/categories\/sub\/([^/]+)$/);
   if (subCatMatch) return { screen: 'sub-categories', params: { category: decodeURIComponent(subCatMatch[1]) } };
 
-  const screen = STATIC_PATH_TO_SCREEN[clean];
-  if (screen) return { screen, params: {} };
   return null;
 }
 
