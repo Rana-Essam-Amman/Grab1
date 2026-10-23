@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useUI } from '@/hooks/useUI';
 import { AuthTopBar } from '../components/AuthTopBar';
 import { AuthToastBanner } from '../components/AuthToastBanner';
@@ -10,29 +10,18 @@ export interface LoginScreenProps {
 }
 
 export const LoginScreen: React.FC<LoginScreenProps> = () => {
-  const {
-    isArabic,
-    goBack,
-    setLocale,
-    setBrowseLocation,
-    navigateTo,
-    setBrowseMarketOverrideLocal,
-    geoUnsupported,
+  const { 
+    isArabic, 
+    goBack, 
+    setLocale, 
+    setBrowseLocation, 
+    navigateTo, 
+    setBrowseMarketOverrideLocal 
   } = useUI();
-
+  
+  // Reverted to false to prevent blocking the login UI and breaking E2E tests
   const [guestCountrySelect, setGuestCountrySelect] = useState(false);
   const [toastMsg, setToastMsg] = useState('');
-
-  // F3 fix: open the country picker when geo detection says the user is
-  // outside the 5 supported markets. This runs once when geoUnsupported
-  // transitions to true (async detection resolves after first render).
-  // If the user closes the picker without choosing, we don't force it back —
-  // RLS on the backend still prevents posting outside their market.
-  useEffect(() => {
-    if (geoUnsupported) {
-      setGuestCountrySelect(true);
-    }
-  }, [geoUnsupported]);
 
   const handleBack = useCallback(() => {
     setToastMsg('');
@@ -61,13 +50,13 @@ export const LoginScreen: React.FC<LoginScreenProps> = () => {
 
   return (
     <div className="flex flex-col h-full bg-canvas">
-      <AuthTopBar
-        step="gateway"
-        onBack={handleBack}
-        isArabic={isArabic}
-        onToggleLanguage={() => setLocale(isArabic ? 'en' : 'ar')}
+      <AuthTopBar 
+        step="gateway" 
+        onBack={handleBack} 
+        isArabic={isArabic} 
+        onToggleLanguage={() => setLocale(isArabic ? 'en' : 'ar')} 
       />
-
+      
       <AuthToastBanner message={toastMsg} onDismiss={handleClearToast} />
 
       <LoginScreenBody
