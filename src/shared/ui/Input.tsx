@@ -11,8 +11,10 @@ export const inputVariants = cva(
         error: 'border-danger text-danger focus:border-danger focus:ring-danger',
       },
       size: {
-        sm: 'h-8 text-xs px-3',
-        md: 'h-10 text-sm px-3.5',
+        // a11y: all input sizes meet 44px minimum for touch screens.
+        // Previously sm=32px, md=40px — both under the minimum.
+        sm: 'h-11 text-xs px-3',
+        md: 'h-11 text-sm px-3.5',
         lg: 'h-12 text-base px-4',
       },
       hasLeftIcon: {
