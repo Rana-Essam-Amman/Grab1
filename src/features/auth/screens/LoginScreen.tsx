@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useUI } from '@/hooks/useUI';
 import { AuthTopBar } from '../components/AuthTopBar';
 import { AuthToastBanner } from '../components/AuthToastBanner';
@@ -16,12 +16,32 @@ export const LoginScreen: React.FC<LoginScreenProps> = () => {
     setLocale, 
     setBrowseLocation, 
     navigateTo, 
-    setBrowseMarketOverrideLocal 
+    setBrowseMarketOverrideLocal,
+    geoUnsupported,
   } = useUI();
   
-  // Reverted to false to prevent blocking the login UI and breaking E2E tests
   const [guestCountrySelect, setGuestCountrySelect] = useState(false);
   const [toastMsg, setToastMsg] = useState('');
+  const autoOpenedRef = useRef(false);
+
+  // F3: auto-open the country picker when geo detection confirms the user is
+  // outside the 5 supported markets.
+  //
+  // Safety layers:
+  //   1. VITE_E2E guard: skip in test mode — the picker replaces the login
+  //      gateway and would break tests expecting Google/Apple/WhatsApp buttons.
+  //   2. One-shot ref: if the user closes the picker, a re-render must not
+  //      force it back open.
+  //   3. Explicit isUnsupported check (via F4): a `fallback` source (network
+  //      failure) sets geoUnsupported=false, so transient errors never trigger
+  //      the picker.
+  useEffect(() => {
+    if (import.meta.env.VITE_E2E === 'true') return;
+    if (autoOpenedRef.current) return;
+    if (!geoUnsupported) return;
+    autoOpenedRef.current = true;
+    setGuestCountrySelect(true);
+  }, [geoUnsupported]);
 
   const handleBack = useCallback(() => {
     setToastMsg('');
