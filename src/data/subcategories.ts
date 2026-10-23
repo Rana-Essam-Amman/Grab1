@@ -9,9 +9,12 @@ export const subcategories: Record<string, SubcategoryDef[]> = {
     { slug: 'lease_transfer', nameEn: 'Lease Transfer', nameAr: 'سيارات للتنازل (مقسطة)' },
     { slug: 'motorbikes', nameEn: 'Motorcycles & Scooters', nameAr: 'دراجات وسكوتر' },
     { slug: 'bikes_for_rent', nameEn: 'Motorcycles for Rent', nameAr: 'دراجات نارية للإيجار' },
+    { slug: 'motorcycle-gear', nameEn: 'Motorcycle Gear & Helmets', nameAr: 'خوذ وملابس دراجات' },
     { slug: 'atv_buggies', nameEn: 'ATVs & Buggies', nameAr: 'دراجات رباعية ودبابات' },
     { slug: 'heavy', nameEn: 'Heavy Vehicles & Trucks', nameAr: 'شاحنات وآليات ثقيلة' },
+    { slug: 'heavy-equipment', nameEn: 'Heavy Equipment', nameAr: 'معدات ثقيلة (حفارات، رافعات)' },
     { slug: 'heavy_for_rent', nameEn: 'Heavy Equipment for Rent', nameAr: 'آليات ثقيلة للإيجار' },
+    { slug: 'buses', nameEn: 'Buses & Minibuses', nameAr: 'باصات وحافلات للبيع' },
     { slug: 'buses_for_rent', nameEn: 'Buses & Vans for Rent', nameAr: 'باصات وفانات للإيجار' },
     { slug: 'boats', nameEn: 'Boats & Watercraft', nameAr: 'قوارب وجت سكي' },
     { slug: 'boats_for_rent', nameEn: 'Boats & Jet Skis for Rent', nameAr: 'قوارب وجت سكي للإيجار' },
@@ -221,4 +224,4 @@ export function findSubcategoryBySlug(slug: string): SubcategoryDef | undefined 
     if (found) return found;
   }
   return undefined;
-}
+     }
