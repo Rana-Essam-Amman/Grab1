@@ -25,11 +25,14 @@ export const buttonVariants = cva(
           'text-primary underline-offset-4 hover:underline p-0 h-auto font-semibold',
       },
       size: {
-        sm: 'h-8 px-3 text-xs rounded-lg gap-1.5',
-        md: 'h-10 px-4 text-sm rounded-xl gap-2',
+        // a11y: all interactive sizes meet 44px (Apple HIG) / 48px (Material).
+        // Previously sm=32px, md=40px, icon=40px, icon-sm=32px — all under the
+        // minimum touch target and prone to mis-taps on mobile.
+        sm: 'h-11 px-3 text-xs rounded-lg gap-1.5',
+        md: 'h-11 px-4 text-sm rounded-xl gap-2',
         lg: 'h-12 px-6 text-base rounded-xl gap-2.5',
-        icon: 'h-10 w-10 p-0 rounded-xl',
-        'icon-sm': 'h-8 w-8 p-0 rounded-lg',
+        icon: 'h-11 w-11 p-0 rounded-xl',
+        'icon-sm': 'h-11 w-11 p-0 rounded-lg',
       },
       fullWidth: {
         true: 'w-full',
@@ -90,7 +93,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             <path
               className="opacity-75"
               fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l-2.647z"
             />
           </svg>
         )}
