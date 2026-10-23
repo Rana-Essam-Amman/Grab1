@@ -20,7 +20,6 @@ const getStoredPendingWishlist = (): string | null => {
   } catch { return null; }
 };
 
-// Derive initial browse country from storage
 const getStoredCountry = (): MarketCode => {
   try {
     return (globalStorage().get<MarketCode>('catch_browse_country') as MarketCode) || 'JO';
@@ -29,10 +28,6 @@ const getStoredCountry = (): MarketCode => {
   }
 };
 
-// Prefer the user's explicit market override (persisted synchronously on
-// every CountrySheet selection). Without this, the initial render uses
-// the base country from `catch_browse_country`, causing a visible flag
-// flicker on refresh until useMarketSync resolves to the override async.
 const initialOverride = getStoredOverride();
 const initialBrowseCountryCode = initialOverride ?? getStoredCountry();
 const initialCapital = DEFAULT_REGIONAL_CAPITALS[initialBrowseCountryCode] || DEFAULT_REGIONAL_CAPITALS.JO;
@@ -109,32 +104,16 @@ export async function hydrateCountryFromGeo(): Promise<void> {
   try {
     const { detectCountry } = await import('@/shared/lib/geoDetect');
     const detected = await detectCountry();
-
     const { useUIStore } = await import('./ui.slice');
 
-    // Always record the geo-detected country code (placeholder when unsupported).
-    useUIStore.setState({ geoCountryCode: detected.country });
-
-    // F4 fix: read the explicit `isUnsupported` flag, not `!isSupported`.
-    //
-    //   isUnsupported = true  → user is outside JO/SA/LB/PS/SY (e.g., US).
-    //                           Do NOT auto-override browse country.
-    //                           The UI layer (when ready) may show a picker.
-    //
-    //   source = 'fallback'   → every detection method failed (network + tz
-    //                           + lang). Keep geoUnsupported = false so we do
-    //                           not treat a transient failure as "outside
-    //                           our markets". Do NOT auto-override browse country.
-    if (detected.isUnsupported) {
-      useUIStore.setState({ geoUnsupported: true });
-      return;
-    }
-
-    useUIStore.setState({ geoUnsupported: false });
-
+    // F4: read `isUnsupported` (not `!isSupported`) to distinguish
+    // "outside supported countries" from "detection failed".
+    useUIStore.setState({
+      geoCountryCode: detected.country,
+      geoUnsupported: detected.isUnsupported,
+    });
+    if (detected.isUnsupported) return;
     if (detected.source === 'fallback') return;
-
-    // Respect a prior user selection.
     if (globalStorage().get<string>('catch_browse_country')) return;
 
     const capital = DEFAULT_REGIONAL_CAPITALS[detected.country] || DEFAULT_REGIONAL_CAPITALS.JO;
