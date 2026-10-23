@@ -183,6 +183,30 @@ export const textSignals: Record<string, CategoryHint> = {
   'buggy': { categorySlug: 'motors', subcategorySlug: 'atv_buggies', labelAr: 'دراجات رباعية ودبابات', labelEn: 'ATVs & Buggies' },
   'quad bike': { categorySlug: 'motors', subcategorySlug: 'atv_buggies', labelAr: 'دراجات رباعية ودبابات', labelEn: 'ATVs & Buggies' },
 
+  // ═══════════ MOTORS / NEW TAXONOMY ═══════════
+  'باص للبيع': { categorySlug: 'motors', subcategorySlug: 'buses', labelAr: 'باصات للبيع', labelEn: 'Buses for Sale' },
+  'حافلة للبيع': { categorySlug: 'motors', subcategorySlug: 'buses', labelAr: 'باصات للبيع', labelEn: 'Buses for Sale' },
+  'باص مدرسة للبيع': { categorySlug: 'motors', subcategorySlug: 'buses', labelAr: 'باصات للبيع', labelEn: 'Buses for Sale' },
+  'bus for sale': { categorySlug: 'motors', subcategorySlug: 'buses', labelAr: 'باصات للبيع', labelEn: 'Buses for Sale' },
+  'minibus for sale': { categorySlug: 'motors', subcategorySlug: 'buses', labelAr: 'باصات للبيع', labelEn: 'Buses for Sale' },
+
+  'حفارة للبيع': { categorySlug: 'motors', subcategorySlug: 'heavy-equipment', labelAr: 'معدات ثقيلة', labelEn: 'Heavy Equipment' },
+  'حفار للبيع': { categorySlug: 'motors', subcategorySlug: 'heavy-equipment', labelAr: 'معدات ثقيلة', labelEn: 'Heavy Equipment' },
+  'لودر للبيع': { categorySlug: 'motors', subcategorySlug: 'heavy-equipment', labelAr: 'معدات ثقيلة', labelEn: 'Heavy Equipment' },
+  'جرافة للبيع': { categorySlug: 'motors', subcategorySlug: 'heavy-equipment', labelAr: 'معدات ثقيلة', labelEn: 'Heavy Equipment' },
+  'رافعة شوكية': { categorySlug: 'motors', subcategorySlug: 'heavy-equipment', labelAr: 'معدات ثقيلة', labelEn: 'Heavy Equipment' },
+  'excavator for sale': { categorySlug: 'motors', subcategorySlug: 'heavy-equipment', labelAr: 'معدات ثقيلة', labelEn: 'Heavy Equipment' },
+  'bulldozer for sale': { categorySlug: 'motors', subcategorySlug: 'heavy-equipment', labelAr: 'معدات ثقيلة', labelEn: 'Heavy Equipment' },
+  'forklift': { categorySlug: 'motors', subcategorySlug: 'heavy-equipment', labelAr: 'معدات ثقيلة', labelEn: 'Heavy Equipment' },
+
+  'خوذة دراجة': { categorySlug: 'motors', subcategorySlug: 'motorcycle-gear', labelAr: 'خوذ وملابس دراجات', labelEn: 'Motorcycle Gear' },
+  'خوذ': { categorySlug: 'motors', subcategorySlug: 'motorcycle-gear', labelAr: 'خوذ وملابس دراجات', labelEn: 'Motorcycle Gear' },
+  'جاكيت دراجات': { categorySlug: 'motors', subcategorySlug: 'motorcycle-gear', labelAr: 'خوذ وملابس دراجات', labelEn: 'Motorcycle Gear' },
+  'قفازات دراجات': { categorySlug: 'motors', subcategorySlug: 'motorcycle-gear', labelAr: 'خوذ وملابس دراجات', labelEn: 'Motorcycle Gear' },
+  'helmet': { categorySlug: 'motors', subcategorySlug: 'motorcycle-gear', labelAr: 'خوذ وملابس دراجات', labelEn: 'Motorcycle Gear' },
+  'motorcycle gear': { categorySlug: 'motors', subcategorySlug: 'motorcycle-gear', labelAr: 'خوذ وملابس دراجات', labelEn: 'Motorcycle Gear' },
+  'biker jacket': { categorySlug: 'motors', subcategorySlug: 'motorcycle-gear', labelAr: 'خوذ وملابس دراجات', labelEn: 'Motorcycle Gear' },
+
   // ═══════════ REAL ESTATE / FOR SALE ═══════════
   'شقة': { categorySlug: 'real-estate', subcategorySlug: 'apartments-for-sale', labelAr: 'شقق للبيع', labelEn: 'Apartments for Sale' },
   'شقه': { categorySlug: 'real-estate', subcategorySlug: 'apartments-for-sale', labelAr: 'شقق للبيع', labelEn: 'Apartments for Sale' },
