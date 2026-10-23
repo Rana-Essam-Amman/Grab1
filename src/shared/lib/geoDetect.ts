@@ -5,17 +5,30 @@
  *   3. navigator.language
  *   4. Fallback 'JO'
  *
- * Returns the best-guess MarketCode and the detection source.
+ * Returns the best-guess MarketCode, the detection source, and explicit
+ * unsupported flag so callers can distinguish:
+ *   - "user is outside the 5 supported countries"  → isUnsupported = true
+ *   - "we could not detect anything"               → source = 'fallback'
  */
 
 export type MarketCode = 'JO' | 'SA' | 'LB' | 'PS' | 'SY';
-export type GeoSource = 'storage' | 'ip' | 'timezone' | 'language' | 'fallback';
+export type GeoSource =
+  | 'storage'
+  | 'ip'
+  | 'timezone'
+  | 'language'
+  | 'fallback'
+  | 'unsupported';
 
 export interface GeoResult {
   readonly country: MarketCode;
   readonly source: GeoSource;
-  /** True when the detected country is one of the 5 supported markets. */
+  /** True iff `country` came from a real supported detection. */
   readonly isSupported: boolean;
+  /** True iff IP detection returned a country outside SUPPORTED (e.g., 'US'). */
+  readonly isUnsupported: boolean;
+  /** Raw ISO country when isUnsupported (e.g., 'US'), for logging/debugging. */
+  readonly detectedIso?: string;
 }
 
 const SUPPORTED: readonly MarketCode[] = ['JO', 'SA', 'LB', 'PS', 'SY'];
@@ -65,18 +78,26 @@ function fromLanguage(): MarketCode | null {
   return null;
 }
 
-async function fromIp(): Promise<MarketCode | null> {
+type IpResult =
+  | { status: 'supported'; country: MarketCode }
+  | { status: 'unsupported'; iso: string }
+  | { status: 'error' };
+
+async function fromIp(): Promise<IpResult> {
   try {
     const res = await fetch('/api/geo', { cache: 'force-cache' });
-    if (!res.ok) return null;
+    if (!res.ok) return { status: 'error' };
     const data = await res.json();
-    if (data && SUPPORTED.includes(data.country)) {
-      return data.country as MarketCode;
+    if (!data || typeof data.country !== 'string') return { status: 'error' };
+    const iso = String(data.country).toUpperCase();
+    if (SUPPORTED.includes(iso as MarketCode)) {
+      return { status: 'supported', country: iso as MarketCode };
     }
+    return { status: 'unsupported', iso };
   } catch {
-    // offline / no function / CORS — ignore
+    // offline / no function / CORS — treat as error
+    return { status: 'error' };
   }
-  return null;
 }
 
 /**
@@ -85,13 +106,53 @@ async function fromIp(): Promise<MarketCode | null> {
  */
 export async function detectCountry(): Promise<GeoResult> {
   const ip = await fromIp();
-  if (ip) return { country: ip, source: 'ip', isSupported: true };
 
+  if (ip.status === 'supported') {
+    return {
+      country: ip.country,
+      source: 'ip',
+      isSupported: true,
+      isUnsupported: false,
+    };
+  }
+
+  if (ip.status === 'unsupported') {
+    // User is outside the 5 supported markets. Placeholder country = JO,
+    // but flagged explicitly so callers do not treat this as a real JO user.
+    return {
+      country: 'JO',
+      source: 'unsupported',
+      isSupported: false,
+      isUnsupported: true,
+      detectedIso: ip.iso,
+    };
+  }
+
+  // ip.status === 'error' — try timezone, then language, then fallback.
   const tz = fromTimezone();
-  if (tz) return { country: tz, source: 'timezone', isSupported: true };
+  if (tz) {
+    return {
+      country: tz,
+      source: 'timezone',
+      isSupported: true,
+      isUnsupported: false,
+    };
+  }
 
   const lang = fromLanguage();
-  if (lang) return { country: lang, source: 'language', isSupported: true };
+  if (lang) {
+    return {
+      country: lang,
+      source: 'language',
+      isSupported: true,
+      isUnsupported: false,
+    };
+  }
 
-  return { country: 'JO', source: 'fallback', isSupported: false };
+  return {
+    country: 'JO',
+    source: 'fallback',
+    isSupported: false,
+    isUnsupported: false,
+  };
 }
