@@ -8,7 +8,16 @@ export function initPosthog(): void {
   const key = import.meta.env.VITE_POSTHOG_KEY;
   const host = import.meta.env.VITE_POSTHOG_HOST || 'https://eu.i.posthog.com';
 
+  console.log('[PostHog Debug] Initialization triggered.');
+  console.log('[PostHog Debug] Env check:', {
+    hasKey: Boolean(key),
+    keyPrefix: key ? key.substring(0, 4) : 'MISSING',
+    host: host,
+    mode: import.meta.env.MODE,
+  });
+
   if (!key || typeof key !== 'string' || key.trim() === '') {
+    console.warn('[PostHog Debug] No valid VITE_POSTHOG_KEY found. Analytics is disabled.');
     isInitialized = true;
     return;
   }
@@ -25,6 +34,7 @@ export function initPosthog(): void {
       mask_all_element_attributes: true,
       loaded: () => { isInitialized = true; },
     });
+    console.log('[PostHog Debug] PostHog init called successfully.');
     isInitialized = true;
   } catch (error) {
     console.warn('[PostHog] Failed to initialize:', error);
