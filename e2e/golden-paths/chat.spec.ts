@@ -16,6 +16,17 @@ function filterExpectedAuth400s(errors: string[]): string[] {
   });
 }
 
+test.beforeEach(async ({ chatReadyPage }) => {
+  // Mock external IP API to prevent CORS/Network errors in CI
+  await chatReadyPage.route('**/ipapi.co/**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ country_code: 'JO' }),
+    });
+  });
+});
+
 test.describe('Chat Golden Path', () => {
   test('Messages tab shows the mocked conversation', async ({ chatReadyPage }) => {
     const consoleErrors = setupConsoleErrorListener(chatReadyPage);
