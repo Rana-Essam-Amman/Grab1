@@ -68,11 +68,11 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
   const draftMarket = myMarket ?? currentBrowseMarket;
 
   const startPostFlow = useCallback(() => {
-    if (!canPostInMarket) return;
+    if (!canPostInMarket || freeRemaining <= 0) return;
     draftStartPostFlow(); setAiFlowPending(true);
     capture(EVENTS.LISTING_STARTED, { market: draftMarket ?? 'unknown' });
     navigateTo('post-category');
-  }, [canPostInMarket, draftStartPostFlow, setAiFlowPending, navigateTo, draftMarket]);
+  }, [canPostInMarket, freeRemaining, draftStartPostFlow, setAiFlowPending, navigateTo, draftMarket]);
 
   return { isArabic, handleBack, startPostFlow, canPostInMarket, myMarket, freeLimit, freeRemaining, updateUserMarket };
 };
