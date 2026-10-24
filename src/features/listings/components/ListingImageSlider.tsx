@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Crown } from 'iconsax-react';
 import { Badge } from '@/shared/ui/Badge';
 import { BookmarkHeartButton } from '@/shared/components/BookmarkHeartButton';
@@ -20,7 +20,6 @@ export interface ListingImageSliderProps {
   readonly onStartChat?: () => void;
 }
 
-// Clamp extreme ratios so the frame never becomes too tall or too wide.
 const MIN_RATIO = 3 / 4;
 const MAX_RATIO = 16 / 9;
 const DEFAULT_RATIO = 4 / 3;
@@ -39,7 +38,12 @@ export const ListingImageSlider: React.FC<ListingImageSliderProps> = React.memo(
 }) => {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [ratio, setRatio] = useState<number>(DEFAULT_RATIO);
+  const [imgError, setImgError] = useState(false);
   const { goNext, goPrev, handleTouchStart, handleTouchEnd } = useImageSwipe({ images, activeIdx, onChangeIdx });
+
+  useEffect(() => {
+    setImgError(false);
+  }, [activeIdx, images[activeIdx]]);
 
   if (!images || images.length === 0) {
     return (
@@ -65,17 +69,24 @@ export const ListingImageSlider: React.FC<ListingImageSliderProps> = React.memo(
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        <img
-          key={images[activeIdx]}
-          src={toOptimizedImageUrl(images[activeIdx], { width: 1200, quality: 82 })}
-          alt={`${title || 'Listing'} - ${activeIdx + 1}`}
-          onLoad={handleLoad}
-          loading={activeIdx === 0 ? 'eager' : 'lazy'}
-          decoding="async"
-          {...(activeIdx === 0 ? { fetchPriority: 'high' as const } : {})}
-          className="w-full h-full object-cover object-center cursor-zoom-in"
-          onClick={() => setIsLightboxOpen(true)}
-        />
+        {imgError ? (
+          <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground text-sm">
+            {isArabic ? 'تعذر تحميل الصورة' : 'Failed to load image'}
+          </div>
+        ) : (
+          <img
+            key={images[activeIdx]}
+            src={toOptimizedImageUrl(images[activeIdx], { width: 1200, quality: 82 })}
+            alt={`${title || 'Listing'} - ${activeIdx + 1}`}
+            onLoad={handleLoad}
+            onError={() => setImgError(true)}
+            loading={activeIdx === 0 ? 'eager' : 'lazy'}
+            decoding="async"
+            {...(activeIdx === 0 ? { fetchPriority: 'high' as const } : {})}
+            className="w-full h-full object-cover object-center cursor-zoom-in"
+            onClick={() => setIsLightboxOpen(true)}
+          />
+        )}
         {isPremium && (
           <div className="absolute top-3 start-3 z-20">
             <Badge variant="warning" size="md" className="flex items-center gap-1 shadow-sm">
