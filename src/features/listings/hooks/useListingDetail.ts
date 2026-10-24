@@ -5,6 +5,7 @@ import { useListings } from '@/hooks/useListings';
 import { useChat } from '@/hooks/useChat';
 import { useAuth } from '@/hooks/useAuth';
 import { isValidMarket } from '@/shared/lib/marketGate';
+import { globalStorage } from '@/shared/lib/marketStorage';
 import { useListingDerivedData, getWhatsAppUrl } from '../helpers/listingDerivedData';
 import { WhatsAppIntent, composeIntentMessage } from '../helpers/whatsappIntents';
 import { showChatUnavailable, showChatOpenFailed, showChatCrossMarket } from '../helpers/chatErrorToast';
@@ -64,7 +65,7 @@ export function useListingDetail(): UseListingDetailReturn {
   const handleStartChat = useCallback(async () => {
     if (!listing) return;
     if (authStatus === 'unauthenticated' || !user?.id || isAnonymous) {
-      localStorage.setItem('pending_chat_listing', listing.id);
+      globalStorage().set('pending_chat_listing', listing.id);
       navigateTo('login');
       return;
     }
