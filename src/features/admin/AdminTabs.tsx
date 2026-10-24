@@ -91,7 +91,17 @@ export const AdminTabs: React.FC<{ market: MarketCode; actions: any; actionLoadi
               <div className="flex gap-1.5 pt-1">
                 <button onClick={async () => { await actions.dismissReport(r.id); loadTab(); }} disabled={actionLoading} className="px-2 py-1 bg-surface border border-border rounded text-[11px] text-ink cursor-pointer">تجاهل</button>
                 <button onClick={async () => { await actions.hideListing(r.listing_id); loadTab(); }} disabled={actionLoading} className="px-2 py-1 bg-amber-500/10 text-amber-600 rounded text-[11px] cursor-pointer">اخفي الإعلان</button>
-                <button onClick={async () => { const reason = prompt('سبب الحظر:'); if (reason) { await actions.banUser(r.reporter_id, reason); loadTab(); } }} disabled={actionLoading} className="px-2 py-1 bg-red-500/10 text-red-600 rounded text-[11px] cursor-pointer">احظر</button>
+                <button onClick={async () => {
+                  if (!r.listing_owner_id) {
+                    alert(isArabic ? 'لا يمكن حظر البائع: معرّف البائع غير متوفر' : 'Cannot ban seller: owner ID missing');
+                    return;
+                  }
+                  const confirmMsg = isArabic
+                    ? `حظر البائع "${r.listing_owner_name || 'غير معروف'}"؟\n\nالسبب:`
+                    : `Ban seller "${r.listing_owner_name || 'unknown'}"?\n\nReason:`;
+                  const reason = prompt(confirmMsg);
+                  if (reason) { await actions.banUser(r.listing_owner_id, reason); loadTab(); }
+                }} disabled={actionLoading} className="px-2 py-1 bg-red-500/10 text-red-600 rounded text-[11px] cursor-pointer">احظر البائع</button>
               </div>
             </div>
           ))}
