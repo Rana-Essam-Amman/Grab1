@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { devAssertMarketIsolation } from '../helpers/devAssertMarketIsolation';
 import { useUI } from '@/hooks/useUI';
 import { useListings } from '@/hooks/useListings';
@@ -13,7 +13,7 @@ import { ScreenType } from '@/store/ui.slice';
 import { showChatUnavailable, showChatOpenFailed, showChatCrossMarket } from '../helpers/chatErrorToast';
 import { useListingDelete } from './useListingDelete';
 import { useRevealPhone } from './useRevealPhone';
-import { supabase } from '@/shared/lib/supabase';
+import { useFetchMissingListing } from './useFetchMissingListing';
 
 export interface UseListingDetailReturn {
   listing: Listing | null; activeCountry: string; isCountryMismatch: boolean;
@@ -28,40 +28,27 @@ export interface UseListingDetailReturn {
 }
 
 export function useListingDetail(): UseListingDetailReturn {
-  const { isArabic, goBack, selectedListingId, setSelectedListingId, setSelectedThreadId, setSelectedSellerPhone, navigateTo, browseCountryCode } = useUI();
+  const ui = useUI();
+  const { isArabic, goBack, selectedListingId, setSelectedListingId, setSelectedThreadId, setSelectedSellerPhone, navigateTo, browseCountryCode } = ui;
   const { getListing } = useListings();
   const { openConversation } = useChat();
   const { authStatus, user, isAnonymous } = useAuth();
+  
   const [activePhotoIdx, setActivePhotoIdx] = useState(0);
-  const [showShare, setShowShare] = useState(false); const [showReport, setShowReport] = useState(false); const [showWhatsAppSheet, setShowWhatsAppSheet] = useState(false);
+  const [showShare, setShowShare] = useState(false);
+  const [showReport, setShowReport] = useState(false);
+  const [showWhatsAppSheet, setShowWhatsAppSheet] = useState(false);
   
   const localListing = selectedListingId ? getListing(selectedListingId) || null : null;
-  const [listing, setListing] = useState<Listing | null>(localListing);
-
-  useEffect(() => {
-    setListing(localListing);
-  }, [localListing]);
-
-  useEffect(() => {
-    if (!selectedListingId || listing) return;
-    let cancelled = false;
-    (async () => {
-      const { data, error } = await supabase.from('listings').select('*').eq('id', selectedListingId).single();
-      if (cancelled) return;
-      if (error || !data) {
-        setListing(null);
-      } else {
-        setListing(data as Listing);
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [selectedListingId, listing]);
+  const fetchedListing = useFetchMissingListing(selectedListingId, localListing);
+  const listing = localListing || fetchedListing;
 
   const activeCountry = isValidMarket(browseCountryCode) ? browseCountryCode : 'JO';
   const isCountryMismatch = useMemo(() => Boolean(listing && listing.countryCode !== activeCountry), [listing, activeCountry]);
   devAssertMarketIsolation(listing, activeCountry);
-  const derived = useListingDerivedData(listing, isArabic); const isAuthenticated = authStatus === 'authenticated';
-
+  
+  const derived = useListingDerivedData(listing, isArabic);
+  const isAuthenticated = authStatus === 'authenticated';
   const { revealPhone, isRevealing: isRevealingPhone } = useRevealPhone(listing?.id, listing?.sellerPhone, isArabic, listing?.countryCode);
 
   const handleCall = useCallback(async () => {
@@ -84,11 +71,14 @@ export function useListingDetail(): UseListingDetailReturn {
   }, [user, listing]);
 
   const handleSelectSeller = useCallback(() => {
-    if (!listing) return; const key = listing.userId || listing.sellerPhone; if (key) { setSelectedSellerPhone(key); navigateTo('seller-profile'); }
+    if (!listing) return;
+    const key = listing.userId || listing.sellerPhone;
+    if (key) { setSelectedSellerPhone(key); navigateTo('seller-profile'); }
   }, [listing, setSelectedSellerPhone, navigateTo]);
 
   const handleStartChat = useCallback(async () => {
-    if (!listing) return; if (authStatus === 'unauthenticated' || !user?.id || isAnonymous) { navigateTo('login'); return; }
+    if (!listing) return;
+    if (authStatus === 'unauthenticated' || !user?.id || isAnonymous) { navigateTo('login'); return; }
     if (isOwner) return;
     if (!listing.userId) { showChatUnavailable(isArabic); return; }
     try {
