@@ -110,11 +110,14 @@ export const createWishlistActions = (set: SetFn, get: GetFn) => ({
     for (const mc of markets) {
       const local = getWishlistForMarket(mc);
       if (!local || local.length === 0) continue;
-      // Idempotent: skip if DB already has rows for this market
+      
       const { data } = await fetchWishlist(userId, mc);
-      if (data && data.length > 0) continue;
+      const serverIds = new Set(data?.map((d) => d.listingId) || []);
+      
       for (const listingId of local) {
-        await addToWishlist(userId, listingId, mc);
+        if (!serverIds.has(listingId)) {
+          await addToWishlist(userId, listingId, mc);
+        }
       }
     }
   },
