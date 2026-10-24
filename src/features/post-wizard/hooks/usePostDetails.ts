@@ -55,7 +55,10 @@ export function usePostDetails() {
       const draftData = buildDraftData({ title: title.trim(), price: price.trim(), description: description.trim(), postDraft, fields, values, isArabic });
       updatePostDraft(draftData);
       if (authStatus !== 'authenticated' || isAnonymous) { setPendingPublish(browseCountryCode, 'post-details'); navigateTo('login'); return; }
-      if (!requirePhoneForPublish(() => void handleContinue())) return;
+      if (!requirePhoneForPublish(() => void handleContinue())) {
+        publishLock.current = false; // Release lock before user interacts with the modal
+        return;
+      }
       const prepared = preparePublish({ postDraft, draftData, user: getCurrentUser(), browseCountryCode, activeCurrency });
       if (!prepared) return;
 
