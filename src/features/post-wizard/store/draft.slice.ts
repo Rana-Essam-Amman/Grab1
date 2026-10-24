@@ -18,17 +18,32 @@ function generateDraftId(): string {
 }
 
 function getInitialDraft(): PostDraft {
-  const uiState = getUISnapshot();
-  const browseCountryCode = getBrowseCountryCode();
-  const isArabic = uiState.locale === 'ar';
-  const fallback = DEFAULT_REGIONAL_CAPITALS[browseCountryCode] || DEFAULT_REGIONAL_CAPITALS.JO;
+  let uiState: ReturnType<typeof getUISnapshot> | null = null;
+  let browseCountryCode: ReturnType<typeof getBrowseCountryCode> = 'JO';
+
+  try {
+    uiState = getUISnapshot();
+    browseCountryCode = getBrowseCountryCode();
+  } catch {
+    // The UI getter may not be registered during module initialization.
+    // Use Jordan defaults until the UI store becomes available.
+  }
+
+  const isArabic = uiState?.locale === 'ar';
+  const fallback =
+    DEFAULT_REGIONAL_CAPITALS[browseCountryCode] ||
+    DEFAULT_REGIONAL_CAPITALS.JO;
 
   return {
     categorySlug: 'motors',
     subcategorySlug: 'cars',
     photos: [],
-    city: isArabic ? (uiState.browseCityAr || fallback.cityAr) : (uiState.browseCityEn || fallback.cityEn),
-    neighborhood: isArabic ? fallback.neighborhoodAr : fallback.neighborhoodEn,
+    city: isArabic
+      ? (uiState?.browseCityAr || fallback.cityAr)
+      : (uiState?.browseCityEn || fallback.cityEn),
+    neighborhood: isArabic
+      ? fallback.neighborhoodAr
+      : fallback.neighborhoodEn,
     site: '',
     noteText: '',
     variantSeed: 0,
@@ -86,6 +101,7 @@ export const useDraftStore = create<DraftState>()((set, get) => ({
   },
 }));
 
+// Initial rehydrate uses the CURRENT market at boot time.
 draftRepository.getCurrent().then((draft) => {
   if (draft) {
     useDraftStore.setState({
