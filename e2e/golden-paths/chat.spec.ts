@@ -4,14 +4,14 @@ import { setupConsoleErrorListener, expectNoConsoleErrors } from '../helpers/ass
 
 /**
  * The chatReadyPage fixture blocks /auth/v1/** so the seeded user persists.
- * The browser logs expected 400s from those blocked calls. We filter ONLY
- * those out before asserting no console errors. Any other console error
- * still fails the test.
+ * The browser logs expected 400s from those blocked calls. 
+ * It also logs CORS errors from the external IP API. We filter BOTH out.
  */
 function filterExpectedAuth400s(errors: string[]): string[] {
   return errors.filter((msg) => {
     if (/auth\/v1/.test(msg)) return false;
     if (/Failed to load resource.*status of 40[01]/.test(msg)) return false;
+    if (/ipapi\.co/.test(msg)) return false; // Ignore IP API CORS errors
     return true;
   });
 }
