@@ -6,4 +6,5 @@ export const EVENTS = {
   SEARCH_PERFORMED: 'search_performed',
   LISTING_VIEWED: 'listing_viewed',
   CONTACT_SELLER_CLICKED: 'contact_seller_clicked',
+  SIGNUP_COMPLETED: 'signup_completed',
 } as const;
