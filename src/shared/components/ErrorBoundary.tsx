@@ -1,6 +1,7 @@
 import React from 'react';
 import { globalStorage } from '../lib/marketStorage';
 import { Warning2 } from 'iconsax-react';
+import { Sentry } from '@/config/sentry.init';
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -33,6 +34,9 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    try {
+      Sentry.captureException(error, { contexts: { react: errorInfo } });
+    } catch {}
     try {
       globalStorage().set('catch_crash_last', {
         message: error.message,
