@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, Dispatch, SetStateAction } from 'react';
+import { useState, useMemo, useCallback, useEffect, Dispatch, SetStateAction } from 'react';
 import { useUI } from '@/hooks/useUI';
 import { useListings } from '@/hooks/useListings';
 import { useAuth } from '@/hooks/useAuth';
@@ -58,6 +58,19 @@ export function useExploreListings(): UseExploreListingsReturn {
   const setFilterMode = useCallback<Dispatch<SetStateAction<'city' | 'all'>>>((action) => {
     setUserFilterMode((prev) => typeof action === 'function' ? action(prev ?? 'all') : action);
   }, []);
+
+  // Reset pagination when search or filters change
+  useEffect(() => {
+    useListingsStore.getState().setPage(0);
+  }, [
+    searchQuery,
+    categoryFilter,
+    subcategoryFilter,
+    minPriceFilter,
+    maxPriceFilter,
+    activeNeighborhood,
+    filterMode,
+  ]);
 
   const displayListings = useMemo(() => {
     const hasActiveSearch = searchQuery.trim().length > 0; const geoHint = hasActiveSearch ? detectGeoHint(searchQuery) : null;
