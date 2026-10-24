@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useListingDetail } from '../hooks/useListingDetail';
+import { capture } from '@/shared/analytics/posthog';
+import { EVENTS } from '@/shared/analytics/events';
 import { ListingDetailHeader } from '../components/ListingDetailHeader';
 import { ListingAntiFraudBanner } from '../components/ListingAntiFraudBanner';
 import { ListingImageSlider } from '../components/ListingImageSlider';
@@ -21,6 +23,10 @@ export const ListingDetailScreen: React.FC = () => {
   const detail = useListingDetail();
   const isAdmin = useIsAdmin();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  useEffect(() => {
+    capture(EVENTS.LISTING_VIEWED);
+  }, []);
 
   if (!detail.listing) return <ListingNotFound isArabic={detail.isArabic} onGoBack={detail.goBack} />;
 

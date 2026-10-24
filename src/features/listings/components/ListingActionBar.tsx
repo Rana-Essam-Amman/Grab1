@@ -2,6 +2,8 @@ import React from 'react';
 import { useTranslation } from '@/shared/i18n';
 import { Call, Whatsapp, Message } from 'iconsax-react';
 import { getChatActionState } from '../helpers/chatActionState';
+import { capture } from '@/shared/analytics/posthog';
+import { EVENTS } from '@/shared/analytics/events';
 
 export interface ListingActionBarProps {
   isArabic: boolean;
@@ -50,7 +52,7 @@ export const ListingActionBar: React.FC<ListingActionBarProps> = React.memo((pro
       <div className="flex items-center gap-2.5">
         <button
           data-testid="listing-chat-button"
-          onClick={onStartChat}
+          onClick={() => { capture(EVENTS.CONTACT_SELLER_CLICKED, { method: 'chat' }); onStartChat(); }}
           disabled={chatState.disabled}
           type="button"
           className={`flex-1 h-12 rounded-full flex items-center justify-center gap-2 font-bold text-sm shadow-sm transition-all ${
@@ -65,7 +67,7 @@ export const ListingActionBar: React.FC<ListingActionBarProps> = React.memo((pro
         </button>
 
         <button
-          onClick={onWhatsAppClick}
+          onClick={() => { capture(EVENTS.CONTACT_SELLER_CLICKED, { method: 'whatsapp' }); onWhatsAppClick(); }}
           disabled={waDisabled}
           type="button"
           className={`w-14 h-14 rounded-full flex items-center justify-center shrink-0 shadow-md transition-all ${
@@ -80,7 +82,7 @@ export const ListingActionBar: React.FC<ListingActionBarProps> = React.memo((pro
         </button>
 
         <button
-          onClick={onCall}
+          onClick={() => { capture(EVENTS.CONTACT_SELLER_CLICKED, { method: 'call' }); onCall(); }}
           disabled={callDisabled}
           type="button"
           className={`flex-1 h-12 rounded-full flex items-center justify-center gap-2 font-bold text-sm shadow-sm transition-all ${

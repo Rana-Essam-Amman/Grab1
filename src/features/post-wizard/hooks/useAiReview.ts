@@ -12,6 +12,7 @@ import { useAiReviewAttributes } from './useAiReviewAttributes';
 import type { UseAiReviewReturn } from './useAiReview.types';
 import { useRegenerateListing } from './useRegenerateListing';
 import { getCurrentUser, requirePhoneForPublish } from '@/features/auth/helpers/publishPhoneGuard';
+import { capture } from '@/shared/analytics/posthog'; import { EVENTS } from '@/shared/analytics/events';
 export type { UseAiReviewReturn } from './useAiReview.types';
 export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => void } {
   const { postDraft, updatePostDraft } = usePostWizard();
@@ -73,8 +74,7 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
         setError(result.error || 'فشل نشر الإعلان');
         return;
       }
-      resetPostDraft();
-      navigateTo('post-publish-success');
+      resetPostDraft(); capture(EVENTS.LISTING_PUBLISHED, { flow: 'ai' }); navigateTo('post-publish-success');
     } catch {
       setError('فشل نشر الإعلان');
     } finally {

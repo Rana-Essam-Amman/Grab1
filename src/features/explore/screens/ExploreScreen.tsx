@@ -9,6 +9,8 @@ import { ExploreListingsSections } from '../components/ExploreListingsSections';
 import { SearchRelatedBanner } from '@/features/listings/components/SearchRelatedBanner';
 import { SyncStatusBanner } from '@/shared/components/SyncStatusBanner';
 import { useListings } from '@/hooks/useListings';
+import { capture } from '@/shared/analytics/posthog';
+import { EVENTS } from '@/shared/analytics/events';
 
 function useDebouncedValue<T>(value: T, delayMs: number): T {
   const [debounced, setDebounced] = React.useState(value);
@@ -46,6 +48,7 @@ export const ExploreScreen: React.FC = () => {
 
   const handleSearchSubmit = useCallback(() => {
     if (!searchInput.trim()) return;
+    capture(EVENTS.SEARCH_PERFORMED, { query: searchInput.trim() });
     setSearchQuery(searchInput.trim());
   }, [searchInput, setSearchQuery]);
 
