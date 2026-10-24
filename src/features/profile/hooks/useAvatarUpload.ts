@@ -41,7 +41,7 @@ export function useAvatarUpload(userId: string | null): {
 
       const { error: upErr } = await supabase.storage
         .from(BUCKET)
-        .upload(path, blob, { contentType: mime, upsert: false });
+        .upload(path, blob, { contentType: mime, upsert: false, cacheControl: '31536000' });
 
       if (upErr) {
         setError(upErr.message);
@@ -59,4 +59,4 @@ export function useAvatarUpload(userId: string | null): {
   }, [userId]);
 
   return { upload, uploading, error };
-        }
+}
