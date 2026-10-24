@@ -29,14 +29,24 @@ export function useSupabaseAuthListener(): void {
 
       if (event === 'SIGNED_OUT') {
         if (!isInitialized) return;
-        useAuthStore.setState({ user: null, sessionToken: null, authStatus: 'unauthenticated', isAnonymous: false, profileHydrated: false });
+        useAuthStore.setState({
+          user: null,
+          sessionToken: null,
+          authStatus: 'unauthenticated',
+          isAnonymous: false,
+          profileHydrated: false,
+        });
+        useListingsStore.setState({ listings: [], wishlist: [] });
         return;
       }
 
       if (!session) return;
 
       if (event === 'TOKEN_REFRESHED') {
-        useAuthStore.setState({ sessionToken: session.access_token, isAnonymous: isAnonymousUser(session.user) });
+        useAuthStore.setState({
+          sessionToken: session.access_token,
+          isAnonymous: isAnonymousUser(session.user),
+        });
         return;
       }
 
@@ -47,7 +57,13 @@ export function useSupabaseAuthListener(): void {
         const stillAnon = isAnonymousUser(session.user);
         const wasAnon = useAuthStore.getState().isAnonymous;
 
-        useAuthStore.setState({ user, sessionToken: session.access_token, authStatus: 'authenticated', isAnonymous: stillAnon, profileHydrated: false });
+        useAuthStore.setState({
+          user,
+          sessionToken: session.access_token,
+          authStatus: 'authenticated',
+          isAnonymous: stillAnon,
+          profileHydrated: false,
+        });
         void hydrateProfile();
 
         if (event === 'SIGNED_IN') {
