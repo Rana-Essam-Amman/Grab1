@@ -35,7 +35,9 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     try {
-      Sentry.captureException(error, { contexts: { react: errorInfo } });
+      Sentry.captureException(error, {
+        extra: { componentStack: errorInfo.componentStack },
+      });
     } catch {}
     try {
       globalStorage().set('catch_crash_last', {
