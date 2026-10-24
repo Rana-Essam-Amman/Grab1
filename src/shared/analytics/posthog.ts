@@ -8,6 +8,14 @@ export function initPosthog(): void {
   const key = import.meta.env.VITE_POSTHOG_KEY;
   const host = import.meta.env.VITE_POSTHOG_HOST || 'https://eu.i.posthog.com';
 
+  console.log('[PostHog Debug] Initialization triggered.');
+  console.log('[PostHog Debug] Env check:', {
+    hasKey: Boolean(key),
+    keyPrefix: key ? key.substring(0, 4) : 'MISSING',
+    host: host,
+    mode: import.meta.env.MODE,
+  });
+
   if (!key || typeof key !== 'string' || key.trim() === '') {
     isInitialized = true;
     return;
