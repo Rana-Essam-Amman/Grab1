@@ -1,4 +1,5 @@
 import { supabase } from '@/shared/lib/supabase';
+import { Sentry } from '@/config/sentry.init';
 
 export type LogSeverity = 'info' | 'warn' | 'error';
 
@@ -14,6 +15,21 @@ export interface ErrorPayload {
 const BUILD_VERSION = (import.meta.env.VITE_APP_VERSION as string | undefined) || '1.0.0';
 
 export async function logError(payload: ErrorPayload): Promise<void> {
+  // Forward to Sentry (no-op if VITE_SENTRY_DSN is not configured)
+  try {
+    const error = new Error(payload.message);
+    if (payload.stack) error.stack = payload.stack;
+    Sentry.captureException(error, {
+      extra: {
+        componentStack: payload.componentStack,
+        url: payload.url,
+        metadata: payload.metadata,
+        severity: payload.severity ?? 'error',
+        buildVersion: BUILD_VERSION,
+      },
+    });
+  } catch {}
+
   try {
     const { data: userData } = await supabase.auth.getUser();
     await supabase.from('error_logs').insert({
