@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useUIStore } from './store/ui.slice';
 import { useAuthStore, useSupabaseAuthListener } from '@/features/auth';
 import { useListingsStore, useSupabaseListingsSync } from '@/features/listings';
+import { useDraftStore } from '@/features/post-wizard/store/draft.slice';
 import { registerListingsGetterForMonetization } from '@/features/monetization/store/deps';
 import { registerUIGetter } from '@/shared/store-getters/ui.getter';
 import { registerAuthGetter } from '@/shared/store-getters/auth.getter';
@@ -31,7 +32,22 @@ registerListingsGetterForMonetization(() => useListingsStore.getState().listings
 
 export default function App() {
   const locale = useUIStore((state) => state.locale);
+  const browseCountryCode = useUIStore((state) => state.browseCountryCode);
+  const resetDraftOnMarketChange = useDraftStore((state) => state.resetDraftOnMarketChange);
   const currentUserId = useAuthStore((s) => s.user?.id ?? null);
+
+  // Prevent resetting the draft on the initial boot (only reset on actual changes)
+  const initialMarketRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (initialMarketRef.current === null) {
+      initialMarketRef.current = browseCountryCode;
+      return;
+    }
+    if (initialMarketRef.current !== browseCountryCode) {
+      resetDraftOnMarketChange();
+      initialMarketRef.current = browseCountryCode;
+    }
+  }, [browseCountryCode, resetDraftOnMarketChange]);
 
   useSupabaseAuthListener();
   useSupabaseListingsSync();
