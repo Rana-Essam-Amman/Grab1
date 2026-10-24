@@ -11,8 +11,8 @@ import {
   estimateDataUrlBytes,
 } from './imageUtils';
 
-const MAX_DIMENSION = 1920;
-const JPEG_QUALITY = 0.85;
+const MAX_DIMENSION = 1600;
+const JPEG_QUALITY = 0.75;
 const SKIP_THRESHOLD_BYTES = 500 * 1024;
 
 export interface CompressResult {
