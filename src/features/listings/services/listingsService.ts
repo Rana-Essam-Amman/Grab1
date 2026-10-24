@@ -50,49 +50,47 @@ export async function searchListings(
 }
 
 export interface CreateListingInput {
-  readonly title: string;
-  readonly description: string;
-  readonly price: string;
-  readonly currency: string;
-  readonly countryCode: "JO" | "LB" | "PS" | "SY" | "SA";
-  readonly city: string;
-  readonly neighborhood?: string;
-  readonly categorySlug: string;
-  readonly subcategorySlug?: string;
-  readonly images: string[];
-  readonly imageWidth?: number;
-  readonly imageHeight?: number;
+  readonly title: string; readonly description: string; readonly price: string; readonly currency: string;
+  readonly countryCode: "JO" | "LB" | "PS" | "SY" | "SA"; readonly city: string; readonly neighborhood?: string;
+  readonly categorySlug: string; readonly subcategorySlug?: string; readonly images: string[];
+  readonly imageWidth?: number; readonly imageHeight?: number;
   readonly attributes?: Array<{ key?: string; label: string; value: string }>;
-  readonly sellerName?: string;
-  readonly sellerPhone?: string;
+  readonly sellerName?: string; readonly sellerPhone?: string;
 }
 
 export async function createListing(input: CreateListingInput): Promise<{ data: Listing | null; error: string | null }> {
   try {
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user) return { data: null, error: 'Not authenticated' };
-    const { data, error } = await supabase
-      .from('listings')
-      .insert({
-        user_id: userData.user.id,
-        title: input.title,
-        description: input.description,
-        price: input.price,
-        currency: input.currency,
-        country_code: input.countryCode,
-        city: input.city,
-        neighborhood: input.neighborhood || null,
-        category_slug: input.categorySlug,
-        subcategory_slug: input.subcategorySlug || null,
-        images: input.images,
-        image_width: input.imageWidth ?? null,
-        image_height: input.imageHeight ?? null,
-        attributes: input.attributes || [],
-        seller_name: input.sellerName || null,
-        seller_phone: input.sellerPhone || null,
-      })
-      .select(LISTING_COLUMNS)
-      .single();
+
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      timer = setTimeout(() => reject(new Error('Network timeout. Please check your connection.')), 15000);
+    });
+
+    const insertPromise = supabase.from('listings').insert({
+      user_id: userData.user.id,
+      title: input.title,
+      description: input.description,
+      price: input.price,
+      currency: input.currency,
+      country_code: input.countryCode,
+      city: input.city,
+      neighborhood: input.neighborhood || null,
+      category_slug: input.categorySlug,
+      subcategory_slug: input.subcategorySlug || null,
+      images: input.images,
+      image_width: input.imageWidth ?? null,
+      image_height: input.imageHeight ?? null,
+      attributes: input.attributes || [],
+      seller_name: input.sellerName || null,
+      seller_phone: input.sellerPhone || null,
+    }).select(LISTING_COLUMNS).single();
+
+    const { data, error } = await Promise.race([insertPromise, timeoutPromise]).finally(() => {
+      if (timer) clearTimeout(timer);
+    });
+
     if (error) return { data: null, error: error.message };
     return { data: rowToListing(data as SupabaseListingRow), error: null };
   } catch (err) {

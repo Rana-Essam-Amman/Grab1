@@ -55,7 +55,14 @@ export class LocalStorageDraftAdapter implements DraftRepository {
   async save(draft: PostDraftWithMeta): Promise<void> {
     const parsed = DRAFT_SCHEMA.safeParse(draft);
     if (!parsed.success) return;
-    this.getStore().set(STORAGE_KEY, parsed.data);
+    try {
+      this.getStore().set(STORAGE_KEY, parsed.data);
+    } catch (error) {
+      if (error instanceof Error && error.name === 'QuotaExceededError') {
+        console.error('[Draft] Storage full. Cannot save draft.');
+      }
+      throw error;
+    }
   }
 
   async clear(): Promise<void> {

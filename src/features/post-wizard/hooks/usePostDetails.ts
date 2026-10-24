@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import { usePostWizard } from './usePostWizard';
 import { useUI } from '@/hooks/useUI';
 import { useAuth } from '@/hooks/useAuth';
@@ -12,6 +12,7 @@ import { capture } from '@/shared/analytics/posthog';
 import { EVENTS } from '@/shared/analytics/events';
 
 export function usePostDetails() {
+  const publishLock = useRef(false);
   const { postDraft, updatePostDraft } = usePostWizard();
   const { resetPostDraft } = useDraft();
   const { authStatus, isAnonymous } = useAuth();
@@ -46,31 +47,37 @@ export function usePostDetails() {
   const canContinue = title.trim().length >= 5 && isPriceValid && missing.length === 0 && hasLocation;
 
   const handleContinue = async () => {
-    setSubmitAttempted(true);
-    if (!canContinue || isPublishing) return;
-    const draftData = buildDraftData({ title: title.trim(), price: price.trim(), description: description.trim(), postDraft, fields, values, isArabic });
-    updatePostDraft(draftData);
-    if (authStatus !== 'authenticated' || isAnonymous) { setPendingPublish(browseCountryCode, 'post-details'); navigateTo('login'); return; }
-    if (!requirePhoneForPublish(() => void handleContinue())) return;
-    const prepared = preparePublish({ postDraft, draftData, user: getCurrentUser(), browseCountryCode, activeCurrency });
-    if (!prepared) return;
-
-    setIsPublishing(true); setError(null);
+    if (publishLock.current) return;
+    publishLock.current = true;
     try {
-      const result = await publishListing(prepared.newListing, prepared.targetMarket, isArabic);
-      if (!result.success) {
-        let errorMsg = result.error || (isArabic ? 'فشل نشر الإعلان' : 'Failed to publish');
-        if (errorMsg.includes('Rate limit') || errorMsg.includes('ACTIVE_LISTING_CAP_REACHED')) errorMsg = isArabic ? 'لقد وصلت للحد الأقصى لعدد الإعلانات المسموح بها حالياً. يرجى المحاولة لاحقاً.' : 'You have reached the maximum allowed listings. Please try again later.';
-        else if (errorMsg.toLowerCase().includes('row-level security')) { setError(isArabic ? 'يجب إضافة رقم هاتف أولاً' : 'Phone required'); navigateTo('profile'); return; }
-        setError(errorMsg); return;
+      setSubmitAttempted(true);
+      if (!canContinue || isPublishing) return;
+      const draftData = buildDraftData({ title: title.trim(), price: price.trim(), description: description.trim(), postDraft, fields, values, isArabic });
+      updatePostDraft(draftData);
+      if (authStatus !== 'authenticated' || isAnonymous) { setPendingPublish(browseCountryCode, 'post-details'); navigateTo('login'); return; }
+      if (!requirePhoneForPublish(() => void handleContinue())) return;
+      const prepared = preparePublish({ postDraft, draftData, user: getCurrentUser(), browseCountryCode, activeCurrency });
+      if (!prepared) return;
+
+      setIsPublishing(true); setError(null);
+      try {
+        const result = await publishListing(prepared.newListing, prepared.targetMarket, isArabic);
+        if (!result.success) {
+          let errorMsg = result.error || (isArabic ? 'فشل نشر الإعلان' : 'Failed to publish');
+          if (errorMsg.includes('Rate limit') || errorMsg.includes('ACTIVE_LISTING_CAP_REACHED')) errorMsg = isArabic ? 'لقد وصلت للحد الأقصى لعدد الإعلانات المسموح بها حالياً. يرجى المحاولة لاحقاً.' : 'You have reached the maximum allowed listings. Please try again later.';
+          else if (errorMsg.toLowerCase().includes('row-level security')) { setError(isArabic ? 'يجب إضافة رقم هاتف أولاً' : 'Phone required'); navigateTo('profile'); return; }
+          setError(errorMsg); return;
+        }
+        resetPostDraft(); setActiveTab('my-ads');
+        capture(EVENTS.LISTING_PUBLISHED, { flow: 'manual' });
+        navigateTo('main');
+      } catch (err) {
+        console.error('[PUBLISH ERROR]', err); setError('فشل نشر الإعلان');
+      } finally {
+        setIsPublishing(false);
       }
-      resetPostDraft(); setActiveTab('my-ads');
-      capture(EVENTS.LISTING_PUBLISHED, { flow: 'manual' });
-      navigateTo('main');
-    } catch (err) {
-      console.error('[PUBLISH ERROR]', err); setError('فشل نشر الإعلان');
     } finally {
-      setIsPublishing(false);
+      publishLock.current = false;
     }
   };
 
