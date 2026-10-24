@@ -33,12 +33,28 @@ export function usePhotoUpload(): UsePhotoUploadReturn {
       setUploading(true);
       setErrors([]);
       try {
-        const results = await Promise.all(filesToRead.map(compressImage));
-        const newPhotos = results.map((r) => r.dataUrl);
-        const existing = postDraft.photos || [];
-        const merged = [...existing, ...newPhotos].slice(0, listingMaxPhotos);
-        updatePostDraft({ photos: merged });
-        capture(EVENTS.PHOTO_UPLOADED, { count: newPhotos.length });
+        const results = await Promise.allSettled(filesToRead.map(compressImage));
+        const newPhotos: string[] = [];
+        let hasRejected = false;
+
+        for (const res of results) {
+          if (res.status === 'fulfilled') {
+            newPhotos.push(res.value.dataUrl);
+          } else {
+            hasRejected = true;
+          }
+        }
+
+        if (hasRejected) {
+          setErrors((prev) => [...prev, 'Some images failed to process. The rest were saved.']);
+        }
+
+        if (newPhotos.length > 0) {
+          const existing = postDraft.photos || [];
+          const merged = [...existing, ...newPhotos].slice(0, listingMaxPhotos);
+          updatePostDraft({ photos: merged });
+          capture(EVENTS.PHOTO_UPLOADED, { count: newPhotos.length });
+        }
       } catch (error) {
         setErrors((prev) => [...prev, 'Failed to process one or more images. Please try again.']);
       } finally {
