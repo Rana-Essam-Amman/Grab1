@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { devAssertMarketIsolation } from '../helpers/devAssertMarketIsolation';
 import { useUI } from '@/hooks/useUI';
 import { useListings } from '@/hooks/useListings';
@@ -13,6 +13,7 @@ import { ScreenType } from '@/store/ui.slice';
 import { showChatUnavailable, showChatOpenFailed, showChatCrossMarket } from '../helpers/chatErrorToast';
 import { useListingDelete } from './useListingDelete';
 import { useRevealPhone } from './useRevealPhone';
+import { supabase } from '@/shared/lib/supabase';
 
 export interface UseListingDetailReturn {
   listing: Listing | null; activeCountry: string; isCountryMismatch: boolean;
@@ -33,7 +34,29 @@ export function useListingDetail(): UseListingDetailReturn {
   const { authStatus, user, isAnonymous } = useAuth();
   const [activePhotoIdx, setActivePhotoIdx] = useState(0);
   const [showShare, setShowShare] = useState(false); const [showReport, setShowReport] = useState(false); const [showWhatsAppSheet, setShowWhatsAppSheet] = useState(false);
-  const listing = selectedListingId ? getListing(selectedListingId) || null : null;
+  
+  const localListing = selectedListingId ? getListing(selectedListingId) || null : null;
+  const [listing, setListing] = useState<Listing | null>(localListing);
+
+  useEffect(() => {
+    setListing(localListing);
+  }, [localListing]);
+
+  useEffect(() => {
+    if (!selectedListingId || listing) return;
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabase.from('listings').select('*').eq('id', selectedListingId).single();
+      if (cancelled) return;
+      if (error || !data) {
+        setListing(null);
+      } else {
+        setListing(data as Listing);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [selectedListingId, listing]);
+
   const activeCountry = isValidMarket(browseCountryCode) ? browseCountryCode : 'JO';
   const isCountryMismatch = useMemo(() => Boolean(listing && listing.countryCode !== activeCountry), [listing, activeCountry]);
   devAssertMarketIsolation(listing, activeCountry);
