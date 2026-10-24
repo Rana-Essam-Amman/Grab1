@@ -18,11 +18,17 @@ import { ShareModal, ReportModal, ErrorBoundary } from '@/shared/components';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { DeleteConfirmDialog } from '../components/DeleteConfirmDialog';
 import { ListingIdBadge } from '@/shared/components/ListingIdBadge';
+import { useSEO } from '@/shared/hooks/useSEO';
 
 export const ListingDetailScreen: React.FC = () => {
   const detail = useListingDetail();
   const isAdmin = useIsAdmin();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  useSEO({
+    title: detail.listing?.title ? `${detail.listing.title} | FOX` : undefined,
+    description: detail.listing?.description,
+  });
 
   useEffect(() => {
     capture(EVENTS.LISTING_VIEWED);
@@ -63,7 +69,6 @@ export const ListingDetailScreen: React.FC = () => {
         {detail.showWhatsAppSheet && detail.listing && (
           <WhatsAppIntentSheet open={detail.showWhatsAppSheet} listing={detail.listing} isArabic={detail.isArabic} onClose={() => detail.setShowWhatsAppSheet(false)} onPick={detail.handleWhatsAppIntent} onWriteOwn={() => { detail.setShowWhatsAppSheet(false); detail.handleWhatsApp(); }} />
         )}
-
 
         <DeleteConfirmDialog isOpen={showDeleteConfirm} isArabic={detail.isArabic} isDeleting={detail.isDeleting} onCancel={() => setShowDeleteConfirm(false)} onConfirm={async () => { setShowDeleteConfirm(false); await detail.handleDelete(); }} />
       </div>
