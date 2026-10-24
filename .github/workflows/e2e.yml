@@ -32,6 +32,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') || hashFiles('package.json') }}
+
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium chromium-headless-shell
 
