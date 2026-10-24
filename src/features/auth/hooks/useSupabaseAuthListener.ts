@@ -11,19 +11,11 @@ function resumePendingWishlist(): void {
   const ui = useUIStore.getState();
   const pendingId = ui.pendingWishlistId;
   if (!pendingId) return;
-
-  const listingsStore = useListingsStore.getState();
-  const listing = listingsStore.listings.find((l) => l.id === pendingId);
-
+  const listing = useListingsStore.getState().listings.find((l) => l.id === pendingId);
   if (listing) {
-    listingsStore.toggleWishlist(listing.id, listing.countryCode);
-    toast.success(
-      ui.isArabic
-        ? 'تم حفظ الإعلان في المفضلة ✓'
-        : 'Saved to favorites ✓'
-    );
+    useListingsStore.getState().toggleWishlist(listing.id, listing.countryCode);
+    toast.success(ui.isArabic ? 'تم حفظ الإعلان في المفضلة ✓' : 'Saved to favorites ✓');
   }
-
   ui.setPendingWishlistId(null);
 }
 
@@ -33,30 +25,18 @@ export function useSupabaseAuthListener(): void {
     let isInitialized = false;
 
     const { unsubscribe } = onAuthStateChange((event, session) => {
-      if (event === 'INITIAL_SESSION') {
-        isInitialized = true;
-      }
+      if (event === 'INITIAL_SESSION') isInitialized = true;
 
       if (event === 'SIGNED_OUT') {
         if (!isInitialized) return;
-
-        useAuthStore.setState({
-          user: null,
-          sessionToken: null,
-          authStatus: 'unauthenticated',
-          isAnonymous: false,
-          profileHydrated: false,
-        });
+        useAuthStore.setState({ user: null, sessionToken: null, authStatus: 'unauthenticated', isAnonymous: false, profileHydrated: false });
         return;
       }
 
       if (!session) return;
 
       if (event === 'TOKEN_REFRESHED') {
-        useAuthStore.setState({
-          sessionToken: session.access_token,
-          isAnonymous: isAnonymousUser(session.user),
-        });
+        useAuthStore.setState({ sessionToken: session.access_token, isAnonymous: isAnonymousUser(session.user) });
         return;
       }
 
@@ -67,20 +47,12 @@ export function useSupabaseAuthListener(): void {
         const stillAnon = isAnonymousUser(session.user);
         const wasAnon = useAuthStore.getState().isAnonymous;
 
-        useAuthStore.setState({
-          user,
-          sessionToken: session.access_token,
-          authStatus: 'authenticated',
-          isAnonymous: stillAnon,
-          profileHydrated: false,
-        });
+        useAuthStore.setState({ user, sessionToken: session.access_token, authStatus: 'authenticated', isAnonymous: stillAnon, profileHydrated: false });
         void hydrateProfile();
 
         if (event === 'SIGNED_IN') {
           const uiState = useUIStore.getState();
-          if (uiState.activeTab !== 'explore') {
-            uiState.setActiveTab('explore');
-          }
+          if (uiState.activeTab !== 'explore') uiState.setActiveTab('explore');
         }
 
         const justLinked = !stillAnon && wasAnon;
@@ -91,7 +63,7 @@ export function useSupabaseAuthListener(): void {
             localStorage.removeItem('pending_chat_listing');
             useUIStore.getState().setSelectedListingId(pendingChat);
             useUIStore.getState().navigateTo('listing-detail');
-            return; // Stop further navigation so we go straight to chat
+            return;
           }
           resumePendingNavigation();
           resumePendingWishlist();
