@@ -102,18 +102,26 @@ export const useDraftStore = create<DraftState>()((set, get) => ({
 }));
 
 // Initial rehydrate uses the CURRENT market at boot time.
-draftRepository.getCurrent().then((draft) => {
-  if (draft) {
-    useDraftStore.setState({
-      postDraft: {
-        categorySlug: draft.categorySlug,
-        subcategorySlug: draft.subcategorySlug,
-        photos: [...draft.photos],
-        city: draft.city,
-        neighborhood: draft.neighborhood,
-        site: draft.site,
-        noteText: draft.noteText,
-      },
-    });
-  }
-}).catch(console.error);
+// Wrapped because getBrowseCountryCode may throw if the UI store is not registered yet.
+try {
+  draftRepository.getCurrent().then((draft) => {
+    if (draft) {
+      useDraftStore.setState({
+        postDraft: {
+          categorySlug: draft.categorySlug,
+          subcategorySlug: draft.subcategorySlug,
+          photos: [...draft.photos],
+          city: draft.city,
+          neighborhood: draft.neighborhood,
+          site: draft.site,
+          noteText: draft.noteText,
+        },
+      });
+    }
+  }).catch((err) => {
+    console.warn('[Draft] Rehydrate failed:', err);
+  });
+} catch (err) {
+  // Ignore boot-time errors; UI getter will be registered later.
+  console.warn('[Draft] Initial rehydrate skipped during boot:', err);
+}
