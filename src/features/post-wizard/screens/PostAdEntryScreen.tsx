@@ -7,88 +7,46 @@ import { toast } from 'sonner';
 import { useUI } from '@/hooks/useUI';
 
 const MARKET_NAMES: Record<string, string> = {
-  JO: 'الأردن',
-  SA: 'السعودية',
-  LB: 'لبنان',
-  PS: 'فلسطين',
-  SY: 'سوريا',
+  JO: 'الأردن', SA: 'السعودية', LB: 'لبنان', PS: 'فلسطين', SY: 'سوريا',
 };
 
 export const PostAdEntryScreen = () => {
-  const {
-    isArabic,
-    handleBack,
-    startPostFlow,
-    canPostInMarket,
-    myMarket,
-    freeRemaining,
-    updateUserMarket,
-  } = usePostAdEntry();
-
+  const { isArabic, handleBack, startPostFlow, canPostInMarket, myMarket, freeRemaining, updateUserMarket } = usePostAdEntry();
   const { navigateTo } = useUI();
+
+  const handleSelectMarket = async (m: MarketCode) => {
+    const success = await updateUserMarket?.(m);
+    if (!success) {
+      toast.error(isArabic ? 'فشل تحديث الدولة، يرجى المحاولة مرة أخرى' : 'Failed to update market, please try again');
+    }
+  };
 
   const header = (
     <div className="flex items-center justify-between p-4 border-b border-border">
-      <button
-        id="post-ad-entry-back-btn"
-        onClick={handleBack}
-        className="p-2 rounded-full hover:bg-surface transition-colors"
-      >
-        <Icon
-          icon="lucide:arrow-right"
-          className={isArabic ? '' : 'rotate-180'}
-        />
+      <button id="post-ad-entry-back-btn" onClick={handleBack} className="p-2 rounded-full hover:bg-surface transition-colors">
+        <Icon icon="lucide:arrow-right" className={isArabic ? '' : 'rotate-180'} />
       </button>
-      <h2 className="text-lg font-bold text-ink">
-        {isArabic ? 'إضافة إعلان' : 'Post Ad'}
-      </h2>
+      <h2 className="text-lg font-bold text-ink">{isArabic ? 'إضافة إعلان' : 'Post Ad'}</h2>
       <div className="w-10" />
     </div>
   );
 
   if (!canPostInMarket) {
     return (
-      <div
-        id="post-ad-entry-screen"
-        className="flex flex-col min-h-screen bg-surface pb-12"
-        dir={isArabic ? 'rtl' : 'ltr'}
-      >
+      <div id="post-ad-entry-screen" className="flex flex-col min-h-screen bg-surface pb-12" dir={isArabic ? 'rtl' : 'ltr'}>
         {header}
-
         <div className="p-6 flex flex-col gap-5 flex-1 items-center justify-center">
           <div className="text-center px-4 mb-4">
-            <h3
-              id="post-ad-entry-blocked-title"
-              className="text-xl font-bold text-ink mb-2"
-            >
-              {isArabic
-                ? 'اختر السوق الذي تريد النشر فيه'
-                : 'Select the market you want to post in'}
+            <h3 id="post-ad-entry-blocked-title" className="text-xl font-bold text-ink mb-2">
+              {isArabic ? 'اختر السوق الذي تريد النشر فيه' : 'Select the market you want to post in'}
             </h3>
-
             <p className="text-sm text-ink-muted">
-              {isArabic
-                ? 'يرجى تحديد الدولة لمتابعة النشر'
-                : 'Please select your country to continue posting'}
+              {isArabic ? 'يرجى تحديد الدولة لمتابعة النشر' : 'Please select your country to continue posting'}
             </p>
           </div>
-
           <div className="grid grid-cols-2 gap-3 w-full max-w-sm">
-            {(['JO', 'SA', 'LB', 'PS', 'SY'] as MarketCode[]).map((m) => (
-              <button
-                key={m}
-                onClick={async () => {
-                  const success = await updateUserMarket?.(m);
-                  if (!success) {
-                    toast.error(
-                      isArabic
-                        ? 'فشل تحديث الدولة، يرجى المحاولة مرة أخرى'
-                        : 'Failed to update market, please try again'
-                    );
-                  }
-                }}
-                className="p-4 border border-border bg-surface rounded-xl font-bold text-ink hover:border-primary hover:text-primary transition-all"
-              >
+            {(Object.keys(MARKET_NAMES) as MarketCode[]).map((m) => (
+              <button key={m} onClick={() => handleSelectMarket(m)} className="p-4 border border-border bg-surface rounded-xl font-bold text-ink hover:border-primary hover:text-primary transition-all">
                 {MARKET_NAMES[m]}
               </button>
             ))}
@@ -99,52 +57,24 @@ export const PostAdEntryScreen = () => {
   }
 
   return (
-    <div
-      id="post-ad-entry-screen"
-      className="flex flex-col min-h-screen bg-surface pb-12"
-      dir={isArabic ? 'rtl' : 'ltr'}
-    >
+    <div id="post-ad-entry-screen" className="flex flex-col min-h-screen bg-surface pb-12" dir={isArabic ? 'rtl' : 'ltr'}>
       {header}
-
       <div className="p-6 flex flex-col gap-5 flex-1 items-center justify-center">
         <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-          <Icon
-            icon="lucide:plus-circle"
-            width={48}
-            height={48}
-            className="text-primary"
-          />
+          <Icon icon="lucide:plus-circle" width={48} height={48} className="text-primary" />
         </div>
-
         <div className="text-center px-4">
-          <h3 className="text-xl font-bold text-ink mb-2">
-            {isArabic ? 'أضف إعلانك الآن' : 'Post your ad now'}
-          </h3>
-
+          <h3 className="text-xl font-bold text-ink mb-2">{isArabic ? 'أضف إعلانك الآن' : 'Post your ad now'}</h3>
           <p className="text-sm text-ink-muted mb-6">
-            {isArabic
-              ? `يمكنك نشر ${freeRemaining} إعلانات مجانية متبقية في ${MARKET_NAMES[myMarket || 'JO']}`
-              : `You can post ${freeRemaining} more free ads in ${myMarket || 'JO'}`}
+            {isArabic ? `يمكنك نشر ${freeRemaining} إعلانات مجانية متبقية في ${MARKET_NAMES[myMarket || 'JO']}` : `You can post ${freeRemaining} more free ads in ${myMarket || 'JO'}`}
           </p>
         </div>
-
         {freeRemaining <= 0 ? (
-          <Button
-            id="post-ad-entry-upgrade"
-            onClick={() => navigateTo('pricing')}
-            size="lg"
-            className="w-full mt-4"
-            variant="primary"
-          >
+          <Button id="post-ad-entry-upgrade" onClick={() => navigateTo('pricing')} size="lg" className="w-full mt-4" variant="primary">
             {isArabic ? 'ترقية الباقة للنشر' : 'Upgrade Plan to Post'}
           </Button>
         ) : (
-          <Button
-            id="post-ad-entry-start"
-            onClick={startPostFlow}
-            size="lg"
-            className="w-full mt-4"
-          >
+          <Button id="post-ad-entry-start" onClick={startPostFlow} size="lg" className="w-full mt-4">
             {isArabic ? 'بدء النشر' : 'Start Posting'}
           </Button>
         )}
