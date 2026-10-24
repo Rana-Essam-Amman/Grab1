@@ -6,6 +6,8 @@ import { ImageLightbox } from './ImageLightbox';
 import { ListingImageNav } from './ListingImageNav';
 import { useImageSwipe } from '../hooks/useImageSwipe';
 import { toOptimizedImageUrl } from '@/shared/lib/optimizedImage';
+import { getClampedRatio, DEFAULT_RATIO } from '../helpers/imageRatioHelper';
+import { ListingImageFallback } from './ListingImageFallback';
 
 export interface ListingImageSliderProps {
   readonly images: string[];
@@ -20,21 +22,8 @@ export interface ListingImageSliderProps {
   readonly onStartChat?: () => void;
 }
 
-const MIN_RATIO = 3 / 4;
-const MAX_RATIO = 16 / 9;
-const DEFAULT_RATIO = 4 / 3;
-
 export const ListingImageSlider: React.FC<ListingImageSliderProps> = React.memo(({
-  images,
-  title,
-  isPremium,
-  listingId,
-  isArabic,
-  activeIdx,
-  onChangeIdx,
-  onCall,
-  onWhatsApp,
-  onStartChat,
+  images, title, isPremium, listingId, isArabic, activeIdx, onChangeIdx, onCall, onWhatsApp, onStartChat,
 }) => {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [ratio, setRatio] = useState<number>(DEFAULT_RATIO);
@@ -48,17 +37,14 @@ export const ListingImageSlider: React.FC<ListingImageSliderProps> = React.memo(
   if (!images || images.length === 0) {
     return (
       <div className="relative w-full aspect-[4/3] bg-muted flex items-center justify-center text-muted-foreground">
-        {isArabic ? 'لا توجد صور' : 'No images'}
+        <ListingImageFallback isArabic={isArabic} messageAr="لا توجد صور" messageEn="No images" />
       </div>
     );
   }
 
   const handleLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.currentTarget;
-    if (!img.naturalWidth || !img.naturalHeight) return;
-    const natural = img.naturalWidth / img.naturalHeight;
-    const clamped = Math.max(MIN_RATIO, Math.min(MAX_RATIO, natural));
-    setRatio(clamped);
+    setRatio(getClampedRatio(img.naturalWidth, img.naturalHeight));
   };
 
   return (
@@ -70,9 +56,7 @@ export const ListingImageSlider: React.FC<ListingImageSliderProps> = React.memo(
         onTouchEnd={handleTouchEnd}
       >
         {imgError ? (
-          <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground text-sm">
-            {isArabic ? 'تعذر تحميل الصورة' : 'Failed to load image'}
-          </div>
+          <ListingImageFallback isArabic={isArabic} messageAr="تعذر تحميل الصورة" messageEn="Failed to load image" />
         ) : (
           <img
             key={images[activeIdx]}
