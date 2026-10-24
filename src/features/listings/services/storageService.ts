@@ -40,6 +40,7 @@ async function uploadOne(dataUrl: string, userId: string): Promise<UploadedOne> 
     const { error } = await supabase.storage.from(BUCKET).upload(path, blob, {
       contentType: blob.type,
       upsert: false,
+      cacheControl: '31536000',
     });
     if (!error) {
       const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
