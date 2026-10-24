@@ -63,7 +63,11 @@ export function useListingDetail(): UseListingDetailReturn {
 
   const handleStartChat = useCallback(async () => {
     if (!listing) return;
-    if (authStatus === 'unauthenticated' || !user?.id || isAnonymous) { navigateTo('login'); return; }
+    if (authStatus === 'unauthenticated' || !user?.id || isAnonymous) {
+      localStorage.setItem('pending_chat_listing', listing.id);
+      navigateTo('login');
+      return;
+    }
     if (isOwner) return;
     if (!listing.userId) { showChatUnavailable(isArabic); return; }
     try {
