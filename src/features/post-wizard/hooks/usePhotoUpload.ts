@@ -39,8 +39,8 @@ export function usePhotoUpload(): UsePhotoUploadReturn {
         const merged = [...existing, ...newPhotos].slice(0, listingMaxPhotos);
         updatePostDraft({ photos: merged });
         capture(EVENTS.PHOTO_UPLOADED, { count: newPhotos.length });
-      } catch {
-        // silent fallback (same behavior as before validation was added)
+      } catch (error) {
+        setErrors((prev) => [...prev, 'Failed to process one or more images. Please try again.']);
       } finally {
         setUploading(false);
       }

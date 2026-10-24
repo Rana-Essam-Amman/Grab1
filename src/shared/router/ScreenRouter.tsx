@@ -2,9 +2,9 @@ import React, { lazy } from 'react';
 import { useScreenFromUrl } from './useScreenFromUrl';
 import { useRegistry } from '@/shared/registry';
 import { useUIStore } from '@/store/ui.slice';
-import { AdminScreen } from '@/features/admin/AdminScreen';
 import { ExploreScreen } from '@/features/explore/screens/ExploreScreen';
 
+const AdminScreen = lazy(() => import('@/features/admin/AdminScreen').then((m) => ({ default: m.AdminScreen })));
 const CategoriesScreen = lazy(() => import('@/features/categories/screens/CategoriesScreen').then((m) => ({ default: m.CategoriesScreen })));
 const MyAdsScreen = lazy(() => import('@/features/my-ads/screens/MyAdsScreen').then((m) => ({ default: m.MyAdsScreen })));
 const MessagesScreen = lazy(() => import('@/features/chat/screens/MessagesScreen').then((m) => ({ default: m.MessagesScreen })));
