@@ -8,6 +8,8 @@ import { PostFlowHeader } from '../components/PostFlowHeader';
 import { CategorySearchBar } from '../components/CategorySearchBar';
 import { searchCategories } from '@/data/searchIndex';
 import { ArrowLeft, ArrowRight } from 'iconsax-react';
+import { capture } from '@/shared/analytics/posthog';
+import { EVENTS } from '@/shared/analytics/events';
 
 export const ChooseCategoryScreen: React.FC = () => {
   const { isArabic, goBack, navigateTo } = useUI();
@@ -46,6 +48,7 @@ export const ChooseCategoryScreen: React.FC = () => {
         categorySlug,
         subcategorySlug,
       });
+      capture(EVENTS.CATEGORY_SELECTED, { category: categorySlug, subcategory: subcategorySlug });
       navigateTo('post-photos');
     },
     [updatePostDraft, navigateTo]

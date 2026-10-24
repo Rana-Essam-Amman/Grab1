@@ -2,6 +2,8 @@ import { useState, useRef, RefObject, useCallback } from 'react';
 import { usePostWizard } from './usePostWizard';
 import { listingMaxPhotos } from '@/data/photoRules';
 import { compressImage } from '../helpers/compressImage';
+import { capture } from '@/shared/analytics/posthog';
+import { EVENTS } from '@/shared/analytics/events';
 
 export interface UsePhotoUploadReturn {
   photos: string[];
@@ -36,6 +38,7 @@ export function usePhotoUpload(): UsePhotoUploadReturn {
         const existing = postDraft.photos || [];
         const merged = [...existing, ...newPhotos].slice(0, listingMaxPhotos);
         updatePostDraft({ photos: merged });
+        capture(EVENTS.PHOTO_UPLOADED, { count: newPhotos.length });
       } catch {
         // silent fallback (same behavior as before validation was added)
       } finally {

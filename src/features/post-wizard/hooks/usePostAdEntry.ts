@@ -9,6 +9,8 @@ import { useListings } from '@/hooks/useListings';
 import { MONETIZATION_MATRIX } from '@/data/monetization';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { supabase } from '@/shared/lib/supabase';
+import { capture } from '@/shared/analytics/posthog';
+import { EVENTS } from '@/shared/analytics/events';
 
 export interface UsePostAdEntryReturn {
   readonly isArabic: boolean;
@@ -63,10 +65,14 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
 
   const handleBack = useCallback(() => { setActiveTab('explore'); goBack(); }, [setActiveTab, goBack]);
 
+  const draftMarket = myMarket ?? currentBrowseMarket;
+
   const startPostFlow = useCallback(() => {
     if (!canPostInMarket) return;
-    draftStartPostFlow(); setAiFlowPending(true); navigateTo('post-category');
-  }, [canPostInMarket, draftStartPostFlow, setAiFlowPending, navigateTo]);
+    draftStartPostFlow(); setAiFlowPending(true);
+    capture(EVENTS.LISTING_STARTED, { market: draftMarket ?? 'unknown' });
+    navigateTo('post-category');
+  }, [canPostInMarket, draftStartPostFlow, setAiFlowPending, navigateTo, draftMarket]);
 
   return { isArabic, handleBack, startPostFlow, canPostInMarket, myMarket, freeLimit, freeRemaining, updateUserMarket };
 };

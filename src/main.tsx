@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
 import { initSentry } from './config/sentry.init';
+import { initPosthog } from '@/shared/analytics/posthog';
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 
 try {
@@ -60,6 +61,7 @@ try {
 }
 
 initSentry();
+initPosthog();
 
 window.addEventListener('error', (event) => {
   void logError({

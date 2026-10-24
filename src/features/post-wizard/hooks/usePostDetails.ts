@@ -8,6 +8,8 @@ import { setPendingPublish } from '../helpers/pendingPublishFlags';
 import { resolvePostDetailsFields, preparePublish } from '../helpers/postDetailsHelpers';
 import { buildDraftData } from '../helpers/buildDraftData';
 import { getCurrentUser, requirePhoneForPublish } from '@/features/auth/helpers/publishPhoneGuard';
+import { capture } from '@/shared/analytics/posthog';
+import { EVENTS } from '@/shared/analytics/events';
 
 export function usePostDetails() {
   const { postDraft, updatePostDraft } = usePostWizard();
@@ -62,7 +64,9 @@ export function usePostDetails() {
         else if (errorMsg.toLowerCase().includes('row-level security')) { setError(isArabic ? 'يجب إضافة رقم هاتف أولاً' : 'Phone required'); navigateTo('profile'); return; }
         setError(errorMsg); return;
       }
-      resetPostDraft(); setActiveTab('my-ads'); navigateTo('main');
+      resetPostDraft(); setActiveTab('my-ads');
+      capture(EVENTS.LISTING_PUBLISHED, { flow: 'manual' });
+      navigateTo('main');
     } catch (err) {
       console.error('[PUBLISH ERROR]', err); setError('فشل نشر الإعلان');
     } finally {
