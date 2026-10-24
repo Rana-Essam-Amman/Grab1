@@ -5,31 +5,16 @@ import { useListings } from '@/hooks/useListings';
 import { useChat } from '@/hooks/useChat';
 import { useAuth } from '@/hooks/useAuth';
 import { isValidMarket } from '@/shared/lib/marketGate';
-import { FormattedPhone } from '@/shared/lib/phoneFormatting';
 import { useListingDerivedData, getWhatsAppUrl } from '../helpers/listingDerivedData';
 import { WhatsAppIntent, composeIntentMessage } from '../helpers/whatsappIntents';
-import { Listing } from '@/types';
-import { ScreenType } from '@/store/ui.slice';
 import { showChatUnavailable, showChatOpenFailed, showChatCrossMarket } from '../helpers/chatErrorToast';
 import { useListingDelete } from './useListingDelete';
 import { useRevealPhone } from './useRevealPhone';
 import { useFetchMissingListing } from './useFetchMissingListing';
-
-export interface UseListingDetailReturn {
-  listing: Listing | null; activeCountry: string; isCountryMismatch: boolean;
-  sanitizedLoc: { city: string; neighborhood: string }; locationText: string;
-  mapUrl: string; displayCurrency: string; images: string[]; mapQuery: string;
-  formattedPhone: FormattedPhone; activePhotoIdx: number; setActivePhotoIdx: (idx: number) => void;
-  showShare: boolean; setShowShare: (v: boolean) => void; showReport: boolean; setShowReport: (v: boolean) => void; showWhatsAppSheet: boolean; setShowWhatsAppSheet: (v: boolean) => void;
-  handleStartChat: () => void | Promise<void>; handleCall: () => void | Promise<void>; handleWhatsApp: () => void | Promise<void>;
-  handleWhatsAppClick: () => void; handleWhatsAppIntent: (intent: WhatsAppIntent) => void;
-  handleDelete: () => Promise<void>; handleEdit: () => void; handleSelectSeller: () => void; isAuthenticated: boolean; isDeleting: boolean;
-  isOwner: boolean; isArabic: boolean; goBack: () => void; navigateTo: (screen: ScreenType) => void; isRevealingPhone: boolean;
-}
+import type { UseListingDetailReturn } from './useListingDetail.types';
 
 export function useListingDetail(): UseListingDetailReturn {
-  const ui = useUI();
-  const { isArabic, goBack, selectedListingId, setSelectedListingId, setSelectedThreadId, setSelectedSellerPhone, navigateTo, browseCountryCode } = ui;
+  const { isArabic, goBack, selectedListingId, setSelectedListingId, setSelectedThreadId, setSelectedSellerPhone, navigateTo, browseCountryCode } = useUI();
   const { getListing } = useListings();
   const { openConversation } = useChat();
   const { authStatus, user, isAnonymous } = useAuth();
