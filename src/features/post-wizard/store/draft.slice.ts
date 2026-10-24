@@ -2,6 +2,9 @@ import { create } from 'zustand';
 import { PostDraft } from '@/types';
 import { getBrowseCountryCode, getUISnapshot } from '@/shared/store-getters/ui.getter';
 import { DEFAULT_REGIONAL_CAPITALS } from '@/data/locations';
+import type { DraftRepository } from '../data/repositories/DraftRepository';
+import { LocalStorageDraftAdapter } from '../data/adapters/LocalStorageDraftAdapter';
+import type { PostDraftWithMeta } from '../domain';
 
 function generateDraftId(): string {
   try {
@@ -13,12 +16,26 @@ function generateDraftId(): string {
   }
   return `d-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 }
-import type { DraftRepository } from '../data/repositories/DraftRepository';
-import { LocalStorageDraftAdapter } from '../data/adapters/LocalStorageDraftAdapter';
-import type { PostDraftWithMeta } from '../domain';
 
-// Market is resolved lazily on every call. This ensures the draft store
-// always targets the user's CURRENT market, not the one at construction.
+function getInitialDraft(): PostDraft {
+  const uiState = getUISnapshot();
+  const browseCountryCode = getBrowseCountryCode();
+  const isArabic = uiState.locale === 'ar';
+  const fallback = DEFAULT_REGIONAL_CAPITALS[browseCountryCode] || DEFAULT_REGIONAL_CAPITALS.JO;
+
+  return {
+    categorySlug: 'motors',
+    subcategorySlug: 'cars',
+    photos: [],
+    city: isArabic ? (uiState.browseCityAr || fallback.cityAr) : (uiState.browseCityEn || fallback.cityEn),
+    neighborhood: isArabic ? fallback.neighborhoodAr : fallback.neighborhoodEn,
+    site: '',
+    noteText: '',
+    variantSeed: 0,
+    draftId: generateDraftId(),
+  };
+}
+
 const draftRepository: DraftRepository = new LocalStorageDraftAdapter(
   () => getBrowseCountryCode()
 );
@@ -27,22 +44,12 @@ export interface DraftState {
   postDraft: PostDraft;
   updatePostDraft: (updates: Partial<PostDraft>) => void;
   resetPostDraft: () => void;
+  resetDraftOnMarketChange: () => void;
   startPostFlow: () => void;
 }
 
-const defaultDraft: PostDraft = {
-  categorySlug: 'motors',
-  subcategorySlug: 'cars',
-  photos: [],
-  city: 'عمّان',
-  neighborhood: 'خلدا',
-  site: '',
-  noteText: '',
-  variantSeed: 0,
-};
-
 export const useDraftStore = create<DraftState>()((set, get) => ({
-  postDraft: defaultDraft,
+  postDraft: getInitialDraft(),
 
   updatePostDraft: (updates) => {
     set((state) => ({
@@ -58,26 +65,8 @@ export const useDraftStore = create<DraftState>()((set, get) => ({
   },
 
   resetPostDraft: () => {
-    const uiState = getUISnapshot();
-    const browseCountryCode = getBrowseCountryCode();
-    const isArabic = uiState.locale === 'ar';
-
-    const fallback = DEFAULT_REGIONAL_CAPITALS[browseCountryCode] || DEFAULT_REGIONAL_CAPITALS.JO;
-
-    const newDraft: PostDraft = {
-      categorySlug: 'motors',
-      subcategorySlug: 'cars',
-      photos: [],
-      city: isArabic ? (uiState.browseCityAr || fallback.cityAr) : (uiState.browseCityEn || fallback.cityEn),
-      neighborhood: isArabic ? fallback.neighborhoodAr : fallback.neighborhoodEn,
-      site: '',
-      noteText: '',
-      variantSeed: 0,
-      draftId: generateDraftId(),
-    };
-    set(() => ({
-      postDraft: newDraft,
-    }));
+    const newDraft = getInitialDraft();
+    set({ postDraft: newDraft });
 
     const draftWithMeta: PostDraftWithMeta = {
       ...newDraft,
@@ -87,13 +76,16 @@ export const useDraftStore = create<DraftState>()((set, get) => ({
     draftRepository.save(draftWithMeta).catch(console.error);
   },
 
+  resetDraftOnMarketChange: () => {
+    set({ postDraft: getInitialDraft() });
+  },
+
   startPostFlow: () => {
     get().resetPostDraft();
     getUISnapshot().navigateTo('post-category');
   },
 }));
 
-// Initial rehydrate uses the CURRENT market at boot time.
 draftRepository.getCurrent().then((draft) => {
   if (draft) {
     useDraftStore.setState({
