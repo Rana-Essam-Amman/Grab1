@@ -61,7 +61,7 @@ export const ListingDetailScreen: React.FC = () => {
           <ListingLocationCard mapQuery={detail.mapQuery} locationText={detail.locationText} mapUrl={detail.mapUrl} isArabic={detail.isArabic} />
         </div>
 
-        <ListingActionBar isArabic={detail.isArabic} countryCode={detail.listing.countryCode} onCall={detail.handleCall} onWhatsAppClick={detail.handleWhatsAppClick} onStartChat={detail.handleStartChat} isCountryMismatch={detail.isCountryMismatch} isAuthenticated={detail.isAuthenticated} isOwner={detail.isOwner} hasPhone={!detail.listing.isDemo} hasSellerAccount={Boolean(detail.listing.userId)} />
+        <ListingActionBar isArabic={detail.isArabic} countryCode={detail.listing.countryCode} onCall={detail.handleCall} onWhatsAppClick={detail.handleWhatsAppClick} onStartChat={detail.handleStartChat} isCountryMismatch={detail.isCountryMismatch} isAuthenticated={detail.isAuthenticated} isOwner={detail.isOwner} hasPhone={Boolean(detail.listing.sellerPhone)} hasSellerAccount={Boolean(detail.listing.userId)} />
 
         {detail.showShare && <ShareModal listing={detail.listing} onClose={() => detail.setShowShare(false)} />}
         {detail.showReport && <ReportModal listing={detail.listing} onClose={() => detail.setShowReport(false)} />}
