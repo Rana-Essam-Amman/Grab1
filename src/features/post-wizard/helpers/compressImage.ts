@@ -46,7 +46,12 @@ export async function compressImage(file: File): Promise<CompressResult> {
 
     ctx.drawImage(bitmap, 0, 0, width, height);
 
-    const compressedDataUrl = canvas.toDataURL('image/jpeg', JPEG_QUALITY);
+    // Try WebP first (30-40% smaller than JPEG on modern browsers).
+    // Fall back to JPEG if the browser doesn't support WebP encoding.
+    const webpDataUrl = canvas.toDataURL('image/webp', JPEG_QUALITY);
+    const compressedDataUrl = webpDataUrl.startsWith('data:image/webp')
+      ? webpDataUrl
+      : canvas.toDataURL('image/jpeg', JPEG_QUALITY);
     const compressedBytes = estimateDataUrlBytes(compressedDataUrl);
 
     if (compressedBytes >= file.size) {
