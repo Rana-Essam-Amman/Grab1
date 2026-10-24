@@ -10,6 +10,7 @@ import { buildDraftData } from '../helpers/buildDraftData';
 import { getCurrentUser, requirePhoneForPublish } from '@/features/auth/helpers/publishPhoneGuard';
 import { capture } from '@/shared/analytics/posthog';
 import { EVENTS } from '@/shared/analytics/events';
+import { toast } from 'sonner';
 
 export function usePostDetails() {
   const publishLock = useRef(false);
@@ -39,14 +40,15 @@ export function usePostDetails() {
   const missing = fields.filter(f => f.required && !(values[f.key] || '').trim()).map(f => isArabic ? f.labelAr : f.labelEn);
   const hasLocation = Boolean(postDraft.city?.trim());
 
-  // F7 fix: Number.isFinite subsumes !isNaN and additionally rejects
-  // Infinity / -Infinity / "1e500". A user could previously bypass the
-  // price check with "Infinity" and it would pass `> 0`.
   const priceNum = Number(price);
   const isPriceValid = price.trim().length > 0 && Number.isFinite(priceNum) && priceNum > 0;
   const canContinue = title.trim().length >= 5 && isPriceValid && missing.length === 0 && hasLocation;
 
   const handleContinue = async () => {
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      toast.error(isArabic ? 'لا يوجد اتصال بالإنترنت. يرجى المحاولة لاحقاً.' : 'No internet connection. Please try again later.');
+      return;
+    }
     if (publishLock.current) return;
     publishLock.current = true;
     try {
@@ -56,7 +58,7 @@ export function usePostDetails() {
       updatePostDraft(draftData);
       if (authStatus !== 'authenticated' || isAnonymous) { setPendingPublish(browseCountryCode, 'post-details'); navigateTo('login'); return; }
       if (!requirePhoneForPublish(() => void handleContinue())) {
-        publishLock.current = false; // Release lock before user interacts with the modal
+        publishLock.current = false; 
         return;
       }
       const prepared = preparePublish({ postDraft, draftData, user: getCurrentUser(), browseCountryCode, activeCurrency });
@@ -85,4 +87,4 @@ export function usePostDetails() {
   };
 
   return { title, setTitle, price, setPrice, description, setDescription, values, setField, fields, missingRequired: missing, canContinue, handleContinue, isArabic, submitAttempted, isPublishing, error };
-                                                                           }
+}
