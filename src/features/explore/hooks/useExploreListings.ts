@@ -61,7 +61,7 @@ export function useExploreListings(): UseExploreListingsReturn {
 
   // Reset pagination when search or filters change
   useEffect(() => {
-    useListingsStore.getState().setPage(0);
+    useListingsStore.setState({ page: 0 });
   }, [
     searchQuery,
     categoryFilter,
