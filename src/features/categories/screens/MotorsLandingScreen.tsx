@@ -6,6 +6,7 @@ import { subcategoriesByCategory } from '@/data/subcategories';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
 import { groupMotorsSubcategories } from '@/data/motorsGroups';
 import { MotorsGroupCard } from '../components/MotorsGroupCard';
+import { useSEO } from '@/shared/hooks/useSEO';
 
 export const MotorsLandingScreen: React.FC = () => {
   const {
@@ -17,6 +18,13 @@ export const MotorsLandingScreen: React.FC = () => {
     browseCountryCode,
   } = useUI();
   const { listings } = useListings();
+
+  useSEO({
+    title: isArabic ? 'سيارات للبيع | FOX' : 'Cars for Sale | FOX',
+    description: isArabic
+      ? 'تصفح سيارات للبيع على FOX Marketplace. ابحث عن أفضل العروض في منطقتك.'
+      : 'Browse cars for sale on FOX Marketplace. Find the best deals in your area.',
+  });
 
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
