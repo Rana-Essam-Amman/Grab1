@@ -142,6 +142,15 @@ Deno.serve(async (request: Request): Promise<Response> => {
     return jsonResponse({ error: "Method not allowed" }, 405);
   }
 
+  // Worker-secret gate (feature-flagged: enforces only when WORKER_SECRET is set)
+  const expectedSecret = Deno.env.get("WORKER_SECRET");
+  if (expectedSecret && expectedSecret.length >= 16) {
+    const providedSecret = request.headers.get("x-worker-secret");
+    if (providedSecret !== expectedSecret) {
+      return jsonResponse({ error: "Unauthorized" }, 401);
+    }
+  }
+
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   const jinaApiKey = Deno.env.get("JINA_API_KEY");
