@@ -5,13 +5,12 @@ import { marketStorage } from '@/shared/lib/marketStorage';
 import { isValidMarketCode } from '@/data/markets/config';
 import type { MarketCode } from '@/data/markets/types';
 import { useUIStore } from '@/store/ui.slice';
+import { useDraftStore } from '@/features/post-wizard/store/draft.slice';
 import type { ScreenType } from '@/store/ui.slice.types';
 import type { UserProfile } from '@/types';
 
 export function mapSessionToUser(session: Session | null): UserProfile | null {
   if (!session?.user) return null;
-  // Anonymous path kept for backward-compat with any old sessions; new flow
-  // never creates them (ensureAnonymousSession is a no-op).
   if (isAnonymousUser(session.user)) {
     return {
       id: session.user.id,
@@ -38,8 +37,6 @@ export function mapSessionToUser(session: Session | null): UserProfile | null {
 }
 
 export function resumePendingNavigation(): void {
-  // Market is read from the UI store snapshot — the same market the user
-  // was on when the pending flag was written.
   const market = useUIStore.getState().browseCountryCode;
   if (!isValidMarketCode(market)) return;
   const store = marketStorage(market as MarketCode);
@@ -52,6 +49,9 @@ export function resumePendingNavigation(): void {
     }, 200);
     return;
   }
+
+  const draft = useDraftStore.getState().postDraft;
+  if (!draft || !draft.categorySlug) return;
 
   const pending = store.get<string>('pending_publish');
   const screen = store.get<string>('pending_publish_screen');
