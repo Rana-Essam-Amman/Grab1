@@ -4,6 +4,7 @@ import { Icon } from '@iconify/react';
 import { Button } from '@/shared/ui/Button';
 import type { MarketCode } from '@/data/markets/types';
 import { toast } from 'sonner';
+import { useUI } from '@/hooks/useUI';
 
 const MARKET_NAMES: Record<string, string> = {
   JO: 'الأردن',
@@ -23,6 +24,8 @@ export const PostAdEntryScreen = () => {
     freeRemaining,
     updateUserMarket,
   } = usePostAdEntry();
+
+  const { navigateTo } = useUI();
 
   const header = (
     <div className="flex items-center justify-between p-4 border-b border-border">
@@ -125,15 +128,26 @@ export const PostAdEntryScreen = () => {
           </p>
         </div>
 
-        <Button
-          id="post-ad-entry-start"
-          onClick={startPostFlow}
-          size="lg"
-          className="w-full mt-4"
-          disabled={freeRemaining <= 0}
-        >
-          {isArabic ? 'بدء النشر' : 'Start Posting'}
-        </Button>
+        {freeRemaining <= 0 ? (
+          <Button
+            id="post-ad-entry-upgrade"
+            onClick={() => navigateTo('pricing')}
+            size="lg"
+            className="w-full mt-4"
+            variant="primary"
+          >
+            {isArabic ? 'ترقية الباقة للنشر' : 'Upgrade Plan to Post'}
+          </Button>
+        ) : (
+          <Button
+            id="post-ad-entry-start"
+            onClick={startPostFlow}
+            size="lg"
+            className="w-full mt-4"
+          >
+            {isArabic ? 'بدء النشر' : 'Start Posting'}
+          </Button>
+        )}
       </div>
     </div>
   );
