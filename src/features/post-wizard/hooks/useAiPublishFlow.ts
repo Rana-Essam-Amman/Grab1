@@ -6,6 +6,7 @@ import { matchCategory } from '@/ai/categoryMatch';
 import type { ScreenType } from '@/store/ui.slice.types';
 import { buildAppliedDraft } from './useAiPublishFlow.helpers';
 import { globalStorage } from '@/shared/lib/marketStorage';
+import { toast } from 'sonner';
 
 export const useAiPublishFlow = (setIsAnalyzing: (val: boolean) => void) => {
   const { isArabic, browseCountryCode, browseCityAr, navigateTo } = useUI();
@@ -19,6 +20,10 @@ export const useAiPublishFlow = (setIsAnalyzing: (val: boolean) => void) => {
 
   const processPublishFlow = useCallback(
     async (rawInput: string, images: string[], cb?: () => void, overrideCategory?: string) => {
+      if (typeof navigator !== 'undefined' && !navigator.onLine) {
+        toast.error(isArabic ? 'لا يوجد اتصال بالإنترنت. يرجى المحاولة لاحقاً.' : 'No internet connection. Please try again later.');
+        return;
+      }
       const raw = rawInput || (isArabic ? 'إعلان جديد للبيع' : 'New Item for sale');
       setIsAnalyzing(true);
       const photosToUse = images;
@@ -30,10 +35,6 @@ export const useAiPublishFlow = (setIsAnalyzing: (val: boolean) => void) => {
         note: raw,
       });
 
-      // Category to pass to Gemini:
-      //  - overrideCategory (from CategoryPickScreen) wins
-      //  - then matchCategory's best guess
-      //  - otherwise empty string → Gemini infers from text
       const categoryForAI = overrideCategory || initialMatch.effectiveCategory || '';
       const subForAI = initialMatch.effectiveSub || '';
 
@@ -71,8 +72,6 @@ export const useAiPublishFlow = (setIsAnalyzing: (val: boolean) => void) => {
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : String(err);
         console.error('[AI FLOW] Gemini failed:', errorMessage);
-
-        // NO silent fallback. Store the error and route to manual category picker.
         globalStorage().set('catch_ai_last_error', errorMessage.slice(0, 200));
         updatePostDraft({
           noteText: raw,
