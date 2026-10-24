@@ -7,10 +7,6 @@ interface UseSEOOptions {
 
 const DEFAULT_TITLE = 'FOX Marketplace';
 
-function getMeta(attr: 'name' | 'property', key: string): string {
-  return document.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`)?.getAttribute('content') ?? '';
-}
-
 function setOrCreateMeta(attr: 'name' | 'property', key: string, content: string): void {
   let meta = document.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);
   if (!meta) {
@@ -21,22 +17,31 @@ function setOrCreateMeta(attr: 'name' | 'property', key: string, content: string
   meta.setAttribute('content', content);
 }
 
+function removeMeta(attr: 'name' | 'property', key: string): void {
+  document.querySelector(`meta[${attr}="${key}"]`)?.remove();
+}
+
 export function useSEO({ title, description }: UseSEOOptions): void {
   useEffect(() => {
-    // 1. Store previous values for cleanup
     const prevTitle = document.title;
-    const prevDesc = getMeta('name', 'description');
-    const prevOgTitle = getMeta('property', 'og:title');
-    const prevOgDesc = getMeta('property', 'og:description');
 
-    // 2. Compute new values
+    // Snapshot existing elements and their content
+    const prevDescEl = document.querySelector<HTMLMetaElement>('meta[name="description"]');
+    const prevDesc = prevDescEl ? prevDescEl.getAttribute('content') : null;
+
+    const prevOgTitleEl = document.querySelector<HTMLMetaElement>('meta[property="og:title"]');
+    const prevOgTitle = prevOgTitleEl ? prevOgTitleEl.getAttribute('content') : null;
+
+    const prevOgDescEl = document.querySelector<HTMLMetaElement>('meta[property="og:description"]');
+    const prevOgDesc = prevOgDescEl ? prevOgDescEl.getAttribute('content') : null;
+
+    // Apply new values
     const nextTitle = title?.trim() ? title.trim() : DEFAULT_TITLE;
     const nextDesc = description?.trim() ?? '';
 
-    // 3. Apply new values
     document.title = nextTitle;
     setOrCreateMeta('property', 'og:title', nextTitle);
-    
+
     if (nextDesc) {
       setOrCreateMeta('name', 'description', nextDesc);
       setOrCreateMeta('property', 'og:description', nextDesc);
@@ -45,13 +50,32 @@ export function useSEO({ title, description }: UseSEOOptions): void {
       setOrCreateMeta('name', 'twitter:description', nextDesc);
     }
 
-    // 4. Cleanup: Restore EVERYTHING when component unmounts
+    // Cleanup: Restore or remove based on original state
     return () => {
       document.title = prevTitle;
-      setOrCreateMeta('property', 'og:title', prevOgTitle || prevTitle);
-      
-      if (prevDesc) setOrCreateMeta('name', 'description', prevDesc);
-      if (prevOgDesc) setOrCreateMeta('property', 'og:description', prevOgDesc);
+
+      if (prevDesc !== null) {
+        setOrCreateMeta('name', 'description', prevDesc);
+      } else {
+        removeMeta('name', 'description');
+      }
+
+      if (prevOgTitle !== null) {
+        setOrCreateMeta('property', 'og:title', prevOgTitle);
+      } else {
+        removeMeta('property', 'og:title');
+      }
+
+      if (prevOgDesc !== null) {
+        setOrCreateMeta('property', 'og:description', prevOgDesc);
+      } else {
+        removeMeta('property', 'og:description');
+      }
+
+      // Twitter tags are dynamic per page, so remove them on unmount
+      removeMeta('name', 'twitter:card');
+      removeMeta('name', 'twitter:title');
+      removeMeta('name', 'twitter:description');
     };
   }, [title, description]);
 }
