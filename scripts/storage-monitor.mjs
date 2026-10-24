@@ -43,21 +43,20 @@ async function main() {
     results.warnings.push(`🟠 Listings: ${listingCount} (warn > ${THRESHOLDS.listings_warn})`);
   }
 
-  // 2. Count storage objects
-  const { data: storageData, error: storageErr } = await supabase
-    .from('storage_objects_summary')
-    .select('bucket_id, total_bytes, object_count');
-
-  if (storageErr) {
-    // Fallback: query storage.objects directly if view doesn't exist
-    const { data: rawObjects, error: rawErr } = await supabase
+  // 2. Count storage objects (query storage schema directly)
+  try {
+    const { data: rawObjects, error: storageErr } = await supabase
+      .schema('storage')
       .from('objects')
-      .select('bucket_id, metadata')
-      .limit(10000);
-    if (rawErr) {
-      console.warn('Storage query failed (non-fatal):', rawErr.message);
+      .select('bucket_id, metadata');
+
+    if (storageErr) {
+      console.warn('Storage query failed (non-fatal):', storageErr.message);
     } else {
-      const totalBytes = (rawObjects || []).reduce((sum, o) => sum + (o.metadata?.size || 0), 0);
+      const totalBytes = (rawObjects || []).reduce(
+        (sum, o) => sum + Number(o.metadata?.size || 0),
+        0
+      );
       const totalMb = Math.round(totalBytes / (1024 * 1024));
       results.facts.storage_mb = totalMb;
       if (totalMb >= THRESHOLDS.storage_critical_mb) {
@@ -66,15 +65,8 @@ async function main() {
         results.warnings.push(`🟠 Storage: ${totalMb} MB (warn > ${THRESHOLDS.storage_warn_mb} MB)`);
       }
     }
-  } else if (storageData) {
-    const totalBytes = storageData.reduce((sum, r) => sum + Number(r.total_bytes || 0), 0);
-    const totalMb = Math.round(totalBytes / (1024 * 1024));
-    results.facts.storage_mb = totalMb;
-    if (totalMb >= THRESHOLDS.storage_critical_mb) {
-      results.criticals.push(`🔴 Storage: ${totalMb} MB (critical > ${THRESHOLDS.storage_critical_mb} MB)`);
-    } else if (totalMb >= THRESHOLDS.storage_warn_mb) {
-      results.warnings.push(`🟠 Storage: ${totalMb} MB (warn > ${THRESHOLDS.storage_warn_mb} MB)`);
-    }
+  } catch (err) {
+    console.warn('Storage measurement failed (non-fatal):', err);
   }
 
   // 3. Print facts for the workflow
