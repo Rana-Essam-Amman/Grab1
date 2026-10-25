@@ -8,9 +8,7 @@ import { toggleLike } from '../services/socialService';
 import { CommentSheet } from './CommentSheet';
 import { toast } from 'sonner';
 
-interface PostProps {
-  post: any;
-}
+interface PostProps { post: any; }
 
 export const SocialPostCard: React.FC<PostProps> = ({ post }) => {
   const { isArabic } = useUI();
@@ -70,21 +68,21 @@ export const SocialPostCard: React.FC<PostProps> = ({ post }) => {
 
   return (
     <div className="bg-surface border border-border rounded-xl mb-4 shadow-sm flex flex-col">
-      <div className="flex items-center gap-3 p-3">
-        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
-          {post.seller_avatar ? <img src={post.seller_avatar} alt="avatar" className="w-full h-full object-cover" /> : <span className="text-primary font-bold text-lg">{post.seller_name?.charAt(0)}</span>}
+      <div className="flex items-center gap-3 p-4">
+        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+          {post.seller_avatar ? <img src={post.seller_avatar} alt="avatar" className="w-full h-full object-cover" /> : <span className="text-primary font-bold text-xl">{post.seller_name?.charAt(0)}</span>}
         </div>
         <div className="flex flex-col flex-1">
-          <span className="font-bold text-sm text-ink">{post.seller_name}</span>
-          <div className="flex items-center gap-1 text-[11px] text-ink-muted">
-            <Location size="12" variant="Bold" /><span>{post.city}</span><span>•</span><span>{new Date(post.created_at).toLocaleDateString(isArabic ? 'ar-JO' : 'en-US')}</span>
+          <span className="font-bold text-base text-ink">{post.seller_name}</span>
+          <div className="flex items-center gap-1 text-sm text-ink-muted mt-0.5">
+            <Location size="14" variant="Bold" /><span>{post.city}</span><span>•</span><span>{new Date(post.created_at).toLocaleDateString(isArabic ? 'ar-JO' : 'en-US')}</span>
           </div>
         </div>
       </div>
 
-      <div className="px-3 pb-2 text-sm text-ink">
-        <h3 className="font-bold mb-1">{post.title}</h3>
-        {post.description && <p className="text-ink-soft text-xs line-clamp-2">{post.description}</p>}
+      <div className="px-4 pb-3 text-base text-ink">
+        <h3 className="font-bold mb-1.5">{post.title}</h3>
+        {post.description && <p className="text-ink-soft text-sm line-clamp-3 leading-relaxed">{post.description}</p>}
       </div>
 
       {images.length > 0 && (
@@ -94,24 +92,24 @@ export const SocialPostCard: React.FC<PostProps> = ({ post }) => {
               <div key={i} className="w-full h-full shrink-0 snap-center"><img src={img} alt={`listing-${i}`} className="w-full h-full object-cover" loading="lazy" /></div>
             ))}
           </div>
-          {images.length > 1 && <div className="absolute top-2 right-2 bg-ink/60 text-surface text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm">{activeIndex + 1} / {images.length}</div>}
-          {images.length > 1 && <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1">{images.map((_, i) => <div key={i} className={`h-1.5 rounded-full transition-all ${i === activeIndex ? 'bg-primary w-3' : 'bg-surface/60 w-1.5'}`} />)}</div>}
+          {images.length > 1 && <div className="absolute top-3 right-3 bg-ink/60 text-surface text-xs px-2.5 py-1 rounded-full backdrop-blur-sm">{activeIndex + 1} / {images.length}</div>}
+          {images.length > 1 && <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5">{images.map((_, i) => <div key={i} className={`h-2 rounded-full transition-all ${i === activeIndex ? 'bg-primary w-4' : 'bg-surface/60 w-2'}`} />)}</div>}
         </div>
       )}
 
-      <div className="px-3 py-2 border-b border-border flex justify-between items-center bg-surface">
-        <span className="text-lg font-bold text-primary">{formatPrice(post.price, post.currency, isArabic)}</span>
+      <div className="px-4 py-3 border-b border-border flex justify-between items-center bg-surface">
+        <span className="text-xl font-bold text-primary">{formatPrice(post.price, post.currency, isArabic)}</span>
       </div>
 
-      <div className="flex items-center justify-around p-2 text-xs font-bold text-ink-muted bg-surface rounded-b-xl">
-        <button onClick={handleLike} disabled={liking} className={`flex items-center gap-1.5 flex-1 justify-center py-2 rounded-lg hover:bg-canvas transition cursor-pointer ${liked ? 'text-danger' : ''}`}>
-          <Heart size="18" variant={liked ? 'Bold' : 'Linear'} color="currentColor" /><span>{likeCount} {isArabic ? 'إعجاب' : 'Likes'}</span>
+      <div className="flex items-center justify-around p-2 text-sm font-semibold text-ink-muted bg-surface rounded-b-xl">
+        <button onClick={handleLike} disabled={liking} className={`flex items-center gap-2 flex-1 justify-center py-2.5 rounded-lg hover:bg-canvas transition cursor-pointer ${liked ? 'text-danger' : ''}`}>
+          <Heart size="20" variant={liked ? 'Bold' : 'Linear'} color="currentColor" /><span>{likeCount} {isArabic ? 'إعجاب' : 'Likes'}</span>
         </button>
-        <button onClick={() => setShowComments(true)} className="flex items-center gap-1.5 flex-1 justify-center py-2 rounded-lg hover:bg-canvas transition cursor-pointer">
-          <MessageCircle size="18" variant="Linear" /><span>{commentCount} {isArabic ? 'تعليق' : 'Comments'}</span>
+        <button onClick={() => setShowComments(true)} className="flex items-center gap-2 flex-1 justify-center py-2.5 rounded-lg hover:bg-canvas transition cursor-pointer">
+          <MessageCircle size="20" variant="Linear" /><span>{commentCount} {isArabic ? 'تعليق' : 'Comments'}</span>
         </button>
-        <button onClick={handleShare} className="flex items-center gap-1.5 flex-1 justify-center py-2 rounded-lg hover:bg-canvas transition cursor-pointer">
-          <Share size="18" variant="Linear" /><span>{isArabic ? 'مشاركة' : 'Share'}</span>
+        <button onClick={handleShare} className="flex items-center gap-2 flex-1 justify-center py-2.5 rounded-lg hover:bg-canvas transition cursor-pointer">
+          <Share size="20" variant="Linear" /><span>{isArabic ? 'مشاركة' : 'Share'}</span>
         </button>
       </div>
 
