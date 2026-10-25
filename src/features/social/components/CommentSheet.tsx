@@ -60,10 +60,26 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
             </div>
           ))}
         </div>
-        <div className="p-3 border-t border-border flex gap-2 pb-8 bg-surface">
-          <input autoFocus value={text} onChange={(e) => setText(e.target.value)} placeholder={isArabic ? 'اكتب تعليق...' : 'Write a comment...'} maxLength={1000} className="flex-1 p-3 rounded-xl border border-border bg-canvas text-base text-ink outline-none focus:border-primary" />
-          <button onClick={handleSubmit} disabled={submitting || !text.trim()} className="px-5 py-3 bg-primary text-ink-inverse rounded-xl font-bold text-sm disabled:opacity-50 cursor-pointer">{submitting ? '...' : (isArabic ? 'إرسال' : 'Send')}</button>
+        
+        {/* التعديل هنا: إضافة min-w-0 للـ input و shrink-0 للزرار عشان الزرار ميتزقش برة الشاشة */}
+        <div className="p-3 border-t border-border flex items-center gap-2 pb-8 bg-surface w-full">
+          <input 
+            autoFocus 
+            value={text} 
+            onChange={(e) => setText(e.target.value)} 
+            placeholder={isArabic ? 'اكتب تعليق...' : 'Write a comment...'} 
+            maxLength={1000} 
+            className="flex-1 min-w-0 p-3 rounded-xl border border-border bg-canvas text-base text-ink outline-none focus:border-primary" 
+          />
+          <button 
+            onClick={handleSubmit} 
+            disabled={submitting || !text.trim()} 
+            className="shrink-0 px-5 py-3 bg-primary text-ink-inverse rounded-xl font-bold text-sm disabled:opacity-50 cursor-pointer"
+          >
+            {submitting ? '...' : (isArabic ? 'إرسال' : 'Send')}
+          </button>
         </div>
+        
       </div>
     </>
   );
