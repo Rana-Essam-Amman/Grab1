@@ -28,7 +28,7 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
 
   const handleScroll = () => {
     if (scrollRef.current) {
-      const scrollPosition = scrollRef.current.scrollLeft;
+      const scrollPosition = Math.abs(scrollRef.current.scrollLeft);
       const width = scrollRef.current.clientWidth;
       const newIndex = Math.round(scrollPosition / width);
       if (newIndex !== activeIndex) setActiveIndex(newIndex);
