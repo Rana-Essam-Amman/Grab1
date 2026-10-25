@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { Heart, MessageCircle, Share2, MapPin } from 'iconsax-react';
 import { formatPrice } from '@/shared/lib/formatPrice';
 import { useUI } from '@/hooks/useUI';
@@ -9,6 +9,21 @@ interface PostProps {
 
 export const SocialPostCard: React.FC<PostProps> = ({ post }) => {
   const { isArabic } = useUI();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const images: string[] = post.images_list || [];
+
+  const handleScroll = () => {
+    if (scrollRef.current) {
+      const scrollPosition = scrollRef.current.scrollLeft;
+      const width = scrollRef.current.clientWidth;
+      const newIndex = Math.round(scrollPosition / width);
+      if (newIndex !== activeIndex) {
+        setActiveIndex(newIndex);
+      }
+    }
+  };
 
   return (
     <div className="bg-surface border border-border rounded-xl mb-4 shadow-sm flex flex-col">
@@ -38,10 +53,42 @@ export const SocialPostCard: React.FC<PostProps> = ({ post }) => {
         {post.description && <p className="text-ink-soft text-xs line-clamp-2">{post.description}</p>}
       </div>
 
-      {/* Image */}
-      {post.cover_image && (
-        <div className="w-full aspect-square bg-canvas relative overflow-hidden">
-          <img src={post.cover_image} alt="listing" className="w-full h-full object-cover" loading="lazy" />
+      {/* Image Carousel (Facebook Style) */}
+      {images.length > 0 && (
+        <div className="relative w-full aspect-square bg-canvas">
+          <div 
+            ref={scrollRef}
+            onScroll={handleScroll}
+            className="w-full h-full flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {images.map((img, i) => (
+              <div key={i} className="w-full h-full shrink-0 snap-center">
+                <img src={img} alt={`listing-${i}`} className="w-full h-full object-cover" loading="lazy" />
+              </div>
+            ))}
+          </div>
+          
+          {/* Image Counter (e.g., 1/3) */}
+          {images.length > 1 && (
+            <div className="absolute top-2 right-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm">
+              {activeIndex + 1} / {images.length}
+            </div>
+          )}
+
+          {/* Dots Indicator */}
+          {images.length > 1 && (
+            <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
+              {images.map((_, i) => (
+                <div 
+                  key={i} 
+                  className={`h-1.5 rounded-full transition-all ${
+                    i === activeIndex ? 'bg-white w-3' : 'bg-white/50 w-1.5'
+                  }`} 
+                />
+              ))}
+            </div>
+          )}
         </div>
       )}
 
