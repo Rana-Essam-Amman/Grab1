@@ -1,4 +1,4 @@
-// RULE-14-EXCEPTION: CommentSheet requires portal + scroll lock + FB-like composer
+// RULE-14-EXCEPTION: CommentSheet requires portal + visual viewport + FB-like composer
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { CloseCircle, Camera, Add, Send } from 'iconsax-react';
@@ -16,6 +16,9 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [text, setText] = useState('');
+  
+  // State to track keyboard height
+  const [bottomOffset, setBottomOffset] = useState(0);
 
   // Prevent background scroll
   useEffect(() => {
@@ -23,6 +26,30 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = originalStyle;
+    };
+  }, []);
+
+  // Visual Viewport API to handle mobile keyboard resize
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+
+    const handleResize = () => {
+      // Calculate how much the keyboard pushed the viewport up
+      const offset = window.innerHeight - vv.height;
+      // If offset is significantly large, keyboard is likely open
+      setBottomOffset(offset > 100 ? offset : 0);
+    };
+
+    vv.addEventListener('resize', handleResize);
+    vv.addEventListener('scroll', handleResize);
+    
+    // Initial check
+    handleResize();
+
+    return () => {
+      vv.removeEventListener('resize', handleResize);
+      vv.removeEventListener('scroll', handleResize);
     };
   }, []);
 
@@ -46,12 +73,24 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
     }
   };
 
-  // Using createPortal to render directly into document.body
+  // We use inline style for `bottom` to push the sheet exactly above the keyboard
   return createPortal(
     <>
-      <div className="fixed inset-0 bg-ink/60 z-[60] animate-in fade-in" onClick={onClose} />
+      <div 
+        className="fixed inset-0 bg-ink/60 z-[60] animate-in fade-in" 
+        onClick={onClose} 
+        style={{ bottom: bottomOffset > 0 ? `${bottomOffset}px` : 0 }}
+      />
       
-      <div className="fixed bottom-0 left-0 right-0 z-[61] bg-surface rounded-t-2xl max-h-[85dvh] flex flex-col animate-in slide-in-from-bottom shadow-2xl" dir={isArabic ? 'rtl' : 'ltr'}>
+      <div 
+        className="fixed left-0 right-0 z-[61] bg-surface rounded-t-2xl flex flex-col animate-in slide-in-from-bottom shadow-2xl" 
+        dir={isArabic ? 'rtl' : 'ltr'}
+        style={{ 
+          bottom: `${bottomOffset}px`,
+          maxHeight: bottomOffset > 0 ? 'calc(100vh - 50px)' : '85dvh',
+          height: bottomOffset > 0 ? `calc(${window.visualViewport?.height || window.innerHeight}px - 20px)` : 'auto'
+        }}
+      >
         
         {/* Header */}
         <div className="flex items-center justify-center p-3 border-b border-border relative shrink-0">
