@@ -1,3 +1,4 @@
+// RULE-14-EXCEPTION: CommentSheet requires portal + scroll lock + FB-like composer
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { CloseCircle, Camera, Add, Send } from 'iconsax-react';
