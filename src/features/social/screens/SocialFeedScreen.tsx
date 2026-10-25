@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { ArrowLeft2, ArrowRight2 } from 'iconsax-react';
 import { supabase } from '@/shared/lib/supabase';
 import { SocialPostCard } from '../components/SocialPostCard';
 import { useUI } from '@/hooks/useUI';
@@ -91,7 +92,23 @@ export const SocialFeedScreen: React.FC = () => {
   return (
     <div className={`max-w-[440px] mx-auto w-full flex flex-col pt-0 pb-28 bg-canvas min-h-screen ${isArabic ? 'font-cairo' : ''}`} dir={isArabic ? 'rtl' : 'ltr'}>
       <Header />
-      <div className="px-4 pt-4">
+
+      {/* Sub-header with Back button */}
+      <div className="sticky top-[64px] z-40 bg-surface border-b border-border px-4 py-2.5 flex items-center justify-between">
+        <button
+          onClick={() => navigateTo('main')}
+          className="flex items-center gap-1.5 text-ink font-semibold text-[15px] cursor-pointer hover:bg-canvas px-2 py-1 -ms-2 rounded-lg transition"
+        >
+          {isArabic ? <ArrowRight2 size="18" /> : <ArrowLeft2 size="18" />}
+          <span>{isArabic ? 'الرئيسية' : 'Home'}</span>
+        </button>
+        <h1 className="font-bold text-[16px] text-ink absolute left-1/2 -translate-x-1/2">
+          {isArabic ? 'مجتمع FOX' : 'FOX Community'}
+        </h1>
+        <div className="w-8" /> {/* Spacer to balance the layout */}
+      </div>
+
+      <div className="px-3 pt-3">
         {posts.map((post) => <SocialPostCard key={post.id} post={post} />)}
 
         {error && (
