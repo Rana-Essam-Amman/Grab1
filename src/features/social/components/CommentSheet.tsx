@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { CloseCircle, Camera, Add, Send } from 'iconsax-react';
 import { getComments, addComment, SocialComment } from '../services/socialService';
 import { useUI } from '@/hooks/useUI';
@@ -15,7 +16,7 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
   const [submitting, setSubmitting] = useState(false);
   const [text, setText] = useState('');
 
-  // Fix 1: Prevent the background page from scrolling when the sheet is open
+  // Prevent background scroll
   useEffect(() => {
     const originalStyle = window.getComputedStyle(document.body).overflow;
     document.body.style.overflow = 'hidden';
@@ -44,12 +45,12 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
     }
   };
 
-  return (
+  // Using createPortal to render directly into document.body
+  return createPortal(
     <>
       <div className="fixed inset-0 bg-ink/60 z-[60] animate-in fade-in" onClick={onClose} />
       
-      {/* Fix 2: Use max-h-[85dvh] and bottom-0 instead of top-10vh to stick to the keyboard */}
-      <div className="fixed bottom-0 left-0 right-0 z-[60] bg-surface rounded-t-2xl max-h-[85dvh] flex flex-col animate-in slide-in-from-bottom shadow-2xl" dir={isArabic ? 'rtl' : 'ltr'}>
+      <div className="fixed bottom-0 left-0 right-0 z-[61] bg-surface rounded-t-2xl max-h-[85dvh] flex flex-col animate-in slide-in-from-bottom shadow-2xl" dir={isArabic ? 'rtl' : 'ltr'}>
         
         {/* Header */}
         <div className="flex items-center justify-center p-3 border-b border-border relative shrink-0">
@@ -118,6 +119,7 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
         </div>
 
       </div>
-    </>
+    </>,
+    document.body
   );
 };
