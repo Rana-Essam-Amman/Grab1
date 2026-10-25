@@ -15,6 +15,15 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
   const [submitting, setSubmitting] = useState(false);
   const [text, setText] = useState('');
 
+  // Fix 1: Prevent the background page from scrolling when the sheet is open
+  useEffect(() => {
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = originalStyle;
+    };
+  }, []);
+
   useEffect(() => { 
     getComments(listingId).then((c) => { setComments(c); setLoading(false); }); 
   }, [listingId]);
@@ -39,12 +48,8 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
     <>
       <div className="fixed inset-0 bg-ink/60 z-[60] animate-in fade-in" onClick={onClose} />
       
-      {/* 
-        Here is the magic fix: 
-        Instead of h-[80vh] bottom-0, we use top-[10vh] bottom-0. 
-        This forces the sheet to stretch exactly between the top margin and the keyboard. 
-      */}
-      <div className="fixed top-[10vh] bottom-0 left-0 right-0 z-[60] bg-surface rounded-t-2xl flex flex-col animate-in slide-in-from-bottom shadow-2xl" dir={isArabic ? 'rtl' : 'ltr'}>
+      {/* Fix 2: Use max-h-[85dvh] and bottom-0 instead of top-10vh to stick to the keyboard */}
+      <div className="fixed bottom-0 left-0 right-0 z-[60] bg-surface rounded-t-2xl max-h-[85dvh] flex flex-col animate-in slide-in-from-bottom shadow-2xl" dir={isArabic ? 'rtl' : 'ltr'}>
         
         {/* Header */}
         <div className="flex items-center justify-center p-3 border-b border-border relative shrink-0">
@@ -55,7 +60,7 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
           </button>
         </div>
 
-        {/* Comments List (min-h-0 is crucial for scrolling inside flex-col) */}
+        {/* Comments List */}
         <div className="flex-1 overflow-y-auto min-h-0 p-3 space-y-4">
           {loading ? (
             <p className="text-center text-[13px] text-ink-muted py-4">جاري التحميل...</p>
