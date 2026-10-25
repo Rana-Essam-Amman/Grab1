@@ -71,7 +71,7 @@ export const SocialPostCard: React.FC<PostProps> = ({ post }) => {
           
           {/* Image Counter (e.g., 1/3) */}
           {images.length > 1 && (
-            <div className="absolute top-2 right-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm">
+            <div className="absolute top-2 right-2 bg-ink/60 text-surface text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm">
               {activeIndex + 1} / {images.length}
             </div>
           )}
@@ -83,7 +83,7 @@ export const SocialPostCard: React.FC<PostProps> = ({ post }) => {
                 <div 
                   key={i} 
                   className={`h-1.5 rounded-full transition-all ${
-                    i === activeIndex ? 'bg-white w-3' : 'bg-white/50 w-1.5'
+                    i === activeIndex ? 'bg-primary w-3' : 'bg-surface/60 w-1.5'
                   }`} 
                 />
               ))}
