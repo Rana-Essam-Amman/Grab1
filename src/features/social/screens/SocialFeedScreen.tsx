@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { supabase } from '@/shared/lib/supabase';
 import { SocialPostCard } from '../components/SocialPostCard';
 import { useUI } from '@/hooks/useUI';
+import { Header } from '@/shared/components/Header';
 
 const PAGE_SIZE = 10;
 
@@ -16,7 +17,6 @@ export const SocialFeedScreen: React.FC = () => {
 
   const fetchPosts = useCallback(async (currentOffset: number) => {
     try {
-      // For now, hardcoding 'JO' for testing. We will use real market later.
       const { data, error } = await supabase.rpc('get_social_feed', {
         p_country_code: 'JO',
         p_limit: PAGE_SIZE,
@@ -61,14 +61,13 @@ export const SocialFeedScreen: React.FC = () => {
   }, [hasMore, loading, offset, fetchPosts]);
 
   return (
-    <div className="min-h-screen bg-canvas" dir={isArabic ? 'rtl' : 'ltr'}>
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-surface border-b border-border p-4 text-center">
-        <h1 className="text-lg font-bold text-ink">{isArabic ? 'مجتمع FOX' : 'FOX Community'}</h1>
-      </div>
+    <div
+      className={`max-w-[440px] mx-auto w-full flex flex-col pt-0 pb-28 bg-canvas min-h-screen ${isArabic ? 'font-cairo' : ''}`}
+      dir={isArabic ? "rtl" : "ltr"}
+    >
+      <Header />
 
-      {/* Feed List */}
-      <div className="max-w-lg mx-auto p-4">
+      <div className="px-4 pt-4">
         {posts.map(post => (
           <SocialPostCard key={post.id} post={post} />
         ))}
