@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Heart, MessageCircle, Share2, MapPin } from 'iconsax-react';
+import { Heart, MessageCircle, Share, Location } from 'iconsax-react';
 import { formatPrice } from '@/shared/lib/formatPrice';
 import { useUI } from '@/hooks/useUI';
 
@@ -39,7 +39,7 @@ export const SocialPostCard: React.FC<PostProps> = ({ post }) => {
         <div className="flex flex-col flex-1">
           <span className="font-bold text-sm text-ink">{post.seller_name}</span>
           <div className="flex items-center gap-1 text-[11px] text-ink-muted">
-            <MapPin size="12" variant="Bold" />
+            <Location size="12" variant="Bold" />
             <span>{post.city}</span>
             <span>•</span>
             <span>{new Date(post.created_at).toLocaleDateString(isArabic ? 'ar-JO' : 'en-US')}</span>
@@ -110,7 +110,7 @@ export const SocialPostCard: React.FC<PostProps> = ({ post }) => {
           <span>{post.comment_count || 0} {isArabic ? 'تعليق' : 'Comments'}</span>
         </button>
         <button className="flex items-center gap-1.5 flex-1 justify-center py-2 rounded-lg hover:bg-canvas transition cursor-pointer">
-          <Share2 size="18" variant="Linear" />
+          <Share size="18" variant="Linear" />
           <span>{isArabic ? 'مشاركة' : 'Share'}</span>
         </button>
       </div>
