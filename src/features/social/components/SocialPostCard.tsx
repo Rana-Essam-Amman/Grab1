@@ -143,7 +143,7 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
   };
 
   return (
-    <div className="bg-surface border-b border-border sm:border sm:rounded-xl sm:mb-4 flex flex-col">
+    <div className="bg-surface border border-border rounded-xl mb-3 shadow-sm flex flex-col overflow-hidden">
       <div className="flex items-center gap-2.5 p-3">
         <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden shrink-0">
           {post.seller_avatar ? (
@@ -164,7 +164,7 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
       </div>
 
       <div className="px-3 pb-3 text-[15px] text-ink">
-        {/* Title in a subtle box */}
+        {/* Title in a distinct box */}
         <div className="bg-canvas p-2.5 rounded-lg mb-2">
           <h3
             className="font-bold leading-[1.3333]"
@@ -210,25 +210,25 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
 
       {renderMedia()}
 
-      <div className="px-3 py-2.5 flex justify-between items-center bg-surface">
+      {/* Price & Summary Area */}
+      <div className="px-3 py-2.5 flex justify-between items-center bg-canvas/30 border-t border-border">
         <span className="text-xl font-bold text-danger">
           {formatPrice(post.price, post.currency, isArabic)}
         </span>
-      </div>
-
-      <div className="px-3 py-2 flex items-center justify-between text-[13px] text-ink-muted">
-        <div className="flex items-center gap-1">
-          <div className="bg-primary rounded-full p-0.5 shrink-0 flex items-center justify-center">
-            <Heart size="10" color="white" variant="Bold" />
+        <div className="flex items-center gap-3 text-[13px] text-ink-muted">
+          <div className="flex items-center gap-1">
+            <Heart size="14" variant={liked ? 'Bold' : 'Linear'} color={liked ? 'currentColor' : 'currentColor'} className={liked ? 'text-danger' : ''} />
+            <span>{likeCount}</span>
           </div>
-          <span>{likeCount}</span>
-        </div>
-        <div>
-          <span>{commentCount} {isArabic ? 'تعليق' : 'Comments'}</span>
+          <div className="flex items-center gap-1">
+            <MessageCircle size="14" variant="Linear" />
+            <span>{commentCount}</span>
+          </div>
         </div>
       </div>
 
-      <div className="flex items-center justify-between px-2 py-1 border-t border-border">
+      {/* Action Buttons */}
+      <div className="flex items-center justify-between px-2 py-1 border-t border-border bg-surface">
         <button onClick={handleLike} disabled={liking} className={`flex items-center justify-center gap-2 flex-1 min-h-[44px] rounded-lg hover:bg-canvas transition cursor-pointer ${liked ? 'text-danger' : 'text-ink-muted'}`}>
           <Heart size="20" variant={liked ? 'Bold' : 'Linear'} color="currentColor" />
           <span className="text-[15px] font-semibold">{isArabic ? 'إعجاب' : 'Like'}</span>
