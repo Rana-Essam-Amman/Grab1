@@ -101,7 +101,7 @@ export const SocialPostCard: React.FC<PostProps> = ({ post }) => {
       {/* Content */}
       <div className="px-3 pb-3 text-[15px] text-ink">
         <h3 className="font-semibold mb-1">{post.title}</h3>
-        {post.description && <p className="text-ink-soft leading-relaxed line-clamp-3">{post.description}</p>}
+        {post.description && <p className="text-ink-soft leading-[1.3333] line-clamp-3">{post.description}</p>}
       </div>
 
       {/* Image Carousel */}
@@ -148,7 +148,7 @@ export const SocialPostCard: React.FC<PostProps> = ({ post }) => {
         </span>
       </div>
 
-      {/* Summary Row (Facebook Style) */}
+      {/* Summary Row */}
       <div className="px-3 py-2 flex items-center justify-between text-[13px] text-ink-muted">
         <div className="flex items-center gap-1">
           <div className="bg-primary rounded-full p-0.5 shrink-0 flex items-center justify-center">
@@ -161,7 +161,7 @@ export const SocialPostCard: React.FC<PostProps> = ({ post }) => {
         </div>
       </div>
 
-      {/* Action Buttons (Facebook Style) */}
+      {/* Action Buttons */}
       <div className="flex items-center justify-between px-2 py-2 border-t border-border">
         <button
           onClick={handleLike}
