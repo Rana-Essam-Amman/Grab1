@@ -1,4 +1,4 @@
-// RULE-14-EXCEPTION: CommentSheet requires portal + flexbox + threaded rendering
+// RULE-14-EXCEPTION: CommentSheet requires portal + keyboard sync + threaded rendering
 import React, { useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { CloseCircle, Camera, Add, Send } from 'iconsax-react';
@@ -6,6 +6,7 @@ import { getComments, addComment, SocialComment } from '../services/socialServic
 import { useUI } from '@/hooks/useUI';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { useKeyboardSync } from '../hooks/useKeyboardSync';
 
 interface CommentSheetProps { listingId: string; onClose: () => void; onCommentAdded: () => void; }
 
@@ -21,16 +22,17 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
   const [parentId, setParentId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Prevent background scroll
-  useEffect(() => {
-    const originalStyle = window.getComputedStyle(document.body).overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = originalStyle; };
-  }, []);
+  const keyboardHeight = useKeyboardSync();
 
   useEffect(() => { 
     getComments(listingId).then((c) => { setComments(c); setLoading(false); }); 
   }, [listingId]);
+
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      inputRef.current?.focus({ preventScroll: true });
+    });
+  }, []);
 
   const handleSubmit = async () => {
     if (!text.trim() || submitting) return;
@@ -53,7 +55,7 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
   const handleReply = (id: string, name: string, isReply: boolean, originalParentId?: string | null) => {
     setParentId(isReply && originalParentId ? originalParentId : id);
     setReplyingTo(name);
-    inputRef.current?.focus();
+    inputRef.current?.focus({ preventScroll: true });
   };
 
   const topLevelComments = comments.filter(c => !c.parent_comment_id);
@@ -84,18 +86,23 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
   );
 
   return createPortal(
-    // The magic fix: fixed inset-0, flex flex-col justify-end. 
-    // It naturally pushes the input up when the keyboard opens on mobile.
-    <div className="fixed inset-0 z-[60] flex flex-col justify-end bg-ink/60 animate-in fade-in" onClick={onClose}>
-      
-      {/* Prevent clicks inside the sheet from closing it */}
-      <div 
-        className="w-full bg-surface rounded-t-2xl flex flex-col animate-in slide-in-from-bottom shadow-2xl h-[85dvh]" 
+    <div
+      className="fixed inset-0 z-[60] bg-ink/60"
+      style={{ transform: 'translateZ(0)' }}
+      onClick={onClose}
+    >
+      <div
+        className="absolute left-0 right-0 bg-surface rounded-t-2xl flex flex-col transition-[bottom] duration-200 ease-out"
+        style={{
+          bottom: `${keyboardHeight}px`,
+          height: '85vh',
+          maxHeight: '85dvh',
+          transform: 'translate3d(0, 0, 0)',
+          willChange: 'bottom',
+        }}
         dir={isArabic ? 'rtl' : 'ltr'}
-        onClick={(e) => e.stopPropagation()}
+        onClick={e => e.stopPropagation()}
       >
-        
-        {/* Header */}
         <div className="flex items-center justify-center p-3 border-b border-border relative shrink-0">
           <div className="w-12 h-1 bg-border rounded-full absolute top-2" />
           <h3 className="font-bold text-ink text-[15px] mt-2">{isArabic ? 'التعليقات' : 'Comments'}</h3>
@@ -104,8 +111,7 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
           </button>
         </div>
 
-        {/* Comments List */}
-        <div className="flex-1 overflow-y-auto min-h-0 p-3 space-y-4">
+        <div className="flex-1 overflow-y-auto min-h-0 overscroll-contain p-3 space-y-4">
           {loading ? (
             <p className="text-center text-[13px] text-ink-muted py-4">جاري التحميل...</p>
           ) : comments.length === 0 ? (
@@ -122,7 +128,6 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
           )}
         </div>
 
-        {/* Replying To Banner */}
         {replyingTo && (
           <div className="px-3 py-1.5 bg-canvas border-t border-border flex items-center justify-between text-xs text-ink-muted">
             <span>{isArabic ? `ترد على ${replyingTo}` : `Replying to ${replyingTo}`}</span>
@@ -130,13 +135,14 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
           </div>
         )}
 
-        {/* Input Area */}
-        <div className="p-2 border-t border-border flex items-end gap-2 bg-surface shrink-0 pb-safe">
+        <div
+          className="flex-none p-2 border-t border-border flex items-end gap-2 bg-surface"
+          style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 8px)' }}
+        >
           <div className="flex-1 min-w-0 bg-canvas rounded-full flex items-center px-3 py-2 border border-border">
             <Camera size="22" variant="Linear" className="text-ink-muted shrink-0 cursor-pointer" />
             <input 
               ref={inputRef}
-              autoFocus 
               value={text} 
               onChange={(e) => setText(e.target.value)} 
               placeholder={isArabic ? 'اكتب تعليقاً...' : 'Write a comment...'} 
@@ -144,7 +150,6 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
               className="flex-1 min-w-0 bg-transparent px-2 text-[15px] text-ink outline-none placeholder:text-ink-muted" 
             />
           </div>
-          
           {text.trim().length > 0 ? (
             <button onClick={handleSubmit} disabled={submitting} className="shrink-0 p-2 text-primary font-bold cursor-pointer">
               {submitting ? <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" /> : <Send size="26" variant="Bold" />}
@@ -155,7 +160,6 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
             </button>
           )}
         </div>
-
       </div>
     </div>,
     document.body
