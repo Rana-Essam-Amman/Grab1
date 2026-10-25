@@ -1,6 +1,7 @@
 // RULE-14-EXCEPTION: UI complexity
 import React, { useState, useCallback, useRef, useLayoutEffect } from 'react';
 import { Heart, MessageCircle, Share, Location } from 'iconsax-react';
+import { stripEmojis } from '@/shared/lib/stripEmojis';
 import { formatPrice } from '@/shared/lib/formatPrice';
 import { useUI } from '@/hooks/useUI';
 import { useAuth } from '@/hooks/useAuth';
@@ -26,7 +27,8 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
 
   const textRef = useRef<HTMLDivElement>(null);
   const images: string[] = post.images_list || [];
-  const description = post.description || '';
+  const description = stripEmojis(post.description || '');
+  const cleanTitle = stripEmojis(post.title || '');
 
   useLayoutEffect(() => {
     const el = textRef.current;
@@ -171,7 +173,7 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
             overflow: 'hidden'
           }}
         >
-          {post.title}
+          {cleanTitle}
         </h3>
         {description && (
           <div>
