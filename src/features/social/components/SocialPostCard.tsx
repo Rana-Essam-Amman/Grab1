@@ -101,8 +101,8 @@ export const SocialPostCard: React.FC<PostProps> = ({ post }) => {
 
       {/* Actions (Like, Comment, Share) */}
       <div className="flex items-center justify-around p-2 text-xs font-bold text-ink-muted bg-surface rounded-b-xl">
-        <button className="flex items-center gap-1.5 flex-1 justify-center py-2 rounded-lg hover:bg-canvas transition cursor-pointer">
-          <Heart size="18" variant={post.is_liked ? "Bold" : "Linear"} color={post.is_liked ? "#ef4444" : "currentColor"} />
+        <button className={`flex items-center gap-1.5 flex-1 justify-center py-2 rounded-lg hover:bg-canvas transition cursor-pointer ${post.is_liked ? 'text-danger' : ''}`}>
+          <Heart size="18" variant={post.is_liked ? "Bold" : "Linear"} color="currentColor" />
           <span>{post.like_count || 0} {isArabic ? 'إعجاب' : 'Likes'}</span>
         </button>
         <button className="flex items-center gap-1.5 flex-1 justify-center py-2 rounded-lg hover:bg-canvas transition cursor-pointer">
