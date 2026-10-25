@@ -1,5 +1,5 @@
-// RULE-14-EXCEPTION: CommentSheet requires portal + visual viewport + FB-like composer
-import React, { useEffect, useState } from 'react';
+// RULE-14-EXCEPTION: CommentSheet requires portal + visual viewport + threaded rendering
+import React, { useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { CloseCircle, Camera, Add, Send } from 'iconsax-react';
 import { getComments, addComment, SocialComment } from '../services/socialService';
@@ -17,36 +17,28 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
   const [submitting, setSubmitting] = useState(false);
   const [text, setText] = useState('');
   
-  // State to track keyboard height
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [parentId, setParentId] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  
   const [bottomOffset, setBottomOffset] = useState(0);
 
-  // Prevent background scroll
   useEffect(() => {
     const originalStyle = window.getComputedStyle(document.body).overflow;
     document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = originalStyle;
-    };
+    return () => { document.body.style.overflow = originalStyle; };
   }, []);
 
-  // Visual Viewport API to handle mobile keyboard resize
   useEffect(() => {
     const vv = window.visualViewport;
     if (!vv) return;
-
     const handleResize = () => {
-      // Calculate how much the keyboard pushed the viewport up
       const offset = window.innerHeight - vv.height;
-      // If offset is significantly large, keyboard is likely open
       setBottomOffset(offset > 100 ? offset : 0);
     };
-
     vv.addEventListener('resize', handleResize);
     vv.addEventListener('scroll', handleResize);
-    
-    // Initial check
     handleResize();
-
     return () => {
       vv.removeEventListener('resize', handleResize);
       vv.removeEventListener('scroll', handleResize);
@@ -61,10 +53,12 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
     if (!text.trim() || submitting) return;
     if (!user || !user.id) { toast.error(isArabic ? 'سجل دخول أولاً' : 'Please sign in first'); return; }
     setSubmitting(true);
-    const ok = await addComment(listingId, text);
+    const ok = await addComment(listingId, text, parentId);
     setSubmitting(false);
     if (ok) {
       setText('');
+      setParentId(null);
+      setReplyingTo(null);
       const updated = await getComments(listingId);
       setComments(updated);
       onCommentAdded();
@@ -73,24 +67,42 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
     }
   };
 
-  // We use inline style for `bottom` to push the sheet exactly above the keyboard
+  const handleReply = (id: string, name: string) => {
+    setParentId(id);
+    setReplyingTo(name);
+    inputRef.current?.focus();
+  };
+
+  const topLevelComments = comments.filter(c => !c.parent_comment_id);
+  const getReplies = (id: string) => comments.filter(c => c.parent_comment_id === id);
+
+  const renderComment = (c: SocialComment, isReply = false) => (
+    <div key={c.id} className={`flex gap-2 ${isReply ? 'mt-2' : 'mt-0'}`}>
+      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden shrink-0 mt-0.5">
+        {c.user_avatar ? <img src={c.user_avatar} alt="" className="w-full h-full object-cover" /> : <span className="text-primary font-bold text-xs">{c.user_name?.charAt(0)}</span>}
+      </div>
+      <div className="flex flex-col items-start max-w-[85%]">
+        <div className="bg-canvas rounded-2xl px-3 py-2">
+          <p className="font-semibold text-[13px] text-ink leading-tight">{c.user_name}</p>
+          <p className="text-[15px] text-ink mt-0.5 whitespace-pre-wrap">{c.content}</p>
+        </div>
+        <div className="flex items-center gap-3 mt-1 ms-2">
+          <p className="text-[11px] text-ink-muted font-medium">{new Date(c.created_at).toLocaleDateString(isArabic ? 'ar-JO' : 'en-US')}</p>
+          {!isReply && (
+            <button onClick={() => handleReply(c.id, c.user_name)} className="text-[11px] font-bold text-ink-muted hover:text-ink">
+              {isArabic ? 'رد' : 'Reply'}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
   return createPortal(
     <>
-      <div 
-        className="fixed inset-0 bg-ink/60 z-[60] animate-in fade-in" 
-        onClick={onClose} 
-        style={{ bottom: bottomOffset > 0 ? `${bottomOffset}px` : 0 }}
-      />
+      <div className="fixed inset-0 bg-ink/60 z-[60] animate-in fade-in" onClick={onClose} style={{ bottom: bottomOffset > 0 ? `${bottomOffset}px` : 0 }} />
       
-      <div 
-        className="fixed left-0 right-0 z-[61] bg-surface rounded-t-2xl flex flex-col animate-in slide-in-from-bottom shadow-2xl" 
-        dir={isArabic ? 'rtl' : 'ltr'}
-        style={{ 
-          bottom: `${bottomOffset}px`,
-          maxHeight: bottomOffset > 0 ? 'calc(100vh - 50px)' : '85dvh',
-          height: bottomOffset > 0 ? `calc(${window.visualViewport?.height || window.innerHeight}px - 20px)` : 'auto'
-        }}
-      >
+      <div className="fixed left-0 right-0 z-[61] bg-surface rounded-t-2xl flex flex-col animate-in slide-in-from-bottom shadow-2xl" dir={isArabic ? 'rtl' : 'ltr'} style={{ bottom: `${bottomOffset}px`, maxHeight: bottomOffset > 0 ? 'calc(100vh - 50px)' : '85dvh', height: bottomOffset > 0 ? `calc(${window.visualViewport?.height || window.innerHeight}px - 20px)` : 'auto' }}>
         
         {/* Header */}
         <div className="flex items-center justify-center p-3 border-b border-border relative shrink-0">
@@ -108,32 +120,32 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
           ) : comments.length === 0 ? (
             <p className="text-center text-[13px] text-ink-muted py-4">كن أول من يعلق</p>
           ) : (
-            comments.map((c) => (
-              <div key={c.id} className="flex gap-2">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden shrink-0 mt-0.5">
-                  {c.user_avatar ? (
-                    <img src={c.user_avatar} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    <span className="text-primary font-bold text-xs">{c.user_name?.charAt(0)}</span>
-                  )}
-                </div>
-                <div className="flex flex-col items-start max-w-[85%]">
-                  <div className="bg-canvas rounded-2xl px-3 py-2">
-                    <p className="font-semibold text-[13px] text-ink leading-tight">{c.user_name}</p>
-                    <p className="text-[15px] text-ink mt-0.5 whitespace-pre-wrap">{c.content}</p>
-                  </div>
-                  <p className="text-[11px] text-ink-muted mt-1 ms-2 font-medium">{new Date(c.created_at).toLocaleDateString(isArabic ? 'ar-JO' : 'en-US')}</p>
+            topLevelComments.map(c => (
+              <div key={c.id} className="flex flex-col">
+                {renderComment(c, false)}
+                {/* Render Replies */}
+                <div className="ms-10 mt-1">
+                  {getReplies(c.id).map(reply => renderComment(reply, true))}
                 </div>
               </div>
             ))
           )}
         </div>
 
-        {/* Facebook-Style Input Area */}
+        {/* Replying To Banner */}
+        {replyingTo && (
+          <div className="px-3 py-1.5 bg-canvas border-t border-border flex items-center justify-between text-xs text-ink-muted">
+            <span>{isArabic ? `ترد على ${replyingTo}` : `Replying to ${replyingTo}`}</span>
+            <button onClick={() => { setReplyingTo(null); setParentId(null); }} className="font-bold cursor-pointer hover:text-ink">X</button>
+          </div>
+        )}
+
+        {/* Input Area */}
         <div className="p-2 border-t border-border flex items-end gap-2 bg-surface shrink-0 pb-safe">
           <div className="flex-1 min-w-0 bg-canvas rounded-full flex items-center px-3 py-2 border border-border">
             <Camera size="22" variant="Linear" className="text-ink-muted shrink-0 cursor-pointer" />
             <input 
+              ref={inputRef}
               autoFocus 
               value={text} 
               onChange={(e) => setText(e.target.value)} 
@@ -144,11 +156,7 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
           </div>
           
           {text.trim().length > 0 ? (
-            <button 
-              onClick={handleSubmit} 
-              disabled={submitting} 
-              className="shrink-0 p-2 text-primary font-bold cursor-pointer"
-            >
+            <button onClick={handleSubmit} disabled={submitting} className="shrink-0 p-2 text-primary font-bold cursor-pointer">
               {submitting ? <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" /> : <Send size="26" variant="Bold" />}
             </button>
           ) : (

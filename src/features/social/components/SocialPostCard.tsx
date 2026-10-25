@@ -36,11 +36,9 @@ export const SocialPostCard: React.FC<PostProps> = ({ post }) => {
   const handleLike = async () => {
     if (!user || !user.id) { toast.error(isArabic ? 'سجل دخول أولاً' : 'Please sign in first'); return; }
     if (liking) return;
-    
     const previousLiked = liked;
     const previousCount = likeCount;
     
-    // Optimistic UI
     setLiked(!previousLiked);
     setLikeCount(prev => previousLiked ? Math.max(0, prev - 1) : prev + 1);
     setLiking(true);
@@ -48,12 +46,10 @@ export const SocialPostCard: React.FC<PostProps> = ({ post }) => {
     try {
       const result = await toggleLike(post.id);
       if (!result) {
-        // Rollback on failure
         setLiked(previousLiked);
         setLikeCount(previousCount);
         toast.error(isArabic ? 'فشل التفاعل' : 'Failed to like');
       } else {
-        // Sync with server exact count
         setLiked(result.liked);
         setLikeCount(result.like_count);
       }
@@ -152,7 +148,20 @@ export const SocialPostCard: React.FC<PostProps> = ({ post }) => {
         </span>
       </div>
 
-      {/* Actions Bar */}
+      {/* Summary Row (Facebook Style) */}
+      <div className="px-3 py-2 flex items-center justify-between text-[13px] text-ink-muted">
+        <div className="flex items-center gap-1">
+          <div className="bg-primary rounded-full p-0.5 shrink-0 flex items-center justify-center text-ink-inverse">
+            <Heart size="10" color="currentColor" variant="Bold" />
+          </div>
+          <span>{likeCount}</span>
+        </div>
+        <div>
+          <span>{commentCount} {isArabic ? 'تعليق' : 'Comments'}</span>
+        </div>
+      </div>
+
+      {/* Action Buttons (Facebook Style) */}
       <div className="flex items-center justify-between px-2 py-1 border-t border-border">
         <button
           onClick={handleLike}
@@ -160,21 +169,21 @@ export const SocialPostCard: React.FC<PostProps> = ({ post }) => {
           className={`flex items-center gap-2 flex-1 justify-center py-2 rounded-lg hover:bg-canvas transition cursor-pointer ${liked ? 'text-danger' : 'text-ink-muted'}`}
         >
           <Heart size="20" variant={liked ? 'Bold' : 'Linear'} color="currentColor" />
-          <span className="text-[15px] font-medium">{likeCount} {isArabic ? 'إعجاب' : 'Likes'}</span>
+          <span className="text-[15px] font-semibold">{isArabic ? 'إعجاب' : 'Like'}</span>
         </button>
         <button
           onClick={() => setShowComments(true)}
           className="flex items-center gap-2 flex-1 justify-center py-2 rounded-lg hover:bg-canvas transition cursor-pointer text-ink-muted"
         >
           <MessageCircle size="20" variant="Linear" color="currentColor" />
-          <span className="text-[15px] font-medium">{commentCount} {isArabic ? 'تعليق' : 'Comments'}</span>
+          <span className="text-[15px] font-semibold">{isArabic ? 'تعليق' : 'Comment'}</span>
         </button>
         <button
           onClick={handleShare}
           className="flex items-center gap-2 flex-1 justify-center py-2 rounded-lg hover:bg-canvas transition cursor-pointer text-ink-muted"
         >
           <Share size="20" variant="Linear" color="currentColor" />
-          <span className="text-[15px] font-medium">{isArabic ? 'مشاركة' : 'Share'}</span>
+          <span className="text-[15px] font-semibold">{isArabic ? 'مشاركة' : 'Share'}</span>
         </button>
       </div>
 
