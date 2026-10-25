@@ -24,18 +24,15 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
   const [isTextExpanded, setIsTextExpanded] = useState(false);
   const [hasOverflow, setHasOverflow] = useState(false);
 
-  const textRef = useRef<HTMLParagraphElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
   const images: string[] = post.images_list || [];
   const description = post.description || '';
 
-  // Measure overflow exactly like Facebook
   useLayoutEffect(() => {
     const el = textRef.current;
     if (!el) return;
-
-    // Check overflow only if we are in the collapsed state
     if (!isTextExpanded) {
-      setHasOverflow(el.scrollHeight > el.clientHeight + 1);
+      setHasOverflow(el.scrollHeight > el.clientHeight + 2);
     }
   }, [description, isTextExpanded]);
 
@@ -91,54 +88,46 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
     }
   };
 
-  // EXACT FACEBOOK GRID ARCHITECTURE
   const renderMedia = () => {
     if (images.length === 0) return null;
-
     if (images.length === 1) {
       return (
-        <div className="w-full grid cursor-pointer" onClick={() => openLightbox(0)}>
-          <div className="relative aspect-square overflow-hidden bg-canvas">
-            <img src={images[0]} alt="listing" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
-          </div>
+        <div className="w-full relative aspect-square bg-canvas cursor-pointer" onClick={() => openLightbox(0)}>
+          <img src={images[0]} alt="listing" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
         </div>
       );
     }
-
     if (images.length === 2) {
       return (
-        <div className="w-full aspect-[2/1] bg-canvas grid grid-cols-2 gap-[1px] cursor-pointer">
-          <div className="relative aspect-square overflow-hidden w-full h-full" onClick={() => openLightbox(0)}>
+        <div className="w-full aspect-[2/1] bg-canvas grid grid-cols-2 gap-[2px] cursor-pointer">
+          <div className="relative w-full h-full" onClick={() => openLightbox(0)}>
             <img src={images[0]} alt="listing-0" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
           </div>
-          <div className="relative aspect-square overflow-hidden w-full h-full" onClick={() => openLightbox(1)}>
+          <div className="relative w-full h-full" onClick={() => openLightbox(1)}>
             <img src={images[1]} alt="listing-1" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
           </div>
         </div>
       );
     }
-
     if (images.length === 3) {
       return (
-        <div className="w-full aspect-square bg-canvas grid grid-cols-2 grid-rows-2 gap-[1px] cursor-pointer">
-          <div className="relative row-span-2 overflow-hidden w-full h-full" onClick={() => openLightbox(0)}>
+        <div className="w-full aspect-square bg-canvas grid grid-cols-2 grid-rows-2 gap-[2px] cursor-pointer">
+          <div className="relative w-full h-full row-span-2" onClick={() => openLightbox(0)}>
             <img src={images[0]} alt="listing-0" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
           </div>
-          <div className="relative aspect-square overflow-hidden w-full h-full" onClick={() => openLightbox(1)}>
+          <div className="relative w-full h-full" onClick={() => openLightbox(1)}>
             <img src={images[1]} alt="listing-1" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
           </div>
-          <div className="relative aspect-square overflow-hidden w-full h-full" onClick={() => openLightbox(2)}>
+          <div className="relative w-full h-full" onClick={() => openLightbox(2)}>
             <img src={images[2]} alt="listing-2" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
           </div>
         </div>
       );
     }
-
-    // 4+ Images
     return (
-      <div className="w-full aspect-square bg-canvas grid grid-cols-2 grid-rows-2 gap-[1px] cursor-pointer">
+      <div className="w-full aspect-square bg-canvas grid grid-cols-2 grid-rows-2 gap-[2px] cursor-pointer">
         {images.slice(0, 4).map((img, i) => (
-          <div key={i} className="relative aspect-square overflow-hidden w-full h-full" onClick={() => openLightbox(i)}>
+          <div key={i} className="relative w-full h-full" onClick={() => openLightbox(i)}>
             <img src={img} alt={`listing-${i}`} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
             {i === 3 && images.length > 4 && (
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
@@ -153,7 +142,6 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
 
   return (
     <div className="bg-surface border-b border-border sm:border sm:rounded-xl sm:mb-4 flex flex-col">
-      {/* Header */}
       <div className="flex items-center gap-2.5 p-3">
         <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden shrink-0">
           {post.seller_avatar ? (
@@ -173,17 +161,17 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
         </div>
       </div>
 
-      {/* Content - Facebook Style */}
       <div className="px-3 pb-3 text-[15px] text-ink">
         <h3 className="font-bold leading-[1.3333] mb-1">{post.title}</h3>
         {description && (
           <div>
-            <p
+            <div
               ref={textRef}
-              className={`text-ink leading-[1.3333] ${!isTextExpanded ? 'line-clamp-3' : ''}`}
+              className={`text-ink leading-[1.3333] whitespace-normal ${!isTextExpanded ? 'line-clamp-3' : ''}`}
+              style={!isTextExpanded ? { display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' } : {}}
             >
               {description}
-            </p>
+            </div>
             {hasOverflow && (
               <button
                 onClick={() => setIsTextExpanded(!isTextExpanded)}
@@ -196,17 +184,14 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
         )}
       </div>
 
-      {/* Image Grid */}
       {renderMedia()}
 
-      {/* Price */}
       <div className="px-3 py-2.5 flex justify-between items-center bg-surface">
         <span className="text-lg font-bold text-primary">
           {formatPrice(post.price, post.currency, isArabic)}
         </span>
       </div>
 
-      {/* Summary Row */}
       <div className="px-3 py-2 flex items-center justify-between text-[13px] text-ink-muted">
         <div className="flex items-center gap-1">
           <div className="bg-primary rounded-full p-0.5 shrink-0 flex items-center justify-center">
@@ -219,47 +204,23 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
         </div>
       </div>
 
-      {/* Action Buttons */}
       <div className="flex items-center justify-between px-2 py-1 border-t border-border">
-        <button
-          onClick={handleLike}
-          disabled={liking}
-          className={`flex items-center justify-center gap-2 flex-1 min-h-[44px] rounded-lg hover:bg-canvas transition cursor-pointer ${liked ? 'text-danger' : 'text-ink-muted'}`}
-        >
+        <button onClick={handleLike} disabled={liking} className={`flex items-center justify-center gap-2 flex-1 min-h-[44px] rounded-lg hover:bg-canvas transition cursor-pointer ${liked ? 'text-danger' : 'text-ink-muted'}`}>
           <Heart size="20" variant={liked ? 'Bold' : 'Linear'} color="currentColor" />
           <span className="text-[15px] font-semibold">{isArabic ? 'إعجاب' : 'Like'}</span>
         </button>
-        <button
-          onClick={() => setShowComments(true)}
-          className="flex items-center justify-center gap-2 flex-1 min-h-[44px] rounded-lg hover:bg-canvas transition cursor-pointer text-ink-muted"
-        >
+        <button onClick={() => setShowComments(true)} className="flex items-center justify-center gap-2 flex-1 min-h-[44px] rounded-lg hover:bg-canvas transition cursor-pointer text-ink-muted">
           <MessageCircle size="20" variant="Linear" color="currentColor" />
           <span className="text-[15px] font-semibold">{isArabic ? 'تعليق' : 'Comment'}</span>
         </button>
-        <button
-          onClick={handleShare}
-          className="flex items-center justify-center gap-2 flex-1 min-h-[44px] rounded-lg hover:bg-canvas transition cursor-pointer text-ink-muted"
-        >
+        <button onClick={handleShare} className="flex items-center justify-center gap-2 flex-1 min-h-[44px] rounded-lg hover:bg-canvas transition cursor-pointer text-ink-muted">
           <Share size="20" variant="Linear" color="currentColor" />
           <span className="text-[15px] font-semibold">{isArabic ? 'مشاركة' : 'Share'}</span>
         </button>
       </div>
 
-      {showComments && (
-        <CommentSheet
-          listingId={post.id}
-          onClose={handleCloseComments}
-          onCommentAdded={handleCommentAdded}
-        />
-      )}
-
-      {showLightbox && (
-        <ImageLightbox
-          images={images}
-          initialIndex={lightboxIndex}
-          onClose={handleCloseLightbox}
-        />
-      )}
+      {showComments && <CommentSheet listingId={post.id} onClose={handleCloseComments} onCommentAdded={handleCommentAdded} />}
+      {showLightbox && <ImageLightbox images={images} initialIndex={lightboxIndex} onClose={handleCloseLightbox} />}
     </div>
   );
 });
