@@ -31,8 +31,10 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
   useLayoutEffect(() => {
     const el = textRef.current;
     if (!el) return;
+
     if (!isTextExpanded) {
-      setHasOverflow(el.scrollHeight > el.clientHeight + 2);
+      // + 5px tolerance for sub-pixel rendering
+      setHasOverflow(el.scrollHeight > el.clientHeight + 5);
     }
   }, [description, isTextExpanded]);
 
@@ -167,8 +169,16 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
           <div>
             <div
               ref={textRef}
-              className={`text-ink leading-[1.3333] whitespace-normal ${!isTextExpanded ? 'line-clamp-3' : ''}`}
-              style={!isTextExpanded ? { display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' } : {}}
+              className="text-ink leading-[1.3333] whitespace-pre-wrap"
+              style={{
+                whiteSpace: 'pre-wrap',
+                ...(!isTextExpanded ? {
+                  display: '-webkit-box',
+                  WebkitLineClamp: 3,
+                  WebkitBoxOrient: 'vertical',
+                  overflow: 'hidden'
+                } : {})
+              }}
             >
               {description}
             </div>
