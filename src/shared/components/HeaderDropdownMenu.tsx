@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Global, Heart, Notification, MessageQuestion, Setting2 } from 'iconsax-react';
+import { User, Global, Heart, Notification, MessageQuestion, Setting2, People } from 'iconsax-react';
 import { MARKETS } from '@/data/markets/config';
 import type { MarketCode } from '@/data/markets/types';
 import { useUI } from '@/hooks/useUI';
@@ -16,6 +16,7 @@ interface HeaderDropdownMenuProps {
   handleWishlistNav: () => void;
   wishlistLength: number;
   handleNotificationsNav: () => void;
+  handleSocialNav: () => void;
   activeCurrency: string;
   handleCurrencySelect: (code: string) => void;
   setIsCountrySheetOpen: (open: boolean) => void;
@@ -29,6 +30,7 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
   handleWishlistNav,
   wishlistLength,
   handleNotificationsNav,
+  handleSocialNav,
   setIsCountrySheetOpen,
 }) => {
   const { browseCountryCode, isArabic } = useUI();
@@ -61,6 +63,15 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
               <span>{isArabic ? market.nameAr : market.nameEn}</span>
             </span>
             <Global variant="Bold" size={22} color="#0EA5E9" className="shrink-0" />
+          </button>
+          <button
+            onClick={() => { handleSocialNav(); handleMenuClose(); }}
+            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-canvas/40 active:bg-canvas/60"
+          >
+            <span className="text-sm font-bold text-ink">
+              {isArabic ? 'مجتمع FOX' : 'FOX Community'}
+            </span>
+            <People variant="Bold" size={22} color="#3B82F6" className="shrink-0" />
           </button>
           <button
             onClick={() => { handleProfileNav(); handleMenuClose(); }}

@@ -85,6 +85,7 @@ const STATIC_SCREEN_TO_PATH: Record<string, string> = {
   'safety': '/safety',
   'about': '/about',
   'filters': '/filters',
+  'social': '/social',
   'admin': '/admin',
 };
 

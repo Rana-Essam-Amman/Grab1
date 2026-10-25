@@ -44,6 +44,10 @@ export const Header: React.FC = () => {
     navigateTo('wishlist');
     setIsMenuOpen(false);
   }, [navigateTo]);
+  const handleSocialNav = useCallback(() => {
+    navigateTo('social');
+    setIsMenuOpen(false);
+  }, [navigateTo]);
   const handleNotificationsNav = useCallback(() => {
     if (authStatus === 'unauthenticated' || !user) {
       navigateTo('login');
@@ -133,6 +137,7 @@ export const Header: React.FC = () => {
           handleWishlistNav={handleWishlistNav}
           wishlistLength={wishlist.length}
           handleNotificationsNav={handleNotificationsNav}
+          handleSocialNav={handleSocialNav}
           activeCurrency={activeCurrency}
           handleCurrencySelect={handleCurrencySelect}
           setIsCountrySheetOpen={setIsCountrySheetOpen}

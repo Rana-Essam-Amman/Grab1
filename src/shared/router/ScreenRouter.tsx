@@ -33,6 +33,7 @@ const LoginScreen = lazy(() => import('@/features/auth/screens/LoginScreen').the
 const SubCategoriesScreen = lazy(() => import('@/features/categories/screens/SubCategoriesScreen').then((m) => ({ default: m.SubCategoriesScreen })));
 const EditProfileScreen = lazy(() => import('@/features/profile/screens/EditProfileScreen').then((m) => ({ default: m.EditProfileScreen })));
 const ProfileScreen = lazy(() => import('@/features/profile/screens/ProfileScreen').then((m) => ({ default: m.ProfileScreen })));
+const SocialFeedScreen = lazy(() => import('@/features/social/screens/SocialFeedScreen').then((m) => ({ default: m.SocialFeedScreen })));
 
 const registryScreensMap = new Map<string, React.LazyExoticComponent<React.ComponentType<any>>>();
 
@@ -62,6 +63,7 @@ export const ScreenRouter: React.FC = () => {
     case 'seller-profile': return r('seller-profile', SellerProfileScreen);
     case 'search-results': return r('search-results', SearchResultsScreen);
     case 'settings': return r('settings', SettingsScreen);
+    case 'social': return <SocialFeedScreen />;
     case 'admin': return r('admin', AdminScreen);
     case 'register': return <LoginScreen />;
     case 'terms': return r('terms', TermsScreen);
