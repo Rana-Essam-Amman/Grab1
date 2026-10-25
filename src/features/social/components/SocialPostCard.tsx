@@ -164,19 +164,23 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
       </div>
 
       <div className="px-3 pb-3 text-[15px] text-ink">
-        <h3
-          className="font-bold leading-[1.3333] mb-1"
-          style={{
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden'
-          }}
-        >
-          {cleanTitle}
-        </h3>
+        {/* Title in a subtle box */}
+        <div className="bg-canvas p-2.5 rounded-lg mb-2">
+          <h3
+            className="font-bold leading-[1.3333]"
+            style={{
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden'
+            }}
+          >
+            {cleanTitle}
+          </h3>
+        </div>
+
         {description && (
-          <div>
+          <div className="px-0.5">
             <div
               ref={textRef}
               className="text-ink leading-[1.3333]"
