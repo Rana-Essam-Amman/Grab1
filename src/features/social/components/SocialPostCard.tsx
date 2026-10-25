@@ -1,5 +1,5 @@
 // RULE-14-EXCEPTION: UI complexity
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import { Heart, MessageCircle, Share, Location } from 'iconsax-react';
 import { formatPrice } from '@/shared/lib/formatPrice';
 import { useUI } from '@/hooks/useUI';
@@ -25,6 +25,11 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
   const [showLightbox, setShowLightbox] = useState(false);
 
   const images: string[] = post.images_list || [];
+
+  // Stabilize onClose to prevent history back bug
+  const handleCloseComments = useCallback(() => setShowComments(false), []);
+  const handleCloseLightbox = useCallback(() => setShowLightbox(false), []);
+  const handleCommentAdded = useCallback(() => setCommentCount((c) => c + 1), []);
 
   const handleScroll = () => {
     if (scrollRef.current) {
@@ -187,8 +192,8 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
       {showComments && (
         <CommentSheet
           listingId={post.id}
-          onClose={() => setShowComments(false)}
-          onCommentAdded={() => setCommentCount((c) => c + 1)}
+          onClose={handleCloseComments}
+          onCommentAdded={handleCommentAdded}
         />
       )}
 
@@ -196,7 +201,7 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
         <ImageLightbox
           images={images}
           initialIndex={activeIndex}
-          onClose={() => setShowLightbox(false)}
+          onClose={handleCloseLightbox}
         />
       )}
     </div>
