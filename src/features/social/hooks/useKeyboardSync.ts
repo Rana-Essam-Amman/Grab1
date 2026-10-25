@@ -11,7 +11,7 @@ export function useKeyboardSync() {
     let lastHeight = window.innerHeight;
     let isMounted = true;
 
-    const handleResize = () => {
+    const computeKeyboard = () => {
       if (!isMounted) return;
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       rafRef.current = requestAnimationFrame(() => {
@@ -40,12 +40,14 @@ export function useKeyboardSync() {
     const preventScroll = () => { window.scrollTo(0, scrollY); };
 
     window.addEventListener('scroll', preventScroll, { passive: false });
-    vv.addEventListener('resize', handleResize);
-    handleResize();
+    vv.addEventListener('resize', computeKeyboard);
+    vv.addEventListener('scroll', computeKeyboard);
+    computeKeyboard();
 
     return () => {
       isMounted = false;
-      vv.removeEventListener('resize', handleResize);
+      vv.removeEventListener('resize', computeKeyboard);
+      vv.removeEventListener('scroll', computeKeyboard);
       window.removeEventListener('scroll', preventScroll);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       document.body.style.position = original.position;

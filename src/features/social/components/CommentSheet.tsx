@@ -17,22 +17,38 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [text, setText] = useState('');
-  
+
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [parentId, setParentId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const keyboardHeight = useKeyboardSync();
 
-  useEffect(() => { 
-    getComments(listingId).then((c) => { setComments(c); setLoading(false); }); 
+  useEffect(() => {
+    getComments(listingId).then((c) => { setComments(c); setLoading(false); });
   }, [listingId]);
 
+  // iOS-safe focus: double RAF + timeout
   useEffect(() => {
-    requestAnimationFrame(() => {
-      inputRef.current?.focus({ preventScroll: true });
+    let raf1: number, raf2: number;
+    raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => {
+        setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 50);
+      });
     });
+    return () => { cancelAnimationFrame(raf1); cancelAnimationFrame(raf2); };
   }, []);
+
+  // Android back button closes sheet
+  useEffect(() => {
+    const onPop = () => onClose();
+    window.history.pushState({ sheet: listingId }, '');
+    window.addEventListener('popstate', onPop);
+    return () => {
+      window.removeEventListener('popstate', onPop);
+      if (window.history.state?.sheet === listingId) window.history.back();
+    };
+  }, [listingId, onClose]);
 
   const handleSubmit = async () => {
     if (!text.trim() || submitting) return;
@@ -58,22 +74,24 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
     inputRef.current?.focus({ preventScroll: true });
   };
 
-  const topLevelComments = comments.filter(c => !c.parent_comment_id);
-  const getReplies = (id: string) => comments.filter(c => c.parent_comment_id === id);
+  const allParentIds = new Set(comments.filter((c) => !c.parent_comment_id).map((c) => c.id));
+  const topLevelComments = comments.filter((c) => !c.parent_comment_id || !allParentIds.has(c.parent_comment_id as string));
+  const getReplies = (id: string) => comments.filter((c) => c.parent_comment_id === id);
 
   const handleAddClick = () => {
     toast.info(isArabic ? 'ميزة إرفاق الصور قريباً' : 'Attachment feature coming soon');
   };
 
-  const renderComment = (c: SocialComment, isReply = false) => (
+  const renderComment = (c: SocialComment, isReply = false, orphan = false) => (
     <div key={c.id} className={`flex gap-2 ${isReply ? 'mt-2' : 'mt-0'}`}>
       <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden shrink-0 mt-0.5">
         {c.user_avatar ? <img src={c.user_avatar} alt="" className="w-full h-full object-cover" /> : <span className="text-primary font-bold text-xs">{c.user_name?.charAt(0)}</span>}
       </div>
       <div className="flex flex-col items-start max-w-[85%]">
-        <div className="bg-canvas rounded-2xl px-3 py-2">
+        <div className="bg-canvas rounded-lg px-3 py-2">
           <p className="font-semibold text-[13px] text-ink leading-tight">{c.user_name}</p>
-          <p className="text-[15px] text-ink leading-[1.3333] mt-0.5 whitespace-pre-wrap">{c.content}</p>
+          <p className="text-[14px] text-ink leading-[1.3333] mt-0.5 whitespace-pre-wrap">{c.content}</p>
+          {orphan && <p className="text-[10px] text-ink-muted italic mt-1">{isArabic ? '(رد على تعليق محذوف)' : '(reply to deleted comment)'}</p>}
         </div>
         <div className="flex items-center gap-3 mt-1 ms-2">
           <p className="text-[11px] text-ink-muted font-medium">{new Date(c.created_at).toLocaleDateString(isArabic ? 'ar-JO' : 'en-US')}</p>
@@ -86,22 +104,19 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
   );
 
   return createPortal(
-    <div
-      className="fixed inset-0 z-[60] bg-ink/60"
-      style={{ transform: 'translateZ(0)' }}
-      onClick={onClose}
-    >
+    <div className="fixed inset-0 z-[60] bg-ink/60" onClick={onClose}>
       <div
-        className="absolute left-0 right-0 bg-surface rounded-t-2xl flex flex-col transition-[bottom] duration-200 ease-out"
+        className="absolute left-0 right-0 bg-surface rounded-t-2xl flex flex-col transition-transform duration-200 ease-out"
         style={{
-          bottom: `${keyboardHeight}px`,
+          bottom: 0,
           height: '85vh',
           maxHeight: '85dvh',
-          transform: 'translate3d(0, 0, 0)',
-          willChange: 'bottom',
+          transform: `translateY(-${keyboardHeight}px)`,
+          willChange: 'transform',
+          transformOrigin: 'bottom',
         }}
         dir={isArabic ? 'rtl' : 'ltr'}
-        onClick={e => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-center p-3 border-b border-border relative shrink-0">
           <div className="w-12 h-1 bg-border rounded-full absolute top-2" />
@@ -117,14 +132,19 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
           ) : comments.length === 0 ? (
             <p className="text-center text-[13px] text-ink-muted py-4">كن أول من يعلق</p>
           ) : (
-            topLevelComments.map(c => (
-              <div key={c.id} className="flex flex-col">
-                {renderComment(c, false)}
-                <div className="ms-10 mt-1">
-                  {getReplies(c.id).map(reply => renderComment(reply, true))}
+            topLevelComments.map((c) => {
+              const isOrphan = !!c.parent_comment_id;
+              return (
+                <div key={c.id} className="flex flex-col">
+                  {renderComment(c, false, isOrphan)}
+                  {!isOrphan && (
+                    <div className="ms-10 mt-1">
+                      {getReplies(c.id).map((reply) => renderComment(reply, true))}
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
 
@@ -135,19 +155,16 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
           </div>
         )}
 
-        <div
-          className="flex-none p-2 border-t border-border flex items-end gap-2 bg-surface"
-          style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 8px)' }}
-        >
+        <div className="flex-none p-2 border-t border-border flex items-end gap-2 bg-surface" style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 8px)' }}>
           <div className="flex-1 min-w-0 bg-canvas rounded-full flex items-center px-3 py-2 border border-border">
             <Camera size="22" variant="Linear" className="text-ink-muted shrink-0 cursor-pointer" />
-            <input 
+            <input
               ref={inputRef}
-              value={text} 
-              onChange={(e) => setText(e.target.value)} 
-              placeholder={isArabic ? 'اكتب تعليقاً...' : 'Write a comment...'} 
-              maxLength={1000} 
-              className="flex-1 min-w-0 bg-transparent px-2 text-[15px] text-ink outline-none placeholder:text-ink-muted" 
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder={isArabic ? 'اكتب تعليقاً...' : 'Write a comment...'}
+              maxLength={1000}
+              className="flex-1 min-w-0 bg-transparent px-2 text-[15px] text-ink outline-none placeholder:text-ink-muted"
             />
           </div>
           {text.trim().length > 0 ? (
