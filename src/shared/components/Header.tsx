@@ -45,9 +45,13 @@ export const Header: React.FC = () => {
     setIsMenuOpen(false);
   }, [navigateTo]);
   const handleSocialNav = useCallback(() => {
-    navigateTo('social');
+    if (authStatus === 'unauthenticated' || !user) {
+      navigateTo('login');
+    } else {
+      navigateTo('social');
+    }
     setIsMenuOpen(false);
-  }, [navigateTo]);
+  }, [authStatus, user, navigateTo]);
   const handleNotificationsNav = useCallback(() => {
     if (authStatus === 'unauthenticated' || !user) {
       navigateTo('login');
