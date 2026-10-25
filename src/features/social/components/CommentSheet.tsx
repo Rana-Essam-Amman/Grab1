@@ -28,7 +28,6 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
     getComments(listingId).then((c) => { setComments(c); setLoading(false); });
   }, [listingId]);
 
-  // iOS-safe focus: double RAF + timeout
   useEffect(() => {
     let raf1: number, raf2: number;
     raf1 = requestAnimationFrame(() => {
@@ -39,7 +38,6 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
     return () => { cancelAnimationFrame(raf1); cancelAnimationFrame(raf2); };
   }, []);
 
-  // Android back button closes sheet
   useEffect(() => {
     const onPop = () => onClose();
     window.history.pushState({ sheet: listingId }, '');
@@ -88,7 +86,7 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
         {c.user_avatar ? <img src={c.user_avatar} alt="" className="w-full h-full object-cover" /> : <span className="text-primary font-bold text-xs">{c.user_name?.charAt(0)}</span>}
       </div>
       <div className="flex flex-col items-start max-w-[85%]">
-        <div className="bg-canvas rounded-lg px-3 py-2">
+        <div className="bg-canvas rounded-xl px-3 py-2">
           <p className="font-semibold text-[13px] text-ink leading-tight">{c.user_name}</p>
           <p className="text-[14px] text-ink leading-[1.3333] mt-0.5 whitespace-pre-wrap">{c.content}</p>
           {orphan && <p className="text-[10px] text-ink-muted italic mt-1">{isArabic ? '(رد على تعليق محذوف)' : '(reply to deleted comment)'}</p>}
@@ -106,7 +104,7 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
   return createPortal(
     <div className="fixed inset-0 z-[60] bg-ink/60" onClick={onClose}>
       <div
-        className="absolute left-0 right-0 bg-surface rounded-t-2xl flex flex-col transition-transform duration-200 ease-out"
+        className="absolute left-0 right-0 bg-surface rounded-t-2xl flex flex-col transition-transform duration-[250ms] ease-[cubic-bezier(0.2,0,0,1)]"
         style={{
           bottom: 0,
           height: '85vh',
@@ -157,7 +155,7 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
 
         <div className="flex-none p-2 border-t border-border flex items-end gap-2 bg-surface" style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 8px)' }}>
           <div className="flex-1 min-w-0 bg-canvas rounded-full flex items-center px-3 py-2 border border-border">
-            <Camera size="22" variant="Linear" className="text-ink-muted shrink-0 cursor-pointer" />
+            <Camera size="24" variant="Linear" className="text-ink-muted shrink-0 cursor-pointer" />
             <input
               ref={inputRef}
               value={text}
