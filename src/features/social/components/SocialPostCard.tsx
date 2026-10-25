@@ -151,8 +151,8 @@ export const SocialPostCard: React.FC<PostProps> = ({ post }) => {
       {/* Summary Row (Facebook Style) */}
       <div className="px-3 py-2 flex items-center justify-between text-[13px] text-ink-muted">
         <div className="flex items-center gap-1">
-          <div className="bg-primary rounded-full p-0.5 shrink-0 flex items-center justify-center text-ink-inverse">
-            <Heart size="10" color="currentColor" variant="Bold" />
+          <div className="bg-primary rounded-full p-0.5 shrink-0 flex items-center justify-center">
+            <Heart size="10" color="white" variant="Bold" />
           </div>
           <span>{likeCount}</span>
         </div>
@@ -162,25 +162,25 @@ export const SocialPostCard: React.FC<PostProps> = ({ post }) => {
       </div>
 
       {/* Action Buttons (Facebook Style) */}
-      <div className="flex items-center justify-between px-2 py-1 border-t border-border">
+      <div className="flex items-center justify-between px-2 py-2 border-t border-border">
         <button
           onClick={handleLike}
           disabled={liking}
-          className={`flex items-center gap-2 flex-1 justify-center py-2 rounded-lg hover:bg-canvas transition cursor-pointer ${liked ? 'text-danger' : 'text-ink-muted'}`}
+          className={`flex items-center gap-2 flex-1 justify-center py-1.5 rounded-lg hover:bg-canvas transition cursor-pointer ${liked ? 'text-danger' : 'text-ink-muted'}`}
         >
           <Heart size="20" variant={liked ? 'Bold' : 'Linear'} color="currentColor" />
           <span className="text-[15px] font-semibold">{isArabic ? 'إعجاب' : 'Like'}</span>
         </button>
         <button
           onClick={() => setShowComments(true)}
-          className="flex items-center gap-2 flex-1 justify-center py-2 rounded-lg hover:bg-canvas transition cursor-pointer text-ink-muted"
+          className="flex items-center gap-2 flex-1 justify-center py-1.5 rounded-lg hover:bg-canvas transition cursor-pointer text-ink-muted"
         >
           <MessageCircle size="20" variant="Linear" color="currentColor" />
           <span className="text-[15px] font-semibold">{isArabic ? 'تعليق' : 'Comment'}</span>
         </button>
         <button
           onClick={handleShare}
-          className="flex items-center gap-2 flex-1 justify-center py-2 rounded-lg hover:bg-canvas transition cursor-pointer text-ink-muted"
+          className="flex items-center gap-2 flex-1 justify-center py-1.5 rounded-lg hover:bg-canvas transition cursor-pointer text-ink-muted"
         >
           <Share size="20" variant="Linear" color="currentColor" />
           <span className="text-[15px] font-semibold">{isArabic ? 'مشاركة' : 'Share'}</span>
