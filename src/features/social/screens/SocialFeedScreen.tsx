@@ -5,12 +5,25 @@ import { SocialPostCard } from '../components/SocialPostCard';
 import { useUI } from '@/hooks/useUI';
 import { useAuth } from '@/hooks/useAuth';
 import { Header } from '@/shared/components/Header';
+import { SearchBar } from '@/features/explore/components/SearchBar';
 
 const PAGE_SIZE = 10;
+
+function useDebouncedValue<T>(value: T, delayMs: number): T {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delayMs);
+    return () => clearTimeout(timer);
+  }, [value, delayMs]);
+  return debounced;
+}
 
 export const SocialFeedScreen: React.FC = () => {
   const { isArabic, browseCountryCode, navigateTo } = useUI();
   const { user, authStatus } = useAuth();
+
+  const [searchInput, setSearchInput] = useState('');
+  const debouncedSearch = useDebouncedValue(searchInput, 600);
 
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,6 +51,7 @@ export const SocialFeedScreen: React.FC = () => {
         p_country_code: browseCountryCode,
         p_limit: PAGE_SIZE,
         p_offset: currentOffset,
+        p_search: debouncedSearch.trim()
       });
 
       if (err) throw err;
@@ -53,7 +67,7 @@ export const SocialFeedScreen: React.FC = () => {
       setLoading(false);
       fetchingRef.current = false;
     }
-  }, [browseCountryCode, user]);
+  }, [browseCountryCode, user, debouncedSearch]);
 
   useEffect(() => {
     setPosts([]);
@@ -92,10 +106,10 @@ export const SocialFeedScreen: React.FC = () => {
   return (
     <div className={`max-w-[440px] mx-auto w-full flex flex-col pt-0 pb-28 bg-canvas min-h-screen ${isArabic ? 'font-cairo' : ''}`} dir={isArabic ? 'rtl' : 'ltr'}>
       <Header />
-
+      
       {/* Sub-header with Back button */}
       <div className="sticky top-[64px] z-40 bg-surface border-b border-border px-4 py-2.5 flex items-center justify-between">
-        <button
+        <button 
           onClick={() => navigateTo('main')}
           className="flex items-center gap-1.5 text-ink font-semibold text-[15px] cursor-pointer hover:bg-canvas px-2 py-1 -ms-2 rounded-lg transition"
         >
@@ -105,7 +119,18 @@ export const SocialFeedScreen: React.FC = () => {
         <h1 className="font-bold text-[16px] text-ink absolute left-1/2 -translate-x-1/2">
           {isArabic ? 'مجتمع FOX' : 'FOX Community'}
         </h1>
-        <div className="w-8" /> {/* Spacer to balance the layout */}
+        <div className="w-8" />
+      </div>
+
+      {/* Search Bar (Exact copy from Home) */}
+      <div className="sticky top-[112px] z-30 bg-canvas pt-3 pb-2 px-4 border-b border-border/50">
+        <SearchBar
+          isArabic={isArabic}
+          value={searchInput}
+          onChange={setSearchInput}
+          onSubmit={() => {}} 
+          onFocusChange={() => {}} 
+        />
       </div>
 
       <div className="px-3 pt-3">
@@ -123,6 +148,7 @@ export const SocialFeedScreen: React.FC = () => {
         <div ref={observerTarget} className="py-8 flex justify-center text-xs text-ink-muted">
           {loading && !error && (isArabic ? 'جاري التحميل...' : 'Loading...')}
           {!hasMore && !error && posts.length > 0 && (isArabic ? 'وصلت لنهاية المجتمع' : 'You have reached the end')}
+          {!loading && posts.length === 0 && !error && (isArabic ? 'لا توجد نتائج بحث' : 'No results found')}
         </div>
       </div>
     </div>
