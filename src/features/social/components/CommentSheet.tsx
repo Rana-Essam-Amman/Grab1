@@ -1,4 +1,4 @@
-// RULE-14-EXCEPTION: CommentSheet requires portal + visual viewport + threaded rendering
+// RULE-14-EXCEPTION: CommentSheet requires portal + flexbox + threaded rendering
 import React, { useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { CloseCircle, Camera, Add, Send } from 'iconsax-react';
@@ -20,29 +20,12 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [parentId, setParentId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  
-  const [bottomOffset, setBottomOffset] = useState(0);
 
+  // Prevent background scroll
   useEffect(() => {
     const originalStyle = window.getComputedStyle(document.body).overflow;
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = originalStyle; };
-  }, []);
-
-  useEffect(() => {
-    const vv = window.visualViewport;
-    if (!vv) return;
-    const handleResize = () => {
-      const offset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-      setBottomOffset(offset > 100 ? offset : 0);
-    };
-    vv.addEventListener('resize', handleResize);
-    vv.addEventListener('scroll', handleResize);
-    handleResize();
-    return () => {
-      vv.removeEventListener('resize', handleResize);
-      vv.removeEventListener('scroll', handleResize);
-    };
   }, []);
 
   useEffect(() => { 
@@ -101,10 +84,16 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
   );
 
   return createPortal(
-    <>
-      <div className="fixed inset-0 bg-ink/60 z-[60] animate-in fade-in" onClick={onClose} style={{ bottom: bottomOffset > 0 ? `${bottomOffset}px` : 0 }} />
+    // The magic fix: fixed inset-0, flex flex-col justify-end. 
+    // It naturally pushes the input up when the keyboard opens on mobile.
+    <div className="fixed inset-0 z-[60] flex flex-col justify-end bg-ink/60 animate-in fade-in" onClick={onClose}>
       
-      <div className="fixed left-0 right-0 z-[61] bg-surface rounded-t-2xl flex flex-col animate-in slide-in-from-bottom shadow-2xl" dir={isArabic ? 'rtl' : 'ltr'} style={{ bottom: `${bottomOffset}px`, maxHeight: bottomOffset > 0 ? 'calc(100vh - 50px)' : '85dvh', height: bottomOffset > 0 ? `calc(${window.visualViewport?.height || window.innerHeight}px - 20px)` : 'auto' }}>
+      {/* Prevent clicks inside the sheet from closing it */}
+      <div 
+        className="w-full bg-surface rounded-t-2xl flex flex-col animate-in slide-in-from-bottom shadow-2xl h-[85dvh]" 
+        dir={isArabic ? 'rtl' : 'ltr'}
+        onClick={(e) => e.stopPropagation()}
+      >
         
         {/* Header */}
         <div className="flex items-center justify-center p-3 border-b border-border relative shrink-0">
@@ -125,7 +114,6 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
             topLevelComments.map(c => (
               <div key={c.id} className="flex flex-col">
                 {renderComment(c, false)}
-                {/* Render Replies */}
                 <div className="ms-10 mt-1">
                   {getReplies(c.id).map(reply => renderComment(reply, true))}
                 </div>
@@ -169,7 +157,7 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
         </div>
 
       </div>
-    </>,
+    </div>,
     document.body
   );
 };
