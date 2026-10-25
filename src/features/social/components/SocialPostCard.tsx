@@ -1,5 +1,5 @@
 // RULE-14-EXCEPTION: UI complexity
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useLayoutEffect } from 'react';
 import { Heart, MessageCircle, Share, Location } from 'iconsax-react';
 import { formatPrice } from '@/shared/lib/formatPrice';
 import { useUI } from '@/hooks/useUI';
@@ -22,10 +22,22 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
   const [showLightbox, setShowLightbox] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [isTextExpanded, setIsTextExpanded] = useState(false);
+  const [hasOverflow, setHasOverflow] = useState(false);
 
+  const textRef = useRef<HTMLParagraphElement>(null);
   const images: string[] = post.images_list || [];
   const description = post.description || '';
-  const isLongText = description.length > 100;
+
+  // Measure overflow exactly like Facebook
+  useLayoutEffect(() => {
+    const el = textRef.current;
+    if (!el) return;
+
+    // Check overflow only if we are in the collapsed state
+    if (!isTextExpanded) {
+      setHasOverflow(el.scrollHeight > el.clientHeight + 1);
+    }
+  }, [description, isTextExpanded]);
 
   const handleCloseComments = useCallback(() => setShowComments(false), []);
   const handleCloseLightbox = useCallback(() => setShowLightbox(false), []);
@@ -79,26 +91,28 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
     }
   };
 
-  // Facebook-style Image Grid
+  // EXACT FACEBOOK GRID ARCHITECTURE
   const renderMedia = () => {
     if (images.length === 0) return null;
 
     if (images.length === 1) {
       return (
-        <div className="w-full aspect-square bg-canvas cursor-pointer" onClick={() => openLightbox(0)}>
-          <img src={images[0]} alt="listing" className="w-full h-full object-cover" loading="lazy" />
+        <div className="w-full grid cursor-pointer" onClick={() => openLightbox(0)}>
+          <div className="relative aspect-square overflow-hidden bg-canvas">
+            <img src={images[0]} alt="listing" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+          </div>
         </div>
       );
     }
 
     if (images.length === 2) {
       return (
-        <div className="w-full aspect-[2/1] bg-canvas grid grid-cols-2 gap-0.5 cursor-pointer">
-          <div className="h-full w-full overflow-hidden" onClick={() => openLightbox(0)}>
-            <img src={images[0]} alt="listing-0" className="w-full h-full object-cover" loading="lazy" />
+        <div className="w-full aspect-[2/1] bg-canvas grid grid-cols-2 gap-[1px] cursor-pointer">
+          <div className="relative aspect-square overflow-hidden w-full h-full" onClick={() => openLightbox(0)}>
+            <img src={images[0]} alt="listing-0" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
           </div>
-          <div className="h-full w-full overflow-hidden" onClick={() => openLightbox(1)}>
-            <img src={images[1]} alt="listing-1" className="w-full h-full object-cover" loading="lazy" />
+          <div className="relative aspect-square overflow-hidden w-full h-full" onClick={() => openLightbox(1)}>
+            <img src={images[1]} alt="listing-1" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
           </div>
         </div>
       );
@@ -106,27 +120,28 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
 
     if (images.length === 3) {
       return (
-        <div className="w-full aspect-square bg-canvas grid grid-cols-2 grid-rows-2 gap-0.5 cursor-pointer">
-          <div className="row-span-2 h-full w-full overflow-hidden" onClick={() => openLightbox(0)}>
-            <img src={images[0]} alt="listing-0" className="w-full h-full object-cover" loading="lazy" />
+        <div className="w-full aspect-square bg-canvas grid grid-cols-2 grid-rows-2 gap-[1px] cursor-pointer">
+          <div className="relative row-span-2 overflow-hidden w-full h-full" onClick={() => openLightbox(0)}>
+            <img src={images[0]} alt="listing-0" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
           </div>
-          <div className="h-full w-full overflow-hidden" onClick={() => openLightbox(1)}>
-            <img src={images[1]} alt="listing-1" className="w-full h-full object-cover" loading="lazy" />
+          <div className="relative aspect-square overflow-hidden w-full h-full" onClick={() => openLightbox(1)}>
+            <img src={images[1]} alt="listing-1" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
           </div>
-          <div className="h-full w-full overflow-hidden" onClick={() => openLightbox(2)}>
-            <img src={images[2]} alt="listing-2" className="w-full h-full object-cover" loading="lazy" />
+          <div className="relative aspect-square overflow-hidden w-full h-full" onClick={() => openLightbox(2)}>
+            <img src={images[2]} alt="listing-2" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
           </div>
         </div>
       );
     }
 
+    // 4+ Images
     return (
-      <div className="w-full aspect-square bg-canvas grid grid-cols-2 grid-rows-2 gap-0.5 cursor-pointer">
+      <div className="w-full aspect-square bg-canvas grid grid-cols-2 grid-rows-2 gap-[1px] cursor-pointer">
         {images.slice(0, 4).map((img, i) => (
-          <div key={i} className="relative h-full w-full overflow-hidden" onClick={() => openLightbox(i)}>
-            <img src={img} alt={`listing-${i}`} className="w-full h-full object-cover" loading="lazy" />
+          <div key={i} className="relative aspect-square overflow-hidden w-full h-full" onClick={() => openLightbox(i)}>
+            <img src={img} alt={`listing-${i}`} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
             {i === 3 && images.length > 4 && (
-              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
                 <span className="text-white font-bold text-2xl">+{images.length - 4}</span>
               </div>
             )}
@@ -158,18 +173,21 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
         </div>
       </div>
 
-      {/* Content (Title & Description) - Facebook Style */}
-      <div className="px-3 pb-3">
-        <h3 className="font-bold text-[15px] text-ink leading-[1.3333] mb-1">{post.title}</h3>
+      {/* Content - Facebook Style */}
+      <div className="px-3 pb-3 text-[15px] text-ink">
+        <h3 className="font-bold leading-[1.3333] mb-1">{post.title}</h3>
         {description && (
           <div>
-            <p className={`text-[15px] text-ink leading-[1.3333] whitespace-pre-wrap ${!isTextExpanded && isLongText ? 'line-clamp-3' : ''}`}>
+            <p
+              ref={textRef}
+              className={`text-ink leading-[1.3333] ${!isTextExpanded ? 'line-clamp-3' : ''}`}
+            >
               {description}
             </p>
-            {isLongText && (
+            {hasOverflow && (
               <button
                 onClick={() => setIsTextExpanded(!isTextExpanded)}
-                className="text-ink-muted font-semibold text-[15px] mt-1 hover:underline cursor-pointer"
+                className="text-ink-muted font-semibold text-[14px] mt-1 hover:underline cursor-pointer"
               >
                 {isTextExpanded ? (isArabic ? 'عرض أقل' : 'See Less') : (isArabic ? 'عرض المزيد' : 'See More')}
               </button>
@@ -178,7 +196,7 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
         )}
       </div>
 
-      {/* Facebook-style Media Grid */}
+      {/* Image Grid */}
       {renderMedia()}
 
       {/* Price */}
