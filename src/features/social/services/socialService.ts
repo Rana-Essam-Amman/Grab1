@@ -16,18 +16,33 @@ export interface LikeResult {
 
 export async function toggleLike(listingId: string): Promise<LikeResult | null> {
   const { data, error } = await supabase.rpc('toggle_post_like', { p_listing_id: listingId });
-  if (error) { console.error('toggleLike', error); return null; }
+  if (error) {
+    console.error('toggleLike error:', error);
+    if (typeof window !== 'undefined') {
+      window.alert(`LIKE DEBUG\n\nCode: ${error.code || 'no-code'}\nMessage: ${error.message}\nDetails: ${error.details || 'no-details'}\nHint: ${error.hint || 'no-hint'}`);
+    }
+    return null;
+  }
   return data as LikeResult;
 }
 
 export async function getComments(listingId: string): Promise<SocialComment[]> {
   const { data, error } = await supabase.rpc('get_post_comments', { p_listing_id: listingId });
-  if (error) { console.error('getComments', error); return []; }
+  if (error) {
+    console.error('getComments error:', error);
+    return [];
+  }
   return (data as SocialComment[]) || [];
 }
 
 export async function addComment(listingId: string, content: string): Promise<boolean> {
   const { error } = await supabase.rpc('add_post_comment', { p_listing_id: listingId, p_content: content });
-  if (error) { console.error('addComment', error); return false; }
+  if (error) {
+    console.error('addComment error:', error);
+    if (typeof window !== 'undefined') {
+      window.alert(`COMMENT DEBUG\n\nCode: ${error.code || 'no-code'}\nMessage: ${error.message}\nDetails: ${error.details || 'no-details'}\nHint: ${error.hint || 'no-hint'}`);
+    }
+    return false;
+  }
   return true;
 }
