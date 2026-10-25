@@ -33,7 +33,6 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
     const vv = window.visualViewport;
     if (!vv) return;
     const handleResize = () => {
-      // Fix D2: Account for offsetTop
       const offset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
       setBottomOffset(offset > 100 ? offset : 0);
     };
@@ -77,6 +76,10 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
   const topLevelComments = comments.filter(c => !c.parent_comment_id);
   const getReplies = (id: string) => comments.filter(c => c.parent_comment_id === id);
 
+  const handleAddClick = () => {
+    toast.info(isArabic ? 'ميزة إرفاق الصور قريباً' : 'Attachment feature coming soon');
+  };
+
   const renderComment = (c: SocialComment, isReply = false) => (
     <div key={c.id} className={`flex gap-2 ${isReply ? 'mt-2' : 'mt-0'}`}>
       <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden shrink-0 mt-0.5">
@@ -85,11 +88,10 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
       <div className="flex flex-col items-start max-w-[85%]">
         <div className="bg-canvas rounded-2xl px-3 py-2">
           <p className="font-semibold text-[13px] text-ink leading-tight">{c.user_name}</p>
-          <p className="text-[15px] text-ink mt-0.5 whitespace-pre-wrap">{c.content}</p>
+          <p className="text-[15px] text-ink leading-[1.3333] mt-0.5 whitespace-pre-wrap">{c.content}</p>
         </div>
         <div className="flex items-center gap-3 mt-1 ms-2">
           <p className="text-[11px] text-ink-muted font-medium">{new Date(c.created_at).toLocaleDateString(isArabic ? 'ar-JO' : 'en-US')}</p>
-          {/* Fix D1: Show Reply button on ALL comments */}
           <button onClick={() => handleReply(c.id, c.user_name, isReply, c.parent_comment_id)} className="text-[11px] font-bold text-ink-muted hover:text-ink">
             {isArabic ? 'رد' : 'Reply'}
           </button>
@@ -160,7 +162,7 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
               {submitting ? <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" /> : <Send size="26" variant="Bold" />}
             </button>
           ) : (
-            <button className="shrink-0 p-2 text-ink-muted cursor-pointer">
+            <button onClick={handleAddClick} className="shrink-0 p-2 text-ink-muted cursor-pointer hover:bg-canvas rounded-full transition">
               <Add size="26" variant="Linear" />
             </button>
           )}
