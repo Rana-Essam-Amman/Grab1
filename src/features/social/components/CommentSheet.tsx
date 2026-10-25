@@ -33,7 +33,8 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
     const vv = window.visualViewport;
     if (!vv) return;
     const handleResize = () => {
-      const offset = window.innerHeight - vv.height;
+      // Fix D2: Account for offsetTop
+      const offset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
       setBottomOffset(offset > 100 ? offset : 0);
     };
     vv.addEventListener('resize', handleResize);
@@ -67,8 +68,8 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
     }
   };
 
-  const handleReply = (id: string, name: string) => {
-    setParentId(id);
+  const handleReply = (id: string, name: string, isReply: boolean, originalParentId?: string | null) => {
+    setParentId(isReply && originalParentId ? originalParentId : id);
     setReplyingTo(name);
     inputRef.current?.focus();
   };
@@ -88,11 +89,10 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
         </div>
         <div className="flex items-center gap-3 mt-1 ms-2">
           <p className="text-[11px] text-ink-muted font-medium">{new Date(c.created_at).toLocaleDateString(isArabic ? 'ar-JO' : 'en-US')}</p>
-          {!isReply && (
-            <button onClick={() => handleReply(c.id, c.user_name)} className="text-[11px] font-bold text-ink-muted hover:text-ink">
-              {isArabic ? 'رد' : 'Reply'}
-            </button>
-          )}
+          {/* Fix D1: Show Reply button on ALL comments */}
+          <button onClick={() => handleReply(c.id, c.user_name, isReply, c.parent_comment_id)} className="text-[11px] font-bold text-ink-muted hover:text-ink">
+            {isArabic ? 'رد' : 'Reply'}
+          </button>
         </div>
       </div>
     </div>
