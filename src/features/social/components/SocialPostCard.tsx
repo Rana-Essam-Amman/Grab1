@@ -6,6 +6,7 @@ import { useUI } from '@/hooks/useUI';
 import { useAuth } from '@/hooks/useAuth';
 import { toggleLike } from '../services/socialService';
 import { CommentSheet } from './CommentSheet';
+import { ImageLightbox } from './ImageLightbox';
 import { toast } from 'sonner';
 
 interface PostProps { post: any; }
@@ -21,6 +22,7 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
   const [liking, setLiking] = useState(false);
   const [commentCount, setCommentCount] = useState<number>(post.comment_count || 0);
   const [showComments, setShowComments] = useState(false);
+  const [showLightbox, setShowLightbox] = useState(false);
 
   const images: string[] = post.images_list || [];
 
@@ -78,7 +80,6 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
 
   return (
     <div className="bg-surface border-b border-border sm:border sm:rounded-xl sm:mb-4 flex flex-col">
-      {/* Header */}
       <div className="flex items-center gap-2.5 p-3">
         <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden shrink-0">
           {post.seller_avatar ? (
@@ -98,13 +99,11 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
         </div>
       </div>
 
-      {/* Content */}
       <div className="px-3 pb-3 text-[15px] text-ink">
         <h3 className="font-semibold leading-[1.3333] mb-1">{post.title}</h3>
         {post.description && <p className="text-ink-soft leading-[1.3333] line-clamp-3">{post.description}</p>}
       </div>
 
-      {/* Image Carousel */}
       {images.length > 0 && (
         <div className="relative w-full aspect-square bg-canvas">
           <div
@@ -112,22 +111,23 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
             onScroll={handleScroll}
             className="w-full h-full flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            onClick={() => setShowLightbox(true)}
           >
             {images.map((img, i) => (
-              <div key={i} className="w-full h-full shrink-0 snap-center">
+              <div key={i} className="w-full h-full shrink-0 snap-center cursor-pointer">
                 <img src={img} alt={`listing-${i}`} className="w-full h-full object-cover" loading="lazy" />
               </div>
             ))}
           </div>
 
           {images.length > 1 && (
-            <div className="absolute top-3 end-3 bg-ink/70 text-surface text-xs px-2.5 py-1 rounded-full backdrop-blur-sm">
+            <div className="absolute top-3 end-3 bg-ink/70 text-surface text-xs px-2.5 py-1 rounded-full backdrop-blur-sm pointer-events-none">
               {activeIndex + 1} / {images.length}
             </div>
           )}
 
           {images.length > 1 && (
-            <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5">
+            <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 pointer-events-none">
               {images.map((_, i) => (
                 <div
                   key={i}
@@ -141,14 +141,12 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
         </div>
       )}
 
-      {/* Price Tag */}
       <div className="px-3 py-2.5 flex justify-between items-center bg-surface">
         <span className="text-lg font-bold text-primary">
           {formatPrice(post.price, post.currency, isArabic)}
         </span>
       </div>
 
-      {/* Summary Row */}
       <div className="px-3 py-2 flex items-center justify-between text-[13px] text-ink-muted">
         <div className="flex items-center gap-1">
           <div className="bg-primary rounded-full p-0.5 shrink-0 flex items-center justify-center">
@@ -161,7 +159,6 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
         </div>
       </div>
 
-      {/* Action Buttons (44px Touch Target) */}
       <div className="flex items-center justify-between px-2 py-1 border-t border-border">
         <button
           onClick={handleLike}
@@ -192,6 +189,14 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
           listingId={post.id}
           onClose={() => setShowComments(false)}
           onCommentAdded={() => setCommentCount((c) => c + 1)}
+        />
+      )}
+
+      {showLightbox && (
+        <ImageLightbox
+          images={images}
+          initialIndex={activeIndex}
+          onClose={() => setShowLightbox(false)}
         />
       )}
     </div>

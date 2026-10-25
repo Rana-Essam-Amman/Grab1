@@ -1,4 +1,4 @@
-// RULE-14-EXCEPTION: CommentSheet requires portal + keyboard sync + threaded rendering
+// RULE-14-EXCEPTION: CommentSheet requires portal + threaded rendering
 import React, { useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { CloseCircle, Camera, Add, Send } from 'iconsax-react';
@@ -6,7 +6,6 @@ import { getComments, addComment, SocialComment } from '../services/socialServic
 import { useUI } from '@/hooks/useUI';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { useKeyboardSync } from '../hooks/useKeyboardSync';
 
 interface CommentSheetProps { listingId: string; onClose: () => void; onCommentAdded: () => void; }
 
@@ -21,8 +20,6 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [parentId, setParentId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const keyboardHeight = useKeyboardSync();
 
   useEffect(() => {
     getComments(listingId).then((c) => { setComments(c); setLoading(false); });
@@ -102,17 +99,9 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
   );
 
   return createPortal(
-    <div className="fixed inset-0 z-[60] bg-ink/60" onClick={onClose}>
+    <div className="fixed inset-0 z-[60] flex flex-col justify-end bg-ink/60 animate-in fade-in" onClick={onClose}>
       <div
-        className="absolute left-0 right-0 bg-surface rounded-t-2xl flex flex-col transition-transform duration-[250ms] ease-[cubic-bezier(0.2,0,0,1)]"
-        style={{
-          bottom: 0,
-          height: '85vh',
-          maxHeight: '85dvh',
-          transform: `translateY(-${keyboardHeight}px)`,
-          willChange: 'transform',
-          transformOrigin: 'bottom',
-        }}
+        className="w-full bg-surface rounded-t-2xl flex flex-col animate-in slide-in-from-bottom shadow-2xl h-[85dvh]"
         dir={isArabic ? 'rtl' : 'ltr'}
         onClick={(e) => e.stopPropagation()}
       >
