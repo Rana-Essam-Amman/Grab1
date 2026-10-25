@@ -207,7 +207,7 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
       {renderMedia()}
 
       <div className="px-3 py-2.5 flex justify-between items-center bg-surface">
-        <span className="text-lg font-bold text-primary">
+        <span className="text-xl font-bold text-danger">
           {formatPrice(post.price, post.currency, isArabic)}
         </span>
       </div>
