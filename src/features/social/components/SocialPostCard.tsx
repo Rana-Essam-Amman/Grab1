@@ -100,7 +100,7 @@ export const SocialPostCard: React.FC<PostProps> = ({ post }) => {
 
       {/* Content */}
       <div className="px-3 pb-3 text-[15px] text-ink">
-        <h3 className="font-semibold mb-1">{post.title}</h3>
+        <h3 className="font-semibold leading-[1.3333] mb-1">{post.title}</h3>
         {post.description && <p className="text-ink-soft leading-[1.3333] line-clamp-3">{post.description}</p>}
       </div>
 
