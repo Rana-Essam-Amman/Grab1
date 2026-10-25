@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 
 interface PostProps { post: any; }
 
-export const SocialPostCard: React.FC<PostProps> = ({ post }) => {
+export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
   const { isArabic } = useUI();
   const { user } = useAuth();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -161,26 +161,26 @@ export const SocialPostCard: React.FC<PostProps> = ({ post }) => {
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex items-center justify-between px-2 py-2 border-t border-border">
+      {/* Action Buttons (44px Touch Target) */}
+      <div className="flex items-center justify-between px-2 py-1 border-t border-border">
         <button
           onClick={handleLike}
           disabled={liking}
-          className={`flex items-center gap-2 flex-1 justify-center py-1.5 rounded-lg hover:bg-canvas transition cursor-pointer ${liked ? 'text-danger' : 'text-ink-muted'}`}
+          className={`flex items-center justify-center gap-2 flex-1 min-h-[44px] rounded-lg hover:bg-canvas transition cursor-pointer ${liked ? 'text-danger' : 'text-ink-muted'}`}
         >
           <Heart size="20" variant={liked ? 'Bold' : 'Linear'} color="currentColor" />
           <span className="text-[15px] font-semibold">{isArabic ? 'إعجاب' : 'Like'}</span>
         </button>
         <button
           onClick={() => setShowComments(true)}
-          className="flex items-center gap-2 flex-1 justify-center py-1.5 rounded-lg hover:bg-canvas transition cursor-pointer text-ink-muted"
+          className="flex items-center justify-center gap-2 flex-1 min-h-[44px] rounded-lg hover:bg-canvas transition cursor-pointer text-ink-muted"
         >
           <MessageCircle size="20" variant="Linear" color="currentColor" />
           <span className="text-[15px] font-semibold">{isArabic ? 'تعليق' : 'Comment'}</span>
         </button>
         <button
           onClick={handleShare}
-          className="flex items-center gap-2 flex-1 justify-center py-1.5 rounded-lg hover:bg-canvas transition cursor-pointer text-ink-muted"
+          className="flex items-center justify-center gap-2 flex-1 min-h-[44px] rounded-lg hover:bg-canvas transition cursor-pointer text-ink-muted"
         >
           <Share size="20" variant="Linear" color="currentColor" />
           <span className="text-[15px] font-semibold">{isArabic ? 'مشاركة' : 'Share'}</span>
@@ -196,4 +196,6 @@ export const SocialPostCard: React.FC<PostProps> = ({ post }) => {
       )}
     </div>
   );
-};
+});
+
+SocialPostCard.displayName = 'SocialPostCard';
