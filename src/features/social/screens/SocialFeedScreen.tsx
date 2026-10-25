@@ -17,6 +17,7 @@ export const SocialFeedScreen: React.FC = () => {
   const [hasMore, setHasMore] = useState(true);
   
   const observerTarget = useRef<HTMLDivElement>(null);
+  const fetchingRef = useRef(false); // P1 Fix: Prevent race conditions
 
   useEffect(() => {
     if (authStatus === 'unauthenticated' || !user) {
@@ -25,7 +26,10 @@ export const SocialFeedScreen: React.FC = () => {
   }, [authStatus, user, navigateTo]);
 
   const fetchPosts = useCallback(async (currentOffset: number) => {
-    if (!user) return;
+    if (!user || fetchingRef.current) return;
+    fetchingRef.current = true;
+    setLoading(true);
+    
     try {
       const { data, error } = await supabase.rpc('get_social_feed', {
         p_country_code: browseCountryCode,
@@ -41,20 +45,25 @@ export const SocialFeedScreen: React.FC = () => {
       }
     } catch (err) {
       console.error('Failed to load feed', err);
+      setHasMore(false); // Stop retrying on error
     } finally {
       setLoading(false);
+      fetchingRef.current = false;
     }
   }, [browseCountryCode, user]);
 
+  // Reset feed when country changes
   useEffect(() => {
+    setPosts([]);
+    setOffset(0);
+    setHasMore(true);
     if (user) fetchPosts(0);
   }, [fetchPosts, user]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       entries => {
-        if (entries[0].isIntersecting && hasMore && !loading) {
-          setLoading(true);
+        if (entries[0].isIntersecting && hasMore && !loading && !fetchingRef.current) {
           const nextOffset = offset + PAGE_SIZE;
           setOffset(nextOffset);
           fetchPosts(nextOffset);

@@ -36,19 +36,33 @@ export const SocialPostCard: React.FC<PostProps> = ({ post }) => {
   const handleLike = async () => {
     if (!user || !user.id) { toast.error(isArabic ? 'سجل دخول أولاً' : 'Please sign in first'); return; }
     if (liking) return;
-    const wasLiked = liked;
-    setLiked(!wasLiked);
-    setLikeCount((c) => (wasLiked ? Math.max(0, c - 1) : c + 1));
+    
+    const previousLiked = liked;
+    const previousCount = likeCount;
+    
+    // Optimistic UI
+    setLiked(!previousLiked);
+    setLikeCount(prev => previousLiked ? Math.max(0, prev - 1) : prev + 1);
     setLiking(true);
-    const result = await toggleLike(post.id);
-    setLiking(false);
-    if (!result) {
-      setLiked(wasLiked);
-      setLikeCount((c) => (wasLiked ? c + 1 : Math.max(0, c - 1)));
+
+    try {
+      const result = await toggleLike(post.id);
+      if (!result) {
+        // Rollback on failure
+        setLiked(previousLiked);
+        setLikeCount(previousCount);
+        toast.error(isArabic ? 'فشل التفاعل' : 'Failed to like');
+      } else {
+        // Sync with server exact count
+        setLiked(result.liked);
+        setLikeCount(result.like_count);
+      }
+    } catch (err) {
+      setLiked(previousLiked);
+      setLikeCount(previousCount);
       toast.error(isArabic ? 'فشل التفاعل' : 'Failed to like');
-    } else {
-      setLiked(result.liked);
-      setLikeCount(result.like_count);
+    } finally {
+      setLiking(false);
     }
   };
 
