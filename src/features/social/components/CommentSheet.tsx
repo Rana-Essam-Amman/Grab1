@@ -36,50 +36,62 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
   return (
     <>
       <div className="fixed inset-0 bg-ink/50 z-[60] animate-in fade-in" onClick={onClose} />
-      <div className="fixed bottom-0 left-0 right-0 z-[60] bg-surface rounded-t-2xl h-[80vh] flex flex-col animate-in slide-in-from-bottom" dir={isArabic ? 'rtl' : 'ltr'}>
-        <div className="flex items-center justify-center p-3 border-b border-border relative">
+      <div className="fixed bottom-0 left-0 right-0 z-[60] bg-surface rounded-t-2xl h-[85vh] flex flex-col animate-in slide-in-from-bottom" dir={isArabic ? 'rtl' : 'ltr'}>
+        {/* Header */}
+        <div className="flex items-center justify-center p-3 border-b border-border relative shrink-0">
           <div className="w-10 h-1 bg-border rounded-full absolute top-2" />
-          <h3 className="font-bold text-ink text-base mt-2">{isArabic ? 'التعليقات' : 'Comments'}</h3>
-          <button onClick={onClose} className="absolute end-4 top-4 p-1 text-ink-muted cursor-pointer">
+          <h3 className="font-bold text-ink text-[15px] mt-2">{isArabic ? 'التعليقات' : 'Comments'}</h3>
+          <button onClick={onClose} className="absolute end-4 top-4 p-1 text-ink-muted cursor-pointer hover:bg-canvas rounded-full transition">
             <CloseCircle size="24" variant="Bold" color="currentColor" />
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {loading ? <p className="text-center text-sm text-ink-muted">جاري التحميل...</p> : comments.length === 0 ? <p className="text-center text-sm text-ink-muted">كن أول من يعلق</p> : comments.map((c) => (
-            <div key={c.id} className="flex gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden shrink-0">
-                {c.user_avatar ? <img src={c.user_avatar} alt="" className="w-full h-full object-cover" /> : <span className="text-primary font-bold text-sm">{c.user_name?.charAt(0)}</span>}
-              </div>
-              <div className="flex-1">
-                <div className="bg-canvas rounded-2xl p-3">
-                  <p className="font-bold text-sm text-ink mb-1">{c.user_name}</p>
-                  <p className="text-sm text-ink-soft whitespace-pre-wrap">{c.content}</p>
+
+        {/* Comments List */}
+        <div className="flex-1 overflow-y-auto p-3 space-y-3">
+          {loading ? (
+            <p className="text-center text-[13px] text-ink-muted py-4">جاري التحميل...</p>
+          ) : comments.length === 0 ? (
+            <p className="text-center text-[13px] text-ink-muted py-4">كن أول من يعلق</p>
+          ) : (
+            comments.map((c) => (
+              <div key={c.id} className="flex gap-2">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden shrink-0 mt-0.5">
+                  {c.user_avatar ? (
+                    <img src={c.user_avatar} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-primary font-bold text-xs">{c.user_name?.charAt(0)}</span>
+                  )}
                 </div>
-                <p className="text-[11px] text-ink-muted mt-1 ms-1">{new Date(c.created_at).toLocaleDateString(isArabic ? 'ar-JO' : 'en-US')}</p>
+                <div className="flex flex-col items-start max-w-[85%]">
+                  <div className="bg-canvas rounded-2xl px-3 py-2">
+                    <p className="font-semibold text-[13px] text-ink leading-tight">{c.user_name}</p>
+                    <p className="text-[15px] text-ink mt-0.5 whitespace-pre-wrap">{c.content}</p>
+                  </div>
+                  <p className="text-[11px] text-ink-muted mt-1 ms-2 font-medium">{new Date(c.created_at).toLocaleDateString(isArabic ? 'ar-JO' : 'en-US')}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
-        
-        {/* التعديل هنا: إضافة min-w-0 للـ input و shrink-0 للزرار عشان الزرار ميتزقش برة الشاشة */}
-        <div className="p-3 border-t border-border flex items-center gap-2 pb-8 bg-surface w-full">
+
+        {/* Input Area (Sticky) */}
+        <div className="p-3 border-t border-border flex items-center gap-2 pb-8 bg-surface w-full shrink-0">
           <input 
             autoFocus 
             value={text} 
             onChange={(e) => setText(e.target.value)} 
             placeholder={isArabic ? 'اكتب تعليق...' : 'Write a comment...'} 
             maxLength={1000} 
-            className="flex-1 min-w-0 p-3 rounded-xl border border-border bg-canvas text-base text-ink outline-none focus:border-primary" 
+            className="flex-1 min-w-0 px-4 py-2.5 rounded-full border border-border bg-canvas text-[15px] text-ink outline-none focus:border-primary" 
           />
           <button 
             onClick={handleSubmit} 
             disabled={submitting || !text.trim()} 
-            className="shrink-0 px-5 py-3 bg-primary text-ink-inverse rounded-xl font-bold text-sm disabled:opacity-50 cursor-pointer"
+            className="shrink-0 px-4 py-2.5 bg-primary text-white rounded-full font-bold text-[15px] disabled:opacity-50 cursor-pointer"
           >
             {submitting ? '...' : (isArabic ? 'إرسال' : 'Send')}
           </button>
         </div>
-        
       </div>
     </>
   );
