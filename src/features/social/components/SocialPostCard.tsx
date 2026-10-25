@@ -1,5 +1,5 @@
 // RULE-14-EXCEPTION: UI complexity
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Heart, MessageCircle, Share, Location } from 'iconsax-react';
 import { formatPrice } from '@/shared/lib/formatPrice';
 import { useUI } from '@/hooks/useUI';
@@ -14,30 +14,26 @@ interface PostProps { post: any; }
 export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
   const { isArabic } = useUI();
   const { user } = useAuth();
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-
   const [liked, setLiked] = useState<boolean>(!!post.is_liked);
   const [likeCount, setLikeCount] = useState<number>(post.like_count || 0);
   const [liking, setLiking] = useState(false);
   const [commentCount, setCommentCount] = useState<number>(post.comment_count || 0);
   const [showComments, setShowComments] = useState(false);
   const [showLightbox, setShowLightbox] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [isTextExpanded, setIsTextExpanded] = useState(false);
 
   const images: string[] = post.images_list || [];
+  const description = post.description || '';
+  const isLongText = description.length > 100;
 
-  // Stabilize onClose to prevent history back bug
   const handleCloseComments = useCallback(() => setShowComments(false), []);
   const handleCloseLightbox = useCallback(() => setShowLightbox(false), []);
   const handleCommentAdded = useCallback(() => setCommentCount((c) => c + 1), []);
 
-  const handleScroll = () => {
-    if (scrollRef.current) {
-      const scrollPosition = Math.abs(scrollRef.current.scrollLeft);
-      const width = scrollRef.current.clientWidth;
-      const newIndex = Math.round(scrollPosition / width);
-      if (newIndex !== activeIndex) setActiveIndex(newIndex);
-    }
+  const openLightbox = (index: number) => {
+    setLightboxIndex(index);
+    setShowLightbox(true);
   };
 
   const handleLike = async () => {
@@ -83,8 +79,66 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
     }
   };
 
+  // Facebook-style Image Grid
+  const renderMedia = () => {
+    if (images.length === 0) return null;
+
+    if (images.length === 1) {
+      return (
+        <div className="w-full aspect-square bg-canvas cursor-pointer" onClick={() => openLightbox(0)}>
+          <img src={images[0]} alt="listing" className="w-full h-full object-cover" loading="lazy" />
+        </div>
+      );
+    }
+
+    if (images.length === 2) {
+      return (
+        <div className="w-full aspect-[2/1] bg-canvas grid grid-cols-2 gap-0.5 cursor-pointer">
+          <div className="h-full w-full overflow-hidden" onClick={() => openLightbox(0)}>
+            <img src={images[0]} alt="listing-0" className="w-full h-full object-cover" loading="lazy" />
+          </div>
+          <div className="h-full w-full overflow-hidden" onClick={() => openLightbox(1)}>
+            <img src={images[1]} alt="listing-1" className="w-full h-full object-cover" loading="lazy" />
+          </div>
+        </div>
+      );
+    }
+
+    if (images.length === 3) {
+      return (
+        <div className="w-full aspect-square bg-canvas grid grid-cols-2 grid-rows-2 gap-0.5 cursor-pointer">
+          <div className="row-span-2 h-full w-full overflow-hidden" onClick={() => openLightbox(0)}>
+            <img src={images[0]} alt="listing-0" className="w-full h-full object-cover" loading="lazy" />
+          </div>
+          <div className="h-full w-full overflow-hidden" onClick={() => openLightbox(1)}>
+            <img src={images[1]} alt="listing-1" className="w-full h-full object-cover" loading="lazy" />
+          </div>
+          <div className="h-full w-full overflow-hidden" onClick={() => openLightbox(2)}>
+            <img src={images[2]} alt="listing-2" className="w-full h-full object-cover" loading="lazy" />
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="w-full aspect-square bg-canvas grid grid-cols-2 grid-rows-2 gap-0.5 cursor-pointer">
+        {images.slice(0, 4).map((img, i) => (
+          <div key={i} className="relative h-full w-full overflow-hidden" onClick={() => openLightbox(i)}>
+            <img src={img} alt={`listing-${i}`} className="w-full h-full object-cover" loading="lazy" />
+            {i === 3 && images.length > 4 && (
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                <span className="text-white font-bold text-2xl">+{images.length - 4}</span>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="bg-surface border-b border-border sm:border sm:rounded-xl sm:mb-4 flex flex-col">
+      {/* Header */}
       <div className="flex items-center gap-2.5 p-3">
         <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden shrink-0">
           {post.seller_avatar ? (
@@ -104,54 +158,37 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
         </div>
       </div>
 
-      <div className="px-3 pb-3 text-[15px] text-ink">
-        <h3 className="font-semibold leading-[1.3333] mb-1">{post.title}</h3>
-        {post.description && <p className="text-ink-soft leading-[1.3333] line-clamp-3">{post.description}</p>}
+      {/* Content (Title & Description) - Facebook Style */}
+      <div className="px-3 pb-3">
+        <h3 className="font-bold text-[15px] text-ink leading-[1.3333] mb-1">{post.title}</h3>
+        {description && (
+          <div>
+            <p className={`text-[15px] text-ink leading-[1.3333] whitespace-pre-wrap ${!isTextExpanded && isLongText ? 'line-clamp-3' : ''}`}>
+              {description}
+            </p>
+            {isLongText && (
+              <button
+                onClick={() => setIsTextExpanded(!isTextExpanded)}
+                className="text-ink-muted font-semibold text-[15px] mt-1 hover:underline cursor-pointer"
+              >
+                {isTextExpanded ? (isArabic ? 'عرض أقل' : 'See Less') : (isArabic ? 'عرض المزيد' : 'See More')}
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
-      {images.length > 0 && (
-        <div className="relative w-full aspect-square bg-canvas">
-          <div
-            ref={scrollRef}
-            onScroll={handleScroll}
-            className="w-full h-full flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            onClick={() => setShowLightbox(true)}
-          >
-            {images.map((img, i) => (
-              <div key={i} className="w-full h-full shrink-0 snap-center cursor-pointer">
-                <img src={img} alt={`listing-${i}`} className="w-full h-full object-cover" loading="lazy" />
-              </div>
-            ))}
-          </div>
+      {/* Facebook-style Media Grid */}
+      {renderMedia()}
 
-          {images.length > 1 && (
-            <div className="absolute top-3 end-3 bg-ink/70 text-surface text-xs px-2.5 py-1 rounded-full backdrop-blur-sm pointer-events-none">
-              {activeIndex + 1} / {images.length}
-            </div>
-          )}
-
-          {images.length > 1 && (
-            <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 pointer-events-none">
-              {images.map((_, i) => (
-                <div
-                  key={i}
-                  className={`h-1.5 rounded-full transition-all ${
-                    i === activeIndex ? 'bg-primary w-4' : 'bg-surface/60 w-1.5'
-                  }`}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
+      {/* Price */}
       <div className="px-3 py-2.5 flex justify-between items-center bg-surface">
         <span className="text-lg font-bold text-primary">
           {formatPrice(post.price, post.currency, isArabic)}
         </span>
       </div>
 
+      {/* Summary Row */}
       <div className="px-3 py-2 flex items-center justify-between text-[13px] text-ink-muted">
         <div className="flex items-center gap-1">
           <div className="bg-primary rounded-full p-0.5 shrink-0 flex items-center justify-center">
@@ -164,6 +201,7 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
         </div>
       </div>
 
+      {/* Action Buttons */}
       <div className="flex items-center justify-between px-2 py-1 border-t border-border">
         <button
           onClick={handleLike}
@@ -200,7 +238,7 @@ export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
       {showLightbox && (
         <ImageLightbox
           images={images}
-          initialIndex={activeIndex}
+          initialIndex={lightboxIndex}
           onClose={handleCloseLightbox}
         />
       )}
