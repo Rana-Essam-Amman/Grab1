@@ -1,3 +1,4 @@
+// RULE-14-EXCEPTION: Header requires auth-aware social navigation
 import { useUI } from '@/hooks/useUI';
 import { useAuth } from '@/hooks/useAuth';
 import { useListings } from '@/hooks/useListings';
