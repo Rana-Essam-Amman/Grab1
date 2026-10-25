@@ -21,6 +21,12 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
   const [parentId, setParentId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Use a ref for onClose to prevent the history effect from re-running on every re-render
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
   useEffect(() => {
     getComments(listingId).then((c) => { setComments(c); setLoading(false); });
   }, [listingId]);
@@ -35,15 +41,18 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
     return () => { cancelAnimationFrame(raf1); cancelAnimationFrame(raf2); };
   }, []);
 
+  // Only depend on listingId. Use onCloseRef inside.
   useEffect(() => {
-    const onPop = () => onClose();
+    const onPop = () => onCloseRef.current();
     window.history.pushState({ sheet: listingId }, '');
     window.addEventListener('popstate', onPop);
     return () => {
       window.removeEventListener('popstate', onPop);
-      if (window.history.state?.sheet === listingId) window.history.back();
+      if (window.history.state?.sheet === listingId) {
+        window.history.back();
+      }
     };
-  }, [listingId, onClose]);
+  }, [listingId]);
 
   const handleSubmit = async () => {
     if (!text.trim() || submitting) return;
