@@ -1,15 +1,13 @@
 import React, { useMemo } from 'react';
 import { Listing } from '@/types';
 import { BookmarkHeartButton } from './BookmarkHeartButton';
-import { Crown } from 'iconsax-react';
 import { Icon } from '@iconify/react';
-import { Badge } from '@/shared/ui/Badge';
 import { RequiredSpecsRow } from '@/features/listings/components/RequiredSpecsRow';
-import { ListingCardSellerRow } from '@/features/listings/components/ListingCardSellerRow';
 import { toOptimizedImageUrl } from '@/shared/lib/optimizedImage';
 import { formatPrice } from '@/shared/lib/formatPrice';
 import { formatRelativeDate } from '@/shared/lib/formatDate';
 import { stripEmojis } from '@/shared/lib/stripEmojis';
+import { ListingImageCollage } from './ListingImageCollage';
 
 interface ListingCardHorizontalProps {
   listing: Listing;
@@ -33,73 +31,66 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
 }) => {
   const relativeDate = useMemo(() => formatRelativeDate(listing.createdAt, isArabic), [listing.createdAt, isArabic]);
 
+  const displayImages = useMemo(() => {
+    if (listing.images && listing.images.length > 0) {
+      return listing.images.map(img => toOptimizedImageUrl(img, { width: 600, quality: 80 }));
+    }
+    return listing.imageUrl ? [toOptimizedImageUrl(listing.imageUrl, { width: 600, quality: 80 })] : [];
+  }, [listing.images, listing.imageUrl]);
+
   return (
     <div
       data-testid="listing-card"
       onClick={handleClick}
-      className={`${premiumClasses} rounded-2xl border overflow-hidden cursor-pointer hover:border-primary/60 transition-all shadow-xs group active:scale-[0.98]`}
+      className={`${premiumClasses} rounded-xl mb-3 shadow-sm flex flex-col overflow-hidden cursor-pointer hover:border-primary/60 transition-all active:scale-[0.99]`}
       dir={isArabic ? 'rtl' : 'ltr'}
     >
-      <div className="p-3 flex gap-3 items-start">
-        <div className="w-[120px] h-[120px] rounded-xl overflow-hidden bg-surface relative shrink-0 border border-border/50">
-          <img
-            src={toOptimizedImageUrl(listing.imageUrl, { width: 400, quality: 80 })}
-            alt={listing.title}
-            loading="lazy"
-            decoding="async"
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-            onError={handleImageError}
-          />
-          {listing.isPremium && (
-            <div className="absolute top-1.5 start-1.5 z-10">
-              <Badge variant="warning" size="sm" className="flex items-center gap-1 shadow-sm">
-                <span>{isArabic ? 'مُميز' : 'Featured'}</span>
-                <Crown size={12} variant="Bold" color="currentColor" className="text-accent" />
-              </Badge>
-            </div>
-          )}
-          <div className="absolute top-1.5 end-1.5">
-            <BookmarkHeartButton listingId={listing.id} size="sm" />
+      {/* Header: Seller Info */}
+      <div className="flex items-center gap-2.5 p-3">
+        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+          <span className="text-primary font-bold text-base">{listing.sellerName?.charAt(0) || '?'}</span>
+        </div>
+        <div className="flex flex-col flex-1">
+          <span className="font-semibold text-[15px] text-ink leading-tight">{listing.sellerName}</span>
+          <div className="flex items-center gap-1 text-[13px] text-ink-muted mt-0.5">
+            <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
+            <span>{locationText}</span>
+            {relativeDate && (
+              <>
+                <span>•</span>
+                <span>{relativeDate}</span>
+              </>
+            )}
           </div>
         </div>
-
-        <div className="flex-1 min-w-0 flex flex-col justify-between min-h-[120px] py-0.5">
-          <div>
-            <div className="text-[15px] font-bold text-ink leading-tight line-clamp-2" dir="auto">
-              {stripEmojis(listing.title)}
-            </div>
-
-            <div className="flex items-center justify-between gap-1 text-[11px] text-ink-soft font-medium mt-1.5 mb-2">
-              <div className="flex items-center gap-1 truncate">
-                <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
-                <span className="truncate" dir="auto">{locationText}</span>
-              </div>
-              {relativeDate && (
-                <div className="flex items-center gap-1 shrink-0 text-ink-muted">
-                  <Icon icon="lucide:clock" width={11} height={11} className="shrink-0" />
-                  <span>{relativeDate}</span>
-                </div>
-              )}
-            </div>
-
-            <RequiredSpecsRow
-              categorySlug={listing.categorySlug}
-              subcategorySlug={listing.subcategorySlug}
-              attributes={listing.attributes ?? []}
-              isArabic={isArabic}
-            />
-          </div>
-
-          <div className="flex items-center mt-2 gap-1.5">
-            <div className="text-[18px] font-extrabold text-ink shrink-0">
-              <span>{formatPrice(listing.price, listing.currency, isArabic)}</span>
-            </div>
-          </div>
+        <div className="shrink-0 z-10">
+          <BookmarkHeartButton listingId={listing.id} size="sm" />
         </div>
       </div>
 
-      <div className="border-t border-border px-3 py-2 bg-canvas">
-        <ListingCardSellerRow sellerName={listing.sellerName} sellerKey={sellerKey} />
+      {/* Body: Title & Specs */}
+      <div className="px-3 pb-3">
+        <div className="bg-canvas p-2.5 rounded-lg mb-2">
+          <h3 className="font-bold text-[15px] leading-tight line-clamp-2 text-ink" dir="auto">
+            {stripEmojis(listing.title)}
+          </h3>
+        </div>
+        <RequiredSpecsRow
+          categorySlug={listing.categorySlug}
+          subcategorySlug={listing.subcategorySlug}
+          attributes={listing.attributes ?? []}
+          isArabic={isArabic}
+        />
+      </div>
+
+      {/* Image Collage */}
+      <ListingImageCollage images={displayImages} onImageError={handleImageError} />
+
+      {/* Footer: Price (OpenSooq Style) */}
+      <div className="px-3 py-3 border-t border-border mt-1 flex justify-between items-center bg-surface">
+        <span className="text-xl font-extrabold text-primary">
+          {formatPrice(listing.price, listing.currency, isArabic)}
+        </span>
       </div>
     </div>
   );
