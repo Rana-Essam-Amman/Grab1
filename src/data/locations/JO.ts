@@ -15,7 +15,10 @@ export const JO_EN: CountryLocations = {
     'Umm Rummanah', 'Al Tunayb', 'Manja', 'Umm Al Walid',
     'Zizya East', 'Zizya West', 'Zizya South', 'Al Mushatta',
     'Al Thuraya', 'Al Majidiyah', 'Al Thalatheen', 'Nitl', 'Al Lubban', 'Umm Qasr',
-    'Areenbeh', 'Al Khraym', 'Dabaa'
+    'Areenbeh', 'Al Khraym', 'Dabaa',
+    'Iraq al-Amir', 'Al-Rawda', 'Al-Jiza', 'Qastal', 'Al-Muwaqqar',
+    'Umm al-Rasas', 'Al-Hashmi', 'Al-Nuzha', 'Quwaysimah', 'Juwaideh',
+    'Al-Raqeem', 'Kherbet al-Souk', 'Al-Yadudah'
   ],
   Irbid: [
     'Irbid City', 'University Street', 'Al Hoson', 'Hakama', 'Ramtha', 'Al Mazar Al Shamali',
@@ -82,7 +85,10 @@ export const JO_AR: CountryLocations = {
     'أم رمانة', 'الطنيب', 'منجا', 'أم الوليد',
     'زيزيا الشرقي', 'زيزيا الغربي', 'زيزيا الجنوبي', 'المشتى',
     'أراضي الثريا', 'الماجدية', 'الثلاثين', 'نتل', 'اللبن', 'أم قصر',
-    'أرينبة', 'الخريم', 'ضبعة'
+    'أرينبة', 'الخريم', 'ضبعة',
+    'عراق الأمير', 'الروضة', 'الجيزة', 'القسطل', 'الموقر',
+    'أم الرصاص', 'الهاشمي', 'النزهة', 'القويسمة', 'الجويدة',
+    'الرقيم', 'خريبة السوق', 'اليادودة'
   ],
   'إربد': [
     'مدينة إربد', 'شارع الجامعة', 'الحصن', 'حكما', 'الرمثا', 'المزار الشمالي', 'بني كنانة',
