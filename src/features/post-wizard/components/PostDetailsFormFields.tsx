@@ -5,7 +5,7 @@ import { Textarea } from '@/shared/ui/Textarea';
 import { Combobox } from '@/shared/ui/Combobox';
 import { AiReviewSectionCard } from './AiReviewSectionCard';
 import type { CategoryFieldDef } from '@/data/categoryFields';
-import { stripEmojis } from '@/shared/lib/stripEmojis';
+import { stripEmojisFromInput } from '@/shared/lib/stripEmojis';
 
 export interface PostDetailsFormFieldsProps {
   readonly isArabic: boolean;
@@ -35,8 +35,7 @@ export const PostDetailsFormFields: React.FC<PostDetailsFormFieldsProps> = ({
         <div className="flex flex-col gap-4">
           <Input
             label={isArabic ? 'عنوان الإعلان' : 'Listing Title'} value={title}
-            onChange={(e) => setTitle(e.target.value.replace(/[\p{Extended_Pictographic}\u{1F3FB}-\u{1F3FF}\u{1F1E6}-\u{1F1FF}]/gu, ''))}
-            onBlur={(e) => setTitle(stripEmojis(e.target.value))}
+            onChange={(e) => setTitle(stripEmojisFromInput(e.target.value))}
             placeholder={isArabic ? 'مثلاً: آيفون 13 برو نظيف' : 'e.g. iPhone 13 Pro clean'}
             error={titleError ? (isArabic ? 'مطلوب (5 أحرف على الأقل)' : 'Required (min 5 chars)') : undefined}
           />
@@ -47,8 +46,7 @@ export const PostDetailsFormFields: React.FC<PostDetailsFormFieldsProps> = ({
           />
           <Textarea
             label={isArabic ? 'الوصف' : 'Description'} value={description}
-            onChange={(e) => setDescription(e.target.value.replace(/[\p{Extended_Pictographic}\u{1F3FB}-\u{1F3FF}\u{1F1E6}-\u{1F1FF}]/gu, ''))}
-            onBlur={(e) => setDescription(stripEmojis(e.target.value))}
+            onChange={(e) => setDescription(stripEmojisFromInput(e.target.value))}
             placeholder={isArabic ? 'اكتب تفاصيل الإعلان هنا...' : 'Write listing details here...'}
             error={descError ? (isArabic ? 'مطلوب (10 أحرف على الأقل)' : 'Required (min 10 chars)') : undefined}
           />
