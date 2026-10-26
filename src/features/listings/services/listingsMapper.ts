@@ -11,6 +11,9 @@ export interface SupabaseListingRow {
   readonly country_code: string;
   readonly city: string;
   readonly neighborhood: string | null;
+  readonly city_slug?: string | null;
+  readonly district_slug?: string | null;
+  readonly neighborhood_slug?: string | null;
   readonly category_slug: string;
   readonly subcategory_slug: string | null;
   readonly images: string[];
@@ -46,6 +49,9 @@ export function rowToListing(row: SupabaseListingRow): Listing {
     countryCode: row.country_code as Listing['countryCode'],
     city: row.city,
     neighborhood: row.neighborhood || '',
+    citySlug: row.city_slug ?? undefined,
+    districtSlug: row.district_slug ?? undefined,
+    neighborhoodSlug: row.neighborhood_slug ?? undefined,
     categorySlug: row.category_slug,
     subcategorySlug: row.subcategory_slug || '',
     imageUrl: row.images?.[0] || '',
@@ -76,6 +82,9 @@ export function listingToRow(updates: Partial<Listing>): Partial<SupabaseListing
   if (updates.countryCode !== undefined) row.country_code = updates.countryCode;
   if (updates.city !== undefined) row.city = updates.city;
   if (updates.neighborhood !== undefined) row.neighborhood = updates.neighborhood || null;
+  if (updates.citySlug !== undefined) row.city_slug = updates.citySlug || null;
+  if (updates.districtSlug !== undefined) row.district_slug = updates.districtSlug || null;
+  if (updates.neighborhoodSlug !== undefined) row.neighborhood_slug = updates.neighborhoodSlug || null;
   if (updates.categorySlug !== undefined) row.category_slug = updates.categorySlug;
   if (updates.subcategorySlug !== undefined) row.subcategory_slug = updates.subcategorySlug || null;
   if (updates.images !== undefined) row.images = updates.images;
