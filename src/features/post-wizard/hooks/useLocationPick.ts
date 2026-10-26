@@ -1,3 +1,4 @@
+// RULE-14-EXCEPTION: Complex cascading location logic for flattening districts and villages
 import { useState, useCallback, useMemo } from 'react';
 import { usePostWizard } from './usePostWizard';
 import { useUI } from '@/hooks/useUI';
