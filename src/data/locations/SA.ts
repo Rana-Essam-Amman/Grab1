@@ -1,1 +1,107 @@
-PLACEHOLDER
+import type { CountryLocations } from './types';
+
+export const SA_EN: CountryLocations = {
+  'Riyadh': [
+    'Al-Olaya', 'Al-Malaz', 'Al-Nakheel', 'Al-Sulaymaniyah', 'Al-Diriyah',
+    'Al Malqa', 'Hittin', 'Al Sahafah', 'Al Rabwah', 'Al Wurud',
+    'Al Yasmin', 'Al Narjis', 'Al Qairawan', 'Al Arid', 'Al Munsiyah',
+    'Qurtubah', 'Al Shifa', 'Al Manar', 'Badr', 'Al Suwaidi',
+    'Al Aziziyah', 'Al Shumaysi', 'Al Batha', 'Al Dirah', 'Al Mursalat',
+    'Al-Kharj', 'Al-Dilam', 'Al-Yamamah', 'Al-Sahna', 'Al-Hayathem',
+    'Al-Tawqi', 'Al-Uyaynah', 'Al-Jubaylah', 'Huraymila',
+    'Al-Ghat', 'Al-Zulfi', 'Al-Artawiyah', 'Al-Qasab',
+    'Al-Duwadimi', 'Afif', 'Al-Bijadiyah', 'Al-Ruwaidah',
+  ],
+  'Makkah': [
+    'Makkah City', 'Al-Aziziyah', 'Al-Shawqiyah', 'Mina', 'Muzdalifah',
+    'Jeddah', 'Al-Balad', 'Al-Hamra', 'Al-Rawdah', 'Al-Salamah', 'Obhur',
+    'Al Shati', 'Al Zahra', 'Al Bawadi', 'Al Safa', 'Al Marwah',
+    'Al Naeem', 'Al Muhammadiyah', 'Al Rehab', 'Al Naseem',
+    'Al Faisaliyah', 'Al Baghdadiyah', 'Al Hindawiyah',
+    'Taif', 'Al-Hada', 'Al-Shafa', 'Al-Hawiyah', 'Al-Sail al-Kabir',
+    'Rabigh', 'Masturah', 'Thuwal', 'Al-Kamil',
+  ],
+  'Madinah': [
+    'Madinah City', 'Al-Haram', 'Qurban', 'Al-Uyun', 'Badr',
+    'Yanbu', 'Yanbu al-Bahr', 'Yanbu al-Nakhl', 'Al-Ais',
+    'Al-Ula', 'Mughayra', 'Khaybar', 'Al-Hijr', 'Dadan',
+  ],
+  'Qassim': [
+    'Buraydah', 'Al-Bukayriyah', 'Al-Badi', 'Riyadh al-Khabra',
+    'Unaizah', 'Al-Mithnab', 'Al-Nabhaniyah', 'Uyun al-Jawa',
+    'Al-Rass', 'Al-Qawarah', 'Al-Shamasiah', 'Al-Fuwayliq',
+  ],
+  'Eastern Province': [
+    'Dammam', 'Al-Faisaliyah', 'Al-Adamah', 'Al-Jalawiyah',
+    'Al-Khobar', 'Al-Aqrabiyah', 'Al-Thuqbah', 'Al-Bandariyah',
+    'Dhahran', 'KFUPM', 'Al-Doha', 'Al-Nuzhah',
+    'Jubail', 'Jubail Industrial', 'Al-Fanateer', 'Al-Deffi',
+    'Qatif', 'Saihat', 'Safwa', 'Al-Awamiyah',
+    'Hofuf', 'Al-Mubarraz', 'Al-Oyoun', 'Al-Jafr',
+    'Hafr Al-Batin', 'Al-Qaisumah', 'Al-Rafiah', 'Al-Sarrar',
+  ],
+  'Asir': [
+    'Abha', 'Al-Soda', 'Al-Nimas', 'Tanomah', 'Al-Baha',
+    'Khamis Mushait', 'Ahad Rafidah', 'Al-Majardah', 'Rijal Alma', 'Al-Farsha',
+  ],
+  'Tabuk': ['Tabuk', 'Al-Wajh', 'Duba', 'Tayma', 'Haql'],
+  'Hail': ['Hail', 'Baqaa', 'Al-Ghazalah', 'Al-Shamli', 'Mawqaq'],
+  'Northern Borders': ['Arar', 'Rafha', 'Turaif', 'Al-Uwayqilah', 'Al-Hadithah'],
+  'Jazan': ['Jazan', 'Sabya', 'Abu Arish', 'Samtah', 'Farasan'],
+  'Najran': ['Najran', 'Sharurah', 'Hubuna', 'Badr al-Janub', 'Yadamah'],
+  'Al Bahah': ['Al-Bahah', 'Baljurashi', 'Al-Mikhwah', 'Qilwah', 'Al-Aqiq'],
+  'Al Jouf': ['Sakaka', 'Dumat al-Jandal', 'Tabarjal', 'Al-Qurayyat', 'Al-Isawiyah', 'Al-Hadithah', 'Al-Nasfah', 'Al-Qasr', 'Al-Nabk'],
+};
+
+export const SA_AR: CountryLocations = {
+  'الرياض': [
+    'العليا', 'الملز', 'النخيل', 'السليمانية', 'الدرعية',
+    'الملقا', 'حطين', 'الصحافة', 'الربوة', 'الورود',
+    'الياسمين', 'النرجس', 'القيروان', 'العارض', 'المونسية',
+    'قرطبة', 'الشفا', 'المنار', 'بدر', 'السويدي',
+    'العزيزية', 'الشميسي', 'البطحاء', 'الديرة', 'المرسلات',
+    'الخرج', 'الدلم', 'اليمامة', 'الصحنة', 'الحياثم',
+    'التوقي', 'العيينة', 'الجبيلة', 'حريملاء',
+    'الغاط', 'الزلفي', 'الأرطاوية', 'القصب',
+    'الدوادمي', 'عفيف', 'البجادية', 'الرويضة',
+  ],
+  'مكة المكرمة': [
+    'مكة المكرمة', 'العزيزية', 'الشوقية', 'منى', 'مزدلفة',
+    'جدة', 'البلد', 'الحمرا', 'الروضة', 'السلامة', 'أبحر',
+    'الشاطئ', 'الزهراء', 'البوادي', 'الصفا', 'المروة',
+    'النعيم', 'المحمدية', 'الرحاب', 'النسيم',
+    'الفيصلية', 'البغدادية', 'الهنداوية',
+    'الطائف', 'الهدا', 'الشفا', 'الحوية', 'السيل الكبير',
+    'رابغ', 'مستورة', 'ثول', 'الكامل',
+  ],
+  'المدينة المنورة': [
+    'المدينة المنورة', 'الحرم', 'قربان', 'العيون', 'بدر',
+    'ينبع', 'ينبع البحر', 'ينبع النخل', 'العيص',
+    'العلا', 'مغيرة', 'خيبر', 'الحجر', 'ددان',
+  ],
+  'القصيم': [
+    'بريدة', 'البكيرية', 'البدائع', 'رياض الخبراء',
+    'عنيزة', 'المذنب', 'النبهانية', 'عيون الجواء',
+    'الرس', 'القوارة', 'الشماسية', 'الفويلق',
+  ],
+  'المنطقة الشرقية': [
+    'الدمام', 'الفيصلية', 'الآدامة', 'الجلوية',
+    'الخبر', 'العقربية', 'الثقبة', 'البندرية',
+    'الظهران', 'جامعة الملك فهد', 'الدوحة', 'النزهة',
+    'الجبيل', 'الجبيل الصناعية', 'الفناتير', 'الدفي',
+    'القطيف', 'سيهات', 'صفوى', 'العوامية',
+    'الهفوف', 'المبرز', 'العيون', 'الجفر',
+    'حفر الباطن', 'القيصومة', 'الرفيعة', 'السرار',
+  ],
+  'عسير': [
+    'أبها', 'السودة', 'النماص', 'تنومة', 'الباحة',
+    'خميس مشيط', 'أحد رفيدة', 'المجاردة', 'رجال ألمع', 'الفرشة',
+  ],
+  'تبوك': ['تبوك', 'الوجه', 'ضبا', 'تيماء', 'حقل'],
+  'حائل': ['حائل', 'بقعاء', 'الغزالة', 'الشملي', 'موقق'],
+  'الحدود الشمالية': ['عرعر', 'رفحاء', 'طريف', 'العويقيلة', 'الحديثة'],
+  'جازان': ['جازان', 'صبيا', 'أبو عريش', 'صمطة', 'فرسان'],
+  'نجران': ['نجران', 'شرورة', 'حبونا', 'بدر الجنوب', 'يدمة'],
+  'الباحة': ['الباحة', 'بلجرشي', 'المخواة', 'قلوة', 'العقيق'],
+  'الجوف': ['سكاكا', 'دومة الجندل', 'طبرجل', 'القريات', 'العيساوية', 'الحديثة', 'النصفة', 'القصر', 'النبك'],
+};
