@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useAuthStore } from '@/features/auth';
 import { useChatStore } from '@/features/chat/store/chat.slice';
 import { useListings } from '@/hooks/useListings';
+import { stripEmojisFromInput } from '@/shared/lib/stripEmojis';
 import { markMessagesRead as markMessagesReadAction, applyMessageUpdate, reconcileConfirmedMessage } from '../store/chat.slice.actions.mutate';
 import { loadInitialMessages as loadInitialMessagesAction } from '../store/chat.slice.actions.load';
 import { subscribeToMessages } from '../services/chatRealtime';
@@ -89,8 +90,9 @@ export const ThreadScreen: React.FC = () => {
   }, [thread, setSelectedListingId, navigateTo]);
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputText(e.target.value);
-    if (e.target.value.trim().length > 0) notifyTyping();
+    const cleaned = stripEmojisFromInput(e.target.value);
+    setInputText(cleaned);
+    if (cleaned.trim().length > 0) notifyTyping();
   }, [notifyTyping]);
 
   const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
