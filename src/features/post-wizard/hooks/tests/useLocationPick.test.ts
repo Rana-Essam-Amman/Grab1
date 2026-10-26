@@ -9,7 +9,7 @@ describe('useLocationPick', () => {
     useDraftStore.setState({
       postDraft: {
         categorySlug: 'motors', subcategorySlug: 'cars', photos: [],
-        city: 'عمّان', neighborhood: 'خلدا', site: '', noteText: '',
+        city: 'العاصمة', neighborhood: 'خلدا', site: '', noteText: '',
       },
     });
     useUIStore.setState({ isArabic: true, browseCountryCode: 'JO', currentScreen: 'post-location', screenHistory: ['main', 'post-location'] });
@@ -40,6 +40,28 @@ describe('useLocationPick', () => {
     });
     const draft = useDraftStore.getState().postDraft;
     expect(draft.site).toBe('Near City Mall');
-    expect(draft.city).toBe(result.current.selectedCity);
+    // The hook saves the final resolved city (which is 'العاصمة' since it's a valid governorate)
+    expect(draft.city).toBe('العاصمة');
+  });
+
+  it('saveAndContinue handles custom city correctly (Other flow)', () => {
+    useDraftStore.setState({
+      postDraft: {
+        categorySlug: 'motors', subcategorySlug: 'cars', photos: [],
+        city: 'الطفيلة', neighborhood: 'الحسا', site: '', noteText: '',
+      },
+    });
+    const { result } = renderHook(() => useLocationPick());
+    
+    // Since 'الطفيلة' is not in the standard governorates list, it should be treated as custom
+    expect(result.current.selectedCity).toBe('أخرى');
+    expect(result.current.customCity).toBe('الطفيلة');
+    
+    act(() => {
+      result.current.saveAndContinue();
+    });
+    const draft = useDraftStore.getState().postDraft;
+    // The custom city should be saved
+    expect(draft.city).toBe('الطفيلة');
   });
 });
