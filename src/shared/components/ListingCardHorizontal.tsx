@@ -42,7 +42,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
     <div
       data-testid="listing-card"
       onClick={handleClick}
-      className={`${premiumClasses} rounded-xl mb-3 shadow-sm flex flex-col overflow-hidden cursor-pointer hover:border-primary/60 transition-all active:scale-[0.99]`}
+      className={`${premiumClasses} rounded-2xl mb-3 shadow-sm flex flex-col overflow-hidden cursor-pointer hover:border-primary/60 transition-all active:scale-[0.99]`}
       dir={isArabic ? 'rtl' : 'ltr'}
     >
       {/* Header: Seller Info */}
