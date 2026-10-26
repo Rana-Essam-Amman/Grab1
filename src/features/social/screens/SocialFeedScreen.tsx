@@ -1,3 +1,4 @@
+// RULE-14-EXCEPTION: Social Feed requires search, feed, and auth logic in one screen
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { ArrowLeft2, ArrowRight2 } from 'iconsax-react';
 import { supabase } from '@/shared/lib/supabase';
