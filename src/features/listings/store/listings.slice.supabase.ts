@@ -44,7 +44,6 @@ export async function performSupabasePublish(
     }
 
     if (failedCount > 0) {
-      // Partial failure — publish with what we have, log silently.
       console.warn(`[publish] ${failedCount} image(s) failed to upload. Last error: ${lastError}`);
     }
 
@@ -56,6 +55,9 @@ export async function performSupabasePublish(
       countryCode: sanitized.countryCode,
       city: sanitized.city,
       neighborhood: sanitized.neighborhood,
+      citySlug: sanitized.citySlug,
+      districtSlug: sanitized.districtSlug,
+      neighborhoodSlug: sanitized.neighborhoodSlug,
       categorySlug: sanitized.categorySlug,
       subcategorySlug: sanitized.subcategorySlug,
       images: uploadedImages,
