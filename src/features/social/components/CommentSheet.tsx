@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { CloseCircle, Camera, Add, Send } from 'iconsax-react';
 import { getComments, addComment, SocialComment } from '../services/socialService';
+import { stripEmojisFromInput } from '@/shared/lib/stripEmojis';
 import { useUI } from '@/hooks/useUI';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -157,7 +158,7 @@ export const CommentSheet: React.FC<CommentSheetProps> = ({ listingId, onClose, 
             <input
               ref={inputRef}
               value={text}
-              onChange={(e) => setText(e.target.value)}
+              onChange={(e) => setText(stripEmojisFromInput(e.target.value))}
               placeholder={isArabic ? 'اكتب تعليقاً...' : 'Write a comment...'}
               maxLength={1000}
               className="flex-1 min-w-0 bg-transparent px-2 text-[15px] text-ink outline-none placeholder:text-ink-muted"
