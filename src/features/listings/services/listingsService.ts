@@ -9,7 +9,7 @@ export type { SearchListingsParams } from './searchListings.types';
 export interface FetchListingsParams { readonly market?: string; readonly offset?: number; readonly limit?: number; }
 
 export const LISTINGS_PAGE_SIZE = 20;
-const LISTING_COLUMNS = 'id,user_id,is_demo,title,description,price,currency,country_code,city,neighborhood,category_slug,subcategory_slug,images,image_width,image_height,attributes,status,views,seller_name,created_at,updated_at,bumps_today,bumps_reset_date,is_premium,premium_expires_at,auto_bump_active,auto_bump_expires_at';
+const LISTING_COLUMNS = 'id,user_id,is_demo,title,description,price,currency,country_code,city,neighborhood,city_slug,district_slug,neighborhood_slug,category_slug,subcategory_slug,images,image_width,image_height,attributes,status,views,seller_name,created_at,updated_at,bumps_today,bumps_reset_date,is_premium,premium_expires_at,auto_bump_active,auto_bump_expires_at';
 
 export async function fetchListings(params: FetchListingsParams = {}): Promise<{ data: Listing[] | null; error: string | null }> {
   try {
@@ -52,6 +52,7 @@ export async function searchListings(
 export interface CreateListingInput {
   readonly title: string; readonly description: string; readonly price: string; readonly currency: string;
   readonly countryCode: "JO" | "LB" | "PS" | "SY" | "SA"; readonly city: string; readonly neighborhood?: string;
+  readonly citySlug?: string; readonly districtSlug?: string; readonly neighborhoodSlug?: string;
   readonly categorySlug: string; readonly subcategorySlug?: string; readonly images: string[];
   readonly imageWidth?: number; readonly imageHeight?: number;
   readonly attributes?: Array<{ key?: string; label: string; value: string }>;
@@ -77,6 +78,9 @@ export async function createListing(input: CreateListingInput): Promise<{ data: 
       country_code: input.countryCode,
       city: input.city,
       neighborhood: input.neighborhood || null,
+      city_slug: input.citySlug || null,
+      district_slug: input.districtSlug || null,
+      neighborhood_slug: input.neighborhoodSlug || null,
       category_slug: input.categorySlug,
       subcategory_slug: input.subcategorySlug || null,
       images: input.images,
