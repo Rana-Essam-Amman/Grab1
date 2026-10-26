@@ -21,6 +21,13 @@ describe('LocalStorageDraftAdapter', () => {
     lastUpdatedAt: '2026-09-27T00:00:00.000Z',
   };
 
+  const validDraftWithSlugs: PostDraftWithMeta = {
+    ...validDraft,
+    citySlug: 'amman',
+    districtSlug: 'amman-city',
+    neighborhoodSlug: 'dabouq',
+  };
+
   beforeEach(() => {
     localStorage.clear();
     adapter = new LocalStorageDraftAdapter(() => TEST_MARKET);
@@ -114,6 +121,43 @@ describe('LocalStorageDraftAdapter', () => {
       expect(await adapter.getCurrent()).toEqual(validDraft);
       await adapter.clear();
       expect(await adapter.getCurrent()).toBeNull();
+    });
+  });
+
+  describe('location slugs persistence', () => {
+    it('preserves citySlug, districtSlug, neighborhoodSlug through save → getCurrent', async () => {
+      await adapter.save(validDraftWithSlugs);
+      const result = await adapter.getCurrent();
+      expect(result).not.toBeNull();
+      expect(result?.citySlug).toBe('amman');
+      expect(result?.districtSlug).toBe('amman-city');
+      expect(result?.neighborhoodSlug).toBe('dabouq');
+    });
+
+    it('loads legacy drafts without slugs without errors (backward compat)', async () => {
+      // Simulate an old draft saved before slug fields existed
+      localStorage.setItem(SCOPED_KEY, JSON.stringify(validDraft));
+      const result = await adapter.getCurrent();
+      expect(result).not.toBeNull();
+      expect(result?.city).toBe('Amman');
+      expect(result?.neighborhood).toBe('Abdoun');
+      expect(result?.citySlug).toBeUndefined();
+      expect(result?.districtSlug).toBeUndefined();
+      expect(result?.neighborhoodSlug).toBeUndefined();
+    });
+
+    it('partial slugs survive (city + neighborhood set, district undefined)', async () => {
+      const partialSlugs: PostDraftWithMeta = {
+        ...validDraft,
+        citySlug: 'amman',
+        neighborhoodSlug: 'dabouq',
+        // districtSlug intentionally undefined
+      };
+      await adapter.save(partialSlugs);
+      const result = await adapter.getCurrent();
+      expect(result?.citySlug).toBe('amman');
+      expect(result?.districtSlug).toBeUndefined();
+      expect(result?.neighborhoodSlug).toBe('dabouq');
     });
   });
 });
