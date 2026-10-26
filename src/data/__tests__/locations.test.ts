@@ -33,7 +33,7 @@ describe('Data Layer - Locations & Geographic Integrity', () => {
   it('validateRegionalSanity returns true for valid city and neighborhood', () => {
     expect(validateRegionalSanity('JO', 'Amman', 'Abdoun')).toBe(true);
     expect(validateRegionalSanity('JO', 'عمّان', 'عبدون')).toBe(true);
-    expect(validateRegionalSanity('SA', 'Riyadh', 'Olaya')).toBe(true);
+    expect(validateRegionalSanity('SA', 'Riyadh', 'Al-Olaya')).toBe(true);
     expect(validateRegionalSanity('LB', 'Beirut', 'Hamra')).toBe(true);
   });
 
