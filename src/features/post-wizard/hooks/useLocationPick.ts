@@ -46,7 +46,6 @@ export function useLocationPick(): UseLocationPickReturn {
   const rawDistricts = useMemo(() => (currentGovSlug ? getAllDistricts(browseCountryCode, currentGovSlug) : []), [browseCountryCode, currentGovSlug]);
   const rawCamps = useMemo(() => (currentGovSlug ? getAllCamps(browseCountryCode).filter((c) => c.governorateSlug === currentGovSlug) : []), [browseCountryCode, currentGovSlug]);
 
-  // Build labeled neighborhood list: Districts (plain) + Villages (with parent district) + Camps (with label)
   const neighborhoods = useMemo(() => {
     if (isOtherValue(selectedCity)) return [otherLabel];
     
@@ -87,17 +86,13 @@ export function useLocationPick(): UseLocationPickReturn {
     return [...labels.sort((a, b) => a.localeCompare(b, 'ar')), otherLabel];
   }, [selectedCity, rawDistricts, rawCamps, isArabic, otherLabel]);
 
-  // Extract the raw neighborhood name from a label (strips " — District" suffix)
+  // Extract the raw neighborhood name from a label (strips " — District" suffix) - used for mapQuery only
   const extractNeighborhoodName = useCallback((label: string): string => {
     const idx = label.indexOf(LABEL_SEPARATOR);
     return idx > -1 ? label.substring(0, idx) : label;
   }, []);
 
-  const [selectedNeighborhood, setSelectedNeighborhood] = useState(() => {
-    const initial = postDraft.neighborhood || (neighborhoods[0] || "");
-    return initial;
-  });
-
+  const [selectedNeighborhood, setSelectedNeighborhood] = useState(postDraft.neighborhood || (neighborhoods[0] || ""));
   const [site, setSite] = useState(postDraft.site || "");
   const [customCity, setCustomCity] = useState("");
   const [customNeighborhood, setCustomNeighborhood] = useState("");
@@ -120,7 +115,9 @@ export function useLocationPick(): UseLocationPickReturn {
   }, []);
 
   const handleSiteChange = useCallback((s: string) => setSite(s), []);
+
   const mapQuery = useMemo(() => {
+    // Google Maps works better with the clean village name
     const cleanArea = extractNeighborhoodName(selectedNeighborhood);
     return googleSearchQuery({ city: selectedCity, area: cleanArea, site });
   }, [selectedCity, selectedNeighborhood, site, extractNeighborhoodName]);
@@ -134,12 +131,15 @@ export function useLocationPick(): UseLocationPickReturn {
   const saveAndContinue = useCallback(() => {
     if (validationError) return;
     const finalCity = isOtherValue(selectedCity) && customCity.trim() ? customCity.trim() : selectedCity;
-    const finalNeighborhoodRaw = isOtherValue(selectedNeighborhood) && customNeighborhood.trim() 
+    
+    // CTO FIX: Preserve the full label "Village — District" in the saved draft to maintain disambiguation
+    const finalNeighborhood = isOtherValue(selectedNeighborhood) && customNeighborhood.trim() 
       ? customNeighborhood.trim() 
-      : extractNeighborhoodName(selectedNeighborhood);
-    updatePostDraft({ city: finalCity, neighborhood: finalNeighborhoodRaw, site });
+      : selectedNeighborhood;
+      
+    updatePostDraft({ city: finalCity, neighborhood: finalNeighborhood, site });
     navigateTo("post-details");
-  }, [validationError, selectedCity, selectedNeighborhood, customCity, customNeighborhood, site, updatePostDraft, navigateTo, extractNeighborhoodName]);
+  }, [validationError, selectedCity, selectedNeighborhood, customCity, customNeighborhood, site, updatePostDraft, navigateTo]);
 
   return {
     cities, neighborhoods, selectedCity, selectedNeighborhood, site, customCity, setCustomCity,
