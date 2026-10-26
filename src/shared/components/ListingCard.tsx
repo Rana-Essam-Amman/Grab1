@@ -66,7 +66,7 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
       tabIndex={0}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
-      className={`${premiumClasses} rounded-2xl overflow-hidden border flex flex-col cursor-pointer hover:border-primary/60 transition-all shadow-xs group active:scale-[0.98]`}
+      className={`${premiumClasses} rounded-2xl overflow-hidden border flex flex-col cursor-pointer hover:border-primary/60 transition-all shadow-md group active:scale-[0.98]`}
       dir={isArabic ? 'rtl' : 'ltr'}
       data-testid="listing-card"
     >
