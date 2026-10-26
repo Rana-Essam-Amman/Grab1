@@ -5,12 +5,14 @@ export const LB_EN: CountryLocations = {
     'Hamra', 'Achrafieh', 'Verdun', 'Ras Beirut', 'Mazraa', 'Bachoura', 'Medawar', 'Saifi',
     'Gemmayzeh', 'Mar Mikhael', 'Zokak el-Blat', 'Ayn al-Mreisseh', 'Manara', 'Raouche',
     'Basta', 'Ras El Nabeh', 'Msaytbeh', 'Tallet el-Khayat', 'Qasqas', 'Barbour',
-    'Kantari', 'Clemenceau', 'Zarif', 'Sanayeh', 'Badaro'
+    'Kantari', 'Clemenceau', 'Zarif', 'Sanayeh', 'Badaro',
+    'Ain el Mreisseh', 'Manara', 'Ramlet el Baida', 'Verdun', 'Kantari', 'Sanayeh', 'Basta', 'Mar Mikhael', 'Saifi', 'Zoukak el Blat', 'Ras el Nabaa', 'Bachoura', 'Chiyah', 'Msaytbeh', 'Tallet el Khayyat', 'Dweir'
   ],
   Tripoli: [
     'Mina', 'Qalamoun', 'Bab al-Tabbaneh', 'Jabal Mohsen', 'Abu Samra', 'Beddawi',
     'Zeitoun', 'Qobbeh', 'Baal Mohsen', 'Tal', 'Soueika', 'Maqsouda', 'Zwaytina',
-    'Riva', 'Azmi', 'Maloula', 'Corniche', 'Port Saida'
+    'Riva', 'Azmi', 'Maloula', 'Corniche', 'Port Saida',
+    'Al Mina', 'Al Qobbeh', 'Bab al Tebbeneh', 'Bab Al Hadid', 'Abu Samra'
   ],
   Saida: [
     'Old Saida', 'Hlaliyeh', 'Miyeh w Miyeh', 'Sirob', 'Abra', 'Wastani', 'Mar Elias',
@@ -67,12 +69,14 @@ export const LB_AR: CountryLocations = {
     'الحمرا', 'الأشرفية', 'فردان', 'رأس بيروت', 'المزرعة', 'الباشورة', 'المدور', 'الصيفي',
     'الجميزة', 'مار مخايل', 'زقاق البلاط', 'عين المريسة', 'المنارة', 'الروشة', 'البسطة',
     'رأس النبع', 'المصيطبة', 'تلة الخياط', 'قصقص', 'بربور', 'القنطاري', 'كليمنصو', 'الظريف',
-    'الصنائع', 'بدارو'
+    'الصنائع', 'بدارو',
+    'عين المريسة', 'المنارة', 'رملة البيضا', 'فردان', 'القنطاري', 'الصنايع', 'البسطة', 'مار مخايل', 'الصيفي', 'زقاق البلاط', 'رأس النبع', 'الباشورة', 'الشياح', 'المصيطبة', 'تلة الخياط', 'الدوير'
   ],
   'طرابلس': [
     'الميناء', 'القلمون', 'باب التبانة', 'جبل محسن', 'أبو سمرة', 'البداوي', 'الزيتون',
     'القبة', 'بعل محسن', 'التل', 'السويقة', 'المقصودة', 'الزويتينة', 'الريفا', 'عزمي',
-    'ملولة', 'الكورنيش', 'مرفأ صيدا'
+    'ملولة', 'الكورنيش', 'مرفأ صيدا',
+    'الميناء', 'القبة', 'باب التبانة', 'باب الحديد', 'أبو سمراء'
   ],
   'صيدا': [
     'صيدا القديمة', 'الهلالية', 'المية ومية', 'سيروب', 'عبرا', 'الوسطاني', 'مار الياس',
