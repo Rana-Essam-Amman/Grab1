@@ -5,13 +5,16 @@ export const SY_EN: CountryLocations = {
     'Mezzeh', 'Abu Rummaneh', 'Malki', 'Baramkeh', 'Kafr Sousa', 'Rukn al-Din', 'Muhajireen',
     'Qanawat', 'Bab Touma', 'Bab Sharqi', 'Al-Midan', 'Al-Shaghour', 'Al-Qassaa', 'Al-Salihiyah',
     'Dummar', 'Jobar', 'Al-Tijara', 'Al-Marjah', 'Al-Amara', 'Al-Bahsa', 'Bustan al-Dour',
-    'Al-Zahra', 'Al-Mazzeh 86', 'Al-Muhajirin', 'Al-Izaa'
+    'Al-Zahra', 'Al-Mazzeh 86', 'Al-Muhajirin', 'Al-Izaa',
+    'Al Shaalan', 'Al Mazzeh Jabal', 'Al Jaramana', 'Al Tadamon', 'Al Yarmouk',
+    'Al Sabboura'
   ],
   Aleppo: [
     'Al-Jdaydeh', 'Al-Furdous', 'Al-Sulaimaniyah', 'Al-Aziziyah', 'Al-Ashrafiyah', 'Bab al-Faraj',
     'Al-Jamiliyah', 'Al-Shaar', 'Al-Zahraa', 'Hamdaniyah', 'Al-Midan', 'Al-Masharqah',
     'Al-Sabil', 'Bab al-Nasr', 'Bab al-Hadid', 'Qal\'at al-Sharif', 'Al-Izaa', 'Al-Mogambo',
-    'Al-Hamdaniyah New', 'Al-Furqan'
+    'Al-Hamdaniyah New', 'Al-Furqan',
+    'Al Ramousah', 'Al Sakhour', 'Bab al Nayrab', 'Salah Al Din', 'Al Shahba'
   ],
   Hama: [
     'Al-Hader', 'Al-Madina', 'Al-Qusour', 'Al-Hamidiyah', 'Al-Salhiya', 'Al-Shari\'a',
@@ -77,12 +80,15 @@ export const SY_AR: CountryLocations = {
     'المزة', 'أبو رمانة', 'المالكي', 'البرامكة', 'كفرسوسة', 'ركن الدين', 'المهاجرين',
     'القنوات', 'باب توما', 'باب شرقي', 'الميدان', 'الشاغور', 'القصاع', 'الصالحية',
     'دمر', 'جوبر', 'التجارة', 'المرجة', 'العمارة', 'البحصة', 'بستان الدور', 'الزهراء',
-    'المزة 86', 'المهاجرين الثانية', 'الإذاعة'
+    'المزة 86', 'المهاجرين الثانية', 'الإذاعة',
+    'الشعلان', 'المزة جبل', 'الجرمانة', 'التضامن', 'اليرموك',
+    'السبورة'
   ],
   'حلب': [
     'الجديدة', 'الفردوس', 'السليمانية', 'العزيزية', 'الأشرفية', 'باب الفرج', 'الجميلية',
     'الشعار', 'الزهراء', 'الحمدانية', 'الميدان', 'المشارقة', 'السبيل', 'باب النصر',
-    'باب الحديد', 'قلعة الشريف', 'الإذاعة', 'الموكامبو', 'الحمدانية الجديدة', 'الفرقان'
+    'باب الحديد', 'قلعة الشريف', 'الإذاعة', 'الموكامبو', 'الحمدانية الجديدة', 'الفرقان',
+    'الراموسة', 'الصاخور', 'باب النيراب', 'صلاح الدين', 'الشهباء'
   ],
   'حماة': [
     'الحاضر', 'المدينة', 'القصور', 'الحميدية', 'الصالحية', 'الشريعة', 'الجراجمة',
