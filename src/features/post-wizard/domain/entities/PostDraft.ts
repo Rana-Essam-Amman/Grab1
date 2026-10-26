@@ -14,6 +14,9 @@ export interface PostDraft {
   readonly photos: readonly string[];
   readonly city: string;
   readonly neighborhood: string;
+  readonly citySlug?: string;
+  readonly districtSlug?: string;
+  readonly neighborhoodSlug?: string;
   readonly site: string;
   readonly noteText: string;
   readonly title?: string;
