@@ -14,11 +14,6 @@ const formatNumberValue = (v: string): string => {
   return !isNaN(num) ? new Intl.NumberFormat('en-US').format(num) : v;
 };
 
-/**
- * Renders ALL required attributes for the listing's category, translated to
- * display labels. Used on ListingCard so buyers see mandatory specs at a glance.
- * Works for every category (motors, real-estate, mobiles, etc.) — automatic.
- */
 export function RequiredSpecsRow({ categorySlug, subcategorySlug, attributes, isArabic }: Props) {
   const items = useMemo(() => {
     const fields = getListingFields(categorySlug, subcategorySlug ?? undefined);
@@ -40,8 +35,14 @@ export function RequiredSpecsRow({ categorySlug, subcategorySlug, attributes, is
         if (f.type === 'number' || f.key === 'km' || f.key === 'mileage' || f.key === 'area') {
           if (f.key === 'year') return raw;
           const formatted = formatNumberValue(raw);
+
           if (f.key === 'area') return `${formatted}${isArabic ? ' م²' : ' m²'}`;
           if (f.key === 'km' || f.key === 'mileage') return `${formatted}${isArabic ? ' كم' : ' KM'}`;
+
+          // FIX: Add explicit labels for rooms and bathrooms
+          if (f.key === 'bedrooms' || f.key === 'rooms' || f.key === 'beds' || f.key === 'غرف') return `${formatted}${isArabic ? ' غرف' : ' Beds'}`;
+          if (f.key === 'bathrooms' || f.key === 'baths' || f.key === 'حمام') return `${formatted}${isArabic ? ' حمام' : ' Baths'}`;
+
           return formatted;
         }
         return raw;

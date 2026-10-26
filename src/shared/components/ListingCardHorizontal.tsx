@@ -42,10 +42,9 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
     <div
       data-testid="listing-card"
       onClick={handleClick}
-      className={`${premiumClasses} rounded-2xl mb-3 shadow-sm flex flex-col overflow-hidden cursor-pointer hover:border-primary/60 transition-all active:scale-[0.99]`}
+      className={`${premiumClasses} rounded-2xl mb-4 shadow-md flex flex-col overflow-hidden cursor-pointer hover:border-primary/60 transition-all active:scale-[0.99]`}
       dir={isArabic ? 'rtl' : 'ltr'}
     >
-      {/* Header: Seller Info */}
       <div className="flex items-center gap-2.5 p-3">
         <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
           <span className="text-primary font-bold text-base">{listing.sellerName?.charAt(0) || '?'}</span>
@@ -68,7 +67,6 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
         </div>
       </div>
 
-      {/* Body: Title & Specs */}
       <div className="px-3 pb-3">
         <div className="bg-canvas p-2.5 rounded-lg mb-2">
           <h3 className="font-bold text-[15px] leading-tight line-clamp-2 text-ink" dir="auto">
@@ -83,12 +81,10 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
         />
       </div>
 
-      {/* Image Collage */}
       <ListingImageCollage images={displayImages} onImageError={handleImageError} />
 
-      {/* Footer: Price (OpenSooq Style) */}
       <div className="px-3 py-3 border-t border-border mt-1 flex justify-between items-center bg-surface">
-        <span className="text-xl font-extrabold text-primary">
+        <span className="text-[22px] font-extrabold text-danger">
           {formatPrice(listing.price, listing.currency, isArabic)}
         </span>
       </div>
