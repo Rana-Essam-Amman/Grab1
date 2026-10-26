@@ -62,6 +62,9 @@ try {
         subcategorySlug: draft.subcategorySlug,
         photos: [...draft.photos],
         city: draft.city, neighborhood: draft.neighborhood,
+        citySlug: draft.citySlug,
+        districtSlug: draft.districtSlug,
+        neighborhoodSlug: draft.neighborhoodSlug,
         site: draft.site, noteText: draft.noteText,
       },
     });
