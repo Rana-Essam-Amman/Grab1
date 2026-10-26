@@ -91,7 +91,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
           </div>
 
           <div className="flex items-center mt-2 gap-1.5">
-            <div className="text-[18px] font-extrabold text-primary shrink-0">
+            <div className="text-[18px] font-extrabold text-ink shrink-0">
               <span>{formatPrice(listing.price, listing.currency, isArabic)}</span>
             </div>
           </div>
