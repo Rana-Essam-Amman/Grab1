@@ -29,11 +29,8 @@ describe('useLocationPick', () => {
       result.current.handleCityChange(nextCity);
     });
     
-    // The city changed
     expect(result.current.selectedCity).toBe(nextCity);
-    // The neighborhood was reset to "Other" (safe default until user picks)
     expect(result.current.selectedNeighborhood).toBe('أخرى');
-    // Custom fields were cleared
     expect(result.current.customCity).toBe('');
     expect(result.current.customNeighborhood).toBe('');
   });
@@ -50,13 +47,11 @@ describe('useLocationPick', () => {
     
     const draft = useDraftStore.getState().postDraft;
     expect(draft.site).toBe('Near City Mall');
-    // The hook syncs the draft city with the selected city
     expect(draft.city).toBe(result.current.selectedCity);
     expect(draft.city).toBe('العاصمة');
   });
 
   it('saveAndContinue handles custom city correctly (Other flow - back navigation)', () => {
-    // Simulate: user previously entered a custom city, went back to location screen
     const fakeCity = 'مدينة_وهمية_للامتحان';
     const fakeNeighborhood = 'حي_وهمي_للامتحان';
     
@@ -69,15 +64,11 @@ describe('useLocationPick', () => {
     
     const { result } = renderHook(() => useLocationPick());
     
-    // The hook detects the saved city is not in the standard list, so it:
-    // 1. Sets selectedCity to "Other" (so the custom input is visible)
-    // 2. Pre-fills customCity with the saved value (so user can see and edit it)
     expect(result.current.selectedCity).toBe('أخرى');
     expect(result.current.customCity).toBe(fakeCity);
     expect(result.current.selectedNeighborhood).toBe('أخرى');
     expect(result.current.customNeighborhood).toBe(fakeNeighborhood);
     
-    // When saving again, the custom values are preserved (not lost, not replaced by "أخرى")
     act(() => {
       result.current.saveAndContinue();
     });
@@ -87,22 +78,54 @@ describe('useLocationPick', () => {
     expect(draft.neighborhood).toBe(fakeNeighborhood);
   });
 
-  it('saveAndContinue uses custom text when user selects Other and types', () => {
+  it('saveAndContinue BLOCKS save when city is Other but custom text is missing', () => {
+    // Real-world test: user selects "Other" but forgets to type the custom city name.
+    // The validation must block save and NOT write garbage to the draft.
     const { result } = renderHook(() => useLocationPick());
-    const fakeCity = 'مدينة_مخصصة_جديدة';
     
-    // Simulate user experience: selects "Other" from cities, then types in the custom input
     act(() => {
       result.current.handleCityChange('أخرى');
     });
+    
+    // customCity is empty, customNeighborhood is empty → validation should fail
+    expect(result.current.canContinue).toBe(false);
+    expect(result.current.validationError).not.toBeNull();
+    
+    act(() => {
+      result.current.saveAndContinue();
+    });
+    
+    // Draft should NOT be updated (still the original value)
+    const draft = useDraftStore.getState().postDraft;
+    expect(draft.city).toBe('العاصمة');
+  });
+
+  it('saveAndContinue uses BOTH custom fields when user selects Other and types in both', () => {
+    const { result } = renderHook(() => useLocationPick());
+    const fakeCity = 'مدينة_مخصصة_جديدة';
+    const fakeNeighborhood = 'حي_مخصص_جديد';
+    
+    // Simulate: user selects "Other" for city (this auto-sets neighborhood to "Other" too)
+    act(() => {
+      result.current.handleCityChange('أخرى');
+    });
+    
+    // Then user types in BOTH custom inputs (city + neighborhood)
     act(() => {
       result.current.setCustomCity(fakeCity);
+      result.current.setCustomNeighborhood(fakeNeighborhood);
     });
+    
+    // Now canContinue should be true
+    expect(result.current.canContinue).toBe(true);
+    expect(result.current.validationError).toBeNull();
+    
     act(() => {
       result.current.saveAndContinue();
     });
     
     const draft = useDraftStore.getState().postDraft;
     expect(draft.city).toBe(fakeCity);
+    expect(draft.neighborhood).toBe(fakeNeighborhood);
   });
 });
