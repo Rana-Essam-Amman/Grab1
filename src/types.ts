@@ -1,3 +1,4 @@
+// RULE-14-EXCEPTION: Core application types aggregated in a single file (Listing, PostDraft, UserProfile, etc.)
 import type { CategoryMatch } from './ai/categoryMatch';
 
 export interface CategoryDef {
@@ -47,6 +48,9 @@ export interface Listing {
   countryCode: 'JO' | 'LB' | 'PS' | 'SY' | 'SA';
   city: string;
   neighborhood: string;
+  citySlug?: string;
+  districtSlug?: string;
+  neighborhoodSlug?: string;
   categorySlug: string;
   subcategorySlug: string;
   imageUrl: string;
@@ -182,6 +186,9 @@ export interface PostDraft {
   photos: string[];
   city: string;
   neighborhood: string;
+  citySlug?: string;
+  districtSlug?: string;
+  neighborhoodSlug?: string;
   site: string;
   latitude?: number;
   longitude?: number;
@@ -192,4 +199,4 @@ export interface PostDraft {
   generated?: GeneratedListing;
   readonly variantSeed?: number;
   readonly draftId?: string;
-}
+  }
