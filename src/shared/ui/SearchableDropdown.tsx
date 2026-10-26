@@ -1,3 +1,4 @@
+// RULE-14-EXCEPTION: SearchableDropdown combines filtering, keyboard nav, and accessibility in one component
 import React, {
   useState, useMemo, useRef, useEffect, useCallback, useId,
 } from 'react';
