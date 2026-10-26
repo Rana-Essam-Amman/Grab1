@@ -3,16 +3,13 @@ import React, { useMemo, useCallback } from 'react';
 import { Listing } from '@/types';
 import { Icon } from '@iconify/react';
 import { getSanitizedRegionalLocation } from '@/data/locations';
-import { getListingFields } from '@/data/listingFields';
 import { ListingCardImage } from './ListingCardImage';
 import { ListingCardHorizontal } from './ListingCardHorizontal';
 import { ListingCardSellerRow } from '@/features/listings/components/ListingCardSellerRow';
 import { RequiredSpecsRow } from '@/features/listings/components/RequiredSpecsRow';
-import { TagChips } from '@/features/listings/components/TagChips';
-import { pickSpecs } from '@/features/listings';
-import { ListingSpecsRow } from './ListingSpecsRow';
 import { formatPrice } from '@/shared/lib/formatPrice';
 import { formatRelativeDate } from '@/shared/lib/formatDate';
+import { stripEmojis } from '@/shared/lib/stripEmojis';
 
 interface ListingCardProps {
   listing: Listing;
@@ -37,12 +34,6 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
 
   const locationText = useMemo(() => (sanitizedLoc.neighborhood ? `${sanitizedLoc.neighborhood}, ${sanitizedLoc.city}` : sanitizedLoc.city), [sanitizedLoc]);
 
-  const requiredKeys = useMemo(() => {
-    const fields = getListingFields(listing.categorySlug, listing.subcategorySlug);
-    return new Set(fields.filter((f) => f.required).map((f) => f.key));
-  }, [listing.categorySlug, listing.subcategorySlug]);
-
-  const specs = useMemo(() => pickSpecs(listing.attributes?.filter((a) => !requiredKeys.has(a.key)), 5, listing.title), [listing.attributes, listing.title, requiredKeys]);
   const sellerKey = useMemo(() => listing.userId || listing.sellerPhone || '', [listing.sellerPhone, listing.userId]);
 
   const isVerifiedSeller = useMemo(() => {
@@ -80,32 +71,41 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
       data-testid="listing-card"
     >
       <ListingCardImage imageUrl={listing.imageUrl} title={listing.title} isPremium={listing.isPremium} listingId={listing.id} isArabic={isArabic} onImageError={handleImageError} />
+
       <div className="p-3 flex flex-col flex-1">
-        <div className="flex items-start justify-between gap-1">
-          <div className="text-[15px] font-bold text-ink line-clamp-2" dir="auto">{listing.title}</div>
-          {conditionVal && <span className="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20">{conditionVal}</span>}
+        <div className="flex items-start justify-between gap-2">
+          <div className="text-[15px] font-bold text-ink leading-tight line-clamp-2" dir="auto">
+            {stripEmojis(listing.title)}
+          </div>
+          {conditionVal && (
+            <span className="shrink-0 px-2 py-0.5 rounded-md text-[10px] font-bold bg-surface border border-border text-ink-soft">
+              {conditionVal}
+            </span>
+          )}
         </div>
-        <div className="flex items-center justify-between gap-1 text-xs text-ink-soft font-medium mt-1 mb-2">
+
+        <div className="flex items-center justify-between gap-1 text-[11px] text-ink-soft font-medium mt-1.5 mb-2">
           <div className="flex items-center gap-1 truncate">
             <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
             <span className="truncate" dir="auto">{locationText}</span>
           </div>
           {relativeDate && (
-            <div className="flex items-center gap-1 shrink-0 text-[11px] text-ink-muted">
+            <div className="flex items-center gap-1 shrink-0 text-ink-muted">
               <Icon icon="lucide:clock" width={11} height={11} className="shrink-0" />
               <span>{relativeDate}</span>
             </div>
           )}
         </div>
+
         <RequiredSpecsRow categorySlug={listing.categorySlug} subcategorySlug={listing.subcategorySlug} attributes={listing.attributes ?? []} isArabic={isArabic} />
-        <TagChips listing={listing} isArabic={isArabic} compact />
-        {specs.length > 0 && <ListingSpecsRow specs={specs} compact />}
-        <div className="flex items-center mt-3 pt-2 border-t border-border gap-1.5">
-          <div className="price-tag text-base font-bold text-danger shrink-0">
+
+        <div className="mt-auto pt-3 border-t border-border/60 flex items-center gap-1.5">
+          <div className="price-tag text-[17px] font-extrabold text-primary shrink-0">
             <span>{formattedPrice || (isArabic ? 'السعر غير محدد' : 'Price not specified')}</span>
           </div>
         </div>
       </div>
+
       <div className="border-t border-border px-3 py-2 bg-canvas flex items-center justify-between">
         <ListingCardSellerRow sellerName={listing.sellerName} sellerKey={sellerKey} />
         {isVerifiedSeller && (
