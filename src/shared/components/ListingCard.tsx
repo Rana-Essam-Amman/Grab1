@@ -71,7 +71,7 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
       data-testid="listing-card"
     >
       <ListingCardImage imageUrl={listing.imageUrl} title={listing.title} isPremium={listing.isPremium} listingId={listing.id} isArabic={isArabic} onImageError={handleImageError} />
-
+      
       <div className="p-3 flex flex-col flex-1">
         <div className="flex items-start justify-between gap-2">
           <div className="text-[15px] font-bold text-ink leading-tight line-clamp-2" dir="auto">
@@ -83,7 +83,7 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
             </span>
           )}
         </div>
-
+        
         <div className="flex items-center justify-between gap-1 text-[11px] text-ink-soft font-medium mt-1.5 mb-2">
           <div className="flex items-center gap-1 truncate">
             <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
@@ -98,9 +98,9 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
         </div>
 
         <RequiredSpecsRow categorySlug={listing.categorySlug} subcategorySlug={listing.subcategorySlug} attributes={listing.attributes ?? []} isArabic={isArabic} />
-
+        
         <div className="mt-auto pt-3 border-t border-border/60 flex items-center gap-1.5">
-          <div className="text-[18px] font-extrabold text-primary shrink-0">
+          <div className="text-[18px] font-extrabold text-ink shrink-0">
             <span>{formattedPrice || (isArabic ? 'السعر غير محدد' : 'Price not specified')}</span>
           </div>
         </div>
