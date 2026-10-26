@@ -6,13 +6,13 @@ import { useAuth } from '@/hooks/useAuth';
 import { useAuthStore } from '@/features/auth';
 import { useChatStore } from '@/features/chat/store/chat.slice';
 import { useListings } from '@/hooks/useListings';
-import { stripEmojisFromInput } from '@/shared/lib/stripEmojis';
 import { markMessagesRead as markMessagesReadAction, applyMessageUpdate, reconcileConfirmedMessage } from '../store/chat.slice.actions.mutate';
 import { loadInitialMessages as loadInitialMessagesAction } from '../store/chat.slice.actions.load';
 import { subscribeToMessages } from '../services/chatRealtime';
 import { getFormattedLocalPhone } from '@/shared/lib/phoneFormatting';
 import { useTypingIndicator } from '../hooks/useTypingIndicator';
 import { useMessageDeleteFlow } from '../hooks/useMessageDeleteFlow';
+import { useChatComposer } from '../hooks/useChatComposer';
 import { ThreadHeader } from '../components/ThreadHeader';
 import { ThreadMessageFlow } from '../components/ThreadMessageFlow';
 import { ThreadInputBar } from '../components/ThreadInputBar';
@@ -32,7 +32,7 @@ export const ThreadScreen: React.FC = () => {
     if (authStatus === 'unauthenticated') navigateTo('login');
   }, [authStatus, navigateTo]);
 
-  const [inputText, setInputText] = useState('');
+  const { inputText, handleInputChange, clearInput } = useChatComposer(notifyTyping);
   const { getListing } = useListings();
   const thread = useMemo(() => conversations.find((c) => c.id === selectedThreadId), [conversations, selectedThreadId]);
   const convView = useMemo(() => storeConversations.find((c) => c.id === selectedThreadId), [storeConversations, selectedThreadId]);
@@ -79,8 +79,8 @@ export const ThreadScreen: React.FC = () => {
       );
       return;
     }
-    setInputText('');
-  }, [thread, isMessageLimitReached, inputText, sendChatMessageAsync, currentUserId, isArabic]);
+    clearInput();
+  }, [thread, isMessageLimitReached, inputText, sendChatMessageAsync, currentUserId, isArabic, clearInput]);
 
   const handleViewListing = useCallback(() => {
     if (thread) {
@@ -88,12 +88,6 @@ export const ThreadScreen: React.FC = () => {
       navigateTo('listing-detail');
     }
   }, [thread, setSelectedListingId, navigateTo]);
-
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const cleaned = stripEmojisFromInput(e.target.value);
-    setInputText(cleaned);
-    if (cleaned.trim().length > 0) notifyTyping();
-  }, [notifyTyping]);
 
   const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     (e.target as HTMLImageElement).src =
