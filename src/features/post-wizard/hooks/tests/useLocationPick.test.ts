@@ -40,28 +40,31 @@ describe('useLocationPick', () => {
     });
     const draft = useDraftStore.getState().postDraft;
     expect(draft.site).toBe('Near City Mall');
-    // The hook saves the final resolved city (which is 'العاصمة' since it's a valid governorate)
     expect(draft.city).toBe('العاصمة');
   });
 
   it('saveAndContinue handles custom city correctly (Other flow)', () => {
+    // Use a truly fake city name that is NOT in the standard governorates list
+    const fakeCity = 'مدينة_وهمية_للامتحان';
+    const fakeNeighborhood = 'حي_وهمي_للامتحان';
+    
     useDraftStore.setState({
       postDraft: {
         categorySlug: 'motors', subcategorySlug: 'cars', photos: [],
-        city: 'الطفيلة', neighborhood: 'الحسا', site: '', noteText: '',
+        city: fakeCity, neighborhood: fakeNeighborhood, site: '', noteText: '',
       },
     });
     const { result } = renderHook(() => useLocationPick());
     
-    // Since 'الطفيلة' is not in the standard governorates list, it should be treated as custom
+    // Since the city is fake, it should be treated as custom ("Other")
     expect(result.current.selectedCity).toBe('أخرى');
-    expect(result.current.customCity).toBe('الطفيلة');
+    expect(result.current.customCity).toBe(fakeCity);
     
     act(() => {
       result.current.saveAndContinue();
     });
     const draft = useDraftStore.getState().postDraft;
     // The custom city should be saved
-    expect(draft.city).toBe('الطفيلة');
+    expect(draft.city).toBe(fakeCity);
   });
 });
