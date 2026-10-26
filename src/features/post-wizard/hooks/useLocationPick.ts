@@ -1,4 +1,4 @@
-// RULE-14-EXCEPTION: Complex cascading location logic for flattening districts and villages
+// RULE-14-EXCEPTION: Complex location logic with bilingual resolution + slug extraction for stable persistence
 import { useState, useCallback, useMemo } from 'react';
 import { usePostWizard } from './usePostWizard';
 import { useUI } from '@/hooks/useUI';
@@ -27,6 +27,11 @@ export interface UseLocationPickReturn {
 
 const LABEL_SEPARATOR = ' — ';
 
+function stripSuffix(label: string): string {
+  const idx = label.indexOf(LABEL_SEPARATOR);
+  return idx > -1 ? label.substring(0, idx) : label;
+}
+
 export function useLocationPick(): UseLocationPickReturn {
   const { postDraft, updatePostDraft } = usePostWizard();
   const { isArabic, browseCountryCode, navigateTo } = useUI();
@@ -39,20 +44,34 @@ export function useLocationPick(): UseLocationPickReturn {
     return map;
   }, [rawGovs, isArabic]);
 
-  const cities = useMemo(() => 
-    [...rawGovs.map((g) => (isArabic ? g.nameAr : g.nameEn)), otherLabel], 
+  const cities = useMemo(
+    () => [...rawGovs.map((g) => (isArabic ? g.nameAr : g.nameEn)), otherLabel],
     [rawGovs, isArabic, otherLabel]
   );
 
-  // P1 FIX: If saved city is not a known governorate, treat it as custom ("Other" + prepopulate custom input)
-  const [selectedCity, setSelectedCity] = useState(() => {
+  // P0 FIX: Bilingual resolution so language switch doesn't lose location
+  const resolveCityLabel = useCallback((saved: string): string | null => {
+    if (!saved) return null;
+    const currentMatch = rawGovs.find((g) => (isArabic ? g.nameAr : g.nameEn) === saved);
+    if (currentMatch) return isArabic ? currentMatch.nameAr : currentMatch.nameEn;
+    const otherMatch = rawGovs.find((g) => (isArabic ? g.nameEn : g.nameAr) === saved);
+    if (otherMatch) return isArabic ? otherMatch.nameAr : otherMatch.nameEn;
+    return null;
+  }, [rawGovs, isArabic]);
+
+  const initialCityLabel = useMemo(
+    () => resolveCityLabel(postDraft.city || ""),
+    [resolveCityLabel, postDraft.city]
+  );
+
+  const [selectedCity, setSelectedCity] = useState<string>(() => {
     if (!postDraft.city) return cities[0] || "";
-    return cities.includes(postDraft.city) ? postDraft.city : otherLabel;
+    return initialCityLabel || otherLabel;
   });
 
-  const [customCity, setCustomCity] = useState(() => {
+  const [customCity, setCustomCity] = useState<string>(() => {
     if (!postDraft.city) return "";
-    return cities.includes(postDraft.city) ? "" : postDraft.city;
+    return initialCityLabel ? "" : postDraft.city;
   });
 
   const currentGovSlug = useMemo(() => govsMap.get(selectedCity) || null, [govsMap, selectedCity]);
@@ -68,58 +87,87 @@ export function useLocationPick(): UseLocationPickReturn {
 
   const neighborhoods = useMemo(() => {
     if (isOtherValue(selectedCity)) return [otherLabel];
-
     const labels: string[] = [];
     const seen = new Set<string>();
-
     for (const d of rawDistricts) {
       const name = isArabic ? d.nameAr : d.nameEn;
-      if (!seen.has(name)) {
-        labels.push(name);
-        seen.add(name);
-      }
+      if (!seen.has(name)) { labels.push(name); seen.add(name); }
     }
-
     for (const d of rawDistricts) {
       const districtName = isArabic ? d.nameAr : d.nameEn;
       for (const v of d.villages ?? []) {
         const villageName = isArabic ? v.nameAr : v.nameEn;
         const label = `${villageName}${LABEL_SEPARATOR}${districtName}`;
-        if (!seen.has(label)) {
-          labels.push(label);
-          seen.add(label);
-        }
+        if (!seen.has(label)) { labels.push(label); seen.add(label); }
       }
     }
-
     for (const c of rawCamps) {
       const name = isArabic ? c.nameAr : c.nameEn;
-      if (!seen.has(name)) {
-        labels.push(name);
-        seen.add(name);
-      }
+      if (!seen.has(name)) { labels.push(name); seen.add(name); }
     }
-
-    return [...labels.sort((a, b) => a.localeCompare(b, 'ar')), otherLabel];
+    return [...labels.sort((a, b) => a.localeCompare(b, isArabic ? 'ar' : 'en')), otherLabel];
   }, [selectedCity, rawDistricts, rawCamps, isArabic, otherLabel]);
 
-  // P1 FIX: If saved neighborhood is not a known option, treat it as custom
-  const [selectedNeighborhood, setSelectedNeighborhood] = useState(() => {
+  // P0 FIX: Bilingual resolution for neighborhood
+  const resolveNeighborhoodLabel = useCallback((saved: string): string | null => {
+    if (!saved) return null;
+    const baseName = stripSuffix(saved);
+    for (const d of rawDistricts) {
+      if ((isArabic ? d.nameAr : d.nameEn) === baseName) return isArabic ? d.nameAr : d.nameEn;
+      if ((isArabic ? d.nameEn : d.nameAr) === baseName) return isArabic ? d.nameAr : d.nameEn;
+    }
+    for (const d of rawDistricts) {
+      const districtName = isArabic ? d.nameAr : d.nameEn;
+      for (const v of d.villages ?? []) {
+        const mc = (isArabic ? v.nameAr : v.nameEn) === baseName;
+        const mo = (isArabic ? v.nameEn : v.nameAr) === baseName;
+        if (mc || mo) return `${isArabic ? v.nameAr : v.nameEn}${LABEL_SEPARATOR}${districtName}`;
+      }
+    }
+    for (const c of rawCamps) {
+      const mc = (isArabic ? c.nameAr : c.nameEn) === baseName;
+      const mo = (isArabic ? c.nameEn : c.nameAr) === baseName;
+      if (mc || mo) return isArabic ? c.nameAr : c.nameEn;
+    }
+    return null;
+  }, [rawDistricts, rawCamps, isArabic]);
+
+  const initialNeighborhoodLabel = useMemo(
+    () => resolveNeighborhoodLabel(postDraft.neighborhood || ""),
+    [resolveNeighborhoodLabel, postDraft.neighborhood]
+  );
+
+  const [selectedNeighborhood, setSelectedNeighborhood] = useState<string>(() => {
     if (!postDraft.neighborhood) return neighborhoods[0] || "";
-    return neighborhoods.includes(postDraft.neighborhood) ? postDraft.neighborhood : otherLabel;
+    return initialNeighborhoodLabel || otherLabel;
   });
 
-  const [customNeighborhood, setCustomNeighborhood] = useState(() => {
+  const [customNeighborhood, setCustomNeighborhood] = useState<string>(() => {
     if (!postDraft.neighborhood) return "";
-    return neighborhoods.includes(postDraft.neighborhood) ? "" : postDraft.neighborhood;
+    return initialNeighborhoodLabel ? "" : postDraft.neighborhood;
   });
 
   const [site, setSite] = useState(postDraft.site || "");
 
-  const extractNeighborhoodName = useCallback((label: string): string => {
-    const idx = label.indexOf(LABEL_SEPARATOR);
-    return idx > -1 ? label.substring(0, idx) : label;
-  }, []);
+  // NEW: Extract slugs from display label (for stable persistence)
+  const extractSlugs = useCallback((label: string): { districtSlug?: string; neighborhoodSlug?: string } => {
+    if (!label || isOtherValue(label)) return {};
+    const sepIdx = label.indexOf(LABEL_SEPARATOR);
+    if (sepIdx > -1) {
+      const villageName = label.substring(0, sepIdx);
+      const districtName = label.substring(sepIdx + LABEL_SEPARATOR.length);
+      const district = rawDistricts.find((d) => (isArabic ? d.nameAr : d.nameEn) === districtName);
+      if (district) {
+        const village = district.villages.find((v) => (isArabic ? v.nameAr : v.nameEn) === villageName);
+        if (village) return { districtSlug: district.slug, neighborhoodSlug: village.slug };
+      }
+    }
+    const camp = rawCamps.find((c) => (isArabic ? c.nameAr : c.nameEn) === label);
+    if (camp) return { neighborhoodSlug: camp.slug };
+    const district = rawDistricts.find((d) => (isArabic ? d.nameAr : d.nameEn) === label);
+    if (district) return { districtSlug: district.slug };
+    return {};
+  }, [rawDistricts, rawCamps, isArabic]);
 
   const handleCityChange = useCallback((c: string) => {
     setSelectedCity(c);
@@ -135,16 +183,15 @@ export function useLocationPick(): UseLocationPickReturn {
 
   const handleSiteChange = useCallback((s: string) => setSite(s), []);
 
-  // P2 FIX: Use custom values in map query when "Other" is selected
   const mapQuery = useMemo(() => {
     const area = isOtherValue(selectedNeighborhood) && customNeighborhood.trim()
       ? customNeighborhood.trim()
-      : extractNeighborhoodName(selectedNeighborhood);
+      : stripSuffix(selectedNeighborhood);
     const city = isOtherValue(selectedCity) && customCity.trim()
       ? customCity.trim()
       : selectedCity;
     return googleSearchQuery({ city, area, site });
-  }, [selectedCity, customCity, selectedNeighborhood, customNeighborhood, site, extractNeighborhoodName]);
+  }, [selectedCity, customCity, selectedNeighborhood, customNeighborhood, site]);
 
   const validationError = useMemo(() => {
     if (isOtherValue(selectedCity) && !customCity.trim())
@@ -156,15 +203,27 @@ export function useLocationPick(): UseLocationPickReturn {
 
   const saveAndContinue = useCallback(() => {
     if (validationError) return;
-    const finalCity = isOtherValue(selectedCity) && customCity.trim() 
-      ? customCity.trim() 
+    const finalCity = isOtherValue(selectedCity) && customCity.trim()
+      ? customCity.trim()
       : selectedCity;
     const finalNeighborhood = isOtherValue(selectedNeighborhood) && customNeighborhood.trim()
       ? customNeighborhood.trim()
       : selectedNeighborhood;
-    updatePostDraft({ city: finalCity, neighborhood: finalNeighborhood, site });
+
+    // Extract slugs for stable persistence
+    const slugs = extractSlugs(finalNeighborhood);
+    const citySlug = isOtherValue(selectedCity) ? undefined : (currentGovSlug || undefined);
+
+    updatePostDraft({
+      city: finalCity,
+      neighborhood: finalNeighborhood,
+      site,
+      citySlug,
+      districtSlug: slugs.districtSlug,
+      neighborhoodSlug: slugs.neighborhoodSlug,
+    });
     navigateTo("post-details");
-  }, [validationError, selectedCity, selectedNeighborhood, customCity, customNeighborhood, site, updatePostDraft, navigateTo]);
+  }, [validationError, selectedCity, selectedNeighborhood, customCity, customNeighborhood, site, currentGovSlug, extractSlugs, updatePostDraft, navigateTo]);
 
   return {
     cities, neighborhoods, selectedCity, selectedNeighborhood, site, customCity, setCustomCity,
