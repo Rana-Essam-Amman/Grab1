@@ -100,7 +100,7 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
         <RequiredSpecsRow categorySlug={listing.categorySlug} subcategorySlug={listing.subcategorySlug} attributes={listing.attributes ?? []} isArabic={isArabic} />
 
         <div className="mt-auto pt-3 border-t border-border/60 flex items-center gap-1.5">
-          <div className="price-tag text-[17px] font-extrabold text-primary shrink-0">
+          <div className="text-[18px] font-extrabold text-primary shrink-0">
             <span>{formattedPrice || (isArabic ? 'السعر غير محدد' : 'Price not specified')}</span>
           </div>
         </div>

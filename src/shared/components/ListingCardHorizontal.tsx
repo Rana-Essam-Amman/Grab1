@@ -40,8 +40,8 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
       className={`${premiumClasses} rounded-2xl border overflow-hidden cursor-pointer hover:border-primary/60 transition-all shadow-xs group active:scale-[0.98]`}
       dir={isArabic ? 'rtl' : 'ltr'}
     >
-      <div className="p-3 flex gap-3">
-        <div className="w-[110px] h-[110px] rounded-xl overflow-hidden bg-surface relative shrink-0">
+      <div className="p-3 flex gap-3 items-start">
+        <div className="w-[120px] h-[120px] rounded-xl overflow-hidden bg-surface relative shrink-0 border border-border/50">
           <img
             src={toOptimizedImageUrl(listing.imageUrl, { width: 400, quality: 80 })}
             alt={listing.title}
@@ -63,13 +63,13 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
           </div>
         </div>
 
-        <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+        <div className="flex-1 min-w-0 flex flex-col justify-between min-h-[120px] py-0.5">
           <div>
             <div className="text-[15px] font-bold text-ink leading-tight line-clamp-2" dir="auto">
               {stripEmojis(listing.title)}
             </div>
 
-            <div className="flex items-center justify-between gap-1 text-[11px] text-ink-soft font-medium mt-1 mb-2">
+            <div className="flex items-center justify-between gap-1 text-[11px] text-ink-soft font-medium mt-1.5 mb-2">
               <div className="flex items-center gap-1 truncate">
                 <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
                 <span className="truncate" dir="auto">{locationText}</span>
@@ -91,7 +91,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
           </div>
 
           <div className="flex items-center mt-2 gap-1.5">
-            <div className="price-tag text-[17px] font-extrabold text-primary shrink-0">
+            <div className="text-[18px] font-extrabold text-primary shrink-0">
               <span>{formatPrice(listing.price, listing.currency, isArabic)}</span>
             </div>
           </div>
