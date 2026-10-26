@@ -45,7 +45,15 @@ export function useLocationPick(): UseLocationPickReturn {
 
   const neighborhoods = useMemo(() => {
     if (isOtherValue(selectedCity)) return [otherLabel];
-    return [...rawDistricts.map((d) => (isArabic ? d.nameAr : d.nameEn)), ...rawCamps.map((c) => (isArabic ? c.nameAr : c.nameEn)), otherLabel];
+    
+    const districtNames = rawDistricts.map(d => isArabic ? d.nameAr : d.nameEn);
+    const villageNames = rawDistricts.flatMap(d => 
+      d.villages?.map(v => isArabic ? v.nameAr : v.nameEn) || []
+    );
+    const campNames = rawCamps.map(c => isArabic ? c.nameAr : c.nameEn);
+
+    const uniqueList = Array.from(new Set([...districtNames, ...villageNames, ...campNames]));
+    return [...uniqueList.sort((a, b) => a.localeCompare(b, 'ar')), otherLabel];
   }, [selectedCity, rawDistricts, rawCamps, isArabic, otherLabel]);
 
   const [selectedNeighborhood, setSelectedNeighborhood] = useState(postDraft.neighborhood || (neighborhoods[0] || ""));
@@ -61,8 +69,10 @@ export function useLocationPick(): UseLocationPickReturn {
       setSelectedNeighborhood(otherLabel);
     } else {
       const dists = getAllDistricts(browseCountryCode, govSlug).map((d) => (isArabic ? d.nameAr : d.nameEn));
+      const vills = getAllDistricts(browseCountryCode, govSlug).flatMap(d => d.villages?.map(v => isArabic ? v.nameAr : v.nameEn) || []);
       const camps = getAllCamps(browseCountryCode).filter((cmp) => cmp.governorateSlug === govSlug).map((cmp) => (isArabic ? cmp.nameAr : cmp.nameEn));
-      setSelectedNeighborhood([...dists, ...camps, otherLabel][0] || otherLabel);
+      const firstOpt = Array.from(new Set([...dists, ...vills, ...camps])).sort((a,b) => a.localeCompare(b, 'ar'))[0];
+      setSelectedNeighborhood(firstOpt || otherLabel);
     }
     setCustomNeighborhood("");
   }, [govsMap, browseCountryCode, isArabic, otherLabel]);
