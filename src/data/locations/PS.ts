@@ -5,11 +5,13 @@ export const PS_EN: CountryLocations = {
     'Old City', 'Sheikh Jarrah', 'Silwan', 'Ras al-Amud', 'Jabal al-Mukaber', 'Sur Baher',
     'Beit Hanina', 'Shu\'fat', 'Beit Safafa', 'Al-Tur', 'Wadi al-Joz', 'Issawiya',
     'Abu Tor', 'Talpiot', 'Katamon', 'Mamilla', 'Bab al-Zahra', 'Wadi Hilweh',
-    'Ein al-Luza', 'Sheikh Badr'
+    'Ein al-Luza', 'Sheikh Badr', 'Musrara', 'Mea Shearim', 'Rehavia', 'Talbiya',
+    'Malha', 'Gilo', 'Wadi Joz'
   ],
   Ramallah: [
     'Al Tireh', 'Al Masyoun', 'Ein Misbah', 'Al Balou', 'Al Ersal', 'Al Nahda', 'Al Irsal',
-    'Al Tahreer', 'Al Masayef', 'Al Amari', 'Qadoura', 'Al Shurfa', 'Beitunia', 'Al Madina'
+    'Al Tahreer', 'Al Masayef', 'Al Amari', 'Qadoura', 'Al Shurfa', 'Beitunia', 'Al Madina',
+    'Al Jinan', 'Al Mazraa Al Sharqiyah'
   ],
   'Al-Bireh': [
     'Al Balou', 'Al Bireh Center', 'Al Nahda', 'Al Ersal', 'Al Jazeera', 'Al Sheikh Zayed',
@@ -62,7 +64,8 @@ export const PS_EN: CountryLocations = {
     'Rimal', 'Shujaiya', 'Zeitoun', 'Sabra', 'Tal al-Hawa', 'Sheikh Radwan',
     'Sheikh Ijlin', 'Al-Nasser', 'Al-Nafaq', 'Al-Daraj', 'Al-Tuffah', 'Al-Sahaba',
     'Shati Camp', 'Old City', 'Al-Remal Al-Janoubi', 'Al-Shati', 'Al-Mukhabarat',
-    'Al-Saraya', 'Al-Amal', 'Al-Salam'
+    'Al-Saraya', 'Al-Amal', 'Al-Salam', 'Al Rimmal', 'Al Shujaiya', 'Al Zaytoun',
+    'Al Tuffah', 'Al Nasr', 'Al Sabra'
   ],
   'Deir al-Balah': [
     'Deir al-Balah', 'Nuseirat', 'Bureij', 'Maghazi', 'Zawaida', 'Wadi al-Salqa',
@@ -85,11 +88,13 @@ export const PS_AR: CountryLocations = {
   'القدس': [
     'البلدة القديمة', 'الشيخ جراح', 'سلوان', 'رأس العامود', 'جبل المكبر', 'صور باهر',
     'بيت حنينا', 'شعفاط', 'بيت صفافا', 'الطور', 'وادي الجوز', 'العيساوية', 'أبو طور',
-    'تلبيوت', 'القطمون', 'مأمن الله', 'باب الساهرة', 'وادي حلوة', 'عين اللوزة', 'الشيخ بدر'
+    'تلبيوت', 'القطمون', 'مأمن الله', 'باب الساهرة', 'وادي حلوة', 'عين اللوزة', 'الشيخ بدر',
+    'المصرارة', 'ميا شعريم', 'رحافيا', 'الطالبية', 'المالحة', 'غيلو'
   ],
   'رام الله': [
     'الطيرة', 'المصيون', 'عين مصباح', 'البالوع', 'الإرسال', 'النهضة', 'الارسال', 'التحرير',
-    'المصايف', 'الأمعري', 'قدورة', 'الشرفة', 'بيتونيا', 'المدينة'
+    'المصايف', 'الأمعري', 'قدورة', 'الشرفة', 'بيتونيا', 'المدينة', 'الماصيون', 'الجنان',
+    'المزرعة الشرقية'
   ],
   'البيرة': [
     'البالوع', 'وسط البيرة', 'النهضة', 'الإرسال', 'الجزيرة', 'الشيخ زايد', 'العين',
