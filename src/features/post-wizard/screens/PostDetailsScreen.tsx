@@ -14,7 +14,7 @@ import { getListingFields } from '@/data/listingFields';
 import { DynamicFieldRenderer } from '../components/DynamicFieldRenderer';
 import { StaticMapPreview } from '../components/StaticMapPreview';
 import { formatPrice } from '@/shared/lib/formatPrice';
-import { stripEmojis } from '@/shared/lib/stripEmojis';
+import { stripEmojisFromInput } from '@/shared/lib/stripEmojis';
 
 export const PostDetailsScreen: React.FC = () => {
   const { isArabic, goBack, activeCurrency, browseCountryCode } = useUI();
@@ -88,7 +88,7 @@ export const PostDetailsScreen: React.FC = () => {
           <h3 className="text-xs font-bold text-ink-soft uppercase tracking-wider">{isArabic ? 'العنوان والسعر' : 'Title & Price'}</h3>
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-bold text-ink-soft">{isArabic ? 'عنوان الإعلان' : 'Listing Title'} <span className="text-accent">*</span></label>
-            <input data-testid="post-details-title-input" type="text" value={title} onChange={(e) => setTitle(e.target.value.replace(/[\p{Extended_Pictographic}\u{1F3FB}-\u{1F3FF}\u{1F1E6}-\u{1F1FF}]/gu, ''))} onBlur={(e) => setTitle(stripEmojis(e.target.value))} placeholder={isArabic ? 'أدخل عنواناً جذاباً...' : 'Enter title...'} className="w-full h-11 px-3 rounded-xl border border-line bg-canvas text-ink text-sm font-medium focus:outline-none focus:border-primary" />
+            <input data-testid="post-details-title-input" type="text" value={title} onChange={(e) => setTitle(stripEmojisFromInput(e.target.value))} placeholder={isArabic ? 'أدخل عنواناً جذاباً...' : 'Enter title...'} className="w-full h-11 px-3 rounded-xl border border-line bg-canvas text-ink text-sm font-medium focus:outline-none focus:border-primary" />
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-bold text-ink-soft">{isArabic ? `السعر (${activeCurrency})` : `Price (${activeCurrency})`} <span className="text-accent">*</span></label>
@@ -108,7 +108,7 @@ export const PostDetailsScreen: React.FC = () => {
 
         <div className="rounded-2xl border border-line bg-surface p-4 flex flex-col gap-3">
           <h3 className="text-xs font-bold text-ink-soft uppercase tracking-wider">{isArabic ? 'الوصف' : 'Description'} <span className="text-[10px] text-ink-muted normal-case tracking-normal font-normal">({isArabic ? 'اختياري' : 'optional'})</span></h3>
-          <textarea data-testid="post-details-description" value={description} onChange={(e) => setDescription(e.target.value.replace(/[\p{Extended_Pictographic}\u{1F3FB}-\u{1F3FF}\u{1F1E6}-\u{1F1FF}]/gu, ''))} onBlur={(e) => setDescription(stripEmojis(e.target.value))} rows={4} placeholder={isArabic ? 'اكتب تفاصيل إضافية عن السلعة...' : 'Write additional details...'} className="w-full p-3 rounded-xl border border-line bg-canvas text-ink text-sm font-medium focus:outline-none focus:border-primary resize-none" />
+          <textarea data-testid="post-details-description" value={description} onChange={(e) => setDescription(stripEmojisFromInput(e.target.value))} rows={4} placeholder={isArabic ? 'اكتب تفاصيل إضافية عن السلعة...' : 'Write additional details...'} className="w-full p-3 rounded-xl border border-line bg-canvas text-ink text-sm font-medium focus:outline-none focus:border-primary resize-none" />
         </div>
 
         <div className="rounded-2xl border border-line bg-surface p-4 flex flex-col gap-3">
