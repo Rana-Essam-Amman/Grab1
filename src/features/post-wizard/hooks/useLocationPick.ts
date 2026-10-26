@@ -49,7 +49,6 @@ export function useLocationPick(): UseLocationPickReturn {
     [rawGovs, isArabic, otherLabel]
   );
 
-  // P0 FIX: Bilingual resolution so language switch doesn't lose location
   const resolveCityLabel = useCallback((saved: string): string | null => {
     if (!saved) return null;
     const currentMatch = rawGovs.find((g) => (isArabic ? g.nameAr : g.nameEn) === saved);
@@ -108,7 +107,6 @@ export function useLocationPick(): UseLocationPickReturn {
     return [...labels.sort((a, b) => a.localeCompare(b, isArabic ? 'ar' : 'en')), otherLabel];
   }, [selectedCity, rawDistricts, rawCamps, isArabic, otherLabel]);
 
-  // P0 FIX: Bilingual resolution for neighborhood
   const resolveNeighborhoodLabel = useCallback((saved: string): string | null => {
     if (!saved) return null;
     const baseName = stripSuffix(saved);
@@ -149,26 +147,6 @@ export function useLocationPick(): UseLocationPickReturn {
 
   const [site, setSite] = useState(postDraft.site || "");
 
-  // NEW: Extract slugs from display label (for stable persistence)
-  const extractSlugs = useCallback((label: string): { districtSlug?: string; neighborhoodSlug?: string } => {
-    if (!label || isOtherValue(label)) return {};
-    const sepIdx = label.indexOf(LABEL_SEPARATOR);
-    if (sepIdx > -1) {
-      const villageName = label.substring(0, sepIdx);
-      const districtName = label.substring(sepIdx + LABEL_SEPARATOR.length);
-      const district = rawDistricts.find((d) => (isArabic ? d.nameAr : d.nameEn) === districtName);
-      if (district) {
-        const village = district.villages.find((v) => (isArabic ? v.nameAr : v.nameEn) === villageName);
-        if (village) return { districtSlug: district.slug, neighborhoodSlug: village.slug };
-      }
-    }
-    const camp = rawCamps.find((c) => (isArabic ? c.nameAr : c.nameEn) === label);
-    if (camp) return { neighborhoodSlug: camp.slug };
-    const district = rawDistricts.find((d) => (isArabic ? d.nameAr : d.nameEn) === label);
-    if (district) return { districtSlug: district.slug };
-    return {};
-  }, [rawDistricts, rawCamps, isArabic]);
-
   const handleCityChange = useCallback((c: string) => {
     setSelectedCity(c);
     setCustomCity("");
@@ -201,8 +179,66 @@ export function useLocationPick(): UseLocationPickReturn {
     return null;
   }, [selectedCity, customCity, selectedNeighborhood, customNeighborhood, isArabic]);
 
+  // DEFENSIVE RESOLUTION: Re-derive slugs from labels at save-time, bilingual-safe.
+  // This makes save resilient to stale state (e.g., language was switched while on-screen).
+  const resolveSlugsAtSave = useCallback((cityLabel: string, neighborhoodLabel: string): {
+    citySlug?: string;
+    districtSlug?: string;
+    neighborhoodSlug?: string;
+  } => {
+    // --- Resolve citySlug ---
+    let citySlug: string | undefined = undefined;
+    if (!isOtherValue(cityLabel)) {
+      let gov = rawGovs.find((g) => (isArabic ? g.nameAr : g.nameEn) === cityLabel);
+      if (!gov) gov = rawGovs.find((g) => (isArabic ? g.nameEn : g.nameAr) === cityLabel);
+      citySlug = gov?.slug;
+    }
+
+    // --- Resolve neighborhood slugs (bilingual) ---
+    let districtSlug: string | undefined = undefined;
+    let neighborhoodSlug: string | undefined = undefined;
+
+    if (citySlug && !isOtherValue(neighborhoodLabel)) {
+      const scopeDistricts = getAllDistricts(browseCountryCode, citySlug);
+      const scopeCamps = getAllCamps(browseCountryCode).filter((c) => c.governorateSlug === citySlug);
+
+      const sepIdx = neighborhoodLabel.indexOf(LABEL_SEPARATOR);
+
+      if (sepIdx > -1) {
+        // "Village — District" format
+        const villageName = neighborhoodLabel.substring(0, sepIdx);
+        const districtName = neighborhoodLabel.substring(sepIdx + LABEL_SEPARATOR.length);
+
+        let district = scopeDistricts.find((d) => (isArabic ? d.nameAr : d.nameEn) === districtName);
+        let village = district?.villages.find((v) => (isArabic ? v.nameAr : v.nameEn) === villageName);
+        if (!village) {
+          district = scopeDistricts.find((d) => (isArabic ? d.nameEn : d.nameAr) === districtName);
+          village = district?.villages.find((v) => (isArabic ? v.nameEn : v.nameAr) === villageName);
+        }
+        if (district && village) {
+          districtSlug = district.slug;
+          neighborhoodSlug = village.slug;
+        }
+      } else {
+        // District or camp (no separator)
+        let camp = scopeCamps.find((c) => (isArabic ? c.nameAr : c.nameEn) === neighborhoodLabel);
+        if (!camp) camp = scopeCamps.find((c) => (isArabic ? c.nameEn : c.nameAr) === neighborhoodLabel);
+        if (camp) {
+          neighborhoodSlug = camp.slug;
+        } else {
+          let district = scopeDistricts.find((d) => (isArabic ? d.nameAr : d.nameEn) === neighborhoodLabel);
+          if (!district) district = scopeDistricts.find((d) => (isArabic ? d.nameEn : d.nameAr) === neighborhoodLabel);
+          if (district) districtSlug = district.slug;
+        }
+      }
+    }
+
+    return { citySlug, districtSlug, neighborhoodSlug };
+  }, [rawGovs, isArabic, browseCountryCode]);
+
   const saveAndContinue = useCallback(() => {
     if (validationError) return;
+
     const finalCity = isOtherValue(selectedCity) && customCity.trim()
       ? customCity.trim()
       : selectedCity;
@@ -210,24 +246,22 @@ export function useLocationPick(): UseLocationPickReturn {
       ? customNeighborhood.trim()
       : selectedNeighborhood;
 
-    // Extract slugs for stable persistence
-    const slugs = extractSlugs(finalNeighborhood);
-    const citySlug = isOtherValue(selectedCity) ? undefined : (currentGovSlug || undefined);
+    const { citySlug, districtSlug, neighborhoodSlug } = resolveSlugsAtSave(finalCity, finalNeighborhood);
 
     updatePostDraft({
       city: finalCity,
       neighborhood: finalNeighborhood,
       site,
       citySlug,
-      districtSlug: slugs.districtSlug,
-      neighborhoodSlug: slugs.neighborhoodSlug,
+      districtSlug,
+      neighborhoodSlug,
     });
     navigateTo("post-details");
-  }, [validationError, selectedCity, selectedNeighborhood, customCity, customNeighborhood, site, currentGovSlug, extractSlugs, updatePostDraft, navigateTo]);
+  }, [validationError, selectedCity, selectedNeighborhood, customCity, customNeighborhood, site, resolveSlugsAtSave, updatePostDraft, navigateTo]);
 
   return {
     cities, neighborhoods, selectedCity, selectedNeighborhood, site, customCity, setCustomCity,
     customNeighborhood, setCustomNeighborhood, handleCityChange, handleNeighborhoodChange,
     handleSiteChange, mapQuery, saveAndContinue, canContinue: validationError === null, validationError,
   };
-}
+                                      }
