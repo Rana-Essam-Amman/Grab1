@@ -25,6 +25,8 @@ export interface UseLocationPickReturn {
   readonly validationError: string | null;
 }
 
+const LABEL_SEPARATOR = ' — ';
+
 export function useLocationPick(): UseLocationPickReturn {
   const { postDraft, updatePostDraft } = usePostWizard();
   const { isArabic, browseCountryCode, navigateTo } = useUI();
@@ -44,20 +46,58 @@ export function useLocationPick(): UseLocationPickReturn {
   const rawDistricts = useMemo(() => (currentGovSlug ? getAllDistricts(browseCountryCode, currentGovSlug) : []), [browseCountryCode, currentGovSlug]);
   const rawCamps = useMemo(() => (currentGovSlug ? getAllCamps(browseCountryCode).filter((c) => c.governorateSlug === currentGovSlug) : []), [browseCountryCode, currentGovSlug]);
 
+  // Build labeled neighborhood list: Districts (plain) + Villages (with parent district) + Camps (with label)
   const neighborhoods = useMemo(() => {
     if (isOtherValue(selectedCity)) return [otherLabel];
     
-    const districtNames = rawDistricts.map(d => isArabic ? d.nameAr : d.nameEn);
-    const villageNames = rawDistricts.flatMap(d => 
-      d.villages?.map(v => isArabic ? v.nameAr : v.nameEn) || []
-    );
-    const campNames = rawCamps.map(c => isArabic ? c.nameAr : c.nameEn);
+    const labels: string[] = [];
+    const seen = new Set<string>();
 
-    const uniqueList = Array.from(new Set([...districtNames, ...villageNames, ...campNames]));
-    return [...uniqueList.sort((a, b) => a.localeCompare(b, 'ar')), otherLabel];
+    // Districts: plain names
+    for (const d of rawDistricts) {
+      const name = isArabic ? d.nameAr : d.nameEn;
+      if (!seen.has(name)) {
+        labels.push(name);
+        seen.add(name);
+      }
+    }
+
+    // Villages: "Village — District"
+    for (const d of rawDistricts) {
+      const districtName = isArabic ? d.nameAr : d.nameEn;
+      for (const v of d.villages ?? []) {
+        const villageName = isArabic ? v.nameAr : v.nameEn;
+        const label = `${villageName}${LABEL_SEPARATOR}${districtName}`;
+        if (!seen.has(label)) {
+          labels.push(label);
+          seen.add(label);
+        }
+      }
+    }
+
+    // Camps: plain names
+    for (const c of rawCamps) {
+      const name = isArabic ? c.nameAr : c.nameEn;
+      if (!seen.has(name)) {
+        labels.push(name);
+        seen.add(name);
+      }
+    }
+
+    return [...labels.sort((a, b) => a.localeCompare(b, 'ar')), otherLabel];
   }, [selectedCity, rawDistricts, rawCamps, isArabic, otherLabel]);
 
-  const [selectedNeighborhood, setSelectedNeighborhood] = useState(postDraft.neighborhood || (neighborhoods[0] || ""));
+  // Extract the raw neighborhood name from a label (strips " — District" suffix)
+  const extractNeighborhoodName = useCallback((label: string): string => {
+    const idx = label.indexOf(LABEL_SEPARATOR);
+    return idx > -1 ? label.substring(0, idx) : label;
+  }, []);
+
+  const [selectedNeighborhood, setSelectedNeighborhood] = useState(() => {
+    const initial = postDraft.neighborhood || (neighborhoods[0] || "");
+    return initial;
+  });
+
   const [site, setSite] = useState(postDraft.site || "");
   const [customCity, setCustomCity] = useState("");
   const [customNeighborhood, setCustomNeighborhood] = useState("");
@@ -69,14 +109,10 @@ export function useLocationPick(): UseLocationPickReturn {
     if (!govSlug) {
       setSelectedNeighborhood(otherLabel);
     } else {
-      const dists = getAllDistricts(browseCountryCode, govSlug).map((d) => (isArabic ? d.nameAr : d.nameEn));
-      const vills = getAllDistricts(browseCountryCode, govSlug).flatMap(d => d.villages?.map(v => isArabic ? v.nameAr : v.nameEn) || []);
-      const camps = getAllCamps(browseCountryCode).filter((cmp) => cmp.governorateSlug === govSlug).map((cmp) => (isArabic ? cmp.nameAr : cmp.nameEn));
-      const firstOpt = Array.from(new Set([...dists, ...vills, ...camps])).sort((a,b) => a.localeCompare(b, 'ar'))[0];
-      setSelectedNeighborhood(firstOpt || otherLabel);
+      setSelectedNeighborhood(otherLabel); // Reset to "Other" until user picks
     }
     setCustomNeighborhood("");
-  }, [govsMap, browseCountryCode, isArabic, otherLabel]);
+  }, [govsMap, otherLabel]);
 
   const handleNeighborhoodChange = useCallback((n: string) => {
     setSelectedNeighborhood(n);
@@ -84,7 +120,10 @@ export function useLocationPick(): UseLocationPickReturn {
   }, []);
 
   const handleSiteChange = useCallback((s: string) => setSite(s), []);
-  const mapQuery = useMemo(() => googleSearchQuery({ city: selectedCity, area: selectedNeighborhood, site }), [selectedCity, selectedNeighborhood, site]);
+  const mapQuery = useMemo(() => {
+    const cleanArea = extractNeighborhoodName(selectedNeighborhood);
+    return googleSearchQuery({ city: selectedCity, area: cleanArea, site });
+  }, [selectedCity, selectedNeighborhood, site, extractNeighborhoodName]);
 
   const validationError = useMemo(() => {
     if (isOtherValue(selectedCity) && !customCity.trim()) return isArabic ? 'يرجى كتابة اسم المدينة' : 'Please enter the city name';
@@ -95,10 +134,12 @@ export function useLocationPick(): UseLocationPickReturn {
   const saveAndContinue = useCallback(() => {
     if (validationError) return;
     const finalCity = isOtherValue(selectedCity) && customCity.trim() ? customCity.trim() : selectedCity;
-    const finalNeighborhood = isOtherValue(selectedNeighborhood) && customNeighborhood.trim() ? customNeighborhood.trim() : selectedNeighborhood;
-    updatePostDraft({ city: finalCity, neighborhood: finalNeighborhood, site });
+    const finalNeighborhoodRaw = isOtherValue(selectedNeighborhood) && customNeighborhood.trim() 
+      ? customNeighborhood.trim() 
+      : extractNeighborhoodName(selectedNeighborhood);
+    updatePostDraft({ city: finalCity, neighborhood: finalNeighborhoodRaw, site });
     navigateTo("post-details");
-  }, [validationError, selectedCity, selectedNeighborhood, customCity, customNeighborhood, site, updatePostDraft, navigateTo]);
+  }, [validationError, selectedCity, selectedNeighborhood, customCity, customNeighborhood, site, updatePostDraft, navigateTo, extractNeighborhoodName]);
 
   return {
     cities, neighborhoods, selectedCity, selectedNeighborhood, site, customCity, setCustomCity,
