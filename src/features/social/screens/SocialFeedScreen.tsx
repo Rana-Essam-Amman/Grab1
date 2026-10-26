@@ -34,6 +34,7 @@ export const SocialFeedScreen: React.FC = () => {
 
   const observerTarget = useRef<HTMLDivElement>(null);
   const fetchingRef = useRef(false);
+  const requestIdRef = useRef(0);
 
   useEffect(() => {
     if (authStatus === 'unauthenticated' || !user) {
@@ -42,7 +43,13 @@ export const SocialFeedScreen: React.FC = () => {
   }, [authStatus, user, navigateTo]);
 
   const fetchPosts = useCallback(async (currentOffset: number) => {
-    if (!user || fetchingRef.current) return;
+    if (!user) return;
+
+    // Block pagination (offset > 0) if a request is already in flight.
+    // Allow concurrent offset=0 requests (search changes) — they supersede each other via requestIdRef.
+    if (currentOffset > 0 && fetchingRef.current) return;
+
+    const myRequestId = ++requestIdRef.current;
     fetchingRef.current = true;
     setLoading(true);
     setError(false);
@@ -52,8 +59,11 @@ export const SocialFeedScreen: React.FC = () => {
         p_country_code: browseCountryCode,
         p_limit: PAGE_SIZE,
         p_offset: currentOffset,
-        p_search: debouncedSearch.trim()
+        p_search: debouncedSearch.trim(),
       });
+
+      // Stale guard: a newer request has superseded this one.
+      if (myRequestId !== requestIdRef.current) return;
 
       if (err) throw err;
 
@@ -62,11 +72,15 @@ export const SocialFeedScreen: React.FC = () => {
         setHasMore(data.length === PAGE_SIZE);
       }
     } catch (err) {
+      if (myRequestId !== requestIdRef.current) return;
       console.error('Failed to load feed', err);
       setError(true);
     } finally {
-      setLoading(false);
-      fetchingRef.current = false;
+      // Only the latest request resets shared loading/fetching state.
+      if (myRequestId === requestIdRef.current) {
+        setLoading(false);
+        fetchingRef.current = false;
+      }
     }
   }, [browseCountryCode, user, debouncedSearch]);
 
@@ -87,7 +101,7 @@ export const SocialFeedScreen: React.FC = () => {
           fetchPosts(nextOffset);
         }
       },
-      { threshold: 1.0 }
+      { threshold: 1.0 },
     );
 
     if (observerTarget.current) observer.observe(observerTarget.current);
@@ -107,10 +121,10 @@ export const SocialFeedScreen: React.FC = () => {
   return (
     <div className={`max-w-[440px] mx-auto w-full flex flex-col pt-0 pb-28 bg-canvas min-h-screen ${isArabic ? 'font-cairo' : ''}`} dir={isArabic ? 'rtl' : 'ltr'}>
       <Header />
-      
+
       {/* Sub-header with Back button */}
       <div className="sticky top-[64px] z-40 bg-surface border-b border-border px-4 py-2.5 flex items-center justify-between">
-        <button 
+        <button
           onClick={() => navigateTo('main')}
           className="flex items-center gap-1.5 text-ink font-semibold text-[15px] cursor-pointer hover:bg-canvas px-2 py-1 -ms-2 rounded-lg transition"
         >
@@ -129,8 +143,8 @@ export const SocialFeedScreen: React.FC = () => {
           isArabic={isArabic}
           value={searchInput}
           onChange={setSearchInput}
-          onSubmit={() => {}} 
-          onFocusChange={() => {}} 
+          onSubmit={() => {}}
+          onFocusChange={() => {}}
         />
       </div>
 
