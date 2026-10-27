@@ -58,10 +58,8 @@ export function filterListings(listings: Listing[], options: FilterListingsOptio
     sortBy = 'newest', attrs = {}, preserveOrder = false,
   } = options;
 
-  // FIX: Always trim the search query, even if preserveOrder is true.
-  const effectiveSearchQuery = searchQuery.trim();
+  const effectiveSearchQuery = preserveOrder ? '' : searchQuery.trim();
   const isSearching = effectiveSearchQuery.length > 0;
-  
   const scoped = market ? filterListingsByMarket(listings, market as MarketCode) : listings;
   const normCityAr = cityAr ? normalizeArabic(cityAr) : '';
   const normCityEn = cityEn ? normalizeArabic(cityEn) : '';
