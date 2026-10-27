@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react';
 import { Call, Whatsapp } from 'iconsax-react';
-import { useUI } from '@/hooks/useUI';
 import { useRevealPhone } from '@/features/listings/hooks/useRevealPhone';
 import { getWhatsAppUrl } from '@/features/listings/helpers/listingDerivedData';
 import { capture } from '@/shared/analytics/posthog';
@@ -13,7 +12,6 @@ interface CardContactActionsProps {
 }
 
 export const CardContactActions: React.FC<CardContactActionsProps> = ({ listing, isArabic }) => {
-  const { navigateTo } = useUI();
   const { revealPhone, isRevealing } = useRevealPhone(listing.id, listing.sellerPhone, isArabic, listing.countryCode);
   const hasPhone = Boolean(listing.sellerPhone);
 
@@ -39,26 +37,28 @@ export const CardContactActions: React.FC<CardContactActionsProps> = ({ listing,
 
   return (
     <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border" onClick={(e) => e.stopPropagation()}>
+      {/* Call Button - Official Blue */}
       <button
         onClick={handleCall}
         disabled={!hasPhone || isRevealing}
         className={`flex-1 h-[44px] rounded-xl flex items-center justify-center gap-2 font-bold text-[14px] transition-all shadow-sm ${
-          !hasPhone 
-            ? 'bg-canvas text-ink-muted cursor-not-allowed border border-border opacity-70' 
+          !hasPhone
+            ? 'bg-canvas text-ink-muted cursor-not-allowed border border-border opacity-70'
             : 'bg-primary text-white hover:bg-primary/90 active:scale-95'
         }`}
       >
         <Call size={18} variant="Bold" />
         <span>{isArabic ? 'اتصال' : 'Call'}</span>
       </button>
-      
+
+      {/* WhatsApp Button - Official Green Token */}
       <button
         onClick={handleWhatsApp}
         disabled={!hasPhone || isRevealing}
         className={`flex-1 h-[44px] rounded-xl flex items-center justify-center gap-2 font-bold text-[14px] transition-all shadow-sm ${
-          !hasPhone 
-            ? 'bg-canvas text-ink-muted cursor-not-allowed border border-border opacity-70' 
-            : 'bg-[#25D366] text-white hover:bg-[#1DA851] active:scale-95'
+          !hasPhone
+            ? 'bg-canvas text-ink-muted cursor-not-allowed border border-border opacity-70'
+            : 'bg-whatsapp text-white hover:bg-whatsapp-hover active:scale-95'
         }`}
       >
         <Whatsapp size={18} variant="Bold" />
