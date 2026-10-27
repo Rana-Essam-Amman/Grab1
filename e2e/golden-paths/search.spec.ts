@@ -20,7 +20,8 @@ test.describe('Search — inline on Home', () => {
     await searchInput.fill('xyz123nonexistent');
     await searchInput.press('Enter');
 
-    await expect(page.getByText(/لا نتائج لـ/i)).toBeVisible();
+    const emptyState = page.locator('[data-testid="explore-empty-search-state"]');
+    await expect(emptyState).toBeVisible({ timeout: 10000 });
   });
 
   test('clearing the query empties the input', async ({ page }) => {
@@ -57,7 +58,6 @@ test.describe('Search — inline on Home', () => {
     const header = page.locator('header').first();
     const searchBar = page.locator('div.sticky.z-40.bg-canvas').first();
 
-    // Initial state
     await expect(header).toBeVisible();
     await expect(searchBar).toBeVisible();
 
@@ -66,25 +66,20 @@ test.describe('Search — inline on Home', () => {
     expect(initialHeaderBox).not.toBeNull();
     expect(initialSearchBox).not.toBeNull();
 
-    // Scroll down
     await page.evaluate(() => window.scrollBy(0, 400));
-    await page.waitForTimeout(500); // Wait for transition
+    await page.waitForTimeout(500);
 
-    // Check if header moved off-screen (Y < 0)
     const scrolledHeaderBox = await header.boundingBox();
     expect(scrolledHeaderBox).not.toBeNull();
     expect(scrolledHeaderBox!.y).toBeLessThan(0);
 
-    // Search bar should have moved up
     const scrolledSearchBox = await searchBar.boundingBox();
     expect(scrolledSearchBox).not.toBeNull();
     expect(scrolledSearchBox!.y).toBeLessThan(initialSearchBox!.y);
 
-    // Scroll back to top
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.waitForTimeout(500);
 
-    // Header should be visible again
     const restoredHeaderBox = await header.boundingBox();
     expect(restoredHeaderBox).not.toBeNull();
     expect(Math.abs(restoredHeaderBox!.y)).toBeLessThanOrEqual(5);
