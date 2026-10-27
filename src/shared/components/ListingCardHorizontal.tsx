@@ -5,6 +5,7 @@ import { Icon } from '@iconify/react';
 import { RequiredSpecsRow } from '@/features/listings/components/RequiredSpecsRow';
 import { toOptimizedImageUrl } from '@/shared/lib/optimizedImage';
 import { formatPrice } from '@/shared/lib/formatPrice';
+import { formatRelativeDate } from '@/shared/lib/formatDate';
 import { stripEmojis } from '@/shared/lib/stripEmojis';
 import { CardContactActions } from './CardContactActions';
 import { ListingImageCollage } from './ListingImageCollage';
@@ -32,6 +33,8 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
 }) => {
   const { setSelectedSellerPhone, navigateTo } = useUI();
   
+  const relativeDate = useMemo(() => formatRelativeDate(listing.createdAt, isArabic), [listing.createdAt, isArabic]);
+
   const displayImages = useMemo(() => {
     if (listing.images && listing.images.length > 0) {
       return listing.images.map(img => toOptimizedImageUrl(img, { width: 600, quality: 80 }));
@@ -53,7 +56,6 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
       className={`${premiumClasses} rounded-2xl shadow-md flex flex-col overflow-hidden cursor-pointer hover:border-primary/60 transition-all active:scale-[0.99]`}
       dir={isArabic ? 'rtl' : 'ltr'}
     >
-      {/* Header: Seller Info & Heart */}
       <div className="flex items-center justify-between gap-2 p-3 pb-2">
         <div className="flex items-center gap-2 cursor-pointer flex-1" onClick={handleSellerClick}>
           <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
@@ -66,10 +68,8 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
         </div>
       </div>
 
-      {/* Image Collage (4:3) */}
       <ListingImageCollage images={displayImages} onImageError={handleImageError} />
 
-      {/* Body: Price, Title, Specs, Location */}
       <div className="p-3 flex flex-col flex-1">
         <div className="text-[22px] font-extrabold text-danger mb-1">
           {formatPrice(listing.price, listing.currency, isArabic)}
@@ -88,12 +88,19 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
           />
         </div>
 
-        <div className="flex items-center gap-1 text-[12px] text-ink-soft mb-1">
-          <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
-          <span className="truncate" dir="auto">{locationText}</span>
+        <div className="flex items-center justify-between gap-1 text-[12px] text-ink-soft mb-1">
+          <div className="flex items-center gap-1 truncate">
+            <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
+            <span className="truncate" dir="auto">{locationText}</span>
+          </div>
+          {relativeDate && (
+            <div className="flex items-center gap-1 shrink-0 text-ink-muted">
+              <Icon icon="lucide:clock" width={11} height={11} className="shrink-0" />
+              <span>{relativeDate}</span>
+            </div>
+          )}
         </div>
 
-        {/* Contact Actions */}
         <CardContactActions listing={listing} isArabic={isArabic} />
       </div>
     </div>
