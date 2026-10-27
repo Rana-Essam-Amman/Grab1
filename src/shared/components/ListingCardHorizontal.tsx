@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { Listing } from '@/types';
 import { BookmarkHeartButton } from './BookmarkHeartButton';
 import { Icon } from '@iconify/react';
@@ -8,6 +8,7 @@ import { formatPrice } from '@/shared/lib/formatPrice';
 import { formatRelativeDate } from '@/shared/lib/formatDate';
 import { stripEmojis } from '@/shared/lib/stripEmojis';
 import { ListingImageCollage } from './ListingImageCollage';
+import { useUI } from '@/hooks/useUI';
 
 interface ListingCardHorizontalProps {
   listing: Listing;
@@ -29,6 +30,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
   handleClick,
   handleImageError,
 }) => {
+  const { setSelectedSellerPhone, navigateTo } = useUI();
   const relativeDate = useMemo(() => formatRelativeDate(listing.createdAt, isArabic), [listing.createdAt, isArabic]);
 
   const displayImages = useMemo(() => {
@@ -38,6 +40,13 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
     return listing.imageUrl ? [toOptimizedImageUrl(listing.imageUrl, { width: 600, quality: 80 })] : [];
   }, [listing.images, listing.imageUrl]);
 
+  const handleSellerClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!sellerKey) return;
+    setSelectedSellerPhone(sellerKey);
+    navigateTo('seller-profile');
+  }, [sellerKey, setSelectedSellerPhone, navigateTo]);
+
   return (
     <div
       data-testid="listing-card"
@@ -45,12 +54,12 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
       className={`${premiumClasses} rounded-2xl shadow-md flex flex-col overflow-hidden cursor-pointer hover:border-primary/60 transition-all active:scale-[0.99]`}
       dir={isArabic ? 'rtl' : 'ltr'}
     >
-      <div className="flex items-center gap-2.5 p-3">
+      <div className="flex items-center gap-2.5 p-3 cursor-pointer" onClick={handleSellerClick}>
         <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
           <span className="text-primary font-bold text-base">{listing.sellerName?.charAt(0) || '?'}</span>
         </div>
         <div className="flex flex-col flex-1">
-          <span className="font-semibold text-[15px] text-ink leading-tight">{listing.sellerName}</span>
+          <span className="font-semibold text-[15px] text-ink leading-tight hover:underline">{listing.sellerName}</span>
           <div className="flex items-center gap-1 text-[13px] text-ink-muted mt-0.5">
             <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
             <span>{locationText}</span>
