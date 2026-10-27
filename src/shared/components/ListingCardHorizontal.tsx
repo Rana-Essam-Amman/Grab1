@@ -5,10 +5,9 @@ import { Icon } from '@iconify/react';
 import { RequiredSpecsRow } from '@/features/listings/components/RequiredSpecsRow';
 import { toOptimizedImageUrl } from '@/shared/lib/optimizedImage';
 import { formatPrice } from '@/shared/lib/formatPrice';
-import { formatRelativeDate } from '@/shared/lib/formatDate';
 import { stripEmojis } from '@/shared/lib/stripEmojis';
-import { ListingImageCollage } from './ListingImageCollage';
 import { CardContactActions } from './CardContactActions';
+import { ListingImageCollage } from './ListingImageCollage';
 import { useUI } from '@/hooks/useUI';
 
 interface ListingCardHorizontalProps {
@@ -54,34 +53,21 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
       className={`${premiumClasses} rounded-2xl shadow-md flex flex-col overflow-hidden cursor-pointer hover:border-primary/60 transition-all active:scale-[0.99]`}
       dir={isArabic ? 'rtl' : 'ltr'}
     >
-      {/* Header: Seller Info & Price */}
-      <div className="flex items-center justify-between gap-2 p-3 pb-2 cursor-pointer" onClick={handleSellerClick}>
-        <div className="flex items-center gap-2">
+      {/* Header: Seller Info & Heart */}
+      <div className="flex items-center justify-between gap-2 p-3 pb-2">
+        <div className="flex items-center gap-2 cursor-pointer flex-1" onClick={handleSellerClick}>
           <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
             <span className="text-primary font-bold text-sm">{listing.sellerName?.charAt(0) || '?'}</span>
           </div>
           <span className="font-semibold text-[13px] text-ink leading-tight hover:underline">{listing.sellerName}</span>
         </div>
-        <BookmarkHeartButton listingId={listing.id} size="sm" />
+        <div className="shrink-0 z-30">
+          <BookmarkHeartButton listingId={listing.id} size="sm" />
+        </div>
       </div>
 
-      {/* Image (4:3) */}
-      <div className="w-full aspect-[4/3] relative overflow-hidden bg-canvas">
-        <img
-          src={displayImages[0]}
-          alt={listing.title}
-          className="absolute inset-0 w-full h-full object-cover"
-          onError={handleImageError}
-        />
-        {/* Badges overlay */}
-        {listing.isPremium && (
-          <div className="absolute top-2 start-2 z-10">
-            <span className="bg-warning text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-sm">
-              {isArabic ? 'مميز' : 'Featured'}
-            </span>
-          </div>
-        )}
-      </div>
+      {/* Image Collage (4:3) */}
+      <ListingImageCollage images={displayImages} onImageError={handleImageError} />
 
       {/* Body: Price, Title, Specs, Location */}
       <div className="p-3 flex flex-col flex-1">
