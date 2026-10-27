@@ -10,14 +10,14 @@ export const ListingImageCollage: React.FC<ListingImageCollageProps> = ({ images
 
   if (images.length === 1) {
     return (
-      <div className="w-full relative aspect-square bg-canvas">
+      <div className="w-full relative aspect-[4/3] bg-canvas">
         <img src={images[0]} alt="listing" className="absolute inset-0 w-full h-full object-cover" loading="lazy" onError={onImageError} />
       </div>
     );
   }
   if (images.length === 2) {
     return (
-      <div className="w-full aspect-[2/1] bg-canvas grid grid-cols-2 gap-[2px]">
+      <div className="w-full aspect-[4/3] bg-canvas grid grid-cols-2 gap-[2px]">
         <div className="relative w-full h-full">
           <img src={images[0]} alt="listing-0" className="absolute inset-0 w-full h-full object-cover" loading="lazy" onError={onImageError} />
         </div>
@@ -29,7 +29,7 @@ export const ListingImageCollage: React.FC<ListingImageCollageProps> = ({ images
   }
   if (images.length === 3) {
     return (
-      <div className="w-full aspect-square bg-canvas grid grid-cols-2 grid-rows-2 gap-[2px]">
+      <div className="w-full aspect-[4/3] bg-canvas grid grid-cols-2 grid-rows-2 gap-[2px]">
         <div className="relative w-full h-full row-span-2">
           <img src={images[0]} alt="listing-0" className="absolute inset-0 w-full h-full object-cover" loading="lazy" onError={onImageError} />
         </div>
@@ -43,7 +43,7 @@ export const ListingImageCollage: React.FC<ListingImageCollageProps> = ({ images
     );
   }
   return (
-    <div className="w-full aspect-square bg-canvas grid grid-cols-2 grid-rows-2 gap-[2px]">
+    <div className="w-full aspect-[4/3] bg-canvas grid grid-cols-2 grid-rows-2 gap-[2px]">
       {images.slice(0, 4).map((img, i) => (
         <div key={i} className="relative w-full h-full">
           <img src={img} alt={`listing-${i}`} className="absolute inset-0 w-full h-full object-cover" loading="lazy" onError={onImageError} />
