@@ -8,6 +8,7 @@ import { formatPrice } from '@/shared/lib/formatPrice';
 import { formatRelativeDate } from '@/shared/lib/formatDate';
 import { stripEmojis } from '@/shared/lib/stripEmojis';
 import { ListingImageCollage } from './ListingImageCollage';
+import { CardContactActions } from './CardContactActions';
 import { useUI } from '@/hooks/useUI';
 
 interface ListingCardHorizontalProps {
@@ -32,7 +33,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
 }) => {
   const { setSelectedSellerPhone, navigateTo } = useUI();
   const relativeDate = useMemo(() => formatRelativeDate(listing.createdAt, isArabic), [listing.createdAt, isArabic]);
-
+  
   const displayImages = useMemo(() => {
     if (listing.images && listing.images.length > 0) {
       return listing.images.map(img => toOptimizedImageUrl(img, { width: 600, quality: 80 }));
@@ -51,7 +52,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
     <div
       data-testid="listing-card"
       onClick={handleClick}
-      className={`${premiumClasses} rounded-2xl shadow-md flex flex-col overflow-hidden cursor-pointer hover:border-primary/60 transition-all active:scale-[0.99]`}
+      className={`${premiumClasses} rounded-2xl mb-4 shadow-md flex flex-col overflow-hidden cursor-pointer hover:border-primary/60 transition-all active:scale-[0.99]`}
       dir={isArabic ? 'rtl' : 'ltr'}
     >
       <div className="flex items-center gap-2.5 p-3 cursor-pointer" onClick={handleSellerClick}>
@@ -96,6 +97,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
         <span className="text-[22px] font-extrabold text-danger">
           {formatPrice(listing.price, listing.currency, isArabic)}
         </span>
+        <CardContactActions listing={listing} isArabic={isArabic} />
       </div>
     </div>
   );
