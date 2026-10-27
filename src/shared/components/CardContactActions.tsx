@@ -1,6 +1,5 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { Call, Whatsapp } from 'iconsax-react';
-import { useAuth } from '@/hooks/useAuth';
 import { useUI } from '@/hooks/useUI';
 import { useRevealPhone } from '@/features/listings/hooks/useRevealPhone';
 import { getWhatsAppUrl } from '@/features/listings/helpers/listingDerivedData';
@@ -20,6 +19,7 @@ export const CardContactActions: React.FC<CardContactActionsProps> = ({ listing,
 
   const handleCall = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
     if (!hasPhone || isRevealing) return;
     capture(EVENTS.CONTACT_SELLER_CLICKED, { method: 'call', source: 'card' });
     const num = await revealPhone();
@@ -28,6 +28,7 @@ export const CardContactActions: React.FC<CardContactActionsProps> = ({ listing,
 
   const handleWhatsApp = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
     if (!hasPhone || isRevealing) return;
     capture(EVENTS.CONTACT_SELLER_CLICKED, { method: 'whatsapp', source: 'card' });
     const num = await revealPhone();
@@ -40,19 +41,27 @@ export const CardContactActions: React.FC<CardContactActionsProps> = ({ listing,
     <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border" onClick={(e) => e.stopPropagation()}>
       <button
         onClick={handleCall}
-        disabled={!hasPhone}
-        className={`flex-1 h-10 rounded-xl flex items-center justify-center gap-1.5 font-bold text-[13px] transition-all ${!hasPhone ? 'bg-canvas text-ink-muted' : 'bg-danger/10 text-danger hover:bg-danger/20 active:scale-95'}`}
+        disabled={!hasPhone || isRevealing}
+        className={`flex-1 h-[44px] rounded-xl flex items-center justify-center gap-2 font-bold text-[14px] transition-all shadow-sm ${
+          !hasPhone 
+            ? 'bg-canvas text-ink-muted cursor-not-allowed border border-border opacity-70' 
+            : 'bg-primary text-white hover:bg-primary/90 active:scale-95'
+        }`}
       >
-        <Call size={16} variant="Bold" />
+        <Call size={18} variant="Bold" />
         <span>{isArabic ? 'اتصال' : 'Call'}</span>
       </button>
       
       <button
         onClick={handleWhatsApp}
-        disabled={!hasPhone}
-        className={`flex-1 h-10 rounded-xl flex items-center justify-center gap-1.5 font-bold text-[13px] transition-all ${!hasPhone ? 'bg-canvas text-ink-muted' : 'bg-whatsapp/10 text-whatsapp hover:bg-whatsapp/20 active:scale-95'}`}
+        disabled={!hasPhone || isRevealing}
+        className={`flex-1 h-[44px] rounded-xl flex items-center justify-center gap-2 font-bold text-[14px] transition-all shadow-sm ${
+          !hasPhone 
+            ? 'bg-canvas text-ink-muted cursor-not-allowed border border-border opacity-70' 
+            : 'bg-[#25D366] text-white hover:bg-[#1DA851] active:scale-95'
+        }`}
       >
-        <Whatsapp size={16} variant="Bold" />
+        <Whatsapp size={18} variant="Bold" />
         <span>{isArabic ? 'واتساب' : 'WhatsApp'}</span>
       </button>
     </div>
