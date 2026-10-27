@@ -35,13 +35,7 @@ export const BookmarkHeartButton: React.FC<BookmarkHeartButtonProps> = ({
   };
 
   const iconSize = size === 'sm' ? 16 : size === 'lg' ? 24 : 20;
-
-  const buttonDimensions =
-    size === 'sm'
-      ? 'w-7.5 h-7.5'
-      : size === 'lg'
-      ? 'w-10 h-10'
-      : 'w-8.5 h-8.5';
+  const buttonDimensions = size === 'sm' ? 'w-7.5 h-7.5' : size === 'lg' ? 'w-10 h-10' : 'w-8.5 h-8.5';
 
   return (
     <motion.button
@@ -50,47 +44,18 @@ export const BookmarkHeartButton: React.FC<BookmarkHeartButtonProps> = ({
       whileHover={{ scale: 1.08 }}
       whileTap={{ scale: 0.88 }}
       onClick={handleClick}
-      className={`relative flex items-center justify-center rounded-full backdrop-blur-md transition-all duration-200 z-10 ${
-        isSaved
-          ? 'bg-surface shadow-md ring-1 ring-danger/20'
-          : 'bg-surface/90 hover:bg-surface shadow-xs'
+      className={`relative flex items-center justify-center rounded-full backdrop-blur-md transition-all duration-200 z-30 ${
+        isSaved ? 'bg-surface shadow-md ring-1 ring-danger/20' : 'bg-surface/90 hover:bg-surface shadow-xs'
       } ${buttonDimensions} ${className}`}
-      aria-label={
-        isSaved
-          ? isArabic
-            ? 'إزالة من المفضلة'
-            : 'Remove from favorites'
-          : isArabic
-          ? 'حفظ في المفضلة'
-          : 'Save to favorites'
-      }
-      title={
-        isSaved
-          ? isArabic
-            ? 'إزالة من المفضلة'
-            : 'Remove from favorites'
-          : isArabic
-          ? 'حفظ في المفضلة'
-          : 'Save to favorites'
-      }
+      aria-label={isSaved ? (isArabic ? 'إزالة من المفضلة' : 'Remove from favorites') : (isArabic ? 'حفظ في المفضلة' : 'Save to favorites')}
+      title={isSaved ? (isArabic ? 'إزالة من المفضلة' : 'Remove from favorites') : (isArabic ? 'حفظ في المفضلة' : 'Save to favorites')}
     >
-      <div className="flex items-center justify-center">
-        <Heart
-          variant={isSaved ? 'Bold' : 'Linear'}
-          size={iconSize}
-          color={isSaved ? '#EF4444' : '#64748B'}
-        />
+      <div className="flex items-center justify-center pointer-events-none">
+        <Heart variant={isSaved ? 'Bold' : 'Linear'} size={iconSize} color={isSaved ? '#EF4444' : '#64748B'} />
       </div>
-
       {showLabel && (
         <span className="text-xs font-semibold ml-1.5 whitespace-nowrap">
-          {isSaved
-            ? isArabic
-              ? 'محفوظ'
-              : 'Saved'
-            : isArabic
-            ? 'حفظ'
-            : 'Save'}
+          {isSaved ? (isArabic ? 'محفوظ' : 'Saved') : (isArabic ? 'حفظ' : 'Save')}
         </span>
       )}
     </motion.button>
