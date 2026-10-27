@@ -21,8 +21,8 @@ export const ExploreListingsSections: React.FC<ExploreListingsSectionsProps> = (
   hasTier1,
 }) => (
   <>
-    {/* Listings Feed */}
-    {hasTier1 ? (
+    {/* Listings Feed: Show empty state if there's an active search, even if Tier 2 exists */}
+    {(hasTier1 || primaryFeedProps.activeSearchText) ? (
       <ExploreListingFeed {...primaryFeedProps} />
     ) : showTier2 ? null : (
       <ExploreListingFeed {...primaryFeedProps} />
