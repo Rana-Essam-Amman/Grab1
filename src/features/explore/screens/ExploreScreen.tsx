@@ -11,6 +11,7 @@ import { SyncStatusBanner } from '@/shared/components/SyncStatusBanner';
 import { useListings } from '@/hooks/useListings';
 import { capture } from '@/shared/analytics/posthog';
 import { EVENTS } from '@/shared/analytics/events';
+import { useScrollDirection } from '@/shared/hooks/useScrollDirection';
 
 function useDebouncedValue<T>(value: T, delayMs: number): T {
   const [debounced, setDebounced] = React.useState(value);
@@ -25,6 +26,7 @@ export const ExploreScreen: React.FC = () => {
   const { isArabic, browseCountryCode, navigateTo, setSearchQuery, isSearchFocused, setIsSearchFocused } = useUI();
   const [searchInput, setSearchInput] = useState('');
   const debouncedSearch = useDebouncedValue(searchInput, 600);
+  const isVisible = useScrollDirection();
 
   React.useEffect(() => {
     setSearchQuery(debouncedSearch.trim());
@@ -61,7 +63,7 @@ export const ExploreScreen: React.FC = () => {
       dir={isArabic ? "rtl" : "ltr"}
       style={{ WebkitOverflowScrolling: 'touch' }}
     >
-      <div className="sticky top-[73px] z-40 bg-canvas pt-3 pb-2 -mx-4 px-4">
+      <div className={`sticky z-40 bg-canvas pt-3 pb-2 -mx-4 px-4 transition-all duration-300 ${isVisible ? 'top-[73px]' : 'top-0'}`}>
         <SearchBar
           isArabic={isArabic}
           value={searchInput}

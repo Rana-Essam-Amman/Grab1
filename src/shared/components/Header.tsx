@@ -9,6 +9,7 @@ import { Avatar } from '@/shared/ui/Avatar';
 import { HeaderDropdownMenu } from './HeaderDropdownMenu';
 import { CountryFlag } from './CountryFlag';
 import { getUserAvatar } from '@/shared/lib/userDisplay';
+import { useScrollDirection } from '@/shared/hooks/useScrollDirection';
 
 const DEFAULT_CAPITALS: Record<string, { en: string; ar: string; cityEn?: string; cityAr?: string }> = {
   JO: { en: 'Amman', ar: 'عمّان', cityEn: 'Amman', cityAr: 'عمّان' },
@@ -23,6 +24,8 @@ export const Header: React.FC = () => {
   const { user, authStatus } = useAuth();
   const { wishlist } = useListings();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const isVisible = useScrollDirection();
+
   const countryCode = (browseCountry?.code || 'JO') as 'JO' | 'LB' | 'PS' | 'SY' | 'SA';
   const defaultCap = DEFAULT_CAPITALS[countryCode] || DEFAULT_CAPITALS.JO;
 
@@ -88,7 +91,7 @@ export const Header: React.FC = () => {
   const displayCityEn = isValidCity ? browseCityEn : defaultCap.en;
 
   return (
-    <header className="sticky top-0 z-50 px-4 pt-2 pb-2 bg-brand border-b border-white/20">
+    <header className={`sticky top-0 z-50 px-4 pt-2 pb-2 bg-brand border-b border-white/20 transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
       <div className="flex items-center justify-between gap-2">
         <div className="w-12 shrink-0 flex items-center justify-start">
           <Button
