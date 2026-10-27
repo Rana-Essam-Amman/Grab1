@@ -17,23 +17,25 @@ export const ExploreEmptyFeedState: React.FC<ExploreEmptyFeedStateProps> = React
 }) => {
   if (activeSearchText) {
     return (
-      <EmptyState
-        icon={<SearchNormal1 size={40} variant="Linear" color="#64748B" />}
-        title={isArabic ? `لا نتائج لـ "${activeSearchText}"` : `No results for "${activeSearchText}"`}
-        description={
-          isArabic ? 'جرّب كلمات أخرى، أو انشر إعلانك' : 'Try other keywords, or post your own'
-        }
-        action={
-          <div className="flex flex-col gap-2 w-full max-w-[240px] mx-auto">
-            <Button variant="primary" size="md" onClick={onExpandSearch}>
-              {isArabic ? 'وسّع البحث لكل الدولة' : 'Search all country'}
-            </Button>
-            <Button variant="ghost" size="md" onClick={onResetFilters}>
-              {isArabic ? 'مسح البحث' : 'Clear search'}
-            </Button>
-          </div>
-        }
-      />
+      <div data-testid="explore-empty-search-state">
+        <EmptyState
+          icon={<SearchNormal1 size={40} variant="Linear" color="#64748B" />}
+          title={isArabic ? `لا نتائج لـ "${activeSearchText}"` : `No results for "${activeSearchText}"`}
+          description={
+            isArabic ? 'جرّب كلمات أخرى، أو انشر إعلانك' : 'Try other keywords, or post your own'
+          }
+          action={
+            <div className="flex flex-col gap-2 w-full max-w-[240px] mx-auto">
+              <Button variant="primary" size="md" onClick={onExpandSearch}>
+                {isArabic ? 'وسّع البحث لكل الدولة' : 'Search all country'}
+              </Button>
+              <Button variant="ghost" size="md" onClick={onResetFilters}>
+                {isArabic ? 'مسح البحث' : 'Clear search'}
+              </Button>
+            </div>
+          }
+        />
+      </div>
     );
   }
 
