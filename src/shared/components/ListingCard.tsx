@@ -10,6 +10,7 @@ import { RequiredSpecsRow } from '@/features/listings/components/RequiredSpecsRo
 import { formatPrice } from '@/shared/lib/formatPrice';
 import { formatRelativeDate } from '@/shared/lib/formatDate';
 import { stripEmojis } from '@/shared/lib/stripEmojis';
+import { CardContactActions } from './CardContactActions';
 
 interface ListingCardProps {
   listing: Listing;
@@ -99,10 +100,11 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
 
         <RequiredSpecsRow categorySlug={listing.categorySlug} subcategorySlug={listing.subcategorySlug} attributes={listing.attributes ?? []} isArabic={isArabic} />
         
-        <div className="mt-auto pt-3 border-t border-border/60 flex items-center gap-1.5">
+        <div className="mt-auto pt-3 border-t border-border/60 flex items-center justify-between gap-1.5">
           <div className="text-[18px] font-extrabold text-danger shrink-0">
             <span>{formattedPrice || (isArabic ? 'السعر غير محدد' : 'Price not specified')}</span>
           </div>
+          <CardContactActions listing={listing} isArabic={isArabic} />
         </div>
       </div>
 
