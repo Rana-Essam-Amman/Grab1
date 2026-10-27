@@ -57,7 +57,7 @@ export const ExploreScreen: React.FC = () => {
 
   return (
     <div
-      className={`max-w-[440px] mx-auto w-full flex flex-col gap-5 pt-0 pb-28 px-4 bg-surface ${isArabic ? 'font-cairo' : ''}`}
+      className={`max-w-[440px] mx-auto w-full flex flex-col gap-5 pt-0 pb-28 px-4 bg-canvas ${isArabic ? 'font-cairo' : ''}`}
       dir={isArabic ? "rtl" : "ltr"}
       style={{ WebkitOverflowScrolling: 'touch' }}
     >
@@ -77,7 +77,6 @@ export const ExploreScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* Cross-Border Tripwire Void Notice */}
       {voidedNotice && (
         <ExploreVoidedNoticeBanner
           isArabic={isArabic}
@@ -87,7 +86,6 @@ export const ExploreScreen: React.FC = () => {
         />
       )}
 
-      {/* Sync Status: stale data / refreshing indicator */}
       <SyncStatusBanner />
 
       {!isSearchFocused && (
@@ -96,7 +94,6 @@ export const ExploreScreen: React.FC = () => {
 
       <SearchRelatedBanner banner={searchBanner} relatedHeader={searchRelatedHeader} />
 
-      {/* Listings Feed + Tier 2 Section */}
       <ExploreListingsSections
         primaryFeedProps={{
           listings: displayListings,

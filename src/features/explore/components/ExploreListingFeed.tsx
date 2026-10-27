@@ -35,7 +35,7 @@ export const ExploreListingFeed: React.FC<ExploreListingFeedProps> = ({
   const isVirtualized = listings.length >= 100;
 
   const rowCount = useMemo(() => (feedLayout === 'grid' ? Math.ceil(listings.length / 2) : listings.length), [listings.length, feedLayout]);
-  const estimatedRowHeight = useMemo(() => (feedLayout === 'grid' ? 290 : 130), [feedLayout]);
+  const estimatedRowHeight = useMemo(() => (feedLayout === 'grid' ? 300 : 140), [feedLayout]);
 
   const getScrollElement = useCallback(() => parentRef.current, []);
   const estimateSize = useCallback(() => estimatedRowHeight, [estimatedRowHeight]);
@@ -63,8 +63,8 @@ export const ExploreListingFeed: React.FC<ExploreListingFeedProps> = ({
 
   if (!isVirtualized) {
     return (
-      <div className="flex flex-col gap-3.5">
-        <div className={feedLayout === 'grid' ? 'grid grid-cols-2 gap-3.5' : 'flex flex-col gap-3.5'}>
+      <div className="flex flex-col gap-5">
+        <div className={feedLayout === 'grid' ? 'grid grid-cols-2 gap-5' : 'flex flex-col gap-5'}>
           {listings.map((l) => (
             <ListingCard key={l.id} listing={l} layout={feedLayout === 'list' ? 'horizontal' : 'grid'} />
           ))}
@@ -82,7 +82,7 @@ export const ExploreListingFeed: React.FC<ExploreListingFeedProps> = ({
             const item1 = listings[vRow.index * 2];
             const item2 = listings[vRow.index * 2 + 1];
             return (
-              <div key={vRow.key} data-index={vRow.index} ref={rowVirtualizer.measureElement} className="absolute top-0 start-0 w-full grid grid-cols-2 gap-3.5 pb-3.5" style={{ transform: `translateY(${vRow.start}px)` }}>
+              <div key={vRow.key} data-index={vRow.index} ref={rowVirtualizer.measureElement} className="absolute top-0 start-0 w-full grid grid-cols-2 gap-5 pb-5" style={{ transform: `translateY(${vRow.start}px)` }}>
                 {item1 && <ListingCard key={item1.id} listing={item1} layout="grid" />}
                 {item2 && <ListingCard key={item2.id} listing={item2} layout="grid" />}
               </div>
@@ -90,7 +90,7 @@ export const ExploreListingFeed: React.FC<ExploreListingFeedProps> = ({
           }
           const item = listings[vRow.index];
           return item ? (
-            <div key={vRow.key} data-index={vRow.index} ref={rowVirtualizer.measureElement} className="absolute top-0 start-0 w-full pb-3.5" style={{ transform: `translateY(${vRow.start}px)` }}>
+            <div key={vRow.key} data-index={vRow.index} ref={rowVirtualizer.measureElement} className="absolute top-0 start-0 w-full pb-5" style={{ transform: `translateY(${vRow.start}px)` }}>
               <ListingCard key={item.id} listing={item} layout="horizontal" />
             </div>
           ) : null;
