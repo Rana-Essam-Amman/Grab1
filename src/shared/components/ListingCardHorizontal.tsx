@@ -32,7 +32,6 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
   handleImageError,
 }) => {
   const { setSelectedSellerPhone, navigateTo } = useUI();
-  const relativeDate = useMemo(() => formatRelativeDate(listing.createdAt, isArabic), [listing.createdAt, isArabic]);
   
   const displayImages = useMemo(() => {
     if (listing.images && listing.images.length > 0) {
@@ -52,51 +51,63 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
     <div
       data-testid="listing-card"
       onClick={handleClick}
-      className={`${premiumClasses} rounded-2xl mb-4 shadow-md flex flex-col overflow-hidden cursor-pointer hover:border-primary/60 transition-all active:scale-[0.99]`}
+      className={`${premiumClasses} rounded-2xl shadow-md flex flex-col overflow-hidden cursor-pointer hover:border-primary/60 transition-all active:scale-[0.99]`}
       dir={isArabic ? 'rtl' : 'ltr'}
     >
-      <div className="flex items-center gap-2.5 p-3 cursor-pointer" onClick={handleSellerClick}>
-        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-          <span className="text-primary font-bold text-base">{listing.sellerName?.charAt(0) || '?'}</span>
-        </div>
-        <div className="flex flex-col flex-1">
-          <span className="font-semibold text-[15px] text-ink leading-tight hover:underline">{listing.sellerName}</span>
-          <div className="flex items-center gap-1 text-[13px] text-ink-muted mt-0.5">
-            <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
-            <span>{locationText}</span>
-            {relativeDate && (
-              <>
-                <span>•</span>
-                <span>{relativeDate}</span>
-              </>
-            )}
+      {/* Header: Seller Info & Price */}
+      <div className="flex items-center justify-between gap-2 p-3 pb-2 cursor-pointer" onClick={handleSellerClick}>
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+            <span className="text-primary font-bold text-sm">{listing.sellerName?.charAt(0) || '?'}</span>
           </div>
+          <span className="font-semibold text-[13px] text-ink leading-tight hover:underline">{listing.sellerName}</span>
         </div>
-        <div className="shrink-0 z-10">
-          <BookmarkHeartButton listingId={listing.id} size="sm" />
-        </div>
+        <BookmarkHeartButton listingId={listing.id} size="sm" />
       </div>
 
-      <div className="px-3 pb-3">
-        <div className="bg-canvas p-2.5 rounded-lg mb-2">
-          <h3 className="font-bold text-[15px] leading-tight line-clamp-2 text-ink" dir="auto">
-            {stripEmojis(listing.title)}
-          </h3>
-        </div>
-        <RequiredSpecsRow
-          categorySlug={listing.categorySlug}
-          subcategorySlug={listing.subcategorySlug}
-          attributes={listing.attributes ?? []}
-          isArabic={isArabic}
+      {/* Image (4:3) */}
+      <div className="w-full aspect-[4/3] relative overflow-hidden bg-canvas">
+        <img
+          src={displayImages[0]}
+          alt={listing.title}
+          className="absolute inset-0 w-full h-full object-cover"
+          onError={handleImageError}
         />
+        {/* Badges overlay */}
+        {listing.isPremium && (
+          <div className="absolute top-2 start-2 z-10">
+            <span className="bg-warning text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-sm">
+              {isArabic ? 'مميز' : 'Featured'}
+            </span>
+          </div>
+        )}
       </div>
 
-      <ListingImageCollage images={displayImages} onImageError={handleImageError} />
-
-      <div className="px-3 py-3 border-t border-border mt-1 flex justify-between items-center bg-surface">
-        <span className="text-[22px] font-extrabold text-danger">
+      {/* Body: Price, Title, Specs, Location */}
+      <div className="p-3 flex flex-col flex-1">
+        <div className="text-[22px] font-extrabold text-danger mb-1">
           {formatPrice(listing.price, listing.currency, isArabic)}
-        </span>
+        </div>
+        
+        <h3 className="font-bold text-[15px] leading-tight line-clamp-2 text-ink mb-2" dir="auto">
+          {stripEmojis(listing.title)}
+        </h3>
+        
+        <div className="mb-2">
+          <RequiredSpecsRow
+            categorySlug={listing.categorySlug}
+            subcategorySlug={listing.subcategorySlug}
+            attributes={listing.attributes ?? []}
+            isArabic={isArabic}
+          />
+        </div>
+
+        <div className="flex items-center gap-1 text-[12px] text-ink-soft mb-1">
+          <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
+          <span className="truncate" dir="auto">{locationText}</span>
+        </div>
+
+        {/* Contact Actions */}
         <CardContactActions listing={listing} isArabic={isArabic} />
       </div>
     </div>
