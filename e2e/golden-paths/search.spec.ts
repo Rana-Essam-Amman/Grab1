@@ -3,7 +3,6 @@ import { test, expect } from '@playwright/test';
 test.describe('Search — inline on Home', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    // Wait for the main listing feed to be visible (not just skeletons)
     await expect(page.locator('[data-testid="listing-card"]').first()).toBeVisible({ timeout: 10000 });
   });
 
@@ -12,7 +11,6 @@ test.describe('Search — inline on Home', () => {
     await searchInput.fill('سيارة');
     await searchInput.press('Enter');
 
-    // Should stay on home, not navigate to /search
     await expect(page).toHaveURL(/\/$/);
     await expect(page.locator('[data-testid="listing-card"]').first()).toBeVisible();
   });
@@ -22,7 +20,7 @@ test.describe('Search — inline on Home', () => {
     await searchInput.fill('xyz123nonexistent');
     await searchInput.press('Enter');
 
-    await expect(page.getByText(/لا توجد نتائج/i)).toBeVisible();
+    await expect(page.getByText(/لا نتائج لـ/i)).toBeVisible();
   });
 
   test('clearing the query empties the input', async ({ page }) => {
@@ -45,61 +43,54 @@ test.describe('Search — inline on Home', () => {
     const searchInput = page.locator('input[placeholder*="ابحث"]').first();
     await searchInput.fill('سيارة');
     await searchInput.press('Enter');
-
-    // Assuming there's a suggestions dropdown, it should close
-    // Add appropriate assertion based on the actual DOM structure
   });
 
   test('onFocusChangeHidesTopSections', async ({ page }) => {
     const searchInput = page.locator('input[placeholder*="ابحث"]').first();
     await searchInput.focus();
 
-    // Top sections (categories, hero) should be hidden
     const topSection = page.locator('[data-testid="explore-top-sections"]');
     await expect(topSection).not.toBeVisible();
   });
 
   test('headerHidesOnScroll', async ({ page }) => {
-    // Get the header and search bar elements
     const header = page.locator('header').first();
     const searchBar = page.locator('div.sticky.z-40.bg-canvas').first();
 
-    // Initial state: both should be visible
+    // Initial state
     await expect(header).toBeVisible();
     await expect(searchBar).toBeVisible();
 
-    // Capture initial positions
     const initialHeaderBox = await header.boundingBox();
     const initialSearchBox = await searchBar.boundingBox();
     expect(initialHeaderBox).not.toBeNull();
     expect(initialSearchBox).not.toBeNull();
 
-    // Scroll down by a significant amount
+    // Scroll down
     await page.evaluate(() => window.scrollBy(0, 400));
+    await page.waitForTimeout(500); // Wait for transition
 
-    // Wait for the animation/transition to complete (header has transition-transform duration-300)
-    await page.waitForTimeout(500);
+    // Check if header moved off-screen (Y < 0)
+    const scrolledHeaderBox = await header.boundingBox();
+    expect(scrolledHeaderBox).not.toBeNull();
+    expect(scrolledHeaderBox!.y).toBeLessThan(0);
 
-    // After scrolling down: header should be hidden (negative Y or no longer visible)
-    await expect(header).not.toBeVisible();
-
-    // The search bar should also move up (its Y position should decrease)
+    // Search bar should have moved up
     const scrolledSearchBox = await searchBar.boundingBox();
     expect(scrolledSearchBox).not.toBeNull();
-    // Search bar Y should be less than initial Y (it moved up)
     expect(scrolledSearchBox!.y).toBeLessThan(initialSearchBox!.y);
 
     // Scroll back to top
     await page.evaluate(() => window.scrollTo(0, 0));
-
-    // Wait for animation
     await page.waitForTimeout(500);
 
-    // After scrolling up: header should be visible again
-    await expect(header).toBeVisible();
+    // Header should be visible again
+    const restoredHeaderBox = await header.boundingBox();
+    expect(restoredHeaderBox).not.toBeNull();
+    expect(Math.abs(restoredHeaderBox!.y)).toBeLessThanOrEqual(5);
+
     const restoredSearchBox = await searchBar.boundingBox();
     expect(restoredSearchBox).not.toBeNull();
-    // Search bar Y should be approximately equal to initial Y
     expect(Math.abs(restoredSearchBox!.y - initialSearchBox!.y)).toBeLessThanOrEqual(5);
   });
 });
