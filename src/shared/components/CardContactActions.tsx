@@ -4,6 +4,7 @@ import { useRevealPhone } from '@/features/listings/hooks/useRevealPhone';
 import { getWhatsAppUrl } from '@/features/listings/helpers/listingDerivedData';
 import { capture } from '@/shared/analytics/posthog';
 import { EVENTS } from '@/shared/analytics/events';
+import { toast } from 'sonner';
 import type { Listing } from '@/types';
 
 interface CardContactActionsProps {
@@ -18,16 +19,24 @@ export const CardContactActions: React.FC<CardContactActionsProps> = ({ listing,
   const handleCall = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    if (!hasPhone || isRevealing) return;
+    if (isRevealing) return;
+    if (!hasPhone) {
+      toast.error(isArabic ? 'البائع لم يضع رقم هاتف' : 'Seller has no phone number');
+      return;
+    }
     capture(EVENTS.CONTACT_SELLER_CLICKED, { method: 'call', source: 'card' });
     const num = await revealPhone();
     if (num) window.location.href = `tel:${num}`;
-  }, [hasPhone, isRevealing, revealPhone]);
+  }, [hasPhone, isRevealing, revealPhone, isArabic]);
 
   const handleWhatsApp = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    if (!hasPhone || isRevealing) return;
+    if (isRevealing) return;
+    if (!hasPhone) {
+      toast.error(isArabic ? 'البائع لم يضع رقم هاتف' : 'Seller has no phone number');
+      return;
+    }
     capture(EVENTS.CONTACT_SELLER_CLICKED, { method: 'whatsapp', source: 'card' });
     const num = await revealPhone();
     if (num) {
@@ -37,29 +46,17 @@ export const CardContactActions: React.FC<CardContactActionsProps> = ({ listing,
 
   return (
     <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border" onClick={(e) => e.stopPropagation()}>
-      {/* Call Button - Official Blue */}
       <button
         onClick={handleCall}
-        disabled={!hasPhone || isRevealing}
-        className={`flex-1 h-[44px] rounded-xl flex items-center justify-center gap-2 font-bold text-[14px] transition-all shadow-sm ${
-          !hasPhone
-            ? 'bg-canvas text-ink-muted cursor-not-allowed border border-border opacity-70'
-            : 'bg-primary text-white hover:bg-primary/90 active:scale-95'
-        }`}
+        className="flex-1 h-[44px] rounded-xl flex items-center justify-center gap-2 font-bold text-[14px] transition-all shadow-sm bg-primary text-white hover:bg-primary/90 active:scale-95"
       >
         <Call size={18} variant="Bold" />
         <span>{isArabic ? 'اتصال' : 'Call'}</span>
       </button>
 
-      {/* WhatsApp Button - Official Green Token */}
       <button
         onClick={handleWhatsApp}
-        disabled={!hasPhone || isRevealing}
-        className={`flex-1 h-[44px] rounded-xl flex items-center justify-center gap-2 font-bold text-[14px] transition-all shadow-sm ${
-          !hasPhone
-            ? 'bg-canvas text-ink-muted cursor-not-allowed border border-border opacity-70'
-            : 'bg-whatsapp text-white hover:bg-whatsapp-hover active:scale-95'
-        }`}
+        className="flex-1 h-[44px] rounded-xl flex items-center justify-center gap-2 font-bold text-[14px] transition-all shadow-sm bg-whatsapp text-white hover:bg-whatsapp-hover active:scale-95"
       >
         <Whatsapp size={18} variant="Bold" />
         <span>{isArabic ? 'واتساب' : 'WhatsApp'}</span>
