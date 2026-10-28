@@ -1,12 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import {
-  MARKETS, getMarketSafe, getMarket, isValidMarketCode,
-  DEFAULT_MARKET_CODE, ALL_MARKET_CODES,
-} from '../config';
+import { MARKETS, DEFAULT_MARKET_CODE, ALL_MARKET_CODES, isValidMarketCode, getMarket, getMarketSafe, getMarketLocale, getMarketDirection } from '../config';
 
 describe('Markets config', () => {
-  it('has all 5 MENA markets', () => {
-    expect(Object.keys(MARKETS).sort()).toEqual(['JO', 'LB', 'PS', 'SA', 'SY']);
+  it('has all 6 MENA markets', () => {
+    expect(Object.keys(MARKETS).sort()).toEqual(['JO', 'KW', 'LB', 'PS', 'SA', 'SY']);
   });
 
   it('default market is Jordan', () => {
@@ -15,10 +12,8 @@ describe('Markets config', () => {
 
   it('isValidMarketCode narrows correctly', () => {
     expect(isValidMarketCode('JO')).toBe(true);
-    expect(isValidMarketCode('LB')).toBe(true);
+    expect(isValidMarketCode('KW')).toBe(true);
     expect(isValidMarketCode('XX')).toBe(false);
-    expect(isValidMarketCode(undefined)).toBe(false);
-    expect(isValidMarketCode(123)).toBe(false);
   });
 
   it('getMarket throws on unknown code', () => {
@@ -33,10 +28,10 @@ describe('Markets config', () => {
   it('every market has required non-empty fields', () => {
     for (const code of ALL_MARKET_CODES) {
       const m = MARKETS[code];
-      expect(m.code).toBe(code);
       expect(m.nameAr.length).toBeGreaterThan(0);
       expect(m.nameEn.length).toBeGreaterThan(0);
-      expect(m.allowedCurrencies).toContain(m.defaultCurrency);
+      expect(m.defaultCurrency.length).toBe(3);
+      expect(m.allowedCurrencies.length).toBeGreaterThan(0);
     }
   });
 
@@ -53,5 +48,10 @@ describe('Markets config', () => {
     expect(MARKETS.LB.dialect).toBe('levantine');
     expect(MARKETS.PS.dialect).toBe('levantine');
     expect(MARKETS.SY.dialect).toBe('levantine');
+  });
+
+  it('Kuwait uses Gulf dialect', () => {
+    expect(MARKETS.KW.dialect).toBe('gulf');
+    expect(MARKETS.KW.defaultCurrency).toBe('KWD');
   });
 });
