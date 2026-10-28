@@ -14,6 +14,8 @@ describe('Markets config', () => {
     expect(isValidMarketCode('JO')).toBe(true);
     expect(isValidMarketCode('KW')).toBe(true);
     expect(isValidMarketCode('XX')).toBe(false);
+    expect(isValidMarketCode(undefined)).toBe(false);
+    expect(isValidMarketCode(123)).toBe(false);
   });
 
   it('getMarket throws on unknown code', () => {
@@ -23,6 +25,7 @@ describe('Markets config', () => {
   it('getMarketSafe falls back to default', () => {
     expect(getMarketSafe('XX').code).toBe('JO');
     expect(getMarketSafe(null).code).toBe('JO');
+    expect(getMarketSafe(undefined).code).toBe('JO');
   });
 
   it('every market has required non-empty fields', () => {
@@ -32,6 +35,13 @@ describe('Markets config', () => {
       expect(m.nameEn.length).toBeGreaterThan(0);
       expect(m.defaultCurrency.length).toBe(3);
       expect(m.allowedCurrencies.length).toBeGreaterThan(0);
+      expect(m.allowedCurrencies).toContain(m.defaultCurrency);
+    }
+  });
+
+  it('every market code has a matching key', () => {
+    for (const code of ALL_MARKET_CODES) {
+      expect(MARKETS[code].code).toBe(code);
     }
   });
 
