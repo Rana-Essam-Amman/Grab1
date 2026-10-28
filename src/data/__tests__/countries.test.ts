@@ -41,6 +41,23 @@ describe('Data Layer - Countries & Currencies', () => {
     const sa = countryByCode('SA');
     expect(sa.code).toBe('SA');
     expect(sa.nameAr).toBe('السعودية');
+
+    const lb = countryByCode('LB');
+    expect(lb.code).toBe('LB');
+    expect(lb.nameAr).toBe('لبنان');
+
+    const ps = countryByCode('PS');
+    expect(ps.code).toBe('PS');
+    expect(ps.nameAr).toBe('فلسطين');
+
+    const sy = countryByCode('SY');
+    expect(sy.code).toBe('SY');
+    expect(sy.nameAr).toBe('سوريا');
+
+    const kw = countryByCode('KW');
+    expect(kw.code).toBe('KW');
+    expect(kw.nameAr).toBe('الكويت');
+    expect(kw.currencies[0].code).toBe('KWD');
   });
 
   it('countryByCode falls back to Jordan (JO) for unknown codes', () => {
