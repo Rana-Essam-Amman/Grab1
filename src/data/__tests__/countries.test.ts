@@ -37,6 +37,10 @@ describe('Data Layer - Countries & Currencies', () => {
     expect(jo.code).toBe('JO');
     expect(jo.nameAr).toBe('الأردن');
     expect(jo.currencies[0].code).toBe('JOD');
+
+    const sa = countryByCode('SA');
+    expect(sa.code).toBe('SA');
+    expect(sa.nameAr).toBe('السعودية');
   });
 
   it('countryByCode falls back to Jordan (JO) for unknown codes', () => {
