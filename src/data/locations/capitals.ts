@@ -31,4 +31,10 @@ export const DEFAULT_REGIONAL_CAPITALS: DefaultCapitals = {
     neighborhoodEn: 'Olaya',
     neighborhoodAr: 'العليا',
   },
+  KW: {
+    cityEn: 'Kuwait City',
+    cityAr: 'مدينة الكويت',
+    neighborhoodEn: 'Salmiya',
+    neighborhoodAr: 'السالمية',
+  },
 };
