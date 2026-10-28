@@ -9,7 +9,7 @@ import {
   CATEGORY_META,
 } from '../_shared/categoryMeta';
 
-const MARKETS_UPPER = ['JO', 'SA', 'LB', 'PS', 'SY'];
+const MARKETS_UPPER = ['JO', 'SA', 'LB', 'PS', 'SY', 'KW'];
 const CATEGORY_SLUGS = Object.keys(CATEGORY_META);
 
 export function parseCategoryUrl(
