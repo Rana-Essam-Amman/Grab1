@@ -42,4 +42,11 @@ export const COUNTRY_PHONE_RULES: Record<string, CountryPhoneRule> = {
     errorMsgAr: 'رقم غير صحيح. أدخل رقماً صحيحاً للسعودية',
     errorMsgEn: 'Invalid number. Enter a valid Saudi phone.',
   },
+  KW: {
+    prefixes: ['965'],
+    pattern: /^[569]\d{7}$/,
+    format: (d) => `+965 ${d.slice(0, 4)} ${d.slice(4)}`,
+    errorMsgAr: 'رقم غير صحيح. أدخل رقماً صحيحاً للكويت',
+    errorMsgEn: 'Invalid number. Enter a valid Kuwait phone.',
+  },
 };
