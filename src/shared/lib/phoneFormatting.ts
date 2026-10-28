@@ -17,6 +17,7 @@ export function getFormattedLocalPhone(
     PS: { intlCode: '970', localPrefix: '0', length: 10 },
     SY: { intlCode: '963', localPrefix: '0', length: 10 },
     SA: { intlCode: '966', localPrefix: '0', length: 10 },
+    KW: { intlCode: '965', localPrefix: '0', length: 8 },
   };
 
   let detectedCountry = countryCode || 'JO';
@@ -26,8 +27,10 @@ export function getFormattedLocalPhone(
     else if (cleaned.startsWith('970') || cleaned.startsWith('972')) detectedCountry = 'PS';
     else if (cleaned.startsWith('963')) detectedCountry = 'SY';
     else if (cleaned.startsWith('966')) detectedCountry = 'SA';
+    else if (cleaned.startsWith('965')) detectedCountry = 'KW';
     else {
       if (cleaned.length === 8 && cleaned.startsWith('3')) detectedCountry = 'LB';
+      else if (cleaned.length === 8 && (cleaned.startsWith('5') || cleaned.startsWith('6') || cleaned.startsWith('9'))) detectedCountry = 'KW';
       else if (cleaned.length === 9) {
         if (cleaned.startsWith('7')) detectedCountry = 'JO';
         else if (cleaned.startsWith('5')) detectedCountry = 'SA';
