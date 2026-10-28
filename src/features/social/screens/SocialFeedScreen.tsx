@@ -7,6 +7,7 @@ import { useUI } from '@/hooks/useUI';
 import { useAuth } from '@/hooks/useAuth';
 import { Header } from '@/shared/components/Header';
 import { SearchBar } from '@/features/explore/components/SearchBar';
+import { useScrollDirection } from '@/shared/hooks/useScrollDirection';
 
 const PAGE_SIZE = 10;
 
@@ -22,6 +23,7 @@ function useDebouncedValue<T>(value: T, delayMs: number): T {
 export const SocialFeedScreen: React.FC = () => {
   const { isArabic, browseCountryCode, navigateTo } = useUI();
   const { user, authStatus } = useAuth();
+  const isVisible = useScrollDirection();
 
   const [searchInput, setSearchInput] = useState('');
   const debouncedSearch = useDebouncedValue(searchInput, 600);
@@ -45,8 +47,6 @@ export const SocialFeedScreen: React.FC = () => {
   const fetchPosts = useCallback(async (currentOffset: number) => {
     if (!user) return;
 
-    // Block pagination (offset > 0) if a request is already in flight.
-    // Allow concurrent offset=0 requests (search changes) — they supersede each other via requestIdRef.
     if (currentOffset > 0 && fetchingRef.current) return;
 
     const myRequestId = ++requestIdRef.current;
@@ -62,7 +62,6 @@ export const SocialFeedScreen: React.FC = () => {
         p_search: debouncedSearch.trim(),
       });
 
-      // Stale guard: a newer request has superseded this one.
       if (myRequestId !== requestIdRef.current) return;
 
       if (err) throw err;
@@ -76,7 +75,6 @@ export const SocialFeedScreen: React.FC = () => {
       console.error('Failed to load feed', err);
       setError(true);
     } finally {
-      // Only the latest request resets shared loading/fetching state.
       if (myRequestId === requestIdRef.current) {
         setLoading(false);
         fetchingRef.current = false;
@@ -122,30 +120,33 @@ export const SocialFeedScreen: React.FC = () => {
     <div className={`max-w-[440px] mx-auto w-full flex flex-col pt-0 pb-28 bg-canvas min-h-screen ${isArabic ? 'font-cairo' : ''}`} dir={isArabic ? 'rtl' : 'ltr'}>
       <Header />
 
-      {/* Sub-header with Back button */}
-      <div className="sticky top-[64px] z-40 bg-surface border-b border-border px-4 py-2.5 flex items-center justify-between">
-        <button
-          onClick={() => navigateTo('main')}
-          className="flex items-center gap-1.5 text-ink font-semibold text-[15px] cursor-pointer hover:bg-canvas px-2 py-1 -ms-2 rounded-lg transition"
-        >
-          {isArabic ? <ArrowRight2 size="18" /> : <ArrowLeft2 size="18" />}
-          <span>{isArabic ? 'الرئيسية' : 'Home'}</span>
-        </button>
-        <h1 className="font-bold text-[16px] text-ink absolute left-1/2 -translate-x-1/2">
-          {isArabic ? 'مجتمع FOX' : 'FOX Community'}
-        </h1>
-        <div className="w-8" />
-      </div>
+      {/* Sticky Sub-header + Search Bar Wrapper */}
+      <div className={`sticky z-40 flex flex-col transition-all duration-300 ${isVisible ? 'top-[64px]' : 'top-0'}`}>
+        {/* Sub-header with Back button */}
+        <div className="bg-surface border-b border-border px-4 py-2.5 flex items-center justify-between">
+          <button
+            onClick={() => navigateTo('main')}
+            className="flex items-center gap-1.5 text-ink font-semibold text-[15px] cursor-pointer hover:bg-canvas px-2 py-1 -ms-2 rounded-lg transition"
+          >
+            {isArabic ? <ArrowRight2 size="18" /> : <ArrowLeft2 size="18" />}
+            <span>{isArabic ? 'الرئيسية' : 'Home'}</span>
+          </button>
+          <h1 className="font-bold text-[16px] text-ink absolute left-1/2 -translate-x-1/2">
+            {isArabic ? 'مجتمع FOX' : 'FOX Community'}
+          </h1>
+          <div className="w-8" />
+        </div>
 
-      {/* Search Bar (Exact copy from Home) */}
-      <div className="sticky top-[112px] z-30 bg-canvas pt-3 pb-2 px-4 border-b border-border/50">
-        <SearchBar
-          isArabic={isArabic}
-          value={searchInput}
-          onChange={setSearchInput}
-          onSubmit={() => {}}
-          onFocusChange={() => {}}
-        />
+        {/* Search Bar */}
+        <div className="bg-canvas pt-3 pb-2 px-4 border-b border-border/50">
+          <SearchBar
+            isArabic={isArabic}
+            value={searchInput}
+            onChange={setSearchInput}
+            onSubmit={() => {}}
+            onFocusChange={() => {}}
+          />
+        </div>
       </div>
 
       <div className="px-3 pt-3">
