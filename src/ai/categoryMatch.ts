@@ -65,7 +65,7 @@ export function matchCategory({
   };
 }
 
-const COUNTRY_CODES = ['JO', 'LB', 'PS', 'SY', 'SA'] as const;
+const COUNTRY_CODES = ['JO', 'LB', 'PS', 'SY', 'SA', 'KW'] as const;
 
 export function detectCountryHint(query: string): string | null {
   const q = query.trim().toLowerCase();
@@ -91,7 +91,7 @@ export interface GeoHint {
   readonly matchedName: string;
 }
 
-const GEO_COUNTRY_CODES = ['JO', 'LB', 'PS', 'SY', 'SA'] as const;
+const GEO_COUNTRY_CODES = ['JO', 'LB', 'PS', 'SY', 'SA', 'KW'] as const;
 
 export function detectGeoHint(query: string): GeoHint | null {
   const q = query.trim();
