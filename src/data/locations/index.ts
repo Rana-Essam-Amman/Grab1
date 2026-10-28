@@ -32,6 +32,7 @@ import './LB.geo';
 import './PS.geo';
 import './SY.geo';
 import './SA.geo';
+import './KW.geo';
 
 export * from './types';
 export * from './registry';
