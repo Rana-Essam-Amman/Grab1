@@ -1,17 +1,4 @@
-/**
- * Client-side geo detection. Combines:
- *   1. Cloudflare /api/geo (IP-based)
- *   2. Intl.DateTimeFormat timezone
- *   3. navigator.language
- *   4. Fallback 'JO'
- *
- * Returns the best-guess MarketCode, the detection source, and explicit
- * unsupported flag so callers can distinguish:
- *   - "user is outside the 5 supported countries"  → isUnsupported = true
- *   - "we could not detect anything"               → source = 'fallback'
- */
-
-export type MarketCode = 'JO' | 'SA' | 'LB' | 'PS' | 'SY';
+export type MarketCode = 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | 'KW';
 export type GeoSource = 'storage' | 'ip' | 'timezone' | 'language' | 'fallback' | 'unsupported';
 
 export interface GeoResult {
@@ -22,7 +9,7 @@ export interface GeoResult {
   readonly detectedIso?: string;
 }
 
-const SUPPORTED: readonly MarketCode[] = ['JO', 'SA', 'LB', 'PS', 'SY'];
+const SUPPORTED: readonly MarketCode[] = ['JO', 'SA', 'LB', 'PS', 'SY', 'KW'];
 
 const TIMEZONE_MAP: Record<string, MarketCode> = {
   'Asia/Amman': 'JO',
@@ -31,10 +18,11 @@ const TIMEZONE_MAP: Record<string, MarketCode> = {
   'Asia/Gaza': 'PS',
   'Asia/Hebron': 'PS',
   'Asia/Damascus': 'SY',
+  'Asia/Kuwait': 'KW',
 };
 
 const LANG_MAP: Record<string, MarketCode> = {
-  JO: 'JO', SA: 'SA', LB: 'LB', PS: 'PS', SY: 'SY',
+  JO: 'JO', SA: 'SA', LB: 'LB', PS: 'PS', SY: 'SY', KW: 'KW',
 };
 
 function fromTimezone(): MarketCode | null {
