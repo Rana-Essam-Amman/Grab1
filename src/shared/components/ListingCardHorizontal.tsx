@@ -33,7 +33,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
   handleImageError,
 }) => {
   const { setSelectedSellerPhone, navigateTo } = useUI();
-  
+
   const relativeDate = useMemo(() => formatRelativeDate(listing.createdAt, isArabic), [listing.createdAt, isArabic]);
 
   const displayImages = useMemo(() => {
@@ -85,15 +85,15 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
 
       {/* Body: Price, Title, Specs, Location */}
       <div className="p-3 flex flex-col flex-1">
-        <div className="text-[22px] font-extrabold text-danger mb-1">
+        <div className="text-[22px] font-extrabold text-danger mb-2">
           {formatPrice(listing.price, listing.currency, isArabic)}
         </div>
-        
-        <h3 className="font-bold text-[15px] leading-tight line-clamp-2 text-ink mb-2" dir="auto">
+
+        <h3 className="font-bold text-[15px] leading-snug line-clamp-2 text-ink mb-3" dir="auto">
           {stripEmojis(listing.title)}
         </h3>
-        
-        <div className="mb-2">
+
+        <div className="mb-3">
           <RequiredSpecsRow
             categorySlug={listing.categorySlug}
             subcategorySlug={listing.subcategorySlug}
