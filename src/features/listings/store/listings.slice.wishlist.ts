@@ -13,18 +13,6 @@ import type { ListingsState } from './listings.slice.types';
 type SetFn = (fn: (state: ListingsState) => void) => void;
 type GetFn = () => ListingsState;
 
-/**
- * Wishlist-related actions, kept in a sibling file so the parent actions
- * file stays under the architecture line limit and responsibilities
- * stay separated (listings vs favorites).
- *
- * Public surface (mirrors ListingsState):
- *   toggleWishlist, clearWishlist, setWishlistForCountry,
- *   loadWishlistFromSupabase, migrateLegacyWishlistIfNeeded
- *
- * Writes are OPTIMISTIC: local state updates instantly, network calls
- * fire in the background, reverts happen on server error.
- */
 export const createWishlistActions = (set: SetFn, get: GetFn) => ({
   toggleWishlist: (id: string, countryCode?: string) => {
     const activeCountry =
@@ -64,9 +52,7 @@ export const createWishlistActions = (set: SetFn, get: GetFn) => ({
           saveWishlistForMarket(state.activeWishlistCountry, next);
         });
       })
-      .catch(() => {
-        // Revert already handled above; never throw into caller
-      });
+      .catch(() => {});
   },
 
   clearWishlist: () => {
@@ -98,7 +84,6 @@ export const createWishlistActions = (set: SetFn, get: GetFn) => ({
     const { data, error } = await fetchWishlist(userId, marketCode as MarketCode);
     if (error || !data) return;
     set((state) => {
-      // Race guard: ignore if the user switched markets since we started
       if (state.activeWishlistCountry !== marketCode) return;
       state.wishlist = data.map((e) => e.listingId);
     });
@@ -106,14 +91,14 @@ export const createWishlistActions = (set: SetFn, get: GetFn) => ({
 
   migrateLegacyWishlistIfNeeded: async (userId: string) => {
     if (!userId) return;
-    const markets: MarketCode[] = ['JO', 'SA', 'LB', 'PS', 'SY'];
+    const markets: MarketCode[] = ['JO', 'SA', 'LB', 'PS', 'SY', 'KW'];
     for (const mc of markets) {
       const local = getWishlistForMarket(mc);
       if (!local || local.length === 0) continue;
-      
+
       const { data } = await fetchWishlist(userId, mc);
       const serverIds = new Set(data?.map((d) => d.listingId) || []);
-      
+
       for (const listingId of local) {
         if (!serverIds.has(listingId)) {
           await addToWishlist(userId, listingId, mc);
