@@ -51,6 +51,15 @@ export const countries: CountryDef[] = [
       { code: 'SAR', nameEn: 'Saudi Riyal', nameAr: 'ريال سعودي' },
     ],
   },
+  {
+    code: 'KW',
+    nameEn: 'Kuwait',
+    nameAr: 'الكويت',
+    flagUrl: '/flags/kw.jpg',
+    currencies: [
+      { code: 'KWD', nameEn: 'Kuwaiti Dinar', nameAr: 'دينار كويتي' },
+    ],
+  },
 ];
 
 export const ALLOWED_CURRENCIES: Record<string, string[]> = {
@@ -59,6 +68,7 @@ export const ALLOWED_CURRENCIES: Record<string, string[]> = {
   PS: ['ILS', 'JOD', 'USD'],
   SY: ['SYP', 'USD'],
   SA: ['SAR'],
+  KW: ['KWD'],
 };
 
 export function getSanitizedCurrency(countryCode: string, currency?: string): string {
