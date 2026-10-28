@@ -14,10 +14,10 @@ export const DEFAULT_REGIONAL_CAPITALS: DefaultCapitals = {
     neighborhoodAr: 'الحمرا',
   },
   PS: {
-    cityEn: 'Ramallah and Al-Bireh',
-    cityAr: 'رام الله والبيرة',
-    neighborhoodEn: 'Al Tireh',
-    neighborhoodAr: 'الطيرة',
+    cityEn: 'Jerusalem',
+    cityAr: 'القدس',
+    neighborhoodEn: 'Al Quds',
+    neighborhoodAr: 'القدس',
   },
   SY: {
     cityEn: 'Damascus',
