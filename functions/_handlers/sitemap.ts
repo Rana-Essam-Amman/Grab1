@@ -10,8 +10,8 @@ import {
 } from '../_shared/sitemapHelpers';
 import { CATEGORY_META } from '../_shared/categoryMeta';
 
-const MARKETS = ['jo', 'sa', 'lb', 'ps', 'sy'] as const;
-const SITEMAP_MARKET_RE = /^\/sitemap-(jo|sa|lb|ps|sy)\.xml$/;
+const MARKETS = ['jo', 'sa', 'lb', 'ps', 'sy', 'kw'] as const;
+const SITEMAP_MARKET_RE = /^\/sitemap-(jo|sa|lb|ps|sy|kw)\.xml$/;
 const CATEGORY_SLUGS = Object.keys(CATEGORY_META);
 
 const XML_HEADERS = {
