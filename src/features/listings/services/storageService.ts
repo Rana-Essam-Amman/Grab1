@@ -78,7 +78,7 @@ export async function uploadListingImages(
         const d = await readImageDimensions(src);
         dims.push(d);
       } catch (err) {
-        // eslint-disable-next-line no-console
+         
         console.warn('[uploadListingImages] dims read failed for URL', src, err);
         dims.push(null);
       }
@@ -119,7 +119,7 @@ export async function removeListingImages(urls: readonly string[]): Promise<Remo
   try {
     const { data, error } = await supabase.storage.from(BUCKET).remove(paths);
     if (error) {
-      // eslint-disable-next-line no-console
+       
       console.warn('[removeListingImages]', error.message);
       return { deleted: 0, failed: paths.length, error: error.message };
     }
@@ -127,7 +127,7 @@ export async function removeListingImages(urls: readonly string[]): Promise<Remo
     return { deleted, failed: paths.length - deleted, error: null };
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Unknown error';
-    // eslint-disable-next-line no-console
+     
     console.warn('[removeListingImages] threw', err);
     return { deleted: 0, failed: paths.length, error: msg };
   }
