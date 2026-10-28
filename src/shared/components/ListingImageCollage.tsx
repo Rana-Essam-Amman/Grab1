@@ -17,7 +17,7 @@ export const ListingImageCollage: React.FC<ListingImageCollageProps> = ({ images
   }
   if (images.length === 2) {
     return (
-      <div className="w-full aspect-[4/3] bg-canvas grid grid-cols-2 gap-[2px]">
+      <div className="w-full aspect-[4/3] bg-canvas grid grid-cols-2 gap-1">
         <div className="relative w-full h-full">
           <img src={images[0]} alt="listing-0" className="absolute inset-0 w-full h-full object-cover" loading="lazy" onError={onImageError} />
         </div>
@@ -29,7 +29,7 @@ export const ListingImageCollage: React.FC<ListingImageCollageProps> = ({ images
   }
   if (images.length === 3) {
     return (
-      <div className="w-full aspect-[4/3] bg-canvas grid grid-cols-2 grid-rows-2 gap-[2px]">
+      <div className="w-full aspect-[4/3] bg-canvas grid grid-cols-2 grid-rows-2 gap-1">
         <div className="relative w-full h-full row-span-2">
           <img src={images[0]} alt="listing-0" className="absolute inset-0 w-full h-full object-cover" loading="lazy" onError={onImageError} />
         </div>
@@ -43,17 +43,17 @@ export const ListingImageCollage: React.FC<ListingImageCollageProps> = ({ images
     );
   }
   return (
-    <div className="w-full aspect-[4/3] bg-canvas grid grid-cols-2 grid-rows-2 gap-[2px]">
+    <div className="w-full aspect-[4/3] bg-canvas grid grid-cols-2 grid-rows-2 gap-1 relative">
       {images.slice(0, 4).map((img, i) => (
         <div key={i} className="relative w-full h-full">
           <img src={img} alt={`listing-${i}`} className="absolute inset-0 w-full h-full object-cover" loading="lazy" onError={onImageError} />
-          {i === 3 && images.length > 4 && (
-            <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
-              <span className="text-white font-bold text-2xl">+{images.length - 4}</span>
-            </div>
-          )}
         </div>
       ))}
+      {images.length > 4 && (
+        <div className="absolute bottom-2 right-2 bg-black/75 text-white text-[12px] font-bold px-2 py-1 rounded-md z-20 shadow-sm">
+          +{images.length - 4}
+        </div>
+      )}
     </div>
   );
 };
