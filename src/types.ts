@@ -22,7 +22,7 @@ export interface CurrencyDef {
 }
 
 export interface CountryDef {
-  code: 'JO' | 'LB' | 'PS' | 'SY' | 'SA';
+  code: 'JO' | 'LB' | 'PS' | 'SY' | 'SA' | 'KW';
   nameEn: string;
   nameAr: string;
   flagUrl: string;
@@ -44,8 +44,8 @@ export interface Listing {
   title: string;
   description: string;
   price: string;
-  currency: 'JOD' | 'SAR' | 'ILS' | 'LBP' | 'SYP' | 'USD';
-  countryCode: 'JO' | 'LB' | 'PS' | 'SY' | 'SA';
+  currency: 'JOD' | 'SAR' | 'ILS' | 'LBP' | 'SYP' | 'USD' | 'KWD';
+  countryCode: 'JO' | 'LB' | 'PS' | 'SY' | 'SA' | 'KW';
   city: string;
   neighborhood: string;
   citySlug?: string;
@@ -167,7 +167,7 @@ export interface UserProfile {
   countryCode?: string;
   avatarUrl?: string;
   avatar?: string;
-  browseMarket?: 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | null;
+  browseMarket?: 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | 'KW' | null;
 }
 
 export interface RegisteredAccount {
@@ -199,4 +199,4 @@ export interface PostDraft {
   generated?: GeneratedListing;
   readonly variantSeed?: number;
   readonly draftId?: string;
-  }
+}
