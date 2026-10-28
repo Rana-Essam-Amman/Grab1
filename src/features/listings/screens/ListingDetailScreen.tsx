@@ -40,7 +40,7 @@ export const ListingDetailScreen: React.FC = () => {
     <ErrorBoundary>
       <div className="max-w-[440px] mx-auto w-full flex flex-col min-h-screen bg-canvas pb-28 relative shadow-md" dir={detail.isArabic ? 'rtl' : 'ltr'}>
         <ListingDetailHeader isArabic={detail.isArabic} onBack={detail.goBack} onShare={() => detail.setShowShare(true)} onReport={() => detail.setShowReport(true)} onEdit={detail.handleEdit} onDelete={() => setShowDeleteConfirm(true)} isOwner={detail.isOwner} isAdmin={isAdmin} listingId={detail.listing.id} />
-        
+
         {detail.isCountryMismatch && <ListingAntiFraudBanner isArabic={detail.isArabic} />}
 
         <ListingImageSlider images={detail.images} activeIdx={detail.activePhotoIdx} onChangeIdx={detail.setActivePhotoIdx} isArabic={detail.isArabic} onCall={detail.handleCall} onWhatsApp={detail.handleWhatsApp} onStartChat={detail.handleStartChat} />
@@ -51,10 +51,15 @@ export const ListingDetailScreen: React.FC = () => {
           <ListingMainInfo title={detail.listing.title || ''} price={detail.listing.price || '0'} currency={detail.displayCurrency} locationText={detail.locationText} attributes={detail.listing.attributes || []} isArabic={detail.isArabic} />
 
           <ListingSellerCard sellerName={detail.listing.sellerName || ''} sellerPhone={detail.listing.sellerPhone || ''} isArabic={detail.isArabic} onClick={detail.handleSelectSeller} />
-          
+
           <ListingRateSellerButton listingId={detail.listing.id} sellerName={detail.listing.sellerName || ''} sellerUserId={detail.listing.userId} sellerPhone={detail.listing.sellerPhone} isArabic={detail.isArabic} />
 
-          <ListingAttributesCard attributes={detail.listing.attributes || []} isArabic={detail.isArabic} />
+          <ListingAttributesCard 
+            attributes={detail.listing.attributes || []} 
+            categorySlug={detail.listing.categorySlug} 
+            subcategorySlug={detail.listing.subcategorySlug} 
+            isArabic={detail.isArabic} 
+          />
 
           <ListingDescriptionCard description={detail.listing.description || ''} isArabic={detail.isArabic} isAuthenticated={detail.isAuthenticated} onNavigateToLogin={() => detail.navigateTo('login')} />
 
@@ -65,7 +70,7 @@ export const ListingDetailScreen: React.FC = () => {
 
         {detail.showShare && <ShareModal listing={detail.listing} onClose={() => detail.setShowShare(false)} />}
         {detail.showReport && <ReportModal listing={detail.listing} onClose={() => detail.setShowReport(false)} />}
-        
+
         {detail.showWhatsAppSheet && detail.listing && (
           <WhatsAppIntentSheet open={detail.showWhatsAppSheet} listing={detail.listing} isArabic={detail.isArabic} onClose={() => detail.setShowWhatsAppSheet(false)} onPick={detail.handleWhatsAppIntent} onWriteOwn={() => { detail.setShowWhatsAppSheet(false); detail.handleWhatsApp(); }} />
         )}
