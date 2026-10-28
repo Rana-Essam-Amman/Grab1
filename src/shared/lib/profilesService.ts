@@ -1,16 +1,3 @@
-/**
- * Profile persistence service.
- *
- * Wraps Supabase writes for the public.profiles table.
- * Reads live in profilesFetchService (fetchPublicProfile / fetchOwnProfile).
- *
- * Note on phone:
- *  - SELECT on profiles.phone is revoked from authenticated (Phase C).
- *    Reads go through get_own_phone() RPC.
- *  - INSERT/UPDATE on profiles.phone is still granted for the registration
- *    and phone-capture flows. Writes go through savePhone here.
- */
-
 import { supabase } from './supabase';
 
 export interface ProfileRecord {
@@ -22,7 +9,7 @@ export interface ProfileRecord {
   readonly avatar_url: string | null;
   readonly country_code: string | null;
   readonly feed_layout?: 'list' | 'grid' | null;
-  readonly browse_market?: 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | null;
+  readonly browse_market?: 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | 'KW' | null;
   readonly rating_avg?: number | null;
   readonly rating_count?: number | null;
   readonly created_at?: string;
@@ -36,14 +23,9 @@ export interface ProfileUpdate {
   readonly avatar_url?: string;
   readonly country_code?: string;
   readonly feed_layout?: 'list' | 'grid';
-  readonly browse_market?: 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | null;
+  readonly browse_market?: 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | 'KW' | null;
 }
 
-/**
- * Read-back projection for upsert. Deliberately excludes `phone` — SELECT
- * on that column is revoked from authenticated (Phase C), so RETURNING it
- * would raise 42501. Callers needing their own phone use fetchOwnProfile().
- */
 const RETURN_COLUMNS =
   'id, first_name, last_name, nickname, phone_locked, avatar_url, ' +
   'country_code, feed_layout, browse_market, rating_avg, rating_count, ' +
@@ -139,7 +121,7 @@ export async function saveFeedLayout(
 
 export async function saveBrowseMarket(
   userId: string,
-  market: 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | null
+  market: 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | 'KW' | null
 ): Promise<ProfileRecord | null> {
   return upsertProfile(userId, { browse_market: market });
 }
