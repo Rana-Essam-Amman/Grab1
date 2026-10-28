@@ -31,9 +31,15 @@ export function useExploreListings(): UseExploreListingsReturn {
   const activeNeighborhood = neighborhoodFilter;
   const setActiveNeighborhood = setNeighborhoodFilter;
 
+  // Reset filter mode to 'all' whenever the market changes
+  useEffect(() => {
+    setUserFilterMode('all');
+  }, [browseCountryCode]);
+
   const handleResetAllFilters = useCallback(() => {
     setCategoryFilter(null); setSubcategoryFilter(null); setMinPriceFilter(null); setMaxPriceFilter(null);
     setNeighborhoodFilter(null); setSearchQuery(''); setVoidedNotice(null); setAttrsFilter({}); setSortBy('newest');
+    setUserFilterMode('all');
   }, [setCategoryFilter, setSubcategoryFilter, setMinPriceFilter, setMaxPriceFilter, setNeighborhoodFilter, setSearchQuery, setAttrsFilter, setSortBy]);
 
   const marketListings = useMemo(() => filterListingsByMarket(listings, browseCountryCode), [listings, browseCountryCode]);
@@ -45,7 +51,6 @@ export function useExploreListings(): UseExploreListingsReturn {
     setUserFilterMode((prev) => typeof action === 'function' ? action(prev ?? 'all') : action);
   }, []);
 
-  // Reset pagination when search or filters change
   useEffect(() => { useListingsStore.setState({ page: 0 }); }, [searchQuery, categoryFilter, subcategoryFilter, minPriceFilter, maxPriceFilter, activeNeighborhood, filterMode]);
 
   const displayListings = useMemo(() => {
