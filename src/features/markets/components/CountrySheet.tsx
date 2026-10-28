@@ -13,6 +13,7 @@ const FLAG_SRC: Record<MarketCode, string> = {
   LB: '/flags/lb.jpg',
   PS: '/flags/ps.jpg',
   SY: '/flags/sy.jpg',
+  KW: '/flags/kw.jpg',
 };
 
 export const CountrySheet: React.FC = () => {
