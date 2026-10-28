@@ -3,7 +3,7 @@ import type { AllLocations, CountryLocations } from './types';
 
 export const OTHER_AR = 'أخرى';
 export const OTHER_EN = 'Other';
-export const ALL_MARKETS_LOC = ['JO', 'LB', 'PS', 'SY', 'SA'] as const;
+export const ALL_MARKETS_LOC = ['JO', 'LB', 'PS', 'SY', 'SA', 'KW'] as const;
 
 export function isOtherValue(v: string | undefined | null): boolean {
   if (!v) return false;
@@ -22,7 +22,7 @@ function augmentOne(record: CountryLocations | undefined, otherLabel: string): C
 }
 
 function augmentAll(all: AllLocations, otherLabel: string): AllLocations {
-  const out: AllLocations = { JO: {}, SA: {}, LB: {}, PS: {}, SY: {} };
+  const out: AllLocations = { JO: {}, SA: {}, LB: {}, PS: {}, SY: {}, KW: {} };
   for (const code of ALL_MARKETS_LOC) {
     out[code] = augmentOne(all[code], otherLabel);
   }
