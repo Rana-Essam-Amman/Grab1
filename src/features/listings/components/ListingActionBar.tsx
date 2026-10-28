@@ -24,7 +24,6 @@ export const ListingActionBar: React.FC<ListingActionBarProps> = React.memo((pro
     onCall,
     onWhatsAppClick,
     onStartChat,
-    hasPhone,
     isOwner,
     isAuthenticated,
     isCountryMismatch,
@@ -32,8 +31,6 @@ export const ListingActionBar: React.FC<ListingActionBarProps> = React.memo((pro
   } = props;
   const { t } = useTranslation();
 
-  const waDisabled = !hasPhone;
-  const callDisabled = !hasPhone;
   const chatState = getChatActionState({
     isAuthenticated,
     isOwner,
@@ -68,13 +65,8 @@ export const ListingActionBar: React.FC<ListingActionBarProps> = React.memo((pro
 
         <button
           onClick={() => { capture(EVENTS.CONTACT_SELLER_CLICKED, { method: 'whatsapp' }); onWhatsAppClick(); }}
-          disabled={waDisabled}
           type="button"
-          className={`w-14 h-14 rounded-full flex items-center justify-center shrink-0 shadow-md transition-all ${
-            waDisabled
-              ? 'bg-border text-ink-muted cursor-not-allowed'
-              : 'bg-whatsapp text-white hover:bg-whatsapp-hover active:scale-[0.95] cursor-pointer'
-          }`}
+          className="w-14 h-14 rounded-full flex items-center justify-center shrink-0 shadow-md transition-all bg-whatsapp text-white hover:bg-whatsapp-hover active:scale-[0.95] cursor-pointer"
           aria-label={isArabic ? 'تواصل عبر واتساب' : 'Contact via WhatsApp'}
           title={isArabic ? 'واتساب' : 'WhatsApp'}
         >
@@ -83,13 +75,8 @@ export const ListingActionBar: React.FC<ListingActionBarProps> = React.memo((pro
 
         <button
           onClick={() => { capture(EVENTS.CONTACT_SELLER_CLICKED, { method: 'call' }); onCall(); }}
-          disabled={callDisabled}
           type="button"
-          className={`flex-1 h-12 rounded-full flex items-center justify-center gap-2 font-bold text-sm shadow-sm transition-all ${
-            callDisabled
-              ? 'bg-border text-ink-muted cursor-not-allowed'
-              : 'bg-brand text-white hover:bg-brand-strong active:scale-[0.98] cursor-pointer'
-          }`}
+          className="flex-1 h-12 rounded-full flex items-center justify-center gap-2 font-bold text-sm shadow-sm transition-all bg-brand text-white hover:bg-brand-strong active:scale-[0.98] cursor-pointer"
           aria-label={isArabic ? 'اتصال' : 'Call'}
         >
           <Call size={18} variant="Bold" />
