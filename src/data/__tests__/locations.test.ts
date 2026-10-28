@@ -25,9 +25,35 @@ describe('Data Layer - Locations & Geographic Integrity', () => {
     expect(DEFAULT_REGIONAL_CAPITALS.JO.cityAr).toBe('عمّان');
     expect(DEFAULT_REGIONAL_CAPITALS.LB.cityEn).toBe('Beirut');
     expect(DEFAULT_REGIONAL_CAPITALS.LB.cityAr).toBe('بيروت');
-    expect(DEFAULT_REGIONAL_CAPITALS.PS.cityEn).toBe('Ramallah and Al-Bireh');
+    expect(DEFAULT_REGIONAL_CAPITALS.PS.cityEn).toBe('Jerusalem');
     expect(DEFAULT_REGIONAL_CAPITALS.SY.cityEn).toBe('Damascus');
     expect(DEFAULT_REGIONAL_CAPITALS.SA.cityEn).toBe('Riyadh');
+  });
+
+  it('DEFAULT_REGIONAL_CAPITALS defines neighborhoods and all city fields for every market', () => {
+    // JO neighborhoods
+    expect(DEFAULT_REGIONAL_CAPITALS.JO.neighborhoodEn).toBe('Abdali');
+    expect(DEFAULT_REGIONAL_CAPITALS.JO.neighborhoodAr).toBe('العبدلي');
+    // LB neighborhoods
+    expect(DEFAULT_REGIONAL_CAPITALS.LB.neighborhoodEn).toBe('Hamra');
+    expect(DEFAULT_REGIONAL_CAPITALS.LB.neighborhoodAr).toBe('الحمرا');
+    // PS
+    expect(DEFAULT_REGIONAL_CAPITALS.PS.cityAr).toBe('القدس');
+    expect(DEFAULT_REGIONAL_CAPITALS.PS.neighborhoodEn).toBe('Al Quds');
+    expect(DEFAULT_REGIONAL_CAPITALS.PS.neighborhoodAr).toBe('القدس');
+    // SY
+    expect(DEFAULT_REGIONAL_CAPITALS.SY.cityAr).toBe('دمشق');
+    expect(DEFAULT_REGIONAL_CAPITALS.SY.neighborhoodEn).toBe('Mezzeh');
+    expect(DEFAULT_REGIONAL_CAPITALS.SY.neighborhoodAr).toBe('المزة');
+    // SA
+    expect(DEFAULT_REGIONAL_CAPITALS.SA.cityAr).toBe('الرياض');
+    expect(DEFAULT_REGIONAL_CAPITALS.SA.neighborhoodEn).toBe('Olaya');
+    expect(DEFAULT_REGIONAL_CAPITALS.SA.neighborhoodAr).toBe('العليا');
+    // KW
+    expect(DEFAULT_REGIONAL_CAPITALS.KW.cityEn).toBe('Kuwait City');
+    expect(DEFAULT_REGIONAL_CAPITALS.KW.cityAr).toBe('مدينة الكويت');
+    expect(DEFAULT_REGIONAL_CAPITALS.KW.neighborhoodEn).toBe('Salmiya');
+    expect(DEFAULT_REGIONAL_CAPITALS.KW.neighborhoodAr).toBe('السالمية');
   });
 
   it('validateRegionalSanity returns true for valid city and neighborhood', () => {
