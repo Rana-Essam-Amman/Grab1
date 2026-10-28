@@ -9,7 +9,7 @@ const PENDING_WISHLIST_KEY = 'catch_pending_wishlist';
 const getStoredOverride = (): MarketCode | null => {
   try {
     const raw = globalStorage().get<string>(OVERRIDE_KEY);
-    if (raw === 'JO' || raw === 'SA' || raw === 'LB' || raw === 'PS' || raw === 'SY') return raw;
+    if (raw === 'JO' || raw === 'SA' || raw === 'LB' || raw === 'PS' || raw === 'SY' || raw === 'KW') return raw;
     return null;
   } catch { return null; }
 };
@@ -96,6 +96,7 @@ export function getSanitizedCurrencyByCountry(countryCode: string): string {
     PS: 'ILS',
     LB: 'LBP',
     SY: 'SYP',
+    KW: 'KWD',
   };
   return map[countryCode] || 'JOD';
 }
@@ -106,8 +107,6 @@ export async function hydrateCountryFromGeo(): Promise<void> {
     const detected = await detectCountry();
     const { useUIStore } = await import('./ui.slice');
 
-    // F4: read `isUnsupported` (not `!isSupported`) to distinguish
-    // "outside supported countries" from "detection failed".
     useUIStore.setState({
       geoCountryCode: detected.country,
       geoUnsupported: detected.isUnsupported,
