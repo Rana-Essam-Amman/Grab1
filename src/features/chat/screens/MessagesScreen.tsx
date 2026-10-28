@@ -19,7 +19,7 @@ export const MessagesScreen: React.FC = () => {
   const [activeMarket, setActiveMarket] = useState<MarketCode | null>(null);
 
   const marketCounts = useMemo(() => {
-    const out: Record<MarketCode, number> = { JO: 0, SA: 0, LB: 0, PS: 0, SY: 0 };
+    const out: Record<MarketCode, number> = { JO: 0, SA: 0, LB: 0, PS: 0, SY: 0, KW: 0 };
     for (const c of conversations) {
       const code = (c as { marketCode?: MarketCode }).marketCode ?? 'JO';
       if (code in out) out[code] += 1;
@@ -27,7 +27,6 @@ export const MessagesScreen: React.FC = () => {
     return out;
   }, [conversations]);
 
-  // Default to the first market that has conversations; fall back to JO.
   const resolvedMarket: MarketCode = activeMarket
     ?? (ALL_MARKET_CODES.find((code) => marketCounts[code] > 0) ?? 'JO');
 
