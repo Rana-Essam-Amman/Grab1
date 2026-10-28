@@ -1,3 +1,16 @@
+/**
+ * Profile persistence service.
+ *
+ * Wraps Supabase writes for the public.profiles table.
+ * Reads live in profilesFetchService (fetchPublicProfile / fetchOwnProfile).
+ *
+ * Note on phone:
+ *  - SELECT on profiles.phone is revoked from authenticated (Phase C).
+ *    Reads go through get_own_phone() RPC.
+ *  - INSERT/UPDATE on profiles.phone is still granted for the registration
+ *    and phone-capture flows. Writes go through savePhone here.
+ */
+
 import { supabase } from './supabase';
 
 export interface ProfileRecord {
@@ -26,6 +39,11 @@ export interface ProfileUpdate {
   readonly browse_market?: 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | 'KW' | null;
 }
 
+/**
+ * Read-back projection for upsert. Deliberately excludes `phone` — SELECT
+ * on that column is revoked from authenticated (Phase C), so RETURNING it
+ * would raise 42501. Callers needing their own phone use fetchOwnProfile().
+ */
 const RETURN_COLUMNS =
   'id, first_name, last_name, nickname, phone_locked, avatar_url, ' +
   'country_code, feed_layout, browse_market, rating_avg, rating_count, ' +
