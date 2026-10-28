@@ -24,7 +24,14 @@ const KW_GEO: CountryGeo = {
       { slug: 'adailiya', nameAr: 'العديلية', nameEn: 'Adailiya', villages: [] },
       { slug: 'khaldiya', nameAr: 'الخالدية', nameEn: 'Khaldiya', villages: [] },
       { slug: 'shuwaikh', nameAr: 'الشويخ', nameEn: 'Shuwaikh', villages: [] },
-      { slug: 'doha', nameAr: 'الدوحة', nameEn: 'Doha', villages: [] }
+      { slug: 'doha', nameAr: 'الدوحة', nameEn: 'Doha', villages: [] },
+      { slug: 'abdullah-al-salem', nameAr: 'ضاحية عبد الله السالم', nameEn: 'Abdullah Al-Salem', villages: [] },
+      { slug: 'al-sour-gardens', nameAr: 'حدائق السور', nameEn: 'Al-Sour Gardens', villages: [] },
+      { slug: 'daiya', nameAr: 'الدعية', nameEn: 'Daiya', villages: [] },
+      { slug: 'granada', nameAr: 'غرناطة', nameEn: 'Granada', villages: [] },
+      { slug: 'mirqab', nameAr: 'المرقاب', nameEn: 'Mirqab', villages: [] },
+      { slug: 'north-west-sulaibikhat', nameAr: 'شمال غرب الصليبيخات', nameEn: 'North West Sulaibikhat', villages: [] },
+      { slug: 'qairawan', nameAr: 'القيروان', nameEn: 'Qairawan', villages: [] }
     ]},
     { slug: 'hawalli', nameAr: 'حولي', nameEn: 'Hawalli', districts: [
       { slug: 'hawalli', nameAr: 'حولي', nameEn: 'Hawalli', villages: [] },
@@ -38,7 +45,13 @@ const KW_GEO: CountryGeo = {
       { slug: 'salam', nameAr: 'السلام', nameEn: 'Salam', villages: [] },
       { slug: 'shati', nameAr: 'الشاطئ', nameEn: 'Shati', villages: [] },
       { slug: 'siddiq', nameAr: 'الصديق', nameEn: 'Siddiq', villages: [] },
-      { slug: 'anjafa', nameAr: 'أنجفة', nameEn: 'Anjafa', villages: [] }
+      { slug: 'anjafa', nameAr: 'أنجفة', nameEn: 'Anjafa', villages: [] },
+      { slug: 'al-bidaa', nameAr: 'البدع', nameEn: 'Al-Bida\'a', villages: [] },
+      { slug: 'hitteen', nameAr: 'حطين', nameEn: 'Hitteen', villages: [] },
+      { slug: 'mubarak-al-abdullah', nameAr: 'ضاحية مبارك العبد الله الجابر', nameEn: 'Mubarak Al-Abdullah', villages: [] },
+      { slug: 'shuhada', nameAr: 'الشهداء', nameEn: 'Shuhada', villages: [] },
+      { slug: 'zahra', nameAr: 'الزهراء', nameEn: 'Zahra', villages: [] },
+      { slug: 'nuqra', nameAr: 'النقرة', nameEn: 'Nuqra', villages: [] }
     ]},
     { slug: 'al-farwaniya', nameAr: 'الفروانية', nameEn: 'Al Farwaniya', districts: [
       { slug: 'farwaniya', nameAr: 'الفروانية', nameEn: 'Farwaniya', villages: [] },
@@ -57,7 +70,11 @@ const KW_GEO: CountryGeo = {
       { slug: 'dhajeej', nameAr: 'الضجيج', nameEn: 'Dhajeej', villages: [] },
       { slug: 'ferdous', nameAr: 'الفردوس', nameEn: 'Ferdous', villages: [] },
       { slug: 'rehab', nameAr: 'الرحاب', nameEn: 'Rehab', villages: [] },
-      { slug: 'rai', nameAr: 'الري', nameEn: 'Rai', villages: [] }
+      { slug: 'rai', nameAr: 'الري', nameEn: 'Rai', villages: [] },
+      { slug: 'abraq-khaitan', nameAr: 'أبرق خيطان', nameEn: 'Abraq Khaitan', villages: [] },
+      { slug: 'new-khaitan', nameAr: 'خيطان الجديدة', nameEn: 'New Khaitan', villages: [] },
+      { slug: 'al-hasawi', nameAr: 'الحساوي', nameEn: 'Al-Hasawi', villages: [] },
+      { slug: 'abdullah-al-mubarak', nameAr: 'ضاحية عبد الله المبارك', nameEn: 'Abdullah Al-Mubarak', villages: [] }
     ]},
     { slug: 'mubarak-al-kabeer', nameAr: 'مبارك الكبير', nameEn: 'Mubarak Al-Kabeer', districts: [
       { slug: 'mubarak-al-kabeer', nameAr: 'مبارك الكبير', nameEn: 'Mubarak Al-Kabeer', villages: [] },
@@ -70,7 +87,9 @@ const KW_GEO: CountryGeo = {
       { slug: 'masayel', nameAr: 'المسايل', nameEn: 'Masayel', villages: [] },
       { slug: 'fnaitees', nameAr: 'الفنيطيس', nameEn: 'Fnaitees', villages: [] },
       { slug: 'abu-halifa', nameAr: 'أبو حليفة', nameEn: 'Abu Halifa', villages: [] },
-      { slug: 'abu-al-hasaniya', nameAr: 'أبو الحصانية', nameEn: 'Abu Al-Hasaniya', villages: [] }
+      { slug: 'abu-al-hasaniya', nameAr: 'أبو الحصانية', nameEn: 'Abu Al-Hasaniya', villages: [] },
+      { slug: 'abu-ftaira', nameAr: 'أبو فطيرة', nameEn: 'Abu Ftaira', villages: [] },
+      { slug: 'wista', nameAr: 'ويستا', nameEn: 'Wista', villages: [] }
     ]},
     { slug: 'al-ahmadi', nameAr: 'الأحمدي', nameEn: 'Al Ahmadi', districts: [
       { slug: 'ahmadi', nameAr: 'الأحمدي', nameEn: 'Ahmadi', villages: [] },
@@ -88,7 +107,15 @@ const KW_GEO: CountryGeo = {
       { slug: 'nuwaiseeb', nameAr: 'النويصيب', nameEn: 'Nuwaiseeb', villages: [] },
       { slug: 'zour', nameAr: 'الزور', nameEn: 'Zour', villages: [] },
       { slug: 'shuaiba', nameAr: 'الشعيبة', nameEn: 'Shuaiba', villages: [] },
-      { slug: 'ali-sabah-al-salem', nameAr: 'علي صباح السالم', nameEn: 'Ali Sabah Al-Salem', villages: [] }
+      { slug: 'ali-sabah-al-salem', nameAr: 'علي صباح السالم', nameEn: 'Ali Sabah Al-Salem', villages: [] },
+      { slug: 'egaila', nameAr: 'العقيلة', nameEn: 'Egaila', villages: [] },
+      { slug: 'daher', nameAr: 'الظهر', nameEn: 'Daher', villages: [] },
+      { slug: 'magwa', nameAr: 'المقوع', nameEn: 'Magwa', villages: [] },
+      { slug: 'bnaider', nameAr: 'بنيدر', nameEn: 'Bnaider', villages: [] },
+      { slug: 'al-julaiaa', nameAr: 'الجليعة', nameEn: 'Al-Julaia\'a', villages: [] },
+      { slug: 'dhabaiya', nameAr: 'الضباعية', nameEn: 'Dhabaiya', villages: [] },
+      { slug: 'jaber-al-ali', nameAr: 'ضاحية جابر العلي', nameEn: 'Jaber Al-Ali', villages: [] },
+      { slug: 'wara', nameAr: 'واره', nameEn: 'Wara', villages: [] }
     ]},
     { slug: 'al-jahra', nameAr: 'الجهراء', nameEn: 'Al Jahra', districts: [
       { slug: 'jahra', nameAr: 'الجهراء', nameEn: 'Jahra', villages: [] },
@@ -104,7 +131,16 @@ const KW_GEO: CountryGeo = {
       { slug: 'mutlaa', nameAr: 'المطلاع', nameEn: 'Mutlaa', villages: [] },
       { slug: 'abdali', nameAr: 'العبدلي', nameEn: 'Abdali', villages: [] },
       { slug: 'salmi', nameAr: 'السالمي', nameEn: 'Salmi', villages: [] },
-      { slug: 'kabad', nameAr: 'كبد', nameEn: 'Kabad', villages: [] }
+      { slug: 'kabad', nameAr: 'كبد', nameEn: 'Kabad', villages: [] },
+      { slug: 'sheikh-nawaf-al-ahmad-city', nameAr: 'مدينة نواف الأحمد', nameEn: 'Sheikh Nawaf Al Ahmad City', villages: [] },
+      { slug: 'naeem', nameAr: 'النعيم', nameEn: 'Naeem', villages: [] },
+      { slug: 'al-qaisariya', nameAr: 'القيصرية', nameEn: 'Al-Qaisariya', villages: [] },
+      { slug: 'old-jahra', nameAr: 'الجهراء القديمة', nameEn: 'Old Jahra', villages: [] },
+      { slug: 'new-jahra', nameAr: 'الجهراء الجديدة', nameEn: 'New Jahra', villages: [] },
+      { slug: 'kazma', nameAr: 'كاظمة', nameEn: 'Kazma', villages: [] },
+      { slug: 'madinat-al-hareer', nameAr: 'مدينة الحرير', nameEn: 'Madinat al-Hareer', villages: [] },
+      { slug: 'rawdatain', nameAr: 'الروضتين', nameEn: 'Rawdatain', villages: [] },
+      { slug: 'subiya', nameAr: 'الصبية', nameEn: 'Subiya', villages: [] }
     ]}
   ],
   refugeeCamps: [],
