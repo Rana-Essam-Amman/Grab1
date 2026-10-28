@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useUIStore } from '@/store/ui.slice';
 import type { MarketCode } from '@/shared/lib/marketGate';
 
-const VALID_MARKETS: MarketCode[] = ['JO', 'SA', 'LB', 'PS', 'SY'];
+const VALID_MARKETS: MarketCode[] = ['JO', 'SA', 'LB', 'PS', 'SY', 'KW'];
 const GEO_API_URL = 'https://ipapi.co/country_code/';
 const FETCH_TIMEOUT_MS = 3000;
 
@@ -19,11 +19,6 @@ function hasStoredCountry(): boolean {
   }
 }
 
-/**
- * Detects the visitor's country via IP and applies it as the browse market,
- * but ONLY when the user has not already made a choice (no override + no
- * stored country). Silent failure — the app keeps the default JO fallback.
- */
 export function useGeoLocation(): void {
   const ran = useRef(false);
 
@@ -41,14 +36,13 @@ export function useGeoLocation(): void {
     fetch(GEO_API_URL, { signal: controller.signal })
       .then((res) => (res.ok ? res.text() : Promise.reject(new Error('geo-fetch-failed'))))
       .then((text) => {
-        // 🛡️ Race Condition Guard: Ignore IP result if user made a choice during fetch
         const latestStore = useUIStore.getState();
         if (latestStore.browseMarketOverride) return;
-        if (hasStoredCountry()) return; // ✅ السطر الجديد اللي اتضاف
+        if (hasStoredCountry()) return;
 
         const code = (text || '').trim().toUpperCase();
         if (!isValidMarket(code)) return;
-        
+
         useUIStore.setState({ geoCountryCode: code });
         latestStore.setBrowseLocation(code, '', '');
       })
