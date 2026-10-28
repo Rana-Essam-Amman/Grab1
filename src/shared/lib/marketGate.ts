@@ -1,8 +1,8 @@
 import type { Listing } from '@/types';
 
-export type MarketCode = 'JO' | 'LB' | 'PS' | 'SY' | 'SA';
+export type MarketCode = 'JO' | 'LB' | 'PS' | 'SY' | 'SA' | 'KW';
 
-export const ALL_MARKETS: MarketCode[] = ['JO', 'LB', 'PS', 'SY', 'SA'];
+export const ALL_MARKETS: MarketCode[] = ['JO', 'LB', 'PS', 'SY', 'SA', 'KW'];
 
 export function isValidMarket(code: string): code is MarketCode {
   return ALL_MARKETS.includes(code as MarketCode);
