@@ -17,6 +17,7 @@ const DEFAULT_CAPITALS: Record<string, { en: string; ar: string; cityEn?: string
   PS: { en: 'Jerusalem', ar: 'القدس', cityEn: 'Jerusalem', cityAr: 'القدس' },
   SY: { en: 'Damascus', ar: 'دمشق', cityEn: 'Damascus', cityAr: 'دمشق' },
   SA: { en: 'Riyadh', ar: 'الرياض', cityEn: 'Riyadh', cityAr: 'الرياض' },
+  KW: { en: 'Kuwait City', ar: 'مدينة الكويت', cityEn: 'Kuwait City', cityAr: 'مدينة الكويت' },
 };
 
 export const Header: React.FC = () => {
@@ -26,7 +27,7 @@ export const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isVisible = useScrollDirection();
 
-  const countryCode = (browseCountry?.code || 'JO') as 'JO' | 'LB' | 'PS' | 'SY' | 'SA';
+  const countryCode = (browseCountry?.code || 'JO') as 'JO' | 'LB' | 'PS' | 'SY' | 'SA' | 'KW';
   const defaultCap = DEFAULT_CAPITALS[countryCode] || DEFAULT_CAPITALS.JO;
 
   const handleMenuToggle = useCallback(() => setIsMenuOpen((prev) => !prev), []);
