@@ -1,6 +1,6 @@
 import React from 'react';
 
-type MarketCode = 'JO' | 'SA' | 'LB' | 'PS' | 'SY';
+type MarketCode = 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | 'KW';
 
 interface Props {
   readonly code: MarketCode;
@@ -8,7 +8,7 @@ interface Props {
   readonly ariaLabel?: string;
 }
 
-// ─── ADJUST HERE ───────────────────────────────────────────────
+// ─── ADJUST HERE ─────────────────────────────────────────────────
 // Flag display size in px.
 //   64 = small   |  80 = medium (current)  |  96 = large
 const FLAG_SIZE_PX = 80;
@@ -21,7 +21,7 @@ const FLAG_ROTATE_DEG = -10;
 // Distance from the flag to the nearest edge of the header.
 //   end-2 = 8px   end-3 = 12px   end-4 = 16px   end-8 = 32px
 const FLAG_END_CLASS = 'end-3';
-// ──────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────
 
 const FLAG_SRC: Record<MarketCode, string> = {
   JO: '/flags/jo.jpg',
@@ -29,6 +29,7 @@ const FLAG_SRC: Record<MarketCode, string> = {
   LB: '/flags/lb.jpg',
   PS: '/flags/ps.jpg',
   SY: '/flags/sy.jpg',
+  KW: '/flags/kw.jpg',
 };
 
 /**
