@@ -1,4 +1,4 @@
-export type MarketCode = 'JO' | 'SA' | 'LB' | 'PS' | 'SY';
+export type MarketCode = 'JO' | 'SA' | 'LB' | 'PS' | 'SY' | 'KW';
 
 export interface ChatMessageRow {
   readonly id: string;
