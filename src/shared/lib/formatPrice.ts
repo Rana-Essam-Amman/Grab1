@@ -20,6 +20,7 @@ export function formatPrice(
     ILS: { ar: 'شيكل', en: 'ILS' },
     AED: { ar: 'درهم', en: 'AED' },
     EGP: { ar: 'جنيه', en: 'EGP' },
+    KWD: { ar: 'دينار كويتي', en: 'KWD' },
   };
 
   const code = (currencyCode || '').toUpperCase();
