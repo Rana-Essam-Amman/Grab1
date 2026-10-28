@@ -72,7 +72,7 @@ export const ExploreTopSections: React.FC<ExploreTopSectionsProps> = ({ displayL
   const marketLabel = {
     JO: isArabic ? 'عمّان' : 'Amman', SA: isArabic ? 'الرياض' : 'Riyadh',
     PS: isArabic ? 'القدس' : 'Jerusalem', LB: isArabic ? 'بيروت' : 'Beirut',
-    SY: isArabic ? 'دمشق' : 'Damascus',
+    SY: isArabic ? 'دمشق' : 'Damascus', KW: isArabic ? 'الكويت' : 'Kuwait',
   }[browseCountryCode] || browseCountryCode;
 
   return (
