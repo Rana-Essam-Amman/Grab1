@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface CountrySelectorTabsProps {
-  filteredCountries: Array<{ code: 'JO' | 'LB' | 'PS' | 'SY' | 'SA'; nameEn: string; nameAr: string; flagUrl: string }>;
+  filteredCountries: Array<{ code: 'JO' | 'LB' | 'PS' | 'SY' | 'SA' | 'KW'; nameEn: string; nameAr: string; flagUrl: string }>;
   selectedCountry: string;
   isArabic: boolean;
   handleCountryChange: (code: string) => void;
