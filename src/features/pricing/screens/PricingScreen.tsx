@@ -27,7 +27,7 @@ const MarketRow: React.FC<MarketRowProps> = ({ code, isArabic }) => {
 export const PricingScreen: React.FC = () => {
   const { isArabic, goBack } = useUI();
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
-  const markets = ['JO', 'SA', 'LB', 'PS', 'SY'];
+  const markets = ['JO', 'SA', 'LB', 'PS', 'SY', 'KW'];
 
   return (
     <div className="flex flex-col min-h-screen bg-surface pb-12" dir={isArabic ? 'rtl' : 'ltr'}>
