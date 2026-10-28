@@ -9,7 +9,7 @@ import { getWhatsAppUrl } from '@/features/listings/helpers/listingDerivedData';
 import { capture } from '@/shared/analytics/posthog';
 import { EVENTS } from '@/shared/analytics/events';
 import { globalStorage } from '@/shared/lib/marketStorage';
-import { showChatUnavailable, showChatOpenFailed, showChatCrossMarket } from '@/features/listings/helpers/chatErrorToast';
+import { showChatOpenFailed, showChatCrossMarket } from '@/features/listings/helpers/chatErrorToast';
 import { toast } from 'sonner';
 import type { Listing } from '@/types';
 
