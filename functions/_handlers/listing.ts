@@ -9,7 +9,7 @@ import {
 } from '../_shared/listingMeta';
 import { buildJsonLd } from '../_shared/listingJsonLd';
 
-const MARKETS_LOWER = ['jo', 'sa', 'lb', 'ps', 'sy'];
+const MARKETS_LOWER = ['jo', 'sa', 'lb', 'ps', 'sy', 'kw'];
 const UUID_LENGTH = 36;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
