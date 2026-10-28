@@ -9,6 +9,7 @@ export interface AllLocations {
   LB: CountryLocations;
   PS: CountryLocations;
   SY: CountryLocations;
+  KW: CountryLocations;
 }
 
 export interface DefaultCapital {
@@ -63,7 +64,7 @@ export interface Governorate {
 }
 
 export interface CountryGeo {
-  readonly countryCode: 'JO' | 'LB' | 'PS' | 'SY' | 'SA';
+  readonly countryCode: 'JO' | 'LB' | 'PS' | 'SY' | 'SA' | 'KW';
   readonly governorates: readonly Governorate[];
   readonly refugeeCamps: readonly RefugeeCamp[];
   readonly landmarks: readonly Landmark[];
