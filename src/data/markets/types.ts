@@ -6,7 +6,7 @@
  * market. No cross-market visibility, storage, or AI behavior is allowed.
  */
 
-export type MarketCode = 'JO' | 'LB' | 'PS' | 'SY' | 'SA';
+export type MarketCode = 'JO' | 'LB' | 'PS' | 'SY' | 'SA' | 'KW';
 export type MarketLocale = 'ar' | 'en';
 export type TextDirection = 'rtl' | 'ltr';
 
