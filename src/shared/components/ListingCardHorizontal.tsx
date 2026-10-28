@@ -2,6 +2,7 @@ import React, { useMemo, useCallback } from 'react';
 import { Listing } from '@/types';
 import { BookmarkHeartButton } from './BookmarkHeartButton';
 import { Icon } from '@iconify/react';
+import { Crown } from 'iconsax-react';
 import { RequiredSpecsRow } from '@/features/listings/components/RequiredSpecsRow';
 import { toOptimizedImageUrl } from '@/shared/lib/optimizedImage';
 import { formatPrice } from '@/shared/lib/formatPrice';
@@ -56,6 +57,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
       className={`${premiumClasses} rounded-2xl shadow-md flex flex-col overflow-hidden cursor-pointer hover:border-primary/60 transition-all active:scale-[0.99]`}
       dir={isArabic ? 'rtl' : 'ltr'}
     >
+      {/* Header: Seller Info & Heart */}
       <div className="flex items-center justify-between gap-2 p-3 pb-2">
         <div className="flex items-center gap-2 cursor-pointer flex-1" onClick={handleSellerClick}>
           <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
@@ -68,8 +70,20 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
         </div>
       </div>
 
-      <ListingImageCollage images={displayImages} onImageError={handleImageError} />
+      {/* Image Collage with Premium Badge */}
+      <div className="relative w-full">
+        <ListingImageCollage images={displayImages} onImageError={handleImageError} />
+        {listing.isPremium && (
+          <div className="absolute top-2 start-2 z-10">
+            <span className="bg-accent text-ink-inverse text-[11px] font-bold px-2 py-1 rounded-md shadow-md flex items-center gap-1">
+              <Crown size={13} variant="Bold" color="#FFFFFF" />
+              {isArabic ? 'مُميز' : 'Featured'}
+            </span>
+          </div>
+        )}
+      </div>
 
+      {/* Body: Price, Title, Specs, Location */}
       <div className="p-3 flex flex-col flex-1">
         <div className="text-[22px] font-extrabold text-danger mb-1">
           {formatPrice(listing.price, listing.currency, isArabic)}
@@ -101,6 +115,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
           )}
         </div>
 
+        {/* Contact Actions */}
         <CardContactActions listing={listing} isArabic={isArabic} />
       </div>
     </div>
