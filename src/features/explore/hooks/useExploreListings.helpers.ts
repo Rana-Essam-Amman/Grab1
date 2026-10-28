@@ -10,8 +10,9 @@ export const computeAdaptiveFilterMode = (userMode: 'city' | 'all' | null, cityC
 
 /**
  * Resolve filterMode with capital-city awareness.
- * If the user picked a non-capital city, force 'city' mode so only that
- * city shows. Otherwise defer to computeAdaptiveFilterMode (D6 default 'all').
+ * Priority 1: User's explicit choice ('all' or 'city').
+ * Priority 2: If user hasn't chosen, check if current city differs from capital.
+ * Priority 3: Otherwise, fall back to adaptive density check.
  */
 export const computeFilterModeWithCapital = (
   browseCountryCode: MarketCode,
@@ -20,9 +21,22 @@ export const computeFilterModeWithCapital = (
   cityCount: number,
   minDensity: number,
 ): 'city' | 'all' => {
+  // 1. If user explicitly set 'all', respect it (don't override with city filter)
+  if (userFilterMode === 'all') {
+    return 'all';
+  }
+
+  // 2. If user explicitly set 'city', respect it
+  if (userFilterMode === 'city') {
+    return 'city';
+  }
+
+  // 3. Fallback: if browseCityEn differs from capital, force city mode
   const capital = DEFAULT_REGIONAL_CAPITALS[browseCountryCode];
   if (capital && browseCityEn && browseCityEn !== capital.cityEn) {
     return 'city';
   }
-  return computeAdaptiveFilterMode(userFilterMode, cityCount, minDensity);
+
+  // 4. Final fallback: adaptive density check
+  return cityCount >= minDensity ? 'city' : 'all';
 };
