@@ -2,7 +2,7 @@
 import type { MarketConfig, MarketCode, MarketLocale, TextDirection } from './types';
 
 /**
- * THE 5 MARKETS — single source of truth.
+ * THE 6 MARKETS — single source of truth.
  * Markets are FULLY ISOLATED. No behavior may cross this boundary.
  */
 export const MARKETS: Record<MarketCode, MarketConfig> = {
@@ -67,11 +67,23 @@ export const MARKETS: Record<MarketCode, MarketConfig> = {
     dialect: 'gulf',
     prefersEnglishContent: false,
   },
+  KW: {
+    code: 'KW',
+    nameAr: 'الكويت',
+    nameEn: 'Kuwait',
+    defaultLocale: 'ar',
+    fallbackLocale: 'en',
+    defaultCurrency: 'KWD',
+    allowedCurrencies: ['KWD'],
+    direction: 'rtl',
+    dialect: 'gulf',
+    prefersEnglishContent: false,
+  },
 };
 
 export const DEFAULT_MARKET_CODE: MarketCode = 'JO';
 
-export const ALL_MARKET_CODES: readonly MarketCode[] = ['JO', 'LB', 'PS', 'SY', 'SA'];
+export const ALL_MARKET_CODES: readonly MarketCode[] = ['JO', 'LB', 'PS', 'SY', 'SA', 'KW'];
 
 /** Type guard — narrows a string to a valid MarketCode. */
 export function isValidMarketCode(code: unknown): code is MarketCode {
