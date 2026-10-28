@@ -14,35 +14,32 @@ interface CardContactActionsProps {
 
 export const CardContactActions: React.FC<CardContactActionsProps> = ({ listing, isArabic }) => {
   const { revealPhone, isRevealing } = useRevealPhone(listing.id, listing.sellerPhone, isArabic, listing.countryCode);
-  const hasPhone = Boolean(listing.sellerPhone);
 
   const handleCall = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
     if (isRevealing) return;
-    if (!hasPhone) {
-      toast.error(isArabic ? 'البائع لم يضع رقم هاتف' : 'Seller has no phone number');
-      return;
-    }
     capture(EVENTS.CONTACT_SELLER_CLICKED, { method: 'call', source: 'card' });
     const num = await revealPhone();
-    if (num) window.location.href = `tel:${num}`;
-  }, [hasPhone, isRevealing, revealPhone, isArabic]);
+    if (num) {
+      window.location.href = `tel:${num}`;
+    } else {
+      toast.error(isArabic ? 'البائع لم يضع رقم هاتف' : 'Seller has no phone number');
+    }
+  }, [isRevealing, revealPhone, isArabic]);
 
   const handleWhatsApp = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
     if (isRevealing) return;
-    if (!hasPhone) {
-      toast.error(isArabic ? 'البائع لم يضع رقم هاتف' : 'Seller has no phone number');
-      return;
-    }
     capture(EVENTS.CONTACT_SELLER_CLICKED, { method: 'whatsapp', source: 'card' });
     const num = await revealPhone();
     if (num) {
       window.open(getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: num, listingTitle: listing.title, isArabic }), '_blank');
+    } else {
+      toast.error(isArabic ? 'البائع لم يضع رقم هاتف' : 'Seller has no phone number');
     }
-  }, [hasPhone, isRevealing, revealPhone, listing, isArabic]);
+  }, [isRevealing, revealPhone, listing, isArabic]);
 
   return (
     <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border" onClick={(e) => e.stopPropagation()}>
