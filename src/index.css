@@ -181,6 +181,5 @@
 
 /* تحسين السكرول على الموبايل */
 html, body {
-  overscroll-behavior-y: contain; /* يسمح بالـ Pull-to-Refresh ويمنع الارتداد المزعج */
   -webkit-overflow-scrolling: touch; /* يحسن سلاسة السكرول في iOS */
-        }
+}
