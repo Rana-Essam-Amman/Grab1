@@ -1,16 +1,16 @@
 /**
  * Image URL helper for card thumbnails.
  *
- * IMPORTANT: The Supabase transform endpoint (/render/image/public/...)
- * strips EXIF orientation metadata, which causes portrait photos taken on
- * phones (stored as landscape pixels + EXIF rotate flag) to render rotated
- * or cropped.
+ * Supabase Storage URLs are proxied through wsrv.nl for WebP conversion,
+ * resizing, and EXIF autorotation.
  *
- * Therefore: for card thumbnails we use the ORIGINAL URL — EXIF is
- * preserved, browser auto-rotates correctly. WebP optimization is skipped
- * for cards (acceptable — thumbnails are 136px, the win is negligible).
+ * wsrv.nl uses libvips autorot() to physically rotate pixels before stripping
+ * metadata, so portrait photos taken on phones render correctly (unlike
+ * Supabase's native /render/image/ transform which strips EXIF and can
+ * cause rotated or cropped images).
  *
- * Source: https://stackoverflow.com/questions/77402332/nuxt3-nuxtimg-image-rotate-90-when-i-use-nuxtimg
+ * Local assets still prefer a .webp sibling when available.
+ * External URLs are returned unchanged.
  */
 export interface OptimizedImageOptions {
   readonly width?: number;
@@ -31,10 +31,14 @@ export function toOptimizedImageUrl(
     return url.replace(/\.(jpe?g|png)$/i, '.webp');
   }
 
-  // Supabase Storage: RETURN ORIGINAL URL — do NOT use transform.
-  // Transform strips EXIF → portrait photos appear rotated/cropped.
+  // Supabase Storage: proxy through wsrv.nl for WebP + resize + EXIF autorotate.
+  // wsrv.nl uses libvips autorot() to physically rotate pixels before stripping metadata,
+  // so portrait photos render correctly (unlike Supabase's native transform).
   if (SUPABASE_OBJECT_RE.test(url)) {
-    return url;
+    const width = opts.width ?? 600;
+    const quality = opts.quality ?? 80;
+    const encoded = encodeURIComponent(url);
+    return `https://wsrv.nl/?url=${encoded}&w=${width}&output=webp&q=${quality}`;
   }
 
   return url;
