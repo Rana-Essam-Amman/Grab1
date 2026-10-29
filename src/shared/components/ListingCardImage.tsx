@@ -14,16 +14,18 @@ export interface ListingCardImageProps {
   readonly sellerName?: string;
   readonly sellerKey?: string;
   readonly onImageError: (e: React.SyntheticEvent<HTMLImageElement>) => void;
+  readonly priority?: boolean;
 }
 
 export const ListingCardImage: React.FC<ListingCardImageProps> = ({
-  imageUrl, title, isPremium, listingId, isArabic, onImageError,
+  imageUrl, title, isPremium, listingId, isArabic, onImageError, priority = false,
 }) => (
   <div className="w-full aspect-square bg-background relative overflow-hidden">
     <img
       src={toOptimizedImageUrl(imageUrl, { width: 600, quality: 75 })}
       alt={title}
-      loading="lazy"
+      loading={priority ? "eager" : "lazy"}
+      fetchPriority={priority ? "high" : undefined}
       decoding="async"
       className="w-full h-full object-cover object-center transition-transform duration-300"
       onError={onImageError}
