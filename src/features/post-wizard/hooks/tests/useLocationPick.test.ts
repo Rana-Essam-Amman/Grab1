@@ -100,32 +100,25 @@ describe('useLocationPick', () => {
     expect(draft.city).toBe('العاصمة');
   });
 
-  it('saveAndContinue uses BOTH custom fields when user selects Other and types in both', () => {
+  it('saveAndContinue BLOCKS save when user selects Other with unresolved custom text', () => {
     const { result } = renderHook(() => useLocationPick());
-    const fakeCity = 'مدينة_مخصصة_جديدة';
-    const fakeNeighborhood = 'حي_مخصص_جديد';
-    
-    // Simulate: user selects "Other" for city (this auto-sets neighborhood to "Other" too)
     act(() => {
       result.current.handleCityChange('أخرى');
+      result.current.setCustomCity('مدينة_مخصصة_جديدة');
+      result.current.handleNeighborhoodChange('أخرى');
+      result.current.setCustomNeighborhood('منطقة_مخصصة_جديدة');
     });
-    
-    // Then user types in BOTH custom inputs (city + neighborhood)
-    act(() => {
-      result.current.setCustomCity(fakeCity);
-      result.current.setCustomNeighborhood(fakeNeighborhood);
-    });
-    
-    // Now canContinue should be true
-    expect(result.current.canContinue).toBe(true);
-    expect(result.current.validationError).toBeNull();
-    
+
+    const draftBefore = useDraftStore.getState().postDraft;
+    const cityBefore = draftBefore.city;
+
     act(() => {
       result.current.saveAndContinue();
     });
-    
-    const draft = useDraftStore.getState().postDraft;
-    expect(draft.city).toBe(fakeCity);
-    expect(draft.neighborhood).toBe(fakeNeighborhood);
+
+    const draftAfter = useDraftStore.getState().postDraft;
+    expect(draftAfter.city).toBe(cityBefore);
+    expect(draftAfter.citySlug).toBeUndefined();
+    expect(draftAfter.districtSlug).toBeUndefined();
   });
 });
