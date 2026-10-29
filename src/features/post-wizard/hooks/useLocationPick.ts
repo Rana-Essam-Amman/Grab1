@@ -5,6 +5,7 @@ import { useUI } from '@/hooks/useUI';
 import { getAllGovernorates, getAllDistricts, getAllCamps } from '@/data/locations/registry';
 import { isOtherValue, OTHER_AR, OTHER_EN } from '@/data/locations';
 import { googleSearchQuery } from '@/data/mapUrls';
+import { toast } from 'sonner';
 
 export interface UseLocationPickReturn {
   cities: string[];
@@ -247,6 +248,15 @@ export function useLocationPick(): UseLocationPickReturn {
       : selectedNeighborhood;
 
     const { citySlug, districtSlug, neighborhoodSlug } = resolveSlugsAtSave(finalCity, finalNeighborhood);
+
+    if (!citySlug) {
+      toast.error(isArabic ? 'الرجاء اختيار المدينة من القائمة' : 'Please select the city from the list');
+      return;
+    }
+    if (!districtSlug && !neighborhoodSlug) {
+      toast.error(isArabic ? 'الرجاء اختيار المنطقة من القائمة' : 'Please select the area from the list');
+      return;
+    }
 
     updatePostDraft({
       city: finalCity,
