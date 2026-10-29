@@ -73,7 +73,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
           padding: '40px 20px',
           background: 'var(--color-canvas, #F9FAFB)',
           color: 'var(--color-ink, #111827)',
-          fontFamily: 'var(--font-arabic, "IBM Plex Sans Arabic", system-ui, sans-serif)',
+          fontFamily: 'var(--font-arabic, "Almarai", system-ui, sans-serif)',
           minHeight: '100vh',
           display: 'flex',
           flexDirection: 'column',
