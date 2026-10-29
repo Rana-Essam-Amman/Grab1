@@ -13,8 +13,7 @@ import { useAiReviewAttributes } from './useAiReviewAttributes';
 import type { UseAiReviewReturn } from './useAiReview.types';
 import { useRegenerateListing } from './useRegenerateListing';
 import { getCurrentUser, requirePhoneForPublish } from '@/features/auth/helpers/publishPhoneGuard';
-import { capture } from '@/shared/analytics/posthog'; import { EVENTS } from '@/shared/analytics/events';
-export type { UseAiReviewReturn } from './useAiReview.types';
+import { capture } from '@/shared/analytics/posthog'; import { EVENTS } from '@/shared/analytics/events'; export type { UseAiReviewReturn } from './useAiReview.types';
 export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => void } {
   const { postDraft, updatePostDraft } = usePostWizard();
   const { resetPostDraft } = useDraft();
