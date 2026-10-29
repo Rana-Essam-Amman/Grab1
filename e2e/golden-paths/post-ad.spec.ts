@@ -46,7 +46,12 @@ async function reachDetailsScreen(page: Page) {
 
   const citySelect = page.locator(SELECTORS.postAd.citySelect).first();
   if ((await citySelect.count()) > 0) {
-    await citySelect.selectOption({ index: 0 });
+    await citySelect.selectOption({ label: 'العاصمة' });
+    await page.waitForTimeout(300);
+  }
+  const neighborhoodSelect = page.locator(SELECTORS.postAd.neighborhoodSelect).nth(1);
+  if ((await neighborhoodSelect.count()) > 0) {
+    await neighborhoodSelect.selectOption({ label: 'العبدلي' });
   }
 
   const continueBtn = page
@@ -167,7 +172,12 @@ test.describe('Golden Path 2 — Post Ad Wizard (Unified Flow)', () => {
     const citySelect = loggedInPage.locator(SELECTORS.postAd.citySelect).first();
     if ((await citySelect.count()) > 0) {
       await expect(citySelect).toBeVisible({ timeout: 5000 });
-      await citySelect.selectOption({ index: 0 });
+      await citySelect.selectOption({ label: 'العاصمة' });
+      await loggedInPage.waitForTimeout(300);
+    }
+    const neighborhoodSelect = loggedInPage.locator(SELECTORS.postAd.neighborhoodSelect).nth(1);
+    if ((await neighborhoodSelect.count()) > 0) {
+      await neighborhoodSelect.selectOption({ label: 'العبدلي' });
     }
 
     const continueBtn = loggedInPage
