@@ -1,7 +1,7 @@
 /**
  * Client-side image compression using Canvas API.
  * Reduces 5MB phone photos to ~300KB without visible quality loss.
- * Skips when input is small (< 500KB) or SVG/GIF.
+ * Skips only SVG/GIF or truly tiny files (< 50KB). All real photos go through EXIF orientation fix.
  */
 
 import {
@@ -13,7 +13,7 @@ import {
 
 const MAX_DIMENSION = 1600;
 const JPEG_QUALITY = 0.75;
-const SKIP_THRESHOLD_BYTES = 500 * 1024;
+const SKIP_THRESHOLD_BYTES = 50 * 1024;
 
 export interface CompressResult {
   readonly dataUrl: string;
