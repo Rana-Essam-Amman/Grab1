@@ -39,13 +39,13 @@ export const CardContactActions: React.FC<CardContactActionsProps> = ({ listing,
     e.stopPropagation();
     e.preventDefault();
     if (isRevealing) return;
-    
+
     capture(EVENTS.CONTACT_SELLER_CLICKED, { method: 'call', source: 'card' });
     toast.loading(isArabic ? 'جاري جلب الرقم...' : 'Fetching...', { id: 'fetch-phone' });
-    
+
     const num = await revealPhone();
     toast.dismiss('fetch-phone');
-    
+
     if (num) {
       window.location.href = `tel:${num}`;
     }
@@ -55,15 +55,15 @@ export const CardContactActions: React.FC<CardContactActionsProps> = ({ listing,
     e.stopPropagation();
     e.preventDefault();
     if (isRevealing) return;
-    
+
     const newWindow = window.open('', '_blank');
-    
+
     capture(EVENTS.CONTACT_SELLER_CLICKED, { method: 'whatsapp', source: 'card' });
     toast.loading(isArabic ? 'جاري جلب الرقم...' : 'Fetching...', { id: 'fetch-phone' });
-    
+
     const num = await revealPhone();
     toast.dismiss('fetch-phone');
-    
+
     if (num) {
       const url = getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: num, listingTitle: listing.title, isArabic });
       if (newWindow) {
@@ -102,7 +102,8 @@ export const CardContactActions: React.FC<CardContactActionsProps> = ({ listing,
   }, [chatState, authStatus, user, navigateTo, openConversation, setSelectedThreadId, browseCountryCode, isArabic, listing]);
 
   return (
-    <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border" onClick={(e) => e.stopPropagation()}>
+    // الخط الفاصل اتنقل هنا لتحت الأزرار (border-b بدل border-t)، وضبطنا المسافات
+    <div className="flex items-center gap-2 mt-3 pt-3 pb-3 border-b border-border" onClick={(e) => e.stopPropagation()}>
       <button
         onClick={handleChat}
         className={`flex-1 h-[44px] rounded-xl flex items-center justify-center gap-1.5 font-bold text-[13px] transition-all shadow-sm ${
@@ -112,7 +113,7 @@ export const CardContactActions: React.FC<CardContactActionsProps> = ({ listing,
         <Message size={16} variant="Bold" />
         <span>{isArabic ? 'دردشة' : 'Chat'}</span>
       </button>
-      
+
       <button
         onClick={handleWhatsApp}
         className="flex-1 h-[44px] rounded-xl flex items-center justify-center gap-1.5 font-bold text-[13px] transition-all shadow-sm bg-whatsapp text-white hover:bg-whatsapp-hover active:scale-95"
@@ -120,7 +121,7 @@ export const CardContactActions: React.FC<CardContactActionsProps> = ({ listing,
         <Whatsapp size={16} variant="Bold" />
         <span>{isArabic ? 'واتساب' : 'WhatsApp'}</span>
       </button>
-      
+
       <button
         onClick={handleCall}
         className="flex-1 h-[44px] rounded-xl flex items-center justify-center gap-1.5 font-bold text-[13px] transition-all shadow-sm bg-primary text-white hover:bg-primary/90 active:scale-95"
