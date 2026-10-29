@@ -7,6 +7,7 @@ const MARKET_EN: Record<string, string> = {
   LB: 'Lebanon',
   PS: 'Palestine',
   SY: 'Syria',
+  KW: 'Kuwait',
 };
 
 const CATEGORY_EN: Record<string, string> = {
