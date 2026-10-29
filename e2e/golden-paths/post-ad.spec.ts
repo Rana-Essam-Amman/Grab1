@@ -3,6 +3,19 @@ import { test, expect } from '../fixtures';
 import { setupConsoleErrorListener, expectNoConsoleErrors } from '../helpers/assertions';
 import { SELECTORS } from '../constants/selectors';
 
+async function selectSearchableDropdown(page: Page, wrapperTestId: string, optionLabel: string): Promise<void> {
+  const wrapper = page.locator(`[data-testid="${wrapperTestId}"]`);
+  await expect(wrapper).toBeVisible({ timeout: 5000 });
+  const trigger = wrapper.locator('button').first();
+  await trigger.click();
+  await page.waitForTimeout(300);
+  // Option is a button with role="option"
+  const option = page.locator(`button[role="option"]`).filter({ hasText: optionLabel }).first();
+  await expect(option).toBeVisible({ timeout: 5000 });
+  await option.click();
+  await page.waitForTimeout(300);
+}
+
 async function pickFirstNonEmptyOption(page: Page, testId: string): Promise<void> {
   const field = page.locator(`[data-testid="${testId}"]`).first();
   if ((await field.count()) === 0) return;
@@ -44,15 +57,8 @@ async function reachDetailsScreen(page: Page) {
   await expect(samplePhotoBtn).toBeVisible({ timeout: 5000 });
   await samplePhotoBtn.click();
 
-  const citySelect = page.locator(SELECTORS.postAd.citySelect).first();
-  if ((await citySelect.count()) > 0) {
-    await citySelect.selectOption({ label: 'العاصمة' });
-    await page.waitForTimeout(300);
-  }
-  const neighborhoodSelect = page.locator(SELECTORS.postAd.neighborhoodSelect).nth(1);
-  if ((await neighborhoodSelect.count()) > 0) {
-    await neighborhoodSelect.selectOption({ label: 'العبدلي' });
-  }
+  await selectSearchableDropdown(page, 'location-city-wrapper', 'العاصمة');
+  await selectSearchableDropdown(page, 'location-neighborhood-wrapper', 'العبدلي');
 
   const continueBtn = page
     .locator('button')
@@ -169,16 +175,8 @@ test.describe('Golden Path 2 — Post Ad Wizard (Unified Flow)', () => {
     await expect(samplePhotoBtn).toBeVisible({ timeout: 5000 });
     await samplePhotoBtn.click();
 
-    const citySelect = loggedInPage.locator(SELECTORS.postAd.citySelect).first();
-    if ((await citySelect.count()) > 0) {
-      await expect(citySelect).toBeVisible({ timeout: 5000 });
-      await citySelect.selectOption({ label: 'العاصمة' });
-      await loggedInPage.waitForTimeout(300);
-    }
-    const neighborhoodSelect = loggedInPage.locator(SELECTORS.postAd.neighborhoodSelect).nth(1);
-    if ((await neighborhoodSelect.count()) > 0) {
-      await neighborhoodSelect.selectOption({ label: 'العبدلي' });
-    }
+    await selectSearchableDropdown(loggedInPage, 'location-city-wrapper', 'العاصمة');
+    await selectSearchableDropdown(loggedInPage, 'location-neighborhood-wrapper', 'العبدلي');
 
     const continueBtn = loggedInPage
       .locator('button')
