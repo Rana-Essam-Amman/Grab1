@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { User, Global, Heart, Notification, MessageQuestion, Setting2, People } from 'iconsax-react';
 import { MARKETS } from '@/data/markets/config';
 import type { MarketCode } from '@/data/markets/types';
@@ -7,59 +8,41 @@ import { useUI } from '@/hooks/useUI';
 interface HeaderDropdownMenuProps {
   isArabic: boolean;
   browseCountry: { nameAr: string; nameEn: string; flagUrl: string; currencies: Array<{ code: string }> };
-  displayCityAr: string;
-  displayCityEn: string;
-  handleMenuClose: () => void;
-  handleProfileNav: () => void;
-  handleSettingsNav: () => void;
-  handleLanguageToggle: () => void;
-  handleWishlistNav: () => void;
-  wishlistLength: number;
-  handleNotificationsNav: () => void;
-  handleSocialNav: () => void;
-  activeCurrency: string;
-  handleCurrencySelect: (code: string) => void;
+  displayCityAr: string; displayCityEn: string; handleMenuClose: () => void; handleProfileNav: () => void;
+  handleSettingsNav: () => void; handleLanguageToggle: () => void; handleWishlistNav: () => void; wishlistLength: number;
+  handleNotificationsNav: () => void; handleSocialNav: () => void; activeCurrency: string; handleCurrencySelect: (code: string) => void;
   setIsCountrySheetOpen: (open: boolean) => void;
 }
 
 export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
-  handleMenuClose,
-  handleProfileNav,
-  handleSettingsNav,
-  handleLanguageToggle,
-  handleWishlistNav,
-  wishlistLength,
-  handleNotificationsNav,
-  handleSocialNav,
-  setIsCountrySheetOpen,
+  handleMenuClose, handleProfileNav, handleSettingsNav, handleLanguageToggle, handleWishlistNav, wishlistLength,
+  handleNotificationsNav, handleSocialNav, setIsCountrySheetOpen,
 }) => {
   const { browseCountryCode, isArabic } = useUI();
   const market = MARKETS[browseCountryCode as MarketCode];
+
   return (
     <>
-      {/* Backdrop covers entire screen to handle outside click closing */}
-      <div
-        className="fixed inset-0 z-[99] cursor-pointer"
-        onClick={handleMenuClose}
-      />
+      {/* استخدام createPortal لعزل الخلفية عن الـ Transform بتاع الهيدر */}
+      {createPortal(
+        <div
+          className="fixed inset-0 z-[99] cursor-pointer"
+          onClick={handleMenuClose}
+        />,
+        document.body
+      )}
+      
       {/* Dropdown panel */}
       <div className="absolute top-full start-0 w-72 mt-1 z-[100] bg-surface rounded-2xl border border-border shadow-2xl overflow-hidden">
         <div className="divide-y divide-border bg-surface flex flex-col">
           <button
             type="button"
             data-testid="header-market-btn"
-            onClick={() => {
-              setIsCountrySheetOpen(true);
-              handleMenuClose();
-            }}
+            onClick={() => { setIsCountrySheetOpen(true); handleMenuClose(); }}
             className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-canvas/40 active:bg-canvas/60 border-b border-border"
           >
             <span className="text-sm font-bold text-ink flex items-center gap-2">
-              <img
-                src={`/flags/${browseCountryCode.toLowerCase()}.jpg`}
-                alt=""
-                className="w-5 h-5 rounded-full object-cover"
-              />
+              <img src={`/flags/${browseCountryCode.toLowerCase()}.jpg`} alt="" className="w-5 h-5 rounded-full object-cover" />
               <span>{isArabic ? market.nameAr : market.nameEn}</span>
             </span>
             <Global variant="Bold" size={22} color="#0EA5E9" className="shrink-0" />
@@ -68,36 +51,28 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
             onClick={() => { handleSocialNav(); handleMenuClose(); }}
             className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-canvas/40 active:bg-canvas/60"
           >
-            <span className="text-sm font-bold text-ink">
-              {isArabic ? 'مجتمع FOX' : 'FOX Community'}
-            </span>
+            <span className="text-sm font-bold text-ink">{isArabic ? 'مجتمع FOX' : 'FOX Community'}</span>
             <People variant="Bold" size={22} color="#3B82F6" className="shrink-0" />
           </button>
           <button
             onClick={() => { handleProfileNav(); handleMenuClose(); }}
             className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-canvas/40 active:bg-canvas/60"
           >
-            <span className="text-sm font-bold text-ink">
-              {isArabic ? 'الملف الشخصي' : 'My Profile'}
-            </span>
+            <span className="text-sm font-bold text-ink">{isArabic ? 'الملف الشخصي' : 'My Profile'}</span>
             <User variant="Bold" size={22} color="#B85CF6" className="shrink-0" />
           </button>
           <button
             onClick={() => { handleSettingsNav(); handleMenuClose(); }}
             className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-canvas/40 active:bg-canvas/60"
           >
-            <span className="text-sm font-bold text-ink">
-              {isArabic ? 'إعدادات الحساب' : 'Account Settings'}
-            </span>
+            <span className="text-sm font-bold text-ink">{isArabic ? 'إعدادات الحساب' : 'Account Settings'}</span>
             <Setting2 variant="Bold" size={22} color="#64748B" className="shrink-0" />
           </button>
           <button
             onClick={() => { handleLanguageToggle(); handleMenuClose(); }}
             className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-canvas/40 active:bg-canvas/60"
           >
-            <span className="text-sm font-bold text-ink">
-              {isArabic ? 'English' : 'العربية'}
-            </span>
+            <span className="text-sm font-bold text-ink">{isArabic ? 'English' : 'العربية'}</span>
             <Global variant="Bold" size={22} color="#16A34A" className="shrink-0" />
           </button>
           <button
@@ -118,9 +93,7 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
             onClick={() => { handleNotificationsNav(); handleMenuClose(); }}
             className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-canvas/40 active:bg-canvas/60"
           >
-            <span className="text-sm font-bold text-ink">
-              {isArabic ? 'الإشعارات والتنبيهات' : 'Notifications & Alerts'}
-            </span>
+            <span className="text-sm font-bold text-ink">{isArabic ? 'الإشعارات والتنبيهات' : 'Notifications & Alerts'}</span>
             <Notification variant="Bold" size={22} color="#F59E0B" className="shrink-0" />
           </button>
           <a
@@ -128,9 +101,7 @@ export const HeaderDropdownMenu: React.FC<HeaderDropdownMenuProps> = ({
             onClick={handleMenuClose}
             className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-start hover:bg-canvas/40 active:scale-[0.99] transition-all bg-surface border-none cursor-pointer no-underline"
           >
-            <span className="text-sm font-bold text-ink">
-              {isArabic ? 'اقتراح أو تواصل' : 'Send Feedback'}
-            </span>
+            <span className="text-sm font-bold text-ink">{isArabic ? 'اقتراح أو تواصل' : 'Send Feedback'}</span>
             <MessageQuestion variant="Bold" size={22} color="#06B6D4" className="shrink-0" />
           </a>
         </div>
