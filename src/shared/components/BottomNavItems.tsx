@@ -68,7 +68,7 @@ export const BottomNavItems: React.FC<BottomNavItemsProps> = ({
         <div className="relative">
           <MessageText variant="Bold" size={24} color={activeTab === 'messages' ? '#E57E25' : '#94A3B8'} />
           {hasUnread && (
-            <span className="absolute -top-1 -right-1.5 w-2.5 h-2.5 rounded-full bg-danger border border-white shadow-xs" />
+            <span className="absolute -top-1 -end-1.5 w-2.5 h-2.5 rounded-full bg-danger border border-white shadow-xs" />
           )}
         </div>
         <span className="text-[10px]">{isArabic ? 'الرسائل' : 'Messages'}</span>
