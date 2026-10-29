@@ -33,6 +33,7 @@ export const MARKET_AR: Record<string, string> = {
   LB: 'لبنان',
   PS: 'فلسطين',
   SY: 'سوريا',
+  KW: 'الكويت',
 };
 
 export const MARKET_EN: Record<string, string> = {
