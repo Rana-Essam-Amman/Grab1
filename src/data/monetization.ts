@@ -53,6 +53,12 @@ export const MONETIZATION_MATRIX: MonetizationMatrix = {
       currencySymbol: "$",
       featuredAdCost: 0.99,
     },
+    KW: {
+      countryCode: "KW",
+      currency: "KWD",
+      currencySymbol: "د.ك",
+      featuredAdCost: 2,
+    },
   },
 };
 
