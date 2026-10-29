@@ -63,19 +63,26 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
           <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
             <span className="text-primary font-bold text-sm">{listing.sellerName?.charAt(0) || '?'}</span>
           </div>
-          <span className="font-semibold text-[13px] text-ink leading-tight hover:underline truncate">{listing.sellerName}</span>
-          <div className="flex items-center gap-1 text-[11px] text-ink-soft truncate ml-1">
+          
+          {/* Seller Name - restricted to 40% width to leave room for location */}
+          <span className="font-semibold text-[13px] text-ink leading-tight hover:underline truncate shrink-0 max-w-[40%]">
+            {listing.sellerName}
+          </span>
+
+          {/* Location & Date Group - takes remaining space */}
+          <div className="flex items-center gap-1 text-[11px] text-ink-soft min-w-0 flex-1 ms-1">
             <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
-            <span className="truncate" dir="auto">{locationText}</span>
+            <span className="truncate min-w-0 flex-1" dir="auto">{locationText}</span>
             {relativeDate && (
               <>
-                <span className="mx-0.5 text-ink-muted">•</span>
+                <span className="mx-0.5 text-ink-muted shrink-0">•</span>
                 <Icon icon="lucide:clock" width={11} height={11} className="shrink-0" />
-                <span className="shrink-0">{relativeDate}</span>
+                <span className="shrink-0 whitespace-nowrap">{relativeDate}</span>
               </>
             )}
           </div>
         </div>
+        
         <div className="shrink-0 z-30">
           <BookmarkHeartButton listingId={listing.id} size="sm" />
         </div>
