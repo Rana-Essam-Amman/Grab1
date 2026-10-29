@@ -1,5 +1,5 @@
-import React, { useRef, useMemo, useCallback } from 'react';
-import { useVirtualizer } from '@tanstack/react-virtual';
+import React, { useMemo } from 'react';
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useUI } from '@/hooks/useUI';
 import { Listing } from '@/types';
 import { ListingCard } from '@/shared/components';
@@ -31,17 +31,17 @@ export const ExploreListingFeed: React.FC<ExploreListingFeedProps> = ({
   isInitialLoading = false,
 }) => {
   const { isArabic } = useUI();
-  const parentRef = useRef<HTMLDivElement | null>(null);
   const isVirtualized = listings.length >= 100;
 
   const rowCount = useMemo(() => (feedLayout === 'grid' ? Math.ceil(listings.length / 2) : listings.length), [listings.length, feedLayout]);
   const estimatedRowHeight = useMemo(() => (feedLayout === 'grid' ? 300 : 140), [feedLayout]);
 
-  const getScrollElement = useCallback(() => parentRef.current, []);
-  const estimateSize = useCallback(() => estimatedRowHeight, [estimatedRowHeight]);
-
-  const rowVirtualizer = useVirtualizer({
-    count: rowCount, getScrollElement, estimateSize, overscan: 4, enabled: isVirtualized,
+  // استخدام useWindowVirtualizer بدلاً من useVirtualizer للاعتماد على سكرول الصفحة الطبيعية
+  const rowVirtualizer = useWindowVirtualizer({
+    count: rowCount,
+    estimateSize: () => estimatedRowHeight,
+    overscan: 4,
+    enabled: isVirtualized,
   });
 
   if (isInitialLoading && listings.length === 0) {
@@ -75,7 +75,8 @@ export const ExploreListingFeed: React.FC<ExploreListingFeedProps> = ({
   }
 
   return (
-    <div ref={parentRef} dir={isArabic ? 'rtl' : 'ltr'} className="w-full max-h-[72vh] overflow-y-auto overflow-x-hidden scroll-smooth" style={{ contain: 'strict' }}>
+    // شيلنا max-h و overflow-y-auto و scroll-smooth عشان نرجع لسكرول الصفحة الطبيعي
+    <div dir={isArabic ? 'rtl' : 'ltr'} className="w-full">
       <div className="w-full relative" style={{ height: `${rowVirtualizer.getTotalSize()}px` }}>
         {rowVirtualizer.getVirtualItems().map((vRow) => {
           if (feedLayout === 'grid') {
