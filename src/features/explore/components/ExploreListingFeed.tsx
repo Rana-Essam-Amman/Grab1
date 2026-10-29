@@ -38,7 +38,7 @@ export const ExploreListingFeed: React.FC<ExploreListingFeedProps> = ({
     if (listRef.current) setScrollMargin(listRef.current.offsetTop);
   }, [listings.length, feedLayout, isVirtualized]);
 
-  const rowVirtualizer = useWindowVirtualizer({ count: rowCount, estimateSize: () => estimatedRowHeight, overscan: 4, enabled: isVirtualized, scrollMargin });
+  const rowVirtualizer = useWindowVirtualizer({ count: rowCount, estimateSize: () => estimatedRowHeight, overscan: 4, enabled: isVirtualized, scrollMargin, useFlushSync: false });
 
   if (isInitialLoading && listings.length === 0) return <ListingsFeedSkeleton layout={feedLayout} />;
 
