@@ -6,7 +6,10 @@ export function useScrollDirection() {
   const scrollDelta = useRef(0);
 
   useEffect(() => {
-    const threshold = 15; // 15px حركة مطلوبة عشان نخفي أو نظهر (منع الحساسية)
+    // 1. لقط مكان السكرول الحالي أول ما الصفحة تفتح (حل مشكلة الـ Refresh)
+    lastScrollY.current = window.scrollY;
+    
+    const threshold = 15; // 15px حركة مطلوبة عشان نخفي أو نظهر
 
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
