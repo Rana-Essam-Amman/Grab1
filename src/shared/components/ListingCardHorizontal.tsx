@@ -58,12 +58,12 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
       dir={isArabic ? 'rtl' : 'ltr'}
     >
       {/* Header: Seller Info & Heart */}
-      <div className="flex items-center justify-between gap-2 p-3 pb-2">
+      <div className="flex items-center justify-between gap-2 p-2.5 pb-1.5">
         <div className="flex items-center gap-2 cursor-pointer flex-1" onClick={handleSellerClick}>
-          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-            <span className="text-primary font-bold text-sm">{listing.sellerName?.charAt(0) || '?'}</span>
+          <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+            <span className="text-primary font-bold text-xs">{listing.sellerName?.charAt(0) || '?'}</span>
           </div>
-          <span className="font-semibold text-[13px] text-ink leading-tight hover:underline">{listing.sellerName}</span>
+          <span className="font-semibold text-[12px] text-ink leading-tight hover:underline">{listing.sellerName}</span>
         </div>
         <div className="shrink-0 z-30">
           <BookmarkHeartButton listingId={listing.id} size="sm" />
@@ -75,8 +75,8 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
         <ListingImageCollage images={displayImages} onImageError={handleImageError} />
         {listing.isPremium && (
           <div className="absolute top-2 start-2 z-10">
-            <span className="bg-accent text-ink-inverse text-[11px] font-bold px-2 py-1 rounded-md shadow-md flex items-center gap-1">
-              <Crown size={13} variant="Bold" color="#FFFFFF" />
+            <span className="bg-accent text-ink-inverse text-[10px] font-bold px-1.5 py-0.5 rounded-md shadow-md flex items-center gap-1">
+              <Crown size={12} variant="Bold" color="#FFFFFF" />
               {isArabic ? 'مُميز' : 'Featured'}
             </span>
           </div>
@@ -84,16 +84,16 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
       </div>
 
       {/* Body: Price, Title, Specs, Location */}
-      <div className="p-3 flex flex-col flex-1">
-        <div className="text-[22px] font-extrabold text-danger mb-2">
+      <div className="p-2.5 flex flex-col flex-1">
+        <div className="text-[18px] font-extrabold text-danger mb-1">
           {formatPrice(listing.price, listing.currency, isArabic)}
         </div>
 
-        <h3 className="font-bold text-[15px] leading-snug line-clamp-2 text-ink mb-3" dir="auto">
+        <h3 className="font-bold text-[14px] leading-snug line-clamp-2 text-ink mb-2" dir="auto">
           {stripEmojis(listing.title)}
         </h3>
 
-        <div className="mb-3">
+        <div className="mb-2">
           <RequiredSpecsRow
             categorySlug={listing.categorySlug}
             subcategorySlug={listing.subcategorySlug}
@@ -102,7 +102,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
           />
         </div>
 
-        <div className="flex items-center justify-between gap-1 text-[12px] text-ink-soft mb-1">
+        <div className="flex items-center justify-between gap-1 text-[11px] text-ink-soft mb-1.5">
           <div className="flex items-center gap-1 truncate">
             <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
             <span className="truncate" dir="auto">{locationText}</span>
