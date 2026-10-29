@@ -37,7 +37,7 @@ export const ThreadHeader: React.FC<ThreadHeaderProps> = ({
           <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-surface/15 border border-white/20 shrink-0">
             <img src={imageUrl} alt={title} className="w-full h-full object-cover" onError={handleImageError} />
             {isOtherOnline && (
-              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-success ring-2 ring-brand" />
+              <span className="absolute -bottom-0.5 -end-0.5 w-2.5 h-2.5 rounded-full bg-success ring-2 ring-brand" />
             )}
           </div>
           <div className="min-w-0">
