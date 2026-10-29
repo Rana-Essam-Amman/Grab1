@@ -267,7 +267,7 @@ export function useLocationPick(): UseLocationPickReturn {
       neighborhoodSlug,
     });
     navigateTo("post-details");
-  }, [validationError, selectedCity, selectedNeighborhood, customCity, customNeighborhood, site, resolveSlugsAtSave, updatePostDraft, navigateTo]);
+  }, [validationError, selectedCity, selectedNeighborhood, customCity, customNeighborhood, site, resolveSlugsAtSave, updatePostDraft, navigateTo, isArabic]);
 
   return {
     cities, neighborhoods, selectedCity, selectedNeighborhood, site, customCity, setCustomCity,
