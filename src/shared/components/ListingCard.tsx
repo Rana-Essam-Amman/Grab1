@@ -14,9 +14,10 @@ import { CardContactActions } from './CardContactActions';
 interface ListingCardProps {
   listing: Listing;
   layout?: 'grid' | 'horizontal';
+  priority?: boolean;
 }
 
-function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
+function ListingCardComponent({ listing, layout = 'grid', priority = false }: ListingCardProps) {
   const { setSelectedListingId, navigateTo, isArabic } = useUI();
 
   const sanitizedLoc = useMemo(
@@ -43,7 +44,7 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
   const premiumClasses = listing.isPremium ? 'border-primary/40 bg-primary/5 shadow-sm relative overflow-hidden' : 'border-border bg-surface';
 
   if (layout === 'horizontal') {
-    return <ListingCardHorizontal listing={listing} isArabic={isArabic} locationText={locationText} displayCurrency={listing.currency || ''} premiumClasses={premiumClasses} sellerKey={sellerKey} handleClick={handleClick} handleImageError={handleImageError} />;
+    return <ListingCardHorizontal listing={listing} isArabic={isArabic} locationText={locationText} displayCurrency={listing.currency || ''} premiumClasses={premiumClasses} sellerKey={sellerKey} handleClick={handleClick} handleImageError={handleImageError} priority={priority} />;
   }
 
   return (
@@ -55,7 +56,7 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
       dir={isArabic ? 'rtl' : 'ltr'}
       data-testid="listing-card"
     >
-      <ListingCardImage imageUrl={listing.imageUrl} title={listing.title} isPremium={listing.isPremium} listingId={listing.id} isArabic={isArabic} onImageError={handleImageError} />
+      <ListingCardImage imageUrl={listing.imageUrl} title={listing.title} isPremium={listing.isPremium} listingId={listing.id} isArabic={isArabic} onImageError={handleImageError} priority={priority} />
 
       <div className="p-3 flex flex-col flex-1">
         <div className="text-[18px] font-extrabold text-danger mb-1">
