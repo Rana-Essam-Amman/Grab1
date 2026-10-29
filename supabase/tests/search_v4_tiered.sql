@@ -220,6 +220,53 @@ BEGIN
   RAISE NOTICE 'ALL V4 TIERED WRAPPER TESTS PASSED';
 END $$;
 
+
+-- T3: SECURITY REGRESSION — seller_phone must NEVER leak from search
+DO $$
+DECLARE
+  v_phone text;
+  v_count integer;
+BEGIN
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_tiered('كامري', 'JO', 100, 0) t
+  WHERE t.seller_phone IS NOT NULL;
+
+  IF v_count > 0 THEN
+    RAISE EXCEPTION 'TEST T3 FAIL: % rows leaked seller_phone from search', v_count;
+  END IF;
+
+  RAISE NOTICE 'PASS: T3 phone mask verified across search results';
+END $$;
+
+-- T4: SECURITY REGRESSION — demo listings must be excluded from public search
+DO $$
+DECLARE
+  v_demo_id uuid := '97000000-0000-4000-8000-000000000099'::uuid;
+  v_count integer;
+BEGIN
+  INSERT INTO public.listings (
+    id, user_id, title, description, price, currency, country_code,
+    city, neighborhood, category_slug, subcategory_slug, status,
+    attributes, created_at, is_demo
+  ) VALUES (
+    v_demo_id,
+    '96000000-0000-4000-8000-000000000001'::uuid,
+    'سيارة تجريبية ديمو', 'demo listing for t4 test', '100', 'JOD', 'JO',
+    'Amman', NULL, 'motors', 'cars', 'active', '[]'::jsonb,
+    '2026-10-01T10:00:00Z', true
+  );
+
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_tiered('تجريبية', 'JO', 100, 0) t
+  WHERE t.id = v_demo_id;
+
+  IF v_count > 0 THEN
+    RAISE EXCEPTION 'TEST T4 FAIL: demo listing leaked into public search';
+  END IF;
+
+  RAISE NOTICE 'PASS: T4 demo filter verified';
+END $$;
+
 ROLLBACK;
 
 SELECT 'ALL V4 TIERED WRAPPER TESTS PASSED; FIXTURES ROLLED BACK' AS result;
