@@ -5,6 +5,7 @@ import { useUI } from '@/hooks/useUI';
 import { useListings } from '@/hooks/useListings';
 import { useDraft } from '@/hooks/useDraft';
 import { buildNewListingPayload } from '../helpers/buildNewListingPayload';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { setPendingPublish } from '../helpers/pendingPublishFlags';
 import { MONETIZATION_MATRIX } from '@/data/monetization';
 import { getListingFields } from '@/data/listingFields';
@@ -20,6 +21,7 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
   const { authStatus, user, isAnonymous } = useAuth();
   const { navigateTo, browseCountryCode, activeCurrency, isArabic } = useUI();
   const { publishListing } = useListings();
+  const isAdmin = useIsAdmin();
   const [isPublishing, setIsPublishing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const photos = postDraft.photos || [];
@@ -58,7 +60,7 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
       return;
     }
     if (!requirePhoneForPublish(() => void handlePublish())) return;
-    const { title, price, targetMarket, newListing } = buildNewListingPayload({ postDraft, user: getCurrentUser(), browseCountryCode, activeCurrency });
+    const { title, price, targetMarket, newListing } = buildNewListingPayload({ postDraft, user: getCurrentUser(), browseCountryCode, activeCurrency, isAdmin });
     if (!title || !price) return;
     setIsPublishing(true);
     setError(null);
