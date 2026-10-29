@@ -71,7 +71,7 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
   const startPostFlow = useCallback(() => {
     if (isAdminLoading) return;
     if (freeRemaining <= 0) {
-      toast.error(isArabic ? 'لقد استهلكت إعلاناتك المجانية. يرجى ترقية حسابك أو حذف إعلان قديم.' : 'You have used your free ads. Please upgrade or delete an old ad.');
+      toast.error(isArabic ? 'لقد استهلكت إعلاناتك المجانية. يمكنك شراء إعلانات إضافية للمتابعة.' : 'You have used your free ads. You can buy extra ads to continue.');
       navigateTo('pricing');
       return;
     }
