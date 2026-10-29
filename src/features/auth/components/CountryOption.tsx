@@ -26,7 +26,7 @@ export const CountryOption: React.FC<CountryOptionProps> = ({
       fontSize: '16px',
       fontWeight: 600,
       color: '#0F172A',
-      fontFamily: 'IBM Plex Sans Arabic, sans-serif',
+      fontFamily: 'Almarai, sans-serif',
       transition: 'all 0.15s',
     }}
   >
