@@ -178,3 +178,9 @@
 .card-tap {
   animation: card-tap 0.18s ease-out;
 }
+
+/* تحسين السكرول على الموبايل */
+html, body {
+  overscroll-behavior: none; /* يمنع ارتداد الصفحة (Bounce) */
+  -webkit-overflow-scrolling: touch; /* يحسن سلاسة السكرول في iOS */
+}
