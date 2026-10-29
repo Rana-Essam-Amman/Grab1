@@ -107,7 +107,8 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
           {formatPrice(listing.price, listing.currency, isArabic)}
         </div>
 
-        <h3 className="font-extrabold text-[14px] leading-snug line-clamp-2 text-black mb-1.5" dir="auto">
+        {/* أضفنا dark:text-white هنا عشان يبان في الدارك مود */}
+        <h3 className="font-extrabold text-[14px] leading-snug line-clamp-2 text-black dark:text-white mb-1.5" dir="auto">
           {stripEmojis(listing.title)}
         </h3>
 
