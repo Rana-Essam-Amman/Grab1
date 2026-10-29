@@ -4,16 +4,14 @@ export function useScrollDirection() {
   const [isVisible, setIsVisible] = useState(true);
   const lastScrollY = useRef(0);
   const scrollDelta = useRef(0);
+  const ticking = useRef(false);
 
   useEffect(() => {
     lastScrollY.current = window.scrollY;
-    
-    // Facebook-like asymmetric thresholds: 
-    // Hide easily (10px down), Show strictly (30px up) to prevent jitter
-    const upThreshold = 30; 
-    const downThreshold = 10; 
+    const upThreshold = 30;
+    const downThreshold = 10;
 
-    const handleScroll = () => {
+    const updateScroll = () => {
       const currentScrollY = window.scrollY;
       const diff = currentScrollY - lastScrollY.current;
       scrollDelta.current += diff;
@@ -21,13 +19,19 @@ export function useScrollDirection() {
       if (scrollDelta.current > downThreshold && currentScrollY > 80) {
         setIsVisible(false);
         scrollDelta.current = 0;
-      } 
-      else if (scrollDelta.current < -upThreshold) {
+      } else if (scrollDelta.current < -upThreshold) {
         setIsVisible(true);
         scrollDelta.current = 0;
       }
-
       lastScrollY.current = currentScrollY;
+      ticking.current = false;
+    };
+
+    const handleScroll = () => {
+      if (!ticking.current) {
+        window.requestAnimationFrame(updateScroll);
+        ticking.current = true;
+      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
