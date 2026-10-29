@@ -6,27 +6,25 @@ export function useScrollDirection() {
   const scrollDelta = useRef(0);
 
   useEffect(() => {
-    // 1. لقط مكان السكرول الحالي أول ما الصفحة تفتح (حل مشكلة الـ Refresh)
     lastScrollY.current = window.scrollY;
     
-    const threshold = 15; // 15px حركة مطلوبة عشان نخفي أو نظهر
+    // Facebook-like asymmetric thresholds: 
+    // Hide easily (10px down), Show strictly (30px up) to prevent jitter
+    const upThreshold = 30; 
+    const downThreshold = 10; 
 
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      
-      // احسب المسافة اللي المستخدم سحبها من آخر مرة
       const diff = currentScrollY - lastScrollY.current;
       scrollDelta.current += diff;
 
-      // لو المستخدم سحب لتحت أكتر من 15 بكسل (وعده 80 بكسل من فوق)
-      if (scrollDelta.current > threshold && currentScrollY > 80) {
+      if (scrollDelta.current > downThreshold && currentScrollY > 80) {
         setIsVisible(false);
-        scrollDelta.current = 0; // رجع العداد صفر
+        scrollDelta.current = 0;
       } 
-      // لو المستخدم طلع لفوق أكتر من 15 بكسل
-      else if (scrollDelta.current < -threshold) {
+      else if (scrollDelta.current < -upThreshold) {
         setIsVisible(true);
-        scrollDelta.current = 0; // رجع العداد صفر
+        scrollDelta.current = 0;
       }
 
       lastScrollY.current = currentScrollY;
