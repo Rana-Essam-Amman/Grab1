@@ -47,12 +47,12 @@ export function CatalogScreen() {
         <h2 className="text-lg font-bold">Typography</h2>
         <Card padding="sm" className="space-y-3">
           <div className="space-y-1">
-            <span className="text-xs text-ink-muted">Arabic (IBM Plex Sans Arabic)</span>
+            <span className="text-xs text-ink-muted">Arabic (Almarai)</span>
             <p className="font-arabic text-xl font-bold">سوق الإعلانات المبوبة الرائد</p>
             <p className="font-arabic text-sm text-ink-soft">ابحث واشترِ وبع بكل سهولة وأمان</p>
           </div>
           <div className="space-y-1 border-t border-line pt-2">
-            <span className="text-xs text-ink-muted">Latin (Geist)</span>
+            <span className="text-xs text-ink-muted">Latin (Inter)</span>
             <p className="font-latin text-xl font-bold">Classifieds Marketplace 2026</p>
             <p className="font-latin text-sm text-ink-soft">Fast, secure local deals across the region</p>
           </div>
