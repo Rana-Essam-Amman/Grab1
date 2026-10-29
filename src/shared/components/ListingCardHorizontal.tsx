@@ -21,6 +21,7 @@ interface ListingCardHorizontalProps {
   sellerKey: string;
   handleClick: () => void;
   handleImageError: (e: React.SyntheticEvent<HTMLImageElement>) => void;
+  priority?: boolean;
 }
 
 export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
@@ -31,6 +32,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
   sellerKey,
   handleClick,
   handleImageError,
+  priority,
 }) => {
   const { setSelectedSellerPhone, navigateTo } = useUI();
 
@@ -98,7 +100,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
 
       {/* Image Collage with Premium Badge */}
       <div className="relative w-full">
-        <ListingImageCollage images={displayImages} onImageError={handleImageError} />
+        <ListingImageCollage images={displayImages} onImageError={handleImageError} priority={priority} />
         {listing.isPremium && (
           <div className="absolute top-2 start-2 z-10">
             <span className="bg-accent text-ink-inverse text-[11px] font-bold px-2 py-1 rounded-md shadow-md flex items-center gap-1">
