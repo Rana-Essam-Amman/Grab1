@@ -32,7 +32,7 @@ export const TrendingSection: React.FC<TrendingSectionProps> = ({
           <button
             key={listing.id}
             onClick={() => onListingClick(listing.id)}
-            className="flex-shrink-0 w-40 rounded-2xl bg-surface border border-line shadow-sm hover:shadow-md transition-shadow overflow-hidden text-right"
+            className="flex-shrink-0 w-40 rounded-2xl bg-surface border border-line shadow-sm hover:shadow-md transition-shadow overflow-hidden text-end"
             dir={isArabic ? 'rtl' : 'ltr'}
           >
             <div className="relative h-28 w-full">
