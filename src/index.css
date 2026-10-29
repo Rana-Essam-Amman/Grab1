@@ -17,8 +17,8 @@
 */
 
 @theme {
-  --font-arabic: 'IBM Plex Sans Arabic', 'Cairo', sans-serif;
-  --font-latin: 'Geist', 'Inter', system-ui, sans-serif;
+  --font-arabic: 'Almarai', sans-serif;
+  --font-latin: 'Inter', system-ui, sans-serif;
   --font-sans: var(--font-arabic);
   --font-cairo: var(--font-arabic);
   --font-tajawal: var(--font-arabic);
@@ -53,15 +53,15 @@
     background-color: var(--color-canvas);
     color: var(--color-ink);
     font-family: var(--font-arabic), var(--font-latin), system-ui, sans-serif;
-    font-weight: 500;
+    font-weight: 400;
   }
 
   /*
     RTL note: the previous `[dir="rtl"] { font-family: 'Cairo', 'Tajawal' }`
     override was removed because Cairo/Tajawal are not loaded by index.html.
-    It caused Arabic text to fall back to the system font while IBM Plex Sans
-    Arabic (which IS loaded) was never used. `body` now handles both
-    directions via `--font-arabic`, so Arabic consistently renders in IBM Plex.
+    It caused Arabic text to fall back to the system font while Almarai
+    (which IS loaded) was never used. `body` now handles both
+    directions via `--font-arabic`, so Arabic consistently renders in Almarai.
   */
 
   /* Main Section Headers: 18px-19px Bold, Dark Charcoal/Black */
