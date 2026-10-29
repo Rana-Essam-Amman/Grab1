@@ -44,14 +44,14 @@ export const ImageLightbox: React.FC<ImageLightboxProps> = React.memo(({ images,
         decoding="async"
         style={IMG_STYLE}
       />
-      <button type="button" onClick={onClose} aria-label={isArabic ? 'إغلاق' : 'Close'} style={{ ...BTN_STYLE, top: 16, right: 16, width: 44, height: 44, borderRadius: 22 }}>
+      <button type="button" onClick={onClose} aria-label={isArabic ? 'إغلاق' : 'Close'} style={{ ...BTN_STYLE, top: 16, insetInlineEnd: 16, width: 44, height: 44, borderRadius: 22 }}>
         <CloseCircle size={24} variant="Bold" color="#FFFFFF" />
       </button>
       {images.length > 1 && (
         <>
-          <button type="button" aria-label={isArabic ? 'السابق' : 'Previous'} onClick={(e) => { stop(e); goPrev(); }} style={{ ...BTN_STYLE, top: '50%', left: 12, width: 44, height: 44, borderRadius: 22, transform: 'translateY(-50%)', fontSize: 24, fontWeight: 700 }}>‹</button>
-          <button type="button" aria-label={isArabic ? 'التالي' : 'Next'} onClick={(e) => { stop(e); goNext(); }} style={{ ...BTN_STYLE, top: '50%', right: 12, width: 44, height: 44, borderRadius: 22, transform: 'translateY(-50%)', fontSize: 24, fontWeight: 700 }}>›</button>
-          <div dir="ltr" style={{ position: 'absolute', top: 20, left: 20, zIndex: 10, background: 'rgba(255,255,255,0.2)', color: '#FFFFFF', fontSize: 12, fontWeight: 700, padding: '6px 12px', borderRadius: 999, backdropFilter: 'blur(4px)' }}>{activeIdx + 1} / {images.length}</div>
+          <button type="button" aria-label={isArabic ? 'السابق' : 'Previous'} onClick={(e) => { stop(e); goPrev(); }} style={{ ...BTN_STYLE, top: '50%', insetInlineStart: 12, width: 44, height: 44, borderRadius: 22, transform: 'translateY(-50%)', fontSize: 24, fontWeight: 700 }}>‹</button>
+          <button type="button" aria-label={isArabic ? 'التالي' : 'Next'} onClick={(e) => { stop(e); goNext(); }} style={{ ...BTN_STYLE, top: '50%', insetInlineEnd: 12, width: 44, height: 44, borderRadius: 22, transform: 'translateY(-50%)', fontSize: 24, fontWeight: 700 }}>›</button>
+          <div dir="ltr" style={{ position: 'absolute', top: 20, insetInlineStart: 20, zIndex: 10, background: 'rgba(255,255,255,0.2)', color: '#FFFFFF', fontSize: 12, fontWeight: 700, padding: '6px 12px', borderRadius: 999, backdropFilter: 'blur(4px)' }}>{activeIdx + 1} / {images.length}</div>
         </>
       )}
       {hasActions && (
