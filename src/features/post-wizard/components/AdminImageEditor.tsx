@@ -59,7 +59,7 @@ export const AdminImageEditor: React.FC<Props> = ({ images, setImages, ownerUser
               type="button"
               onClick={() => handleRemoveImage(url)}
               disabled={isProcessing}
-              className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center text-white hover:bg-danger transition-colors disabled:opacity-50"
+              className="absolute top-1 end-1 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center text-white hover:bg-danger transition-colors disabled:opacity-50"
             >
               <Trash size={12} variant="Bold" />
             </button>
