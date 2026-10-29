@@ -3,6 +3,7 @@ import { isOtherValue } from '@/data/locations';
 import { normalizeValueToSlug } from '@/shared/lib/attrsTranslation';
 
 export interface BuildListingParams {
+  isAdmin: boolean;
   postDraft: PostDraft;
   user: UserProfile | null;
   browseCountryCode: string;
@@ -11,6 +12,7 @@ export interface BuildListingParams {
 
 export function buildNewListingPayload({
   postDraft,
+  isAdmin,
   user,
   browseCountryCode,
   activeCurrency,
@@ -18,7 +20,7 @@ export function buildNewListingPayload({
   const title = postDraft.title || postDraft.generated?.title || '';
   const price = postDraft.price || postDraft.generated?.price || '';
   const description = postDraft.description || postDraft.generated?.description || '';
-  const targetMarket = user?.countryCode || browseCountryCode;
+  const targetMarket = isAdmin ? browseCountryCode : (user?.countryCode || browseCountryCode);
 
   const rawCity = (postDraft.city || '').trim();
   const rawNeighborhood = (postDraft.neighborhood || '').trim();
