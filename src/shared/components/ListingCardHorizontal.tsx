@@ -57,13 +57,24 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
       className={`${premiumClasses} rounded-2xl shadow-md flex flex-col overflow-hidden cursor-pointer hover:border-primary/60 transition-all active:scale-[0.99]`}
       dir={isArabic ? 'rtl' : 'ltr'}
     >
-      {/* Header: Seller Info & Heart */}
+      {/* Header: Seller Info, Location & Heart (All in one line) */}
       <div className="flex items-center justify-between gap-2 p-3 pb-2">
-        <div className="flex items-center gap-2 cursor-pointer flex-1" onClick={handleSellerClick}>
+        <div className="flex items-center gap-2 cursor-pointer flex-1 min-w-0" onClick={handleSellerClick}>
           <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
             <span className="text-primary font-bold text-sm">{listing.sellerName?.charAt(0) || '?'}</span>
           </div>
-          <span className="font-semibold text-[13px] text-ink leading-tight hover:underline">{listing.sellerName}</span>
+          <span className="font-semibold text-[13px] text-ink leading-tight hover:underline truncate">{listing.sellerName}</span>
+          <div className="flex items-center gap-1 text-[11px] text-ink-soft truncate ml-1">
+            <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
+            <span className="truncate" dir="auto">{locationText}</span>
+            {relativeDate && (
+              <>
+                <span className="mx-0.5 text-ink-muted">•</span>
+                <Icon icon="lucide:clock" width={11} height={11} className="shrink-0" />
+                <span className="shrink-0">{relativeDate}</span>
+              </>
+            )}
+          </div>
         </div>
         <div className="shrink-0 z-30">
           <BookmarkHeartButton listingId={listing.id} size="sm" />
@@ -83,7 +94,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
         )}
       </div>
 
-      {/* Body: Price, Title, Specs, Location */}
+      {/* Body: Price, Title, Specs, Contact */}
       <div className="p-3 flex flex-col flex-1">
         <div className="text-[18px] font-extrabold text-danger mb-1">
           {formatPrice(listing.price, listing.currency, isArabic)}
@@ -93,26 +104,13 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
           {stripEmojis(listing.title)}
         </h3>
 
-        <div className="mb-1.5">
+        <div className="mb-2">
           <RequiredSpecsRow
             categorySlug={listing.categorySlug}
             subcategorySlug={listing.subcategorySlug}
             attributes={listing.attributes ?? []}
             isArabic={isArabic}
           />
-        </div>
-
-        <div className="flex items-center justify-between gap-1 text-[11px] text-ink-soft mb-1">
-          <div className="flex items-center gap-1 truncate">
-            <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
-            <span className="truncate" dir="auto">{locationText}</span>
-          </div>
-          {relativeDate && (
-            <div className="flex items-center gap-1 shrink-0 text-ink-muted">
-              <Icon icon="lucide:clock" width={11} height={11} className="shrink-0" />
-              <span>{relativeDate}</span>
-            </div>
-          )}
         </div>
 
         {/* Contact Actions */}
