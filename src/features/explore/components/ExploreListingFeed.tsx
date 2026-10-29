@@ -55,8 +55,8 @@ export const ExploreListingFeed: React.FC<ExploreListingFeedProps> = ({
     return (
       <div className="flex flex-col gap-5">
         <div className={feedLayout === 'grid' ? 'grid grid-cols-2 gap-5' : 'flex flex-col gap-5'}>
-          {listings.map((l) => (
-            <ListingCard key={l.id} listing={l} layout={feedLayout === 'list' ? 'horizontal' : 'grid'} />
+          {listings.map((l, index) => (
+            <ListingCard key={l.id} listing={l} layout={feedLayout === 'list' ? 'horizontal' : 'grid'} priority={index < 2} />
           ))}
         </div>
         <FeedLoadMoreSentinel hasMore={hasMore} isLoadingMore={isLoadingMore} onLoadMore={onLoadMore} />
@@ -73,15 +73,15 @@ export const ExploreListingFeed: React.FC<ExploreListingFeedProps> = ({
             const item2 = listings[vRow.index * 2 + 1];
             return (
               <div key={vRow.key} data-index={vRow.index} ref={rowVirtualizer.measureElement} className="absolute top-0 start-0 w-full grid grid-cols-2 gap-5 pb-5" style={{ transform: `translateY(${vRow.start - scrollMargin}px)` }}>
-                {item1 && <ListingCard key={item1.id} listing={item1} layout="grid" />}
-                {item2 && <ListingCard key={item2.id} listing={item2} layout="grid" />}
+                {item1 && <ListingCard key={item1.id} listing={item1} layout="grid" priority={vRow.index === 0} />}
+                {item2 && <ListingCard key={item2.id} listing={item2} layout="grid" priority={vRow.index === 0} />}
               </div>
             );
           }
           const item = listings[vRow.index];
           return item ? (
             <div key={vRow.key} data-index={vRow.index} ref={rowVirtualizer.measureElement} className="absolute top-0 start-0 w-full pb-5" style={{ transform: `translateY(${vRow.start - scrollMargin}px)` }}>
-              <ListingCard key={item.id} listing={item} layout="horizontal" />
+              <ListingCard key={item.id} listing={item} layout="horizontal" priority={vRow.index < 2} />
             </div>
           ) : null;
         })}
