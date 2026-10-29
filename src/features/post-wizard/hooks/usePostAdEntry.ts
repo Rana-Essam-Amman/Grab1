@@ -72,7 +72,7 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
     draftStartPostFlow(); setAiFlowPending(true);
     capture(EVENTS.LISTING_STARTED, { market: draftMarket ?? 'unknown' });
     navigateTo('post-category');
-  }, [canPostInMarket, freeRemaining, draftStartPostFlow, setAiFlowPending, navigateTo, draftMarket]);
+  }, [canPostInMarket, freeRemaining, draftStartPostFlow, setAiFlowPending, navigateTo, draftMarket, isAdminLoading]);
 
   return { isArabic, handleBack, startPostFlow, canPostInMarket, myMarket, freeLimit, freeRemaining, updateUserMarket };
 };
