@@ -54,7 +54,7 @@ export const BookmarkHeartButton: React.FC<BookmarkHeartButtonProps> = ({
         <Heart variant={isSaved ? 'Bold' : 'Linear'} size={iconSize} color={isSaved ? '#EF4444' : '#64748B'} />
       </div>
       {showLabel && (
-        <span className="text-xs font-semibold ml-1.5 whitespace-nowrap">
+        <span className="text-xs font-semibold ms-1.5 whitespace-nowrap">
           {isSaved ? (isArabic ? 'محفوظ' : 'Saved') : (isArabic ? 'حفظ' : 'Save')}
         </span>
       )}
