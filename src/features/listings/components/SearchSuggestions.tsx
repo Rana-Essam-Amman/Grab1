@@ -89,7 +89,7 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
           type="button"
           role="option"
           aria-selected={idx === activeIndex}
-          className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm cursor-pointer transition-colors hover:bg-canvas ${
+          className={`flex w-full items-center gap-2 px-3 py-2 text-start text-sm cursor-pointer transition-colors hover:bg-canvas ${
             idx === activeIndex ? 'bg-canvas' : ''
           }`}
           onClick={() => onSelect(item.suggestion)}
