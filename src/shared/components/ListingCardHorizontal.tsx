@@ -4,7 +4,6 @@ import { BookmarkHeartButton } from './BookmarkHeartButton';
 import { Icon } from '@iconify/react';
 import { Crown } from 'iconsax-react';
 import { RequiredSpecsRow } from '@/features/listings/components/RequiredSpecsRow';
-import { toOptimizedImageUrl } from '@/shared/lib/optimizedImage';
 import { formatPrice } from '@/shared/lib/formatPrice';
 import { formatRelativeDate } from '@/shared/lib/formatDate';
 import { stripEmojis } from '@/shared/lib/stripEmojis';
@@ -26,8 +25,8 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
   const relativeDate = useMemo(() => formatRelativeDate(listing.createdAt, isArabic), [listing.createdAt, isArabic]);
   
   const displayImages = useMemo(() => {
-    const imgs = listing.images && listing.images.length > 0 ? listing.images : (listing.imageUrl ? [listing.imageUrl] : []);
-    return imgs.map(img => toOptimizedImageUrl(img, { width: 600, quality: 80 }));
+    if (listing.images && listing.images.length > 0) return listing.images;
+    return listing.imageUrl ? [listing.imageUrl] : [];
   }, [listing.images, listing.imageUrl]);
 
   const handleSellerClick = useCallback((e: React.MouseEvent) => {
