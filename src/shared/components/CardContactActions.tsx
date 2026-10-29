@@ -102,8 +102,8 @@ export const CardContactActions: React.FC<CardContactActionsProps> = ({ listing,
   }, [chatState, authStatus, user, navigateTo, openConversation, setSelectedThreadId, browseCountryCode, isArabic, listing]);
 
   return (
-    // الخط الفاصل اتنقل هنا لتحت الأزرار (border-b بدل border-t)، وضبطنا المسافات
-    <div className="flex items-center gap-2 mt-3 pt-3 pb-3 border-b border-border" onClick={(e) => e.stopPropagation()}>
+    // قللنا المسافة فوق الأزرار من (mt-3 pt-3) لـ (mt-1 pt-2)
+    <div className="flex items-center gap-2 mt-1 pt-2 pb-3 border-b border-border" onClick={(e) => e.stopPropagation()}>
       <button
         onClick={handleChat}
         className={`flex-1 h-[44px] rounded-xl flex items-center justify-center gap-1.5 font-bold text-[13px] transition-all shadow-sm ${
