@@ -69,3 +69,28 @@ export async function fetchListingsByMarketCategory(
   }
 }
 
+export async function fetchListingsByMarketArea(
+  market: string,
+  areaSlug: string,
+  env: Env,
+  limit = 50
+): Promise<CategoryListingRow[]> {
+  const cfg = pickEnv(env);
+  if (!cfg) return [];
+  const q =
+    `country_code=eq.${market.toUpperCase()}` +
+    `&district_slug=eq.${encodeURIComponent(areaSlug)}` +
+    `&status=eq.active` +
+    `&select=id,title,price,currency,city,category_slug,images` +
+    `&order=updated_at.desc` +
+    `&limit=${limit}`;
+  try {
+    const res = await fetch(`${cfg.url}/rest/v1/listings?${q}`, {
+      headers: { apikey: cfg.key, Authorization: `Bearer ${cfg.key}` },
+    });
+    if (!res.ok) return [];
+    return (await res.json()) as CategoryListingRow[];
+  } catch {
+    return [];
+  }
+}
