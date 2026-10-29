@@ -56,23 +56,24 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
       data-testid="listing-card"
     >
       <ListingCardImage imageUrl={listing.imageUrl} title={listing.title} isPremium={listing.isPremium} listingId={listing.id} isArabic={isArabic} onImageError={handleImageError} />
-      
+
       <div className="p-3 flex flex-col flex-1">
         <div className="text-[18px] font-extrabold text-danger mb-1">
           {formattedPrice || (isArabic ? 'السعر غير محدد' : 'Price not specified')}
         </div>
 
-        <div className="text-[15px] font-extrabold text-black leading-tight line-clamp-2 mb-1.5" dir="auto">
+        {/* أضفنا dark:text-white هنا عشان يبان في الدارك مود */}
+        <div className="text-[15px] font-extrabold text-black dark:text-white leading-tight line-clamp-2 mb-1.5" dir="auto">
           {stripEmojis(listing.title)}
         </div>
-        
+
         <div className="flex items-center gap-1 text-[11px] text-ink-soft font-medium mb-2">
           <Icon icon="noto:round-pushpin" width={12} height={12} className="shrink-0" />
           <span className="truncate" dir="auto">{locationText}</span>
         </div>
 
         <RequiredSpecsRow categorySlug={listing.categorySlug} subcategorySlug={listing.subcategorySlug} attributes={listing.attributes ?? []} isArabic={isArabic} />
-        
+
         <CardContactActions listing={listing} isArabic={isArabic} />
       </div>
     </div>
