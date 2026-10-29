@@ -53,6 +53,7 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
   const setCity = (c: string) => updateField('city', c);
   const setDescription = (d: string) => updateField('description', d);
   const handlePublish = async () => {
+    if (isAdminLoading) return;
     if (!postDraft) return;
     if (authStatus !== 'authenticated' || isAnonymous) {
       setPendingPublish(browseCountryCode, 'post-ai-review');

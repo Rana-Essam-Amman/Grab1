@@ -39,7 +39,7 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
 
   const myMarket = user && typeof user.countryCode === 'string' && isValidMarketCode(user.countryCode) ? (user.countryCode as MarketCode) : null;
   const currentBrowseMarket = isValidMarketCode(browseCountryCode) ? (browseCountryCode as MarketCode) : null;
-  const canPostInMarket = isAdmin || (authStatus === 'authenticated' && !isAnonymous && myMarket !== null && currentBrowseMarket !== null && myMarket === currentBrowseMarket);
+  const canPostInMarket = !isAdminLoading && (isAdmin || (authStatus === 'authenticated' && !isAnonymous && myMarket !== null && currentBrowseMarket !== null && myMarket === currentBrowseMarket));
 
   const freeLimit = MONETIZATION_MATRIX.freeLimits.generalCategoryLimit;
   const freeRemaining = isAdmin ? freeLimit : Math.max(0, freeLimit - userListings.filter((l) => l.status !== 'sold').length);
@@ -68,7 +68,7 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
   const draftMarket = myMarket ?? currentBrowseMarket;
 
   const startPostFlow = useCallback(() => {
-    if (!canPostInMarket || freeRemaining <= 0) return;
+    if (!canPostInMarket || freeRemaining <= 0 || isAdminLoading) return;
     draftStartPostFlow(); setAiFlowPending(true);
     capture(EVENTS.LISTING_STARTED, { market: draftMarket ?? 'unknown' });
     navigateTo('post-category');

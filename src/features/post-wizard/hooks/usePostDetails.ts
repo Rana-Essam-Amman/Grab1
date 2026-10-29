@@ -19,7 +19,7 @@ export function usePostDetails() {
   const { resetPostDraft } = useDraft();
   const { authStatus, isAnonymous } = useAuth();
   const { publishListing } = useListings();
-  const { isAdmin } = useIsAdmin();
+  const { isAdmin, isLoading: isAdminLoading } = useIsAdmin();
   const { isArabic, navigateTo, setActiveTab, browseCountryCode, activeCurrency } = useUI();
   const [title, setTitle] = useState(postDraft.title || '');
   const [price, setPrice] = useState(postDraft.price || '');
@@ -47,6 +47,7 @@ export function usePostDetails() {
   const canContinue = title.trim().length >= 5 && isPriceValid && missing.length === 0 && hasLocation;
 
   const handleContinue = async () => {
+    if (isAdminLoading) return;
     if (typeof navigator !== 'undefined' && !navigator.onLine) {
       toast.error(isArabic ? 'لا يوجد اتصال بالإنترنت. يرجى المحاولة لاحقاً.' : 'No internet connection. Please try again later.');
       return;
