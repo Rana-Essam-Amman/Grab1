@@ -19,7 +19,7 @@ export function usePostDetails() {
   const { resetPostDraft } = useDraft();
   const { authStatus, isAnonymous } = useAuth();
   const { publishListing } = useListings();
-  const isAdmin = useIsAdmin();
+  const { isAdmin } = useIsAdmin();
   const { isArabic, navigateTo, setActiveTab, browseCountryCode, activeCurrency } = useUI();
   const [title, setTitle] = useState(postDraft.title || '');
   const [price, setPrice] = useState(postDraft.price || '');

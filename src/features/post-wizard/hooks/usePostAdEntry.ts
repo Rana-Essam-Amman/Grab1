@@ -28,7 +28,7 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
   const { startPostFlow: draftStartPostFlow } = useDraft();
   const { authStatus, isAnonymous, user, updateUser } = useAuth();
   const { userListings } = useListings();
-  const isAdmin = useIsAdmin();
+  const { isAdmin, isLoading: isAdminLoading } = useIsAdmin();
 
   useEffect(() => {
     if (authStatus !== 'authenticated' || isAnonymous) {

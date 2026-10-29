@@ -10,7 +10,7 @@ import { MyAdsContent } from '../components/MyAdsContent';
 export const MyAdsScreen: React.FC = () => {
   const { isArabic, navigateTo, setSelectedListingId, setActiveTab } = useUI();
   const { listings, userListings, wishlistListings, deleteListing, updateListing } = useListings();
-  const isAdmin = useIsAdmin();
+  const { isAdmin } = useIsAdmin();
   const [activeSubTab, setActiveSubTab] = useState<'my' | 'wishlist'>('my');
 
   const displayedMyAds = useMemo(() => isAdmin ? listings : userListings, [isAdmin, listings, userListings]);

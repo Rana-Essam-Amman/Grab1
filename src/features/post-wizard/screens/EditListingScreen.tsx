@@ -17,7 +17,7 @@ export const EditListingScreen: React.FC = () => {
     values, setField, fields, missingRequired, canSave, handleSave, submitAttempted,
     isSaving, saveError, images, setImages,
   } = useEditListing();
-  const isAdmin = useIsAdmin();
+  const { isAdmin } = useIsAdmin();
 
   if (!listing) {
     return (

@@ -22,7 +22,7 @@ import { useSEO } from '@/shared/hooks/useSEO';
 
 export const ListingDetailScreen: React.FC = () => {
   const detail = useListingDetail();
-  const isAdmin = useIsAdmin();
+  const { isAdmin } = useIsAdmin();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useSEO({
