@@ -18,6 +18,9 @@ let mockPostDraft = {
   price: '5000',
   city: 'Amman',
   neighborhood: 'Abdoun',
+  citySlug: 'amman',
+  districtSlug: 'tlaa-al-ali',
+  neighborhoodSlug: undefined,
   description: 'Nice car',
   generated: {
     fields: [{ key: 'year', label: 'Year', value: '2020', required: true }],
@@ -84,6 +87,9 @@ describe('useAiReview', () => {
       price: '5000',
       city: 'Amman',
       neighborhood: 'Abdoun',
+      citySlug: 'amman',
+      districtSlug: 'tlaa-al-ali',
+      neighborhoodSlug: undefined,
       description: 'Nice car',
       generated: {
         fields: [{ key: 'year', label: 'Year', value: '2020', required: true }],
