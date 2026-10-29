@@ -76,11 +76,11 @@
 }
 
 .nav-btn-active {
-  color: #1B2A4A !important;
+  color: var(--color-nav-active-text) !important;
   font-weight: 700 !important;
 }
 .nav-btn-inactive {
-  color: #4b5563 !important;
+  color: var(--color-ink-muted) !important;
   font-weight: 600 !important;
 }
 .post-ad-btn {
@@ -91,7 +91,7 @@
 .category-label {
   font-size: 14px !important;
   font-weight: 600 !important;
-  color: #111827 !important;
+  color: var(--color-ink) !important;
   line-height: 1.25 !important;
   display: block;
   overflow: visible !important;
