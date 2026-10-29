@@ -50,7 +50,7 @@ export const ListingImageCollage: React.FC<ListingImageCollageProps> = ({ images
         </div>
       ))}
       {images.length > 4 && (
-        <div className="absolute bottom-2 right-2 bg-black/75 text-white text-[12px] font-bold px-2 py-1 rounded-md z-20 shadow-sm">
+        <div className="absolute bottom-2 end-2 bg-black/75 text-white text-[12px] font-bold px-2 py-1 rounded-md z-20 shadow-sm">
           +{images.length - 4}
         </div>
       )}
