@@ -3,15 +3,16 @@ import React from 'react';
 interface ListingImageCollageProps {
   readonly images: string[];
   readonly onImageError?: (e: React.SyntheticEvent<HTMLImageElement>) => void;
+  readonly priority?: boolean;
 }
 
-export const ListingImageCollage: React.FC<ListingImageCollageProps> = ({ images, onImageError }) => {
+export const ListingImageCollage: React.FC<ListingImageCollageProps> = ({ images, onImageError, priority = false }) => {
   if (!images || images.length === 0) return null;
 
   if (images.length === 1) {
     return (
       <div className="w-full relative aspect-[4/3] bg-canvas">
-        <img src={images[0]} alt="listing" className="absolute inset-0 w-full h-full object-cover" loading="lazy" onError={onImageError} />
+        <img src={images[0]} alt="listing" className="absolute inset-0 w-full h-full object-cover" loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : undefined} onError={onImageError} />
       </div>
     );
   }
@@ -19,10 +20,10 @@ export const ListingImageCollage: React.FC<ListingImageCollageProps> = ({ images
     return (
       <div className="w-full aspect-[4/3] bg-canvas grid grid-cols-2 gap-1">
         <div className="relative w-full h-full">
-          <img src={images[0]} alt="listing-0" className="absolute inset-0 w-full h-full object-cover" loading="lazy" onError={onImageError} />
+          <img src={images[0]} alt="listing-0" className="absolute inset-0 w-full h-full object-cover" loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : undefined} onError={onImageError} />
         </div>
         <div className="relative w-full h-full">
-          <img src={images[1]} alt="listing-1" className="absolute inset-0 w-full h-full object-cover" loading="lazy" onError={onImageError} />
+          <img src={images[1]} alt="listing-1" className="absolute inset-0 w-full h-full object-cover" loading={priority ? "eager" : "lazy"} onError={onImageError} />
         </div>
       </div>
     );
@@ -31,13 +32,13 @@ export const ListingImageCollage: React.FC<ListingImageCollageProps> = ({ images
     return (
       <div className="w-full aspect-[4/3] bg-canvas grid grid-cols-2 grid-rows-2 gap-1">
         <div className="relative w-full h-full row-span-2">
-          <img src={images[0]} alt="listing-0" className="absolute inset-0 w-full h-full object-cover" loading="lazy" onError={onImageError} />
+          <img src={images[0]} alt="listing-0" className="absolute inset-0 w-full h-full object-cover" loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : undefined} onError={onImageError} />
         </div>
         <div className="relative w-full h-full">
-          <img src={images[1]} alt="listing-1" className="absolute inset-0 w-full h-full object-cover" loading="lazy" onError={onImageError} />
+          <img src={images[1]} alt="listing-1" className="absolute inset-0 w-full h-full object-cover" loading={priority ? "eager" : "lazy"} onError={onImageError} />
         </div>
         <div className="relative w-full h-full">
-          <img src={images[2]} alt="listing-2" className="absolute inset-0 w-full h-full object-cover" loading="lazy" onError={onImageError} />
+          <img src={images[2]} alt="listing-2" className="absolute inset-0 w-full h-full object-cover" loading={priority ? "eager" : "lazy"} onError={onImageError} />
         </div>
       </div>
     );
@@ -46,7 +47,7 @@ export const ListingImageCollage: React.FC<ListingImageCollageProps> = ({ images
     <div className="w-full aspect-[4/3] bg-canvas grid grid-cols-2 grid-rows-2 gap-1 relative">
       {images.slice(0, 4).map((img, i) => (
         <div key={i} className="relative w-full h-full">
-          <img src={img} alt={`listing-${i}`} className="absolute inset-0 w-full h-full object-cover" loading="lazy" onError={onImageError} />
+          <img src={img} alt={`listing-${i}`} className="absolute inset-0 w-full h-full object-cover" loading={priority ? "eager" : "lazy"} fetchPriority={priority && i === 0 ? "high" : undefined} onError={onImageError} />
         </div>
       ))}
       {images.length > 4 && (
