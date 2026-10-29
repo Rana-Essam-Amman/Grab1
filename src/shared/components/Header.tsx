@@ -92,7 +92,7 @@ export const Header: React.FC = () => {
   const displayCityEn = isValidCity ? browseCityEn : defaultCap.en;
 
   return (
-    <header className={`sticky top-0 z-50 px-4 pt-2 pb-2 bg-brand border-b border-white/20 transition-transform duration-300 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
+    <header className={`sticky top-0 px-4 pt-2 pb-2 bg-brand border-b border-white/20 transition-transform duration-300 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'} ${isMenuOpen ? 'z-[100]' : 'z-50'}`}>
       <div className="flex items-center justify-between gap-2">
         <div className="w-12 shrink-0 flex items-center justify-start">
           <Button
