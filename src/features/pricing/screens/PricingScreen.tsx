@@ -15,11 +15,19 @@ const MarketRow: React.FC<MarketRowProps> = ({ code, isArabic }) => {
   const pkg = MONETIZATION_MATRIX.packages[code];
   if (!pkg) return null;
   return (
-    <div className="flex items-center justify-between py-2 border-b border-border/60 last:border-b-0">
-      <span className="text-xs font-bold text-ink">{code}</span>
-      <span className="text-xs font-bold text-primary">
-        {isArabic ? `مميز ${pkg.featuredAdCost} ${pkg.currencySymbol} / 14 يوم` : `Featured ${pkg.featuredAdCost} ${pkg.currency} / 14 days`}
-      </span>
+    <div className="flex flex-col py-2 border-b border-border/60 last:border-b-0">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-bold text-ink">{code}</span>
+        <span className="text-xs font-bold text-primary">
+          {isArabic ? `مميز ${pkg.featuredAdCost} ${pkg.currencySymbol} / 14 يوم` : `Featured ${pkg.featuredAdCost} ${pkg.currency} / 14 days`}
+        </span>
+      </div>
+      <div className="flex items-center justify-between mt-1">
+        <span className="text-xs text-ink-soft">{isArabic ? 'إعلان إضافي' : 'Extra Ad'}</span>
+        <span className="text-xs font-bold text-ink">
+          {pkg.extraAdCost} {isArabic ? pkg.currencySymbol : pkg.currency}
+        </span>
+      </div>
     </div>
   );
 };
