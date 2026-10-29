@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useRef, useMemo, useEffect, useState } from 'react';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useUI } from '@/hooks/useUI';
 import { Listing } from '@/types';
@@ -31,17 +31,26 @@ export const ExploreListingFeed: React.FC<ExploreListingFeedProps> = ({
   isInitialLoading = false,
 }) => {
   const { isArabic } = useUI();
+  const listRef = useRef<HTMLDivElement | null>(null);
+  const [scrollMargin, setScrollMargin] = useState(0);
   const isVirtualized = listings.length >= 100;
 
   const rowCount = useMemo(() => (feedLayout === 'grid' ? Math.ceil(listings.length / 2) : listings.length), [listings.length, feedLayout]);
   const estimatedRowHeight = useMemo(() => (feedLayout === 'grid' ? 300 : 140), [feedLayout]);
 
-  // استخدام useWindowVirtualizer بدلاً من useVirtualizer للاعتماد على سكرول الصفحة الطبيعية
+  // حساب المسافة من أعلى الصفحة لبداية القائمة لضبط الـ Window Virtualizer
+  useEffect(() => {
+    if (listRef.current) {
+      setScrollMargin(listRef.current.offsetTop);
+    }
+  }, [listings.length, feedLayout, isVirtualized]);
+
   const rowVirtualizer = useWindowVirtualizer({
     count: rowCount,
     estimateSize: () => estimatedRowHeight,
     overscan: 4,
     enabled: isVirtualized,
+    scrollMargin, // ضروري جداً
   });
 
   if (isInitialLoading && listings.length === 0) {
@@ -75,15 +84,20 @@ export const ExploreListingFeed: React.FC<ExploreListingFeedProps> = ({
   }
 
   return (
-    // شيلنا max-h و overflow-y-auto و scroll-smooth عشان نرجع لسكرول الصفحة الطبيعي
-    <div dir={isArabic ? 'rtl' : 'ltr'} className="w-full">
+    <div ref={listRef} dir={isArabic ? 'rtl' : 'ltr'} className="w-full">
       <div className="w-full relative" style={{ height: `${rowVirtualizer.getTotalSize()}px` }}>
         {rowVirtualizer.getVirtualItems().map((vRow) => {
           if (feedLayout === 'grid') {
             const item1 = listings[vRow.index * 2];
             const item2 = listings[vRow.index * 2 + 1];
             return (
-              <div key={vRow.key} data-index={vRow.index} ref={rowVirtualizer.measureElement} className="absolute top-0 start-0 w-full grid grid-cols-2 gap-5 pb-5" style={{ transform: `translateY(${vRow.start}px)` }}>
+              <div 
+                key={vRow.key} 
+                data-index={vRow.index} 
+                ref={rowVirtualizer.measureElement} 
+                className="absolute top-0 start-0 w-full grid grid-cols-2 gap-5 pb-5" 
+                style={{ transform: `translateY(${vRow.start - scrollMargin}px)` }} // طرحنا الـ scrollMargin
+              >
                 {item1 && <ListingCard key={item1.id} listing={item1} layout="grid" />}
                 {item2 && <ListingCard key={item2.id} listing={item2} layout="grid" />}
               </div>
@@ -91,7 +105,13 @@ export const ExploreListingFeed: React.FC<ExploreListingFeedProps> = ({
           }
           const item = listings[vRow.index];
           return item ? (
-            <div key={vRow.key} data-index={vRow.index} ref={rowVirtualizer.measureElement} className="absolute top-0 start-0 w-full pb-5" style={{ transform: `translateY(${vRow.start}px)` }}>
+            <div 
+              key={vRow.key} 
+              data-index={vRow.index} 
+              ref={rowVirtualizer.measureElement} 
+              className="absolute top-0 start-0 w-full pb-5" 
+              style={{ transform: `translateY(${vRow.start - scrollMargin}px)` }} // طرحنا الـ scrollMargin
+            >
               <ListingCard key={item.id} listing={item} layout="horizontal" />
             </div>
           ) : null;
