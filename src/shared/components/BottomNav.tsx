@@ -4,11 +4,13 @@ import { useChat } from '@/hooks/useChat';
 import { useAuth } from '@/hooks/useAuth';
 import React, { useCallback } from 'react';
 import { BottomNavItems } from './BottomNavItems';
+import { useScrollDirection } from '@/shared/hooks/useScrollDirection';
 
 export const BottomNav: React.FC = () => {
   const { activeTab, setActiveTab, currentScreen, navigateTo, isArabic, isSearchFocused } = useUI();
   const { conversations } = useChat();
   const { user, authStatus } = useAuth();
+  const isVisible = useScrollDirection();
 
   const handleTabClick = useCallback((tab: TabType) => {
     if (tab === 'post') {
@@ -33,7 +35,7 @@ export const BottomNav: React.FC = () => {
 
   return (
     <nav
-      className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] h-[56px] border-t border-line grid grid-cols-5 z-40 px-1"
+      className={`fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] h-[56px] border-t border-line grid grid-cols-5 z-40 px-1 transition-transform duration-300 ${isVisible ? 'translate-y-0' : 'translate-y-full'}`}
       style={{ backgroundColor: 'var(--color-nav)' }}
       dir={isArabic ? 'rtl' : 'ltr'}
     >
