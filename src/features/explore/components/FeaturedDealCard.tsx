@@ -22,7 +22,7 @@ export const FeaturedDealCard: React.FC<FeaturedDealCardProps> = ({
   return (
     <button
       onClick={onClick}
-      className="w-full rounded-2xl overflow-hidden bg-brand text-white shadow-lg hover:shadow-xl transition-all group active:scale-[0.99] text-right relative"
+      className="w-full rounded-2xl overflow-hidden bg-brand text-white shadow-lg hover:shadow-xl transition-all group active:scale-[0.99] text-end relative"
       dir={isArabic ? 'rtl' : 'ltr'}
     >
       <div className="relative h-64 w-full">
