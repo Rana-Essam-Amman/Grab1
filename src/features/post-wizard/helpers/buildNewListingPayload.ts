@@ -29,6 +29,12 @@ export function buildNewListingPayload({
       'buildNewListingPayload: city and neighborhood are required and must not be "Other"'
     );
   }
+  if (!postDraft.citySlug) {
+    throw new Error('Location slug missing: cannot publish listing without a valid city');
+  }
+  if (!postDraft.districtSlug && !postDraft.neighborhoodSlug) {
+    throw new Error('Location slug missing: cannot publish listing without a valid area');
+  }
 
   const newListing: Listing = {
     id: `listing-${crypto.randomUUID()}`,
