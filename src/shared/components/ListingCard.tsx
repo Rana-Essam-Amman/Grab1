@@ -62,7 +62,7 @@ function ListingCardComponent({ listing, layout = 'grid' }: ListingCardProps) {
           {formattedPrice || (isArabic ? 'السعر غير محدد' : 'Price not specified')}
         </div>
 
-        <div className="text-[15px] font-bold text-ink leading-tight line-clamp-2 mb-1.5" dir="auto">
+        <div className="text-[15px] font-bold text-gray-900 leading-tight line-clamp-2 mb-1.5" dir="auto">
           {stripEmojis(listing.title)}
         </div>
         
