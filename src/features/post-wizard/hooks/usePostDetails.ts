@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo, useRef } from 'react';
 import { usePostWizard } from './usePostWizard';
 import { useUI } from '@/hooks/useUI';
 import { useAuth } from '@/hooks/useAuth';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { useListings } from '@/hooks/useListings';
 import { useDraft } from '@/hooks/useDraft';
 import { setPendingPublish } from '../helpers/pendingPublishFlags';
@@ -18,6 +19,7 @@ export function usePostDetails() {
   const { resetPostDraft } = useDraft();
   const { authStatus, isAnonymous } = useAuth();
   const { publishListing } = useListings();
+  const isAdmin = useIsAdmin();
   const { isArabic, navigateTo, setActiveTab, browseCountryCode, activeCurrency } = useUI();
   const [title, setTitle] = useState(postDraft.title || '');
   const [price, setPrice] = useState(postDraft.price || '');
@@ -61,7 +63,7 @@ export function usePostDetails() {
         publishLock.current = false; 
         return;
       }
-      const prepared = preparePublish({ postDraft, draftData, user: getCurrentUser(), browseCountryCode, activeCurrency });
+      const prepared = preparePublish({ postDraft, draftData, user: getCurrentUser(), browseCountryCode, activeCurrency, isAdmin });
       if (!prepared) return;
 
       setIsPublishing(true); setError(null);

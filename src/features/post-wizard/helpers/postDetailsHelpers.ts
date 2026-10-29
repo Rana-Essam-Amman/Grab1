@@ -49,6 +49,7 @@ export function buildGeneratedFields(
 }
 
 export interface PreparePublishParams {
+  readonly isAdmin: boolean;
   readonly postDraft: PostDraft;
   readonly draftData: Partial<PostDraft>;
   readonly user: UserProfile | null;
@@ -62,13 +63,14 @@ export interface PreparedPublish {
 }
 
 export function preparePublish(params: PreparePublishParams): PreparedPublish | null {
-  const { postDraft, draftData, user, browseCountryCode, activeCurrency } = params;
+  const { postDraft, draftData, user, browseCountryCode, activeCurrency, isAdmin } = params;
   const mergedDraft = { ...postDraft, ...draftData };
   const { title, price, targetMarket, newListing } = buildNewListingPayload({
     postDraft: mergedDraft,
     user,
     browseCountryCode,
     activeCurrency,
+    isAdmin,
   });
   if (!title || !price) return null;
   return { newListing, targetMarket };
