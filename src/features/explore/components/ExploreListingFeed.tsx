@@ -23,12 +23,8 @@ interface ExploreListingFeedProps {
 }
 
 export const ExploreListingFeed: React.FC<ExploreListingFeedProps> = ({
-  listings, feedLayout, hasActiveFilters = false, onResetFilters = () => {},
-  activeSearchText, onPostWithSearch, onExpandSearch,
-  hasMore = false,
-  isLoadingMore = false,
-  onLoadMore = () => {},
-  isInitialLoading = false,
+  listings, feedLayout, hasActiveFilters = false, onResetFilters = () => {}, activeSearchText, onPostWithSearch, onExpandSearch,
+  hasMore = false, isLoadingMore = false, onLoadMore = () => {}, isInitialLoading = false,
 }) => {
   const { isArabic } = useUI();
   const listRef = useRef<HTMLDivElement | null>(null);
@@ -38,34 +34,19 @@ export const ExploreListingFeed: React.FC<ExploreListingFeedProps> = ({
   const rowCount = useMemo(() => (feedLayout === 'grid' ? Math.ceil(listings.length / 2) : listings.length), [listings.length, feedLayout]);
   const estimatedRowHeight = useMemo(() => (feedLayout === 'grid' ? 300 : 140), [feedLayout]);
 
-  // حساب المسافة من أعلى الصفحة لبداية القائمة لضبط الـ Window Virtualizer
   useEffect(() => {
-    if (listRef.current) {
-      setScrollMargin(listRef.current.offsetTop);
-    }
+    if (listRef.current) setScrollMargin(listRef.current.offsetTop);
   }, [listings.length, feedLayout, isVirtualized]);
 
-  const rowVirtualizer = useWindowVirtualizer({
-    count: rowCount,
-    estimateSize: () => estimatedRowHeight,
-    overscan: 4,
-    enabled: isVirtualized,
-    scrollMargin, // ضروري جداً
-  });
+  const rowVirtualizer = useWindowVirtualizer({ count: rowCount, estimateSize: () => estimatedRowHeight, overscan: 4, enabled: isVirtualized, scrollMargin });
 
-  if (isInitialLoading && listings.length === 0) {
-    return <ListingsFeedSkeleton layout={feedLayout} />;
-  }
+  if (isInitialLoading && listings.length === 0) return <ListingsFeedSkeleton layout={feedLayout} />;
 
   if (listings.length === 0) {
     return (
       <ExploreEmptyFeedState
-        isArabic={isArabic}
-        hasActiveFilters={hasActiveFilters}
-        onResetFilters={onResetFilters}
-        activeSearchText={activeSearchText}
-        onPostWithSearch={onPostWithSearch}
-        onExpandSearch={onExpandSearch}
+        isArabic={isArabic} hasActiveFilters={hasActiveFilters} onResetFilters={onResetFilters}
+        activeSearchText={activeSearchText} onPostWithSearch={onPostWithSearch} onExpandSearch={onExpandSearch}
       />
     );
   }
@@ -91,13 +72,7 @@ export const ExploreListingFeed: React.FC<ExploreListingFeedProps> = ({
             const item1 = listings[vRow.index * 2];
             const item2 = listings[vRow.index * 2 + 1];
             return (
-              <div 
-                key={vRow.key} 
-                data-index={vRow.index} 
-                ref={rowVirtualizer.measureElement} 
-                className="absolute top-0 start-0 w-full grid grid-cols-2 gap-5 pb-5" 
-                style={{ transform: `translateY(${vRow.start - scrollMargin}px)` }} // طرحنا الـ scrollMargin
-              >
+              <div key={vRow.key} data-index={vRow.index} ref={rowVirtualizer.measureElement} className="absolute top-0 start-0 w-full grid grid-cols-2 gap-5 pb-5" style={{ transform: `translateY(${vRow.start - scrollMargin}px)` }}>
                 {item1 && <ListingCard key={item1.id} listing={item1} layout="grid" />}
                 {item2 && <ListingCard key={item2.id} listing={item2} layout="grid" />}
               </div>
@@ -105,13 +80,7 @@ export const ExploreListingFeed: React.FC<ExploreListingFeedProps> = ({
           }
           const item = listings[vRow.index];
           return item ? (
-            <div 
-              key={vRow.key} 
-              data-index={vRow.index} 
-              ref={rowVirtualizer.measureElement} 
-              className="absolute top-0 start-0 w-full pb-5" 
-              style={{ transform: `translateY(${vRow.start - scrollMargin}px)` }} // طرحنا الـ scrollMargin
-            >
+            <div key={vRow.key} data-index={vRow.index} ref={rowVirtualizer.measureElement} className="absolute top-0 start-0 w-full pb-5" style={{ transform: `translateY(${vRow.start - scrollMargin}px)` }}>
               <ListingCard key={item.id} listing={item} layout="horizontal" />
             </div>
           ) : null;
