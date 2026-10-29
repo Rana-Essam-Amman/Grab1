@@ -11,6 +11,7 @@ import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { supabase } from '@/shared/lib/supabase';
 import { capture } from '@/shared/analytics/posthog';
 import { EVENTS } from '@/shared/analytics/events';
+import { toast } from 'sonner';
 
 export interface UsePostAdEntryReturn {
   readonly isArabic: boolean;
@@ -68,11 +69,17 @@ export const usePostAdEntry = (): UsePostAdEntryReturn => {
   const draftMarket = myMarket ?? currentBrowseMarket;
 
   const startPostFlow = useCallback(() => {
-    if (!canPostInMarket || freeRemaining <= 0 || isAdminLoading) return;
+    if (isAdminLoading) return;
+    if (freeRemaining <= 0) {
+      toast.error(isArabic ? 'لقد استهلكت إعلاناتك المجانية. يرجى ترقية حسابك أو حذف إعلان قديم.' : 'You have used your free ads. Please upgrade or delete an old ad.');
+      navigateTo('pricing');
+      return;
+    }
+    if (!canPostInMarket) return;
     draftStartPostFlow(); setAiFlowPending(true);
     capture(EVENTS.LISTING_STARTED, { market: draftMarket ?? 'unknown' });
     navigateTo('post-category');
-  }, [canPostInMarket, freeRemaining, draftStartPostFlow, setAiFlowPending, navigateTo, draftMarket, isAdminLoading]);
+  }, [canPostInMarket, freeRemaining, draftStartPostFlow, setAiFlowPending, navigateTo, draftMarket, isAdminLoading, isArabic]);
 
   return { isArabic, handleBack, startPostFlow, canPostInMarket, myMarket, freeLimit, freeRemaining, updateUserMarket };
 };
