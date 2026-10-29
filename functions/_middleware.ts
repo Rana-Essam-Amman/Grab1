@@ -1,6 +1,7 @@
 import type { Env } from './_shared/supabaseRest';
 import { handleSitemap } from './_handlers/sitemap';
 import { handleCategory } from './_handlers/category';
+import { handleArea } from './_handlers/area';
 import { handleListing } from './_handlers/listing';
 import { handleLegacyRedirect } from './_handlers/legacy';
 
@@ -11,6 +12,10 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   // Sitemap routes — highest priority, no HTML needed.
   const sitemap = await handleSitemap(url, context.env);
   if (sitemap) return sitemap;
+
+  // Area pages: /{market}/areas/{area-slug}
+  const area = await handleArea(url, context.env, next);
+  if (area) return area;
 
   // Category pages: /{market}/{category}
   const category = await handleCategory(url, context.env, next);
