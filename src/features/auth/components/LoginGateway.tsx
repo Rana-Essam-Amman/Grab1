@@ -4,10 +4,11 @@ import { LoginGatewayContent } from './LoginGatewayContent';
 import { getLoginProviderButtons } from '../helpers/providerButtonConfig';
 import { useGoogleSignIn } from '../hooks/useGoogleSignIn';
 import { useComingSoonToast } from '../hooks/useComingSoonToast';
+import type { MarketCode } from '@/shared/lib/marketGate';
 
 interface LoginGatewayProps {
   isArabic: boolean;
-  onGuestCountrySelect: (code: string, cityEn: string, cityAr: string) => void;
+  onGuestCountrySelect: (code: MarketCode) => void;
   guestCountrySelectOpen: boolean;
   onToggleGuestCountrySelect: () => void;
 }
