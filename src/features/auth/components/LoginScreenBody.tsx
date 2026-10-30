@@ -1,10 +1,11 @@
 import React from 'react';
 import { LoginGateway } from './LoginGateway';
+import type { MarketCode } from '@/shared/lib/marketGate';
 
 interface LoginScreenBodyProps {
   isArabic: boolean;
   guestCountrySelect: boolean;
-  handleSelectBrowseCountry: (code: string) => void;
+  handleSelectBrowseCountry: (code: MarketCode) => void;
   handleGuestCountryClose: () => void;
   handleGuestCountryOpen: () => void;
   toastMsg?: string;
