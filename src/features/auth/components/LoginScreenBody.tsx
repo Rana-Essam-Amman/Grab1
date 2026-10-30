@@ -4,7 +4,7 @@ import { LoginGateway } from './LoginGateway';
 interface LoginScreenBodyProps {
   isArabic: boolean;
   guestCountrySelect: boolean;
-  handleSelectBrowseCountry: (code: any) => void;
+  handleSelectBrowseCountry: (code: string) => void;
   handleGuestCountryClose: () => void;
   handleGuestCountryOpen: () => void;
   toastMsg?: string;
