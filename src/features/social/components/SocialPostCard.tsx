@@ -9,8 +9,9 @@ import { toggleLike } from '../services/socialService';
 import { CommentSheet } from './CommentSheet';
 import { ImageLightbox } from './ImageLightbox';
 import { toast } from 'sonner';
+import type { SocialPost } from '../types';
 
-interface PostProps { post: any; }
+interface PostProps { post: SocialPost; }
 
 export const SocialPostCard: React.FC<PostProps> = React.memo(({ post }) => {
   const { isArabic } = useUI();
