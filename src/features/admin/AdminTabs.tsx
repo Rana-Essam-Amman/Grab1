@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import * as rpc from './adminRpc';
-import type { MarketCode } from './adminRpc';
+import type { MarketCode, PaymentParams } from './adminRpc';
 import { PhoneRequestsTab } from './PhoneRequestsTab';
 import { formatPrice } from '@/shared/lib/formatPrice';
 import { useUI } from '@/hooks/useUI';
@@ -12,7 +12,7 @@ export const AdminTabs: React.FC<{ market: MarketCode; actions: any; actionLoadi
   const [tab, setTab] = useState<Tab>('reports');
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [payForm, setPayForm] = useState({ userId: '', listingId: '', product: 'featured' as any, amount: '', currency: 'JOD' });
+  const [payForm, setPayForm] = useState({ userId: '', listingId: '', product: 'featured' as PaymentParams['product'], amount: '', currency: 'JOD' });
 
   const loadTab = useCallback(async () => {
     if (tab === 'phoneRequests') return;
@@ -68,7 +68,7 @@ export const AdminTabs: React.FC<{ market: MarketCode; actions: any; actionLoadi
           <input placeholder="معرّف المستخدم (UUID)" value={payForm.userId} onChange={(e) => setPayForm({ ...payForm, userId: e.target.value })} className="p-2 border rounded border-border bg-background" required />
           <input placeholder="معرّف الإعلان (اختياري UUID)" value={payForm.listingId} onChange={(e) => setPayForm({ ...payForm, listingId: e.target.value })} className="p-2 border rounded border-border bg-background" />
           <div className="flex gap-2">
-            <select value={payForm.product} onChange={(e) => setPayForm({ ...payForm, product: e.target.value as any })} className="p-2 border rounded border-border bg-background flex-1">
+            <select value={payForm.product} onChange={(e) => setPayForm({ ...payForm, product: e.target.value as PaymentParams['product'] })} className="p-2 border rounded border-border bg-background flex-1">
               <option value="featured">featured</option>
             </select>
             <input type="number" step="0.01" placeholder="المبلغ" value={payForm.amount} onChange={(e) => setPayForm({ ...payForm, amount: e.target.value })} className="p-2 border rounded border-border bg-background w-24" required />
@@ -97,8 +97,8 @@ export const AdminTabs: React.FC<{ market: MarketCode; actions: any; actionLoadi
                     return;
                   }
                   const confirmMsg = isArabic
-                    ? `حظر البائع "${r.listing_owner_name || 'غير معروف'}"؟\n\nالسبب:`
-                    : `Ban seller "${r.listing_owner_name || 'unknown'}"?\n\nReason:`;
+                    ? `حظر البائع \"${r.listing_owner_name || 'غير معروف'}\"?\n\nالسبب:`
+                    : `Ban seller \"${r.listing_owner_name || 'unknown'}\"?\n\nReason:`;
                   const reason = prompt(confirmMsg);
                   if (reason) { await actions.banUser(r.listing_owner_id, reason); loadTab(); }
                 }} disabled={actionLoading} className="px-2 py-1 bg-red-500/10 text-red-600 rounded text-[11px] cursor-pointer">احظر البائع</button>
