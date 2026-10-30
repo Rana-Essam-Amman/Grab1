@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import * as rpc from './adminRpc';
 import type { MarketCode, PaymentParams } from './adminRpc';
+import type { AdminActions } from './admin.types';
 import { PhoneRequestsTab } from './PhoneRequestsTab';
 import { formatPrice } from '@/shared/lib/formatPrice';
 import { useUI } from '@/hooks/useUI';
 
 type Tab = 'reports' | 'listings' | 'users' | 'revenue' | 'phoneRequests';
 
-export const AdminTabs: React.FC<{ market: MarketCode; actions: any; actionLoading: boolean }> = ({ market, actions, actionLoading }) => {
+export const AdminTabs: React.FC<{ market: MarketCode; actions: AdminActions; actionLoading: boolean }> = ({ market, actions, actionLoading }) => {
   const { isArabic } = useUI();
   const [tab, setTab] = useState<Tab>('reports');
   const [items, setItems] = useState<any[]>([]);
