@@ -2,10 +2,11 @@ import React from 'react';
 import { Button } from '@/shared/ui/Button';
 import { Global } from 'iconsax-react';
 import { countries } from '@/data/countries';
+import type { MarketCode } from '@/shared/lib/marketGate';
 
 interface GuestCountrySelectProps {
   isArabic: boolean;
-  onSelectCountry: (code: string, cityEn: string, cityAr: string) => void;
+  onSelectCountry: (code: MarketCode) => void;
   onClose: () => void;
 }
 
@@ -30,19 +31,10 @@ export const GuestCountrySelect: React.FC<GuestCountrySelectProps> = ({
 
       <div className="flex flex-col gap-3 w-full">
         {countries.map((c) => {
-          const defaultCities: Record<string, { en: string; ar: string }> = {
-            JO: { en: 'Amman', ar: 'عمّان' },
-            LB: { en: 'Beirut', ar: 'بيروت' },
-            PS: { en: 'Jerusalem', ar: 'القدس' },
-            SY: { en: 'Damascus', ar: 'دمشق' },
-            SA: { en: 'Riyadh', ar: 'الرياض' },
-          };
-          const city = defaultCities[c.code] || { en: 'Amman', ar: 'عمّان' };
-          
           return (
             <button
               key={c.code}
-              onClick={() => onSelectCountry(c.code, city.en, city.ar)}
+              onClick={() => onSelectCountry(c.code as MarketCode)}
               type="button"
               className="w-full h-12 bg-surface border border-border hover:border-primary hover:bg-surface text-ink text-sm font-bold rounded-xl flex items-center justify-between px-4 cursor-pointer transition-all active:scale-98"
             >
