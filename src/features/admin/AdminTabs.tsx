@@ -22,11 +22,16 @@ export const AdminTabs: React.FC<{ market: MarketCode; actions: AdminActions; ac
     setItems([]);
     setLoading(true);
     try {
-      let res: any;
-      if (tab === 'reports') res = await rpc.listReports(market, 'pending');
-      else if (tab === 'listings') res = await rpc.listListings(market, 'active');
-      else if (tab === 'users') res = await rpc.listUsers(market);
-      if (myId === requestIdRef.current && res?.data) setItems(res.data);
+      if (tab === 'reports') {
+        const res = await rpc.listReports(market, 'pending');
+        if (myId === requestIdRef.current && res?.data) setItems(res.data);
+      } else if (tab === 'listings') {
+        const res = await rpc.listListings(market, 'active');
+        if (myId === requestIdRef.current && res?.data) setItems(res.data);
+      } else if (tab === 'users') {
+        const res = await rpc.listUsers(market);
+        if (myId === requestIdRef.current && res?.data) setItems(res.data);
+      }
     } catch (err) {
       if (myId === requestIdRef.current) console.error('[AdminTabs] Load failed:', err);
     } finally {
