@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Header } from '@/shared/components/Header';
 import { SearchBar } from '@/features/explore/components/SearchBar';
 import { useScrollDirection } from '@/shared/hooks/useScrollDirection';
+import type { SocialPost } from '../types';
 
 const PAGE_SIZE = 10;
 
@@ -28,7 +29,7 @@ export const SocialFeedScreen: React.FC = () => {
   const [searchInput, setSearchInput] = useState('');
   const debouncedSearch = useDebouncedValue(searchInput, 600);
 
-  const [posts, setPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<SocialPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [offset, setOffset] = useState(0);
