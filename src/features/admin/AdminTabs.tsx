@@ -97,8 +97,8 @@ export const AdminTabs: React.FC<{ market: MarketCode; actions: any; actionLoadi
                     return;
                   }
                   const confirmMsg = isArabic
-                    ? `حظر البائع \"${r.listing_owner_name || 'غير معروف'}\"?\n\nالسبب:`
-                    : `Ban seller \"${r.listing_owner_name || 'unknown'}\"?\n\nReason:`;
+                    ? `حظر البائع "${r.listing_owner_name || 'غير معروف'}"؟\n\nالسبب:`
+                    : `Ban seller "${r.listing_owner_name || 'Unknown'}"?\n\nReason:`;
                   const reason = prompt(confirmMsg);
                   if (reason) { await actions.banUser(r.listing_owner_id, reason); loadTab(); }
                 }} disabled={actionLoading} className="px-2 py-1 bg-red-500/10 text-red-600 rounded text-[11px] cursor-pointer">احظر البائع</button>
