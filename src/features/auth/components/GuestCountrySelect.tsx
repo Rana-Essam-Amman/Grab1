@@ -34,13 +34,13 @@ export const GuestCountrySelect: React.FC<GuestCountrySelectProps> = ({
           return (
             <button
               key={c.code}
-              onClick={() => onSelectCountry(c.code as MarketCode)}
+              onClick={() => onSelectCountry(c.code)}
               type="button"
               className="w-full h-12 bg-surface border border-border hover:border-primary hover:bg-surface text-ink text-sm font-bold rounded-xl flex items-center justify-between px-4 cursor-pointer transition-all active:scale-98"
             >
               <div className="flex items-center gap-3">
                 <span className="text-lg">
-                  {c.code === 'JO' ? '🇯🇴' : c.code === 'LB' ? '🇱🇧' : c.code === 'PS' ? '🇵🇸' : c.code === 'SY' ? '🇸🇾' : '🇸🇦'}
+                  {c.code === 'JO' ? '🇯🇴' : c.code === 'LB' ? '🇱🇧' : c.code === 'PS' ? '🇵🇸' : c.code === 'SY' ? '🇸🇾' : c.code === 'KW' ? '🇰🇼' : '🇸🇦'}
                 </span>
                 <span className="text-sm">{isArabic ? c.nameAr : c.nameEn}</span>
               </div>
