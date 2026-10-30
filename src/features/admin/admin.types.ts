@@ -54,9 +54,26 @@ export interface DashboardMetrics {
   currency: string;
 }
 
+// Verified from live RPC: admin_get_dashboard recent_reports subquery
+// (12 fields — no listing_owner_id/listing_owner_name)
+export interface RecentReportSummary {
+  id: string;
+  listing_id: string;
+  listing_title: string;
+  listing_country_code: MarketCode;
+  reporter_id: string;
+  reporter_name: string;
+  reason: string;
+  details: string | null;
+  status: string;
+  action_taken: string | null;
+  created_at: string;
+  reviewed_at: string | null;
+}
+
 export interface DashboardData {
   metrics: DashboardMetrics;
-  recent_reports: AdminReport[];
+  recent_reports: RecentReportSummary[];
 }
 
 // Actions exposed by useAdmin and consumed by AdminTabs
