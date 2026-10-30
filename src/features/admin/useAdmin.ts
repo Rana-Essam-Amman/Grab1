@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import * as rpc from './adminRpc';
 import type { MarketCode, PaymentParams } from './adminRpc';
+import { getErrorMessage } from '@/shared/lib/getErrorMessage';
 
 export function useAdmin() {
   const [market, setMarketState] = useState<MarketCode>('JO');
@@ -33,13 +34,13 @@ export function useAdmin() {
     try {
       const { error: err } = await actionFn();
       if (err) {
-        const errorMessage = err instanceof Error ? err.message : String(err);
+        const errorMessage = getErrorMessage(err);
         throw new Error(errorMessage || 'Action failed');
       }
       await refresh();
       return true;
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : String(err);
+      const errorMessage = getErrorMessage(err);
       setError(errorMessage || 'Action failed');
       return false;
     } finally {
