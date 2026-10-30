@@ -61,7 +61,6 @@ try {
 }
 
 initSentry();
-initPosthog();
 
 window.addEventListener('error', (event) => {
   void logError({
@@ -85,3 +84,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     </ErrorBoundary>
   </React.StrictMode>
 );
+
+// Defer PostHog init until after first paint (non-blocking analytics)
+if ('requestIdleCallback' in window) {
+  window.requestIdleCallback(() => { void initPosthog(); }, { timeout: 2000 });
+} else {
+  setTimeout(() => { void initPosthog(); }, 100);
+}
