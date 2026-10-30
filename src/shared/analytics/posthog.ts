@@ -3,6 +3,7 @@ import type { PostHog } from 'posthog-js';
 let posthogInstance: PostHog | null = null;
 let isInitialized = false;
 const eventQueue: Array<{ name: string; props?: Record<string, string | number | boolean | null | undefined> }> = [];
+const MAX_QUEUE_SIZE = 100;
 
 export async function initPosthog(): Promise<void> {
   if (isInitialized) return;
@@ -36,6 +37,7 @@ export async function initPosthog(): Promise<void> {
     eventQueue.length = 0;
   } catch (error) {
     console.warn('[PostHog] Failed to initialize:', error);
+    eventQueue.length = 0;
     isInitialized = true;
   }
 }
@@ -45,7 +47,9 @@ export function capture(
   properties?: Record<string, string | number | boolean | null | undefined>
 ): void {
   if (!isInitialized) {
-    eventQueue.push({ name: eventName, props: properties });
+    if (eventQueue.length < MAX_QUEUE_SIZE) {
+      eventQueue.push({ name: eventName, props: properties });
+    }
     return;
   }
   if (!posthogInstance) return;
