@@ -1,6 +1,6 @@
 import { supabase } from '@/shared/lib/supabase';
-
-export type { MarketCode } from '@/shared/lib/marketGate';
+import type { MarketCode } from '@/shared/lib/marketGate';
+export type { MarketCode };
 
 export interface PaymentParams {
   userId: string;
