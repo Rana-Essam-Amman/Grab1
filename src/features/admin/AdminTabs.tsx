@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import * as rpc from './adminRpc';
 import type { MarketCode, PaymentParams } from './adminRpc';
 import type { AdminActions } from './admin.types';
@@ -14,19 +14,23 @@ export const AdminTabs: React.FC<{ market: MarketCode; actions: AdminActions; ac
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [payForm, setPayForm] = useState({ userId: '', listingId: '', product: 'featured' as PaymentParams['product'], amount: '', currency: 'JOD' });
+  const requestIdRef = useRef(0);
 
   const loadTab = useCallback(async () => {
     if (tab === 'phoneRequests' || tab === 'revenue') return;
+    const myId = ++requestIdRef.current;
     setItems([]);
     setLoading(true);
-    let res: any;
     try {
+      let res: any;
       if (tab === 'reports') res = await rpc.listReports(market, 'pending');
       else if (tab === 'listings') res = await rpc.listListings(market, 'active');
       else if (tab === 'users') res = await rpc.listUsers(market);
-      if (res?.data) setItems(res.data);
+      if (myId === requestIdRef.current && res?.data) setItems(res.data);
+    } catch (err) {
+      if (myId === requestIdRef.current) console.error('[AdminTabs] Load failed:', err);
     } finally {
-      setLoading(false);
+      if (myId === requestIdRef.current) setLoading(false);
     }
   }, [market, tab]);
 
