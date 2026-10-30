@@ -27,7 +27,7 @@ export function useAdmin() {
     refresh('JO');
   }, [refresh]);
 
-  const runAction = useCallback(async (actionFn: () => Promise<{ error: any }>) => {
+  const runAction = useCallback(async (actionFn: () => Promise<{ error: Error | null }>) => {
     setActionLoading(true);
     setError(null);
     try {
@@ -35,8 +35,9 @@ export function useAdmin() {
       if (err) throw err;
       await refresh();
       return true;
-    } catch (err: any) {
-      setError(err?.message || 'Action failed');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      setError(errorMessage || 'Action failed');
       return false;
     } finally {
       setActionLoading(false);
