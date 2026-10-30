@@ -9,7 +9,7 @@ import {
   type SitemapUrl,
 } from '../_shared/sitemapHelpers';
 import { CATEGORY_META } from '../_shared/categoryMeta';
-import KW_GEO from '../../src/data/locations/KW.geo';
+import { listAllDistricts } from '../_shared/geoLookup';
 
 const MARKETS = ['jo', 'sa', 'lb', 'ps', 'sy', 'kw'] as const;
 const SITEMAP_MARKET_RE = /^\/sitemap-(jo|sa|lb|ps|sy|kw)\.xml$/;
@@ -42,16 +42,12 @@ export async function handleSitemap(
     lastmod: now,
   }));
 
-  // Kuwait area landing pages
-  if (market === 'kw') {
-    for (const gov of KW_GEO.governorates) {
-      for (const d of gov.districts) {
-        categoryUrls.push({
-          loc: `${url.origin}/kw/areas/${d.slug}`,
-          lastmod: now,
-        });
-      }
-    }
+  // Area landing pages (all 6 markets)
+  for (const d of listAllDistricts(market)) {
+    categoryUrls.push({
+      loc: `${url.origin}/${market}/areas/${d.slug}`,
+      lastmod: now,
+    });
   }
 
   const listingUrls: SitemapUrl[] = rows.map((row) => ({
