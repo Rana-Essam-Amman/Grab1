@@ -4,6 +4,18 @@ import { Badge } from '@/shared/ui/Badge';
 import { BookmarkHeartButton } from './BookmarkHeartButton';
 import { toOptimizedImageUrl } from '@/shared/lib/optimizedImage';
 
+const buildSrc = (src: string): string =>
+  toOptimizedImageUrl(src, { width: 800, quality: 75 });
+
+const buildSrcSet = (src: string): string =>
+  [
+    `${toOptimizedImageUrl(src, { width: 400, quality: 75 })} 400w`,
+    `${toOptimizedImageUrl(src, { width: 800, quality: 75 })} 800w`,
+    `${toOptimizedImageUrl(src, { width: 1200, quality: 75 })} 1200w`,
+  ].join(', ');
+
+const IMG_SIZES = '(max-width: 440px) 50vw, 220px';
+
 export interface ListingCardImageProps {
   readonly imageUrl: string;
   readonly title: string;
@@ -22,7 +34,9 @@ export const ListingCardImage: React.FC<ListingCardImageProps> = ({
 }) => (
   <div className="w-full aspect-square bg-background relative overflow-hidden">
     <img
-      src={toOptimizedImageUrl(imageUrl, { width: 600, quality: 75 })}
+      src={buildSrc(imageUrl)}
+      srcSet={buildSrcSet(imageUrl)}
+      sizes={IMG_SIZES}
       alt={title}
       loading={priority ? "eager" : "lazy"}
       fetchPriority={priority ? "high" : undefined}
