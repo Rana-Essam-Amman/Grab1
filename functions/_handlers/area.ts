@@ -3,7 +3,7 @@ import { fetchListingsByMarketArea } from '../_shared/supabaseListings';
 import { buildListingLoc } from '../_shared/sitemapHelpers';
 import { escapeHtml } from '../_shared/listingMeta';
 import { MARKET_AR } from '../_shared/categoryMeta';
-import KW_GEO from '../../src/data/locations/KW.geo';
+import { findDistrict } from '../_shared/geoLookup';
 
 const MARKETS = ['jo', 'sa', 'lb', 'ps', 'sy', 'kw'];
 
@@ -13,13 +13,9 @@ interface AreaInfo {
 }
 
 function findArea(market: string, areaSlug: string): AreaInfo | null {
-  if (market.toLowerCase() !== 'kw') return null;
-  for (const gov of KW_GEO.governorates) {
-    for (const d of gov.districts) {
-      if (d.slug === areaSlug) return { nameAr: d.nameAr, nameEn: d.nameEn };
-    }
-  }
-  return null;
+  const d = findDistrict(market, areaSlug);
+  if (!d) return null;
+  return { nameAr: d.nameAr, nameEn: d.nameEn };
 }
 
 export function parseAreaUrl(pathname: string): { market: string; areaSlug: string } | null {
