@@ -1,17 +1,22 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import * as rpc from './adminRpc';
 import type { MarketCode, PaymentParams } from './adminRpc';
-import type { AdminActions } from './admin.types';
+import type { AdminReport, AdminListing, AdminUser, AdminActions } from './admin.types';
 import { PhoneRequestsTab } from './PhoneRequestsTab';
 import { formatPrice } from '@/shared/lib/formatPrice';
 import { useUI } from '@/hooks/useUI';
 
 type Tab = 'reports' | 'listings' | 'users' | 'revenue' | 'phoneRequests';
 
+type TabItems =
+  | { kind: 'reports'; data: AdminReport[] }
+  | { kind: 'listings'; data: AdminListing[] }
+  | { kind: 'users'; data: AdminUser[] };
+
 export const AdminTabs: React.FC<{ market: MarketCode; actions: AdminActions; actionLoading: boolean }> = ({ market, actions, actionLoading }) => {
   const { isArabic } = useUI();
   const [tab, setTab] = useState<Tab>('reports');
-  const [items, setItems] = useState<any[]>([]);
+  const [items, setItems] = useState<TabItems | null>(null);
   const [loading, setLoading] = useState(false);
   const [payForm, setPayForm] = useState({ userId: '', listingId: '', product: 'featured' as PaymentParams['product'], amount: '', currency: 'JOD' });
   const requestIdRef = useRef(0);
@@ -19,18 +24,18 @@ export const AdminTabs: React.FC<{ market: MarketCode; actions: AdminActions; ac
   const loadTab = useCallback(async () => {
     if (tab === 'phoneRequests' || tab === 'revenue') return;
     const myId = ++requestIdRef.current;
-    setItems([]);
+    setItems(null);
     setLoading(true);
     try {
       if (tab === 'reports') {
         const res = await rpc.listReports(market, 'pending');
-        if (myId === requestIdRef.current && res?.data) setItems(res.data);
+        if (myId === requestIdRef.current && res?.data) setItems({ kind: 'reports', data: res.data as AdminReport[] });
       } else if (tab === 'listings') {
         const res = await rpc.listListings(market, 'active');
-        if (myId === requestIdRef.current && res?.data) setItems(res.data);
+        if (myId === requestIdRef.current && res?.data) setItems({ kind: 'listings', data: res.data as AdminListing[] });
       } else if (tab === 'users') {
         const res = await rpc.listUsers(market);
-        if (myId === requestIdRef.current && res?.data) setItems(res.data);
+        if (myId === requestIdRef.current && res?.data) setItems({ kind: 'users', data: res.data as AdminUser[] });
       }
     } catch (err) {
       if (myId === requestIdRef.current) console.error('[AdminTabs] Load failed:', err);
@@ -94,11 +99,11 @@ export const AdminTabs: React.FC<{ market: MarketCode; actions: AdminActions; ac
         </form>
       ) : tab === 'phoneRequests' ? (
         <PhoneRequestsTab />
-      ) : items.length === 0 ? (
+      ) : !items || items.data.length === 0 ? (
         <div className="py-8 text-center text-xs text-ink-muted">لا توجد بيانات حالياً</div>
       ) : (
         <div className="flex flex-col gap-2">
-          {tab === 'reports' && items.map((r) => (
+          {items?.kind === 'reports' && items.data.map((r) => (
             <div key={r.id} className="p-2.5 bg-surface border border-border rounded-xl flex flex-col gap-1.5 text-xs">
               <div className="flex justify-between font-bold text-ink"><span>{r.reason}</span><span className="text-ink-muted text-[10px]">{r.listing_title}</span></div>
               {r.details && <p className="text-ink-muted text-[11px]">{r.details}</p>}
@@ -119,13 +124,13 @@ export const AdminTabs: React.FC<{ market: MarketCode; actions: AdminActions; ac
               </div>
             </div>
           ))}
-          {tab === 'listings' && items.map((l) => (
+          {items?.kind === 'listings' && items.data.map((l) => (
             <div key={l.id} className="p-2.5 bg-surface border border-border rounded-xl flex items-center justify-between text-xs">
               <div className="flex flex-col"><span className="font-bold text-ink">{l.title}</span><span className="text-ink-muted text-[11px]">{formatPrice(l.price, l.currency, isArabic)}</span></div>
               <button onClick={async () => { await actions.hideListing(l.id); loadTab(); }} disabled={actionLoading || l.status === 'hidden'} className="px-2 py-1 bg-amber-500/10 text-amber-600 rounded text-[11px] cursor-pointer">{l.status === 'hidden' ? 'مخفي' : 'اخفي الإعلان'}</button>
             </div>
           ))}
-          {tab === 'users' && items.map((u) => (
+          {items?.kind === 'users' && items.data.map((u) => (
             <div key={u.id} className="p-2.5 bg-surface border border-border rounded-xl flex items-center justify-between text-xs">
               <div className="flex flex-col"><span className="font-bold text-ink">{u.first_name || 'بدون اسم'} {u.last_name || ''}{u.is_anonymous ? <span className="ms-1 px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-500 text-[10px]">زائر</span> : <span className="ms-1 px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 text-[10px]">حقيقي</span>}</span><span className="text-ink-muted text-[11px]">{u.phone || 'بدون رقم'} {u.banned && <span className="text-red-500">(محظور)</span>}</span></div>
               {u.banned ? (
