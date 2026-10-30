@@ -27,12 +27,15 @@ export function useAdmin() {
     refresh('JO');
   }, [refresh]);
 
-  const runAction = useCallback(async (actionFn: () => Promise<{ error: Error | null }>) => {
+  const runAction = useCallback(async (actionFn: () => Promise<{ error: unknown }>) => {
     setActionLoading(true);
     setError(null);
     try {
       const { error: err } = await actionFn();
-      if (err) throw err;
+      if (err) {
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        throw new Error(errorMessage || 'Action failed');
+      }
       await refresh();
       return true;
     } catch (err: unknown) {
