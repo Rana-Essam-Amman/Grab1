@@ -16,14 +16,18 @@ export const AdminTabs: React.FC<{ market: MarketCode; actions: AdminActions; ac
   const [payForm, setPayForm] = useState({ userId: '', listingId: '', product: 'featured' as PaymentParams['product'], amount: '', currency: 'JOD' });
 
   const loadTab = useCallback(async () => {
-    if (tab === 'phoneRequests') return;
+    if (tab === 'phoneRequests' || tab === 'revenue') return;
+    setItems([]);
     setLoading(true);
     let res: any;
-    if (tab === 'reports') res = await rpc.listReports(market, 'pending');
-    else if (tab === 'listings') res = await rpc.listListings(market, 'active');
-    else if (tab === 'users') res = await rpc.listUsers(market);
-    if (res?.data) setItems(res.data);
-    setLoading(false);
+    try {
+      if (tab === 'reports') res = await rpc.listReports(market, 'pending');
+      else if (tab === 'listings') res = await rpc.listListings(market, 'active');
+      else if (tab === 'users') res = await rpc.listUsers(market);
+      if (res?.data) setItems(res.data);
+    } finally {
+      setLoading(false);
+    }
   }, [market, tab]);
 
   useEffect(() => { loadTab(); }, [loadTab]);
