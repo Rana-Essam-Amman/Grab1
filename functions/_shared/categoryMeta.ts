@@ -42,6 +42,7 @@ export const MARKET_EN: Record<string, string> = {
   LB: 'Lebanon',
   PS: 'Palestine',
   SY: 'Syria',
+  KW: 'Kuwait',
 };
 
 export function categoryTitle(market: string, category: string): string {
