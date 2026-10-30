@@ -2,10 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 import * as rpc from './adminRpc';
 import type { MarketCode, PaymentParams } from './adminRpc';
 import { getErrorMessage } from '@/shared/lib/getErrorMessage';
+import type { DashboardData } from './admin.types';
 
 export function useAdmin() {
   const [market, setMarketState] = useState<MarketCode>('JO');
-  const [dashboard, setDashboard] = useState<any>(null);
+  const [dashboard, setDashboard] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
