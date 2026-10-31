@@ -2,7 +2,7 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback, useId } from 'react';
 import { Icon } from '@iconify/react';
 import { matchScore, findMatchRange } from '@/shared/lib/arabicNormalize';
-import { Sheet } from '@/shared/ui';
+import { Drawer } from '@/shared/ui';
 
 interface Props {
   readonly options: readonly string[];
@@ -25,7 +25,7 @@ export const SearchableDropdown: React.FC<Props> = ({
   const [query, setQuery] = useState('');
   const [highlighted, setHighlighted] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-  
+
   const rootRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const listId = useId();
@@ -195,7 +195,7 @@ export const SearchableDropdown: React.FC<Props> = ({
       )}
 
       {isMobile && (
-        <Sheet
+        <Drawer
           open={open}
           onOpenChange={(v) => {
             if (!v) {
@@ -206,7 +206,7 @@ export const SearchableDropdown: React.FC<Props> = ({
           title={placeholder || (isArabic ? 'اختر' : 'Select')}
         >
           {content}
-        </Sheet>
+        </Drawer>
       )}
     </div>
   );
