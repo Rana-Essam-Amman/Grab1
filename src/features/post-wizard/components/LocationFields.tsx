@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Input } from '@/shared/ui/Input';
 import { Card } from '@/shared/ui/Card';
 import { Icon } from '@iconify/react';
@@ -8,6 +8,7 @@ import { usePostWizard } from '../hooks/usePostWizard';
 import { useUI } from '@/hooks/useUI';
 import { LocationMyLocationButton } from './LocationMyLocationButton';
 import { SearchableDropdown } from '@/shared/ui/SearchableDropdown';
+import { useLiveSearch } from '../hooks/useLiveSearch'; // ✅ استدعاء الـ Hook الجديد
 
 interface Props {
   isArabic: boolean;
@@ -50,6 +51,14 @@ export const LocationFields: React.FC<Props> = ({
   const { postDraft } = usePostWizard();
   const pinLat = latitude ?? postDraft.latitude;
   const pinLng = longitude ?? postDraft.longitude;
+  
+  // ✅ استخدام البحث الحي للأحياء
+  const [liveQuery, setLiveQuery] = useState('');
+  const { results: liveResults } = useLiveSearch(liveQuery, isArabic);
+  
+  // دمج الأحياء الثابتة مع نتائج البحث الحي
+  const allNeighborhoods = Array.from(new Set([...neighborhoods, ...liveResults]));
+
   return (
     <div className="flex flex-col gap-4">
       <LocationMyLocationButton isArabic={isArabic} preferredCountry={browseCountryCode} onCityChange={onCityChange} onNeighborhoodChange={onNeighborhoodChange} />
@@ -74,9 +83,10 @@ export const LocationFields: React.FC<Props> = ({
           <label className="block text-xs font-bold text-ink mb-1.5">{isArabic ? "اللواء / المنطقة / الحي" : "District / Area / Neighborhood"}</label>
           <div data-testid="location-neighborhood-wrapper">
             <SearchableDropdown
-              options={neighborhoods}
+              options={allNeighborhoods} // ✅ الدمج هنا
               value={selectedNeighborhood}
               onChange={onNeighborhoodChange}
+              onSearch={setLiveQuery} // ✅ تفعيل البحث الحي
               placeholder={isArabic ? 'ابحث عن لواء أو حي...' : 'Search district or neighborhood...'}
               isArabic={isArabic}
             />
