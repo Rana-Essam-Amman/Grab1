@@ -11,6 +11,22 @@ import { createWishlistActions } from './listings.slice.wishlist';
 import { createPaginationActions } from './listings.slice.pagination';
 import { getCurrentUser } from '@/shared/store-getters/auth.getter';
 
+/**
+ * Generates a temporary optimistic-listing ID.
+ * Uses crypto.randomUUID when available, falls back to time+random.
+ * Prefix `temp-` is the sole contract for detecting pending listings.
+ */
+function generateTempListingId(): string {
+  try {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      return `temp-${crypto.randomUUID()}`;
+    }
+  } catch {
+    /* fall through */
+  }
+  return `temp-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
 export const createListingsActions = (
   set: (fn: (state: ListingsState) => void) => void,
   get: () => ListingsState
@@ -19,10 +35,17 @@ export const createListingsActions = (
     if (get().isInitialized) return;
     const initialCc = globalStorage().get<string>('catch_browse_country') || 'JO';
     set((state) => {
-      state.listings = getListingsFromStorage();
+      // Clean up any stale optimistic listings from previous sessions.
+      // If publish actually succeeded server-side, the real listing will
+      // arrive via the next sync. If it failed, discarding is correct.
+      const cleaned = getListingsFromStorage().filter(
+        (l) => !l.id.startsWith('temp-')
+      );
+      state.listings = cleaned;
       state.wishlist = getWishlistForMarket(initialCc);
       state.activeWishlistCountry = initialCc;
       state.isInitialized = true;
+      saveListingsToStorage(cleaned);
     });
   },
 
@@ -82,30 +105,72 @@ export const createListingsActions = (
   refreshListings: () => set((state) => { state.listings = getListingsFromStorage(); }),
 
   publishListing: async (listing: Listing, activeCountry: string, isArabic = true): Promise<PublishResult> => {
-    const { remoteListing, error, fallbackToLocal } = await performSupabasePublish(
-      listing,
-      activeCountry,
-      isArabic
-    );
-    // No Supabase session (demo/E2E/offline) → save locally, don't block user.
-    if (fallbackToLocal) {
-      const sanitized = sanitizeListingData(listing, activeCountry, isArabic);
-      set((state) => {
-        state.listings = [sanitized, ...state.listings];
-        saveListingsToStorage(state.listings);
-      });
-      return { success: true, remoteId: sanitized.id, error: null };
-    }
+    const tempId = generateTempListingId();
+    const now = new Date().toISOString();
+    const optimisticListing: Listing = {
+      ...listing,
+      id: tempId,
+      createdAt: listing.createdAt || now,
+      views: listing.views ?? 0,
+    };
 
-    if (error || !remoteListing) {
-      return { success: false, remoteId: null, error: error || 'فشل النشر' };
-    }
-
+    // 1. Optimistic prepend — user sees their listing instantly.
+    //    The `set()` here is synchronous relative to the caller, so by the
+    //    time publishListing returns its promise, the temp listing is
+    //    already in state.listings.
     set((state) => {
-      state.listings = [remoteListing, ...state.listings];
+      state.listings = [optimisticListing, ...state.listings];
       saveListingsToStorage(state.listings);
     });
-    return { success: true, remoteId: remoteListing.id, error: null };
+
+    try {
+      const { remoteListing, error, fallbackToLocal } = await performSupabasePublish(
+        listing,
+        activeCountry,
+        isArabic
+      );
+
+      // 2a. Fallback (no auth) → replace temp with sanitized local listing.
+      if (fallbackToLocal) {
+        const sanitized = sanitizeListingData(listing, activeCountry, isArabic);
+        set((state) => {
+          state.listings = state.listings.map((item) =>
+            item.id === tempId ? sanitized : item
+          );
+          saveListingsToStorage(state.listings);
+        });
+        return { success: true, remoteId: sanitized.id, error: null };
+      }
+
+      // 2b. Failure → remove temp listing.
+      if (error || !remoteListing) {
+        set((state) => {
+          state.listings = state.listings.filter((item) => item.id !== tempId);
+          saveListingsToStorage(state.listings);
+        });
+        return { success: false, remoteId: null, error: error || 'فشل النشر' };
+      }
+
+      // 2c. Success → replace temp with remote listing in same position.
+      set((state) => {
+        state.listings = state.listings.map((item) =>
+          item.id === tempId ? remoteListing : item
+        );
+        saveListingsToStorage(state.listings);
+      });
+      return { success: true, remoteId: remoteListing.id, error: null };
+    } catch (err) {
+      // 2d. Unexpected error → remove temp listing.
+      set((state) => {
+        state.listings = state.listings.filter((item) => item.id !== tempId);
+        saveListingsToStorage(state.listings);
+      });
+      return {
+        success: false,
+        remoteId: null,
+        error: err instanceof Error ? err.message : 'خطأ غير معروف',
+      };
+    }
   },
 
   setIsQuotaExhausted: (exhausted: boolean) => set((state) => { state.isQuotaExhausted = exhausted; }),
