@@ -80,7 +80,7 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
     capture(EVENTS.LISTING_PUBLISHED, { flow: 'ai' });
     navigateTo('post-publish-success');
 
-    attachPublishResultHandler(publishPromise, 'ai', isArabic, navigateTo as (s: string) => void);
+    attachPublishResultHandler(publishPromise, 'ai', isArabic, navigateTo);
   };
 
   const curT = postDraft.title || postDraft.generated?.title || '';
