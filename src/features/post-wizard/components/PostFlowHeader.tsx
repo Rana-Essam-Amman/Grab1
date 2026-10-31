@@ -4,10 +4,12 @@ import { ArrowRight, ArrowLeft } from 'iconsax-react';
 import { useScrollDirection } from '@/shared/hooks/useScrollDirection';
 
 interface PostFlowHeaderProps {
-  step: number;
-  totalSteps: number;
+  step?: number;
+  totalSteps?: number;
   titleAr: string;
   titleEn: string;
+  subtitleAr?: string;
+  subtitleEn?: string;
   isArabic: boolean;
   onBack: () => void;
   categoryAsset?: string;
@@ -22,6 +24,8 @@ export const PostFlowHeader: React.FC<PostFlowHeaderProps> = ({
   totalSteps,
   titleAr,
   titleEn,
+  subtitleAr,
+  subtitleEn,
   isArabic,
   onBack,
   categoryAsset,
@@ -31,7 +35,7 @@ export const PostFlowHeader: React.FC<PostFlowHeaderProps> = ({
   subcategoryNameEn,
 }) => {
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
-  // استدعاء الـ Hook اللي بيخلي الهيدر يختفي مع السكرول
+  // الـ Hook اللي بيخلي الهيدر يختفي بالسكرول
   const isVisible = useScrollDirection();
 
   return (
@@ -56,10 +60,22 @@ export const PostFlowHeader: React.FC<PostFlowHeaderProps> = ({
             {isArabic ? titleAr : titleEn}
           </h2>
           <div className="flex items-center gap-1.5 text-white/70 text-xs mt-0.5">
-            <span>{isArabic ? `الخطوة ${step} من ${totalSteps}` : `Step ${step} of ${totalSteps}`}</span>
+            {/* عرض الخطوة لو موجودة */}
+            {step !== undefined && totalSteps !== undefined && (
+              <span>{isArabic ? `الخطوة ${step} من ${totalSteps}` : `Step ${step} of ${totalSteps}`}</span>
+            )}
+            
+            {/* عرض الوصف الفرعي لو موجود */}
+            {(subtitleAr || subtitleEn) && (
+              <span className="truncate">
+                {isArabic ? subtitleAr : subtitleEn}
+              </span>
+            )}
+
+            {/* عرض القسم لو موجود */}
             {(categoryNameAr || categoryNameEn) && (
               <>
-                <span>•</span>
+                {(step !== undefined || subtitleAr) && <span>•</span>}
                 <span className="truncate">
                   {isArabic ? categoryNameAr : categoryNameEn}
                   {subcategoryNameAr || subcategoryNameEn ? (
