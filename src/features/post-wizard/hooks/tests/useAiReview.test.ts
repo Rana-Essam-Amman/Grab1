@@ -10,7 +10,9 @@ const mockSetActiveTab = vi.fn();
 const mockUpdatePostDraft = vi.fn();
 const mockResetPostDraft = vi.fn();
 const mockPublishListing = vi.fn();
-const mockToastError = vi.fn();
+const { mockToastError } = vi.hoisted(() => ({
+  mockToastError: vi.fn(),
+}));
 
 let mockAuthStatus = 'authenticated';
 let mockPostDraft = {
