@@ -272,6 +272,29 @@ const JO_GEO: CountryGeo = {
             { slug: 'al-dulayl', nameAr: 'الضليل', nameEn: 'Al-Dulayl' },
           ],
         },
+        {
+          slug: 'al-azraq-district',
+          nameAr: 'الأزرق',
+          nameEn: 'Al-Azraq',
+          villages: [
+            { slug: 'al-azraq', nameAr: 'الأزرق', nameEn: 'Al-Azraq' },
+            { slug: 'al-azraq-al-janoubi', nameAr: 'الأزرق الجنوبي', nameEn: 'Al-Azraq Al-Janoubi' },
+            { slug: 'al-azraq-al-shamali', nameAr: 'الأزرق الشمالي', nameEn: 'Al-Azraq Al-Shamali' },
+            { slug: 'muraighan', nameAr: 'المريقبان', nameEn: 'Muraighan' },
+            { slug: 'al-umari', nameAr: 'العامري', nameEn: 'Al-Umari' },
+          ],
+        },
+        {
+          slug: 'birayn-district',
+          nameAr: 'بيرين',
+          nameEn: 'Birayn',
+          villages: [
+            { slug: 'birayn', nameAr: 'بيرين', nameEn: 'Birayn' },
+            { slug: 'um-rumman', nameAr: 'أم رمان', nameEn: 'Um Rumman' },
+            { slug: 'al-hashimiyya', nameAr: 'الهاشمية', nameEn: 'Al-Hashimiyya' },
+            { slug: 'al-zaytounah', nameAr: 'الزيتونة', nameEn: 'Al-Zaytounah' },
+          ],
+        },
       ],
     },
     {
