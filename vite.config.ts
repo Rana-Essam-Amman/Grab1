@@ -44,12 +44,11 @@ export default defineConfig({
           'vendor-radix': [
             '@radix-ui/react-dialog',
             '@radix-ui/react-popover',
-            'vaul', // ✅ تعديل: نقلنا vaul هنا عشان يتحمل مع Radix
           ],
           'vendor-forms': ['zod', 'class-variance-authority', 'clsx', 'tailwind-merge'],
           'vendor-supabase': ['@supabase/supabase-js', '@noble/hashes'],
           'vendor-sentry': ['@sentry/react'],
-          'vendor-ui': ['@iconify/react', 'sonner'], // ✅ تعديل: شيلنا vaul من هنا
+          'vendor-ui': ['@iconify/react', 'vaul', 'sonner'], // ✅ تم إرجاع vaul هنا
         },
       },
     },
