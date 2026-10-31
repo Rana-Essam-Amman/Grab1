@@ -20,6 +20,8 @@ interface ListingCardProps {
 function ListingCardComponent({ listing, layout = 'grid', priority = false }: ListingCardProps) {
   const { setSelectedListingId, navigateTo, isArabic } = useUI();
 
+  const isPending = listing.id.startsWith('temp-');
+
   const sanitizedLoc = useMemo(
     () => getSanitizedRegionalLocation(listing.countryCode, listing.city, listing.neighborhood, isArabic ? 'ar' : 'en', { allowUnknown: true }),
     [listing.countryCode, listing.city, listing.neighborhood, isArabic]
@@ -33,9 +35,10 @@ function ListingCardComponent({ listing, layout = 'grid', priority = false }: Li
   const sellerKey = useMemo(() => listing.userId || listing.sellerPhone || '', [listing.sellerPhone, listing.userId]);
 
   const handleClick = useCallback(() => {
+    if (isPending) return;
     setSelectedListingId(listing.id);
     navigateTo('listing-detail');
-  }, [listing.id, setSelectedListingId, navigateTo]);
+  }, [isPending, listing.id, setSelectedListingId, navigateTo]);
 
   const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     (e.target as HTMLImageElement).src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23E5E7EB"/><path d="M35 65 L50 45 L65 65 Z" fill="%239CA3AF"/><circle cx="65" cy="35" r="6" fill="%239CA3AF"/></svg>';
@@ -52,10 +55,18 @@ function ListingCardComponent({ listing, layout = 'grid', priority = false }: Li
       role="button"
       tabIndex={0}
       onClick={handleClick}
-      className={`${premiumClasses} rounded-2xl overflow-hidden border flex flex-col cursor-pointer hover:border-primary/60 transition-all shadow-md group active:scale-[0.98]`}
+      className={`${premiumClasses} relative rounded-2xl overflow-hidden border flex flex-col ${isPending ? 'cursor-wait' : 'cursor-pointer hover:border-primary/60 active:scale-[0.98]'} transition-all shadow-md group`}
       dir={isArabic ? 'rtl' : 'ltr'}
       data-testid="listing-card"
     >
+      {isPending && (
+        <div className="absolute inset-0 bg-black/40 z-40 flex items-center justify-center rounded-2xl">
+          <span className="bg-primary text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+            {isArabic ? 'جاري النشر...' : 'Publishing...'}
+          </span>
+        </div>
+      )}
+
       <ListingCardImage imageUrl={listing.imageUrl} title={listing.title} isPremium={listing.isPremium} listingId={listing.id} isArabic={isArabic} onImageError={handleImageError} priority={priority} />
 
       <div className="p-3 flex flex-col flex-1">
@@ -63,7 +74,6 @@ function ListingCardComponent({ listing, layout = 'grid', priority = false }: Li
           {formattedPrice || (isArabic ? 'السعر غير محدد' : 'Price not specified')}
         </div>
 
-        {/* أضفنا dark:text-white هنا عشان يبان في الدارك مود */}
         <div className="text-[15px] font-extrabold text-black dark:text-white leading-tight line-clamp-2 mb-1.5" dir="auto">
           {stripEmojis(listing.title)}
         </div>
