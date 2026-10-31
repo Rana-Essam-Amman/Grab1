@@ -35,7 +35,7 @@ export const BottomNav: React.FC = () => {
 
   return (
     <nav
-      className={`fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] h-[56px] border-t border-line grid grid-cols-5 z-40 px-1 transition-transform duration-300 ease-in-out ${isVisible ? 'translate-y-0' : 'translate-y-full'}`}
+      className={`fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] min-h-[56px] pb-[var(--safe-bottom,0px)] border-t border-line grid grid-cols-5 z-40 px-1 transition-transform duration-300 ease-in-out ${isVisible ? 'translate-y-0' : 'translate-y-full'}`}
       style={{ backgroundColor: 'var(--color-nav)' }}
       dir={isArabic ? 'rtl' : 'ltr'}
     >
