@@ -16,7 +16,7 @@ export function Drawer({ open, onOpenChange, children, title, className = '', di
       <VaulDrawer.Portal>
         <VaulDrawer.Overlay className="fixed inset-0 bg-black/40 z-[60]" />
         <VaulDrawer.Content
-          className={`fixed bottom-0 left-0 right-0 z-[65] flex flex-col rounded-t-[24px] bg-surface border-t border-border max-h-[90vh] ${className}`}
+          className={`fixed bottom-0 left-0 right-0 z-[65] flex flex-col rounded-t-[24px] bg-surface border-t border-border pb-[var(--safe-bottom,0px)] max-h-[90vh] ${className}`}
           dir={dir}
         >
           <div className="mx-auto w-12 h-1.5 rounded-full bg-line-strong my-3 opacity-60" />
