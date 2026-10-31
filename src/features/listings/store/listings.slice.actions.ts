@@ -5,27 +5,10 @@ import { validateAdQuotaAvailability as validateAdQuotaAvailabilityHelper } from
 import { globalStorage } from '@/shared/lib/marketStorage';
 import { ListingsState } from './listings.slice.types';
 import { sanitizeListingData, logListingError } from './listings.slice.helpers';
-import type { PublishResult } from './listings.slice.types';
-import { performSupabasePublish } from './listings.slice.supabase';
 import { createWishlistActions } from './listings.slice.wishlist';
 import { createPaginationActions } from './listings.slice.pagination';
 import { getCurrentUser } from '@/shared/store-getters/auth.getter';
-
-/**
- * Generates a temporary optimistic-listing ID.
- * Uses crypto.randomUUID when available, falls back to time+random.
- * Prefix `temp-` is the sole contract for detecting pending listings.
- */
-function generateTempListingId(): string {
-  try {
-    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-      return `temp-${crypto.randomUUID()}`;
-    }
-  } catch {
-    /* fall through */
-  }
-  return `temp-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-}
+import { createPublishAction } from './listings.slice.publish';
 
 export const createListingsActions = (
   set: (fn: (state: ListingsState) => void) => void,
@@ -99,79 +82,11 @@ export const createListingsActions = (
     return { success: true, error: null };
   },
 
+  ...createPublishAction(set),
   ...createWishlistActions(set, get),
   ...createPaginationActions(set, get),
 
   refreshListings: () => set((state) => { state.listings = getListingsFromStorage(); }),
-
-  publishListing: async (listing: Listing, activeCountry: string, isArabic = true): Promise<PublishResult> => {
-    const tempId = generateTempListingId();
-    const now = new Date().toISOString();
-    const optimisticListing: Listing = {
-      ...listing,
-      id: tempId,
-      createdAt: listing.createdAt || now,
-      views: listing.views ?? 0,
-    };
-
-    // 1. Optimistic prepend — user sees their listing instantly.
-    //    The `set()` here is synchronous relative to the caller, so by the
-    //    time publishListing returns its promise, the temp listing is
-    //    already in state.listings.
-    set((state) => {
-      state.listings = [optimisticListing, ...state.listings];
-      saveListingsToStorage(state.listings);
-    });
-
-    try {
-      const { remoteListing, error, fallbackToLocal } = await performSupabasePublish(
-        listing,
-        activeCountry,
-        isArabic
-      );
-
-      // 2a. Fallback (no auth) → replace temp with sanitized local listing.
-      if (fallbackToLocal) {
-        const sanitized = sanitizeListingData(listing, activeCountry, isArabic);
-        set((state) => {
-          state.listings = state.listings.map((item) =>
-            item.id === tempId ? sanitized : item
-          );
-          saveListingsToStorage(state.listings);
-        });
-        return { success: true, remoteId: sanitized.id, error: null };
-      }
-
-      // 2b. Failure → remove temp listing.
-      if (error || !remoteListing) {
-        set((state) => {
-          state.listings = state.listings.filter((item) => item.id !== tempId);
-          saveListingsToStorage(state.listings);
-        });
-        return { success: false, remoteId: null, error: error || 'فشل النشر' };
-      }
-
-      // 2c. Success → replace temp with remote listing in same position.
-      set((state) => {
-        state.listings = state.listings.map((item) =>
-          item.id === tempId ? remoteListing : item
-        );
-        saveListingsToStorage(state.listings);
-      });
-      return { success: true, remoteId: remoteListing.id, error: null };
-    } catch (err) {
-      // 2d. Unexpected error → remove temp listing.
-      set((state) => {
-        state.listings = state.listings.filter((item) => item.id !== tempId);
-        saveListingsToStorage(state.listings);
-      });
-      return {
-        success: false,
-        remoteId: null,
-        error: err instanceof Error ? err.message : 'خطأ غير معروف',
-      };
-    }
-  },
 
   setIsQuotaExhausted: (exhausted: boolean) => set((state) => { state.isQuotaExhausted = exhausted; }),
 

@@ -13,9 +13,9 @@ import { useAiReviewAttributes } from './useAiReviewAttributes';
 import type { UseAiReviewReturn } from './useAiReview.types';
 import { useRegenerateListing } from './useRegenerateListing';
 import { getCurrentUser, requirePhoneForPublish } from '@/features/auth/helpers/publishPhoneGuard';
+import { attachPublishResultHandler } from '../helpers/attachPublishResultHandler';
 import { capture } from '@/shared/analytics/posthog';
 import { EVENTS } from '@/shared/analytics/events';
-import { toast } from 'sonner';
 
 export type { UseAiReviewReturn } from './useAiReview.types';
 
@@ -80,21 +80,7 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
     capture(EVENTS.LISTING_PUBLISHED, { flow: 'ai' });
     navigateTo('post-publish-success');
 
-    // Background result handling via toast.
-    publishPromise
-      .then((result) => {
-        if (result.success) return;
-        if (result.error?.toLowerCase().includes('row-level security')) {
-          toast.error(isArabic ? 'يجب إضافة رقم هاتف أولاً' : 'Phone required');
-          navigateTo('profile');
-          return;
-        }
-        toast.error(result.error || (isArabic ? 'فشل نشر الإعلان' : 'Failed to publish'));
-      })
-      .catch((err) => {
-        console.error('[PUBLISH ERROR]', err);
-        toast.error(isArabic ? 'فشل نشر الإعلان' : 'Failed to publish');
-      });
+    attachPublishResultHandler(publishPromise, 'ai', isArabic, navigateTo as (s: string) => void);
   };
 
   const curT = postDraft.title || postDraft.generated?.title || '';

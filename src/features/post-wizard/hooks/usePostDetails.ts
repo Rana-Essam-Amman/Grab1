@@ -9,6 +9,7 @@ import { setPendingPublish } from '../helpers/pendingPublishFlags';
 import { resolvePostDetailsFields, preparePublish } from '../helpers/postDetailsHelpers';
 import { buildDraftData } from '../helpers/buildDraftData';
 import { getCurrentUser, requirePhoneForPublish } from '@/features/auth/helpers/publishPhoneGuard';
+import { attachPublishResultHandler } from '../helpers/attachPublishResultHandler';
 import { capture } from '@/shared/analytics/posthog';
 import { EVENTS } from '@/shared/analytics/events';
 import { toast } from 'sonner';
@@ -83,24 +84,7 @@ export function usePostDetails() {
       navigateTo('main');
 
       // Background result handling via toast.
-      publishPromise
-        .then((result) => {
-          if (result.success) return;
-          let errorMsg = result.error || (isArabic ? 'فشل نشر الإعلان' : 'Failed to publish');
-          if (errorMsg.includes('Rate limit') || errorMsg.includes('ACTIVE_LISTING_CAP_REACHED')) {
-            errorMsg = isArabic
-              ? 'لقد وصلت للحد الأقصى لعدد الإعلانات المسموح بها حالياً. يرجى المحاولة لاحقاً.'
-              : 'You have reached the maximum allowed listings. Please try again later.';
-          } else if (errorMsg.toLowerCase().includes('row-level security')) {
-            errorMsg = isArabic ? 'يجب إضافة رقم هاتف أولاً' : 'Phone required';
-            navigateTo('profile');
-          }
-          toast.error(errorMsg);
-        })
-        .catch((err) => {
-          console.error('[PUBLISH ERROR]', err);
-          toast.error(isArabic ? 'فشل نشر الإعلان' : 'Failed to publish');
-        });
+      attachPublishResultHandler(publishPromise, 'manual', isArabic, navigateTo as (s: string) => void);
     } finally {
       publishLock.current = false;
     }
