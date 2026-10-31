@@ -6,6 +6,7 @@ import { getAllGovernorates, getAllDistricts, getAllCamps } from '@/data/locatio
 import { isOtherValue, OTHER_AR, OTHER_EN } from '@/data/locations';
 import { googleSearchQuery } from '@/data/mapUrls';
 import { normalizeArabic } from '@/shared/lib/arabicNormalize';
+import { recordNeighborhoodUsage } from '@/services/locations.service'; // ✅ إضافة جديدة للـ Crowdsourcing
 import { toast } from 'sonner';
 
 export interface UseLocationPickReturn {
@@ -165,7 +166,16 @@ export function useLocationPick(): UseLocationPickReturn {
   const handleNeighborhoodChange = useCallback((n: string) => {
     setSelectedNeighborhood(n);
     setCustomNeighborhood("");
-  }, []);
+    
+    // ✅ تسجيل الحي في الـ Crowdsourcing (Fire-and-forget)
+    if (n && !isOtherValue(n) && n !== otherLabel) {
+      void recordNeighborhoodUsage({
+        countryCode: browseCountryCode,
+        cityName: selectedCity,
+        neighborhoodName: n,
+      });
+    }
+  }, [otherLabel, browseCountryCode, selectedCity]);
 
   const handleSiteChange = useCallback((s: string) => setSite(s), []);
 
@@ -255,7 +265,7 @@ export function useLocationPick(): UseLocationPickReturn {
       return;
     }
     
-    // ✅ إصلاح: نسمح بالمرور لو المستخدم اختار حي من البحث اللايف (مش موجود في الـ slugs)
+    // نسمح بالمرور لو المستخدم اختار حي من البحث اللايف (مش موجود في الـ slugs)
     if (!districtSlug && !neighborhoodSlug && !finalNeighborhood) {
       toast.error(isArabic ? 'الرجاء اختيار المنطقة من القائمة' : 'Please select the area from the list');
       return;
@@ -277,4 +287,4 @@ export function useLocationPick(): UseLocationPickReturn {
     customNeighborhood, setCustomNeighborhood, handleCityChange, handleNeighborhoodChange,
     handleSiteChange, mapQuery, saveAndContinue, canContinue: validationError === null, validationError,
   };
-}
+     }
