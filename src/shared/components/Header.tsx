@@ -1,4 +1,4 @@
-// RULE-14-EXCEPTION: Header requires auth-aware social navigation
+// RULE-14-EXCEPTION: Header requires auth-aware social navigation and dropdown visibility logic
 import { useUI } from '@/hooks/useUI';
 import { useAuth } from '@/hooks/useAuth';
 import { useListings } from '@/hooks/useListings';
@@ -25,7 +25,22 @@ export const Header: React.FC = () => {
   const { user, authStatus } = useAuth();
   const { wishlist } = useListings();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const isVisible = useScrollDirection();
+  const [isHiddenByDropdown, setIsHiddenByDropdown] = useState(false);
+  
+  const isScrollVisible = useScrollDirection();
+  const isVisible = isScrollVisible && !isHiddenByDropdown;
+
+  // Listen to the global class added by SearchableDropdown
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const checkDropdown = () => setIsHiddenByDropdown(document.body.classList.contains('dropdown-open'));
+    
+    const observer = new MutationObserver(checkDropdown);
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    checkDropdown(); // Initial check
+
+    return () => observer.disconnect();
+  }, []);
 
   const countryCode = (browseCountry?.code || 'JO') as 'JO' | 'LB' | 'PS' | 'SY' | 'SA' | 'KW';
   const defaultCap = DEFAULT_CAPITALS[countryCode] || DEFAULT_CAPITALS.JO;
