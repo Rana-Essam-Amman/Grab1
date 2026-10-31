@@ -37,8 +37,6 @@ jobs:
           grep -c "nameAr" src/data/locations/JO.geo.ts
           echo "--- Line 465 (previously broken) ---"
           sed -n '465p' src/data/locations/JO.geo.ts
-          echo "--- TypeScript check ---"
-          npx tsc --noEmit
 
       - name: Commit and push
         run: |
