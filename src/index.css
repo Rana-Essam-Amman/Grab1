@@ -1,6 +1,7 @@
 @import './styles/tokens.css';
 @import './styles/tokens-dark.css';
 @import './styles/motion.css';
+@import './styles/safe-area.css';
 @import "tailwindcss";
 
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
