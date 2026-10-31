@@ -27,12 +27,12 @@ export type {
 } from './types';
 
 // Geo registry (6-level hierarchy) — side-effect imports for registration
-import './JO.geo';
-import './LB.geo';
-import './PS.geo';
-import './SY.geo';
-import './SA.geo';
-import './KW.geo';
+import './JO.geo'; // الأردن
+import './SA.geo'; // السعودية
+import './PS.geo'; // فلسطين
+import './LB.geo'; // لبنان
+import './SY.geo'; // سوريا
+import './KW.geo'; // الكويت
 
 export * from './types';
 export * from './registry';
