@@ -485,7 +485,7 @@ const JO_GEO: CountryGeo = {
             { slug: 'al-mazwad', nameAr: 'المزود', nameEn: 'Al-Mazwad' },
             { slug: 'al-khandaq', nameAr: 'الخندق', nameEn: 'Al-Khandaq' },
             { slug: 'al-buqa', nameAr: 'البقعة', nameEn: 'Al-Buqa' },
-            { slug: 'al-bat'an', nameAr: 'البتعان', nameEn: "Al-Bat'an" },
+            { slug: 'al-batan', nameAr: 'البتعان', nameEn: "Al-Bat'an" }, // <-- تم إصلاح هذه الكلمة
             { slug: 'al-judaa', nameAr: 'الجدعة', nameEn: 'Al-Judaa' },
             { slug: 'al-aziziya', nameAr: 'العزيزية', nameEn: 'Al-Aziziya' },
             { slug: 'wadi-al-akrad', nameAr: 'وادي الاكراد', nameEn: 'Wadi Al-Akrad' },
