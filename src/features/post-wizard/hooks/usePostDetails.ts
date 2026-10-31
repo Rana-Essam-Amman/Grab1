@@ -61,29 +61,46 @@ export function usePostDetails() {
       updatePostDraft(draftData);
       if (authStatus !== 'authenticated' || isAnonymous) { setPendingPublish(browseCountryCode, 'post-details'); navigateTo('login'); return; }
       if (!requirePhoneForPublish(() => void handleContinue())) {
-        publishLock.current = false; 
+        publishLock.current = false;
         return;
       }
       const prepared = preparePublish({ postDraft, draftData, user: getCurrentUser(), browseCountryCode, activeCurrency, isAdmin });
       if (!prepared) return;
 
-      setIsPublishing(true); setError(null);
-      try {
-        const result = await publishListing(prepared.newListing, prepared.targetMarket, isArabic);
-        if (!result.success) {
+      setIsPublishing(true);
+      setError(null);
+
+      // Fire-and-forget: the optimistic temp listing is already in
+      // state.listings (added synchronously by publishListing before the
+      // network call). We navigate immediately so the user lands on
+      // My Ads and sees their listing right away.
+      const publishPromise = publishListing(prepared.newListing, prepared.targetMarket, isArabic);
+
+      // Immediate navigation — do NOT await.
+      resetPostDraft();
+      setActiveTab('my-ads');
+      capture(EVENTS.LISTING_PUBLISHED, { flow: 'manual' });
+      navigateTo('main');
+
+      // Background result handling via toast.
+      publishPromise
+        .then((result) => {
+          if (result.success) return;
           let errorMsg = result.error || (isArabic ? 'فشل نشر الإعلان' : 'Failed to publish');
-          if (errorMsg.includes('Rate limit') || errorMsg.includes('ACTIVE_LISTING_CAP_REACHED')) errorMsg = isArabic ? 'لقد وصلت للحد الأقصى لعدد الإعلانات المسموح بها حالياً. يرجى المحاولة لاحقاً.' : 'You have reached the maximum allowed listings. Please try again later.';
-          else if (errorMsg.toLowerCase().includes('row-level security')) { setError(isArabic ? 'يجب إضافة رقم هاتف أولاً' : 'Phone required'); navigateTo('profile'); return; }
-          setError(errorMsg); return;
-        }
-        resetPostDraft(); setActiveTab('my-ads');
-        capture(EVENTS.LISTING_PUBLISHED, { flow: 'manual' });
-        navigateTo('main');
-      } catch (err) {
-        console.error('[PUBLISH ERROR]', err); setError('فشل نشر الإعلان');
-      } finally {
-        setIsPublishing(false);
-      }
+          if (errorMsg.includes('Rate limit') || errorMsg.includes('ACTIVE_LISTING_CAP_REACHED')) {
+            errorMsg = isArabic
+              ? 'لقد وصلت للحد الأقصى لعدد الإعلانات المسموح بها حالياً. يرجى المحاولة لاحقاً.'
+              : 'You have reached the maximum allowed listings. Please try again later.';
+          } else if (errorMsg.toLowerCase().includes('row-level security')) {
+            errorMsg = isArabic ? 'يجب إضافة رقم هاتف أولاً' : 'Phone required';
+            navigateTo('profile');
+          }
+          toast.error(errorMsg);
+        })
+        .catch((err) => {
+          console.error('[PUBLISH ERROR]', err);
+          toast.error(isArabic ? 'فشل نشر الإعلان' : 'Failed to publish');
+        });
     } finally {
       publishLock.current = false;
     }
