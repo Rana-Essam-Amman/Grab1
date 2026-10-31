@@ -1,31 +1,27 @@
 import React from 'react';
-import { ArrowLeft, ArrowRight } from 'iconsax-react';
-import { Button } from '@/shared/ui/Button';
-import { BrandMark } from '@/shared/components/BrandMark';
+import { Icon } from '@iconify/react';
+import { ArrowRight, ArrowLeft } from 'iconsax-react';
+import { useScrollDirection } from '@/shared/hooks/useScrollDirection';
 
 interface PostFlowHeaderProps {
-  readonly step: number;
-  readonly totalSteps?: number;
-  readonly titleAr: string;
-  readonly titleEn: string;
-  readonly subtitleAr?: string;
-  readonly subtitleEn?: string;
-  readonly isArabic: boolean;
-  readonly onBack: () => void;
-  readonly categoryAsset?: string;
-  readonly categoryNameAr?: string;
-  readonly categoryNameEn?: string;
-  readonly subcategoryNameAr?: string;
-  readonly subcategoryNameEn?: string;
+  step: number;
+  totalSteps: number;
+  titleAr: string;
+  titleEn: string;
+  isArabic: boolean;
+  onBack: () => void;
+  categoryAsset?: string;
+  categoryNameAr?: string;
+  categoryNameEn?: string;
+  subcategoryNameAr?: string;
+  subcategoryNameEn?: string;
 }
 
 export const PostFlowHeader: React.FC<PostFlowHeaderProps> = ({
   step,
-  totalSteps = 6,
+  totalSteps,
   titleAr,
   titleEn,
-  subtitleAr,
-  subtitleEn,
   isArabic,
   onBack,
   categoryAsset,
@@ -35,42 +31,54 @@ export const PostFlowHeader: React.FC<PostFlowHeaderProps> = ({
   subcategoryNameEn,
 }) => {
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
-  const subtitle = isArabic ? subtitleAr : subtitleEn;
-  const categoryName = isArabic ? categoryNameAr : categoryNameEn;
-  const subcategoryName = isArabic ? subcategoryNameAr : subcategoryNameEn;
-  const breadcrumb = [categoryName, subcategoryName].filter(Boolean).join(' › ');
+  // استدعاء الـ Hook اللي بيخلي الهيدر يختفي مع السكرول
+  const isVisible = useScrollDirection();
 
   return (
-    <div className="px-4 py-4 border-b border-white/10 flex items-center gap-3 bg-brand sticky top-0 z-20">
-      <Button
-        variant="ghost"
-        size="icon"
+    <div
+      className={`px-4 py-4 border-b border-white/10 flex items-center gap-3 bg-brand sticky top-0 z-20 transition-transform duration-300 ease-in-out ${
+        isVisible ? 'translate-y-0' : '-translate-y-full'
+      }`}
+      dir={isArabic ? 'rtl' : 'ltr'}
+    >
+      <button
+        type="button"
         onClick={onBack}
-        className="w-10 h-10 rounded-full bg-surface/15 text-white hover:bg-surface/25 cursor-pointer flex items-center justify-center p-0"
+        className="w-10 h-10 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 transition-colors shrink-0"
         aria-label={isArabic ? 'رجوع' : 'Back'}
       >
-        <BackIcon size={18} variant="Linear" color="currentColor" className="text-white" />
-      </Button>
+        <BackIcon size={20} color="#FFFFFF" variant="Linear" />
+      </button>
+
+      <div className="flex-1 flex items-center gap-3 min-w-0">
+        <div className="flex flex-col min-w-0">
+          <h2 className="text-white font-bold text-base truncate">
+            {isArabic ? titleAr : titleEn}
+          </h2>
+          <div className="flex items-center gap-1.5 text-white/70 text-xs mt-0.5">
+            <span>{isArabic ? `الخطوة ${step} من ${totalSteps}` : `Step ${step} of ${totalSteps}`}</span>
+            {(categoryNameAr || categoryNameEn) && (
+              <>
+                <span>•</span>
+                <span className="truncate">
+                  {isArabic ? categoryNameAr : categoryNameEn}
+                  {subcategoryNameAr || subcategoryNameEn ? (
+                    <span className="opacity-70">
+                      {' '}/ {isArabic ? subcategoryNameAr : subcategoryNameEn}
+                    </span>
+                  ) : null}
+                </span>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
       {categoryAsset && (
-        <div className="w-8 h-8 rounded-lg overflow-hidden bg-surface/10 shrink-0 flex items-center justify-center">
-          <img src={categoryAsset} alt="" className="w-full h-full object-cover" />
+        <div className="w-10 h-10 rounded-full overflow-hidden border border-white/20 shrink-0 bg-white/5 flex items-center justify-center p-1">
+          <Icon icon={categoryAsset} width={24} height={24} className="object-contain" />
         </div>
       )}
-      <div className="min-w-0 flex-1">
-        <div className="text-xs font-semibold text-white/70 truncate">
-          {isArabic ? `الخطوة ${step} من ${totalSteps}` : `Step ${step} of ${totalSteps}`}
-          {subtitle && <> • {subtitle}</>}
-        </div>
-        <h2 className="text-lg font-bold text-white truncate">
-          {isArabic ? titleAr : titleEn}
-        </h2>
-        {breadcrumb && (
-          <div className="text-[11px] text-white/70 truncate mt-0.5">
-            {breadcrumb}
-          </div>
-        )}
-      </div>
-      <BrandMark isArabic={isArabic} />
     </div>
   );
 };
