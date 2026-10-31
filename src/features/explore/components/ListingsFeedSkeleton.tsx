@@ -7,51 +7,78 @@ interface ListingsFeedSkeletonProps {
 }
 
 /**
- * Mirrors ListingCardHorizontal.tsx structure:
- *  - Header:  p-3 pb-2, avatar w-8 h-8 + seller name + location + bookmark
+ * Mirrors ListingCardHorizontal.tsx structure (non-premium):
+ *  - Outer:   bg-surface rounded-2xl shadow-md (NO border — non-premium)
+ *  - Header:  p-3 pb-2, avatar w-8 h-8, seller, location, bookmark w-[30px]
  *  - Image:   full-width aspect-[4/3] collage
- *  - Body:    p-3, price (text-[18px]) + title (2 lines) + specs + actions
- * Outer card: rounded-2xl shadow-md border border-border overflow-hidden
+ *  - Body:    p-3, price (~text-[18px]) + title 2 lines + specs + actions h-[44px]
+ *
+ * Verified against:
+ *  - ListingCardHorizontal.tsx:46-96
+ *  - CardContactActions.tsx:92-108
+ *  - BookmarkHeartButton.tsx:37-38
  */
 function ListCardSkeleton() {
   return (
-    <div className="bg-surface rounded-2xl shadow-md border border-border flex flex-col overflow-hidden">
-      {/* Header — mirrors p-3 pb-2 row */}
+    <div className="bg-surface rounded-2xl shadow-md flex flex-col overflow-hidden">
+      {/* Header — p-3 pb-2 */}
       <div className="flex items-center justify-between gap-2 p-3 pb-2">
         <div className="flex items-center gap-2 flex-1 min-w-0">
           <Skeleton variant="circle" className="w-8 h-8 shrink-0" />
           <Skeleton variant="text" className="w-24 h-3.5" />
           <Skeleton variant="text" className="w-20 h-3 ms-1" />
         </div>
-        <Skeleton variant="circle" className="w-6 h-6 shrink-0" />
+        {/* BookmarkHeartButton md = 30px per BookmarkHeartButton.tsx:37-38 */}
+        <Skeleton variant="circle" className="w-[30px] h-[30px] shrink-0" />
       </div>
 
-      {/* Image — mirrors aspect-[4/3] full-width collage */}
+      {/* Image — aspect-[4/3] full-width collage */}
       <Skeleton variant="rect" className="w-full aspect-[4/3] rounded-none" />
 
-      {/* Body — mirrors p-3 block */}
+      {/* Body — p-3 */}
       <div className="p-3 flex flex-col gap-2">
+        {/* Price — text-[18px] → h-5 ≈ 20px */}
         <Skeleton variant="text" className="w-1/3 h-5" />
+        {/* Title — line-clamp-2 (2 possible lines) */}
         <Skeleton variant="text" className="w-3/4 h-4" />
+        <Skeleton variant="text" className="w-1/2 h-4" />
+        {/* Specs — RequiredSpecsRow */}
         <Skeleton variant="text" className="w-1/2 h-3" />
-        <Skeleton variant="rect" className="w-full h-9 mt-1 rounded-lg" />
+        {/* Actions — CardContactActions h-[44px] */}
+        <Skeleton variant="rect" className="w-full h-[44px] mt-1 rounded-lg" />
       </div>
     </div>
   );
 }
 
 /**
- * Mirrors grid ListingCard: full-bleed aspect-square image + body block.
- * NOTE: grid body padding is best-effort — verify visually after deploy.
+ * Mirrors grid ListingCard (non-premium):
+ *  - Outer:   bg-surface rounded-2xl shadow-md (NO border)
+ *  - Image:   full-bleed aspect-square
+ *  - Body:    p-3, price + title (2) + location + specs + actions h-[44px]
+ *
+ * Verified against:
+ *  - ListingCard.tsx:44-78
+ *  - ListingCardImage.tsx:35
+ *  - CardContactActions.tsx:92-108
  */
 function GridCardSkeleton() {
   return (
-    <div className="bg-surface rounded-2xl shadow-md border border-border flex flex-col overflow-hidden">
+    <div className="bg-surface rounded-2xl shadow-md flex flex-col overflow-hidden">
       <Skeleton variant="rect" className="w-full aspect-square rounded-none" />
-      <div className="p-2.5 flex flex-col gap-1.5">
-        <Skeleton variant="text" className="w-2/3 h-4" />
+
+      <div className="p-3 flex flex-col gap-1.5">
+        {/* Price */}
+        <Skeleton variant="text" className="w-1/3 h-4" />
+        {/* Title — 2 lines */}
+        <Skeleton variant="text" className="w-3/4 h-3.5" />
+        <Skeleton variant="text" className="w-1/2 h-3.5" />
+        {/* Location */}
         <Skeleton variant="text" className="w-1/2 h-3" />
-        <Skeleton variant="text" className="w-3/4 h-3" />
+        {/* Specs */}
+        <Skeleton variant="text" className="w-2/3 h-3" />
+        {/* Actions */}
+        <Skeleton variant="rect" className="w-full h-[44px] mt-1 rounded-lg" />
       </div>
     </div>
   );
