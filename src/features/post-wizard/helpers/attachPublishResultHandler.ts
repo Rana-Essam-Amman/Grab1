@@ -1,4 +1,5 @@
 import { toast } from 'sonner';
+import type { ScreenType } from '@/store/ui.slice.types';
 
 interface PublishResult {
   success: boolean;
@@ -11,7 +12,7 @@ export function attachPublishResultHandler(
   promise: Promise<PublishResult>,
   flow: PublishFlow,
   isArabic: boolean,
-  navigateTo: (screen: string) => void
+  navigateTo: (screen: ScreenType) => void
 ): void {
   promise
     .then((result) => {
