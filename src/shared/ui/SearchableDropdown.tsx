@@ -2,7 +2,7 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback, useId } from 'react';
 import { Icon } from '@iconify/react';
 import { matchScore, findMatchRange } from '@/shared/lib/arabicNormalize';
-import { Drawer } from '@/shared/ui';
+import { Drawer } from './Drawer'; // ✅ تعديل 1: استيراد مباشر
 
 interface Props {
   readonly options: readonly string[];
@@ -197,7 +197,7 @@ export const SearchableDropdown: React.FC<Props> = ({
       {isMobile && (
         <Drawer
           open={open}
-          onOpenChange={(v) => {
+          onOpenChange={(v: boolean) => { // ✅ تعديل 2: تحديد النوع صراحة
             if (!v) {
               setOpen(false);
               setQuery('');
