@@ -10,6 +10,7 @@ const mockSetActiveTab = vi.fn();
 const mockUpdatePostDraft = vi.fn();
 const mockResetPostDraft = vi.fn();
 const mockPublishListing = vi.fn();
+const mockToastError = vi.fn();
 
 let mockAuthStatus = 'authenticated';
 let mockPostDraft = {
@@ -73,6 +74,13 @@ vi.mock('@/hooks/useListings', () => ({
   useListings: () => ({
     publishListing: mockPublishListing,
   }),
+}));
+
+vi.mock('sonner', () => ({
+  toast: {
+    error: mockToastError,
+    success: vi.fn(),
+  },
 }));
 
 describe('useAiReview', () => {
@@ -141,7 +149,10 @@ describe('useAiReview', () => {
     expect(mockNavigateTo).toHaveBeenCalledWith('post-publish-success');
   });
 
-  it('handlePublish sets error state when publishListing fails', async () => {
+  // OPTIMISTIC UI: handlePublish resets the draft and navigates immediately
+  // (before the network call resolves). Failures are surfaced via toast,
+  // not via the inline `error` state.
+  it('handlePublish navigates immediately and reports failures via toast', async () => {
     mockPublishListing.mockResolvedValueOnce({
       success: false,
       remoteId: null,
@@ -152,9 +163,16 @@ describe('useAiReview', () => {
 
     await act(async () => {
       await result.current.handlePublish();
+      // Flush pending microtasks so publishPromise.then() runs.
+      await new Promise((resolve) => setTimeout(resolve, 0));
     });
 
-    expect(result.current.error).toBe('Publish error');
-    expect(mockResetPostDraft).not.toHaveBeenCalled();
+    // Optimistic behavior: draft reset + success navigation happen before await.
+    expect(mockResetPostDraft).toHaveBeenCalledTimes(1);
+    expect(mockNavigateTo).toHaveBeenCalledWith('post-publish-success');
+
+    // Failure is reported via toast; the inline error state stays null.
+    expect(mockToastError).toHaveBeenCalledWith('Publish error');
+    expect(result.current.error).toBeNull();
   });
 });
