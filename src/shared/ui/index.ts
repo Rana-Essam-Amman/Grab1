@@ -35,3 +35,6 @@ export {
   type EmptyStateProps,
   type EmptyStateNoResultsProps,
 } from './EmptyState';
+
+// ✅ السطر الجديد اللي بيضيف الـ Drawer للـ Barrel
+export { Drawer } from './Drawer';
