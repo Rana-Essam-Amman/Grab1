@@ -49,7 +49,7 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
       dir={isArabic ? 'rtl' : 'ltr'}
     >
       {isPending && (
-        <div className="absolute inset-0 bg-black/40 z-20 flex items-center justify-center rounded-2xl">
+        <div className="absolute inset-0 bg-black/40 z-40 flex items-center justify-center rounded-2xl">
           <span className="bg-primary text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
             {isArabic ? 'جاري النشر...' : 'Publishing...'}
           </span>
