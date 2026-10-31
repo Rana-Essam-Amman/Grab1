@@ -5,6 +5,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   generate:
@@ -21,10 +22,8 @@ jobs:
       - name: Download GeoNames JO data
         run: |
           curl -L -o /tmp/JO.zip "https://download.geonames.org/export/dump/JO.zip"
-          ls -la /tmp/JO.zip
           unzip -o /tmp/JO.zip -d /tmp/
           wc -l /tmp/JO.txt
-          head -2 /tmp/JO.txt
 
       - name: Run generator
         run: node scripts/generate-jo-geo.mjs
@@ -35,17 +34,20 @@ jobs:
           wc -l src/data/locations/JO.geo.ts
           echo "--- Entry count ---"
           grep -c "nameAr" src/data/locations/JO.geo.ts
-          echo "--- Line 465 (previously broken) ---"
-          sed -n '465p' src/data/locations/JO.geo.ts
 
-      - name: Commit and push
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/data/locations/JO.geo.ts
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "chore(data): regenerate JO.geo.ts from GeoNames (automated)"
-            git push
-          fi
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(data): regenerate JO.geo.ts from GeoNames (automated)"
+          branch: chore/auto-jo-geo
+          delete-branch: true
+          title: "Automated: Regenerate Jordan Location Data"
+          body: |
+            This PR regenerates `JO.geo.ts` from the GeoNames dataset.
+            - Total places: 1756
+            - Governorates: 12
+            - Fixes the syntax errors in the previous version.
+          labels: |
+            automated
+            data
