@@ -21,9 +21,11 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
   listing, isArabic, locationText, premiumClasses, sellerKey, priority, handleClick, handleImageError,
 }) => {
   const { setSelectedSellerPhone, navigateTo } = useUI();
-  
+
+  const isPending = listing.id.startsWith('temp-');
+
   const relativeDate = useMemo(() => formatRelativeDate(listing.createdAt, isArabic), [listing.createdAt, isArabic]);
-  
+
   const displayImages = useMemo(() => {
     if (listing.images && listing.images.length > 0) return listing.images;
     return listing.imageUrl ? [listing.imageUrl] : [];
@@ -43,9 +45,17 @@ export const ListingCardHorizontal: React.FC<ListingCardHorizontalProps> = ({
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); } }}
       role="button"
       tabIndex={0}
-      className={`${premiumClasses} rounded-2xl shadow-md flex flex-col overflow-hidden cursor-pointer hover:border-primary/60 transition-all active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2`}
+      className={`${premiumClasses} relative rounded-2xl shadow-md flex flex-col overflow-hidden transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${isPending ? 'cursor-wait' : 'cursor-pointer hover:border-primary/60 active:scale-[0.99]'}`}
       dir={isArabic ? 'rtl' : 'ltr'}
     >
+      {isPending && (
+        <div className="absolute inset-0 bg-black/40 z-20 flex items-center justify-center rounded-2xl">
+          <span className="bg-primary text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+            {isArabic ? 'جاري النشر...' : 'Publishing...'}
+          </span>
+        </div>
+      )}
+
       <div className="flex items-center justify-between gap-2 p-3 pb-2">
         <div className="flex items-center gap-2 cursor-pointer flex-1 min-w-0" onClick={handleSellerClick}>
           <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
