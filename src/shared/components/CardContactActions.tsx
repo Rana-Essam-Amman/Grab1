@@ -12,47 +12,66 @@ import { globalStorage } from '@/shared/lib/marketStorage';
 import { showChatOpenFailed, showChatCrossMarket } from '@/features/listings/helpers/chatErrorToast';
 import { toast } from 'sonner';
 import type { Listing } from '@/types';
+
 interface CardContactActionsProps {
   readonly listing: Listing;
   readonly isArabic: boolean;
 }
+
 export const CardContactActions: React.FC<CardContactActionsProps> = ({ listing, isArabic }) => {
   const { authStatus, user } = useAuth();
   const { openConversation } = useChat();
   const { navigateTo, setSelectedThreadId, browseCountryCode } = useUI();
-  const { revealPhone, isRevealing } = useRevealPhone(listing.id, listing.sellerPhone, isArabic, listing.countryCode);
+  const { phone, revealPhone, isRevealing } = useRevealPhone(
+    listing.id,
+    listing.sellerPhone,
+    isArabic,
+    listing.countryCode
+  );
+
   const isAuthenticated = authStatus === 'authenticated';
   const isCountryMismatch = listing.countryCode !== browseCountryCode;
   const hasSellerAccount = Boolean(listing.userId);
+
   const chatState = getChatActionState({
     isAuthenticated,
     isOwner: false,
     isCountryMismatch,
     hasSellerAccount,
   });
+
   const handleCall = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
     if (isRevealing) return;
     capture(EVENTS.CONTACT_SELLER_CLICKED, { method: 'call', source: 'card' });
-    toast.loading(isArabic ? 'جاري جلب الرقم...' : 'Fetching...', { id: 'fetch-phone' });
-    const num = await revealPhone();
-    toast.dismiss('fetch-phone');
+
+    // Cached phone: fire immediately (no toast, no wait)
+    // Fresh phone: await silently — matches pre-3d8e963 behavior (no loading toast)
+    const num = phone || (await revealPhone());
     if (num) {
       window.location.href = `tel:${num}`;
     }
-  }, [isRevealing, revealPhone, isArabic]);
+  }, [isRevealing, revealPhone, phone]);
+
   const handleWhatsApp = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
     if (isRevealing) return;
+
+    // Open window FIRST (must be in user gesture context to bypass popup blockers)
     const newWindow = window.open('', '_blank');
     capture(EVENTS.CONTACT_SELLER_CLICKED, { method: 'whatsapp', source: 'card' });
-    toast.loading(isArabic ? 'جاري جلب الرقم...' : 'Fetching...', { id: 'fetch-phone' });
-    const num = await revealPhone();
-    toast.dismiss('fetch-phone');
+
+    // Cached phone: fire immediately. Fresh phone: await silently.
+    const num = phone || (await revealPhone());
     if (num) {
-      const url = getWhatsAppUrl({ countryCode: listing.countryCode, dialNumber: num, listingTitle: listing.title, isArabic });
+      const url = getWhatsAppUrl({
+        countryCode: listing.countryCode,
+        dialNumber: num,
+        listingTitle: listing.title,
+        isArabic,
+      });
       if (newWindow) {
         newWindow.location.href = url;
       } else {
@@ -61,7 +80,8 @@ export const CardContactActions: React.FC<CardContactActionsProps> = ({ listing,
     } else {
       if (newWindow) newWindow.close();
     }
-  }, [isRevealing, revealPhone, listing, isArabic]);
+  }, [isRevealing, revealPhone, listing, isArabic, phone]);
+
   const handleChat = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
@@ -76,21 +96,42 @@ export const CardContactActions: React.FC<CardContactActionsProps> = ({ listing,
       return;
     }
     try {
-      const conv = await openConversation({ listingId: listing.id, buyerId: user.id, sellerId: listing.userId!, marketCode: listing.countryCode }, browseCountryCode);
-      if (!conv) { showChatOpenFailed(isArabic); return; }
-      setSelectedThreadId(conv.id); navigateTo('thread');
+      const conv = await openConversation(
+        {
+          listingId: listing.id,
+          buyerId: user.id,
+          sellerId: listing.userId!,
+          marketCode: listing.countryCode,
+        },
+        browseCountryCode
+      );
+      if (!conv) {
+        showChatOpenFailed(isArabic);
+        return;
+      }
+      setSelectedThreadId(conv.id);
+      navigateTo('thread');
     } catch (err) {
-      if ((err instanceof Error ? err.message : '').includes('Cross-market')) showChatCrossMarket(isArabic);
-      else showChatOpenFailed(isArabic);
+      if ((err instanceof Error ? err.message : '').includes('Cross-market')) {
+        showChatCrossMarket(isArabic);
+      } else {
+        showChatOpenFailed(isArabic);
+      }
     }
   }, [chatState, authStatus, user, navigateTo, openConversation, setSelectedThreadId, browseCountryCode, isArabic, listing]);
+
   return (
-    // قللنا المسافة فوق الأزرار من (mt-3 pt-3) لـ (mt-1 pt-2)
-    <div className="flex items-center gap-2 mt-1 pt-2 pb-3 border-b border-border" onClick={(e) => e.stopPropagation()}>
+    // Reduced top spacing (mt-3 pt-3 → mt-1 pt-2) for tighter card layout
+    <div
+      className="flex items-center gap-2 mt-1 pt-2 pb-3 border-b border-border"
+      onClick={(e) => e.stopPropagation()}
+    >
       <button
         onClick={handleChat}
         className={`flex-1 h-[44px] rounded-xl flex items-center justify-center gap-1.5 font-bold text-[13px] transition-all shadow-sm ${
-          chatState.disabled ? 'bg-canvas text-ink-muted' : 'bg-primary/10 text-primary hover:bg-primary/20 active:scale-95'
+          chatState.disabled
+            ? 'bg-canvas text-ink-muted'
+            : 'bg-primary/10 text-primary hover:bg-primary/20 active:scale-95'
         }`}
       >
         <Message size={16} variant="Bold" />
