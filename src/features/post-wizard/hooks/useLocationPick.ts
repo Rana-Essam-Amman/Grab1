@@ -5,6 +5,7 @@ import { useUI } from '@/hooks/useUI';
 import { getAllGovernorates, getAllDistricts, getAllCamps } from '@/data/locations/registry';
 import { isOtherValue, OTHER_AR, OTHER_EN } from '@/data/locations';
 import { googleSearchQuery } from '@/data/mapUrls';
+import { normalizeArabic } from '@/shared/lib/arabicNormalize';
 import { toast } from 'sonner';
 
 export interface UseLocationPickReturn {
@@ -52,10 +53,14 @@ export function useLocationPick(): UseLocationPickReturn {
 
   const resolveCityLabel = useCallback((saved: string): string | null => {
     if (!saved) return null;
-    const currentMatch = rawGovs.find((g) => (isArabic ? g.nameAr : g.nameEn) === saved);
+    const normalizedSaved = normalizeArabic(saved);
+    
+    const currentMatch = rawGovs.find((g) => normalizeArabic(isArabic ? g.nameAr : g.nameEn) === normalizedSaved);
     if (currentMatch) return isArabic ? currentMatch.nameAr : currentMatch.nameEn;
-    const otherMatch = rawGovs.find((g) => (isArabic ? g.nameEn : g.nameAr) === saved);
+    
+    const otherMatch = rawGovs.find((g) => normalizeArabic(isArabic ? g.nameEn : g.nameAr) === normalizedSaved);
     if (otherMatch) return isArabic ? otherMatch.nameAr : otherMatch.nameEn;
+    
     return null;
   }, [rawGovs, isArabic]);
 
@@ -111,21 +116,23 @@ export function useLocationPick(): UseLocationPickReturn {
   const resolveNeighborhoodLabel = useCallback((saved: string): string | null => {
     if (!saved) return null;
     const baseName = stripSuffix(saved);
+    const normalizedBase = normalizeArabic(baseName);
+    
     for (const d of rawDistricts) {
-      if ((isArabic ? d.nameAr : d.nameEn) === baseName) return isArabic ? d.nameAr : d.nameEn;
-      if ((isArabic ? d.nameEn : d.nameAr) === baseName) return isArabic ? d.nameAr : d.nameEn;
+      if (normalizeArabic(isArabic ? d.nameAr : d.nameEn) === normalizedBase) return isArabic ? d.nameAr : d.nameEn;
+      if (normalizeArabic(isArabic ? d.nameEn : d.nameAr) === normalizedBase) return isArabic ? d.nameAr : d.nameEn;
     }
     for (const d of rawDistricts) {
       const districtName = isArabic ? d.nameAr : d.nameEn;
       for (const v of d.villages ?? []) {
-        const mc = (isArabic ? v.nameAr : v.nameEn) === baseName;
-        const mo = (isArabic ? v.nameEn : v.nameAr) === baseName;
+        const mc = normalizeArabic(isArabic ? v.nameAr : v.nameEn) === normalizedBase;
+        const mo = normalizeArabic(isArabic ? v.nameEn : v.nameAr) === normalizedBase;
         if (mc || mo) return `${isArabic ? v.nameAr : v.nameEn}${LABEL_SEPARATOR}${districtName}`;
       }
     }
     for (const c of rawCamps) {
-      const mc = (isArabic ? c.nameAr : c.nameEn) === baseName;
-      const mo = (isArabic ? c.nameEn : c.nameAr) === baseName;
+      const mc = normalizeArabic(isArabic ? c.nameAr : c.nameEn) === normalizedBase;
+      const mo = normalizeArabic(isArabic ? c.nameEn : c.nameAr) === normalizedBase;
       if (mc || mo) return isArabic ? c.nameAr : c.nameEn;
     }
     return null;
@@ -181,13 +188,11 @@ export function useLocationPick(): UseLocationPickReturn {
   }, [selectedCity, customCity, selectedNeighborhood, customNeighborhood, isArabic]);
 
   // DEFENSIVE RESOLUTION: Re-derive slugs from labels at save-time, bilingual-safe.
-  // This makes save resilient to stale state (e.g., language was switched while on-screen).
   const resolveSlugsAtSave = useCallback((cityLabel: string, neighborhoodLabel: string): {
     citySlug?: string;
     districtSlug?: string;
     neighborhoodSlug?: string;
   } => {
-    // --- Resolve citySlug ---
     let citySlug: string | undefined = undefined;
     if (!isOtherValue(cityLabel)) {
       let gov = rawGovs.find((g) => (isArabic ? g.nameAr : g.nameEn) === cityLabel);
@@ -195,7 +200,6 @@ export function useLocationPick(): UseLocationPickReturn {
       citySlug = gov?.slug;
     }
 
-    // --- Resolve neighborhood slugs (bilingual) ---
     let districtSlug: string | undefined = undefined;
     let neighborhoodSlug: string | undefined = undefined;
 
@@ -206,7 +210,6 @@ export function useLocationPick(): UseLocationPickReturn {
       const sepIdx = neighborhoodLabel.indexOf(LABEL_SEPARATOR);
 
       if (sepIdx > -1) {
-        // "Village — District" format
         const villageName = neighborhoodLabel.substring(0, sepIdx);
         const districtName = neighborhoodLabel.substring(sepIdx + LABEL_SEPARATOR.length);
 
@@ -221,7 +224,6 @@ export function useLocationPick(): UseLocationPickReturn {
           neighborhoodSlug = village.slug;
         }
       } else {
-        // District or camp (no separator)
         let camp = scopeCamps.find((c) => (isArabic ? c.nameAr : c.nameEn) === neighborhoodLabel);
         if (!camp) camp = scopeCamps.find((c) => (isArabic ? c.nameEn : c.nameAr) === neighborhoodLabel);
         if (camp) {
@@ -274,4 +276,4 @@ export function useLocationPick(): UseLocationPickReturn {
     customNeighborhood, setCustomNeighborhood, handleCityChange, handleNeighborhoodChange,
     handleSiteChange, mapQuery, saveAndContinue, canContinue: validationError === null, validationError,
   };
-                                      }
+}
