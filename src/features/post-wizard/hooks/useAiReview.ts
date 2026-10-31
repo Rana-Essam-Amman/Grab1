@@ -13,7 +13,12 @@ import { useAiReviewAttributes } from './useAiReviewAttributes';
 import type { UseAiReviewReturn } from './useAiReview.types';
 import { useRegenerateListing } from './useRegenerateListing';
 import { getCurrentUser, requirePhoneForPublish } from '@/features/auth/helpers/publishPhoneGuard';
-import { capture } from '@/shared/analytics/posthog'; import { EVENTS } from '@/shared/analytics/events'; export type { UseAiReviewReturn } from './useAiReview.types';
+import { capture } from '@/shared/analytics/posthog';
+import { EVENTS } from '@/shared/analytics/events';
+import { toast } from 'sonner';
+
+export type { UseAiReviewReturn } from './useAiReview.types';
+
 export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => void } {
   const { postDraft, updatePostDraft } = usePostWizard();
   const { resetPostDraft } = useDraft();
@@ -48,6 +53,7 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
   const setPrice = (p: string) => updateField('price', p);
   const setCity = (c: string) => updateField('city', c);
   const setDescription = (d: string) => updateField('description', d);
+
   const handlePublish = async () => {
     if (isAdminLoading) return;
     if (!postDraft) return;
@@ -59,26 +65,38 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
     if (!requirePhoneForPublish(() => void handlePublish())) return;
     const { title, price, targetMarket, newListing } = buildNewListingPayload({ postDraft, user: getCurrentUser(), browseCountryCode, activeCurrency, isAdmin });
     if (!title || !price) return;
+
     setIsPublishing(true);
     setError(null);
-    try {
-      const result = await publishListing(newListing, targetMarket, isArabic);
-      if (!result.success) {
+
+    // Fire-and-forget: the optimistic temp listing is already in
+    // state.listings (added synchronously by publishListing before the
+    // network call). We navigate to the success screen immediately so
+    // the user gets instant feedback.
+    const publishPromise = publishListing(newListing, targetMarket, isArabic);
+
+    // Immediate navigation — do NOT await.
+    resetPostDraft();
+    capture(EVENTS.LISTING_PUBLISHED, { flow: 'ai' });
+    navigateTo('post-publish-success');
+
+    // Background result handling via toast.
+    publishPromise
+      .then((result) => {
+        if (result.success) return;
         if (result.error?.toLowerCase().includes('row-level security')) {
-          setError(isArabic ? 'يجب إضافة رقم هاتف أولاً' : 'Phone required');
+          toast.error(isArabic ? 'يجب إضافة رقم هاتف أولاً' : 'Phone required');
           navigateTo('profile');
           return;
         }
-        setError(result.error || 'فشل نشر الإعلان');
-        return;
-      }
-      resetPostDraft(); capture(EVENTS.LISTING_PUBLISHED, { flow: 'ai' }); navigateTo('post-publish-success');
-    } catch {
-      setError('فشل نشر الإعلان');
-    } finally {
-      setIsPublishing(false);
-    }
+        toast.error(result.error || (isArabic ? 'فشل نشر الإعلان' : 'Failed to publish'));
+      })
+      .catch((err) => {
+        console.error('[PUBLISH ERROR]', err);
+        toast.error(isArabic ? 'فشل نشر الإعلان' : 'Failed to publish');
+      });
   };
+
   const curT = postDraft.title || postDraft.generated?.title || '';
   const curP = postDraft.price || postDraft.generated?.price || '';
   const curC = postDraft.city || '';
