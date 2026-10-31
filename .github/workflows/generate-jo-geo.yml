@@ -1,0 +1,53 @@
+name: Generate JO Geo Data
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Download GeoNames JO data
+        run: |
+          curl -L -o /tmp/JO.zip "https://download.geonames.org/export/dump/JO.zip"
+          ls -la /tmp/JO.zip
+          unzip -o /tmp/JO.zip -d /tmp/
+          wc -l /tmp/JO.txt
+          head -2 /tmp/JO.txt
+
+      - name: Run generator
+        run: node scripts/generate-jo-geo.mjs
+
+      - name: Verify output
+        run: |
+          echo "--- Lines ---"
+          wc -l src/data/locations/JO.geo.ts
+          echo "--- Entry count ---"
+          grep -c "nameAr" src/data/locations/JO.geo.ts
+          echo "--- Line 465 (previously broken) ---"
+          sed -n '465p' src/data/locations/JO.geo.ts
+          echo "--- TypeScript check ---"
+          npx tsc --noEmit
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/locations/JO.geo.ts
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore(data): regenerate JO.geo.ts from GeoNames (automated)"
+            git push
+          fi
