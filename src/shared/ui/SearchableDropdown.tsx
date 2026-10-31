@@ -1,6 +1,5 @@
-// RULE-14-EXCEPTION: SearchableDropdown combines filtering, keyboard nav, accessibility, and mobile floating menu
+// RULE-14-EXCEPTION: SearchableDropdown combines filtering, keyboard nav, accessibility, and mobile keyboard handling in one component
 import React, { useState, useMemo, useRef, useEffect, useCallback, useId } from 'react';
-import { createPortal } from 'react-dom';
 import { Icon } from '@iconify/react';
 import { matchScore, findMatchRange } from '@/shared/lib/arabicNormalize';
 
@@ -19,11 +18,10 @@ export const SearchableDropdown: React.FC<Props> = ({
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [highlighted, setHighlighted] = useState(0);
-  const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({});
+  const [menuPosition, setMenuPosition] = useState<'below' | 'above'>('below');
 
   const rootRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
   const listId = useId();
 
   // Close on outside click
@@ -43,60 +41,41 @@ export const SearchableDropdown: React.FC<Props> = ({
     };
   }, [open]);
 
-  // Calculate fixed position to avoid keyboard and clipping
+  // Calculate position based on available space (handles mobile keyboard)
   useEffect(() => {
-    if (!open || !inputRef.current) return;
+    if (!open || !rootRef.current) return;
 
     const updatePosition = () => {
-      if (!inputRef.current) return;
-      const rect = inputRef.current.getBoundingClientRect();
-      const vvHeight = window.visualViewport?.height ?? window.innerHeight;
-      
-      const spaceBelow = vvHeight - rect.bottom;
+      if (!rootRef.current) return;
+      const rect = rootRef.current.getBoundingClientRect();
+      const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+      const spaceBelow = viewportHeight - rect.bottom;
       const spaceAbove = rect.top;
       
-      const MENU_HEIGHT = 280; // approx max-h-72 (288px)
-      
-      if (spaceBelow < MENU_HEIGHT && spaceAbove > spaceBelow) {
-        // Open above
-        setMenuStyle({
-          position: 'fixed',
-          bottom: `${window.innerHeight - rect.top + 4}px`,
-          left: `${rect.left}px`,
-          width: `${rect.width}px`,
-          zIndex: 9999,
-        });
+      // If less than 320px below, open above (menu max-h is approx 288px + padding)
+      if (spaceBelow < 320 && spaceAbove > spaceBelow) {
+        setMenuPosition('above');
       } else {
-        // Open below
-        setMenuStyle({
-          position: 'fixed',
-          top: `${rect.bottom + 4}px`,
-          left: `${rect.left}px`,
-          width: `${rect.width}px`,
-          zIndex: 9999,
-        });
+        setMenuPosition('below');
       }
     };
 
     updatePosition();
-    
-    // Listen to visualViewport for keyboard events
+
+    // Listen to visualViewport for mobile keyboard events
     const vv = window.visualViewport;
     if (vv) {
       vv.addEventListener('resize', updatePosition);
       vv.addEventListener('scroll', updatePosition);
     }
-    
-    // Close menu on page scroll to prevent misalignment
-    const handleScroll = () => setOpen(false);
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', updatePosition);
 
     return () => {
       if (vv) {
         vv.removeEventListener('resize', updatePosition);
         vv.removeEventListener('scroll', updatePosition);
       }
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', updatePosition);
     };
   }, [open]);
 
@@ -148,53 +127,9 @@ export const SearchableDropdown: React.FC<Props> = ({
     );
   };
 
-  const menuContent = (
-    <div className="fixed z-[9999] w-full rounded-xl bg-surface border border-border shadow-2xl max-h-72 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-100" style={menuStyle}>
-      <div className="p-2 border-b border-border shrink-0">
-        <input
-          ref={inputRef}
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={isArabic ? 'ابحث...' : 'Search...'}
-          role="combobox"
-          aria-expanded="true"
-          aria-controls={listId}
-          aria-activedescendant={filtered[highlighted] ? `${listId}-${highlighted}` : undefined}
-          className="w-full min-h-10 px-3 rounded-lg bg-canvas border border-border text-sm text-ink focus:outline-none focus:border-primary"
-          autoFocus
-          dir={isArabic ? 'rtl' : 'ltr'}
-        />
-      </div>
-
-      <div id={listId} role="listbox" ref={listRef} className="overflow-y-auto flex-1 overscroll-contain">
-        {filtered.length === 0 ? (
-          <p className="p-3 text-xs text-ink-muted text-center">
-            {isArabic ? 'لا توجد نتائج' : 'No results'}
-          </p>
-        ) : (
-          filtered.map((opt, i) => (
-            <button
-              key={opt}
-              id={`${listId}-${i}`}
-              role="option"
-              aria-selected={i === highlighted}
-              data-option-index={i}
-              type="button"
-              onClick={() => handleSelect(opt)}
-              onMouseEnter={() => setHighlighted(i)}
-              className={`w-full min-h-11 text-start px-3 py-2 text-sm transition-colors ${
-                i === highlighted ? 'bg-primary/10 text-primary font-bold' : 'text-ink hover:bg-canvas'
-              }`}
-            >
-              {renderOptionLabel(opt)}
-            </button>
-          ))
-        )}
-      </div>
-    </div>
-  );
+  const menuClasses = `absolute z-50 w-full rounded-xl bg-surface border border-border shadow-lg max-h-72 overflow-hidden flex flex-col ${
+    menuPosition === 'above' ? 'bottom-full mb-1' : 'top-full mt-1'
+  }`;
 
   return (
     <div ref={rootRef} className="relative">
@@ -216,9 +151,51 @@ export const SearchableDropdown: React.FC<Props> = ({
         />
       </button>
 
-      {open && typeof document !== 'undefined' && createPortal(
-        menuContent,
-        document.body
+      {open && (
+        <div className={menuClasses}>
+          <div className="p-2 border-b border-border shrink-0">
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={isArabic ? 'ابحث...' : 'Search...'}
+              role="combobox"
+              aria-expanded="true"
+              aria-controls={listId}
+              aria-activedescendant={filtered[highlighted] ? `${listId}-${highlighted}` : undefined}
+              className="w-full min-h-10 px-3 rounded-lg bg-canvas border border-border text-sm text-ink focus:outline-none focus:border-primary"
+              autoFocus
+              dir={isArabic ? 'rtl' : 'ltr'}
+            />
+          </div>
+
+          <div id={listId} role="listbox" ref={listRef} className="overflow-y-auto flex-1 overscroll-contain">
+            {filtered.length === 0 ? (
+              <p className="p-3 text-xs text-ink-muted text-center">
+                {isArabic ? 'لا توجد نتائج' : 'No results'}
+              </p>
+            ) : (
+              filtered.map((opt, i) => (
+                <button
+                  key={opt}
+                  id={`${listId}-${i}`}
+                  role="option"
+                  aria-selected={i === highlighted}
+                  data-option-index={i}
+                  type="button"
+                  onClick={() => handleSelect(opt)}
+                  onMouseEnter={() => setHighlighted(i)}
+                  className={`w-full min-h-11 text-start px-3 py-2 text-sm transition-colors ${
+                    i === highlighted ? 'bg-primary/10 text-primary font-bold' : 'text-ink hover:bg-canvas'
+                  }`}
+                >
+                  {renderOptionLabel(opt)}
+                </button>
+              ))
+            )}
+          </div>
+        </div>
       )}
     </div>
   );
