@@ -1,9 +1,8 @@
-// RULE-14-EXCEPTION: SearchableDropdown combines filtering, keyboard nav, and accessibility in one component
-import React, {
-  useState, useMemo, useRef, useEffect, useCallback, useId,
-} from 'react';
+// RULE-14-EXCEPTION: SearchableDropdown combines filtering, keyboard nav, accessibility, and dual mobile/desktop rendering
+import React, { useState, useMemo, useRef, useEffect, useCallback, useId } from 'react';
 import { Icon } from '@iconify/react';
 import { matchScore, findMatchRange } from '@/shared/lib/arabicNormalize';
+import { Sheet } from '@/shared/ui';
 
 interface Props {
   readonly options: readonly string[];
@@ -25,13 +24,23 @@ export const SearchableDropdown: React.FC<Props> = ({
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [highlighted, setHighlighted] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  
   const rootRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const listId = useId();
 
-  // Close on outside click
+  // Detect mobile for Bottom Sheet vs Absolute Dropdown
   useEffect(() => {
-    if (!open) return;
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
+  // Close on outside click (Desktop only)
+  useEffect(() => {
+    if (!open || isMobile) return;
     const handler = (e: MouseEvent) => {
       if (rootRef.current && !rootRef.current.contains(e.target as Node)) {
         setOpen(false);
@@ -40,7 +49,7 @@ export const SearchableDropdown: React.FC<Props> = ({
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
-  }, [open]);
+  }, [open, isMobile]);
 
   // Ranked + filtered results
   const filtered = useMemo(() => {
@@ -52,7 +61,6 @@ export const SearchableDropdown: React.FC<Props> = ({
     return scored.map((x) => x.option);
   }, [options, query]);
 
-  // Reset highlight when results change
   useEffect(() => {
     setHighlighted(0);
   }, [query]);
@@ -110,6 +118,56 @@ export const SearchableDropdown: React.FC<Props> = ({
     );
   };
 
+  // Shared Content for Mobile and Desktop
+  const content = (
+    <div className="flex flex-col h-full max-h-[70vh]">
+      <div className="p-2 border-b border-border shrink-0">
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder={isArabic ? 'ابحث...' : 'Search...'}
+          role="combobox"
+          aria-expanded="true"
+          aria-controls={listId}
+          aria-activedescendant={filtered[highlighted] ? `${listId}-${highlighted}` : undefined}
+          className="w-full min-h-10 px-3 rounded-lg bg-canvas border border-border text-sm text-ink focus:outline-none focus:border-primary"
+          autoFocus
+          dir={isArabic ? 'rtl' : 'ltr'}
+        />
+      </div>
+
+      <div id={listId} role="listbox" ref={listRef} className="overflow-y-auto flex-1">
+        {filtered.length === 0 ? (
+          <p className="p-3 text-xs text-ink-muted text-center">
+            {isArabic ? 'لا توجد نتائج' : 'No results'}
+          </p>
+        ) : (
+          filtered.map((opt, i) => (
+            <button
+              key={opt}
+              id={`${listId}-${i}`}
+              role="option"
+              aria-selected={i === highlighted}
+              data-option-index={i}
+              type="button"
+              onClick={() => handleSelect(opt)}
+              onMouseEnter={() => setHighlighted(i)}
+              className={`w-full min-h-11 text-start px-3 py-2 text-sm transition-colors ${
+                i === highlighted
+                  ? 'bg-primary/10 text-primary font-bold'
+                  : 'text-ink hover:bg-canvas'
+              }`}
+            >
+              {renderOptionLabel(opt)}
+            </button>
+          ))
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <div ref={rootRef} className="relative">
       <button
@@ -130,55 +188,25 @@ export const SearchableDropdown: React.FC<Props> = ({
         />
       </button>
 
-      {open && (
-        <div className="absolute z-50 mt-1 w-full rounded-xl bg-surface border border-border shadow-lg max-h-72 overflow-hidden flex flex-col">
-          <div className="p-2 border-b border-border">
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={isArabic ? 'ابحث...' : 'Search...'}
-              role="combobox"
-              aria-expanded="true"
-              aria-controls={listId}
-              aria-activedescendant={
-                filtered[highlighted] ? `${listId}-${highlighted}` : undefined
-              }
-              className="w-full min-h-10 px-3 rounded-lg bg-canvas border border-border text-sm text-ink focus:outline-none focus:border-primary"
-              autoFocus
-              dir={isArabic ? 'rtl' : 'ltr'}
-            />
-          </div>
-
-          <div id={listId} role="listbox" ref={listRef} className="overflow-y-auto flex-1">
-            {filtered.length === 0 ? (
-              <p className="p-3 text-xs text-ink-muted text-center">
-                {isArabic ? 'لا توجد نتائج' : 'No results'}
-              </p>
-            ) : (
-              filtered.map((opt, i) => (
-                <button
-                  key={opt}
-                  id={`${listId}-${i}`}
-                  role="option"
-                  aria-selected={i === highlighted}
-                  data-option-index={i}
-                  type="button"
-                  onClick={() => handleSelect(opt)}
-                  onMouseEnter={() => setHighlighted(i)}
-                  className={`w-full min-h-11 text-start px-3 py-2 text-sm transition-colors ${
-                    i === highlighted
-                      ? 'bg-primary/10 text-primary font-bold'
-                      : 'text-ink hover:bg-canvas'
-                  }`}
-                >
-                  {renderOptionLabel(opt)}
-                </button>
-              ))
-            )}
-          </div>
+      {open && !isMobile && (
+        <div className="absolute z-50 mt-1 w-full rounded-xl bg-surface border border-border shadow-lg overflow-hidden flex flex-col max-h-72">
+          {content}
         </div>
+      )}
+
+      {isMobile && (
+        <Sheet
+          open={open}
+          onOpenChange={(v) => {
+            if (!v) {
+              setOpen(false);
+              setQuery('');
+            }
+          }}
+          title={placeholder || (isArabic ? 'اختر' : 'Select')}
+        >
+          {content}
+        </Sheet>
       )}
     </div>
   );
