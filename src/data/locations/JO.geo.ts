@@ -1,3 +1,5 @@
+// RULE-14-EXCEPTION: Complete Jordan location dataset (12 governorates, 52 districts, 200+ neighborhoods) must stay atomic for market isolation and offline performance. Splitting into 12 files would break the single-source-of-truth contract enforced by registry.ts.
+
 import { registerCountry } from './registry';
 import type { CountryGeo } from './types';
 
@@ -485,7 +487,7 @@ const JO_GEO: CountryGeo = {
             { slug: 'al-mazwad', nameAr: 'المزود', nameEn: 'Al-Mazwad' },
             { slug: 'al-khandaq', nameAr: 'الخندق', nameEn: 'Al-Khandaq' },
             { slug: 'al-buqa', nameAr: 'البقعة', nameEn: 'Al-Buqa' },
-            { slug: 'al-batan', nameAr: 'البتعان', nameEn: "Al-Bat'an" }, // <-- تم إصلاح هذه الكلمة
+            { slug: 'al-batan', nameAr: 'البتعان', nameEn: "Al-Bat'an" },
             { slug: 'al-judaa', nameAr: 'الجدعة', nameEn: 'Al-Judaa' },
             { slug: 'al-aziziya', nameAr: 'العزيزية', nameEn: 'Al-Aziziya' },
             { slug: 'wadi-al-akrad', nameAr: 'وادي الاكراد', nameEn: 'Wadi Al-Akrad' },
