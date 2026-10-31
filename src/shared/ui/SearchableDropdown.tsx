@@ -10,10 +10,11 @@ interface Props {
   readonly placeholder?: string;
   readonly isArabic?: boolean;
   readonly disabled?: boolean;
+  readonly onSearch?: (query: string) => void; // ✅ خاصية جديدة للبحث الحي
 }
 
 export const SearchableDropdown: React.FC<Props> = ({
-  options, value, onChange, placeholder, isArabic = false, disabled = false,
+  options, value, onChange, placeholder, isArabic = false, disabled = false, onSearch,
 }) => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -24,17 +25,6 @@ export const SearchableDropdown: React.FC<Props> = ({
   const listRef = useRef<HTMLDivElement>(null);
   const listId = useId();
 
-  // 1. Hide Header globally when dropdown is open
-  useEffect(() => {
-    if (open) {
-      document.body.classList.add('dropdown-open');
-    } else {
-      document.body.classList.remove('dropdown-open');
-    }
-    return () => document.body.classList.remove('dropdown-open');
-  }, [open]);
-
-  // 2. Close on outside click
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent | TouchEvent) => {
@@ -51,7 +41,6 @@ export const SearchableDropdown: React.FC<Props> = ({
     };
   }, [open]);
 
-  // 3. Calculate position to avoid keyboard
   useEffect(() => {
     if (!open || !rootRef.current) return;
 
@@ -70,7 +59,6 @@ export const SearchableDropdown: React.FC<Props> = ({
     };
 
     updatePosition();
-
     const vv = window.visualViewport;
     if (vv) {
       vv.addEventListener('resize', updatePosition);
@@ -120,6 +108,12 @@ export const SearchableDropdown: React.FC<Props> = ({
     else if (e.key === 'Tab') { setOpen(false); }
   };
 
+  const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setQuery(val);
+    if (onSearch) onSearch(val); // ✅ إرسال النص للـ API لو الخاصية موجودة
+  };
+
   const renderOptionLabel = (option: string): React.ReactNode => {
     const range = findMatchRange(query, option);
     if (!range) return option;
@@ -165,13 +159,12 @@ export const SearchableDropdown: React.FC<Props> = ({
             <input
               type="text"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={handleQueryChange}
               onKeyDown={handleKeyDown}
               placeholder={isArabic ? 'ابحث...' : 'Search...'}
               role="combobox"
               aria-expanded="true"
               aria-controls={listId}
-              aria-activedescendant={filtered[highlighted] ? `${listId}-${highlighted}` : undefined}
               className="w-full min-h-10 px-3 rounded-lg bg-canvas border border-border text-sm text-ink focus:outline-none focus:border-primary"
               autoFocus
               dir={isArabic ? 'rtl' : 'ltr'}
