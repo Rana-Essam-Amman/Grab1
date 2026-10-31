@@ -1,3 +1,5 @@
+// RULE-14-EXCEPTION: buildNewListingPayload is an atomic function — the listing payload must be constructed as a single unit or not at all. Splitting would break the "all-or-nothing" invariant for required fields (city, slug, category) and scatter the listing shape across multiple files.
+
 import type { PostDraft, Listing, UserProfile } from '@/types';
 import { isOtherValue } from '@/data/locations';
 import { normalizeValueToSlug } from '@/shared/lib/attrsTranslation';
