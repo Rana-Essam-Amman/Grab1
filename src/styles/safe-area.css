@@ -1,0 +1,11 @@
+/* ── Safe Area Tokens ────────────────────────────────────────
+   Web (no viewport-fit=cover): env() → 0px → zero impact.
+   Capacitor (with viewport-fit=cover): real inset values.
+   Activate by adding viewport-fit=cover to <meta viewport>.
+   ──────────────────────────────────────────────────────────── */
+:root {
+  --safe-top:    env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left:   env(safe-area-inset-left, 0px);
+  --safe-right:  env(safe-area-inset-right, 0px);
+}
