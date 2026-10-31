@@ -35,7 +35,7 @@ export const PostFlowHeader: React.FC<PostFlowHeaderProps> = ({
   subcategoryNameEn,
 }) => {
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
-  // تفعيل خاصية الاختفاء عند السكرول لتحت
+  // ميزة الاختفاء عند السكرول لتحت
   const isVisible = useScrollDirection();
 
   return (
@@ -45,20 +45,17 @@ export const PostFlowHeader: React.FC<PostFlowHeaderProps> = ({
       }`}
       dir={isArabic ? 'rtl' : 'ltr'}
     >
-      {/* 1. اللوجو واسم التطبيق (يمين في العربي) */}
-      <div className="flex items-center gap-2 shrink-0">
-        <img
-          src="/assets/icons/logo.png"
-          alt="FOX Marketplace"
-          className="w-10 h-10 object-cover rounded-full shrink-0 mix-blend-lighten"
-        />
-        <div className="flex flex-col justify-center items-start">
-          <span className="text-[18px] font-black text-white font-cairo tracking-[2px] leading-none m-0">FOX</span>
-          <span className="text-[7px] font-semibold text-white tracking-[3px] uppercase leading-none mt-1">Marketplace</span>
-        </div>
-      </div>
+      {/* 1. زرار الرجوع (على اليمين) */}
+      <button
+        type="button"
+        onClick={onBack}
+        className="w-10 h-10 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 transition-colors shrink-0"
+        aria-label={isArabic ? 'رجوع' : 'Back'}
+      >
+        <BackIcon size={20} color="#FFFFFF" variant="Linear" />
+      </button>
 
-      {/* 2. معلومات الخطوة (في المنتصف) */}
+      {/* 2. النص في المنتصف */}
       <div className="flex flex-col items-center justify-center flex-1 min-w-0 text-center px-1">
         {step !== undefined && totalSteps !== undefined && (
           <div className="text-[11px] text-white/80 font-medium">
@@ -86,21 +83,24 @@ export const PostFlowHeader: React.FC<PostFlowHeaderProps> = ({
         )}
       </div>
 
-      {/* 3. صورة القسم + زرار الرجوع (شمال في العربي) */}
+      {/* 3. اللوجو وصورة القسم (على الشمال) */}
       <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1.5">
+          <img
+            src="/assets/icons/logo.png"
+            alt="FOX"
+            className="w-10 h-10 object-cover rounded-full shrink-0 mix-blend-lighten"
+          />
+          <div className="flex flex-col justify-center items-start">
+            <span className="text-[18px] font-black text-white font-cairo tracking-[2px] leading-none m-0">FOX</span>
+            <span className="text-[7px] font-semibold text-white tracking-[3px] uppercase leading-none mt-1">MARKETPLACE</span>
+          </div>
+        </div>
         {categoryAsset && (
-          <div className="w-9 h-9 rounded-full overflow-hidden border border-white/20 bg-white/5 p-1 flex items-center justify-center">
-            <Icon icon={categoryAsset} width={22} height={22} className="object-contain" />
+          <div className="w-10 h-10 rounded-full overflow-hidden border border-white/20 bg-white/5 p-1 flex items-center justify-center">
+            <Icon icon={categoryAsset} width={24} height={24} className="object-contain" />
           </div>
         )}
-        <button
-          type="button"
-          onClick={onBack}
-          className="w-9 h-9 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 transition-colors shrink-0"
-          aria-label={isArabic ? 'رجوع' : 'Back'}
-        >
-          <BackIcon size={20} color="#FFFFFF" variant="Linear" />
-        </button>
       </div>
     </div>
   );
