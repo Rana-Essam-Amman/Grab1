@@ -84,7 +84,7 @@ export function usePostDetails() {
       navigateTo('main');
 
       // Background result handling via toast.
-      attachPublishResultHandler(publishPromise, 'manual', isArabic, navigateTo as (s: string) => void);
+      attachPublishResultHandler(publishPromise, 'manual', isArabic, navigateTo);
     } finally {
       publishLock.current = false;
     }
