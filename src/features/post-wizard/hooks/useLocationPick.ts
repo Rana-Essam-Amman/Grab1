@@ -187,7 +187,6 @@ export function useLocationPick(): UseLocationPickReturn {
     return null;
   }, [selectedCity, customCity, selectedNeighborhood, customNeighborhood, isArabic]);
 
-  // DEFENSIVE RESOLUTION: Re-derive slugs from labels at save-time, bilingual-safe.
   const resolveSlugsAtSave = useCallback((cityLabel: string, neighborhoodLabel: string): {
     citySlug?: string;
     districtSlug?: string;
@@ -255,7 +254,9 @@ export function useLocationPick(): UseLocationPickReturn {
       toast.error(isArabic ? 'الرجاء اختيار المدينة من القائمة' : 'Please select the city from the list');
       return;
     }
-    if (!districtSlug && !neighborhoodSlug) {
+    
+    // ✅ إصلاح: نسمح بالمرور لو المستخدم اختار حي من البحث اللايف (مش موجود في الـ slugs)
+    if (!districtSlug && !neighborhoodSlug && !finalNeighborhood) {
       toast.error(isArabic ? 'الرجاء اختيار المنطقة من القائمة' : 'Please select the area from the list');
       return;
     }
