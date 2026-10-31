@@ -1,4 +1,4 @@
-// RULE-14-EXCEPTION: Header requires auth-aware social navigation and mobile keyboard detection
+// RULE-14-EXCEPTION: Header requires auth-aware social navigation
 import { useUI } from '@/hooks/useUI';
 import { useAuth } from '@/hooks/useAuth';
 import { useListings } from '@/hooks/useListings';
@@ -25,26 +25,7 @@ export const Header: React.FC = () => {
   const { user, authStatus } = useAuth();
   const { wishlist } = useListings();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
-  
-  const isScrollVisible = useScrollDirection();
-  const isVisible = isScrollVisible && !isKeyboardOpen;
-
-  // Detect mobile keyboard to hide header for more screen space
-  useEffect(() => {
-    if (typeof window === 'undefined' || !window.visualViewport) return;
-    
-    const handleResize = () => {
-      // If the visual viewport is significantly smaller than the window, the keyboard is open.
-      const isOpen = window.innerHeight - window.visualViewport!.height > 150;
-      setIsKeyboardOpen(isOpen);
-    };
-    
-    window.visualViewport.addEventListener('resize', handleResize);
-    handleResize(); // Initial check
-    
-    return () => window.visualViewport?.removeEventListener('resize', handleResize);
-  }, []);
+  const isVisible = useScrollDirection();
 
   const countryCode = (browseCountry?.code || 'JO') as 'JO' | 'LB' | 'PS' | 'SY' | 'SA' | 'KW';
   const defaultCap = DEFAULT_CAPITALS[countryCode] || DEFAULT_CAPITALS.JO;
