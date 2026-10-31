@@ -38,6 +38,9 @@ jobs:
       - name: Run Vitest tests
         run: npm test
 
+      - name: Build production bundle
+        run: npm run build
+
       - name: Run architecture audit
         run: npm run audit:arch
       - name: Run integrity audit
