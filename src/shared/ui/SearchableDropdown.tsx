@@ -24,7 +24,17 @@ export const SearchableDropdown: React.FC<Props> = ({
   const listRef = useRef<HTMLDivElement>(null);
   const listId = useId();
 
-  // Close on outside click
+  // 1. Hide Header globally when dropdown is open
+  useEffect(() => {
+    if (open) {
+      document.body.classList.add('dropdown-open');
+    } else {
+      document.body.classList.remove('dropdown-open');
+    }
+    return () => document.body.classList.remove('dropdown-open');
+  }, [open]);
+
+  // 2. Close on outside click
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent | TouchEvent) => {
@@ -41,7 +51,7 @@ export const SearchableDropdown: React.FC<Props> = ({
     };
   }, [open]);
 
-  // Calculate position based on available space (handles mobile keyboard)
+  // 3. Calculate position to avoid keyboard
   useEffect(() => {
     if (!open || !rootRef.current) return;
 
@@ -52,7 +62,6 @@ export const SearchableDropdown: React.FC<Props> = ({
       const spaceBelow = viewportHeight - rect.bottom;
       const spaceAbove = rect.top;
       
-      // If less than 320px below, open above (menu max-h is approx 288px + padding)
       if (spaceBelow < 320 && spaceAbove > spaceBelow) {
         setMenuPosition('above');
       } else {
@@ -62,7 +71,6 @@ export const SearchableDropdown: React.FC<Props> = ({
 
     updatePosition();
 
-    // Listen to visualViewport for mobile keyboard events
     const vv = window.visualViewport;
     if (vv) {
       vv.addEventListener('resize', updatePosition);
