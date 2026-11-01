@@ -95,6 +95,7 @@ DO $$
 DECLARE
   v_count integer;
   v_phone text;
+  v_ids text;
 BEGIN
   -- Data check: slug columns were stored.
   SELECT count(*) INTO v_count
@@ -105,14 +106,22 @@ BEGIN
     RAISE EXCEPTION 'FAIL 0: fixture slug columns were not stored';
   END IF;
 
-  -- 1. Same neighborhood label, two districts. No text neighborhood, no tier-2.
   SELECT count(*) INTO v_count
+  FROM public.listings l
+  WHERE l.title LIKE 'slugtest%'
+    AND public.listing_matches_slugs(l, 'amman', 'marka', 'same-a', NULL, NULL);
+  IF v_count <> 1 THEN
+    RAISE EXCEPTION 'FAIL 0b: helper matched % slugtest rows', v_count;
+  END IF;
+
+  -- 1. Same neighborhood label, two districts. No text neighborhood, no tier-2.
+  SELECT count(*), string_agg(id::text, ',') INTO v_count, v_ids
   FROM public.search_listings_v4_tiered_v4(
     'slugtest chair', 'JO', 20, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0,
     'amman', 'marka', 'same-a'
   );
   IF v_count <> 1 THEN
-    RAISE EXCEPTION 'FAIL 1: expected 1 marka/same-a row, got %', v_count;
+    RAISE EXCEPTION 'FAIL 1: expected 1 marka/same-a row, got % ids %', v_count, v_ids;
   END IF;
 
   -- 2. Same district label, different governorate.
