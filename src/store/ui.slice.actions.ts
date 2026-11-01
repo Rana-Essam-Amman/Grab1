@@ -58,7 +58,7 @@ export const createUIActions = (
       browseCityEn: finalCityEn,
       browseCityAr: finalCityAr,
       activeCurrency,
-      neighborhoodFilter: null,
+      neighborhoodFilter: null, browseGovernorateSlug: null, browseDistrictSlug: null, neighborhoodSlugFilter: null,
     });
 
     globalStorage().set('catch_browse_country', finalCountry);
@@ -105,7 +105,7 @@ export const createUIActions = (
       browseCityEn: capital.cityEn,
       browseCityAr: capital.cityAr,
       activeCurrency: getSanitizedCurrencyByCountry(market),
-      neighborhoodFilter: null,
+      neighborhoodFilter: null, browseGovernorateSlug: null, browseDistrictSlug: null, neighborhoodSlugFilter: null,
     });
 
     globalStorage().set('catch_browse_country', market);
@@ -127,7 +127,7 @@ export const createUIActions = (
       browseCityEn: capital.cityEn,
       browseCityAr: capital.cityAr,
       activeCurrency: getSanitizedCurrencyByCountry(market),
-      neighborhoodFilter: null,
+      neighborhoodFilter: null, browseGovernorateSlug: null, browseDistrictSlug: null, neighborhoodSlugFilter: null,
     });
   },
 

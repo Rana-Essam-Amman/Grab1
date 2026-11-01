@@ -6,7 +6,17 @@ interface Props {
   readonly countryCode: string;
   readonly isArabic: boolean;
   readonly activeNeighborhood: string | null;
-  readonly onSelect: (nameAr: string | null) => void;
+  readonly onSelect: (label: string | null) => void;
+  readonly onLocationChange?: (selection: {
+    readonly governorateSlug: string | null;
+    readonly districtSlug: string | null;
+    readonly neighborhoodSlug: string | null;
+    readonly label: string | null;
+    readonly cityEn: string | null;
+    readonly cityAr: string | null;
+  }) => void;
+  readonly initialGovSlug?: string | null;
+  readonly initialDistSlug?: string | null;
 }
 
 export const LocationHierarchyFilter: React.FC<Props> = ({
@@ -14,6 +24,9 @@ export const LocationHierarchyFilter: React.FC<Props> = ({
   isArabic,
   activeNeighborhood,
   onSelect,
+  onLocationChange,
+  initialGovSlug,
+  initialDistSlug,
 }) => {
   const {
     textFilter,
@@ -28,7 +41,15 @@ export const LocationHierarchyFilter: React.FC<Props> = ({
     onDistSelect,
     onVillageSelect,
     onCampSelect,
-  } = useLocationHierarchyFilter({ countryCode, activeNeighborhood, onSelect });
+  } = useLocationHierarchyFilter({
+    countryCode,
+    isArabic,
+    activeNeighborhood,
+    onSelect,
+    onLocationChange,
+    initialGovSlug,
+    initialDistSlug,
+  });
 
   return (
     <div className="flex flex-col gap-3 mt-3" data-testid="location-hierarchy-filter">

@@ -93,6 +93,8 @@ export interface UIState {
 
   browseCityEn: string;
   browseCityAr: string;
+  browseGovernorateSlug: string | null;
+  browseDistrictSlug: string | null;
   activeCurrency: string;
   setBrowseLocation: (countryCode: MarketCode, cityEn: string, cityAr: string) => void;
   // Explicit user override; persists to Supabase (signed-in users only).
@@ -106,6 +108,7 @@ export interface UIState {
   minPriceFilter: number | null;
   maxPriceFilter: number | null;
   neighborhoodFilter: string | null;
+  neighborhoodSlugFilter: string | null;
   subcategoryFilter: string | null;
   sortBy: 'newest' | 'price-asc' | 'price-desc';
   attrsFilter: Record<string, string>;

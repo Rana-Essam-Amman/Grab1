@@ -12,6 +12,9 @@ export interface ShareFiltersParams {
   readonly draftMin: number | null;
   readonly draftMax: number | null;
   readonly draftNeigh: string | null;
+  readonly draftGov: string | null;
+  readonly draftDist: string | null;
+  readonly draftNeighSlug: string | null;
   readonly draftSort: SortBy;
   readonly draftAttrs: Record<string, string>;
 }
@@ -19,7 +22,7 @@ export interface ShareFiltersParams {
 export function useShareFilters(p: ShareFiltersParams): () => Promise<void> {
   const {
     isArabic, browseCountryCode, draftCategory, draftSub,
-    draftMin, draftMax, draftNeigh, draftSort, draftAttrs,
+    draftMin, draftMax, draftNeigh, draftGov, draftDist, draftNeighSlug, draftSort, draftAttrs,
   } = p;
 
   return useCallback(async () => {
@@ -34,7 +37,8 @@ export function useShareFilters(p: ShareFiltersParams): () => Promise<void> {
       sortBy: draftSort,
       attrs: draftAttrs,
     });
-    const url = `${window.location.origin}${base}${query}`;
+    const slugQuery = [draftGov && `gov=${draftGov}`, draftDist && `dist=${draftDist}`, draftNeighSlug && `nslug=${draftNeighSlug}`].filter(Boolean).join('&');
+    const url = `${window.location.origin}${base}${query}${slugQuery ? (query ? '&' : '?') + slugQuery : ''}`;
     const title = isArabic ? 'FOX Marketplace — نتائج الفلترة' : 'FOX Marketplace — Filtered results';
     const text = isArabic ? 'شوف هذي النتائج على FOX' : 'Check these results on FOX';
 
@@ -52,5 +56,5 @@ export function useShareFilters(p: ShareFiltersParams): () => Promise<void> {
     } catch {
       toast.error(isArabic ? 'تعذر نسخ الرابط' : 'Could not copy link');
     }
-  }, [isArabic, browseCountryCode, draftCategory, draftSub, draftMin, draftMax, draftNeigh, draftSort, draftAttrs]);
+  }, [isArabic, browseCountryCode, draftCategory, draftSub, draftMin, draftMax, draftNeigh, draftGov, draftDist, draftNeighSlug, draftSort, draftAttrs]);
 }

@@ -10,6 +10,7 @@
 export function normalizeArabic(text: string): string {
   return text
     .replace(/[\u064B-\u065F\u0670]/g, '')      // tashkeel
+    .replace(/\u0640/g, '')                      // tatweel
     .replace(/[\u0622\u0623\u0625\u0671]/g, '\u0627') // آ أ إ ٱ → ا
     .replace(/\u0629/g, '\u0647')                // ة → ه
     .replace(/\u0649/g, '\u064A')                // ى → ي

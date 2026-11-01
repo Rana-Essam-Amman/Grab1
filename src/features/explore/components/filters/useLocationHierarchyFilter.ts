@@ -1,30 +1,52 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { getAllGovernorates, getAllDistricts, getAllCamps } from '@/data/locations/registry';
+import { normalizeArabic } from '@/shared/lib/arabicNormalize';
 import type { Governorate, District, Village, RefugeeCamp } from '@/data/locations/types';
+
+interface LocationSelection {
+  readonly governorateSlug: string | null;
+  readonly districtSlug: string | null;
+  readonly neighborhoodSlug: string | null;
+  readonly label: string | null;
+  readonly cityEn: string | null;
+  readonly cityAr: string | null;
+}
 
 interface Params {
   readonly countryCode: string;
+  readonly isArabic: boolean;
   readonly activeNeighborhood: string | null;
-  readonly onSelect: (nameAr: string | null) => void;
+  readonly onSelect: (label: string | null) => void;
+  readonly onLocationChange?: (selection: LocationSelection) => void;
+  readonly initialGovSlug?: string | null;
+  readonly initialDistSlug?: string | null;
 }
 
-const filterItems = <T extends { nameAr: string; nameEn: string }>(
-  items: readonly T[],
-  term: string,
-): readonly T[] => {
-  const trimmed = term.trim();
-  const q = trimmed.toLowerCase();
+const filterItems = <T extends { nameAr: string; nameEn: string }>(items: readonly T[], term: string): readonly T[] => {
+  const q = normalizeArabic(term.trim());
   if (!q) return items;
-  return items.filter(
-    (item) => item.nameAr.includes(trimmed) || item.nameEn.toLowerCase().includes(q),
-  );
+  return items.filter((item) => normalizeArabic(item.nameAr).includes(q) || item.nameEn.toLowerCase().includes(q));
 };
 
-export function useLocationHierarchyFilter({ countryCode, activeNeighborhood, onSelect }: Params) {
+export function useLocationHierarchyFilter({
+  countryCode,
+  isArabic,
+  activeNeighborhood,
+  onSelect,
+  onLocationChange,
+  initialGovSlug = null,
+  initialDistSlug = null,
+}: Params) {
   const [textFilter, setTextFilter] = useState('');
-  const [selectedGov, setSelectedGov] = useState<string | null>(null);
-  const [selectedDist, setSelectedDist] = useState<string | null>(null);
+  const [selectedGov, setSelectedGov] = useState<string | null>(initialGovSlug);
+  const [selectedDist, setSelectedDist] = useState<string | null>(initialDistSlug);
   const previousCountryCode = useRef(countryCode);
+
+  useEffect(() => {
+    setSelectedGov(initialGovSlug ?? null);
+    setSelectedDist(initialDistSlug ?? null);
+    if (!initialGovSlug && !initialDistSlug) setTextFilter('');
+  }, [initialGovSlug, initialDistSlug]);
 
   useEffect(() => {
     if (previousCountryCode.current === countryCode) return;
@@ -33,7 +55,8 @@ export function useLocationHierarchyFilter({ countryCode, activeNeighborhood, on
     setSelectedGov(null);
     setSelectedDist(null);
     onSelect(null);
-  }, [countryCode, onSelect]);
+    onLocationChange?.({ governorateSlug: null, districtSlug: null, neighborhoodSlug: null, label: null, cityEn: null, cityAr: null });
+  }, [countryCode, onSelect, onLocationChange]);
 
   const governorates = useMemo(() => getAllGovernorates(countryCode), [countryCode]);
   const districts = useMemo(
@@ -58,21 +81,47 @@ export function useLocationHierarchyFilter({ countryCode, activeNeighborhood, on
     const next = selectedGov === g.slug ? null : g.slug;
     setSelectedGov(next);
     setSelectedDist(null);
-    onSelect(next ? g.nameAr : null);
+    const label = next ? (isArabic ? g.nameAr : g.nameEn) : null;
+    onSelect(null);
+    onLocationChange?.({ governorateSlug: next, districtSlug: null, neighborhoodSlug: null, label, cityEn: next ? g.nameEn : null, cityAr: next ? g.nameAr : null });
   };
 
   const onDistSelect = (d: District) => {
     const next = selectedDist === d.slug ? null : d.slug;
     setSelectedDist(next);
-    onSelect(next ? d.nameAr : null);
+    const label = next ? (isArabic ? d.nameAr : d.nameEn) : null;
+    onSelect(null);
+    onLocationChange?.({ governorateSlug: selectedGov, districtSlug: next, neighborhoodSlug: null, label, cityEn: null, cityAr: null });
   };
 
   const onVillageSelect = (v: Village) => {
-    onSelect(activeNeighborhood === v.nameAr ? null : v.nameAr);
+    const label = isArabic ? v.nameAr : v.nameEn;
+    const active = activeNeighborhood === v.nameAr || activeNeighborhood === v.nameEn;
+    const next = active ? null : label;
+    onSelect(next);
+    onLocationChange?.({
+      governorateSlug: selectedGov,
+      districtSlug: selectedDist,
+      neighborhoodSlug: next ? v.slug : null,
+      label: next,
+      cityEn: null,
+      cityAr: null,
+    });
   };
 
   const onCampSelect = (c: RefugeeCamp) => {
-    onSelect(activeNeighborhood === c.nameAr ? null : c.nameAr);
+    const label = isArabic ? c.nameAr : c.nameEn;
+    const active = activeNeighborhood === c.nameAr || activeNeighborhood === c.nameEn;
+    const next = active ? null : label;
+    onSelect(next);
+    onLocationChange?.({
+      governorateSlug: selectedGov,
+      districtSlug: null,
+      neighborhoodSlug: next ? c.slug : null,
+      label: next,
+      cityEn: null,
+      cityAr: null,
+    });
   };
 
   return {

@@ -12,7 +12,7 @@ import { detectCountryHint, detectGeoHint } from '@/ai/categoryMatch';
 import { translateAttrsForDb } from '@/shared/lib/attrsTranslation';
 
 export function useExploreListings(): UseExploreListingsReturn {
-  const { isArabic, searchQuery, setSearchQuery, setCategoryFilter, categoryFilter, browseCountryCode, browseCityAr, browseCityEn, minPriceFilter, setMinPriceFilter, maxPriceFilter, setMaxPriceFilter, neighborhoodFilter, setNeighborhoodFilter, sortBy, subcategoryFilter, setSubcategoryFilter, attrsFilter, setAttrsFilter, setSortBy } = useUI();
+  const { isArabic, searchQuery, setSearchQuery, setCategoryFilter, categoryFilter, browseCountryCode, browseCityAr, browseCityEn, browseGovernorateSlug, browseDistrictSlug, neighborhoodSlugFilter, minPriceFilter, setMinPriceFilter, maxPriceFilter, setMaxPriceFilter, neighborhoodFilter, setNeighborhoodFilter, sortBy, subcategoryFilter, setSubcategoryFilter, attrsFilter, setAttrsFilter, setSortBy } = useUI();
   const { listings, hasMore, isLoadingMore, loadMore } = useListings();
   const [userFilterMode, setUserFilterMode] = useState<'city' | 'all' | null>('all');
   const { feedLayout, setFeedLayout: setFeedLayoutStore } = useAuth();
@@ -60,9 +60,10 @@ export function useExploreListings(): UseExploreListingsReturn {
       market: geoHint?.countryCode ?? (hasActiveSearch ? (detectCountryHint(searchQuery) ?? browseCountryCode) : browseCountryCode),
       searchQuery: hasActiveSearch ? searchQuery : '', categorySlug: subcategoryFilter ?? categoryFilter,
       minPrice: minPriceFilter, maxPrice: maxPriceFilter, neighborhood: geoHint?.matchedName ?? activeNeighborhood,
+      governorateSlug: browseGovernorateSlug, districtSlug: browseDistrictSlug, neighborhoodSlug: neighborhoodSlugFilter,
       cityAr: browseCityAr, cityEn: browseCityEn, filterMode, sortBy, attrs: translateAttrsForDb(attrsFilter, categoryFilter, subcategoryFilter), preserveOrder: hasActiveSearch,
     });
-  }, [marketListings, browseCountryCode, searchQuery, categoryFilter, subcategoryFilter, minPriceFilter, maxPriceFilter, activeNeighborhood, browseCityAr, browseCityEn, filterMode, sortBy, attrsFilter]);
+  }, [marketListings, browseCountryCode, searchQuery, categoryFilter, subcategoryFilter, minPriceFilter, maxPriceFilter, activeNeighborhood, browseCityAr, browseCityEn, browseGovernorateSlug, browseDistrictSlug, neighborhoodSlugFilter, filterMode, sortBy, attrsFilter]);
 
   const handleLoadMore = useCallback(() => {
     if (!hasMore || isLoadingMore) return;
