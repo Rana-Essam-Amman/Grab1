@@ -102,4 +102,23 @@ describe('JO administrative hierarchy (DOS 2025)', () => {
       }
     }
   });
+
+  it('every locality link with a qadaSlug resolves to exactly one matching Qada and its parent Liwa', () => {
+    if (!geo) return;
+    const withQada = JO_ADMIN_AUX.localityLinks.filter((l) => l.qadaSlug !== null);
+    expect(withQada.length).toBeGreaterThan(0);
+    for (const l of withQada) {
+      const matches = JO_ADMIN_AUX.qada.filter(
+        (q) => q.governorateSlug === l.governorateSlug && q.slug === l.qadaSlug,
+      );
+      expect(matches.length, l.linkKey).toBe(1);
+      const q = matches[0];
+      expect(q.governorateSlug).toBe(l.governorateSlug);
+      expect(q.liwaSlug).toBe(l.liwaSlug);
+      const gov = geo.governorates.find((g) => g.slug === l.governorateSlug);
+      const liwa = gov?.districts.find((d) => d.slug === l.liwaSlug);
+      expect(liwa, l.linkKey).toBeDefined();
+      expect(liwa?.nameEn).not.toBe('Unverified');
+    }
+  });
 });

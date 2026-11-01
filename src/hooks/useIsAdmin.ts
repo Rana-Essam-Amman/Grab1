@@ -6,22 +6,18 @@ export function useIsAdmin(): { isAdmin: boolean; isLoading: boolean } {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    let mounted = true;
     async function checkAdmin() {
       try {
         const { data, error } = await supabase.rpc('is_admin');
         if (error) throw error;
-        if (mounted) setIsAdmin(data === true);
+        setIsAdmin(data === true);
       } catch {
-        if (mounted) setIsAdmin(false);
+        setIsAdmin(false);
       } finally {
-        if (mounted) setIsLoading(false);
+        setIsLoading(false);
       }
     }
     void checkAdmin();
-    return () => {
-      mounted = false;
-    };
   }, []);
 
   return { isAdmin, isLoading };
