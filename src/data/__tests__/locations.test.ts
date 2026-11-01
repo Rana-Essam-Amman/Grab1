@@ -1,3 +1,4 @@
+
 import { describe, it, expect } from 'vitest';
 import {
   locations,
@@ -7,20 +8,38 @@ import {
   getSanitizedRegionalLocation,
   calculateGeoSimilarity,
   reconcileLocation,
+  getCountryGeo,
 } from '../locations';
 
+const EXPECTED_COUNTRIES = ['JO', 'SA', 'LB', 'PS', 'SY', 'KW'] as const;
+
 describe('Data Layer - Locations & Geographic Integrity', () => {
-  it('locations and locationsAr have entries for all 5 countries (JO, LB, PS, SY, SA)', () => {
-    const expectedCountries = ['JO', 'LB', 'PS', 'SY', 'SA'];
-    expectedCountries.forEach((country) => {
-      expect(locations[country]).toBeDefined();
-      expect(locationsAr[country]).toBeDefined();
+  it('legacy location datasets contain all 6 supported markets', () => {
+    EXPECTED_COUNTRIES.forEach((country) => {
+      expect(locations[country], `${country} English locations`).toBeDefined();
+      expect(locationsAr[country], `${country} Arabic locations`).toBeDefined();
       expect(Object.keys(locations[country]).length).toBeGreaterThan(0);
       expect(Object.keys(locationsAr[country]).length).toBeGreaterThan(0);
     });
   });
 
-  it('DEFAULT_REGIONAL_CAPITALS defines canonical capital cities for all 5 markets', () => {
+  it('geographic registry contains all 6 supported markets', () => {
+    EXPECTED_COUNTRIES.forEach((country) => {
+      const geo = getCountryGeo(country);
+
+      expect(geo, `${country} registry entry`).not.toBeNull();
+      expect(geo?.countryCode).toBe(country);
+      expect(geo?.governorates.length).toBeGreaterThan(0);
+    });
+  });
+
+  it('DEFAULT_REGIONAL_CAPITALS defines canonical capital cities for all 6 markets', () => {
+    EXPECTED_COUNTRIES.forEach((country) => {
+      expect(DEFAULT_REGIONAL_CAPITALS[country]).toBeDefined();
+      expect(DEFAULT_REGIONAL_CAPITALS[country].cityEn.trim().length).toBeGreaterThan(0);
+      expect(DEFAULT_REGIONAL_CAPITALS[country].cityAr.trim().length).toBeGreaterThan(0);
+    });
+
     expect(DEFAULT_REGIONAL_CAPITALS.JO.cityEn).toBe('Amman');
     expect(DEFAULT_REGIONAL_CAPITALS.JO.cityAr).toBe('عمّان');
     expect(DEFAULT_REGIONAL_CAPITALS.LB.cityEn).toBe('Beirut');
@@ -28,28 +47,29 @@ describe('Data Layer - Locations & Geographic Integrity', () => {
     expect(DEFAULT_REGIONAL_CAPITALS.PS.cityEn).toBe('Jerusalem');
     expect(DEFAULT_REGIONAL_CAPITALS.SY.cityEn).toBe('Damascus');
     expect(DEFAULT_REGIONAL_CAPITALS.SA.cityEn).toBe('Riyadh');
+    expect(DEFAULT_REGIONAL_CAPITALS.KW.cityEn).toBe('Kuwait City');
+    expect(DEFAULT_REGIONAL_CAPITALS.KW.cityAr).toBe('مدينة الكويت');
   });
 
   it('DEFAULT_REGIONAL_CAPITALS defines neighborhoods and all city fields for every market', () => {
-    // JO neighborhoods
     expect(DEFAULT_REGIONAL_CAPITALS.JO.neighborhoodEn).toBe('Abdali');
     expect(DEFAULT_REGIONAL_CAPITALS.JO.neighborhoodAr).toBe('العبدلي');
-    // LB neighborhoods
+
     expect(DEFAULT_REGIONAL_CAPITALS.LB.neighborhoodEn).toBe('Hamra');
     expect(DEFAULT_REGIONAL_CAPITALS.LB.neighborhoodAr).toBe('الحمرا');
-    // PS
+
     expect(DEFAULT_REGIONAL_CAPITALS.PS.cityAr).toBe('القدس');
     expect(DEFAULT_REGIONAL_CAPITALS.PS.neighborhoodEn).toBe('Al Quds');
     expect(DEFAULT_REGIONAL_CAPITALS.PS.neighborhoodAr).toBe('القدس');
-    // SY
+
     expect(DEFAULT_REGIONAL_CAPITALS.SY.cityAr).toBe('دمشق');
     expect(DEFAULT_REGIONAL_CAPITALS.SY.neighborhoodEn).toBe('Mezzeh');
     expect(DEFAULT_REGIONAL_CAPITALS.SY.neighborhoodAr).toBe('المزة');
-    // SA
+
     expect(DEFAULT_REGIONAL_CAPITALS.SA.cityAr).toBe('الرياض');
     expect(DEFAULT_REGIONAL_CAPITALS.SA.neighborhoodEn).toBe('Olaya');
     expect(DEFAULT_REGIONAL_CAPITALS.SA.neighborhoodAr).toBe('العليا');
-    // KW
+
     expect(DEFAULT_REGIONAL_CAPITALS.KW.cityEn).toBe('Kuwait City');
     expect(DEFAULT_REGIONAL_CAPITALS.KW.cityAr).toBe('مدينة الكويت');
     expect(DEFAULT_REGIONAL_CAPITALS.KW.neighborhoodEn).toBe('Salmiya');
@@ -64,13 +84,9 @@ describe('Data Layer - Locations & Geographic Integrity', () => {
   });
 
   it('validateRegionalSanity returns false for invalid city or mismatching country', () => {
-    // City belongs to Lebanon, not Jordan
     expect(validateRegionalSanity('JO', 'Beirut')).toBe(false);
-    // Neighborhood does not belong to Irbid
     expect(validateRegionalSanity('JO', 'Irbid', 'Abdoun')).toBe(false);
-    // Invalid country code
     expect(validateRegionalSanity('INVALID', 'Amman')).toBe(false);
-    // Empty city
     expect(validateRegionalSanity('JO', '')).toBe(false);
   });
 
