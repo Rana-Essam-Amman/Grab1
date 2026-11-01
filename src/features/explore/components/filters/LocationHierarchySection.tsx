@@ -42,6 +42,7 @@ export function LocationFilterSection<T extends LocationItem>({
         {items.map((item) => {
           const isActive =
             activeNeighborhood === item.nameAr ||
+            activeNeighborhood === item.nameEn ||
             selectedSlug === item.slug;
 
           return (
