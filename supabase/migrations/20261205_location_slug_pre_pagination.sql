@@ -219,40 +219,7 @@ BEGIN
   -- Trigram fallback for single-token typos only. Multi-token near
   -- matches stay in related so a missing token is not promoted to exact.
   IF v_n = 1 THEN
-  SELECT count(*) INTO v_trigram_count
-  FROM public.listings AS l
-  WHERE l.status = 'active'
-    AND (l.is_demo = false OR public.is_admin())
-    AND (p_market IS NULL OR l.country_code = upper(p_market))
-    AND public.listing_passes_filters(
-      l, p_category_slug, p_subcategory_slug,
-      p_min_price, p_max_price,
-      CASE WHEN p_city_slug IS NULL THEN p_city ELSE NULL END,
-      CASE WHEN p_neighborhood_slug IS NULL AND p_district_slug IS NULL THEN p_neighborhood ELSE NULL END,
-      p_attrs
-    )
-    AND public.listing_matches_slugs(l, p_city_slug, p_district_slug, p_neighborhood_slug, p_city, p_neighborhood)
-    AND word_similarity(
-      v_norm,
-      public.normalize_search_text(coalesce(l.search_text, ''))
-    ) >= 0.4;
-
-  IF v_trigram_count > 0 THEN
-    IF current_setting('app.v4_trace', true) = 'on'
-       AND to_regclass('public.search_v4_trace') IS NOT NULL THEN
-      INSERT INTO public.search_v4_trace(branch) VALUES ('trigram');
-    END IF;
-
-    RETURN QUERY
-    SELECT
-      l.id, l.user_id, l.title, l.description, l.price, l.currency,
-      l.country_code, l.city, l.neighborhood, l.category_slug,
-      l.subcategory_slug, l.images, l.attributes, l.status, l.views,
-      l.seller_name, NULL::text AS seller_phone, l.created_at, l.updated_at,
-      l.is_demo,
-      'exact'::text,
-      v_tokens,
-      v_n
+    SELECT count(*) INTO v_trigram_count
     FROM public.listings AS l
     WHERE l.status = 'active'
       AND (l.is_demo = false OR public.is_admin())
@@ -268,14 +235,47 @@ BEGIN
       AND word_similarity(
         v_norm,
         public.normalize_search_text(coalesce(l.search_text, ''))
-      ) >= 0.4
-    ORDER BY word_similarity(
-      v_norm,
-      public.normalize_search_text(coalesce(l.search_text, ''))
-    ) DESC, l.created_at DESC, l.id ASC
-    LIMIT v_limit OFFSET v_offset;
-    RETURN;
-  END IF;
+      ) >= 0.4;
+
+    IF v_trigram_count > 0 THEN
+      IF current_setting('app.v4_trace', true) = 'on'
+         AND to_regclass('public.search_v4_trace') IS NOT NULL THEN
+        INSERT INTO public.search_v4_trace(branch) VALUES ('trigram');
+      END IF;
+
+      RETURN QUERY
+      SELECT
+        l.id, l.user_id, l.title, l.description, l.price, l.currency,
+        l.country_code, l.city, l.neighborhood, l.category_slug,
+        l.subcategory_slug, l.images, l.attributes, l.status, l.views,
+        l.seller_name, NULL::text AS seller_phone, l.created_at, l.updated_at,
+        l.is_demo,
+        'exact'::text,
+        v_tokens,
+        v_n
+      FROM public.listings AS l
+      WHERE l.status = 'active'
+        AND (l.is_demo = false OR public.is_admin())
+        AND (p_market IS NULL OR l.country_code = upper(p_market))
+        AND public.listing_passes_filters(
+          l, p_category_slug, p_subcategory_slug,
+          p_min_price, p_max_price,
+          CASE WHEN p_city_slug IS NULL THEN p_city ELSE NULL END,
+          CASE WHEN p_neighborhood_slug IS NULL AND p_district_slug IS NULL THEN p_neighborhood ELSE NULL END,
+          p_attrs
+        )
+        AND public.listing_matches_slugs(l, p_city_slug, p_district_slug, p_neighborhood_slug, p_city, p_neighborhood)
+        AND word_similarity(
+          v_norm,
+          public.normalize_search_text(coalesce(l.search_text, ''))
+        ) >= 0.4
+      ORDER BY word_similarity(
+        v_norm,
+        public.normalize_search_text(coalesce(l.search_text, ''))
+      ) DESC, l.created_at DESC, l.id ASC
+      LIMIT v_limit OFFSET v_offset;
+      RETURN;
+    END IF;
   END IF;
 
   -- Related threshold. N=1 is never related.
@@ -347,6 +347,7 @@ $function$;
 GRANT EXECUTE ON FUNCTION public.search_listings_v4_exact_slugs(
   text, text, integer, integer, text, text, numeric, numeric, text, text, jsonb, text, text, text
 ) TO anon, authenticated;
+
 
 CREATE OR REPLACE FUNCTION public.search_listings_v4_tiered_slugs(
   p_query text,
@@ -511,6 +512,7 @@ $func$;
 GRANT EXECUTE ON FUNCTION public.search_listings_v4_tiered_slugs(
   text, text, integer, integer, text, text, numeric, numeric, text, text, jsonb, text, text, text
 ) TO anon, authenticated;
+
 
 CREATE OR REPLACE FUNCTION public.search_listings_v4_tiered_v4(
   p_query text,
@@ -820,6 +822,7 @@ GRANT EXECUTE ON FUNCTION public.search_listings_v4_tiered_v4(
   text, text, integer, integer, text, text, numeric, numeric, text, text, jsonb, integer, text, text, text
 ) TO anon, authenticated;
 
+
 -- v3 keeps its signature for older clients, but delegates to the
 -- pre-pagination v4 implementation so slug filters are not applied after LIMIT.
 CREATE OR REPLACE FUNCTION public.search_listings_v4_tiered_v3(
@@ -851,6 +854,7 @@ $v3$;
 REVOKE ALL ON FUNCTION public.search_listings_v4_tiered_v4(
   text, text, integer, integer, text, text, numeric, numeric, text, text, jsonb, integer, text, text, text
 ) FROM PUBLIC;
+
 GRANT EXECUTE ON FUNCTION public.search_listings_v4_tiered_v4(
   text, text, integer, integer, text, text, numeric, numeric, text, text, jsonb, integer, text, text, text
 ) TO anon, authenticated;
@@ -858,8 +862,24 @@ GRANT EXECUTE ON FUNCTION public.search_listings_v4_tiered_v4(
 REVOKE ALL ON FUNCTION public.search_listings_v4_tiered_v3(
   text, text, integer, integer, text, text, numeric, numeric, text, text, jsonb, integer, text, text, text
 ) FROM PUBLIC;
+
+-- Corrected: the v3 function has 15 arguments, including numeric price bounds.
 GRANT EXECUTE ON FUNCTION public.search_listings_v4_tiered_v3(
-  text, text, integer, integer, text, text, jsonb, integer, text, text, text
+  text,
+  text,
+  integer,
+  integer,
+  text,
+  text,
+  numeric,
+  numeric,
+  text,
+  text,
+  jsonb,
+  integer,
+  text,
+  text,
+  text
 ) TO anon, authenticated;
 
 NOTIFY pgrst, 'reload schema';
