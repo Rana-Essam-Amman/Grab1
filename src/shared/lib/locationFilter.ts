@@ -45,7 +45,10 @@ export function matchLocation(
     return true;
   }
   if (districtSlug && !item.districtSlug) {
-    return neighborhood ? textMatch(item, neighborhood) : false;
+    if (!neighborhood || !textMatch(item, neighborhood)) return false;
+    const hasCitySlugProof = Boolean(governorateSlug && item.citySlug && item.citySlug === governorateSlug);
+    const hasCityTextProof = !item.citySlug && Boolean(cityEn && item.city && textMatch(item, cityEn));
+    return hasCitySlugProof || hasCityTextProof;
   }
   if (governorateSlug && !item.citySlug) {
     return cityEn ? textMatch(item, cityEn) : false;
