@@ -1,116 +1,103 @@
-import React, { useState, useMemo } from 'react';
-import { getAllGovernorates, getAllDistricts, getAllCamps } from '@/data/locations/registry';
+import React, { useState, useMemo, useCallback } from 'react';
+import { searchLocationsHierarchical, type LocationSearchResult } from '@/data/locations/registry';
 
 interface Props {
   readonly countryCode: string;
   readonly isArabic: boolean;
   readonly activeNeighborhood: string | null;
-  readonly onSelect: (nameAr: string | null) => void;
+  readonly onSelect: (result: LocationSearchResult | null) => void;
 }
 
-const filterItems = <T extends { nameAr: string; nameEn: string }>(items: readonly T[], term: string) => {
-  const q = term.trim().toLowerCase();
-  if (!q) return items;
-  return items.filter((i) => i.nameAr.includes(term.trim()) || i.nameEn.toLowerCase().includes(q));
-};
-
-const chipStyle = (isActive: boolean) =>
-  `px-2.5 py-1 rounded-full border text-[11px] font-bold transition-all cursor-pointer ${
-    isActive ? 'bg-accent/15 border-accent text-accent' : 'bg-surface border-border text-ink hover:border-ink-muted'
-  }`;
-
 export const LocationHierarchyFilter: React.FC<Props> = ({ countryCode, isArabic, activeNeighborhood, onSelect }) => {
-  const [textFilter, setTextFilter] = useState('');
-  const [selectedGov, setSelectedGov] = useState<string | null>(null);
-  const [selectedDist, setSelectedDist] = useState<string | null>(null);
+  const [query, setQuery] = useState('');
+  const [selected, setSelected] = useState<LocationSearchResult | null>(null);
 
-  const governorates = useMemo(() => getAllGovernorates(countryCode), [countryCode]);
-  const districts = useMemo(() => (selectedGov ? getAllDistricts(countryCode, selectedGov) : []), [countryCode, selectedGov]);
-  const villages = useMemo(() => (selectedGov && selectedDist ? districts.find((d) => d.slug === selectedDist)?.villages ?? [] : []), [selectedGov, selectedDist, districts]);
-  const camps = useMemo(() => getAllCamps(countryCode), [countryCode]);
+  const results = useMemo(
+    () => (query.trim().length >= 1 ? searchLocationsHierarchical(countryCode, query).slice(0, 30) : []),
+    [countryCode, query],
+  );
 
-  const filteredGovs = useMemo(() => filterItems(governorates, textFilter), [governorates, textFilter]);
-  const filteredDistricts = useMemo(() => filterItems(districts, textFilter), [districts, textFilter]);
-  const filteredVillages = useMemo(() => filterItems(villages, textFilter), [villages, textFilter]);
-  const filteredCamps = useMemo(() => filterItems(camps, textFilter), [camps, textFilter]);
+  const handleSelect = useCallback((item: LocationSearchResult) => {
+    setSelected(item);
+    setQuery('');
+    onSelect(item);
+  }, [onSelect]);
+
+  const handleClear = useCallback(() => {
+    setSelected(null);
+    setQuery('');
+    onSelect(null);
+  }, [onSelect]);
+
+  const displayPath = (item: LocationSearchResult) => (isArabic ? item.parentPathAr : item.parentPathEn).join(' › ');
 
   return (
-    <div className="flex flex-col gap-3 mt-3" data-testid="location-hierarchy-filter">
-      <input
-        type="text"
-        value={textFilter}
-        onChange={(e) => setTextFilter(e.target.value)}
-        placeholder={isArabic ? 'ابحث عن محافظة أو لواء أو قرية...' : 'Search governorate, district, village...'}
-        className="w-full h-9 px-3 rounded-lg border border-border bg-surface text-ink text-xs font-medium focus:outline-none focus:border-accent"
-        data-testid="geo-hierarchy-search"
-      />
+    <div className="flex flex-col gap-2 mt-3" data-testid="location-hierarchy-filter" dir={isArabic ? 'rtl' : 'ltr'}>
+      <label htmlFor="location-global-search" className="text-[11px] font-bold text-ink-muted">
+        {isArabic ? 'ابحث عن محافظة أو منطقة أو قرية' : 'Search governorate, district, or village'}
+      </label>
+      <div className="relative">
+        <input
+          id="location-global-search"
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={isArabic ? 'اكتب اسم المكان...' : 'Type a place name...'}
+          className="w-full px-3 py-2 rounded-lg border border-border bg-surface text-ink text-xs font-medium focus:outline-none focus:border-accent"
+          data-testid="location-global-search"
+          aria-label={isArabic ? 'بحث الموقع' : 'Location search'}
+          autoComplete="off"
+        />
+      </div>
 
-      {filteredGovs.length > 0 && (
-        <div className="flex flex-col gap-1.5">
-          <span className="text-[11px] font-bold text-ink-muted">{isArabic ? 'المحافظة' : 'Governorate'}</span>
-          <div className="flex flex-wrap gap-1.5">
-            {filteredGovs.map((g) => (
+      {selected && (
+        <div className="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg bg-accent/10 border border-accent/30" data-testid="location-selected">
+          <span className="text-xs font-bold text-accent truncate">{displayPath(selected)}</span>
+          <button
+            type="button"
+            onClick={handleClear}
+            className="shrink-0 text-[11px] font-bold text-accent hover:underline"
+            data-testid="location-clear"
+            aria-label={isArabic ? 'مسح الموقع' : 'Clear location'}
+          >
+            {isArabic ? 'مسح' : 'Clear'}
+          </button>
+        </div>
+      )}
+
+      {!selected && activeNeighborhood && (
+        <div className="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg bg-surface border border-border" data-testid="location-active-fallback">
+          <span className="text-xs text-ink truncate">{activeNeighborhood}</span>
+          <button type="button" onClick={handleClear} className="shrink-0 text-[11px] font-bold text-ink-muted hover:underline" data-testid="location-clear">
+            {isArabic ? 'مسح' : 'Clear'}
+          </button>
+        </div>
+      )}
+
+      {results.length > 0 && (
+        <ul className="flex flex-col gap-0.5 max-h-48 overflow-y-auto border border-border rounded-lg bg-surface" role="listbox" data-testid="location-results">
+          {results.map((item) => (
+            <li key={item.id}>
               <button
-                key={g.slug}
                 type="button"
-                onClick={() => {
-                  const next = selectedGov === g.slug ? null : g.slug;
-                  setSelectedGov(next); setSelectedDist(null); onSelect(next ? g.nameAr : null);
-                }}
-                className={chipStyle(activeNeighborhood === g.nameAr || selectedGov === g.slug)}
+                role="option"
+                onClick={() => handleSelect(item)}
+                className="w-full text-start px-2.5 py-1.5 text-xs hover:bg-accent/10 transition-colors flex flex-col gap-0.5"
+                data-testid="location-result"
+                data-id={item.id}
               >
-                {isArabic ? g.nameAr : g.nameEn}
+                <span className="font-bold text-ink">{isArabic ? item.nameAr : item.nameEn}</span>
+                <span className="text-[10px] text-ink-muted truncate">{displayPath(item)}</span>
               </button>
-            ))}
-          </div>
-        </div>
+            </li>
+          ))}
+        </ul>
       )}
 
-      {selectedGov && filteredDistricts.length > 0 && (
-        <div className="flex flex-col gap-1.5">
-          <span className="text-[11px] font-bold text-ink-muted">{isArabic ? 'الألواء / الأقضية' : 'Districts'}</span>
-          <div className="flex flex-wrap gap-1.5">
-            {filteredDistricts.map((d) => (
-              <button
-                key={d.slug}
-                type="button"
-                onClick={() => {
-                  const next = selectedDist === d.slug ? null : d.slug;
-                  setSelectedDist(next); onSelect(next ? d.nameAr : null);
-                }}
-                className={chipStyle(activeNeighborhood === d.nameAr || selectedDist === d.slug)}
-              >
-                {isArabic ? d.nameAr : d.nameEn}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {selectedDist && filteredVillages.length > 0 && (
-        <div className="flex flex-col gap-1.5">
-          <span className="text-[11px] font-bold text-ink-muted">{isArabic ? 'القرى / المناطق' : 'Villages'}</span>
-          <div className="flex flex-wrap gap-1.5">
-            {filteredVillages.map((v) => (
-              <button key={v.slug} type="button" onClick={() => onSelect(activeNeighborhood === v.nameAr ? null : v.nameAr)} className={chipStyle(activeNeighborhood === v.nameAr)}>
-                {isArabic ? v.nameAr : v.nameEn}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {filteredCamps.length > 0 && (
-        <div className="flex flex-col gap-1.5">
-          <span className="text-[11px] font-bold text-ink-muted">{isArabic ? 'مخيمات' : 'Refugee Camps'}</span>
-          <div className="flex flex-wrap gap-1.5">
-            {filteredCamps.map((c) => (
-              <button key={c.slug} type="button" onClick={() => onSelect(activeNeighborhood === c.nameAr ? null : c.nameAr)} className={chipStyle(activeNeighborhood === c.nameAr)}>
-                {isArabic ? c.nameAr : c.nameEn}
-              </button>
-            ))}
-          </div>
-        </div>
+      {query.trim().length >= 1 && results.length === 0 && (
+        <p className="text-[11px] text-ink-muted px-1" data-testid="location-no-results">
+          {isArabic ? 'لا توجد نتائج' : 'No results'}
+        </p>
       )}
     </div>
   );

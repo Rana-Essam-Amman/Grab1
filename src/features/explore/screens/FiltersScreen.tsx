@@ -6,8 +6,8 @@ import { FilterSection } from '../components/filters/FilterSection';
 import { CategoryFilterSection } from '../components/filters/CategoryFilterSection';
 import { SortFilterSection } from '../components/filters/SortFilterSection';
 import { PriceRangeFilterSection } from '../components/filters/PriceRangeFilterSection';
-import { LocationFilterSection } from '../components/filters/LocationFilterSection';
 import { LocationHierarchyFilter } from '../components/filters/LocationHierarchyFilter';
+import type { LocationSearchResult } from '@/data/locations/registry';
 import { CategoryAttrsSection } from '../components/filters/CategoryAttrsSection';
 import { FiltersFooter } from '../components/filters/FiltersFooter';
 import { useShareFilters } from '../hooks/useShareFilters';
@@ -32,7 +32,7 @@ export const FiltersScreen: React.FC = () => {
   const [draftSort, setDraftSort] = useState<SortBy>(sortBy);
   const [draftMin, setDraftMin] = useState<number | null>(minPriceFilter);
   const [draftMax, setDraftMax] = useState<number | null>(maxPriceFilter);
-  const [draftCity, setDraftCity] = useState<string>(browseCityEn);
+  const [, setDraftCity] = useState<string>(browseCityEn);
   const [draftNeigh, setDraftNeigh] = useState<string | null>(neighborhoodFilter);
   const [draftAttrs, setDraftAttrs] = useState<Record<string, string>>(attrsFilter);
   useFiltersUrlSync(draftCategory, draftSub, draftMin, draftMax, draftNeigh, draftSort, draftAttrs);
@@ -123,15 +123,22 @@ export const FiltersScreen: React.FC = () => {
           </FilterSection>
         )}
         <FilterSection isArabic={isArabic} title={isArabic ? 'الموقع' : 'Location'} activeCount={locActive}>
-          <LocationFilterSection
-            isArabic={isArabic}
+          <LocationHierarchyFilter
             countryCode={browseCountryCode}
-            activeCity={draftCity}
+            isArabic={isArabic}
             activeNeighborhood={draftNeigh}
-            onCityChange={(cityEn, cityAr) => { setDraftCity(cityEn); setBrowseLocation(browseCountryCode, cityEn, cityAr); setDraftNeigh(null); }}
-            onNeighborhoodChange={setDraftNeigh}
+            onSelect={(result: LocationSearchResult | null) => {
+              if (!result) {
+                setDraftNeigh(null);
+                return;
+              }
+              const cityEn = result.cityEn ?? result.nameEn;
+              const cityAr = result.cityAr ?? result.nameAr;
+              setDraftCity(cityEn);
+              setBrowseLocation(browseCountryCode, cityEn, cityAr);
+              setDraftNeigh(result.neighborhoodEn);
+            }}
           />
-          <LocationHierarchyFilter countryCode={browseCountryCode} isArabic={isArabic} activeNeighborhood={draftNeigh} onSelect={(nameAr) => setDraftNeigh(nameAr)} />
         </FilterSection>
         <FilterSection isArabic={isArabic} title={isArabic ? 'الترتيب' : 'Sort by'} activeCount={sortActive ? 1 : 0}>
           <SortFilterSection isArabic={isArabic} activeSort={draftSort} onChange={setDraftSort} />
