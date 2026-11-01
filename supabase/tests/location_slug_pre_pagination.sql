@@ -306,6 +306,80 @@ BEGIN
   IF v_count <> 0 THEN
     RAISE EXCEPTION 'FAIL cross-city: NULL-slug row from Zarqa matched Amman request';
   END IF;
+
+  -- 13. District filter parent-proof regression matrix:
+  -- 13.1 Canonical matching district remains accepted.
+  SELECT count(*) INTO v_count
+  FROM public.listings l
+  WHERE l.id = '99110000-0000-4000-8000-000000000001'::uuid
+    AND public.listing_matches_slugs(l, 'amman', 'marka', NULL, 'Amman', 'Abdoun');
+  IF v_count <> 1 THEN
+    RAISE EXCEPTION 'FAIL 13.1: canonical matching district rejected';
+  END IF;
+
+  -- 13.2 Conflicting canonical district remains rejected.
+  SELECT count(*) INTO v_count
+  FROM public.listings l
+  WHERE l.id = '99110000-0000-4000-8000-000000000002'::uuid
+    AND public.listing_matches_slugs(l, 'amman', 'marka', NULL, 'Amman', 'Abdoun');
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'FAIL 13.2: conflicting canonical district accepted';
+  END IF;
+
+  -- 13.3 NULL district slug + matching parent city proof behaves as specified.
+  SELECT count(*) INTO v_count
+  FROM public.listings l
+  WHERE l.id = '99110000-0000-4000-8000-000000000004'::uuid
+    AND public.listing_matches_slugs(l, 'amman', 'marka', NULL, 'Amman', 'Abdoun');
+  IF v_count <> 1 THEN
+    RAISE EXCEPTION 'FAIL 13.3: NULL district slug with matching parent city proof rejected';
+  END IF;
+
+  -- 13.4 NULL district slug + conflicting city slug is rejected.
+  SELECT count(*) INTO v_count
+  FROM public.listings l
+  WHERE l.id = '99110000-0000-4000-8000-000000000003'::uuid
+    AND public.listing_matches_slugs(l, 'amman', 'marka', NULL, 'Amman', 'Same');
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'FAIL 13.4: NULL district slug with conflicting city slug accepted';
+  END IF;
+
+  -- 13.5 NULL district slug + conflicting city text is rejected.
+  SELECT count(*) INTO v_count
+  FROM public.listings l
+  WHERE l.id = '99110000-0000-4000-8000-000000000009'::uuid
+    AND public.listing_matches_slugs(l, 'amman', 'marka', NULL, 'Amman', 'Abdoun');
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'FAIL 13.5: NULL district slug with conflicting city text accepted';
+  END IF;
+
+  -- 13.6 NULL city slug + NULL district slug + identical neighborhood text under another city is rejected.
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_tiered_v4(
+    'slugtest chair', 'JO', 20, 0, 'furniture', NULL, NULL, NULL, 'Amman', 'Abdoun', NULL, 0, 'amman', 'marka', NULL
+  ) r
+  WHERE r.id = '99110000-0000-4000-8000-000000000009'::uuid;
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'FAIL 13.6: Zarqa NULL-slug row cross-matched Amman district filter';
+  END IF;
+
+  -- 13.7 Ambiguous legacy parent data is rejected.
+  SELECT count(*) INTO v_count
+  FROM public.listings l
+  WHERE l.id = '99110000-0000-4000-8000-000000000004'::uuid
+    AND public.listing_matches_slugs(l, 'amman', 'marka', NULL, NULL, 'Abdoun');
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'FAIL 13.7: ambiguous legacy parent data accepted';
+  END IF;
+
+  -- 13.8 No-district behavior remains unchanged.
+  SELECT count(*) INTO v_count
+  FROM public.listings l
+  WHERE l.id = '99110000-0000-4000-8000-000000000001'::uuid
+    AND public.listing_matches_slugs(l, 'amman', NULL, NULL, 'Amman', NULL);
+  IF v_count <> 1 THEN
+    RAISE EXCEPTION 'FAIL 13.8: city-only canonical match failed';
+  END IF;
 END $$;
 
 ROLLBACK;
