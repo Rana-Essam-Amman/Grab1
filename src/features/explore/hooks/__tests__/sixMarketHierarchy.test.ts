@@ -9,23 +9,43 @@ const empty: FilterDrafts = {
   gov: null, dist: null, neighSlug: null, sort: 'newest', attrs: {},
 };
 
+const EXPECTED: Record<string, { gov: number; dist: number; villages: number }> = {
+  JO: { gov: 12, dist: 63, villages: 1748 },
+  SA: { gov: 13, dist: 32, villages: 192 },
+  LB: { gov: 8, dist: 26, villages: 114 },
+  PS: { gov: 16, dist: 37, villages: 205 },
+  SY: { gov: 14, dist: 25, villages: 73 },
+  KW: { gov: 6, dist: 126, villages: 0 },
+};
+
 describe('six-market hierarchy', () => {
-  it.each(MARKETS)('%s has governorates and consistent parent-child slugs', (market) => {
+  it.each(MARKETS)('%s hierarchy is complete and unique within parents', (market) => {
     const govs = getAllGovernorates(market);
-    expect(govs.length).toBeGreaterThan(0);
-    const slugs = new Set(govs.map((g) => g.slug));
-    expect(slugs.size).toBe(govs.length);
+    const expected = EXPECTED[market];
+    expect(govs.length).toBe(expected.gov);
+    const govSlugs = new Set(govs.map((g) => g.slug));
+    expect(govSlugs.size).toBe(govs.length);
     let districts = 0;
     let villages = 0;
     for (const gov of govs) {
+      expect(gov.slug).toBeTruthy();
+      const distSlugs = new Set<string>();
       for (const dist of getAllDistricts(market, gov.slug)) {
-        districts += 1;
-        villages += dist.villages?.length ?? 0;
         expect(dist.slug).toBeTruthy();
-        expect(normalizeArabic(gov.nameAr).length).toBeGreaterThan(0);
+        expect(distSlugs.has(dist.slug)).toBe(false);
+        distSlugs.add(dist.slug);
+        districts += 1;
+        const villageSlugs = new Set<string>();
+        for (const village of dist.villages ?? []) {
+          expect(village.slug).toBeTruthy();
+          expect(villageSlugs.has(village.slug)).toBe(false);
+          villageSlugs.add(village.slug);
+          villages += 1;
+        }
       }
     }
-    expect(districts).toBeGreaterThan(0);
+    expect(districts).toBe(expected.dist);
+    expect(villages).toBe(expected.villages);
   });
 
   it('serializes and parses a full hierarchy without losing unrelated params', () => {

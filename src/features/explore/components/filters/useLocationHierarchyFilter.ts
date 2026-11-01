@@ -43,6 +43,12 @@ export function useLocationHierarchyFilter({
   const previousCountryCode = useRef(countryCode);
 
   useEffect(() => {
+    setSelectedGov(initialGovSlug ?? null);
+    setSelectedDist(initialDistSlug ?? null);
+    if (!initialGovSlug && !initialDistSlug) setTextFilter('');
+  }, [initialGovSlug, initialDistSlug]);
+
+  useEffect(() => {
     if (previousCountryCode.current === countryCode) return;
     previousCountryCode.current = countryCode;
     setTextFilter('');
@@ -77,14 +83,7 @@ export function useLocationHierarchyFilter({
     setSelectedDist(null);
     const label = next ? (isArabic ? g.nameAr : g.nameEn) : null;
     onSelect(null);
-    onLocationChange?.({
-      governorateSlug: next,
-      districtSlug: null,
-      neighborhoodSlug: null,
-      label,
-      cityEn: next ? g.nameEn : null,
-      cityAr: next ? g.nameAr : null,
-    });
+    onLocationChange?.({ governorateSlug: next, districtSlug: null, neighborhoodSlug: null, label, cityEn: next ? g.nameEn : null, cityAr: next ? g.nameAr : null });
   };
 
   const onDistSelect = (d: District) => {
@@ -92,14 +91,7 @@ export function useLocationHierarchyFilter({
     setSelectedDist(next);
     const label = next ? (isArabic ? d.nameAr : d.nameEn) : null;
     onSelect(null);
-    onLocationChange?.({
-      governorateSlug: selectedGov,
-      districtSlug: next,
-      neighborhoodSlug: null,
-      label,
-      cityEn: null,
-      cityAr: null,
-    });
+    onLocationChange?.({ governorateSlug: selectedGov, districtSlug: next, neighborhoodSlug: null, label, cityEn: null, cityAr: null });
   };
 
   const onVillageSelect = (v: Village) => {

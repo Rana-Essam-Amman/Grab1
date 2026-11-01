@@ -31,10 +31,9 @@ AS $slugs$
       OR (
         p_row.neighborhood_slug IS NULL
         AND p_neighborhood IS NOT NULL
-        AND (
-          lower(coalesce(p_row.neighborhood, '')) = lower(p_neighborhood)
-          OR lower(coalesce(p_row.city, '')) = lower(p_neighborhood)
-        )
+        AND lower(coalesce(p_row.neighborhood, '')) = lower(p_neighborhood)
+        AND (p_city_slug IS NULL OR p_city IS NOT NULL)
+        AND (p_city IS NULL OR lower(coalesce(p_row.city, '')) = lower(p_city))
       )
     )
     AND (

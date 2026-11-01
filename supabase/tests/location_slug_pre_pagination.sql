@@ -74,7 +74,12 @@ VALUES
    'Amman', 'Abdoun', 'furniture', 'chairs', 'active',
    '[]'::jsonb, '0790000007', false, '2026-10-07T10:00:00Z',
    'amman', 'marka', NULL),
-  ('99110000-0000-4000-8000-000000000008'::uuid,
+  ('99110000-0000-4000-8000-000000000009'::uuid,
+   '99100000-0000-4000-8000-000000000001'::uuid,
+   'slugtest chair other city', 'shared label', '11', 'JOD', 'JO',
+   'Zarqa', 'Abdoun', 'furniture', 'chairs', 'active',
+   '[]'::jsonb, '0790000009', false, '2026-10-09T10:00:00Z',
+   NULL, NULL, NULL);
    '99100000-0000-4000-8000-000000000001'::uuid,
    'other furniture piece', 'no search token', '40', 'JOD', 'JO',
    'Different', 'Elsewhere', 'furniture', 'chairs', 'active',
@@ -271,7 +276,35 @@ BEGIN
     RAISE EXCEPTION 'FAIL T2-market: NULL market excluded JO rows';
   END IF;
 
-  RAISE NOTICE 'PASS: location slug pre-pagination regressions';
+  -- Independent Tier 2 with NULL market and positive tier-2 limit.
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_tiered_v4(
+    'slugtest chair', NULL, 20, 0, 'furniture', NULL, NULL, NULL, NULL, NULL,
+    '[{"key":"color","value":"red"}]'::jsonb, 5, NULL, NULL, NULL
+  ) r
+  WHERE r.id = '99110000-0000-4000-8000-000000000008'::uuid AND r.tier = 2 AND r.seller_phone IS NULL;
+  IF v_count <> 1 THEN
+    RAISE EXCEPTION 'FAIL T2-null-market: independent tier-2 NULL market did not return fixture';
+  END IF;
+
+  -- Same neighborhood label in two cities. NULL-slug fallback must not cross-match.
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_tiered_v4(
+    'slugtest chair', 'JO', 20, 0, 'furniture', NULL, NULL, NULL, 'Amman', 'Abdoun', NULL, 0, 'amman', NULL, 'abdoun'
+  ) r
+  WHERE r.id = '99110000-0000-4000-8000-000000000002'::uuid;
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'FAIL cross-city: wrong-city slug row matched shared label';
+  END IF;
+
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_tiered_v4(
+    'slugtest chair', 'JO', 20, 0, 'furniture', NULL, NULL, NULL, 'Amman', 'Abdoun', NULL, 0, 'amman', NULL, 'abdoun'
+  ) r
+  WHERE r.id = '99110000-0000-4000-8000-000000000009'::uuid;
+  IF v_count <> 0 THEN
+    RAISE EXCEPTION 'FAIL cross-city: NULL-slug row from Zarqa matched Amman request';
+  END IF;
 END $$;
 
 ROLLBACK;
