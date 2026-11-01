@@ -107,4 +107,47 @@ describe('LocationHierarchyFilter', () => {
 
     expect(onSelect).toHaveBeenLastCalledWith(null);
   });
+
+  it('returns canonical slugs for governorate, district, and village', () => {
+    const onLocationChange = vi.fn();
+    render(
+      <LocationHierarchyFilter
+        countryCode="JO"
+        isArabic={false}
+        activeNeighborhood={null}
+        onSelect={vi.fn()}
+        onLocationChange={onLocationChange}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /^Amman$/ }));
+    expect(onLocationChange).toHaveBeenLastCalledWith({
+      governorateSlug: 'amman',
+      districtSlug: null,
+      neighborhoodSlug: null,
+      label: 'Amman',
+      cityEn: 'Amman',
+      cityAr: 'العاصمة',
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Amman Qasabah' }));
+    expect(onLocationChange).toHaveBeenLastCalledWith({
+      governorateSlug: 'amman',
+      districtSlug: 'amman-qasabah',
+      neighborhoodSlug: null,
+      label: 'Amman Qasabah',
+      cityEn: null,
+      cityAr: null,
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Wadi as Sir' }));
+    expect(onLocationChange).toHaveBeenLastCalledWith({
+      governorateSlug: 'amman',
+      districtSlug: 'amman-qasabah',
+      neighborhoodSlug: 'wadi-as-sir',
+      label: 'Wadi as Sir',
+      cityEn: null,
+      cityAr: null,
+    });
+  });
 });

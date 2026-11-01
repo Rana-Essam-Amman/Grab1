@@ -15,6 +15,9 @@ interface SearchV4TieredV2Row {
   country_code: string;
   city: string;
   neighborhood: string | null;
+  city_slug?: string | null;
+  district_slug?: string | null;
+  neighborhood_slug?: string | null;
   category_slug: string;
   subcategory_slug: string | null;
   images: string[];
@@ -51,7 +54,7 @@ export async function searchListingsV4(
   offset: number,
   filterArgs: Record<string, unknown>,
 ): Promise<SearchV4Result | null> {
-  const { data, error } = await supabase.rpc('search_listings_v4_tiered_v2', {
+  const { data, error } = await supabase.rpc('search_listings_v4_tiered_v3', {
     p_query: trimmed,
     p_market: market ?? null,
     p_limit: limit,

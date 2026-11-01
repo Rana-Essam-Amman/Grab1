@@ -16,5 +16,8 @@ export interface SearchListingsParams {
   readonly maxPrice?: number | null;
   readonly city?: string | null;
   readonly neighborhood?: string | null;
+  readonly citySlug?: string | null;
+  readonly districtSlug?: string | null;
+  readonly neighborhoodSlug?: string | null;
   readonly attrs?: Record<string, string>;
 }

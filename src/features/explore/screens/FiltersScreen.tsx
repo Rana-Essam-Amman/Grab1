@@ -6,8 +6,7 @@ import { FilterSection } from '../components/filters/FilterSection';
 import { CategoryFilterSection } from '../components/filters/CategoryFilterSection';
 import { SortFilterSection } from '../components/filters/SortFilterSection';
 import { PriceRangeFilterSection } from '../components/filters/PriceRangeFilterSection';
-import { LocationFilterSection } from '../components/filters/LocationFilterSection';
-import { LocationHierarchyFilter } from '../components/filters/LocationHierarchyFilter';
+import { FiltersLocationBlock } from '../components/filters/FiltersLocationBlock';
 import { CategoryAttrsSection } from '../components/filters/CategoryAttrsSection';
 import { FiltersFooter } from '../components/filters/FiltersFooter';
 import { useShareFilters } from '../hooks/useShareFilters';
@@ -123,7 +122,7 @@ export const FiltersScreen: React.FC = () => {
           </FilterSection>
         )}
         <FilterSection isArabic={isArabic} title={isArabic ? 'الموقع' : 'Location'} activeCount={locActive}>
-          <LocationFilterSection
+          <FiltersLocationBlock
             isArabic={isArabic}
             countryCode={browseCountryCode}
             activeCity={draftCity}
@@ -131,7 +130,6 @@ export const FiltersScreen: React.FC = () => {
             onCityChange={(cityEn, cityAr) => { setDraftCity(cityEn); setBrowseLocation(browseCountryCode, cityEn, cityAr); setDraftNeigh(null); }}
             onNeighborhoodChange={setDraftNeigh}
           />
-          <LocationHierarchyFilter countryCode={browseCountryCode} isArabic={isArabic} activeNeighborhood={draftNeigh} onSelect={(nameAr) => setDraftNeigh(nameAr)} />
         </FilterSection>
         <FilterSection isArabic={isArabic} title={isArabic ? 'الترتيب' : 'Sort by'} activeCount={sortActive ? 1 : 0}>
           <SortFilterSection isArabic={isArabic} activeSort={draftSort} onChange={setDraftSort} />

@@ -52,7 +52,7 @@ export async function searchListingsHybrid(
       query, market, offset = 0, limit = LISTINGS_PAGE_SIZE,
       categorySlug = null, subcategorySlug = null,
       minPrice = null, maxPrice = null,
-      city = null, neighborhood = null, attrs,
+      city = null, neighborhood = null, citySlug = null, districtSlug = null, neighborhoodSlug = null, attrs,
     } = params;
     const trimmed = query.trim();
     if (trimmed.length === 0) return { data: [], error: null };
@@ -76,8 +76,13 @@ export async function searchListingsHybrid(
       p_neighborhood: neighborhood,
       p_attrs: attrsJson,
     };
+    const slugArgs = {
+      p_city_slug: citySlug,
+      p_district_slug: districtSlug,
+      p_neighborhood_slug: neighborhoodSlug,
+    };
 
-    const v4 = await searchListingsV4(trimmed, market, limit, offset, filterArgs);
+    const v4 = await searchListingsV4(trimmed, market, limit, offset, { ...filterArgs, ...slugArgs });
     if (v4) {
       const hasTier1 = v4.tier1Data.length > 0;
       // Match the UI threshold: Tier 2 is only "shippable" when >= 2.
@@ -137,9 +142,6 @@ export async function searchListingsHybrid(
     if (error) return { data: null, error: error.message };
     return { data: (data || []).map(rowToListing), error: null };
   } catch (err) {
-    return {
-      data: null,
-      error: err instanceof Error ? err.message : 'Unknown error',
-    };
+    return { data: null, error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }

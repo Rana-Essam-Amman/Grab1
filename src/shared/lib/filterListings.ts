@@ -2,10 +2,10 @@ import type { Listing } from '@/types';
 import { normalizeArabic } from '@/data/arabicNormalize';
 import { filterListingsByMarket, MarketCode } from '@/shared/lib/marketGate';
 import { matchPrice, matchNeighborhood, scoreListing, sortListingsByPriority } from '@/shared/lib/listingSearch';
+import { matchLocation } from '@/shared/lib/locationFilter';
 import { getListingFields } from '@/data/listingFields';
 import type { ListingFieldOption } from '@/data/listingFields/types';
 import { getRangeFiltersFor } from '@/data/filterRanges';
-
 export interface FilterListingsOptions {
   readonly market: string;
   readonly searchQuery?: string;
@@ -13,6 +13,9 @@ export interface FilterListingsOptions {
   readonly minPrice?: number | null;
   readonly maxPrice?: number | null;
   readonly neighborhood?: string | null;
+  readonly governorateSlug?: string | null;
+  readonly districtSlug?: string | null;
+  readonly neighborhoodSlug?: string | null;
   readonly cityAr?: string;
   readonly cityEn?: string;
   readonly filterMode?: 'city' | 'all';
@@ -54,7 +57,7 @@ function normalizeAttrValue(
 export function filterListings(listings: Listing[], options: FilterListingsOptions): Listing[] {
   const {
     market, searchQuery = '', categorySlug = null, minPrice = null, maxPrice = null,
-    neighborhood = null, cityAr = '', cityEn = '', filterMode = 'all', includeSold = false,
+    neighborhood = null, governorateSlug = null, districtSlug = null, neighborhoodSlug = null, cityAr = '', cityEn = '', filterMode = 'all', includeSold = false,
     sortBy = 'newest', attrs = {}, preserveOrder = false,
   } = options;
 
@@ -69,7 +72,7 @@ export function filterListings(listings: Listing[], options: FilterListingsOptio
       if (!includeSold && (item.status === 'sold' || item.status === 'archived')) return false;
       if (categorySlug && item.categorySlug !== categorySlug && item.subcategorySlug !== categorySlug) return false;
       if (!matchPrice(item, minPrice, maxPrice)) return false;
-      if (neighborhood && !matchNeighborhood(item, neighborhood)) return false;
+      if (!matchLocation(item, { neighborhood, governorateSlug, districtSlug, neighborhoodSlug }, matchNeighborhood)) return false;
 
       const list = Array.isArray(item.attributes) ? item.attributes : [];
       const fields = getListingFields(item.categorySlug, item.subcategorySlug);
@@ -134,11 +137,7 @@ export function filterListings(listings: Listing[], options: FilterListingsOptio
   if (preserveOrder) return scored.map((s) => s.item);
 
   if (isSearching) {
-    return [...scored]
-      .sort((a, b) =>
-        b.score !== a.score ? b.score - a.score : sortListingsByPriority(a.item, b.item),
-      )
-      .map((s) => s.item);
+    return [...scored].sort((a, b) => b.score !== a.score ? b.score - a.score : sortListingsByPriority(a.item, b.item)).map((s) => s.item);
   }
   const items = scored.map((s) => s.item);
   if (sortBy === 'price-asc') return [...items].sort((a, b) => Number(a.price) - Number(b.price));
