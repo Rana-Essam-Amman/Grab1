@@ -428,9 +428,7 @@ BEGIN
       p_query, p_market, p_limit, p_offset,
       p_category_slug, p_subcategory_slug,
       p_min_price, p_max_price,
-      CASE WHEN p_city_slug IS NULL THEN p_city ELSE NULL END,
-      CASE WHEN p_neighborhood_slug IS NULL AND p_district_slug IS NULL THEN p_neighborhood ELSE NULL END,
-      p_attrs,
+      p_city, p_neighborhood, p_attrs,
       p_city_slug, p_district_slug, p_neighborhood_slug
     ) WITH ORDINALITY
   )
