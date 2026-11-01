@@ -148,13 +148,21 @@ BEGIN
 
   -- 5. NULL listing slug uses text fallback.
   SELECT count(*) INTO v_count
+  FROM public.listings l
+  WHERE l.id = '99110000-0000-4000-8000-000000000004'::uuid
+    AND public.listing_matches_slugs(l, NULL, NULL, 'abdoun', NULL, 'Abdoun');
+  IF v_count <> 1 THEN
+    RAISE EXCEPTION 'FAIL 5a: helper rejected NULL-slug Abdoun fallback';
+  END IF;
+
+  SELECT count(*), string_agg(id::text, ',') INTO v_count, v_ids
   FROM public.search_listings_v4_tiered_v4(
     'slugtest chair', 'JO', 20, 0, NULL, NULL, NULL, NULL, NULL, 'Abdoun', NULL, 5,
     NULL, NULL, 'abdoun'
   ) r
   WHERE r.id = '99110000-0000-4000-8000-000000000004'::uuid;
   IF v_count <> 1 THEN
-    RAISE EXCEPTION 'FAIL 5: NULL slug did not fall back to text';
+    RAISE EXCEPTION 'FAIL 5: NULL slug did not fall back to text (matched %)', v_count;
   END IF;
 
   -- 6. Conflicting populated slug does not match on label.
