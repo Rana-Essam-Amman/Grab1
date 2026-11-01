@@ -33,6 +33,38 @@ describe('Data Layer - Locations & Geographic Integrity', () => {
     });
   });
 
+  it('registry hierarchy has valid governorates, districts, and village records', () => {
+    EXPECTED_COUNTRIES.forEach((country) => {
+      const geo = getCountryGeo(country);
+
+      expect(geo, `${country} registry entry`).not.toBeNull();
+      if (!geo) return;
+
+      geo.governorates.forEach((governorate) => {
+        expect(governorate.slug.trim().length).toBeGreaterThan(0);
+        expect(governorate.nameEn.trim().length).toBeGreaterThan(0);
+        expect(governorate.nameAr.trim().length).toBeGreaterThan(0);
+        expect(
+          governorate.districts.length,
+          `${country}/${governorate.slug} districts`,
+        ).toBeGreaterThan(0);
+
+        governorate.districts.forEach((district) => {
+          expect(district.slug.trim().length).toBeGreaterThan(0);
+          expect(district.nameEn.trim().length).toBeGreaterThan(0);
+          expect(district.nameAr.trim().length).toBeGreaterThan(0);
+          expect(Array.isArray(district.villages)).toBe(true);
+
+          district.villages.forEach((village) => {
+            expect(village.slug.trim().length).toBeGreaterThan(0);
+            expect(village.nameEn.trim().length).toBeGreaterThan(0);
+            expect(village.nameAr.trim().length).toBeGreaterThan(0);
+          });
+        });
+      });
+    });
+  });
+
   it('DEFAULT_REGIONAL_CAPITALS defines canonical capital cities for all 6 markets', () => {
     EXPECTED_COUNTRIES.forEach((country) => {
       expect(DEFAULT_REGIONAL_CAPITALS[country]).toBeDefined();
