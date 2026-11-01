@@ -20,7 +20,7 @@ Jordan serves exclusively as the pilot vertical slice. Shared resolver logic, da
 | **Refugee Camps Supported** | 0 (Integrated) | 0 (None) | 27 Camps | 5 Camps | 0 (In districts) | 0 (None) |
 | **Landmarks Supported** | 0 | 10 Landmarks | 10 Landmarks | 5 Landmarks | 3 Landmarks | 5 Landmarks |
 | **Flat Location Dictionary (Cities)** | 13 Cities | 13 Regions | 18 Cities | 14 Cities | 16 Cities | 6 Governorates |
-| **GPS Coordinate Anchors** | 13 Anchors | 24 Anchors | 17 Anchors | 13 Anchors | 15 Anchors | 6 Anchors (Added) |
+| **GPS Coordinate Anchors** | 13 Anchors | 29 Anchors | 17 Anchors | 13 Anchors | 15 Anchors | 6 Anchors (Added) |
 | **Bounding Box [SW, NE]** | [29.18, 34.88] to [33.38, 39.31] | [16.38, 34.50] to [32.16, 55.67] | [31.20, 34.20] to [32.55, 35.58] | [33.05, 35.10] to [34.69, 36.62] | [32.31, 35.62] to [37.32, 42.38] | [28.52, 46.55] to [30.10, 48.43] |
 
 ---
@@ -37,7 +37,7 @@ Jordan serves exclusively as the pilot vertical slice. Shared resolver logic, da
 - **Verified Administrative Locations**: 13 Regions/Emirates, 32 Governorates in `src/data/locations/SA.geo.ts`.
 - **Known Localities & Neighborhoods**: 192 Centers/Villages, 13 regional centers in `src/data/locations/SA.ts`.
 - **Camps & Landmarks**: 0 refugee camps; 10 verified landmarks (e.g., Kingdom Centre, Al Faisaliah, Masmak Fortress).
-- **Coordinate Centers**: 24 city centroids in `src/data/locations/coords.ts`. Region-level alias anchors (Qassim, Asir, Hail, Jazan, Eastern Province) mapped to regional capitals.
+- **Coordinate Centers**: 29 city centroids in `src/data/locations/coords.ts`. Region-level alias anchors (Qassim, Asir, Hail, Jazan, Eastern Province) mapped to regional capitals.
 
 ### PS (Palestine)
 - **Verified Administrative Locations**: 16 Governorates, 37 Districts in `src/data/locations/PS.geo.ts`.
@@ -70,3 +70,60 @@ Jordan serves exclusively as the pilot vertical slice. Shared resolver logic, da
 2. **Strict Country Isolation**: Coordinates or queries evaluated for market M cannot resolve into entities belonging to market M' != M.
 3. **Safe Manual Fallback**: When an external result is ambiguous, out of bounds, or unrecognized, the resolver outputs `needsManualSelection: true` and falls back safely to the market's catalog selection UI.
 4. **Independent Market Testability**: Each market has a dedicated acceptance suite validating its hierarchy, bilingual normalization, boundaries, and manual fallback handling.
+
+---
+
+## 5. End-to-End Integration Audit & Data Flow Trace (FIX 4)
+
+### Complete Location Lifecycle Trace
+1. **GPS / External Provider Ingestion**:
+   - `useGeoLocation` hook in `src/features/post-wizard/hooks/useGeoLocation.ts` queries browser geolocation (`navigator.geolocation.getCurrentPosition`).
+   - Reverse-geocodes via `reverseGeocode` in `src/features/post-wizard/helpers/reverseGeocode.ts` (Nominatim / OSM) or Google Places.
+2. **Geo Resolver & Country Adapter Normalization**:
+   - Provider payload and raw coordinates are passed to `resolveGeoLocation({ targetMarket, coordinates, externalResult })`.
+   - The market-specific adapter (`joAdapter`, `saAdapter`, etc.) verifies country polygon containment, matches administrative hierarchy tokens, and extracts validated slugs.
+   - Outputs canonical contract: `CanonicalLocation` (`citySlug`, `districtSlug`, `neighborhoodSlug`, display labels, `confidence`, `needsManualSelection`).
+3. **Post Wizard & Publishing Draft**:
+   - `useLocationPick` in `src/features/post-wizard/hooks/useLocationPick.ts` receives canonical slugs:
+     - If `needsManualSelection === true`, the user is prompted to select/confirm city & neighborhood from the hierarchical dropdowns (`LocationFields.tsx`).
+     - `updatePostDraft({ city, neighborhood, citySlug, districtSlug, neighborhoodSlug })` persists into `LocalStorageDraftAdapter.ts`.
+4. **Listing Payload Construction**:
+   - `buildNewListingPayload.ts` in `src/features/post-wizard/helpers/` packages the draft into the API payload:
+     `{ country_code, city, neighborhood, city_slug, district_slug, neighborhood_slug, ... }`.
+5. **Supabase Database Persistence**:
+   - `listingsService.ts` executes `supabase.from('listings').insert(...)` / `.update(...)`.
+   - **DATABASE SCHEMA TRACE & AUDIT**:
+     - Columns present in PostgreSQL `public.listings` (via migration `20261204_location_slugs.sql`):
+       - `country_code` (text, not null)
+       - `city` (text, not null)
+       - `neighborhood` (text, nullable)
+       - `city_slug` (text, nullable)
+       - `district_slug` (text, nullable)
+       - `neighborhood_slug` (text, nullable)
+     - **CRITICAL AUDIT FINDING — LATITUDE & LONGITUDE**:
+       - The PostgreSQL `public.listings` schema **DOES NOT** have `latitude` or `longitude` columns.
+       - Latitude/longitude coordinates are used strictly at client-side runtime for nearest-city resolution and provider reverse geocoding.
+       - **Coordinates are NOT persisted to the database and are NOT exposed in public listing payloads**, protecting seller privacy. No database migrations were added or applied.
+6. **Listing Mapper & Domain Layer**:
+   - `src/features/listings/services/listingsMapper.ts` maps database rows to frontend `Listing` objects:
+     - `citySlug: row.city_slug ?? undefined`
+     - `districtSlug: row.district_slug ?? undefined`
+     - `neighborhoodSlug: row.neighborhood_slug ?? undefined`
+7. **Search Helpers & RPC Layer**:
+   - `searchListingsV4` and `searchListingsHybrid` invoke RPC functions `search_listings_v4_tiered` and `search_listings_v4_exact` passing `p_city_slug`, `p_district_slug`, and `p_neighborhood_slug`.
+   - PostgreSQL function `listing_matches_slugs` evaluates slug equality before pagination.
+8. **Explore Filters**:
+   - `useLocationHierarchyFilter.ts` loads market governorates and districts from the geo registry, binding active filter state to URL search params (`citySlug`, `districtSlug`, `neighborhoodSlug`) and synchronizing with store state via `hydrateStoreFromUrl.ts`.
+
+---
+
+## 6. Authoritative Data Provenance & Confidence Levels (FIX 5)
+
+| Market | Authoritative Agency / Source Reference | Administrative Coverage Level | Centroid Provenance | Overall Confidence Level |
+|---|---|---|---|---|
+| **JO** | Department of Statistics (DOS) & Ministry of Interior | Govs (12), Districts (63), Villages (1,748) verified against official gazette | Municipal center coordinates (approximate centroids, +-1 km) | **High (Verified Admin, Approximate Centroids)** |
+| **SA** | General Authority for Statistics (GASTAT) | 13 Regions, 32 Primary Governorates verified | Municipal centroids for 24 cities + 5 regional anchors | **Medium-High (Top 32 Govs verified; rural markaz unverified)** |
+| **PS** | Palestinian Central Bureau of Statistics (PCBS) & UNRWA | 16 Governorates, 37 Districts, 27 Official Refugee Camps verified | City & camp centroids (approximate) | **High (Verified PCBS/UNRWA; historic village boundaries approximate)** |
+| **LB** | Central Administration of Statistics (CAS) & UNRWA | 8 Mohafazat, 26 Cazas (Districts), 5 UNRWA Camps verified | Caza capital centroids (approximate) | **Medium-High (Official Cazas verified; municipal polygons unverified)** |
+| **SY** | Central Bureau of Statistics (CBS) | 14 Governorates, 25 Major Districts verified | Governorate capital centroids (approximate) | **Medium (Major districts verified; subdistricts partially surveyed)** |
+| **KW** | Public Authority for Civil Information (PACI) | 6 Governorates, 126 Areas (Mantiqah) verified | Governorate centroids from PACI GIS data (approximate) | **High (6 Governorates verified; area centroids approximate)** |

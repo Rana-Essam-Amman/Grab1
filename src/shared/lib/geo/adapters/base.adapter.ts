@@ -4,6 +4,7 @@ import { DEFAULT_REGIONAL_CAPITALS } from '@/data/locations/capitals';
 import { MARKET_BOUNDS, isWithinMarketBounds } from '../marketBounds';
 import { haversineKm, cleanGeoToken, matchLandmarkOrCamp } from './adapterUtils';
 import { matchHierarchyPasses } from './hierarchyMatcher';
+import { CITY_TO_GOVERNORATE_SLUG } from './cityToGovMap';
 import type {
   MarketGeoAdapter,
   MarketCode,
@@ -25,7 +26,12 @@ export abstract class BaseMarketGeoAdapter implements MarketGeoAdapter {
     return isWithinMarketBounds(this.marketCode, coords);
   }
 
-  getNearestCity(coords: LatLng) {
+  getNearestCity(coords: LatLng): {
+    cityEn: string;
+    cityAr: string;
+    slug: string;
+    distanceKm: number;
+  } | null {
     const marketCoords = CITY_COORDS[this.marketCode];
     if (!marketCoords) return null;
 
@@ -37,14 +43,25 @@ export abstract class BaseMarketGeoAdapter implements MarketGeoAdapter {
     if (!best || best.distanceKm > 100) return null;
 
     const geo = getCountryGeo(this.marketCode);
-    const gov = geo?.governorates.find(
-      (g) => cleanGeoToken(g.nameEn) === cleanGeoToken(best!.cityEn) || g.slug === best!.cityEn.toLowerCase()
-    );
-    const cap = this.getDefaultCapital();
+    if (!geo) return null;
+
+    // Strict Canonical Mapping: Look up authoritative governorate slug
+    const mappedGovSlug = CITY_TO_GOVERNORATE_SLUG[this.marketCode]?.[best.cityEn];
+    let gov = mappedGovSlug ? geo.governorates.find((g) => g.slug === mappedGovSlug) : undefined;
+
+    if (!gov) {
+      gov = geo.governorates.find(
+        (g) => cleanGeoToken(g.nameEn) === cleanGeoToken(best!.cityEn) || g.slug === best!.cityEn.toLowerCase()
+      );
+    }
+
+    // Never manufacture a slug from a city label when no canonical mapping exists
+    if (!gov) return null;
+
     return {
       cityEn: best.cityEn,
-      cityAr: gov?.nameAr ?? cap.cityAr,
-      slug: gov?.slug ?? best.cityEn.toLowerCase().replace(/\s+/g, '-'),
+      cityAr: gov.nameAr,
+      slug: gov.slug,
       distanceKm: best.distanceKm,
     };
   }
@@ -55,12 +72,13 @@ export abstract class BaseMarketGeoAdapter implements MarketGeoAdapter {
     const gov = geo?.governorates.find(
       (g) => cleanGeoToken(g.nameEn) === cleanGeoToken(cap.cityEn) || cleanGeoToken(g.nameAr) === cleanGeoToken(cap.cityAr)
     );
+    const slug = gov?.slug ?? cap.cityEn.toLowerCase().replace(/\s+/g, '-');
     return {
       cityEn: cap.cityEn,
       cityAr: cap.cityAr,
       neighborhoodEn: cap.neighborhoodEn,
       neighborhoodAr: cap.neighborhoodAr,
-      slug: gov?.slug ?? cap.cityEn.toLowerCase().replace(/\s+/g, '-'),
+      slug,
     };
   }
 
