@@ -1,5 +1,5 @@
 import type { MarketBounds, MarketCode, LatLng } from './geo.types';
-import { MARKET_MULTIPOLYGONS, isPointInMultiPolygon } from './marketPolygons';
+import { MARKET_MULTIPOLYGONS, isPointInMultiPolygon, BOUNDARY_UNCERTAINTY_METERS } from './marketPolygons';
 
 export const MARKET_BOUNDS: Record<MarketCode, MarketBounds> = {
   JO: { minLat: 29.18, maxLat: 33.38, minLng: 34.88, maxLng: 39.31 },
@@ -10,67 +10,50 @@ export const MARKET_BOUNDS: Record<MarketCode, MarketBounds> = {
   KW: { minLat: 28.52, maxLat: 30.10, minLng: 46.55, maxLng: 48.43 },
 };
 
-/**
- * Checks if coordinates are authoritatively inside the market.
- * Employs MultiPolygon containment and strict boundary discrimination to resolve
- * geographic overlap zones.
- */
-export function isWithinMarketBounds(market: MarketCode, coords: LatLng): boolean {
-  // Input sanity check: detect latitude/longitude inversion
+export interface BoundaryCheckResult {
+  readonly isInside: boolean;
+  readonly isAmbiguousBuffer: boolean;
+  readonly boundaryDistanceMeters: number;
+}
+
+export function checkMarketBoundary(market: MarketCode, coords: LatLng): BoundaryCheckResult {
+  // Input sanity: detect inversion or out-of-range coords
   if (coords.lat > 90 || coords.lat < -90 || coords.lng > 180 || coords.lng < -180) {
-    return false;
+    return { isInside: false, isAmbiguousBuffer: false, boundaryDistanceMeters: Infinity };
   }
-  // Detect swapped lat/long for Middle East region (Middle East lats are ~16-37, lngs are ~34-56)
   if (coords.lat > 40 && coords.lng < 35) {
-    return false; // Inverted coordinates
+    return { isInside: false, isAmbiguousBuffer: false, boundaryDistanceMeters: Infinity };
   }
 
   const b = MARKET_BOUNDS[market];
-  if (!b) return false;
+  if (!b) return { isInside: false, isAmbiguousBuffer: false, boundaryDistanceMeters: Infinity };
 
-  // 1. Coarse prefilter
+  // Coarse prefilter
   if (
     coords.lat < b.minLat ||
     coords.lat > b.maxLat ||
     coords.lng < b.minLng ||
     coords.lng > b.maxLng
   ) {
-    return false;
-  }
-
-  // 2. Authoritative overlap resolution
-  // Check PS vs JO along the Jordan River / Dead Sea meridian
-  if (market === 'JO') {
-    if (coords.lat >= 31.20 && coords.lat <= 32.55 && coords.lng < 35.53) {
-      return false;
-    }
-  }
-
-  if (market === 'PS') {
-    if (coords.lng > 35.55) {
-      return false;
-    }
-  }
-
-  // Check LB vs SY along the Anti-Lebanon / Beqaa border line
-  if (market === 'LB') {
-    if (coords.lat >= 33.20 && coords.lat <= 34.10 && coords.lng > 36.05) {
-      return false;
-    }
-  }
-
-  if (market === 'SY') {
-    if (coords.lat >= 33.30 && coords.lat <= 34.40 && coords.lng < 35.95) {
-      return false;
-    }
+    return { isInside: false, isAmbiguousBuffer: false, boundaryDistanceMeters: Infinity };
   }
 
   const multiPoly = MARKET_MULTIPOLYGONS[market];
-  if (multiPoly) {
-    return isPointInMultiPolygon(coords, multiPoly);
+  if (!multiPoly) {
+    return { isInside: true, isAmbiguousBuffer: false, boundaryDistanceMeters: Infinity };
   }
 
-  return true;
+  const { isInside, boundaryDistanceMeters } = isPointInMultiPolygon(coords, multiPoly);
+  // Real 2 km geodesic uncertainty calculation
+  const isAmbiguousBuffer = boundaryDistanceMeters <= BOUNDARY_UNCERTAINTY_METERS;
+
+  return { isInside, isAmbiguousBuffer, boundaryDistanceMeters };
+}
+
+export function isWithinMarketBounds(market: MarketCode, coords: LatLng): boolean {
+  const result = checkMarketBoundary(market, coords);
+  // Must be inside and not in ambiguous disputed boundary buffer
+  return result.isInside && !result.isAmbiguousBuffer;
 }
 
 export function detectMarketFromCoords(coords: LatLng): MarketCode | null {

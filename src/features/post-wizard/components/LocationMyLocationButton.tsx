@@ -1,8 +1,6 @@
-import React, { useEffect } from 'react';
-import { locations, locationsAr } from '@/data/locations';
+import React, { useEffect, useRef } from 'react';
 import { useGeoLocation } from '../hooks/useGeoLocation';
 import { usePostWizard } from '../hooks/usePostWizard';
-import { matchNeighborhood } from '../helpers/reverseGeocode';
 import { toast } from 'sonner';
 
 interface Props {
@@ -12,14 +10,6 @@ interface Props {
   readonly onNeighborhoodChange: (n: string) => void;
 }
 
-function optionCity(country: string, cityEn: string, isArabic: boolean): string {
-  if (!isArabic) return cityEn;
-  const en = Object.keys(locations[country] || {});
-  const ar = Object.keys(locationsAr[country] || {});
-  const index = en.indexOf(cityEn);
-  return index >= 0 && ar[index] ? ar[index] : cityEn;
-}
-
 export const LocationMyLocationButton: React.FC<Props> = ({
   isArabic,
   preferredCountry,
@@ -27,56 +17,82 @@ export const LocationMyLocationButton: React.FC<Props> = ({
   onNeighborhoodChange,
 }) => {
   const {
-    status, match, canonicalLocation, candidates, error, request, reset,
+    status, canonicalLocation, error, request, reset,
   } = useGeoLocation(preferredCountry, isArabic);
   const { updatePostDraft } = usePostWizard();
+  const requestTimestamp = useRef<number>(0);
+
+  const handleRequest = () => {
+    requestTimestamp.current = Date.now();
+    request();
+  };
 
   useEffect(() => {
     if (status === 'denied') {
-      toast.error(isArabic ? 'تم رفض صلاحية الوصول للموقع. يرجى تفعيلها من إعدادات المتصفح.' : 'Location permission denied. Please enable it in your browser settings.');
+      toast.error(
+        isArabic
+          ? 'تم رفض صلاحية الوصول للموقع. يرجى تفعيلها من إعدادات المتصفح.'
+          : 'Location permission denied. Please enable it in your browser settings.'
+      );
     } else if (status === 'unavailable') {
-      toast.error(isArabic ? 'خدمة تحديد الموقع غير متاحة على جهازك.' : 'Location service is not available on your device.');
+      toast.error(
+        isArabic
+          ? 'خدمة تحديد الموقع غير متاحة على جهازك.'
+          : 'Location service is not available on your device.'
+      );
     } else if (status === 'error' && error) {
-      toast.error(isArabic ? 'تعذر تحديد موقعك. يرجى المحاولة مرة أخرى.' : 'Could not determine your location. Please try again.');
+      toast.error(
+        isArabic
+          ? 'تعذر تحديد موقعك بدقة. يرجى اختيار المدينة والحي يدوياً.'
+          : 'Could not determine your location accurately. Please select manually.'
+      );
     }
   }, [status, error, isArabic]);
 
+  // Handle Canonical Resolution Atomically (BLOCKER A)
   useEffect(() => {
-    if (status !== 'success' || !match) return;
+    if (status !== 'success' || !canonicalLocation) return;
 
-    // Safety check: Ensure the detected country matches the current market
-    if (match.country !== preferredCountry || canonicalLocation?.needsManualSelection) {
+    // Safety check 1: Market agreement
+    if (canonicalLocation.countryCode !== preferredCountry || canonicalLocation.needsManualSelection) {
       toast.error(
         isArabic
-          ? 'موقعك الحالي يبدو خارج نطاق السوق المختار. يرجى تغيير السوق أو اختيار المدينة يدوياً.'
-          : 'Your current location appears to be outside the selected market. Please change the market or select manually.'
+          ? 'موقعك الحالي خارج نطاق السوق المختار أو غير محدد بدقة. يرجى الاختيار يدوياً.'
+          : 'Your location is outside the selected market or unverified. Please select manually.'
       );
       reset();
       return;
     }
 
-    const city = optionCity(match.country, match.city, isArabic);
-    const list = isArabic
-      ? locationsAr[match.country]?.[match.city] || []
-      : locations[match.country]?.[match.city] || [];
-    const matched = matchNeighborhood(candidates, list) ?? '';
+    // Authoritative atomic canonical resolution
+    const finalCity = isArabic
+      ? canonicalLocation.governorateAr || canonicalLocation.governorateEn || ''
+      : canonicalLocation.governorateEn || canonicalLocation.governorateAr || '';
 
-    onCityChange(city);
-    onNeighborhoodChange(matched);
+    const finalNeighborhood = isArabic
+      ? canonicalLocation.neighborhoodAr || canonicalLocation.neighborhoodEn || ''
+      : canonicalLocation.neighborhoodEn || canonicalLocation.neighborhoodAr || '';
 
-    // Canonical slugs integrated: never persist raw coordinates to DB
+    if (!finalCity) {
+      reset();
+      return;
+    }
+
+    onCityChange(finalCity);
+    onNeighborhoodChange(finalNeighborhood);
+
     updatePostDraft({
-      city,
-      neighborhood: matched,
-      citySlug: canonicalLocation?.governorateSlug ?? undefined,
-      districtSlug: canonicalLocation?.districtSlug ?? undefined,
-      neighborhoodSlug: canonicalLocation?.neighborhoodSlug ?? undefined,
+      city: finalCity,
+      neighborhood: finalNeighborhood,
+      citySlug: canonicalLocation.governorateSlug ?? undefined,
+      districtSlug: canonicalLocation.districtSlug ?? undefined,
+      neighborhoodSlug: canonicalLocation.neighborhoodSlug ?? undefined,
     });
 
     reset();
   }, [
-    status, match, canonicalLocation, candidates, preferredCountry,
-    isArabic, onCityChange, onNeighborhoodChange, reset, updatePostDraft,
+    status, canonicalLocation, preferredCountry, isArabic,
+    onCityChange, onNeighborhoodChange, reset, updatePostDraft,
   ]);
 
   const label =
@@ -88,7 +104,7 @@ export const LocationMyLocationButton: React.FC<Props> = ({
     <div className="flex flex-col gap-1">
       <button
         type="button"
-        onClick={request}
+        onClick={handleRequest}
         disabled={status === 'loading'}
         className="h-11 px-3.5 rounded-xl border border-border bg-surface text-sm font-bold text-ink text-start transition-colors hover:bg-canvas disabled:opacity-50"
       >
