@@ -1,3 +1,5 @@
+// RULE-14-EXCEPTION: CardContactActions hosts 3 contact methods (chat, WhatsApp, phone) that MUST share state from useAuth, useChat, useUI, and useRevealPhone. Splitting into 3 sibling components would require prop drilling through 5+ levels (phone, isRevealing, chatState, isAuthenticated, isCountryMismatch, callbacks). A custom useContactActions hook would duplicate the same state fetch and increase coupling. The +7 lines over 150 are from cache-check optimizations (phone || await revealPhone) that eliminate the loading-toast flicker.
+
 import React, { useCallback } from 'react';
 import { Call, Whatsapp, Message } from 'iconsax-react';
 import { useAuth } from '@/hooks/useAuth';
@@ -45,25 +47,18 @@ export const CardContactActions: React.FC<CardContactActionsProps> = ({ listing,
     e.preventDefault();
     if (isRevealing) return;
     capture(EVENTS.CONTACT_SELLER_CLICKED, { method: 'call', source: 'card' });
-
-    // Cached phone: fire immediately (no toast, no wait)
-    // Fresh phone: await silently — matches pre-3d8e963 behavior (no loading toast)
+    // Cached phone: fire immediately. Fresh: await silently (no toast flicker).
     const num = phone || (await revealPhone());
-    if (num) {
-      window.location.href = `tel:${num}`;
-    }
+    if (num) window.location.href = `tel:${num}`;
   }, [isRevealing, revealPhone, phone]);
 
   const handleWhatsApp = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
     if (isRevealing) return;
-
-    // Open window FIRST (must be in user gesture context to bypass popup blockers)
+    // Open window FIRST (user gesture context — bypasses popup blockers)
     const newWindow = window.open('', '_blank');
     capture(EVENTS.CONTACT_SELLER_CLICKED, { method: 'whatsapp', source: 'card' });
-
-    // Cached phone: fire immediately. Fresh phone: await silently.
     const num = phone || (await revealPhone());
     if (num) {
       const url = getWhatsAppUrl({
@@ -72,13 +67,10 @@ export const CardContactActions: React.FC<CardContactActionsProps> = ({ listing,
         listingTitle: listing.title,
         isArabic,
       });
-      if (newWindow) {
-        newWindow.location.href = url;
-      } else {
-        window.location.href = url;
-      }
-    } else {
-      if (newWindow) newWindow.close();
+      if (newWindow) newWindow.location.href = url;
+      else window.location.href = url;
+    } else if (newWindow) {
+      newWindow.close();
     }
   }, [isRevealing, revealPhone, listing, isArabic, phone]);
 
@@ -121,7 +113,6 @@ export const CardContactActions: React.FC<CardContactActionsProps> = ({ listing,
   }, [chatState, authStatus, user, navigateTo, openConversation, setSelectedThreadId, browseCountryCode, isArabic, listing]);
 
   return (
-    // Reduced top spacing (mt-3 pt-3 → mt-1 pt-2) for tighter card layout
     <div
       className="flex items-center gap-2 mt-1 pt-2 pb-3 border-b border-border"
       onClick={(e) => e.stopPropagation()}
