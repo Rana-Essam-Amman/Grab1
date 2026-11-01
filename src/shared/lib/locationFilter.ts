@@ -38,13 +38,13 @@ export function matchLocation(
   if (neighborhoodSlug && item.neighborhoodSlug && item.neighborhoodSlug !== neighborhoodSlug) return false;
 
   if (neighborhoodSlug && !item.neighborhoodSlug) {
-    return neighborhood ? textMatch(item, neighborhood) : true;
+    return neighborhood ? textMatch(item, neighborhood) : false;
   }
   if (districtSlug && !item.districtSlug) {
-    return neighborhood ? textMatch(item, neighborhood) : true;
+    return neighborhood ? textMatch(item, neighborhood) : false;
   }
   if (governorateSlug && !item.citySlug) {
-    return cityEn ? textMatch(item, cityEn) : true;
+    return cityEn ? textMatch(item, cityEn) : false;
   }
   if (!governorateSlug && !districtSlug && !neighborhoodSlug) {
     return neighborhood ? textMatch(item, neighborhood) : true;

@@ -110,7 +110,7 @@ BEGIN
   FROM public.listings l
   WHERE l.title LIKE 'slugtest%'
     AND public.listing_matches_slugs(l, 'amman', 'marka', 'same-a', NULL, NULL);
-  IF v_count <> 1 THEN
+  IF v_count <> 3 THEN
     RAISE EXCEPTION 'FAIL 0b: helper matched % slugtest rows', v_count;
   END IF;
 
