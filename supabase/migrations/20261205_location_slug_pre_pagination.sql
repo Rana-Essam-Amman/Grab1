@@ -758,6 +758,7 @@ BEGIN
           ))::integer AS rank_in_tier
         FROM public.listings l
         WHERE l.status = 'active'
+          AND (l.is_demo = false OR public.is_admin())
           AND l.country_code = upper(coalesce(p_market, 'JO'))
           AND l.category_slug = v_tier2_category
           AND l.id <> ALL(v_excluded_ids)
