@@ -120,6 +120,7 @@ describe('Data Layer - Locations & Geographic Integrity', () => {
     expect(DEFAULT_REGIONAL_CAPITALS.JO.cityEn).toBe('Amman');
     expect(DEFAULT_REGIONAL_CAPITALS.JO.cityAr).toBe('عمّان');
     expect(DEFAULT_REGIONAL_CAPITALS.LB.cityEn).toBe('Beirut');
+    expect(DEFAULT_REGIONAL_CAPITALS.LB.cityAr).toBe('بيروت');
     expect(DEFAULT_REGIONAL_CAPITALS.PS.cityEn).toBe('Jerusalem');
     expect(DEFAULT_REGIONAL_CAPITALS.SY.cityEn).toBe('Damascus');
     expect(DEFAULT_REGIONAL_CAPITALS.SA.cityEn).toBe('Riyadh');
