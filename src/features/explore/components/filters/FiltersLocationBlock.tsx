@@ -23,12 +23,12 @@ export const FiltersLocationBlock: React.FC<Props> = ({
     activeNeighborhood={activeNeighborhood}
     onSelect={onNeighborhoodChange}
     onLocationChange={(selection) => {
+      if (selection.cityEn && selection.cityAr) onCityChange(selection.cityEn, selection.cityAr);
       useUIStore.setState({
         browseGovernorateSlug: selection.governorateSlug,
         browseDistrictSlug: selection.districtSlug,
         neighborhoodSlugFilter: selection.neighborhoodSlug,
       });
-      if (selection.cityEn && selection.cityAr) onCityChange(selection.cityEn, selection.cityAr);
     }}
   />
 );

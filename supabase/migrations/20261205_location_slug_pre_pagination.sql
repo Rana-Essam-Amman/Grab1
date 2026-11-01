@@ -146,7 +146,9 @@ BEGIN
     AND public.listing_passes_filters(
       l, p_category_slug, p_subcategory_slug,
       p_min_price, p_max_price,
-      p_city, p_neighborhood, p_attrs
+      CASE WHEN p_city_slug IS NULL THEN p_city ELSE NULL END,
+      CASE WHEN p_neighborhood_slug IS NULL AND p_district_slug IS NULL THEN p_neighborhood ELSE NULL END,
+      p_attrs
     )
     AND public.listing_matches_slugs(l, p_city_slug, p_district_slug, p_neighborhood_slug, p_city, p_neighborhood)
     AND NOT EXISTS (
@@ -181,7 +183,9 @@ BEGIN
       AND public.listing_passes_filters(
         l, p_category_slug, p_subcategory_slug,
         p_min_price, p_max_price,
-        p_city, p_neighborhood, p_attrs
+        CASE WHEN p_city_slug IS NULL THEN p_city ELSE NULL END,
+        CASE WHEN p_neighborhood_slug IS NULL AND p_district_slug IS NULL THEN p_neighborhood ELSE NULL END,
+        p_attrs
       )
       AND public.listing_matches_slugs(l, p_city_slug, p_district_slug, p_neighborhood_slug, p_city, p_neighborhood)
       AND NOT EXISTS (
@@ -208,7 +212,9 @@ BEGIN
     AND public.listing_passes_filters(
       l, p_category_slug, p_subcategory_slug,
       p_min_price, p_max_price,
-      p_city, p_neighborhood, p_attrs
+      CASE WHEN p_city_slug IS NULL THEN p_city ELSE NULL END,
+      CASE WHEN p_neighborhood_slug IS NULL AND p_district_slug IS NULL THEN p_neighborhood ELSE NULL END,
+      p_attrs
     )
     AND public.listing_matches_slugs(l, p_city_slug, p_district_slug, p_neighborhood_slug, p_city, p_neighborhood)
     AND word_similarity(
@@ -239,7 +245,9 @@ BEGIN
       AND public.listing_passes_filters(
         l, p_category_slug, p_subcategory_slug,
         p_min_price, p_max_price,
-        p_city, p_neighborhood, p_attrs
+        CASE WHEN p_city_slug IS NULL THEN p_city ELSE NULL END,
+        CASE WHEN p_neighborhood_slug IS NULL AND p_district_slug IS NULL THEN p_neighborhood ELSE NULL END,
+        p_attrs
       )
       AND public.listing_matches_slugs(l, p_city_slug, p_district_slug, p_neighborhood_slug, p_city, p_neighborhood)
       AND word_similarity(
@@ -309,7 +317,9 @@ BEGIN
       AND public.listing_passes_filters(
         l, p_category_slug, p_subcategory_slug,
         p_min_price, p_max_price,
-        p_city, p_neighborhood, p_attrs
+        CASE WHEN p_city_slug IS NULL THEN p_city ELSE NULL END,
+        CASE WHEN p_neighborhood_slug IS NULL AND p_district_slug IS NULL THEN p_neighborhood ELSE NULL END,
+        p_attrs
       )
       AND public.listing_matches_slugs(l, p_city_slug, p_district_slug, p_neighborhood_slug, p_city, p_neighborhood)
   ) AS s
@@ -407,7 +417,9 @@ BEGIN
       p_query, p_market, p_limit, p_offset,
       p_category_slug, p_subcategory_slug,
       p_min_price, p_max_price,
-      p_city, p_neighborhood, p_attrs,
+      CASE WHEN p_city_slug IS NULL THEN p_city ELSE NULL END,
+      CASE WHEN p_neighborhood_slug IS NULL AND p_district_slug IS NULL THEN p_neighborhood ELSE NULL END,
+      p_attrs,
       p_city_slug, p_district_slug, p_neighborhood_slug
     ) WITH ORDINALITY
   )
@@ -715,7 +727,7 @@ BEGIN
           l.status,
           l.views,
           l.seller_name,
-          l.seller_phone,
+          NULL::text AS seller_phone,
           l.created_at,
           l.updated_at,
           l.is_demo,
@@ -746,8 +758,8 @@ BEGIN
           AND (p_max_price IS NULL OR (
             CASE WHEN l.price ~ '^[0-9]+(\.[0-9]+)?$' THEN l.price::numeric ELSE NULL END
           ) <= p_max_price)
-          AND (p_city IS NULL OR l.city = p_city)
-          AND (p_neighborhood IS NULL OR l.neighborhood = p_neighborhood)
+          AND (p_city_slug IS NOT NULL OR p_city IS NULL OR l.city = p_city)
+          AND (p_neighborhood_slug IS NOT NULL OR p_district_slug IS NOT NULL OR p_neighborhood IS NULL OR l.neighborhood = p_neighborhood)
           AND public.listing_matches_slugs(l, p_city_slug, p_district_slug, p_neighborhood_slug, p_city, p_neighborhood)
           AND (p_subcategory_slug IS NULL OR l.subcategory_slug = p_subcategory_slug)
       ) ranked

@@ -31,6 +31,10 @@ export function useSupabaseListingsSync(): void {
   const minPriceFilter = useUIStore((s) => s.minPriceFilter);
   const maxPriceFilter = useUIStore((s) => s.maxPriceFilter);
   const attrsFilter = useUIStore((s) => s.attrsFilter);
+  const neighborhoodFilter = useUIStore((s) => s.neighborhoodFilter);
+  const citySlug = useUIStore((s) => s.browseGovernorateSlug);
+  const districtSlug = useUIStore((s) => s.browseDistrictSlug);
+  const neighborhoodSlug = useUIStore((s) => s.neighborhoodSlugFilter);
 
   const searchParams: SearchListingsParams = useMemo(
     () => ({
@@ -41,7 +45,10 @@ export function useSupabaseListingsSync(): void {
       minPrice: minPriceFilter,
       maxPrice: maxPriceFilter,
       city: null,
-      neighborhood: null,
+      neighborhood: neighborhoodSlug ? neighborhoodFilter : null,
+      citySlug,
+      districtSlug,
+      neighborhoodSlug,
       attrs: Object.fromEntries(
         Object.entries(attrsFilter).filter(([key]) => key !== 'km_range'),
       ),
@@ -54,6 +61,10 @@ export function useSupabaseListingsSync(): void {
       minPriceFilter,
       maxPriceFilter,
       attrsFilter,
+      neighborhoodFilter,
+      citySlug,
+      districtSlug,
+      neighborhoodSlug,
     ],
   );
 

@@ -122,6 +122,9 @@ run_sql supabase/tests/search_attribute_keys.sql
 run_sql supabase/tests/search_v4_typo_threshold.sql
 run_sql supabase/tests/search_raw_stopword_guard.sql
 
+# Canonical location slug regressions. Must run before v4 rollback.
+run_sql supabase/tests/location_slug_pre_pagination.sql
+
 # v4 rollback idempotence — run twice, then assert function is gone.
 run_sql supabase/tests/search_v4_rollback_idempotence.sql
 

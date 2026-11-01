@@ -76,7 +76,7 @@ export function useLocationHierarchyFilter({
     setSelectedGov(next);
     setSelectedDist(null);
     const label = next ? (isArabic ? g.nameAr : g.nameEn) : null;
-    onSelect(label);
+    onSelect(null);
     onLocationChange?.({
       governorateSlug: next,
       districtSlug: null,
@@ -91,7 +91,7 @@ export function useLocationHierarchyFilter({
     const next = selectedDist === d.slug ? null : d.slug;
     setSelectedDist(next);
     const label = next ? (isArabic ? d.nameAr : d.nameEn) : null;
-    onSelect(label);
+    onSelect(null);
     onLocationChange?.({
       governorateSlug: selectedGov,
       districtSlug: next,
