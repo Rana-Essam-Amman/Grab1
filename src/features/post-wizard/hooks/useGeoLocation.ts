@@ -1,12 +1,14 @@
 import { useCallback, useState } from 'react';
-import { findNearestCity, GeoMatch } from '../helpers/geoMatch';
-import { reverseGeocode } from '../helpers/reverseGeocode';
+import { GeoMatch } from '../helpers/geoMatch';
+import { CanonicalLocation } from '@/shared/lib/geo';
+import { processLocationCoords } from '../helpers/geoLocationHelpers';
 
 export type GeoStatus = 'idle' | 'loading' | 'success' | 'denied' | 'unavailable' | 'error';
 
 export interface UseGeoLocationReturn {
   readonly status: GeoStatus;
   readonly match: GeoMatch | null;
+  readonly canonicalLocation: CanonicalLocation | null;
   readonly deviceLat: number | null;
   readonly deviceLng: number | null;
   readonly candidates: readonly string[];
@@ -21,6 +23,7 @@ export function useGeoLocation(
 ): UseGeoLocationReturn {
   const [status, setStatus] = useState<GeoStatus>('idle');
   const [match, setMatch] = useState<GeoMatch | null>(null);
+  const [canonicalLocation, setCanonicalLocation] = useState<CanonicalLocation | null>(null);
   const [deviceLat, setDeviceLat] = useState<number | null>(null);
   const [deviceLng, setDeviceLng] = useState<number | null>(null);
   const [candidates, setCandidates] = useState<readonly string[]>([]);
@@ -29,6 +32,7 @@ export function useGeoLocation(
   const reset = useCallback(() => {
     setStatus('idle');
     setMatch(null);
+    setCanonicalLocation(null);
     setDeviceLat(null);
     setDeviceLng(null);
     setCandidates([]);
@@ -50,35 +54,26 @@ export function useGeoLocation(
         setDeviceLat(latitude);
         setDeviceLng(longitude);
 
-        const found = findNearestCity(latitude, longitude, preferredCountry);
-        if (!found) {
+        const res = await processLocationCoords(latitude, longitude, preferredCountry, isArabic);
+        setCandidates(res.candidates);
+        setCanonicalLocation(res.canonicalLocation);
+        setMatch(res.match);
+
+        if (res.error) {
           setStatus('error');
-          setError('No nearby supported city found');
-          setMatch(null);
-          return;
+          setError(res.error);
+        } else {
+          setStatus('success');
         }
-
-        const rv = await reverseGeocode(latitude, longitude, isArabic);
-        setCandidates(rv.candidates);
-
-        setMatch(found);
-        setStatus('success');
       },
       (err) => {
-        if (err.code === err.PERMISSION_DENIED) {
-          setStatus('denied');
-          setError('Permission denied');
-        } else {
-          setStatus('error');
-          setError(err.message || 'Location unavailable');
-        }
+        setStatus(err.code === err.PERMISSION_DENIED ? 'denied' : 'error');
+        setError(err.code === err.PERMISSION_DENIED ? 'Permission denied' : (err.message || 'Location unavailable'));
         setMatch(null);
       },
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
     );
   }, [preferredCountry, isArabic]);
 
-  return {
-    status, match, deviceLat, deviceLng, candidates, error, request, reset,
-  };
+  return { status, match, canonicalLocation, deviceLat, deviceLng, candidates, error, request, reset };
 }

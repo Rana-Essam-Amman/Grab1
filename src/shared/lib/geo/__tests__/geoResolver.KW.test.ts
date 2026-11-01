@@ -77,7 +77,7 @@ describe('GeoResolver — Kuwait (KW) Acceptance Tests', () => {
       textQuery: 'FakeDistrictKW',
     });
     expect(res.needsManualSelection).toBe(true);
-    expect(res.governorateSlug).toBe(adapter.getDefaultCapital().slug);
+    expect(res.governorateSlug).toBe('al-asimah');
   });
 
   it('9. Correct canonical IDs and slugs', () => {

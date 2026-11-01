@@ -41,15 +41,16 @@ export function resolveGeoLocation(options: ResolveGeoOptions): CanonicalLocatio
     coords = { lat: externalResult.lat, lng: externalResult.lng };
   }
 
-  // 1. Strict Provider Country Metadata Validation (FIX 2)
+  // 1. Strict Provider Country Metadata Validation (FIX 1 & 2)
   if (externalResult) {
     const { matches, hasMetadata } = isProviderCountryMatching(targetMarket, externalResult);
+    // If metadata was provided and contradicts targetMarket -> immediate rejection
     if (hasMetadata && !matches) {
       return buildFallback(options, 'unsupported_country');
     }
   }
 
-  // 2. Authoritative Boundary & Cross-Market Validation (FIX 1)
+  // 2. Authoritative Boundary & Cross-Market Validation
   if (coords && !isWithinMarketBounds(targetMarket, coords)) {
     return buildFallback(options, 'out_of_bounds');
   }
@@ -69,9 +70,14 @@ export function resolveGeoLocation(options: ResolveGeoOptions): CanonicalLocatio
   if (candidateTokens.length > 0) {
     const matched = adapter.resolveHierarchy(candidateTokens, coords);
     if (matched) {
+      // If external result lacked country metadata and coordinates, confidence is approximate
+      const { hasMetadata } = isProviderCountryMatching(targetMarket, externalResult);
+      const confidence = (!hasMetadata && externalResult && !coords) ? 'approximate' : matched.confidence;
+
       return {
         countryCode: targetMarket,
         ...matched,
+        confidence,
         site: textQuery || undefined,
       };
     }

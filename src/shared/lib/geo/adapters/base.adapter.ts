@@ -45,7 +45,6 @@ export abstract class BaseMarketGeoAdapter implements MarketGeoAdapter {
     const geo = getCountryGeo(this.marketCode);
     if (!geo) return null;
 
-    // Strict Canonical Mapping: Look up authoritative governorate slug
     const mappedGovSlug = CITY_TO_GOVERNORATE_SLUG[this.marketCode]?.[best.cityEn];
     let gov = mappedGovSlug ? geo.governorates.find((g) => g.slug === mappedGovSlug) : undefined;
 
@@ -55,7 +54,6 @@ export abstract class BaseMarketGeoAdapter implements MarketGeoAdapter {
       );
     }
 
-    // Never manufacture a slug from a city label when no canonical mapping exists
     if (!gov) return null;
 
     return {
@@ -66,19 +64,43 @@ export abstract class BaseMarketGeoAdapter implements MarketGeoAdapter {
     };
   }
 
-  getDefaultCapital() {
+  getDefaultCapital(): {
+    cityEn: string;
+    cityAr: string;
+    neighborhoodEn: string;
+    neighborhoodAr: string;
+    slug: string;
+  } {
     const cap = DEFAULT_REGIONAL_CAPITALS[this.marketCode] || DEFAULT_REGIONAL_CAPITALS.JO;
     const geo = getCountryGeo(this.marketCode);
-    const gov = geo?.governorates.find(
-      (g) => cleanGeoToken(g.nameEn) === cleanGeoToken(cap.cityEn) || cleanGeoToken(g.nameAr) === cleanGeoToken(cap.cityAr)
-    );
-    const slug = gov?.slug ?? cap.cityEn.toLowerCase().replace(/\s+/g, '-');
+    if (!geo) {
+      throw new Error(`Geo registry missing for market ${this.marketCode}`);
+    }
+
+    // Resolve capital to canonical governorate record
+    const mappedGovSlug = CITY_TO_GOVERNORATE_SLUG[this.marketCode]?.[cap.cityEn];
+    let gov = mappedGovSlug ? geo.governorates.find((g) => g.slug === mappedGovSlug) : undefined;
+
+    if (!gov) {
+      gov = geo.governorates.find(
+        (g) =>
+          cleanGeoToken(g.nameEn) === cleanGeoToken(cap.cityEn) ||
+          cleanGeoToken(g.nameAr) === cleanGeoToken(cap.cityAr) ||
+          g.slug === cap.cityEn.toLowerCase()
+      );
+    }
+
+    // Never manufacture an unverified slug
+    if (!gov) {
+      throw new Error(`No canonical governorate mapping found for capital ${cap.cityEn} in ${this.marketCode}`);
+    }
+
     return {
       cityEn: cap.cityEn,
       cityAr: cap.cityAr,
       neighborhoodEn: cap.neighborhoodEn,
       neighborhoodAr: cap.neighborhoodAr,
-      slug,
+      slug: gov.slug,
     };
   }
 

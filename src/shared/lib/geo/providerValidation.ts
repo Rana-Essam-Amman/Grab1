@@ -1,36 +1,63 @@
 import type { MarketCode, ProviderGeocodeResult } from './geo.types';
+import { MARKET_EXACT_IDENTIFIERS, normalizeCountryString } from './countryIdentifiers';
 
-const MARKET_COUNTRY_NAMES: Record<MarketCode, readonly string[]> = {
-  JO: ['jo', 'jordan', 'الأردن', 'الاردن'],
-  SA: ['sa', 'sau', 'saudi arabia', 'saudi', 'السعودية', 'السعوديه', 'المملكة العربية السعودية'],
-  PS: ['ps', 'pse', 'palestine', 'state of palestine', 'فلسطين', 'الضفة الغربية', 'قطاع غزة'],
-  LB: ['lb', 'lbn', 'lebanon', 'لبنان', 'الجمهورية اللبنانية'],
-  SY: ['sy', 'syr', 'syria', 'syrian arab republic', 'سوريا', 'سورية'],
-  KW: ['kw', 'kwt', 'kuwait', 'الكويت', 'دولة الكويت'],
-};
+export interface ProviderValidationResult {
+  readonly matches: boolean;
+  readonly isVerified: boolean;
+  readonly hasMetadata: boolean;
+  readonly detectedCountry?: string;
+  readonly detectedIso?: string;
+}
 
 export function isProviderCountryMatching(
   targetMarket: MarketCode,
   providerResult?: ProviderGeocodeResult
-): { matches: boolean; hasMetadata: boolean } {
-  if (!providerResult?.address) return { matches: true, hasMetadata: false };
+): ProviderValidationResult {
+  if (!providerResult?.address) {
+    return { matches: false, isVerified: false, hasMetadata: false };
+  }
 
   const rawCode = providerResult.address.country_code;
   const rawCountry = providerResult.address.country;
 
-  if (!rawCode && !rawCountry) return { matches: true, hasMetadata: false };
+  const isoCode = rawCode ? String(rawCode).trim().toLowerCase() : undefined;
+  const countryName = rawCountry ? normalizeCountryString(String(rawCountry)) : undefined;
 
-  const allowed = MARKET_COUNTRY_NAMES[targetMarket] || [];
-  const normalizedCode = String(rawCode || '').trim().toLowerCase();
-  const normalizedCountry = String(rawCountry || '').trim().toLowerCase();
+  if (!isoCode && !countryName) {
+    return { matches: false, isVerified: false, hasMetadata: false };
+  }
 
-  const codeMatches = !normalizedCode || allowed.includes(normalizedCode);
-  const countryMatches =
-    !normalizedCountry ||
-    allowed.some((a) => normalizedCountry.includes(a) || a.includes(normalizedCountry));
+  const exactSet = MARKET_EXACT_IDENTIFIERS[targetMarket];
 
-  const matches = Boolean(codeMatches && countryMatches);
-  return { matches, hasMetadata: true };
+  let isoMatches = false;
+  if (isoCode) {
+    isoMatches = exactSet.has(isoCode);
+  }
+
+  let nameMatches = false;
+  if (countryName) {
+    nameMatches = exactSet.has(countryName);
+  }
+
+  if (isoCode && countryName) {
+    const valid = isoMatches && nameMatches;
+    return {
+      matches: valid,
+      isVerified: valid,
+      hasMetadata: true,
+      detectedCountry: countryName,
+      detectedIso: isoCode,
+    };
+  }
+
+  const valid = isoMatches || nameMatches;
+  return {
+    matches: valid,
+    isVerified: valid,
+    hasMetadata: true,
+    detectedCountry: countryName,
+    detectedIso: isoCode,
+  };
 }
 
 export function extractTokensFromProvider(providerResult: ProviderGeocodeResult): string[] {

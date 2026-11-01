@@ -1,5 +1,6 @@
 import { BaseMarketGeoAdapter, cleanGeoToken } from './base.adapter';
 import { getCountryGeo } from '@/data/locations/registry';
+import '@/data/locations/JO.geo';
 import type { MarketCode, CanonicalLocation, LatLng } from '../geo.types';
 
 export class JordanGeoAdapter extends BaseMarketGeoAdapter {

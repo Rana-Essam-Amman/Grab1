@@ -31,7 +31,7 @@ Jordan serves exclusively as the pilot vertical slice. Shared resolver logic, da
 - **Verified Administrative Locations**: 12 Governorates, 63 Districts, 1,748 Villages fully mapped in `src/data/locations/JO.geo.ts`.
 - **Known Localities & Neighborhoods**: Curated list in `src/data/locations/JO.ts` (13 cities, all major neighborhoods).
 - **Camps & Landmarks**: No dedicated camp entities (camps such as Baqa'a, Wehdat are classified under municipal village/district records); 0 landmarks.
-- **Coordinate Centers**: 13 city-center coordinate centroids in `src/data/locations/coords.ts`.
+- **Coordinate Centers**: 13 city-center coordinate centroids in `src/data/locations/coords.ts` (approximate centroids, +/-1 km).
 
 ### SA (Saudi Arabia)
 - **Verified Administrative Locations**: 13 Regions/Emirates, 32 Governorates in `src/data/locations/SA.geo.ts`.
@@ -43,7 +43,7 @@ Jordan serves exclusively as the pilot vertical slice. Shared resolver logic, da
 - **Verified Administrative Locations**: 16 Governorates, 37 Districts in `src/data/locations/PS.geo.ts`.
 - **Known Localities & Neighborhoods**: 205 Towns and Villages across West Bank & Gaza; 18 cities in `src/data/locations/PS.ts`.
 - **Camps & Landmarks**: 27 official UNRWA/Palestinian refugee camps; 10 religious and historical landmarks.
-- **Coordinate Centers**: 17 city centroids in `src/data/locations/coords.ts`.
+- **Coordinate Centers**: 17 city centroids in `src/data/locations/coords.ts` (approximate centroids).
 
 ### LB (Lebanon)
 - **Verified Administrative Locations**: 8 Governorates (Mohafazat), 26 Cazas (Districts) in `src/data/locations/LB.geo.ts`.
@@ -119,11 +119,16 @@ Jordan serves exclusively as the pilot vertical slice. Shared resolver logic, da
 
 ## 6. Authoritative Data Provenance & Confidence Levels (FIX 5)
 
-| Market | Authoritative Agency / Source Reference | Administrative Coverage Level | Centroid Provenance | Overall Confidence Level |
+| Market | Authoritative Agency / Source Reference | Exact Dataset / Source URL | Coordinate Reference System | Confidence Level & Scope |
 |---|---|---|---|---|
-| **JO** | Department of Statistics (DOS) & Ministry of Interior | Govs (12), Districts (63), Villages (1,748) verified against official gazette | Municipal center coordinates (approximate centroids, +-1 km) | **High (Verified Admin, Approximate Centroids)** |
-| **SA** | General Authority for Statistics (GASTAT) | 13 Regions, 32 Primary Governorates verified | Municipal centroids for 24 cities + 5 regional anchors | **Medium-High (Top 32 Govs verified; rural markaz unverified)** |
-| **PS** | Palestinian Central Bureau of Statistics (PCBS) & UNRWA | 16 Governorates, 37 Districts, 27 Official Refugee Camps verified | City & camp centroids (approximate) | **High (Verified PCBS/UNRWA; historic village boundaries approximate)** |
-| **LB** | Central Administration of Statistics (CAS) & UNRWA | 8 Mohafazat, 26 Cazas (Districts), 5 UNRWA Camps verified | Caza capital centroids (approximate) | **Medium-High (Official Cazas verified; municipal polygons unverified)** |
-| **SY** | Central Bureau of Statistics (CBS) | 14 Governorates, 25 Major Districts verified | Governorate capital centroids (approximate) | **Medium (Major districts verified; subdistricts partially surveyed)** |
-| **KW** | Public Authority for Civil Information (PACI) | 6 Governorates, 126 Areas (Mantiqah) verified | Governorate centroids from PACI GIS data (approximate) | **High (6 Governorates verified; area centroids approximate)** |
+| **JO** | Department of Statistics (DOS) & Ministry of Interior | https://dosweb.dos.gov.jo/ (Administrative Gazette & Population Census) | EPSG:4326 (WGS84) | **High**: 12 Govs, 63 Districts, 1,748 Villages verified against official census gazette. Centroids are municipal center approximations (+-1 km). |
+| **SA** | General Authority for Statistics (GASTAT) | https://www.stats.gov.sa/ (National Administrative Boundaries Classification) | EPSG:4326 (WGS84) | **Medium-High**: 13 Regions, 32 Primary Governorates verified against GASTAT administrative guide. Rural centers/markaz are generalized. |
+| **PS** | Palestinian Central Bureau of Statistics (PCBS) & UNRWA | https://www.pcbs.gov.ps/ & https://www.unrwa.org/where-we-work/gaza-strip | EPSG:4326 (WGS84) | **High**: 16 Governorates, 37 Districts, 27 official UNRWA Refugee Camps verified. West Bank & Gaza represented via separate MultiPolygon components. |
+| **LB** | Central Administration of Statistics (CAS) & UNRWA | http://www.cas.gov.lb/ & https://www.unrwa.org/where-we-work/lebanon | EPSG:4326 (WGS84) | **Medium-High**: 8 Mohafazat, 26 Cazas (Districts), 5 UNRWA registered camps verified against CAS spatial guidelines. |
+| **SY** | Central Bureau of Statistics (CBS) | http://cbssyr.sy/ (Administrative Divisions of Syrian Arab Republic) | EPSG:4326 (WGS84) | **Medium**: 14 Governorates, 25 Major Districts verified. Subdistricts partially surveyed due to regional reporting disparities. |
+| **KW** | Public Authority for Civil Information (PACI) | https://www.paci.gov.kw/ (Kuwait Finder GIS / Administrative Directory) | EPSG:4326 (WGS84) | **High**: 6 Governorates, 126 Areas (Mantiqah) verified against PACI Kuwait Finder spatial directory. Centroids approximate area centers. |
+
+### Spatial Geometry Limitations & Disputed Areas
+1. **Palestine (West Bank & Gaza)**: Modeled as a two-component MultiPolygon. Green Line and maritime borders are generalized approximations for app navigation; no sovereignty or legal boundaries are asserted.
+2. **Anti-Lebanon Mountain Range (Lebanon / Syria)**: Bounded using a generalized ridgeline meridian. Border coordinates within +/-2 km of the border will trigger safe manual selection (`needsManualSelection: true`) to avoid misclassification.
+3. **Dead Sea & Jordan Valley (Jordan / Palestine)**: Bounded at the water center-line (~35.53°E - 35.55°E). Ambiguous GPS readings along the valley trigger manual market confirmation.

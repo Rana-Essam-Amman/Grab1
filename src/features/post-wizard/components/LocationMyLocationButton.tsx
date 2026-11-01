@@ -27,11 +27,10 @@ export const LocationMyLocationButton: React.FC<Props> = ({
   onNeighborhoodChange,
 }) => {
   const {
-    status, match, deviceLat, deviceLng, candidates, error, request, reset,
+    status, match, canonicalLocation, candidates, error, request, reset,
   } = useGeoLocation(preferredCountry, isArabic);
   const { updatePostDraft } = usePostWizard();
 
-  // Handle Error Feedback via Toast
   useEffect(() => {
     if (status === 'denied') {
       toast.error(isArabic ? 'تم رفض صلاحية الوصول للموقع. يرجى تفعيلها من إعدادات المتصفح.' : 'Location permission denied. Please enable it in your browser settings.');
@@ -42,12 +41,11 @@ export const LocationMyLocationButton: React.FC<Props> = ({
     }
   }, [status, error, isArabic]);
 
-  // Handle Success & Country Protection
   useEffect(() => {
     if (status !== 'success' || !match) return;
 
     // Safety check: Ensure the detected country matches the current market
-    if (match.country !== preferredCountry) {
+    if (match.country !== preferredCountry || canonicalLocation?.needsManualSelection) {
       toast.error(
         isArabic
           ? 'موقعك الحالي يبدو خارج نطاق السوق المختار. يرجى تغيير السوق أو اختيار المدينة يدوياً.'
@@ -66,17 +64,18 @@ export const LocationMyLocationButton: React.FC<Props> = ({
     onCityChange(city);
     onNeighborhoodChange(matched);
 
+    // Canonical slugs integrated: never persist raw coordinates to DB
     updatePostDraft({
       city,
       neighborhood: matched,
-      ...(deviceLat != null && deviceLng != null
-        ? { latitude: deviceLat, longitude: deviceLng }
-        : {}),
+      citySlug: canonicalLocation?.governorateSlug ?? undefined,
+      districtSlug: canonicalLocation?.districtSlug ?? undefined,
+      neighborhoodSlug: canonicalLocation?.neighborhoodSlug ?? undefined,
     });
 
     reset();
   }, [
-    status, match, deviceLat, deviceLng, candidates, preferredCountry,
+    status, match, canonicalLocation, candidates, preferredCountry,
     isArabic, onCityChange, onNeighborhoodChange, reset, updatePostDraft,
   ]);
 
@@ -96,7 +95,6 @@ export const LocationMyLocationButton: React.FC<Props> = ({
         {status === 'loading' ? '… ' : '📍 '}{label}
       </button>
       
-      {/* Fallback inline error just in case, but toast is primary now */}
       {error && status === 'error' && (
         <p className="text-[11px] text-danger px-1 mt-0.5">{error}</p>
       )}
