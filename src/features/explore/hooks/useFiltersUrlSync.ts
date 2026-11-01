@@ -10,6 +10,9 @@ export interface FilterDrafts {
   readonly min: number | null;
   readonly max: number | null;
   readonly neigh: string | null;
+  readonly gov: string | null;
+  readonly dist: string | null;
+  readonly neighSlug: string | null;
   readonly sort: SortBy;
   readonly attrs: Record<string, string>;
 }
@@ -46,6 +49,9 @@ export function readDraftsFromUrl(fallback: FilterDrafts): FilterDrafts {
     min: minRaw !== null && /^\d+$/.test(minRaw) ? Number(minRaw) : null,
     max: maxRaw !== null && /^\d+$/.test(maxRaw) ? Number(maxRaw) : null,
     neigh: sp.get('neigh'),
+    gov: sp.get('gov'),
+    dist: sp.get('dist'),
+    neighSlug: sp.get('nslug'),
     sort,
     attrs,
   };
@@ -58,6 +64,9 @@ export function buildFiltersQuery(d: FilterDrafts): string {
   if (d.min !== null) sp.set('min', String(d.min));
   if (d.max !== null) sp.set('max', String(d.max));
   if (d.neigh) sp.set('neigh', d.neigh);
+  if (d.gov) sp.set('gov', d.gov);
+  if (d.dist) sp.set('dist', d.dist);
+  if (d.neighSlug) sp.set('nslug', d.neighSlug);
   if (d.sort !== 'newest') sp.set('sort', d.sort);
   for (const [k, v] of Object.entries(d.attrs)) {
     if (v) sp.set(`${ATTR_PREFIX}${k}`, v);
@@ -71,7 +80,7 @@ export function useFiltersUrlSync(
   sub: string | null,
   min: number | null,
   max: number | null,
-  neigh: string | null,
+  neigh: string | null, gov: string | null, dist: string | null, neighSlug: string | null,
   sort: SortBy,
   attrs: Record<string, string>,
 ): void {
@@ -79,10 +88,10 @@ export function useFiltersUrlSync(
   useEffect(() => {
     if (typeof window === 'undefined') return;
     if (window.location.pathname !== '/filters') return;
-    const drafts: FilterDrafts = { category, sub, min, max, neigh, sort, attrs };
+    const drafts: FilterDrafts = { category, sub, min, max, neigh, gov, dist, neighSlug, sort, attrs };
     const next = `/filters${buildFiltersQuery(drafts)}`;
     if (next !== window.location.pathname + window.location.search) {
       replaceUrl(next);
     }
-  }, [replaceUrl, category, sub, min, max, neigh, sort, attrs]);
+  }, [replaceUrl, category, sub, min, max, neigh, gov, dist, neighSlug, sort, attrs]);
 }

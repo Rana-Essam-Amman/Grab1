@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { getAllGovernorates, getAllDistricts, getAllCamps } from '@/data/locations/registry';
+import { normalizeArabic } from '@/shared/lib/arabicNormalize';
 import type { Governorate, District, Village, RefugeeCamp } from '@/data/locations/types';
 
 interface LocationSelection {
@@ -17,18 +18,14 @@ interface Params {
   readonly activeNeighborhood: string | null;
   readonly onSelect: (label: string | null) => void;
   readonly onLocationChange?: (selection: LocationSelection) => void;
+  readonly initialGovSlug?: string | null;
+  readonly initialDistSlug?: string | null;
 }
 
-const filterItems = <T extends { nameAr: string; nameEn: string }>(
-  items: readonly T[],
-  term: string,
-): readonly T[] => {
-  const trimmed = term.trim();
-  const q = trimmed.toLowerCase();
+const filterItems = <T extends { nameAr: string; nameEn: string }>(items: readonly T[], term: string): readonly T[] => {
+  const q = normalizeArabic(term.trim());
   if (!q) return items;
-  return items.filter(
-    (item) => item.nameAr.includes(trimmed) || item.nameEn.toLowerCase().includes(q),
-  );
+  return items.filter((item) => normalizeArabic(item.nameAr).includes(q) || item.nameEn.toLowerCase().includes(q));
 };
 
 export function useLocationHierarchyFilter({
@@ -37,10 +34,12 @@ export function useLocationHierarchyFilter({
   activeNeighborhood,
   onSelect,
   onLocationChange,
+  initialGovSlug = null,
+  initialDistSlug = null,
 }: Params) {
   const [textFilter, setTextFilter] = useState('');
-  const [selectedGov, setSelectedGov] = useState<string | null>(null);
-  const [selectedDist, setSelectedDist] = useState<string | null>(null);
+  const [selectedGov, setSelectedGov] = useState<string | null>(initialGovSlug);
+  const [selectedDist, setSelectedDist] = useState<string | null>(initialDistSlug);
   const previousCountryCode = useRef(countryCode);
 
   useEffect(() => {

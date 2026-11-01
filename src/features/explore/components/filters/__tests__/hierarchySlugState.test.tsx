@@ -32,6 +32,7 @@ describe('hierarchy slug state', () => {
       });
     });
     const onNeighborhoodChange = vi.fn();
+    const onDraftChange = vi.fn();
     render(
       <FiltersLocationBlock
         isArabic={false}
@@ -39,6 +40,7 @@ describe('hierarchy slug state', () => {
         activeNeighborhood={null}
         onCityChange={onCityChange}
         onNeighborhoodChange={onNeighborhoodChange}
+        onDraftChange={onDraftChange}
       />
     );
 
@@ -46,9 +48,7 @@ describe('hierarchy slug state', () => {
 
     expect(onCityChange).toHaveBeenCalledWith('Amman', 'العاصمة');
     expect(onNeighborhoodChange).toHaveBeenCalledWith(null);
-    expect(useUIStore.getState().browseGovernorateSlug).toBe('amman');
-    expect(useUIStore.getState().browseDistrictSlug).toBeNull();
-    expect(useUIStore.getState().neighborhoodSlugFilter).toBeNull();
+    expect(onDraftChange).toHaveBeenCalledWith(expect.objectContaining({ governorateSlug: 'amman', districtSlug: null }));
   });
 
   it('stores district slug without writing the district label as neighborhood', () => {
@@ -59,6 +59,11 @@ describe('hierarchy slug state', () => {
         activeNeighborhood={null}
         onCityChange={vi.fn()}
         onNeighborhoodChange={(value) => useUIStore.setState({ neighborhoodFilter: value })}
+        onDraftChange={(draft) => useUIStore.setState({
+          browseGovernorateSlug: draft.governorateSlug,
+          browseDistrictSlug: draft.districtSlug,
+          neighborhoodSlugFilter: draft.neighborhoodSlug,
+        })}
       />
     );
 

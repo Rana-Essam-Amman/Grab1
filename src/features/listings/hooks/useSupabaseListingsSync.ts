@@ -31,6 +31,7 @@ export function useSupabaseListingsSync(): void {
   const minPriceFilter = useUIStore((s) => s.minPriceFilter);
   const maxPriceFilter = useUIStore((s) => s.maxPriceFilter);
   const attrsFilter = useUIStore((s) => s.attrsFilter);
+  const cityEn = useUIStore((s) => s.browseCityEn);
   const neighborhoodFilter = useUIStore((s) => s.neighborhoodFilter);
   const citySlug = useUIStore((s) => s.browseGovernorateSlug);
   const districtSlug = useUIStore((s) => s.browseDistrictSlug);
@@ -44,7 +45,7 @@ export function useSupabaseListingsSync(): void {
       subcategorySlug: subcategoryFilter ?? null,
       minPrice: minPriceFilter,
       maxPrice: maxPriceFilter,
-      city: null,
+      city: citySlug ? cityEn : null,
       neighborhood: neighborhoodSlug ? neighborhoodFilter : null,
       citySlug,
       districtSlug,
@@ -62,6 +63,7 @@ export function useSupabaseListingsSync(): void {
       maxPriceFilter,
       attrsFilter,
       neighborhoodFilter,
+      cityEn,
       citySlug,
       districtSlug,
       neighborhoodSlug,

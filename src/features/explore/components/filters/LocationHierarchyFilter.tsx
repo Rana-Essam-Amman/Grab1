@@ -15,6 +15,8 @@ interface Props {
     readonly cityEn: string | null;
     readonly cityAr: string | null;
   }) => void;
+  readonly initialGovSlug?: string | null;
+  readonly initialDistSlug?: string | null;
 }
 
 export const LocationHierarchyFilter: React.FC<Props> = ({
@@ -23,6 +25,8 @@ export const LocationHierarchyFilter: React.FC<Props> = ({
   activeNeighborhood,
   onSelect,
   onLocationChange,
+  initialGovSlug,
+  initialDistSlug,
 }) => {
   const {
     textFilter,
@@ -43,6 +47,8 @@ export const LocationHierarchyFilter: React.FC<Props> = ({
     activeNeighborhood,
     onSelect,
     onLocationChange,
+    initialGovSlug,
+    initialDistSlug,
   });
 
   return (

@@ -73,7 +73,13 @@ VALUES
    'slugtest chair partial', 'null child', '10', 'JOD', 'JO',
    'Amman', 'Abdoun', 'furniture', 'chairs', 'active',
    '[]'::jsonb, '0790000007', false, '2026-10-07T10:00:00Z',
-   'amman', 'marka', NULL);
+   'amman', 'marka', NULL),
+  ('99110000-0000-4000-8000-000000000008'::uuid,
+   '99100000-0000-4000-8000-000000000001'::uuid,
+   'other furniture piece', 'no search token', '40', 'JOD', 'JO',
+   'Different', 'Elsewhere', 'furniture', 'chairs', 'active',
+   '[{"key":"color","value":"red"}]'::jsonb, '0790000008', false, '2026-10-08T10:00:00Z',
+   'amman', 'marka', 'same-a');
 
 INSERT INTO public.listings (
   id, user_id, title, description, price, currency, country_code,
@@ -243,6 +249,17 @@ BEGIN
   WHERE r.district_slug = 'marka' AND r.city_slug = 'amman';
   IF v_count < 1 THEN
     RAISE EXCEPTION 'FAIL 12: district slug rejected by neighborhood text';
+  END IF;
+
+  -- Independent Tier 2: category match, no search tokens, correct slug, phone masked.
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_tiered_v4(
+    'slugtest chair', 'JO', 20, 0, 'furniture', NULL, NULL, NULL, NULL, NULL,
+    '[{"key":"color","value":"red"}]'::jsonb, 5, 'amman', 'marka', 'same-a'
+  ) r
+  WHERE r.id = '99110000-0000-4000-8000-000000000008'::uuid AND r.tier = 2 AND r.seller_phone IS NULL;
+  IF v_count <> 1 THEN
+    RAISE EXCEPTION 'FAIL T2: independent tier-2 slug match missing or phone exposed';
   END IF;
 
   RAISE NOTICE 'PASS: location slug pre-pagination regressions';

@@ -17,6 +17,7 @@ describe('FiltersLocationBlock', () => {
         activeNeighborhood={null}
         onCityChange={vi.fn()}
         onNeighborhoodChange={vi.fn()}
+        onDraftChange={vi.fn()}
       />
     );
     expect(screen.getByTestId('location-hierarchy-filter')).toBeInTheDocument();

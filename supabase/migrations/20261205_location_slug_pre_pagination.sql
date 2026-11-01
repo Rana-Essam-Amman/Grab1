@@ -759,19 +759,17 @@ BEGIN
         FROM public.listings l
         WHERE l.status = 'active'
           AND (l.is_demo = false OR public.is_admin())
-          AND l.country_code = upper(coalesce(p_market, 'JO'))
+          AND (p_market IS NULL OR l.country_code = upper(p_market))
           AND l.category_slug = v_tier2_category
           AND l.id <> ALL(v_excluded_ids)
-          AND (p_min_price IS NULL OR (
-            CASE WHEN l.price ~ '^[0-9]+(\.[0-9]+)?$' THEN l.price::numeric ELSE NULL END
-          ) >= p_min_price)
-          AND (p_max_price IS NULL OR (
-            CASE WHEN l.price ~ '^[0-9]+(\.[0-9]+)?$' THEN l.price::numeric ELSE NULL END
-          ) <= p_max_price)
-          AND (p_city_slug IS NOT NULL OR p_city IS NULL OR l.city = p_city)
-          AND (p_neighborhood_slug IS NOT NULL OR p_district_slug IS NOT NULL OR p_neighborhood IS NULL OR l.neighborhood = p_neighborhood)
+          AND public.listing_passes_filters(
+            l, v_tier2_category, p_subcategory_slug,
+            p_min_price, p_max_price,
+            CASE WHEN p_city_slug IS NULL THEN p_city ELSE NULL END,
+            CASE WHEN p_neighborhood_slug IS NULL AND p_district_slug IS NULL THEN p_neighborhood ELSE NULL END,
+            p_attrs
+          )
           AND public.listing_matches_slugs(l, p_city_slug, p_district_slug, p_neighborhood_slug, p_city, p_neighborhood)
-          AND (p_subcategory_slug IS NULL OR l.subcategory_slug = p_subcategory_slug)
       ) ranked
       ORDER BY
         CASE WHEN v_has_tier1 THEN (subcategory_slug = v_top_tier1_subcategory)::int ELSE 0 END DESC NULLS LAST,
@@ -828,6 +826,48 @@ END;
 $func$;
 
 GRANT EXECUTE ON FUNCTION public.search_listings_v4_tiered_v4(
+  text, text, integer, integer, text, text, numeric, numeric, text, text, jsonb, integer, text, text, text
+) TO anon, authenticated;
+
+-- v3 keeps its signature for older clients, but delegates to the
+-- pre-pagination v4 implementation so slug filters are not applied after LIMIT.
+CREATE OR REPLACE FUNCTION public.search_listings_v4_tiered_v3(
+  p_query text, p_market text DEFAULT NULL, p_limit integer DEFAULT 20, p_offset integer DEFAULT 0,
+  p_category_slug text DEFAULT NULL, p_subcategory_slug text DEFAULT NULL,
+  p_min_price numeric DEFAULT NULL, p_max_price numeric DEFAULT NULL,
+  p_city text DEFAULT NULL, p_neighborhood text DEFAULT NULL, p_attrs jsonb DEFAULT NULL,
+  p_tier2_limit integer DEFAULT 5, p_city_slug text DEFAULT NULL,
+  p_district_slug text DEFAULT NULL, p_neighborhood_slug text DEFAULT NULL
+)
+RETURNS TABLE (
+  id uuid, user_id uuid, title text, description text, price text, currency text,
+  country_code text, city text, neighborhood text, category_slug text, subcategory_slug text,
+  images text[], attributes jsonb, status text, views integer, seller_name text,
+  seller_phone text, created_at timestamptz, updated_at timestamptz, is_demo boolean,
+  match_kind text, matched_tokens text[], total_matched_tokens integer,
+  tier integer, tier_reason text, rank_in_tier integer,
+  city_slug text, district_slug text, neighborhood_slug text
+)
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public
+AS $v3$
+  SELECT * FROM public.search_listings_v4_tiered_v4(
+    p_query, p_market, p_limit, p_offset, p_category_slug, p_subcategory_slug,
+    p_min_price, p_max_price, p_city, p_neighborhood, p_attrs, p_tier2_limit,
+    p_city_slug, p_district_slug, p_neighborhood_slug
+  );
+$v3$;
+
+REVOKE ALL ON FUNCTION public.search_listings_v4_tiered_v4(
+  text, text, integer, integer, text, text, numeric, numeric, text, text, jsonb, integer, text, text, text
+) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.search_listings_v4_tiered_v4(
+  text, text, integer, integer, text, text, numeric, numeric, text, text, jsonb, integer, text, text, text
+) TO anon, authenticated;
+
+REVOKE ALL ON FUNCTION public.search_listings_v4_tiered_v3(
+  text, text, integer, integer, text, text, numeric, numeric, text, text, jsonb, integer, text, text, text
+) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.search_listings_v4_tiered_v3(
   text, text, integer, integer, text, text, numeric, numeric, text, text, jsonb, integer, text, text, text
 ) TO anon, authenticated;
 

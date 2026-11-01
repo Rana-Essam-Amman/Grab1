@@ -72,7 +72,7 @@ export function filterListings(listings: Listing[], options: FilterListingsOptio
       if (!includeSold && (item.status === 'sold' || item.status === 'archived')) return false;
       if (categorySlug && item.categorySlug !== categorySlug && item.subcategorySlug !== categorySlug) return false;
       if (!matchPrice(item, minPrice, maxPrice)) return false;
-      if (!matchLocation(item, { neighborhood, governorateSlug, districtSlug, neighborhoodSlug }, matchNeighborhood)) return false;
+      if (!matchLocation(item, { neighborhood, cityEn, governorateSlug, districtSlug, neighborhoodSlug }, matchNeighborhood)) return false;
 
       const list = Array.isArray(item.attributes) ? item.attributes : [];
       const fields = getListingFields(item.categorySlug, item.subcategorySlug);

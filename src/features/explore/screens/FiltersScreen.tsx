@@ -1,6 +1,4 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { ArrowLeft, ArrowRight, Setting4 } from 'iconsax-react';
-import { Button } from '@/shared/ui/Button';
 import { useUI } from '@/hooks/useUI';
 import { FilterSection } from '../components/filters/FilterSection';
 import { CategoryFilterSection } from '../components/filters/CategoryFilterSection';
@@ -12,10 +10,11 @@ import { FiltersFooter } from '../components/filters/FiltersFooter';
 import { useShareFilters } from '../hooks/useShareFilters';
 import { useFiltersUrlSync } from '../hooks/useFiltersUrlSync';
 import type { SortBy } from '@/shared/router/filterParams';
-import { BrandMark } from '@/shared/components/BrandMark';
+import { translateAttrsForDb } from '@/shared/lib/attrsTranslation';
 import { filterListings } from '@/shared/lib/filterListings';
 import { useListings } from '@/hooks/useListings';
-import { translateAttrsForDb } from '@/shared/lib/attrsTranslation';
+import { commitLocationDraft } from './commitLocationDraft';
+import { FiltersHeader } from './FiltersHeader';
 
 export const FiltersScreen: React.FC = () => {
   const {
@@ -24,7 +23,8 @@ export const FiltersScreen: React.FC = () => {
     minPriceFilter, maxPriceFilter, neighborhoodFilter, attrsFilter,
     setCategoryFilter, setSubcategoryFilter, setSortBy,
     setMinPriceFilter, setMaxPriceFilter, setNeighborhoodFilter, setAttrsFilter,
-    activeCurrency, browseCountryCode, browseCityEn, setBrowseLocation,
+    activeCurrency, browseCountryCode, browseCityEn,
+    browseGovernorateSlug, browseDistrictSlug, neighborhoodSlugFilter,
   } = useUI();
   const [draftCategory, setDraftCategory] = useState<string | null>(categoryFilter);
   const [draftSub, setDraftSub] = useState<string | null>(subcategoryFilter);
@@ -33,19 +33,21 @@ export const FiltersScreen: React.FC = () => {
   const [draftMax, setDraftMax] = useState<number | null>(maxPriceFilter);
   const [draftCity, setDraftCity] = useState<string>(browseCityEn);
   const [draftNeigh, setDraftNeigh] = useState<string | null>(neighborhoodFilter);
+  const [draftGov, setDraftGov] = useState<string | null>(browseGovernorateSlug);
+  const [draftDist, setDraftDist] = useState<string | null>(browseDistrictSlug);
+  const [draftNeighSlug, setDraftNeighSlug] = useState<string | null>(neighborhoodSlugFilter);
   const [draftAttrs, setDraftAttrs] = useState<Record<string, string>>(attrsFilter);
-  useFiltersUrlSync(draftCategory, draftSub, draftMin, draftMax, draftNeigh, draftSort, draftAttrs);
-  const BackIcon = isArabic ? ArrowRight : ArrowLeft;
+  useFiltersUrlSync(draftCategory, draftSub, draftMin, draftMax, draftNeigh, draftGov, draftDist, draftNeighSlug, draftSort, draftAttrs);
   const catCount = draftCategory ? 1 + (draftSub ? 1 : 0) : 0;
   const sortActive = draftSort !== 'newest';
   const priceActive = draftMin !== null || draftMax !== null;
-  const locActive = draftNeigh !== null ? 1 : 0;
+  const locActive = (draftGov ? 1 : 0) + (draftDist ? 1 : 0) + (draftNeigh ? 1 : 0);
   const attrsActive = Object.keys(draftAttrs).length;
   const { listings } = useListings();
   
   const previewCount = useMemo(() => filterListings(listings, {
     market: browseCountryCode, searchQuery: '', categorySlug: draftSub ?? draftCategory, minPrice: draftMin, maxPrice: draftMax,
-    neighborhood: draftNeigh, filterMode: 'all', sortBy: draftSort, attrs: translateAttrsForDb(draftAttrs, draftCategory, draftSub),
+    neighborhood: draftNeigh, governorateSlug: draftGov, districtSlug: draftDist, neighborhoodSlug: draftNeighSlug, cityEn: draftCity, filterMode: 'all', sortBy: draftSort, attrs: translateAttrsForDb(draftAttrs, draftCategory, draftSub),
   }).length, [listings, browseCountryCode, draftCategory, draftSub, draftMin, draftMax, draftNeigh, draftSort, draftAttrs]);
   
   const handleApply = useCallback(() => {
@@ -56,6 +58,7 @@ export const FiltersScreen: React.FC = () => {
     setMaxPriceFilter(draftMax);
     setNeighborhoodFilter(draftNeigh);
     setAttrsFilter(draftAttrs);
+    commitLocationDraft({ countryCode: browseCountryCode, city: draftCity, governorateSlug: draftGov, districtSlug: draftDist, neighborhoodSlug: draftNeighSlug });
     setActiveTab('explore');
     navigateTo('main');
   }, [draftCategory, draftSub, draftSort, draftMin, draftMax, draftNeigh, draftAttrs, setCategoryFilter, setSubcategoryFilter, setSortBy, setMinPriceFilter, setMaxPriceFilter, setNeighborhoodFilter, setAttrsFilter, setActiveTab, navigateTo]);
@@ -69,7 +72,7 @@ export const FiltersScreen: React.FC = () => {
     });
   }, []);
   
-  const handleShare = useShareFilters({ isArabic, browseCountryCode, draftCategory, draftSub, draftMin, draftMax, draftNeigh, draftSort, draftAttrs });
+  const handleShare = useShareFilters({ isArabic, browseCountryCode, draftCategory, draftSub, draftMin, draftMax, draftNeigh, draftGov, draftDist, draftNeighSlug, draftSort, draftAttrs });
   
   const handleReset = useCallback(() => {
     setDraftCategory(null);
@@ -78,19 +81,15 @@ export const FiltersScreen: React.FC = () => {
     setDraftMin(null);
     setDraftMax(null);
     setDraftNeigh(null);
+    setDraftGov(null);
+    setDraftDist(null);
+    setDraftNeighSlug(null);
     setDraftAttrs({});
   }, []);
 
   return (
     <div data-testid="filters-screen" className="flex flex-col min-h-screen bg-canvas" dir={isArabic ? 'rtl' : 'ltr'}>
-      <header className="px-4 py-3 bg-brand border-b border-white/10 flex items-center gap-3 sticky top-0 z-20">
-        <Button variant="ghost" size="icon" onClick={goBack} aria-label={isArabic ? 'رجوع' : 'Back'} className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 flex items-center justify-center p-0">
-          <BackIcon size={18} variant="Linear" color="#FFFFFF" />
-        </Button>
-        <Setting4 size={20} variant="Bold" color="#FFFFFF" />
-        <h1 className="text-base font-bold text-white flex-1">{isArabic ? 'فلترة' : 'Filters'}</h1>
-        <BrandMark isArabic={isArabic} />
-      </header>
+      <FiltersHeader isArabic={isArabic} onBack={goBack} />
       <div className="flex-1 flex flex-col gap-3 p-4 pb-32">
         <FilterSection isArabic={isArabic} title={isArabic ? 'القسم' : 'Category'} activeCount={catCount}>
           <CategoryFilterSection
@@ -126,8 +125,11 @@ export const FiltersScreen: React.FC = () => {
             isArabic={isArabic}
             countryCode={browseCountryCode}
             activeNeighborhood={draftNeigh}
-            onCityChange={(cityEn, cityAr) => { setDraftCity(cityEn); setBrowseLocation(browseCountryCode, cityEn, cityAr); setDraftNeigh(null); }}
+            initialGovSlug={draftGov}
+            initialDistSlug={draftDist}
+            onCityChange={(cityEn) => { setDraftCity(cityEn); setDraftNeigh(null); }}
             onNeighborhoodChange={setDraftNeigh}
+            onDraftChange={(draft) => { setDraftGov(draft.governorateSlug); setDraftDist(draft.districtSlug); setDraftNeighSlug(draft.neighborhoodSlug); }}
           />
         </FilterSection>
         <FilterSection isArabic={isArabic} title={isArabic ? 'الترتيب' : 'Sort by'} activeCount={sortActive ? 1 : 0}>

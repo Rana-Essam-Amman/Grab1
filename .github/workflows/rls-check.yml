@@ -123,7 +123,17 @@ jobs:
 
       - name: Authenticated market-integrity probes
         env:
-          SB_URL: https://wmchqotsforwcoxilaeo.supabase.co
-          SB_ANON: sb_publishable_G_g0UzFu8SGDynrUPIF8Qw_TFb3GTTj
-          SB_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: node scripts/rls-probe.mjs
+          SB_TEST_URL: ${{ secrets.SB_TEST_URL }}
+          SB_TEST_ANON: ${{ secrets.SB_TEST_ANON }}
+          SB_TEST_SERVICE_ROLE_KEY: ${{ secrets.SB_TEST_SERVICE_ROLE_KEY }}
+          PRODUCTION_REF: wmchqotsforwcoxilaeo
+        run: |
+          if [ -z "${SB_TEST_URL:-}" ] || [ -z "${SB_TEST_SERVICE_ROLE_KEY:-}" ]; then
+            echo "SKIPPED / CANNOT_VERIFY: isolated Supabase test project is not configured. Write probes are not run against production."
+            exit 0
+          fi
+          if printf '%s' "$SB_TEST_URL" | grep -q "$PRODUCTION_REF"; then
+            echo "SKIPPED / CANNOT_VERIFY: SB_TEST_URL points at production. Refusing to write."
+            exit 0
+          fi
+          SB_URL="$SB_TEST_URL" SB_ANON="${SB_TEST_ANON:-}" SB_SERVICE_ROLE_KEY="$SB_TEST_SERVICE_ROLE_KEY" node scripts/rls-probe.mjs
