@@ -63,7 +63,7 @@ describe('LocationHierarchyFilter', () => {
     );
 
     fireEvent.click(
-      screen.getByRole('button', { name: 'Amman', exact: true })
+      screen.getByRole('button', { name: /^Amman$/ })
     );
 
     fireEvent.click(
