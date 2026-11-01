@@ -4,32 +4,8 @@ import { onAuthStateChange } from '../services/authService';
 import { ensureAnonymousSession, isAnonymousUser } from '../services/anonymousSession';
 import { mapSessionToUser, resumePendingNavigation } from './authListenerHelpers';
 import { createSignedOutHandler } from '../helpers/signedOutHandler';
+import { clearAuthState, resumePendingWishlist } from '../helpers/authStateHelpers';
 import { useUIStore } from '@/store/ui.slice';
-import { useListingsStore } from '@/features/listings';
-import { toast } from 'sonner';
-
-function resumePendingWishlist(): void {
-  const ui = useUIStore.getState();
-  const pendingId = ui.pendingWishlistId;
-  if (!pendingId) return;
-  const listing = useListingsStore.getState().listings.find((l) => l.id === pendingId);
-  if (listing) {
-    useListingsStore.getState().toggleWishlist(listing.id, listing.countryCode);
-    toast.success(ui.isArabic ? 'تم حفظ الإعلان في المفضلة ✓' : 'Saved to favorites ✓');
-  }
-  ui.setPendingWishlistId(null);
-}
-
-function clearAuthState(): void {
-  useAuthStore.setState({
-    user: null,
-    sessionToken: null,
-    authStatus: 'unauthenticated',
-    isAnonymous: false,
-    profileHydrated: false,
-  });
-  useListingsStore.setState({ listings: [], wishlist: [] });
-}
 
 export function useSupabaseAuthListener(): void {
   useEffect(() => {
@@ -39,11 +15,7 @@ export function useSupabaseAuthListener(): void {
 
     const { unsubscribe } = onAuthStateChange((event, session) => {
       if (event === 'INITIAL_SESSION') isInitialized = true;
-
-      // Cancel pending SIGNED_OUT grace period when a real session arrives
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        signedOutHandler.cancel();
-      }
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') signedOutHandler.cancel();
 
       if (event === 'SIGNED_OUT') {
         if (!isInitialized) return;
