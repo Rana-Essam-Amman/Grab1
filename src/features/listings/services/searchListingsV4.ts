@@ -54,7 +54,7 @@ export async function searchListingsV4(
   offset: number,
   filterArgs: Record<string, unknown>,
 ): Promise<SearchV4Result | null> {
-  const { data, error } = await supabase.rpc('search_listings_v4_tiered_v3', {
+  const { data, error } = await supabase.rpc('search_listings_v4_tiered_v4', {
     p_query: trimmed,
     p_market: market ?? null,
     p_limit: limit,

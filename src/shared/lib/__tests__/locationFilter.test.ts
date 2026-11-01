@@ -46,6 +46,15 @@ describe('matchLocation', () => {
     expect(matchLocation(item, { neighborhoodSlug: 'other' }, textMatch)).toBe(false);
   });
 
+  it('rejects a child slug under a different parent', () => {
+    const item = base({
+      citySlug: 'zarqa',
+      districtSlug: 'marka',
+      neighborhoodSlug: 'same-a',
+      neighborhood: 'Same',
+    });
+    expect(matchLocation(item, { governorateSlug: 'amman', districtSlug: 'marka', neighborhoodSlug: 'same-a' }, textMatch)).toBe(false);
+  });
   it('falls back to text for NULL-slug records and does not invent slugs', () => {
     const legacy = base({ neighborhood: 'Abdoun' });
     expect(legacy.citySlug).toBeUndefined();

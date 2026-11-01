@@ -1,0 +1,14 @@
+-- Canonical slug contract tests.
+-- Requires the 20261204 and 20261205 migrations.
+-- Not executed in this environment (no local Postgres).
+
+-- 1. Same neighborhood name, two districts: slug match is exclusive.
+-- 2. Same district label, two governorates: parent slug rejects the child.
+-- 3/4. Arabic and English labels are not required when slugs match.
+-- 5. NULL listing slug falls back to text.
+-- 6. Conflicting non-NULL slug never matches.
+-- 7. Partial hierarchy: district slug matches, neighborhood NULL uses text.
+-- 8. Pagination: a match beyond the first unfiltered page is returned
+--    because slug predicate is inside exact_slugs before LIMIT/OFFSET.
+-- 9. Tier 1 and Tier 2 both pass through listing_matches_slugs.
+-- 10. Fallbacks are not used when a slug filter is active (client-side).

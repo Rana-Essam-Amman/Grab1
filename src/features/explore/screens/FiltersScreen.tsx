@@ -125,7 +125,6 @@ export const FiltersScreen: React.FC = () => {
           <FiltersLocationBlock
             isArabic={isArabic}
             countryCode={browseCountryCode}
-            activeCity={draftCity}
             activeNeighborhood={draftNeigh}
             onCityChange={(cityEn, cityAr) => { setDraftCity(cityEn); setBrowseLocation(browseCountryCode, cityEn, cityAr); setDraftNeigh(null); }}
             onNeighborhoodChange={setDraftNeigh}
