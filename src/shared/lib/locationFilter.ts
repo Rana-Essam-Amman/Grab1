@@ -39,7 +39,8 @@ export function matchLocation(
 
   if (neighborhoodSlug && !item.neighborhoodSlug) {
     if (!neighborhood || !textMatch(item, neighborhood)) return false;
-    if (governorateSlug && !cityEn) return false;
+    if (governorateSlug && item.citySlug && item.citySlug !== governorateSlug) return false;
+    if (governorateSlug && !item.citySlug && !cityEn) return false;
     if (cityEn && item.city && !textMatch(item, cityEn)) return false;
     return true;
   }

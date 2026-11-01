@@ -32,8 +32,11 @@ AS $slugs$
         p_row.neighborhood_slug IS NULL
         AND p_neighborhood IS NOT NULL
         AND lower(coalesce(p_row.neighborhood, '')) = lower(p_neighborhood)
-        AND (p_city_slug IS NULL OR p_city IS NOT NULL)
-        AND (p_city IS NULL OR lower(coalesce(p_row.city, '')) = lower(p_city))
+        AND (
+          (p_city_slug IS NOT NULL AND p_row.city_slug = p_city_slug)
+          OR (p_city IS NOT NULL AND lower(coalesce(p_row.city, '')) = lower(p_city))
+          OR (p_city_slug IS NULL AND p_city IS NULL)
+        )
       )
     )
     AND (
