@@ -1,6 +1,6 @@
-
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { getAllGovernorates, getAllDistricts, getAllCamps } from '@/data/locations/registry';
+import React from 'react';
+import { LocationFilterSection } from './LocationHierarchySection';
+import { useLocationHierarchyFilter } from './useLocationHierarchyFilter';
 
 interface Props {
   readonly countryCode: string;
@@ -9,95 +9,29 @@ interface Props {
   readonly onSelect: (nameAr: string | null) => void;
 }
 
-const filterItems = <T extends { nameAr: string; nameEn: string }>(
-  items: readonly T[],
-  term: string
-) => {
-  const q = term.trim().toLowerCase();
-  if (!q) return items;
-
-  return items.filter(
-    (i) => i.nameAr.includes(term.trim()) || i.nameEn.toLowerCase().includes(q)
-  );
-};
-
-const chipStyle = (isActive: boolean) =>
-  `px-2.5 py-1 rounded-full border text-[11px] font-bold transition-all cursor-pointer ${
-    isActive
-      ? 'bg-accent/15 border-accent text-accent'
-      : 'bg-surface border-border text-ink hover:border-ink-muted'
-  }`;
-
 export const LocationHierarchyFilter: React.FC<Props> = ({
   countryCode,
   isArabic,
   activeNeighborhood,
   onSelect,
 }) => {
-  const [textFilter, setTextFilter] = useState('');
-  const [selectedGov, setSelectedGov] = useState<string | null>(null);
-  const [selectedDist, setSelectedDist] = useState<string | null>(null);
-
-  const previousCountryCode = useRef(countryCode);
-
-  useEffect(() => {
-    if (previousCountryCode.current === countryCode) return;
-
-    previousCountryCode.current = countryCode;
-    setTextFilter('');
-    setSelectedGov(null);
-    setSelectedDist(null);
-    onSelect(null);
-  }, [countryCode, onSelect]);
-
-  const governorates = useMemo(
-    () => getAllGovernorates(countryCode),
-    [countryCode]
-  );
-
-  const districts = useMemo(
-    () => (selectedGov ? getAllDistricts(countryCode, selectedGov) : []),
-    [countryCode, selectedGov]
-  );
-
-  const villages = useMemo(
-    () =>
-      selectedGov && selectedDist
-        ? districts.find((d) => d.slug === selectedDist)?.villages ?? []
-        : [],
-    [selectedGov, selectedDist, districts]
-  );
-
-  const camps = useMemo(
-    () => getAllCamps(countryCode),
-    [countryCode]
-  );
-
-  const filteredGovs = useMemo(
-    () => filterItems(governorates, textFilter),
-    [governorates, textFilter]
-  );
-
-  const filteredDistricts = useMemo(
-    () => filterItems(districts, textFilter),
-    [districts, textFilter]
-  );
-
-  const filteredVillages = useMemo(
-    () => filterItems(villages, textFilter),
-    [villages, textFilter]
-  );
-
-  const filteredCamps = useMemo(
-    () => filterItems(camps, textFilter),
-    [camps, textFilter]
-  );
+  const {
+    textFilter,
+    setTextFilter,
+    selectedGov,
+    selectedDist,
+    filteredGovs,
+    filteredDistricts,
+    filteredVillages,
+    filteredCamps,
+    onGovSelect,
+    onDistSelect,
+    onVillageSelect,
+    onCampSelect,
+  } = useLocationHierarchyFilter({ countryCode, activeNeighborhood, onSelect });
 
   return (
-    <div
-      className="flex flex-col gap-3 mt-3"
-      data-testid="location-hierarchy-filter"
-    >
+    <div className="flex flex-col gap-3 mt-3" data-testid="location-hierarchy-filter">
       <input
         type="text"
         value={textFilter}
@@ -111,106 +45,43 @@ export const LocationHierarchyFilter: React.FC<Props> = ({
         data-testid="geo-hierarchy-search"
       />
 
-      {filteredGovs.length > 0 && (
-        <div className="flex flex-col gap-1.5">
-          <span className="text-[11px] font-bold text-ink-muted">
-            {isArabic ? 'المحافظة' : 'Governorate'}
-          </span>
+      <LocationFilterSection
+        title={isArabic ? 'المحافظة' : 'Governorate'}
+        items={filteredGovs}
+        isArabic={isArabic}
+        activeNeighborhood={activeNeighborhood}
+        selectedSlug={selectedGov}
+        onItemSelect={onGovSelect}
+      />
 
-          <div className="flex flex-wrap gap-1.5">
-            {filteredGovs.map((g) => (
-              <button
-                key={g.slug}
-                type="button"
-                onClick={() => {
-                  const next = selectedGov === g.slug ? null : g.slug;
-                  setSelectedGov(next);
-                  setSelectedDist(null);
-                  onSelect(next ? g.nameAr : null);
-                }}
-                className={chipStyle(
-                  activeNeighborhood === g.nameAr || selectedGov === g.slug
-                )}
-              >
-                {isArabic ? g.nameAr : g.nameEn}
-              </button>
-            ))}
-          </div>
-        </div>
+      {selectedGov && (
+        <LocationFilterSection
+          title={isArabic ? 'الألواء / الأقضية' : 'Districts'}
+          items={filteredDistricts}
+          isArabic={isArabic}
+          activeNeighborhood={activeNeighborhood}
+          selectedSlug={selectedDist}
+          onItemSelect={onDistSelect}
+        />
       )}
 
-      {selectedGov && filteredDistricts.length > 0 && (
-        <div className="flex flex-col gap-1.5">
-          <span className="text-[11px] font-bold text-ink-muted">
-            {isArabic ? 'الألواء / الأقضية' : 'Districts'}
-          </span>
-
-          <div className="flex flex-wrap gap-1.5">
-            {filteredDistricts.map((d) => (
-              <button
-                key={d.slug}
-                type="button"
-                onClick={() => {
-                  const next = selectedDist === d.slug ? null : d.slug;
-                  setSelectedDist(next);
-                  onSelect(next ? d.nameAr : null);
-                }}
-                className={chipStyle(
-                  activeNeighborhood === d.nameAr || selectedDist === d.slug
-                )}
-              >
-                {isArabic ? d.nameAr : d.nameEn}
-              </button>
-            ))}
-          </div>
-        </div>
+      {selectedDist && (
+        <LocationFilterSection
+          title={isArabic ? 'القرى / المناطق' : 'Villages'}
+          items={filteredVillages}
+          isArabic={isArabic}
+          activeNeighborhood={activeNeighborhood}
+          onItemSelect={onVillageSelect}
+        />
       )}
 
-      {selectedDist && filteredVillages.length > 0 && (
-        <div className="flex flex-col gap-1.5">
-          <span className="text-[11px] font-bold text-ink-muted">
-            {isArabic ? 'القرى / المناطق' : 'Villages'}
-          </span>
-
-          <div className="flex flex-wrap gap-1.5">
-            {filteredVillages.map((v) => (
-              <button
-                key={v.slug}
-                type="button"
-                onClick={() =>
-                  onSelect(activeNeighborhood === v.nameAr ? null : v.nameAr)
-                }
-                className={chipStyle(activeNeighborhood === v.nameAr)}
-              >
-                {isArabic ? v.nameAr : v.nameEn}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {filteredCamps.length > 0 && (
-        <div className="flex flex-col gap-1.5">
-          <span className="text-[11px] font-bold text-ink-muted">
-            {isArabic ? 'مخيمات' : 'Refugee Camps'}
-          </span>
-
-          <div className="flex flex-wrap gap-1.5">
-            {filteredCamps.map((c) => (
-              <button
-                key={c.slug}
-                type="button"
-                onClick={() =>
-                  onSelect(activeNeighborhood === c.nameAr ? null : c.nameAr)
-                }
-                className={chipStyle(activeNeighborhood === c.nameAr)}
-              >
-                {isArabic ? c.nameAr : c.nameEn}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+      <LocationFilterSection
+        title={isArabic ? 'مخيمات' : 'Refugee Camps'}
+        items={filteredCamps}
+        isArabic={isArabic}
+        activeNeighborhood={activeNeighborhood}
+        onItemSelect={onCampSelect}
+      />
     </div>
   );
 };
