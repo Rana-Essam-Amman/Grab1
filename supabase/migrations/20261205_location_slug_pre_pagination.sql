@@ -58,8 +58,6 @@ AS $slugs$
       OR p_row.city_slug = p_city_slug
       OR (
         p_row.city_slug IS NULL
-        AND p_district_slug IS NULL
-        AND p_neighborhood_slug IS NULL
         AND p_city IS NOT NULL
         AND lower(coalesce(p_row.city, '')) = lower(p_city)
       )
@@ -463,8 +461,6 @@ BEGIN
     v4r.matched_tokens,
     v4r.total_matched_tokens,
     CASE
-      -- Tier 1: every meaningful token appears as substring
-      -- (same check as v4 exact stage, lines 88-104).
       WHEN v_tokens IS NOT NULL
            AND cardinality(v_tokens) > 0
            AND NOT EXISTS (
@@ -494,9 +490,6 @@ BEGIN
     END AS tier_reason
   FROM v4r
   JOIN public.listings AS l ON l.id = v4r.id
-  -- Order: Tier 1 first, then Tier 2.
-  -- Within each tier preserve the order v4 emitted (v4_order).
-  -- PAGE-LOCAL ONLY (Constraint 2).
   ORDER BY
     (CASE
       WHEN v_tokens IS NOT NULL
@@ -586,14 +579,11 @@ DECLARE
   v_tier2_limit_clamped integer;
   v_c1_tier2_max_rank integer := 0;
 BEGIN
-  -- 1. Normalize query (same as v4 / C1)
   v_norm_query := btrim(public.normalize_search_text(coalesce(p_query, '')));
   v_norm_query := translate(v_norm_query, 'یک', 'يك');
 
-  -- Clamp p_tier2_limit: 0..5
   v_tier2_limit_clamped := least(greatest(coalesce(p_tier2_limit, 5), 0), 5);
 
-  -- 2. Materialize C1 results into temp table (preserves order via ordinality)
   DROP TABLE IF EXISTS pg_temp._c2_c1_rows;
   CREATE TEMP TABLE _c2_c1_rows (
     id uuid,
@@ -655,7 +645,6 @@ BEGIN
     total_matched_tokens, tier, tier_reason, ord
   );
 
-  -- 3. Extract ids, top tier1 metadata, median price
   SELECT COALESCE(array_agg(id), ARRAY[]::uuid[])
   INTO v_tier1_ids
   FROM _c2_c1_rows
@@ -688,7 +677,6 @@ BEGIN
     WHERE tier = 1;
   END IF;
 
-  -- 4. Determine tier2_category by precedence
   IF p_category_slug IS NOT NULL THEN
     v_tier2_category := p_category_slug;
   ELSIF v_has_tier1 THEN
@@ -702,10 +690,8 @@ BEGIN
     v_tier2_category := public.detect_query_category(v_norm_query);
   END IF;
 
-  -- 5. Build excluded ids (union, non-null)
   v_excluded_ids := v_tier1_ids || v_tier2_ids_c1;
 
-  -- 6. Max rank among C1 tier 2 (for continuing numbering)
   SELECT COALESCE(MAX(rn), 0)
   INTO v_c1_tier2_max_rank
   FROM (
@@ -714,7 +700,6 @@ BEGIN
     WHERE tier = 2
   ) t;
 
-  -- 7. Return combined results with rank_in_tier
   IF v_tier2_category IS NOT NULL AND v_tier2_limit_clamped > 0 THEN
     RETURN QUERY
     WITH c1_ranked AS (
@@ -874,7 +859,7 @@ REVOKE ALL ON FUNCTION public.search_listings_v4_tiered_v3(
   text, text, integer, integer, text, text, numeric, numeric, text, text, jsonb, integer, text, text, text
 ) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.search_listings_v4_tiered_v3(
-  text, text, integer, integer, text, text, numeric, numeric, text, text, jsonb, integer, text, text, text
+  text, text, integer, integer, text, text, jsonb, integer, text, text, text
 ) TO anon, authenticated;
 
 NOTIFY pgrst, 'reload schema';
