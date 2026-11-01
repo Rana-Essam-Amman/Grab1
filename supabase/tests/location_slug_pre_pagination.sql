@@ -155,6 +155,16 @@ BEGIN
     RAISE EXCEPTION 'FAIL 5a: helper rejected NULL-slug Abdoun fallback';
   END IF;
 
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_exact_slugs(
+    'slugtest chair', 'JO', 20, 0, NULL, NULL, NULL, NULL, NULL, 'Abdoun', NULL,
+    NULL, NULL, 'abdoun'
+  ) r
+  WHERE r.id = '99110000-0000-4000-8000-000000000004'::uuid;
+  IF v_count <> 1 THEN
+    RAISE EXCEPTION 'FAIL 5b: exact_slugs dropped the NULL-slug fallback row';
+  END IF;
+
   SELECT count(*), string_agg(id::text, ',') INTO v_count, v_ids
   FROM public.search_listings_v4_tiered_v4(
     'slugtest chair', 'JO', 20, 0, NULL, NULL, NULL, NULL, NULL, 'Abdoun', NULL, 5,
