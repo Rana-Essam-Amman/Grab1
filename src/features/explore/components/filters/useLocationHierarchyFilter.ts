@@ -4,8 +4,10 @@ import type { Governorate, District, Village, RefugeeCamp } from '@/data/locatio
 
 interface Params {
   readonly countryCode: string;
+  readonly isArabic: boolean;
   readonly activeNeighborhood: string | null;
-  readonly onSelect: (nameAr: string | null) => void;
+  readonly onSelect: (label: string | null) => void;
+  readonly onCitySelect?: (cityEn: string, cityAr: string) => void;
 }
 
 const filterItems = <T extends { nameAr: string; nameEn: string }>(
@@ -20,7 +22,16 @@ const filterItems = <T extends { nameAr: string; nameEn: string }>(
   );
 };
 
-export function useLocationHierarchyFilter({ countryCode, activeNeighborhood, onSelect }: Params) {
+const uiLabel = (item: { nameAr: string; nameEn: string }, isArabic: boolean) =>
+  isArabic ? item.nameAr : item.nameEn;
+
+export function useLocationHierarchyFilter({
+  countryCode,
+  isArabic,
+  activeNeighborhood,
+  onSelect,
+  onCitySelect,
+}: Params) {
   const [textFilter, setTextFilter] = useState('');
   const [selectedGov, setSelectedGov] = useState<string | null>(null);
   const [selectedDist, setSelectedDist] = useState<string | null>(null);
@@ -58,21 +69,20 @@ export function useLocationHierarchyFilter({ countryCode, activeNeighborhood, on
     const next = selectedGov === g.slug ? null : g.slug;
     setSelectedGov(next);
     setSelectedDist(null);
-    onSelect(next ? g.nameAr : null);
+    onSelect(null);
+    if (next) onCitySelect?.(g.nameEn, g.nameAr);
   };
 
   const onDistSelect = (d: District) => {
     const next = selectedDist === d.slug ? null : d.slug;
     setSelectedDist(next);
-    onSelect(next ? d.nameAr : null);
+    onSelect(next ? uiLabel(d, isArabic) : null);
   };
 
-  const onVillageSelect = (v: Village) => {
-    onSelect(activeNeighborhood === v.nameAr ? null : v.nameAr);
-  };
-
-  const onCampSelect = (c: RefugeeCamp) => {
-    onSelect(activeNeighborhood === c.nameAr ? null : c.nameAr);
+  const toggleLeaf = (item: Village | RefugeeCamp) => {
+    const label = uiLabel(item, isArabic);
+    const active = activeNeighborhood === item.nameAr || activeNeighborhood === item.nameEn;
+    onSelect(active ? null : label);
   };
 
   return {
@@ -86,7 +96,7 @@ export function useLocationHierarchyFilter({ countryCode, activeNeighborhood, on
     filteredCamps,
     onGovSelect,
     onDistSelect,
-    onVillageSelect,
-    onCampSelect,
+    onVillageSelect: toggleLeaf,
+    onCampSelect: toggleLeaf,
   };
 }
