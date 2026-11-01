@@ -96,10 +96,19 @@ DECLARE
   v_count integer;
   v_phone text;
 BEGIN
-  -- 1. Same neighborhood label, two districts.
+  -- Data check: slug columns were stored.
+  SELECT count(*) INTO v_count
+  FROM public.listings
+  WHERE id = '99110000-0000-4000-8000-000000000001'::uuid
+    AND city_slug = 'amman' AND district_slug = 'marka' AND neighborhood_slug = 'same-a';
+  IF v_count <> 1 THEN
+    RAISE EXCEPTION 'FAIL 0: fixture slug columns were not stored';
+  END IF;
+
+  -- 1. Same neighborhood label, two districts. No text neighborhood, no tier-2.
   SELECT count(*) INTO v_count
   FROM public.search_listings_v4_tiered_v4(
-    'slugtest chair', 'JO', 20, 0, NULL, NULL, NULL, NULL, NULL, 'Same', NULL, 5,
+    'slugtest chair', 'JO', 20, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0,
     'amman', 'marka', 'same-a'
   );
   IF v_count <> 1 THEN
