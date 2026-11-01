@@ -91,35 +91,30 @@ jobs:
 
       - name: Anon cannot upload to listing-images
         env:
-          SB_URL: https://wmchqotsforwcoxilaeo.supabase.co
-          SB_ANON: sb_publishable_G_g0UzFu8SGDynrUPIF8Qw_TFb3GTTj
+          SB_TEST_URL: ${{ secrets.SB_TEST_URL }}
+          SB_TEST_ANON: ${{ secrets.SB_TEST_ANON }}
+          PRODUCTION_REF: wmchqotsforwcoxilaeo
         run: |
+          if [ -z "${SB_TEST_URL:-}" ] || [ -z "${SB_TEST_ANON:-}" ]; then
+            echo "SKIPPED / CANNOT_VERIFY: isolated Supabase test project is not configured. Storage write probe is not sent to production."
+            exit 0
+          fi
+          if printf '%s' "$SB_TEST_URL" | grep -q "$PRODUCTION_REF"; then
+            echo "SKIPPED / CANNOT_VERIFY: SB_TEST_URL points at production. Refusing storage write probe."
+            exit 0
+          fi
           set -euo pipefail
-
           PAYLOAD=$(mktemp)
           printf '\xff\xd8\xff\xe0\x00\x10JFIF' > "$PAYLOAD"
-
           PROBE_PATH="rls-check-ci-probe-${{ github.run_id }}.jpg"
-
-          RESP=$(curl -s -w "\n%{http_code}" \
-            -X POST \
-            -H "apikey: $SB_ANON" \
-            -H "Authorization: Bearer $SB_ANON" \
-            -H "Content-Type: image/jpeg" \
-            --data-binary @"$PAYLOAD" \
-            "$SB_URL/storage/v1/object/listing-images/$PROBE_PATH")
-
-          BODY=$(echo "$RESP" | head -n -1)
+          RESP=$(curl -s -w "\n%{http_code}" -X POST -H "apikey: $SB_TEST_ANON" -H "Authorization: Bearer $SB_TEST_ANON" -H "Content-Type: image/jpeg" --data-binary @"$PAYLOAD" "$SB_TEST_URL/storage/v1/object/listing-images/$PROBE_PATH")
           CODE=$(echo "$RESP" | tail -n 1)
           rm -f "$PAYLOAD"
-
-          echo "HTTP $CODE — body: $BODY"
-
           if [ "$CODE" -lt 400 ]; then
-            echo "::error::RLS FAIL — anon uploaded to listing-images (HTTP $CODE). Expected 4xx."
+            echo "::error::RLS FAIL — anon uploaded to listing-images (HTTP $CODE)."
             exit 1
           fi
-          echo "PASS: anon blocked from uploading to listing-images (HTTP $CODE)"
+          echo "PASS: anon blocked from uploading to listing-images on isolated project (HTTP $CODE)"
 
       - name: Authenticated market-integrity probes
         env:

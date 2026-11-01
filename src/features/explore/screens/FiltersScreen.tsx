@@ -48,7 +48,7 @@ export const FiltersScreen: React.FC = () => {
   const previewCount = useMemo(() => filterListings(listings, {
     market: browseCountryCode, searchQuery: '', categorySlug: draftSub ?? draftCategory, minPrice: draftMin, maxPrice: draftMax,
     neighborhood: draftNeigh, governorateSlug: draftGov, districtSlug: draftDist, neighborhoodSlug: draftNeighSlug, cityEn: draftCity, filterMode: 'all', sortBy: draftSort, attrs: translateAttrsForDb(draftAttrs, draftCategory, draftSub),
-  }).length, [listings, browseCountryCode, draftCategory, draftSub, draftMin, draftMax, draftNeigh, draftSort, draftAttrs]);
+  }).length, [listings, browseCountryCode, draftCategory, draftSub, draftMin, draftMax, draftNeigh, draftGov, draftDist, draftNeighSlug, draftCity, draftSort, draftAttrs]);
   
   const handleApply = useCallback(() => {
     setCategoryFilter(draftCategory);
@@ -61,7 +61,7 @@ export const FiltersScreen: React.FC = () => {
     commitLocationDraft({ countryCode: browseCountryCode, city: draftCity, governorateSlug: draftGov, districtSlug: draftDist, neighborhoodSlug: draftNeighSlug });
     setActiveTab('explore');
     navigateTo('main');
-  }, [draftCategory, draftSub, draftSort, draftMin, draftMax, draftNeigh, draftAttrs, setCategoryFilter, setSubcategoryFilter, setSortBy, setMinPriceFilter, setMaxPriceFilter, setNeighborhoodFilter, setAttrsFilter, setActiveTab, navigateTo]);
+  }, [draftCategory, draftSub, draftSort, draftMin, draftMax, draftNeigh, draftAttrs, draftCity, draftGov, draftDist, draftNeighSlug, browseCountryCode, setCategoryFilter, setSubcategoryFilter, setSortBy, setMinPriceFilter, setMaxPriceFilter, setNeighborhoodFilter, setAttrsFilter, setActiveTab, navigateTo]);
   
   const handleAttrChange = useCallback((key: string, value: string | null) => {
     setDraftAttrs((prev) => {
@@ -81,6 +81,7 @@ export const FiltersScreen: React.FC = () => {
     setDraftMin(null);
     setDraftMax(null);
     setDraftNeigh(null);
+    setDraftCity('');
     setDraftGov(null);
     setDraftDist(null);
     setDraftNeighSlug(null);

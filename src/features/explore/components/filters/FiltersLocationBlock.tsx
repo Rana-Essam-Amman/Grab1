@@ -39,6 +39,7 @@ export const FiltersLocationBlock: React.FC<Props> = ({
     onSelect={onNeighborhoodChange}
     onLocationChange={(selection) => {
       if (selection.cityEn && selection.cityAr) onCityChange(selection.cityEn, selection.cityAr);
+      else if (!selection.governorateSlug) onCityChange('', '');
       onDraftChange({
         governorateSlug: selection.governorateSlug,
         districtSlug: selection.districtSlug,

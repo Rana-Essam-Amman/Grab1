@@ -262,6 +262,15 @@ BEGIN
     RAISE EXCEPTION 'FAIL T2: independent tier-2 slug match missing or phone exposed';
   END IF;
 
+  -- NULL market remains unrestricted: JO rows are still returned.
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_tiered_v4(
+    'slugtest chair', NULL, 20, 0, 'furniture', NULL, NULL, NULL, NULL, NULL, NULL, 0, 'amman', 'marka', NULL
+  ) r WHERE r.country_code = 'JO';
+  IF v_count < 1 THEN
+    RAISE EXCEPTION 'FAIL T2-market: NULL market excluded JO rows';
+  END IF;
+
   RAISE NOTICE 'PASS: location slug pre-pagination regressions';
 END $$;
 

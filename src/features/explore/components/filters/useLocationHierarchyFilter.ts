@@ -49,7 +49,8 @@ export function useLocationHierarchyFilter({
     setSelectedGov(null);
     setSelectedDist(null);
     onSelect(null);
-  }, [countryCode, onSelect]);
+    onLocationChange?.({ governorateSlug: null, districtSlug: null, neighborhoodSlug: null, label: null, cityEn: null, cityAr: null });
+  }, [countryCode, onSelect, onLocationChange]);
 
   const governorates = useMemo(() => getAllGovernorates(countryCode), [countryCode]);
   const districts = useMemo(
