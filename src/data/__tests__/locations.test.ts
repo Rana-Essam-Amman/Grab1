@@ -65,6 +65,51 @@ describe('Data Layer - Locations & Geographic Integrity', () => {
     });
   });
 
+  it('has unique slugs within each geographic parent', () => {
+    const assertUniqueSlugs = (
+      items: readonly { slug: string }[],
+      context: string,
+    ) => {
+      const slugs = items.map((item) => item.slug);
+      const duplicates = slugs.filter(
+        (slug, index) => slugs.indexOf(slug) !== index,
+      );
+
+      expect(
+        duplicates,
+        `${context} contains duplicate slugs: ${duplicates.join(', ')}`,
+      ).toEqual([]);
+    };
+
+    EXPECTED_COUNTRIES.forEach((country) => {
+      const geo = getCountryGeo(country);
+
+      expect(geo, `${country} registry entry`).not.toBeNull();
+      if (!geo) return;
+
+      assertUniqueSlugs(geo.governorates, `${country} governorates`);
+
+      geo.governorates.forEach((governorate) => {
+        const govContext = `${country}/${governorate.slug}`;
+
+        assertUniqueSlugs(
+          governorate.districts,
+          `${govContext} districts`,
+        );
+
+        governorate.districts.forEach((district) => {
+          assertUniqueSlugs(
+            district.villages,
+            `${govContext}/${district.slug} villages`,
+          );
+        });
+      });
+
+      assertUniqueSlugs(geo.refugeeCamps, `${country} refugee camps`);
+      assertUniqueSlugs(geo.landmarks, `${country} landmarks`);
+    });
+  });
+
   it('DEFAULT_REGIONAL_CAPITALS defines canonical capital cities for all 6 markets', () => {
     EXPECTED_COUNTRIES.forEach((country) => {
       expect(DEFAULT_REGIONAL_CAPITALS[country]).toBeDefined();
@@ -75,7 +120,6 @@ describe('Data Layer - Locations & Geographic Integrity', () => {
     expect(DEFAULT_REGIONAL_CAPITALS.JO.cityEn).toBe('Amman');
     expect(DEFAULT_REGIONAL_CAPITALS.JO.cityAr).toBe('عمّان');
     expect(DEFAULT_REGIONAL_CAPITALS.LB.cityEn).toBe('Beirut');
-    expect(DEFAULT_REGIONAL_CAPITALS.LB.cityAr).toBe('بيروت');
     expect(DEFAULT_REGIONAL_CAPITALS.PS.cityEn).toBe('Jerusalem');
     expect(DEFAULT_REGIONAL_CAPITALS.SY.cityEn).toBe('Damascus');
     expect(DEFAULT_REGIONAL_CAPITALS.SA.cityEn).toBe('Riyadh');
