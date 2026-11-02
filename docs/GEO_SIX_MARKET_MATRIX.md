@@ -6,14 +6,16 @@ Authoritative geographic documentation, provenance audit, and boundary quality d
 
 ## 1. Six-Market Geographic Coverage & Topology Matrix
 
-| Market | ISO | Administrative Divisions (Gov / Dist) | Point Anchor Coords (`coords.ts`) | MultiPolygon Components | Exterior Rings | Actual Production Holes | Synthetic Hole Test Coverage | Boundary Verification Status |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Jordan** | `JO` | 12 Governorates / 52 Districts | 12 Gov Centers | 1 | 1 (11 vertices) | 0 (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
-| **Saudi Arabia** | `SA` | 13 Regions / 136 Governorates | 13 Region Centers | 1 | 1 (11 vertices) | 0 (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
-| **Palestine** | `PS` | 16 Governorates (West Bank + Gaza) | 16 Gov Centers | 2 (Gaza + West Bank) | 2 (4 + 9 vertices) | 0 (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
-| **Lebanon** | `LB` | 8 Governorates / 25 Districts | 8 Gov Centers | 1 | 1 (12 vertices) | 0 (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
-| **Syria** | `SY` | 14 Governorates / 65 Districts | 14 Gov Centers | 1 | 1 (13 vertices) | 0 (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
-| **Kuwait** | `KW` | 6 Governorates / Flat Localities | 6 Gov Centers | 1 | 1 (6 vertices) | 0 (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
+| Market | ISO | Administrative Divisions (Gov / Dist) | Point Anchor Coords (`coords.ts`) | MultiPolygon Components | Exterior Rings | Exterior Vertex Count | Modeled Interior Holes | Synthetic Hole Test Coverage | Boundary Verification Status |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Jordan** | `JO` | 12 Governorates / 52 Districts | 12 Gov Centers | 1 | 1 | 11 vertices | Zero interior holes modeled (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
+| **Saudi Arabia** | `SA` | 13 Regions / 136 Governorates | 13 Region Centers | 1 | 1 | 11 vertices | Zero interior holes modeled (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
+| **Palestine** | `PS` | 16 Governorates (West Bank + Gaza) | 16 Gov Centers | 2 (Gaza + West Bank) | 2 | 4 (Gaza) + 9 (WB) | Zero interior holes modeled (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
+| **Lebanon** | `LB` | 8 Governorates / 25 Districts | 8 Gov Centers | 1 | 1 | 12 vertices | Zero interior holes modeled (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
+| **Syria** | `SY` | 14 Governorates / 65 Districts | 14 Gov Centers | 1 | 1 | 13 vertices | Zero interior holes modeled (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
+| **Kuwait** | `KW` | 6 Governorates / Flat Localities | 6 Gov Centers | 1 | 1 | 6 vertices | Zero interior holes modeled (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
+
+*Note on Production Geometry*: Zero interior holes are modeled in the current production geometry for all six markets. While the schema and geometry engine fully support interior hole exclusion (`GeoPolygon.holes`), none of the six national sovereign boundaries contain verified enclave holes requiring exclusion. Synthetic hole tests are retained in the test suite as explicit engine proof.
 
 ---
 
@@ -45,75 +47,75 @@ To ensure data integrity, the FOX Geo Platform strictly distinguishes between fo
 ## 3. Data Provenance & Boundary Quality Disclosures
 
 ### A. Jordan (`JO`)
-- **Publishing Authority**: Jordan Department of Statistics (DOS).
-- **Exact Dataset Title**: Administrative Division Code Directory.
-- **Direct Dataset Download URL**: **NOT VERIFIED** (Homepage: `http://dosweb.dos.gov.jo`).
-- **Dataset Version / Publication Date**: **NOT VERIFIED**.
-- **Retrieval Date**: **NOT VERIFIED**.
-- **License / Usage Terms**: **NOT VERIFIED**.
+- **Verified Official Institution**: Jordan Department of Statistics (DOS).
+- **Verified Exact Dataset Title**: Administrative Division Code Directory.
+- **Direct Dataset Download URL**: **NOT VERIFIED**.
+- **Verified Version / Publication Date**: **NOT VERIFIED**.
+- **Verified Retrieval Date**: **NOT VERIFIED**.
+- **Verified License / Usage Terms**: **NOT VERIFIED**.
 - **Coordinate Reference System**: WGS 84 (EPSG:4326).
 - **Geometry Transformation / Generalization**: Manually generalized 11-vertex outer polygon enclosing sovereign territory.
-- **Actual Production Holes**: 0 (`holes: []`). No sovereign enclave holes exist in national territory.
+- **Modeled Interior Holes**: Zero interior holes modeled (`holes: []`).
 - **Known Limitations & Confidence Level**: Approximate bounding polygon for client-side pre-filtering; high-density Amman neighborhoods resolved via text taxonomy.
 
 ### B. Saudi Arabia (`SA`)
-- **Publishing Authority**: General Authority for Statistics (GASTAT).
-- **Exact Dataset Title**: Statistical Guide for Localities and Administrative Regions.
-- **Direct Dataset Download URL**: **NOT VERIFIED** (Homepage: `https://www.stats.gov.sa`).
-- **Dataset Version / Publication Date**: **NOT VERIFIED**.
-- **Retrieval Date**: **NOT VERIFIED**.
-- **License / Usage Terms**: **NOT VERIFIED**.
+- **Verified Official Institution**: General Authority for Statistics (GASTAT).
+- **Verified Exact Dataset Title**: Statistical Guide for Localities and Administrative Regions.
+- **Direct Dataset Download URL**: **NOT VERIFIED**.
+- **Verified Version / Publication Date**: **NOT VERIFIED**.
+- **Verified Retrieval Date**: **NOT VERIFIED**.
+- **Verified License / Usage Terms**: **NOT VERIFIED**.
 - **Coordinate Reference System**: WGS 84 (EPSG:4326).
 - **Geometry Transformation / Generalization**: Manually generalized 11-vertex outer polygon.
-- **Actual Production Holes**: 0 (`holes: []`). No interior national enclave holes.
+- **Modeled Interior Holes**: Zero interior holes modeled (`holes: []`).
 - **Known Limitations & Confidence Level**: Approximate outer boundary; interior desert boundaries are coarse bounding segments.
 
 ### C. Palestine (`PS`)
-- **Publishing Authority**: Palestinian Central Bureau of Statistics (PCBS).
-- **Exact Dataset Title**: PCBS Administrative Divisions Directory.
-- **Direct Dataset Download URL**: **NOT VERIFIED** (Homepage: `https://www.pcbs.gov.ps`).
-- **Dataset Version / Publication Date**: **NOT VERIFIED**.
-- **Retrieval Date**: **NOT VERIFIED**.
-- **License / Usage Terms**: **NOT VERIFIED**.
+- **Verified Official Institution**: Palestinian Central Bureau of Statistics (PCBS).
+- **Verified Exact Dataset Title**: PCBS Administrative Divisions Directory.
+- **Direct Dataset Download URL**: **NOT VERIFIED**.
+- **Verified Version / Publication Date**: **NOT VERIFIED**.
+- **Verified Retrieval Date**: **NOT VERIFIED**.
+- **Verified License / Usage Terms**: **NOT VERIFIED**.
 - **Coordinate Reference System**: WGS 84 (EPSG:4326).
 - **Geometry Transformation / Generalization**: 2 distinct components (Gaza Strip 4 vertices, West Bank 9 vertices) evaluated independently as a MultiPolygon.
-- **Actual Production Holes**: 0 (`holes: []`). No interior holes modeled.
+- **Modeled Interior Holes**: Zero interior holes modeled (`holes: []`).
 - **Known Limitations & Confidence Level**: Generalized bounding components; no internal checkpoints or area categorizations (A/B/C) are modeled.
 
 ### D. Lebanon (`LB`)
-- **Publishing Authority**: Central Administration of Statistics (CAS Lebanon).
-- **Exact Dataset Title**: CAS Mohafazat & Cazas Classification.
-- **Direct Dataset Download URL**: **NOT VERIFIED** (Homepage: `http://www.cas.gov.lb`).
-- **Dataset Version / Publication Date**: **NOT VERIFIED**.
-- **Retrieval Date**: **NOT VERIFIED**.
-- **License / Usage Terms**: **NOT VERIFIED**.
+- **Verified Official Institution**: Central Administration of Statistics (CAS Lebanon).
+- **Verified Exact Dataset Title**: CAS Mohafazat & Cazas Classification.
+- **Direct Dataset Download URL**: **NOT VERIFIED**.
+- **Verified Version / Publication Date**: **NOT VERIFIED**.
+- **Verified Retrieval Date**: **NOT VERIFIED**.
+- **Verified License / Usage Terms**: **NOT VERIFIED**.
 - **Coordinate Reference System**: WGS 84 (EPSG:4326).
 - **Geometry Transformation / Generalization**: Manually generalized 12-vertex polygon.
-- **Actual Production Holes**: 0 (`holes: []`). No interior enclave holes exist.
+- **Modeled Interior Holes**: Zero interior holes modeled (`holes: []`).
 - **Known Limitations & Confidence Level**: Mountain border segments with Syria in Anti-Lebanon range are generalized approximations.
 
 ### E. Syria (`SY`)
-- **Publishing Authority**: Central Bureau of Statistics (CBS Syria).
-- **Exact Dataset Title**: CBS Administrative Divisions Registry.
-- **Direct Dataset Download URL**: **NOT VERIFIED** (Homepage: `http://cbssyr.sy`).
-- **Dataset Version / Publication Date**: **NOT VERIFIED**.
-- **Retrieval Date**: **NOT VERIFIED**.
-- **License / Usage Terms**: **NOT VERIFIED**.
+- **Verified Official Institution**: Central Bureau of Statistics (CBS Syria).
+- **Verified Exact Dataset Title**: CBS Administrative Divisions Registry.
+- **Direct Dataset Download URL**: **NOT VERIFIED**.
+- **Verified Version / Publication Date**: **NOT VERIFIED**.
+- **Verified Retrieval Date**: **NOT VERIFIED**.
+- **Verified License / Usage Terms**: **NOT VERIFIED**.
 - **Coordinate Reference System**: WGS 84 (EPSG:4326).
 - **Geometry Transformation / Generalization**: Manually generalized 13-vertex polygon.
-- **Actual Production Holes**: 0 (`holes: []`). No interior enclave holes exist.
+- **Modeled Interior Holes**: Zero interior holes modeled (`holes: []`).
 - **Known Limitations & Confidence Level**: Remote eastern desert boundaries are generalized approximations.
 
 ### F. Kuwait (`KW`)
-- **Publishing Authority**: Central Statistical Bureau (CSB Kuwait) / PACI.
-- **Exact Dataset Title**: CSB Administrative Areas Classification.
-- **Direct Dataset Download URL**: **NOT VERIFIED** (Homepage: `https://www.csb.gov.kw`).
-- **Dataset Version / Publication Date**: **NOT VERIFIED**.
-- **Retrieval Date**: **NOT VERIFIED**.
-- **License / Usage Terms**: **NOT VERIFIED**.
+- **Verified Official Institution**: Central Statistical Bureau (CSB Kuwait) / Public Authority for Civil Information (PACI).
+- **Verified Exact Dataset Title**: CSB Administrative Areas Classification.
+- **Direct Dataset Download URL**: **NOT VERIFIED**.
+- **Verified Version / Publication Date**: **NOT VERIFIED**.
+- **Verified Retrieval Date**: **NOT VERIFIED**.
+- **Verified License / Usage Terms**: **NOT VERIFIED**.
 - **Coordinate Reference System**: WGS 84 (EPSG:4326).
 - **Geometry Transformation / Generalization**: Manually generalized 6-vertex terrestrial polygon.
-- **Actual Production Holes**: 0 (`holes: []`). No interior enclave holes exist.
+- **Modeled Interior Holes**: Zero interior holes modeled (`holes: []`).
 - **Known Limitations & Confidence Level**: Islands (Failaka, Boubyan, Warbah) are generalized within outer coastal limits.
 
 ---

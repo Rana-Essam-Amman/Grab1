@@ -26,15 +26,17 @@ export interface GeodesicInverseResult {
   readonly distanceMeters: number;
   readonly initialAzimuthRad: number;
   readonly finalAzimuthRad: number;
+  readonly isConverged: boolean;
 }
 
 /**
  * Calculates geodesic distance and initial azimuth between two points on the WGS-84 ellipsoid
- * using Vincenty's inverse formula.
+ * using Vincenty's inverse formula. If Vincenty fails to converge (e.g. near-antipodal),
+ * falls back to Lambert's ellipsoidal distance formula and marks isConverged: false.
  */
 export function wgs84Inverse(p1: LatLng, p2: LatLng): GeodesicInverseResult {
   if (p1.lat === p2.lat && p1.lng === p2.lng) {
-    return { distanceMeters: 0, initialAzimuthRad: 0, finalAzimuthRad: 0 };
+    return { distanceMeters: 0, initialAzimuthRad: 0, finalAzimuthRad: 0, isConverged: true };
   }
 
   const toRad = Math.PI / 180;
@@ -66,7 +68,9 @@ export function wgs84Inverse(p1: LatLng, p2: LatLng): GeodesicInverseResult {
       (cosU2 * sinLambda) * (cosU2 * sinLambda) +
       (cosU1 * sinU2 - sinU1 * cosU2 * cosLambda) * (cosU1 * sinU2 - sinU1 * cosU2 * cosLambda)
     );
-    if (sinSigma === 0) return { distanceMeters: 0, initialAzimuthRad: 0, finalAzimuthRad: 0 };
+    if (sinSigma === 0) {
+      return { distanceMeters: 0, initialAzimuthRad: 0, finalAzimuthRad: 0, isConverged: true };
+    }
 
     cosSigma = sinU1 * sinU2 + cosU1 * cosU2 * cosLambda;
     sigma = Math.atan2(sinSigma, cosSigma);
@@ -80,7 +84,7 @@ export function wgs84Inverse(p1: LatLng, p2: LatLng): GeodesicInverseResult {
       (sigma + C * sinSigma * (cos2SigmaM + C * cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM)));
   }
 
-  // Non-convergent fallback: Lambert's ellipsoidal distance
+  // Non-convergent fallback: Lambert's ellipsoidal distance approximation (isConverged: false)
   if (iter === 0) {
     const beta1 = Math.atan((1 - WGS84_F) * Math.tan(phi1));
     const beta2 = Math.atan((1 - WGS84_F) * Math.tan(phi2));
@@ -89,12 +93,12 @@ export function wgs84Inverse(p1: LatLng, p2: LatLng): GeodesicInverseResult {
     const cosD = Math.sin(beta1) * Math.sin(beta2) + Math.cos(beta1) * Math.cos(beta2) * Math.cos(L);
     const d = Math.acos(Math.max(-1, Math.min(1, cosD)));
     const sinD = Math.sin(d);
-    if (sinD === 0) return { distanceMeters: 0, initialAzimuthRad: 0, finalAzimuthRad: 0 };
+    if (sinD === 0) return { distanceMeters: 0, initialAzimuthRad: 0, finalAzimuthRad: 0, isConverged: false };
     const X = (d - sinD) * (Math.sin(P) * Math.cos(Q) / Math.cos(d / 2)) ** 2;
     const Y = (d + sinD) * (Math.cos(P) * Math.sin(Q) / Math.sin(d / 2)) ** 2;
     const dist = WGS84_A * (d - (WGS84_F / 2) * (X + Y));
     const az = (Math.atan2(Math.sin(L) * cosU2, cosU1 * sinU2 - sinU1 * cosU2 * Math.cos(L)) + 2 * Math.PI) % (2 * Math.PI);
-    return { distanceMeters: dist, initialAzimuthRad: az, finalAzimuthRad: az };
+    return { distanceMeters: dist, initialAzimuthRad: az, finalAzimuthRad: az, isConverged: false };
   }
 
   const uSq = (cosSqAlpha * (WGS84_A * WGS84_A - WGS84_B * WGS84_B)) / (WGS84_B * WGS84_B);
@@ -107,7 +111,7 @@ export function wgs84Inverse(p1: LatLng, p2: LatLng): GeodesicInverseResult {
   const initialAzimuthRad = (Math.atan2(cosU2 * Math.sin(lambda), cosU1 * sinU2 - sinU1 * cosU2 * Math.cos(lambda)) + 2 * Math.PI) % (2 * Math.PI);
   const finalAzimuthRad = (Math.atan2(cosU1 * Math.sin(lambda), -sinU1 * cosU2 + cosU1 * sinU2 * Math.cos(lambda)) + 2 * Math.PI) % (2 * Math.PI);
 
-  return { distanceMeters, initialAzimuthRad, finalAzimuthRad };
+  return { distanceMeters, initialAzimuthRad, finalAzimuthRad, isConverged: true };
 }
 
 export function wgs84DistanceMeters(p1: LatLng, p2: LatLng): number {
@@ -185,18 +189,22 @@ export function wgs84Direct(start: LatLng, distMeters: number, azimuthRad: numbe
 }
 
 /**
- * Shortest geodesic distance from point p to geodesic segment [a, b] on the WGS-84 ellipsoid.
- * Operates purely on the ellipsoid by finding the point on the geodesic segment that minimizes
- * WGS-84 ellipsoidal distance to p using golden section search over the geodesic arc parameter.
+ * Shortest geodesic distance from point p to finite geodesic segment [a, b] on the WGS-84 ellipsoid.
+ * Uses golden-section search over the geodesic arc parameter with a documented stopping condition
+ * based on remaining interval length (tolerance: 0.1 meter) and max 32 iterations.
  */
-export function geodesicDistanceToSegmentMeters(p: LatLng, a: LatLng, b: LatLng): number {
+export function geodesicDistanceToSegmentMeters(
+  p: LatLng,
+  a: LatLng,
+  b: LatLng,
+  intervalTolMeters = 0.1
+): number {
   const invAB = wgs84Inverse(a, b);
   const totalDist = invAB.distanceMeters;
   if (totalDist < 1e-4) return wgs84DistanceMeters(p, a);
 
   const azimuth = invAB.initialAzimuthRad;
 
-  // Objective function: distance from p to point at distance s along the geodesic from a
   const distAt = (s: number): number => {
     const pt = wgs84Direct(a, s, azimuth);
     return wgs84DistanceMeters(p, pt);
@@ -215,8 +223,11 @@ export function geodesicDistanceToSegmentMeters(p: LatLng, a: LatLng, b: LatLng)
   let f1 = distAt(x1);
   let f2 = distAt(x2);
 
-  // 18 iterations gives sub-millimeter precision along the segment
-  for (let i = 0; i < 18; i++) {
+  let iterations = 0;
+  const maxIterations = 32;
+
+  while (right - left > intervalTolMeters && iterations < maxIterations) {
+    iterations++;
     if (f1 < f2) {
       right = x2;
       x2 = x1;
