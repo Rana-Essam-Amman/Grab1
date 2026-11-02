@@ -6,14 +6,14 @@ Authoritative geographic documentation, provenance audit, and boundary quality d
 
 ## 1. Six-Market Geographic Coverage & Topology Matrix
 
-| Market | ISO | Administrative Divisions (Gov / Dist) | Point Anchor Coords (`coords.ts`) | Boundary Geometry Type | Topology & Interior Rings | Boundary Status & Verification |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Jordan** | `JO` | 12 Governorates / 52 Districts | 12 Gov Centers | `GeoMultiPolygon` (1 Component) | Exterior Ring, `holes: []` (no internal enclave holes) | **Approximate Generalized Outer Envelope** (NOT Cadastral) |
-| **Saudi Arabia** | `SA` | 13 Regions / 136 Governorates | 13 Region Centers | `GeoMultiPolygon` (1 Component) | Exterior Ring, `holes: []` (no internal enclave holes) | **Approximate Generalized Outer Envelope** (NOT Cadastral) |
-| **Palestine** | `PS` | 16 Governorates (West Bank + Gaza) | 16 Gov Centers | `GeoMultiPolygon` (2 Components) | Component 1: Gaza Strip<br>Component 2: West Bank | **Approximate Generalized Outer Envelope** (NOT Cadastral) |
-| **Lebanon** | `LB` | 8 Governorates / 25 Districts | 8 Gov Centers | `GeoMultiPolygon` (1 Component) | Exterior Ring, `holes: []` (no internal enclave holes) | **Approximate Generalized Outer Envelope** (NOT Cadastral) |
-| **Syria** | `SY` | 14 Governorates / 65 Districts | 14 Gov Centers | `GeoMultiPolygon` (1 Component) | Exterior Ring, `holes: []` (no internal enclave holes) | **Approximate Generalized Outer Envelope** (NOT Cadastral) |
-| **Kuwait** | `KW` | 6 Governorates / Flat Localities | 6 Gov Centers | `GeoMultiPolygon` (1 Component) | Exterior Ring, `holes: []` (no internal enclave holes) | **Approximate Generalized Outer Envelope** (NOT Cadastral) |
+| Market | ISO | Administrative Divisions (Gov / Dist) | Point Anchor Coords (`coords.ts`) | MultiPolygon Components | Exterior Rings | Actual Production Holes | Synthetic Hole Test Coverage | Boundary Verification Status |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Jordan** | `JO` | 12 Governorates / 52 Districts | 12 Gov Centers | 1 | 1 (11 vertices) | 0 (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
+| **Saudi Arabia** | `SA` | 13 Regions / 136 Governorates | 13 Region Centers | 1 | 1 (11 vertices) | 0 (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
+| **Palestine** | `PS` | 16 Governorates (West Bank + Gaza) | 16 Gov Centers | 2 (Gaza + West Bank) | 2 (4 + 9 vertices) | 0 (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
+| **Lebanon** | `LB` | 8 Governorates / 25 Districts | 8 Gov Centers | 1 | 1 (12 vertices) | 0 (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
+| **Syria** | `SY` | 14 Governorates / 65 Districts | 14 Gov Centers | 1 | 1 (13 vertices) | 0 (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
+| **Kuwait** | `KW` | 6 Governorates / Flat Localities | 6 Gov Centers | 1 | 1 (6 vertices) | 0 (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
 
 ---
 
@@ -33,7 +33,7 @@ To ensure data integrity, the FOX Geo Platform strictly distinguishes between fo
 
 3. **Country Boundary Geometry Coverage**:
    - Defined in `src/shared/lib/geo/marketPolygons.ts` as `GeoMultiPolygon` with WGS84 geodesic coordinates.
-   - Status: **Approximate Generalized Polygons (NOT Official Survey Cadastral Lines)**.
+   - Status: **Approximate Generalized Outer Bounding Envelopes (NOT Cadastral or Survey-Grade Lines)**.
    - Boundaries are designed for coarse client-side market confinement and cross-border rejection, not legal territory delineation.
 
 4. **GPS Resolution Coverage**:
@@ -45,54 +45,76 @@ To ensure data integrity, the FOX Geo Platform strictly distinguishes between fo
 ## 3. Data Provenance & Boundary Quality Disclosures
 
 ### A. Jordan (`JO`)
-- **Source Administrative Agency**: Jordan Department of Statistics (DOS) & Royal Jordanian Geographic Centre (RJGC).
-- **Dataset**: DOS Administrative Division Code Directory.
-- **Reference URL**: `http://dosweb.dos.gov.jo`
-- **CRS**: WGS 84 (EPSG:4326).
-- **Topology & Holes**: The sovereign national territory of Jordan contains no recognized sovereign enclave interior holes. The boundary geometry in `marketPolygons.ts` is an approximate 11-vertex bounding polygon.
-- **Verification Status**: **APPROXIMATE / NOT CADASTRAL**. The polygon is generalized for client-side pre-filtering. High-density urban neighborhood boundaries in Greater Amman are resolved via text/slug taxonomy, not polygonal boundary tiles.
+- **Publishing Authority**: Jordan Department of Statistics (DOS).
+- **Exact Dataset Title**: Administrative Division Code Directory.
+- **Direct Dataset Download URL**: **NOT VERIFIED** (Homepage: `http://dosweb.dos.gov.jo`).
+- **Dataset Version / Publication Date**: **NOT VERIFIED**.
+- **Retrieval Date**: **NOT VERIFIED**.
+- **License / Usage Terms**: **NOT VERIFIED**.
+- **Coordinate Reference System**: WGS 84 (EPSG:4326).
+- **Geometry Transformation / Generalization**: Manually generalized 11-vertex outer polygon enclosing sovereign territory.
+- **Actual Production Holes**: 0 (`holes: []`). No sovereign enclave holes exist in national territory.
+- **Known Limitations & Confidence Level**: Approximate bounding polygon for client-side pre-filtering; high-density Amman neighborhoods resolved via text taxonomy.
 
 ### B. Saudi Arabia (`SA`)
-- **Source Administrative Agency**: General Authority for Statistics (GASTAT) & National Geospatial-Information Authority.
-- **Dataset**: GASTAT Statistical Guide for Localities and Administrative Regions.
-- **Reference URL**: `https://www.stats.gov.sa`
-- **CRS**: WGS 84 (EPSG:4326).
-- **Topology & Holes**: Outer envelope contains no interior national enclave holes. Represented as an 11-vertex generalized boundary.
-- **Verification Status**: **APPROXIMATE / NOT CADASTRAL**. Empty Quarter desert boundaries are approximate bounding segments.
+- **Publishing Authority**: General Authority for Statistics (GASTAT).
+- **Exact Dataset Title**: Statistical Guide for Localities and Administrative Regions.
+- **Direct Dataset Download URL**: **NOT VERIFIED** (Homepage: `https://www.stats.gov.sa`).
+- **Dataset Version / Publication Date**: **NOT VERIFIED**.
+- **Retrieval Date**: **NOT VERIFIED**.
+- **License / Usage Terms**: **NOT VERIFIED**.
+- **Coordinate Reference System**: WGS 84 (EPSG:4326).
+- **Geometry Transformation / Generalization**: Manually generalized 11-vertex outer polygon.
+- **Actual Production Holes**: 0 (`holes: []`). No interior national enclave holes.
+- **Known Limitations & Confidence Level**: Approximate outer boundary; interior desert boundaries are coarse bounding segments.
 
 ### C. Palestine (`PS`)
-- **Source Administrative Agency**: Palestinian Central Bureau of Statistics (PCBS) & Ministry of Local Government (MoLG).
-- **Dataset**: PCBS Administrative Divisions Directory (West Bank & Gaza Strip).
-- **Reference URL**: `https://www.pcbs.gov.ps`
-- **CRS**: WGS 84 (EPSG:4326).
-- **Topology & Holes**: Explicit `GeoMultiPolygon` with two separate, non-contiguous components:
-  1. Component 1: Gaza Strip (4 vertices).
-  2. Component 2: West Bank (9 vertices).
-- **Verification Status**: **APPROXIMATE / NOT CADASTRAL**. MultiPolygon containment evaluates points inside either Gaza or the West Bank independently without ring flattening. No internal checkpoints or area categorizations (A/B/C) are modeled.
+- **Publishing Authority**: Palestinian Central Bureau of Statistics (PCBS).
+- **Exact Dataset Title**: PCBS Administrative Divisions Directory.
+- **Direct Dataset Download URL**: **NOT VERIFIED** (Homepage: `https://www.pcbs.gov.ps`).
+- **Dataset Version / Publication Date**: **NOT VERIFIED**.
+- **Retrieval Date**: **NOT VERIFIED**.
+- **License / Usage Terms**: **NOT VERIFIED**.
+- **Coordinate Reference System**: WGS 84 (EPSG:4326).
+- **Geometry Transformation / Generalization**: 2 distinct components (Gaza Strip 4 vertices, West Bank 9 vertices) evaluated independently as a MultiPolygon.
+- **Actual Production Holes**: 0 (`holes: []`). No interior holes modeled.
+- **Known Limitations & Confidence Level**: Generalized bounding components; no internal checkpoints or area categorizations (A/B/C) are modeled.
 
 ### D. Lebanon (`LB`)
-- **Source Administrative Agency**: Central Administration of Statistics (CAS Lebanon).
-- **Dataset**: CAS Mohafazat & Cazas Classification.
-- **Reference URL**: `http://www.cas.gov.lb`
-- **CRS**: WGS 84 (EPSG:4326).
-- **Topology & Holes**: Exterior ring with 12 vertices. No interior enclave holes exist in national territory.
-- **Verification Status**: **APPROXIMATE / NOT CADASTRAL**. Mountain border segments with Syria in the Anti-Lebanon range are generalized approximations.
+- **Publishing Authority**: Central Administration of Statistics (CAS Lebanon).
+- **Exact Dataset Title**: CAS Mohafazat & Cazas Classification.
+- **Direct Dataset Download URL**: **NOT VERIFIED** (Homepage: `http://www.cas.gov.lb`).
+- **Dataset Version / Publication Date**: **NOT VERIFIED**.
+- **Retrieval Date**: **NOT VERIFIED**.
+- **License / Usage Terms**: **NOT VERIFIED**.
+- **Coordinate Reference System**: WGS 84 (EPSG:4326).
+- **Geometry Transformation / Generalization**: Manually generalized 12-vertex polygon.
+- **Actual Production Holes**: 0 (`holes: []`). No interior enclave holes exist.
+- **Known Limitations & Confidence Level**: Mountain border segments with Syria in Anti-Lebanon range are generalized approximations.
 
 ### E. Syria (`SY`)
-- **Source Administrative Agency**: Central Bureau of Statistics (CBS Syria).
-- **Dataset**: CBS Administrative Divisions Registry.
-- **Reference URL**: `http://cbssyr.sy`
-- **CRS**: WGS 84 (EPSG:4326).
-- **Topology & Holes**: Exterior ring with 13 vertices. No interior enclave holes exist in national territory.
-- **Verification Status**: **APPROXIMATE / NOT CADASTRAL**. Remote eastern desert boundaries are generalized approximations.
+- **Publishing Authority**: Central Bureau of Statistics (CBS Syria).
+- **Exact Dataset Title**: CBS Administrative Divisions Registry.
+- **Direct Dataset Download URL**: **NOT VERIFIED** (Homepage: `http://cbssyr.sy`).
+- **Dataset Version / Publication Date**: **NOT VERIFIED**.
+- **Retrieval Date**: **NOT VERIFIED**.
+- **License / Usage Terms**: **NOT VERIFIED**.
+- **Coordinate Reference System**: WGS 84 (EPSG:4326).
+- **Geometry Transformation / Generalization**: Manually generalized 13-vertex polygon.
+- **Actual Production Holes**: 0 (`holes: []`). No interior enclave holes exist.
+- **Known Limitations & Confidence Level**: Remote eastern desert boundaries are generalized approximations.
 
 ### F. Kuwait (`KW`)
-- **Source Administrative Agency**: Central Statistical Bureau (CSB Kuwait) & Public Authority for Civil Information (PACI).
-- **Dataset**: CSB Administrative Areas Classification.
-- **Reference URL**: `https://www.csb.gov.kw`
-- **CRS**: WGS 84 (EPSG:4326).
-- **Topology & Holes**: Terrestrial envelope with 6 vertices. No interior enclave holes exist.
-- **Verification Status**: **APPROXIMATE / NOT CADASTRAL**. Off-shore islands (Failaka, Boubyan, Warbah) are generalized within outer coastal limits.
+- **Publishing Authority**: Central Statistical Bureau (CSB Kuwait) / PACI.
+- **Exact Dataset Title**: CSB Administrative Areas Classification.
+- **Direct Dataset Download URL**: **NOT VERIFIED** (Homepage: `https://www.csb.gov.kw`).
+- **Dataset Version / Publication Date**: **NOT VERIFIED**.
+- **Retrieval Date**: **NOT VERIFIED**.
+- **License / Usage Terms**: **NOT VERIFIED**.
+- **Coordinate Reference System**: WGS 84 (EPSG:4326).
+- **Geometry Transformation / Generalization**: Manually generalized 6-vertex terrestrial polygon.
+- **Actual Production Holes**: 0 (`holes: []`). No interior enclave holes exist.
+- **Known Limitations & Confidence Level**: Islands (Failaka, Boubyan, Warbah) are generalized within outer coastal limits.
 
 ---
 

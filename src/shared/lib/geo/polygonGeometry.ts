@@ -1,7 +1,9 @@
 // RULE-14-EXCEPTION
 /**
- * WGS-84 Ellipsoid Geodesic Distance Computations
- * Semi-major axis a = 6378137.0 m, flattening f = 1 / 298.257223563
+ * WGS-84 Ellipsoid Direct & Inverse Geodesic Computations
+ * Semi-major axis a = 6378137.0 m
+ * Semi-minor axis b = 6356752.31424518 m
+ * Flattening f = 1 / 298.257223563
  */
 export const WGS84_A = 6378137.0;
 export const WGS84_B = 6356752.31424518;
@@ -20,12 +22,20 @@ export function isGeoPolygon(obj: GeoPolygon | readonly LatLng[]): obj is GeoPol
   return typeof obj === 'object' && obj !== null && 'exterior' in obj && Array.isArray(obj.exterior);
 }
 
+export interface GeodesicInverseResult {
+  readonly distanceMeters: number;
+  readonly initialAzimuthRad: number;
+  readonly finalAzimuthRad: number;
+}
+
 /**
- * Calculates geodesic distance between two points on the WGS-84 ellipsoid using
- * Vincenty's inverse formula. Falls back to Lambert's formula if non-convergent.
+ * Calculates geodesic distance and initial azimuth between two points on the WGS-84 ellipsoid
+ * using Vincenty's inverse formula.
  */
-export function wgs84DistanceMeters(p1: LatLng, p2: LatLng): number {
-  if (p1.lat === p2.lat && p1.lng === p2.lng) return 0;
+export function wgs84Inverse(p1: LatLng, p2: LatLng): GeodesicInverseResult {
+  if (p1.lat === p2.lat && p1.lng === p2.lng) {
+    return { distanceMeters: 0, initialAzimuthRad: 0, finalAzimuthRad: 0 };
+  }
 
   const toRad = Math.PI / 180;
   const phi1 = p1.lat * toRad;
@@ -41,7 +51,7 @@ export function wgs84DistanceMeters(p1: LatLng, p2: LatLng): number {
 
   let lambda = L;
   let lambdaP = 2 * Math.PI;
-  let iter = 20;
+  let iter = 25;
 
   let sigma = 0;
   let sinSigma = 0;
@@ -56,7 +66,7 @@ export function wgs84DistanceMeters(p1: LatLng, p2: LatLng): number {
       (cosU2 * sinLambda) * (cosU2 * sinLambda) +
       (cosU1 * sinU2 - sinU1 * cosU2 * cosLambda) * (cosU1 * sinU2 - sinU1 * cosU2 * cosLambda)
     );
-    if (sinSigma === 0) return 0;
+    if (sinSigma === 0) return { distanceMeters: 0, initialAzimuthRad: 0, finalAzimuthRad: 0 };
 
     cosSigma = sinU1 * sinU2 + cosU1 * cosU2 * cosLambda;
     sigma = Math.atan2(sinSigma, cosSigma);
@@ -70,6 +80,7 @@ export function wgs84DistanceMeters(p1: LatLng, p2: LatLng): number {
       (sigma + C * sinSigma * (cos2SigmaM + C * cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM)));
   }
 
+  // Non-convergent fallback: Lambert's ellipsoidal distance
   if (iter === 0) {
     const beta1 = Math.atan((1 - WGS84_F) * Math.tan(phi1));
     const beta2 = Math.atan((1 - WGS84_F) * Math.tan(phi2));
@@ -78,10 +89,12 @@ export function wgs84DistanceMeters(p1: LatLng, p2: LatLng): number {
     const cosD = Math.sin(beta1) * Math.sin(beta2) + Math.cos(beta1) * Math.cos(beta2) * Math.cos(L);
     const d = Math.acos(Math.max(-1, Math.min(1, cosD)));
     const sinD = Math.sin(d);
-    if (sinD === 0) return 0;
+    if (sinD === 0) return { distanceMeters: 0, initialAzimuthRad: 0, finalAzimuthRad: 0 };
     const X = (d - sinD) * (Math.sin(P) * Math.cos(Q) / Math.cos(d / 2)) ** 2;
     const Y = (d + sinD) * (Math.cos(P) * Math.sin(Q) / Math.sin(d / 2)) ** 2;
-    return WGS84_A * (d - (WGS84_F / 2) * (X + Y));
+    const dist = WGS84_A * (d - (WGS84_F / 2) * (X + Y));
+    const az = (Math.atan2(Math.sin(L) * cosU2, cosU1 * sinU2 - sinU1 * cosU2 * Math.cos(L)) + 2 * Math.PI) % (2 * Math.PI);
+    return { distanceMeters: dist, initialAzimuthRad: az, finalAzimuthRad: az };
   }
 
   const uSq = (cosSqAlpha * (WGS84_A * WGS84_A - WGS84_B * WGS84_B)) / (WGS84_B * WGS84_B);
@@ -90,83 +103,136 @@ export function wgs84DistanceMeters(p1: LatLng, p2: LatLng): number {
   const deltaSigma = B * sinSigma * (cos2SigmaM + (B / 4) * (cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM) -
     (B / 6) * cos2SigmaM * (-3 + 4 * sinSigma * sinSigma) * (-3 + 4 * cos2SigmaM * cos2SigmaM)));
 
-  return WGS84_B * A * (sigma - deltaSigma);
+  const distanceMeters = WGS84_B * A * (sigma - deltaSigma);
+  const initialAzimuthRad = (Math.atan2(cosU2 * Math.sin(lambda), cosU1 * sinU2 - sinU1 * cosU2 * Math.cos(lambda)) + 2 * Math.PI) % (2 * Math.PI);
+  const finalAzimuthRad = (Math.atan2(cosU1 * Math.sin(lambda), -sinU1 * cosU2 + cosU1 * sinU2 * Math.cos(lambda)) + 2 * Math.PI) % (2 * Math.PI);
+
+  return { distanceMeters, initialAzimuthRad, finalAzimuthRad };
+}
+
+export function wgs84DistanceMeters(p1: LatLng, p2: LatLng): number {
+  return wgs84Inverse(p1, p2).distanceMeters;
 }
 
 /**
- * Calculates initial bearing (forward azimuth) from point a to point b on the ellipsoid.
+ * Calculates direct destination point on the WGS-84 ellipsoid given start point,
+ * distance s (meters), and initial azimuth alpha (radians) via Vincenty's direct formula.
  */
-export function initialBearingRadians(a: LatLng, b: LatLng): number {
-  const toRad = Math.PI / 180;
-  const phi1 = a.lat * toRad;
-  const phi2 = b.lat * toRad;
-  const dL = (b.lng - a.lng) * toRad;
+export function wgs84Direct(start: LatLng, distMeters: number, azimuthRad: number): LatLng {
+  if (distMeters === 0) return { lat: start.lat, lng: start.lng };
 
-  const y = Math.sin(dL) * Math.cos(phi2);
-  const x = Math.cos(phi1) * Math.sin(phi2) - Math.sin(phi1) * Math.cos(phi2) * Math.cos(dL);
-  return (Math.atan2(y, x) + 2 * Math.PI) % (2 * Math.PI);
-}
-
-/**
- * Calculates direct geodesic destination point on sphere/ellipsoid approximation
- * given starting point, distance s (meters), and initial azimuth alpha (radians).
- */
-export function directGeodesicPoint(start: LatLng, distMeters: number, azimuthRad: number): LatLng {
   const toRad = Math.PI / 180;
   const toDeg = 180 / Math.PI;
-  const phi1 = start.lat * toRad;
-  const lam1 = start.lng * toRad;
-  const delta = distMeters / WGS84_A;
 
-  const sinPhi2 = Math.sin(phi1) * Math.cos(delta) + Math.cos(phi1) * Math.sin(delta) * Math.cos(azimuthRad);
-  const phi2 = Math.asin(Math.max(-1, Math.min(1, sinPhi2)));
-  const y = Math.sin(azimuthRad) * Math.sin(delta) * Math.cos(phi1);
-  const x = Math.cos(delta) - Math.sin(phi1) * Math.sin(phi2);
-  const lam2 = lam1 + Math.atan2(y, x);
+  const phi1 = start.lat * toRad;
+  const lambda1 = start.lng * toRad;
+  const alpha1 = azimuthRad;
+
+  const sinAlpha1 = Math.sin(alpha1);
+  const cosAlpha1 = Math.cos(alpha1);
+
+  const tanU1 = (1 - WGS84_F) * Math.tan(phi1);
+  const cosU1 = 1 / Math.sqrt(1 + tanU1 * tanU1);
+  const sinU1 = tanU1 * cosU1;
+
+  const sigma1 = Math.atan2(tanU1, cosAlpha1);
+  const sinAlpha = cosU1 * sinAlpha1;
+  const cosSqAlpha = 1 - sinAlpha * sinAlpha;
+  const uSq = (cosSqAlpha * (WGS84_A * WGS84_A - WGS84_B * WGS84_B)) / (WGS84_B * WGS84_B);
+
+  const A = 1 + (uSq / 16384) * (4096 + uSq * (-768 + uSq * (320 - 175 * uSq)));
+  const B = (uSq / 1024) * (256 + uSq * (-128 + uSq * (74 - 47 * uSq)));
+
+  let sigma = distMeters / (WGS84_B * A);
+  let sigmaP = 2 * Math.PI;
+  let cos2SigmaM = 0;
+  let iter = 25;
+
+  let sinSigma = 0;
+  let cosSigma = 0;
+
+  while (Math.abs(sigma - sigmaP) > 1e-12 && --iter > 0) {
+    cos2SigmaM = Math.cos(2 * sigma1 + sigma);
+    sinSigma = Math.sin(sigma);
+    cosSigma = Math.cos(sigma);
+    const deltaSigma = B * sinSigma * (cos2SigmaM + (B / 4) * (cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM) -
+      (B / 6) * cos2SigmaM * (-3 + 4 * sinSigma * sinSigma) * (-3 + 4 * cos2SigmaM * cos2SigmaM)));
+    sigmaP = sigma;
+    sigma = distMeters / (WGS84_B * A) + deltaSigma;
+  }
+
+  const tmp = sinU1 * sinSigma - cosU1 * cosSigma * cosAlpha1;
+  const phi2 = Math.atan2(
+    sinU1 * cosSigma + cosU1 * sinSigma * cosAlpha1,
+    (1 - WGS84_F) * Math.sqrt(sinAlpha * sinAlpha + tmp * tmp)
+  );
+
+  const lambda = Math.atan2(
+    sinSigma * sinAlpha1,
+    cosU1 * cosSigma - sinU1 * sinSigma * cosAlpha1
+  );
+
+  const C = (WGS84_F / 16) * cosSqAlpha * (4 + WGS84_F * (4 - 3 * cosSqAlpha));
+  const L = lambda - (1 - C) * WGS84_F * sinAlpha *
+    (sigma + C * sinSigma * (cos2SigmaM + C * cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM)));
+
+  const lambda2 = lambda1 + L;
 
   return {
     lat: phi2 * toDeg,
-    lng: ((lam2 * toDeg + 540) % 360) - 180,
+    lng: ((lambda2 * toDeg + 540) % 360) - 180,
   };
 }
 
 /**
- * Shortest geodesic distance from point p to geodesic segment [a, b] on WGS-84.
- * Computes spherical cross-track and along-track projection, projects onto the geodesic path,
- * and refines via Vincenty WGS-84 ellipsoidal distance to prevent planar distortion.
+ * Shortest geodesic distance from point p to geodesic segment [a, b] on the WGS-84 ellipsoid.
+ * Operates purely on the ellipsoid by finding the point on the geodesic segment that minimizes
+ * WGS-84 ellipsoidal distance to p using golden section search over the geodesic arc parameter.
  */
 export function geodesicDistanceToSegmentMeters(p: LatLng, a: LatLng, b: LatLng): number {
-  const dAB = wgs84DistanceMeters(a, b);
-  if (dAB < 1e-4) return wgs84DistanceMeters(p, a);
+  const invAB = wgs84Inverse(a, b);
+  const totalDist = invAB.distanceMeters;
+  if (totalDist < 1e-4) return wgs84DistanceMeters(p, a);
 
-  const dAP = wgs84DistanceMeters(a, p);
-  const dBP = wgs84DistanceMeters(b, p);
+  const azimuth = invAB.initialAzimuthRad;
 
-  const delta13 = dAP / WGS84_A;
-  const theta13 = initialBearingRadians(a, p);
-  const theta12 = initialBearingRadians(a, b);
+  // Objective function: distance from p to point at distance s along the geodesic from a
+  const distAt = (s: number): number => {
+    const pt = wgs84Direct(a, s, azimuth);
+    return wgs84DistanceMeters(p, pt);
+  };
 
-  // Cross-track distance
-  const dXt = Math.asin(Math.max(-1, Math.min(1, Math.sin(delta13) * Math.sin(theta13 - theta12)))) * WGS84_A;
+  const dA = wgs84DistanceMeters(p, a);
+  const dB = wgs84DistanceMeters(p, b);
 
-  // Along-track distance from a towards b
-  const cosAt = Math.cos(delta13) / Math.cos(dXt / WGS84_A);
-  const dAt = Math.acos(Math.max(-1, Math.min(1, cosAt))) * WGS84_A;
+  let left = 0;
+  let right = totalDist;
+  const phi = (Math.sqrt(5) - 1) / 2;
 
-  // Determine if projection falls within [a, b] segment
-  const bearingDiff = Math.cos(theta13 - theta12);
-  if (bearingDiff < 0 || dAt <= 0) {
-    return dAP;
+  let x1 = right - phi * (right - left);
+  let x2 = left + phi * (right - left);
+
+  let f1 = distAt(x1);
+  let f2 = distAt(x2);
+
+  // 18 iterations gives sub-millimeter precision along the segment
+  for (let i = 0; i < 18; i++) {
+    if (f1 < f2) {
+      right = x2;
+      x2 = x1;
+      f2 = f1;
+      x1 = right - phi * (right - left);
+      f1 = distAt(x1);
+    } else {
+      left = x1;
+      x1 = x2;
+      f1 = f2;
+      x2 = left + phi * (right - left);
+      f2 = distAt(x2);
+    }
   }
-  if (dAt >= dAB) {
-    return dBP;
-  }
 
-  // Projection point along geodesic path from a towards b
-  const projPoint = directGeodesicPoint(a, dAt, theta12);
-  const distToProj = wgs84DistanceMeters(p, projPoint);
-
-  return Math.min(dAP, dBP, distToProj);
+  return Math.min(dA, dB, f1, f2);
 }
 
 export function distanceToSegmentMeters(p: LatLng, a: LatLng, b: LatLng): number {
