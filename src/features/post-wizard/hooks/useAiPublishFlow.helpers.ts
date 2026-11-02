@@ -1,28 +1,29 @@
-import type { GeneratedListing } from '@/types';
-import type { CategoryMatch } from '@/ai/categoryMatch';
+import { resolveAiLocationSlugs } from '../helpers/aiLocationResolver';
+import type { AIResultParams } from '../helpers/aiLocationResolver.helpers';
 
-export interface AIResultParams {
-  readonly generated: GeneratedListing;
-  readonly match: CategoryMatch;
-  readonly raw: string;
-  readonly photos: string[];
-  readonly isArabic: boolean;
-  readonly browseCityAr: string;
-  readonly categoryForAI: string;
-  readonly subForAI: string;
-}
+export type { AIResultParams };
 
 export function buildAppliedDraft(params: AIResultParams) {
-  const { generated, match, raw, photos, categoryForAI, subForAI } = params;
+  const { generated, match, raw, photos, categoryForAI, subForAI, browseCountryCode } = params;
   const finalCategory = generated.categorySlug || categoryForAI || 'krakeeb';
   const finalSub = generated.subcategorySlug || subForAI;
+  const targetCity = generated.city || params.browseCityAr || '';
+  const targetNeighborhood = generated.city || '';
+
+  const { citySlug, districtSlug, neighborhoodSlug } = browseCountryCode
+    ? resolveAiLocationSlugs(browseCountryCode, targetCity, targetNeighborhood)
+    : { citySlug: undefined, districtSlug: undefined, neighborhoodSlug: undefined };
+
   return {
     noteText: raw,
     photos,
     categorySlug: finalCategory,
     subcategorySlug: finalSub,
-    city: generated.city || '',
-    neighborhood: generated.city || '',
+    city: targetCity,
+    neighborhood: targetNeighborhood,
+    citySlug,
+    districtSlug,
+    neighborhoodSlug,
     lat: generated.lat,
     lng: generated.lng,
     generated: {

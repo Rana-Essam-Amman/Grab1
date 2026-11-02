@@ -177,4 +177,72 @@ describe('useAiReview', () => {
     expect(mockToastError).toHaveBeenCalledWith('Publish error');
     expect(result.current.error).toBeNull();
   });
+
+  it('setCity resolves canonical citySlug and clears all descendant slugs and neighborhood label', () => {
+    const { result } = renderHook(() => useAiReview());
+    act(() => {
+      result.current.setCity('Zarqa');
+    });
+
+    expect(mockUpdatePostDraft).toHaveBeenCalledWith(
+      expect.objectContaining({
+        city: 'Zarqa',
+        neighborhood: '',
+        citySlug: 'zarqa',
+        districtSlug: undefined,
+        neighborhoodSlug: undefined,
+      })
+    );
+  });
+
+  it('setNeighborhood updates canonical slugs and visible neighborhood for a valid city', () => {
+    mockPostDraft.city = 'Amman';
+    const { result } = renderHook(() => useAiReview());
+
+    act(() => {
+      result.current.setNeighborhood('Wadi as Sir');
+    });
+
+    expect(mockUpdatePostDraft).toHaveBeenCalledWith(
+      expect.objectContaining({
+        neighborhood: 'Wadi as Sir',
+        citySlug: 'amman',
+        districtSlug: 'amman-qasabah',
+        neighborhoodSlug: 'wadi-as-sir',
+      })
+    );
+  });
+
+  it('setNeighborhood does not retain stale citySlug when current city is unresolved', () => {
+    mockPostDraft.city = 'NonExistentCity';
+    mockPostDraft.citySlug = 'old-stale-slug';
+    const { result } = renderHook(() => useAiReview());
+
+    act(() => {
+      result.current.setNeighborhood('SomePlace');
+    });
+
+    expect(mockUpdatePostDraft).toHaveBeenCalledWith(
+      expect.objectContaining({
+        neighborhood: 'SomePlace',
+        citySlug: undefined,
+        districtSlug: undefined,
+        neighborhoodSlug: undefined,
+      })
+    );
+  });
+
+  it('publish validation failure restores publishing state to false and records error', async () => {
+    mockPostDraft.city = 'InvalidCity';
+    (mockPostDraft as { citySlug?: string }).citySlug = undefined; // Missing city slug
+    const { result } = renderHook(() => useAiReview());
+
+    await act(async () => {
+      await result.current.handlePublish();
+    });
+
+    expect(result.current.isPublishing).toBe(false);
+    expect(result.current.error).toBeTruthy();
+    expect(mockPublishListing).not.toHaveBeenCalled();
+  });
 });
