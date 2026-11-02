@@ -93,46 +93,80 @@ export function wgs84DistanceMeters(p1: LatLng, p2: LatLng): number {
   return WGS84_B * A * (sigma - deltaSigma);
 }
 
+/**
+ * Calculates initial bearing (forward azimuth) from point a to point b on the ellipsoid.
+ */
+export function initialBearingRadians(a: LatLng, b: LatLng): number {
+  const toRad = Math.PI / 180;
+  const phi1 = a.lat * toRad;
+  const phi2 = b.lat * toRad;
+  const dL = (b.lng - a.lng) * toRad;
+
+  const y = Math.sin(dL) * Math.cos(phi2);
+  const x = Math.cos(phi1) * Math.sin(phi2) - Math.sin(phi1) * Math.cos(phi2) * Math.cos(dL);
+  return (Math.atan2(y, x) + 2 * Math.PI) % (2 * Math.PI);
+}
+
+/**
+ * Calculates direct geodesic destination point on sphere/ellipsoid approximation
+ * given starting point, distance s (meters), and initial azimuth alpha (radians).
+ */
+export function directGeodesicPoint(start: LatLng, distMeters: number, azimuthRad: number): LatLng {
+  const toRad = Math.PI / 180;
+  const toDeg = 180 / Math.PI;
+  const phi1 = start.lat * toRad;
+  const lam1 = start.lng * toRad;
+  const delta = distMeters / WGS84_A;
+
+  const sinPhi2 = Math.sin(phi1) * Math.cos(delta) + Math.cos(phi1) * Math.sin(delta) * Math.cos(azimuthRad);
+  const phi2 = Math.asin(Math.max(-1, Math.min(1, sinPhi2)));
+  const y = Math.sin(azimuthRad) * Math.sin(delta) * Math.cos(phi1);
+  const x = Math.cos(delta) - Math.sin(phi1) * Math.sin(phi2);
+  const lam2 = lam1 + Math.atan2(y, x);
+
+  return {
+    lat: phi2 * toDeg,
+    lng: ((lam2 * toDeg + 540) % 360) - 180,
+  };
+}
+
+/**
+ * Shortest geodesic distance from point p to geodesic segment [a, b] on WGS-84.
+ * Computes spherical cross-track and along-track projection, projects onto the geodesic path,
+ * and refines via Vincenty WGS-84 ellipsoidal distance to prevent planar distortion.
+ */
 export function geodesicDistanceToSegmentMeters(p: LatLng, a: LatLng, b: LatLng): number {
   const dAB = wgs84DistanceMeters(a, b);
   if (dAB < 1e-4) return wgs84DistanceMeters(p, a);
 
-  let left = 0;
-  let right = 1;
-  const phi = (Math.sqrt(5) - 1) / 2;
+  const dAP = wgs84DistanceMeters(a, p);
+  const dBP = wgs84DistanceMeters(b, p);
 
-  let x1 = right - phi * (right - left);
-  let x2 = left + phi * (right - left);
+  const delta13 = dAP / WGS84_A;
+  const theta13 = initialBearingRadians(a, p);
+  const theta12 = initialBearingRadians(a, b);
 
-  const interpolate = (t: number): LatLng => ({
-    lat: a.lat + t * (b.lat - a.lat),
-    lng: a.lng + t * (b.lng - a.lng),
-  });
+  // Cross-track distance
+  const dXt = Math.asin(Math.max(-1, Math.min(1, Math.sin(delta13) * Math.sin(theta13 - theta12)))) * WGS84_A;
 
-  let f1 = wgs84DistanceMeters(p, interpolate(x1));
-  let f2 = wgs84DistanceMeters(p, interpolate(x2));
+  // Along-track distance from a towards b
+  const cosAt = Math.cos(delta13) / Math.cos(dXt / WGS84_A);
+  const dAt = Math.acos(Math.max(-1, Math.min(1, cosAt))) * WGS84_A;
 
-  for (let i = 0; i < 20; i++) {
-    if (f1 < f2) {
-      right = x2;
-      x2 = x1;
-      f2 = f1;
-      x1 = right - phi * (right - left);
-      f1 = wgs84DistanceMeters(p, interpolate(x1));
-    } else {
-      left = x1;
-      x1 = x2;
-      f1 = f2;
-      x2 = left + phi * (right - left);
-      f2 = wgs84DistanceMeters(p, interpolate(x2));
-    }
+  // Determine if projection falls within [a, b] segment
+  const bearingDiff = Math.cos(theta13 - theta12);
+  if (bearingDiff < 0 || dAt <= 0) {
+    return dAP;
+  }
+  if (dAt >= dAB) {
+    return dBP;
   }
 
-  return Math.min(
-    wgs84DistanceMeters(p, a),
-    wgs84DistanceMeters(p, b),
-    (f1 + f2) / 2
-  );
+  // Projection point along geodesic path from a towards b
+  const projPoint = directGeodesicPoint(a, dAt, theta12);
+  const distToProj = wgs84DistanceMeters(p, projPoint);
+
+  return Math.min(dAP, dBP, distToProj);
 }
 
 export function distanceToSegmentMeters(p: LatLng, a: LatLng, b: LatLng): number {

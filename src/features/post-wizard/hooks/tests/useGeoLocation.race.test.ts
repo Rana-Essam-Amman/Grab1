@@ -2,6 +2,24 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useGeoLocation } from '../useGeoLocation';
 import * as helpers from '../../helpers/geoLocationHelpers';
+import type { LocationResolutionResult } from '../../helpers/geoLocationHelpers';
+
+function createMockPosition(latitude: number, longitude: number): GeolocationPosition {
+  return {
+    coords: {
+      latitude,
+      longitude,
+      accuracy: 10,
+      altitude: null,
+      altitudeAccuracy: null,
+      heading: null,
+      speed: null,
+      toJSON: () => ({}),
+    },
+    timestamp: Date.now(),
+    toJSON: () => ({}),
+  };
+}
 
 describe('useGeoLocation — Race Conditions & Stale Rejection (FIX E)', () => {
   beforeEach(() => {
@@ -13,26 +31,25 @@ describe('useGeoLocation — Race Conditions & Stale Rejection (FIX E)', () => {
   });
 
   it('rejects stale responses when a newer request has started', async () => {
-    let resolveFirst: (val: any) => void = () => {};
-    let resolveSecond: (val: any) => void = () => {};
+    let resolveFirst: (val: LocationResolutionResult) => void = () => {};
+    let resolveSecond: (val: LocationResolutionResult) => void = () => {};
 
-    const p1 = new Promise((resolve) => {
+    const p1 = new Promise<LocationResolutionResult>((resolve) => {
       resolveFirst = resolve;
     });
-    const p2 = new Promise((resolve) => {
+    const p2 = new Promise<LocationResolutionResult>((resolve) => {
       resolveSecond = resolve;
     });
 
     let callCount = 0;
-    vi.spyOn(helpers, 'processLocationCoords').mockImplementation((() => {
+    vi.spyOn(helpers, 'processLocationCoords').mockImplementation(() => {
       callCount++;
       return callCount === 1 ? p1 : p2;
-    }) as any);
+    });
 
-    // Mock navigator.geolocation
     const mockGeolocation = {
-      getCurrentPosition: vi.fn((success) => {
-        success({ coords: { latitude: 31.95, longitude: 35.91 } });
+      getCurrentPosition: vi.fn((success: PositionCallback) => {
+        success(createMockPosition(31.95, 35.91));
       }),
     };
     vi.stubGlobal('navigator', { geolocation: mockGeolocation });
@@ -56,7 +73,21 @@ describe('useGeoLocation — Race Conditions & Stale Rejection (FIX E)', () => {
       resolveSecond({
         match: null,
         candidates: ['Second City'],
-        canonicalLocation: { countryCode: 'JO', governorateSlug: 'second' },
+        canonicalLocation: {
+          countryCode: 'JO',
+          governorateSlug: 'second',
+          governorateEn: 'Second',
+          governorateAr: 'ثاني',
+          districtSlug: null,
+          districtEn: null,
+          districtAr: null,
+          neighborhoodSlug: null,
+          neighborhoodEn: null,
+          neighborhoodAr: null,
+          confidence: 'exact',
+          resolutionSource: 'canonical_match',
+          needsManualSelection: false,
+        },
         error: null,
       });
     });
@@ -68,7 +99,21 @@ describe('useGeoLocation — Race Conditions & Stale Rejection (FIX E)', () => {
       resolveFirst({
         match: null,
         candidates: ['First City'],
-        canonicalLocation: { countryCode: 'JO', governorateSlug: 'first' },
+        canonicalLocation: {
+          countryCode: 'JO',
+          governorateSlug: 'first',
+          governorateEn: 'First',
+          governorateAr: 'أول',
+          districtSlug: null,
+          districtEn: null,
+          districtAr: null,
+          neighborhoodSlug: null,
+          neighborhoodEn: null,
+          neighborhoodAr: null,
+          confidence: 'exact',
+          resolutionSource: 'canonical_match',
+          needsManualSelection: false,
+        },
         error: null,
       });
     });
@@ -78,16 +123,16 @@ describe('useGeoLocation — Race Conditions & Stale Rejection (FIX E)', () => {
   });
 
   it('invalidates pending request when reset is called', async () => {
-    let resolveFirst: (val: any) => void = () => {};
-    const p1 = new Promise((resolve) => {
+    let resolveFirst: (val: LocationResolutionResult) => void = () => {};
+    const p1 = new Promise<LocationResolutionResult>((resolve) => {
       resolveFirst = resolve;
     });
 
-    vi.spyOn(helpers, 'processLocationCoords').mockReturnValue(p1 as any);
+    vi.spyOn(helpers, 'processLocationCoords').mockReturnValue(p1);
 
     const mockGeolocation = {
-      getCurrentPosition: vi.fn((success) => {
-        success({ coords: { latitude: 31.95, longitude: 35.91 } });
+      getCurrentPosition: vi.fn((success: PositionCallback) => {
+        success(createMockPosition(31.95, 35.91));
       }),
     };
     vi.stubGlobal('navigator', { geolocation: mockGeolocation });
@@ -109,7 +154,21 @@ describe('useGeoLocation — Race Conditions & Stale Rejection (FIX E)', () => {
       resolveFirst({
         match: null,
         candidates: ['Amman'],
-        canonicalLocation: { countryCode: 'JO' },
+        canonicalLocation: {
+          countryCode: 'JO',
+          governorateSlug: 'amman',
+          governorateEn: 'Amman',
+          governorateAr: 'عمان',
+          districtSlug: null,
+          districtEn: null,
+          districtAr: null,
+          neighborhoodSlug: null,
+          neighborhoodEn: null,
+          neighborhoodAr: null,
+          confidence: 'exact',
+          resolutionSource: 'canonical_match',
+          needsManualSelection: false,
+        },
         error: null,
       });
     });
@@ -120,16 +179,16 @@ describe('useGeoLocation — Race Conditions & Stale Rejection (FIX E)', () => {
   });
 
   it('invalidates pending request when market changes', async () => {
-    let resolveFirst: (val: any) => void = () => {};
-    const p1 = new Promise((resolve) => {
+    let resolveFirst: (val: LocationResolutionResult) => void = () => {};
+    const p1 = new Promise<LocationResolutionResult>((resolve) => {
       resolveFirst = resolve;
     });
 
-    vi.spyOn(helpers, 'processLocationCoords').mockReturnValue(p1 as any);
+    vi.spyOn(helpers, 'processLocationCoords').mockReturnValue(p1);
 
     const mockGeolocation = {
-      getCurrentPosition: vi.fn((success) => {
-        success({ coords: { latitude: 31.95, longitude: 35.91 } });
+      getCurrentPosition: vi.fn((success: PositionCallback) => {
+        success(createMockPosition(31.95, 35.91));
       }),
     };
     vi.stubGlobal('navigator', { geolocation: mockGeolocation });
@@ -153,7 +212,21 @@ describe('useGeoLocation — Race Conditions & Stale Rejection (FIX E)', () => {
       resolveFirst({
         match: null,
         candidates: ['Amman'],
-        canonicalLocation: { countryCode: 'JO' },
+        canonicalLocation: {
+          countryCode: 'JO',
+          governorateSlug: 'amman',
+          governorateEn: 'Amman',
+          governorateAr: 'عمان',
+          districtSlug: null,
+          districtEn: null,
+          districtAr: null,
+          neighborhoodSlug: null,
+          neighborhoodEn: null,
+          neighborhoodAr: null,
+          confidence: 'exact',
+          resolutionSource: 'canonical_match',
+          needsManualSelection: false,
+        },
         error: null,
       });
     });
