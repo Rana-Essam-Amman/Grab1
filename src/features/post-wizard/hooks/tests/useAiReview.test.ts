@@ -195,6 +195,24 @@ describe('useAiReview', () => {
     );
   });
 
+  it('setNeighborhood updates canonical slugs and visible neighborhood for a valid city', () => {
+    mockPostDraft.city = 'Amman';
+    const { result } = renderHook(() => useAiReview());
+
+    act(() => {
+      result.current.setNeighborhood('Wadi as Sir');
+    });
+
+    expect(mockUpdatePostDraft).toHaveBeenCalledWith(
+      expect.objectContaining({
+        neighborhood: 'Wadi as Sir',
+        citySlug: 'amman',
+        districtSlug: 'amman-qasabah',
+        neighborhoodSlug: 'wadi-as-sir',
+      })
+    );
+  });
+
   it('setNeighborhood does not retain stale citySlug when current city is unresolved', () => {
     mockPostDraft.city = 'NonExistentCity';
     mockPostDraft.citySlug = 'old-stale-slug';
