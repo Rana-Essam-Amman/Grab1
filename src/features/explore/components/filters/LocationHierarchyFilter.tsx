@@ -1,6 +1,8 @@
 import React from 'react';
-import { LocationFilterSection } from './LocationHierarchySection';
 import { useLocationHierarchyFilter } from './useLocationHierarchyFilter';
+import { JordanExploreSearchResults } from './JordanExploreSearchResults';
+import { LocationHierarchySections } from './LocationHierarchySections';
+import type { JordanLocationSearchResult } from '@/features/post-wizard/helpers/jordanLocationIndex';
 
 interface Props {
   readonly countryCode: string;
@@ -51,58 +53,51 @@ export const LocationHierarchyFilter: React.FC<Props> = ({
     initialDistSlug,
   });
 
+  const handleJordanDirectSelect = (item: JordanLocationSearchResult) => {
+    const label = isArabic ? item.nameAr : item.nameEn;
+    onSelect(item.neighborhoodSlug ? label : null);
+    onLocationChange?.({
+      governorateSlug: item.citySlug,
+      districtSlug: item.districtSlug ?? null,
+      neighborhoodSlug: item.neighborhoodSlug ?? null,
+      label,
+      cityEn: item.type === 'governorate' ? item.nameEn : null,
+      cityAr: item.type === 'governorate' ? item.nameAr : null,
+    });
+    setTextFilter('');
+  };
+
+  const isJordanDirectSearch = countryCode === 'JO' && textFilter.trim().length > 0;
+
   return (
     <div className="flex flex-col gap-3 mt-3" data-testid="location-hierarchy-filter">
       <input
         type="text"
         value={textFilter}
         onChange={(e) => setTextFilter(e.target.value)}
-        placeholder={
-          isArabic
-            ? 'ابحث عن محافظة أو لواء أو قرية...'
-            : 'Search governorate, district, village...'
-        }
+        placeholder={isArabic ? 'ابحث عن محافظة أو لواء أو قرية...' : 'Search governorate, district, village...'}
         className="w-full h-9 px-3 rounded-lg border border-border bg-surface text-ink text-xs font-medium focus:outline-none focus:border-accent"
         data-testid="geo-hierarchy-search"
       />
 
-      <LocationFilterSection
-        title={isArabic ? 'المحافظة' : 'Governorate'}
-        items={filteredGovs}
-        isArabic={isArabic}
-        activeNeighborhood={activeNeighborhood}
-        selectedSlug={selectedGov}
-        onItemSelect={onGovSelect}
-      />
-
-      {selectedGov && (
-        <LocationFilterSection
-          title={isArabic ? 'الألواء / الأقضية' : 'Districts'}
-          items={filteredDistricts}
+      {isJordanDirectSearch ? (
+        <JordanExploreSearchResults query={textFilter} isArabic={isArabic} onSelect={handleJordanDirectSelect} />
+      ) : (
+        <LocationHierarchySections
           isArabic={isArabic}
           activeNeighborhood={activeNeighborhood}
-          selectedSlug={selectedDist}
-          onItemSelect={onDistSelect}
+          selectedGov={selectedGov}
+          selectedDist={selectedDist}
+          filteredGovs={filteredGovs}
+          filteredDistricts={filteredDistricts}
+          filteredVillages={filteredVillages}
+          filteredCamps={filteredCamps}
+          onGovSelect={onGovSelect}
+          onDistSelect={onDistSelect}
+          onVillageSelect={onVillageSelect}
+          onCampSelect={onCampSelect}
         />
       )}
-
-      {selectedDist && (
-        <LocationFilterSection
-          title={isArabic ? 'القرى / المناطق' : 'Villages'}
-          items={filteredVillages}
-          isArabic={isArabic}
-          activeNeighborhood={activeNeighborhood}
-          onItemSelect={onVillageSelect}
-        />
-      )}
-
-      <LocationFilterSection
-        title={isArabic ? 'مخيمات' : 'Refugee Camps'}
-        items={filteredCamps}
-        isArabic={isArabic}
-        activeNeighborhood={activeNeighborhood}
-        onItemSelect={onCampSelect}
-      />
     </div>
   );
 };

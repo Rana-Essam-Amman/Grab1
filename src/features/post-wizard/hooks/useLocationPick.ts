@@ -267,7 +267,13 @@ export function useLocationPick(): UseLocationPickReturn {
       ? customNeighborhood.trim()
       : selectedNeighborhood;
 
-    const { citySlug, districtSlug, neighborhoodSlug } = resolveSlugsAtSave(finalCity, finalNeighborhood);
+    let { citySlug, districtSlug, neighborhoodSlug } = resolveSlugsAtSave(finalCity, finalNeighborhood);
+
+    if (!citySlug && postDraft.citySlug) {
+      citySlug = postDraft.citySlug;
+      districtSlug = postDraft.districtSlug;
+      neighborhoodSlug = postDraft.neighborhoodSlug;
+    }
 
     if (!citySlug) {
       toast.error(isArabic ? 'الرجاء اختيار المدينة من القائمة' : 'Please select the city from the list');
