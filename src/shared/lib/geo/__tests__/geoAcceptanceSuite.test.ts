@@ -53,14 +53,14 @@ describe('FIX H — Independent WGS-84 Reference Vectors & Controlled Fixture Te
       expect(Math.abs(dist - 111693.18)).toBeLessThan(1.0);
     });
 
-    // Reference 5: Near-antipodal difficult convergence vector
+    // Reference 5: Near-antipodal difficult convergence vector (Lambert fallback transparency)
     it('5. handles near-antipodal vector gracefully via Lambert fallback without throwing', () => {
       const p1: LatLng = { lat: 0.1, lng: 0 };
       const p2: LatLng = { lat: -0.1, lng: 179.95 };
       const res = wgs84Inverse(p1, p2);
       expect(Number.isFinite(res.distanceMeters)).toBe(true);
       expect(res.distanceMeters).toBeGreaterThan(19000000);
-      expect(res.isConverged).toBe(false);
+      expect(res.isConverged).toBe(false); // Explicit non-convergence flag
     });
 
     // Reference 6: Finite geodesic segment nearest point - interior perpendicular
@@ -128,7 +128,9 @@ describe('FIX H — Independent WGS-84 Reference Vectors & Controlled Fixture Te
   });
 
   describe('B. Independent Hardcoded 2,000m Boundary Fixtures for All 6 Markets', () => {
-    // Static independently established coordinates for 1,999m, 2,000m, and 2,001m along segment normals
+    // Note on Fixtures: These static coordinates are established regression fixtures.
+    // They verify that the 2,000-meter uncertainty policy strictly triggers ambiguous status
+    // and manual selection at or below 2,000m, and non-ambiguous classification at 2,001m.
     const independentFixtures: Record<MarketCode, {
       p1999Out: LatLng;
       p2000Out: LatLng;

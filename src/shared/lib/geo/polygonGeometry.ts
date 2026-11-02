@@ -35,6 +35,17 @@ export interface GeodesicSegmentResult {
   readonly iterations: number;
 }
 
+export interface PolygonBoundaryDistanceResult {
+  readonly distanceMeters: number;
+  readonly isReliable: boolean;
+}
+
+export interface MultiPolygonCheckResult {
+  readonly isInside: boolean;
+  readonly boundaryDistanceMeters: number;
+  readonly isReliable: boolean;
+}
+
 /**
  * Calculates geodesic distance and initial azimuth between two points on the WGS-84 ellipsoid
  * using Vincenty's inverse formula. If Vincenty fails to converge (e.g. near-antipodal),
@@ -196,13 +207,14 @@ export function wgs84Direct(start: LatLng, distMeters: number, azimuthRad: numbe
 
 /**
  * Shortest geodesic distance from point p to finite geodesic segment [a, b] on the WGS-84 ellipsoid.
- * Returns structured result indicating whether the requested interval tolerance was achieved.
+ * Uses golden-section search over the geodesic arc parameter.
+ * Default interval tolerance: 0.5 meter (reaches <= 0.5m on up to 2,000 km segments within 32 iterations).
  */
 export function geodesicDistanceToSegmentDetailed(
   p: LatLng,
   a: LatLng,
   b: LatLng,
-  intervalTolMeters = 0.1
+  intervalTolMeters = 0.5
 ): GeodesicSegmentResult {
   if (typeof intervalTolMeters !== 'number' || !Number.isFinite(intervalTolMeters) || intervalTolMeters <= 0) {
     return { distanceMeters: Infinity, isConverged: false, iterations: 0 };
@@ -211,22 +223,29 @@ export function geodesicDistanceToSegmentDetailed(
   const invAB = wgs84Inverse(a, b);
   const totalDist = invAB.distanceMeters;
   if (totalDist < 1e-4) {
+    const invPA = wgs84Inverse(p, a);
     return {
-      distanceMeters: wgs84DistanceMeters(p, a),
-      isConverged: invAB.isConverged,
+      distanceMeters: invPA.distanceMeters,
+      isConverged: invAB.isConverged && invPA.isConverged,
       iterations: 0,
     };
   }
 
   const azimuth = invAB.initialAzimuthRad;
+  let allDistancesConverged = invAB.isConverged;
 
   const distAt = (s: number): number => {
     const pt = wgs84Direct(a, s, azimuth);
-    return wgs84DistanceMeters(p, pt);
+    const inv = wgs84Inverse(p, pt);
+    if (!inv.isConverged) allDistancesConverged = false;
+    return inv.distanceMeters;
   };
 
-  const dA = wgs84DistanceMeters(p, a);
-  const dB = wgs84DistanceMeters(p, b);
+  const invA = wgs84Inverse(p, a);
+  const invB = wgs84Inverse(p, b);
+  if (!invA.isConverged || !invB.isConverged) allDistancesConverged = false;
+  const dA = invA.distanceMeters;
+  const dB = invB.distanceMeters;
 
   let left = 0;
   let right = totalDist;
@@ -258,7 +277,7 @@ export function geodesicDistanceToSegmentDetailed(
     }
   }
 
-  const isConverged = invAB.isConverged && right - left <= intervalTolMeters;
+  const isConverged = allDistancesConverged && right - left <= intervalTolMeters;
   const distanceMeters = Math.min(dA, dB, f1, f2);
 
   return { distanceMeters, isConverged, iterations };
@@ -268,7 +287,7 @@ export function geodesicDistanceToSegmentMeters(
   p: LatLng,
   a: LatLng,
   b: LatLng,
-  intervalTolMeters = 0.1
+  intervalTolMeters = 0.5
 ): number {
   return geodesicDistanceToSegmentDetailed(p, a, b, intervalTolMeters).distanceMeters;
 }
@@ -277,14 +296,29 @@ export function distanceToSegmentMeters(p: LatLng, a: LatLng, b: LatLng): number
   return geodesicDistanceToSegmentMeters(p, a, b);
 }
 
-export function distanceToPolygonBoundaryMeters(point: LatLng, ring: readonly LatLng[]): number {
-  if (!ring || ring.length === 0) return Infinity;
+export function distanceToPolygonBoundaryDetailed(
+  point: LatLng,
+  ring: readonly LatLng[]
+): PolygonBoundaryDistanceResult {
+  if (!ring || ring.length === 0) return { distanceMeters: Infinity, isReliable: false };
   let minDistance = Infinity;
+  let isReliable = true;
+
   for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
-    const d = geodesicDistanceToSegmentMeters(point, ring[i], ring[j]);
-    if (d < minDistance) minDistance = d;
+    const res = geodesicDistanceToSegmentDetailed(point, ring[i], ring[j]);
+    if (!res.isConverged) {
+      isReliable = false;
+    }
+    if (res.distanceMeters < minDistance) {
+      minDistance = res.distanceMeters;
+    }
   }
-  return minDistance;
+
+  return { distanceMeters: minDistance, isReliable };
+}
+
+export function distanceToPolygonBoundaryMeters(point: LatLng, ring: readonly LatLng[]): number {
+  return distanceToPolygonBoundaryDetailed(point, ring).distanceMeters;
 }
 
 export function isPointInPolygonRing(point: LatLng, ring: readonly LatLng[]): boolean {
@@ -307,12 +341,14 @@ export function isPointInPolygonRing(point: LatLng, ring: readonly LatLng[]): bo
 export function isPointInGeoPolygon(
   point: LatLng,
   polygon: GeoPolygon | readonly LatLng[]
-): { isInside: boolean; boundaryDistanceMeters: number } {
+): { isInside: boolean; boundaryDistanceMeters: number; isReliable: boolean } {
   const exterior = isGeoPolygon(polygon) ? polygon.exterior : polygon;
   const holes = isGeoPolygon(polygon) ? polygon.holes : undefined;
 
   const inExterior = isPointInPolygonRing(point, exterior);
-  let minBoundaryDist = distanceToPolygonBoundaryMeters(point, exterior);
+  const extDist = distanceToPolygonBoundaryDetailed(point, exterior);
+  let minBoundaryDist = extDist.distanceMeters;
+  let isReliable = extDist.isReliable;
 
   let inAnyHole = false;
   if (holes && holes.length > 0) {
@@ -320,31 +356,34 @@ export function isPointInGeoPolygon(
       if (isPointInPolygonRing(point, hole)) {
         inAnyHole = true;
       }
-      const holeDist = distanceToPolygonBoundaryMeters(point, hole);
-      if (holeDist < minBoundaryDist) {
-        minBoundaryDist = holeDist;
+      const holeDist = distanceToPolygonBoundaryDetailed(point, hole);
+      if (!holeDist.isReliable) isReliable = false;
+      if (holeDist.distanceMeters < minBoundaryDist) {
+        minBoundaryDist = holeDist.distanceMeters;
       }
     }
   }
 
   const isInside = inExterior && !inAnyHole;
-  return { isInside, boundaryDistanceMeters: minBoundaryDist };
+  return { isInside, boundaryDistanceMeters: minBoundaryDist, isReliable };
 }
 
 export function isPointInMultiPolygon(
   point: LatLng,
   multiPolygon: GeoMultiPolygon
-): { isInside: boolean; boundaryDistanceMeters: number } {
+): MultiPolygonCheckResult {
   let isInsideAny = false;
   let minBoundaryDist = Infinity;
+  let isReliable = true;
 
   for (const poly of multiPolygon) {
     const res = isPointInGeoPolygon(point, poly);
+    if (!res.isReliable) isReliable = false;
     if (res.isInside) isInsideAny = true;
     if (res.boundaryDistanceMeters < minBoundaryDist) {
       minBoundaryDist = res.boundaryDistanceMeters;
     }
   }
 
-  return { isInside: isInsideAny, boundaryDistanceMeters: minBoundaryDist };
+  return { isInside: isInsideAny, boundaryDistanceMeters: minBoundaryDist, isReliable };
 }

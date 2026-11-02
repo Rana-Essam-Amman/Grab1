@@ -89,7 +89,19 @@ export function checkMarketBoundary(market: MarketCode, coords: LatLng): Boundar
     };
   }
 
-  const { isInside, boundaryDistanceMeters } = isPointInMultiPolygon(coords, multiPoly);
+  const { isInside, boundaryDistanceMeters, isReliable } = isPointInMultiPolygon(coords, multiPoly);
+
+  // If numerical calculation is unreliable (e.g. non-converged Vincenty),
+  // fail safely to 'ambiguous' requiring manual selection, never confident inside/outside
+  if (!isReliable) {
+    return {
+      status: 'ambiguous',
+      isInside: false,
+      isAmbiguousBuffer: true,
+      boundaryDistanceMeters,
+    };
+  }
+
   // Real 2,000 meter WGS84 geodesic boundary uncertainty policy
   const isAmbiguousBuffer = boundaryDistanceMeters <= BOUNDARY_UNCERTAINTY_METERS;
 
