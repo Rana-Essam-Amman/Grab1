@@ -11,6 +11,7 @@ import {
   GeoMultiPolygon,
 } from '../polygonGeometry';
 import { checkMarketBoundary, isValidLatLng, isWithinMarketBounds } from '../marketBounds';
+import { MARKET_MULTIPOLYGONS } from '../marketPolygons';
 import { resolveGeoLocation } from '../geoResolver';
 import { isProviderCountryMatching } from '../providerValidation';
 import type { MarketCode, LatLng } from '../geo.types';
@@ -26,18 +27,6 @@ describe('FIX H — Geodesic Rigor, Reliability Propagation & Boundary Fixtures'
       const buninyong: LatLng = { lat: -37.6528211, lng: 143.9264955 };
       const res = wgs84Inverse(flindersPeak, buninyong);
       expect(Math.abs(res.distanceMeters - 54972.271)).toBeLessThan(0.1);
-      expect(res.isConverged).toBe(true);
-    });
-
-    // Benchmark 2: Antimeridian Crossing Geodesic Vector
-    // Source: WGS-84 ellipsoidal geometry across the 180th meridian (Pacific Ocean).
-    // Coordinates: (0°N, 179°E) to (0°N, 179°W) across 180° meridian at the equator.
-    // Analytical expected distance: 2 * a * pi / 180 = 222,638.9816 m (tolerance: 0.1 m).
-    it('matches analytical antimeridian crossing distance without global wrapping distortion', () => {
-      const p1: LatLng = { lat: 0, lng: 179 };
-      const p2: LatLng = { lat: 0, lng: -179 };
-      const res = wgs84Inverse(p1, p2);
-      expect(Math.abs(res.distanceMeters - 222638.98)).toBeLessThan(0.1);
       expect(res.isConverged).toBe(true);
     });
   });
@@ -65,6 +54,18 @@ describe('FIX H — Geodesic Rigor, Reliability Propagation & Boundary Fixtures'
       const p2: LatLng = { lat: 89, lng: 0 };
       const dist = wgs84DistanceMeters(p1, p2);
       expect(Math.abs(dist - 111693.18)).toBeLessThan(1.0);
+    });
+
+    // Analytical 4: Antimeridian Crossing Geodesic Vector
+    // Source: WGS-84 ellipsoidal geometry across the 180th meridian (Pacific Ocean).
+    // Coordinates: (0°N, 179°E) to (0°N, 179°W) across 180° meridian at the equator.
+    // Analytical expected distance: 2 * a * pi / 180 = 222,638.9816 m (tolerance: 0.1 m).
+    it('matches analytical antimeridian crossing distance without global wrapping distortion', () => {
+      const p1: LatLng = { lat: 0, lng: 179 };
+      const p2: LatLng = { lat: 0, lng: -179 };
+      const res = wgs84Inverse(p1, p2);
+      expect(Math.abs(res.distanceMeters - 222638.98)).toBeLessThan(0.1);
+      expect(res.isConverged).toBe(true);
     });
   });
 
@@ -134,7 +135,7 @@ describe('FIX H — Geodesic Rigor, Reliability Propagation & Boundary Fixtures'
   });
 
   describe('4. End-to-End Numerical Reliability & Non-Convergence Safety Propagation', () => {
-    // When an inverse calculation fails to converge, verify the entire pipeline:
+    // When an inverse calculation fails to converge, verify the entire pipeline through the real production checkMarketBoundary:
     // wgs84Inverse -> geodesicDistanceToSegmentDetailed -> distanceToPolygonBoundaryDetailed -> isPointInMultiPolygon -> checkMarketBoundary
     it('propagates non-convergent inverse calculation through to checkMarketBoundary returning ambiguous and isWithinMarketBounds false', () => {
       // Near-antipodal segment known to trigger Vincenty non-convergence
@@ -162,16 +163,39 @@ describe('FIX H — Geodesic Rigor, Reliability Propagation & Boundary Fixtures'
       const multiPolyRes = isPointInMultiPolygon(queryPoint, testMultiPoly);
       expect(multiPolyRes.isReliable).toBe(false);
 
-      // Step D: Market boundary check safely produces status: 'ambiguous', isInside: false, isAmbiguousBuffer: true
-      // Note: We test directly that when an unreliable result enters the decision path, it cannot produce confident inside/outside
-      const fallbackCheck = {
-        status: !multiPolyRes.isReliable ? 'ambiguous' : (multiPolyRes.isInside ? 'inside' : 'outside'),
-        isInside: multiPolyRes.isReliable && multiPolyRes.isInside,
-        isAmbiguousBuffer: !multiPolyRes.isReliable || multiPolyRes.boundaryDistanceMeters <= 2000,
-      };
-      expect(fallbackCheck.status).toBe('ambiguous');
-      expect(fallbackCheck.isInside).toBe(false);
-      expect(fallbackCheck.isAmbiguousBuffer).toBe(true);
+      // Step D: Real production checkMarketBoundary & isWithinMarketBounds execution
+      // We test the real production functions on SA with a controlled test seam replacing SA polygon
+      // with a geometry containing a near-antipodal segment, then cleanly restoring it.
+      const originalSA = MARKET_MULTIPOLYGONS['SA'];
+      const saPoint: LatLng = { lat: 24.71, lng: 46.67 }; // Riyadh, Saudi Arabia
+
+      const nonConvergentSAPolygon: GeoMultiPolygon = [
+        {
+          exterior: [
+            { lat: 16.38, lng: 42.50 },
+            { lat: -16.38, lng: -137.45 }, // near-antipodal segment
+            { lat: 28.30, lng: 34.80 },
+          ],
+          holes: [],
+        },
+      ];
+
+      try {
+        const mutableRegistry = MARKET_MULTIPOLYGONS as unknown as Record<MarketCode, GeoMultiPolygon>;
+        mutableRegistry['SA'] = nonConvergentSAPolygon;
+
+        const prodBoundaryCheck = checkMarketBoundary('SA', saPoint);
+        const prodWithinBounds = isWithinMarketBounds('SA', saPoint);
+
+        // Assert real production function outputs when numerical reliability fails:
+        expect(prodBoundaryCheck.status).toBe('ambiguous');
+        expect(prodBoundaryCheck.isInside).toBe(false);
+        expect(prodBoundaryCheck.isAmbiguousBuffer).toBe(true);
+        expect(prodWithinBounds).toBe(false);
+      } finally {
+        const mutableRegistry = MARKET_MULTIPOLYGONS as unknown as Record<MarketCode, GeoMultiPolygon>;
+        mutableRegistry['SA'] = originalSA;
+      }
     });
   });
 
