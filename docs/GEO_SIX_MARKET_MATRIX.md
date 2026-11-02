@@ -8,14 +8,14 @@ Authoritative geographic documentation, provenance audit, and boundary quality d
 
 | Market | ISO | Administrative Divisions (Gov / Dist) | Point Anchor Coords (`coords.ts`) | MultiPolygon Components | Exterior Rings | Exterior Vertex Count | Modeled Interior Holes | Synthetic Hole Test Coverage | Boundary Verification Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Jordan** | `JO` | 12 Governorates / 52 Districts | 12 Gov Centers | 1 | 1 | 11 vertices | Zero interior holes modeled (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
-| **Saudi Arabia** | `SA` | 13 Regions / 136 Governorates | 13 Region Centers | 1 | 1 | 11 vertices | Zero interior holes modeled (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
-| **Palestine** | `PS` | 16 Governorates (West Bank + Gaza) | 16 Gov Centers | 2 (Gaza + West Bank) | 2 | 4 (Gaza) + 9 (WB) | Zero interior holes modeled (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
-| **Lebanon** | `LB` | 8 Governorates / 25 Districts | 8 Gov Centers | 1 | 1 | 12 vertices | Zero interior holes modeled (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
-| **Syria** | `SY` | 14 Governorates / 65 Districts | 14 Gov Centers | 1 | 1 | 13 vertices | Zero interior holes modeled (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
-| **Kuwait** | `KW` | 6 Governorates / Flat Localities | 6 Gov Centers | 1 | 1 | 6 vertices | Zero interior holes modeled (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
+| **Jordan** | `JO` | 12 Governorates / 52 Districts | 12 Gov Centers | 1 | 1 | 11 vertices | Zero interior holes modeled in supplied data (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
+| **Saudi Arabia** | `SA` | 13 Regions / 136 Governorates | 13 Region Centers | 1 | 1 | 11 vertices | Zero interior holes modeled in supplied data (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
+| **Palestine** | `PS` | 16 Governorates (West Bank + Gaza) | 16 Gov Centers | 2 (Gaza + West Bank) | 2 | 4 (Gaza) + 9 (WB) | Zero interior holes modeled in supplied data (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
+| **Lebanon** | `LB` | 8 Governorates / 25 Districts | 8 Gov Centers | 1 | 1 | 12 vertices | Zero interior holes modeled in supplied data (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
+| **Syria** | `SY` | 14 Governorates / 65 Districts | 14 Gov Centers | 1 | 1 | 13 vertices | Zero interior holes modeled in supplied data (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
+| **Kuwait** | `KW` | 6 Governorates / Flat Localities | 6 Gov Centers | 1 | 1 | 6 vertices | Zero interior holes modeled in supplied data (`holes: []`) | Verified via Engine Test Suite | **APPROXIMATE / NOT CADASTRAL** |
 
-*Note on Production Geometry*: Zero interior holes are modeled in the current production geometry for all six markets. While the schema and geometry engine fully support interior hole exclusion (`GeoPolygon.holes`), none of the six national sovereign boundaries contain verified enclave holes requiring exclusion. Synthetic hole tests are retained in the test suite as explicit engine proof.
+*Critical Disclosure on Polygon Topology*: Zero interior holes are modeled in the current supplied production datasets (`holes: []`). An empty `holes` array in the supplied geometry data does NOT prove that real-world sovereign enclaves or geographic exclusions do not exist. It strictly documents that the client-side generalized bounding polygons in `marketPolygons.ts` do not model interior rings. Synthetic hole tests are retained in the test suite as explicit engine proof that the geometry engine correctly excludes points within interior rings.
 
 ---
 
@@ -55,7 +55,7 @@ To ensure data integrity, the FOX Geo Platform strictly distinguishes between fo
 - **Verified License / Usage Terms**: **NOT VERIFIED**.
 - **Coordinate Reference System**: WGS 84 (EPSG:4326).
 - **Geometry Transformation / Generalization**: Manually generalized 11-vertex outer polygon enclosing sovereign territory.
-- **Modeled Interior Holes**: Zero interior holes modeled (`holes: []`).
+- **Modeled Interior Holes**: Zero interior holes modeled in supplied data (`holes: []`).
 - **Known Limitations & Confidence Level**: Approximate bounding polygon for client-side pre-filtering; high-density Amman neighborhoods resolved via text taxonomy.
 
 ### B. Saudi Arabia (`SA`)
@@ -67,7 +67,7 @@ To ensure data integrity, the FOX Geo Platform strictly distinguishes between fo
 - **Verified License / Usage Terms**: **NOT VERIFIED**.
 - **Coordinate Reference System**: WGS 84 (EPSG:4326).
 - **Geometry Transformation / Generalization**: Manually generalized 11-vertex outer polygon.
-- **Modeled Interior Holes**: Zero interior holes modeled (`holes: []`).
+- **Modeled Interior Holes**: Zero interior holes modeled in supplied data (`holes: []`).
 - **Known Limitations & Confidence Level**: Approximate outer boundary; interior desert boundaries are coarse bounding segments.
 
 ### C. Palestine (`PS`)
@@ -79,7 +79,7 @@ To ensure data integrity, the FOX Geo Platform strictly distinguishes between fo
 - **Verified License / Usage Terms**: **NOT VERIFIED**.
 - **Coordinate Reference System**: WGS 84 (EPSG:4326).
 - **Geometry Transformation / Generalization**: 2 distinct components (Gaza Strip 4 vertices, West Bank 9 vertices) evaluated independently as a MultiPolygon.
-- **Modeled Interior Holes**: Zero interior holes modeled (`holes: []`).
+- **Modeled Interior Holes**: Zero interior holes modeled in supplied data (`holes: []`).
 - **Known Limitations & Confidence Level**: Generalized bounding components; no internal checkpoints or area categorizations (A/B/C) are modeled.
 
 ### D. Lebanon (`LB`)
@@ -91,7 +91,7 @@ To ensure data integrity, the FOX Geo Platform strictly distinguishes between fo
 - **Verified License / Usage Terms**: **NOT VERIFIED**.
 - **Coordinate Reference System**: WGS 84 (EPSG:4326).
 - **Geometry Transformation / Generalization**: Manually generalized 12-vertex polygon.
-- **Modeled Interior Holes**: Zero interior holes modeled (`holes: []`).
+- **Modeled Interior Holes**: Zero interior holes modeled in supplied data (`holes: []`).
 - **Known Limitations & Confidence Level**: Mountain border segments with Syria in Anti-Lebanon range are generalized approximations.
 
 ### E. Syria (`SY`)
@@ -103,7 +103,7 @@ To ensure data integrity, the FOX Geo Platform strictly distinguishes between fo
 - **Verified License / Usage Terms**: **NOT VERIFIED**.
 - **Coordinate Reference System**: WGS 84 (EPSG:4326).
 - **Geometry Transformation / Generalization**: Manually generalized 13-vertex polygon.
-- **Modeled Interior Holes**: Zero interior holes modeled (`holes: []`).
+- **Modeled Interior Holes**: Zero interior holes modeled in supplied data (`holes: []`).
 - **Known Limitations & Confidence Level**: Remote eastern desert boundaries are generalized approximations.
 
 ### F. Kuwait (`KW`)
@@ -115,7 +115,7 @@ To ensure data integrity, the FOX Geo Platform strictly distinguishes between fo
 - **Verified License / Usage Terms**: **NOT VERIFIED**.
 - **Coordinate Reference System**: WGS 84 (EPSG:4326).
 - **Geometry Transformation / Generalization**: Manually generalized 6-vertex terrestrial polygon.
-- **Modeled Interior Holes**: Zero interior holes modeled (`holes: []`).
+- **Modeled Interior Holes**: Zero interior holes modeled in supplied data (`holes: []`).
 - **Known Limitations & Confidence Level**: Islands (Failaka, Boubyan, Warbah) are generalized within outer coastal limits.
 
 ---

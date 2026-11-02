@@ -29,6 +29,12 @@ export interface GeodesicInverseResult {
   readonly isConverged: boolean;
 }
 
+export interface GeodesicSegmentResult {
+  readonly distanceMeters: number;
+  readonly isConverged: boolean;
+  readonly iterations: number;
+}
+
 /**
  * Calculates geodesic distance and initial azimuth between two points on the WGS-84 ellipsoid
  * using Vincenty's inverse formula. If Vincenty fails to converge (e.g. near-antipodal),
@@ -190,18 +196,27 @@ export function wgs84Direct(start: LatLng, distMeters: number, azimuthRad: numbe
 
 /**
  * Shortest geodesic distance from point p to finite geodesic segment [a, b] on the WGS-84 ellipsoid.
- * Uses golden-section search over the geodesic arc parameter with a documented stopping condition
- * based on remaining interval length (tolerance: 0.1 meter) and max 32 iterations.
+ * Returns structured result indicating whether the requested interval tolerance was achieved.
  */
-export function geodesicDistanceToSegmentMeters(
+export function geodesicDistanceToSegmentDetailed(
   p: LatLng,
   a: LatLng,
   b: LatLng,
   intervalTolMeters = 0.1
-): number {
+): GeodesicSegmentResult {
+  if (typeof intervalTolMeters !== 'number' || !Number.isFinite(intervalTolMeters) || intervalTolMeters <= 0) {
+    return { distanceMeters: Infinity, isConverged: false, iterations: 0 };
+  }
+
   const invAB = wgs84Inverse(a, b);
   const totalDist = invAB.distanceMeters;
-  if (totalDist < 1e-4) return wgs84DistanceMeters(p, a);
+  if (totalDist < 1e-4) {
+    return {
+      distanceMeters: wgs84DistanceMeters(p, a),
+      isConverged: invAB.isConverged,
+      iterations: 0,
+    };
+  }
 
   const azimuth = invAB.initialAzimuthRad;
 
@@ -243,7 +258,19 @@ export function geodesicDistanceToSegmentMeters(
     }
   }
 
-  return Math.min(dA, dB, f1, f2);
+  const isConverged = invAB.isConverged && right - left <= intervalTolMeters;
+  const distanceMeters = Math.min(dA, dB, f1, f2);
+
+  return { distanceMeters, isConverged, iterations };
+}
+
+export function geodesicDistanceToSegmentMeters(
+  p: LatLng,
+  a: LatLng,
+  b: LatLng,
+  intervalTolMeters = 0.1
+): number {
+  return geodesicDistanceToSegmentDetailed(p, a, b, intervalTolMeters).distanceMeters;
 }
 
 export function distanceToSegmentMeters(p: LatLng, a: LatLng, b: LatLng): number {
