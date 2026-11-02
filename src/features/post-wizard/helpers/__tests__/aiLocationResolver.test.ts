@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { resolveAiLocationSlugs } from '../aiLocationResolver';
 import { buildNewListingPayload } from '../buildNewListingPayload';
+import { buildAppliedDraft } from '../../hooks/useAiPublishFlow.helpers';
 import type { PostDraft, UserProfile } from '@/types';
 
 describe('AI Publish Canonical Location Resolver', () => {
@@ -46,6 +47,37 @@ describe('AI Publish Canonical Location Resolver', () => {
       expect(payload.newListing.citySlug).toBe('amman');
       expect(payload.newListing.neighborhoodSlug).toBe('wadi-as-sir');
       expect(payload.newListing.city).toBe('Amman');
+    });
+
+    it('buildAppliedDraft resolves canonical slugs when browseCountryCode is passed', () => {
+      const applied = buildAppliedDraft({
+        generated: {
+          title: 'MacBook Pro',
+          price: '1200',
+          description: 'M2 Pro 16GB',
+          categorySlug: 'electronics',
+          subcategorySlug: 'laptops',
+          city: 'Amman',
+          missing: [],
+        },
+        match: {
+          chosenCategory: 'electronics',
+          chosenSub: 'laptops',
+          effectiveCategory: 'electronics',
+          effectiveSub: 'laptops',
+          mismatch: false,
+        },
+        raw: 'Selling Macbook Pro',
+        photos: ['mac.jpg'],
+        isArabic: false,
+        browseCityAr: 'عمّان',
+        categoryForAI: 'electronics',
+        subForAI: 'laptops',
+        browseCountryCode: 'JO',
+      });
+
+      expect(applied.city).toBe('Amman');
+      expect(applied.citySlug).toBe('amman');
     });
   });
 

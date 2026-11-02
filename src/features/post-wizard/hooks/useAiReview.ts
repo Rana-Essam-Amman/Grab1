@@ -41,7 +41,7 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
   };
   const setNeighborhood = (n: string) => {
     const { citySlug, districtSlug, neighborhoodSlug } = resolveAiLocationSlugs(browseCountryCode, postDraft.city || '', n);
-    updatePostDraft({ neighborhood: n, citySlug: citySlug ?? postDraft.citySlug, districtSlug, neighborhoodSlug });
+    updatePostDraft({ neighborhood: n, citySlug: citySlug ?? undefined, districtSlug, neighborhoodSlug });
   };
   const setCity = (c: string) => {
     const { citySlug } = resolveAiLocationSlugs(browseCountryCode, c);
@@ -64,9 +64,13 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
     }
     if (!requirePhoneForPublish(() => void handlePublish())) return;
     try {
-      setIsPublishing(true);
       setError(null);
-      executeAiPublish({ postDraft, browseCountryCode, activeCurrency, isAdmin, isArabic, publishListing, resetPostDraft, navigateTo });
+      const started = executeAiPublish({ postDraft, browseCountryCode, activeCurrency, isAdmin, isArabic, publishListing, resetPostDraft, navigateTo });
+      if (started) {
+        setIsPublishing(true);
+      } else {
+        setIsPublishing(false);
+      }
     } catch (err) {
       setIsPublishing(false);
       setError(err instanceof Error ? err.message : (isArabic ? 'بيانات الموقع غير صالحة' : 'Invalid location data'));

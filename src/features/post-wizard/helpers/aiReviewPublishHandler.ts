@@ -17,7 +17,7 @@ export interface ExecuteAiPublishParams {
   readonly navigateTo: (screen: ScreenType) => void;
 }
 
-export function executeAiPublish(params: ExecuteAiPublishParams): void {
+export function executeAiPublish(params: ExecuteAiPublishParams): boolean {
   const { postDraft, browseCountryCode, activeCurrency, isAdmin, isArabic, publishListing, resetPostDraft, navigateTo } = params;
   const { title, price, targetMarket, newListing } = buildNewListingPayload({
     postDraft,
@@ -26,11 +26,12 @@ export function executeAiPublish(params: ExecuteAiPublishParams): void {
     activeCurrency,
     isAdmin,
   });
-  if (!title || !price) return;
+  if (!title || !price) return false;
 
   const publishPromise = publishListing(newListing, targetMarket, isArabic);
   resetPostDraft();
   capture(EVENTS.LISTING_PUBLISHED, { flow: 'ai' });
   navigateTo('post-publish-success');
   attachPublishResultHandler(publishPromise, 'ai', isArabic, navigateTo);
+  return true;
 }
