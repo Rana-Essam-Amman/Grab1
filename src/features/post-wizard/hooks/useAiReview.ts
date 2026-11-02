@@ -4,18 +4,16 @@ import { useAuth } from '@/hooks/useAuth';
 import { useUI } from '@/hooks/useUI';
 import { useListings } from '@/hooks/useListings';
 import { useDraft } from '@/hooks/useDraft';
-import { buildNewListingPayload } from '../helpers/buildNewListingPayload';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { setPendingPublish } from '../helpers/pendingPublishFlags';
 import { MONETIZATION_MATRIX } from '@/data/monetization';
-import { getListingFields } from '@/data/listingFields';
 import { useAiReviewAttributes } from './useAiReviewAttributes';
 import type { UseAiReviewReturn } from './useAiReview.types';
 import { useRegenerateListing } from './useRegenerateListing';
-import { getCurrentUser, requirePhoneForPublish } from '@/features/auth/helpers/publishPhoneGuard';
-import { attachPublishResultHandler } from '../helpers/attachPublishResultHandler';
-import { capture } from '@/shared/analytics/posthog';
-import { EVENTS } from '@/shared/analytics/events';
+import { requirePhoneForPublish } from '@/features/auth/helpers/publishPhoneGuard';
+import { resolveAiLocationSlugs } from '../helpers/aiLocationResolver';
+import { executeAiPublish } from '../helpers/aiReviewPublishHandler';
+import { updateAiDraftAttribute } from '../helpers/aiReviewAttributeUpdater';
 
 export type { UseAiReviewReturn } from './useAiReview.types';
 
@@ -31,13 +29,9 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
   const photos = postDraft.photos || [];
   const neighborhood = postDraft.neighborhood || '';
   const attributes = useAiReviewAttributes(postDraft.categorySlug, postDraft.generated?.fields || [], isArabic, postDraft.subcategorySlug);
+
   const setAttributeValue = (key: string, value: string) => {
-    const schema = getListingFields(postDraft.categorySlug, postDraft.subcategorySlug);
-    const current = postDraft.generated?.fields ?? schema.map((f) => ({ key: f.key, label: f.labelAr, value: '' }));
-    const exists = current.some((f) => f.key === key);
-    const updated = exists ? current.map((f) => (f.key === key ? { ...f, value } : f)) : [...current, { key, label: key, value }];
-    const baseGenerated = postDraft.generated ?? { title: postDraft.title || '', description: postDraft.description || '', price: postDraft.price || '', categorySlug: postDraft.categorySlug, subcategorySlug: postDraft.subcategorySlug, missing: [] };
-    updatePostDraft({ generated: { ...baseGenerated, fields: updated } });
+    updatePostDraft(updateAiDraftAttribute(postDraft, key, value));
   };
   const addPhotos = (p: string[]) => updatePostDraft({ photos: [...photos, ...p].slice(0, MONETIZATION_MATRIX.freeLimits.photoLimit) });
   const removePhoto = (i: number) => {
@@ -45,42 +39,38 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
     if (url?.startsWith('blob:')) URL.revokeObjectURL(url);
     updatePostDraft({ photos: photos.filter((_, idx) => idx !== i) });
   };
-  const setNeighborhood = (n: string) => updatePostDraft({ neighborhood: n });
-  const updateField = (key: 'title' | 'price' | 'city' | 'description', value: string) => {
+  const setNeighborhood = (n: string) => {
+    const { citySlug, districtSlug, neighborhoodSlug } = resolveAiLocationSlugs(browseCountryCode, postDraft.city || '', n);
+    updatePostDraft({ neighborhood: n, citySlug: citySlug ?? postDraft.citySlug, districtSlug, neighborhoodSlug });
+  };
+  const setCity = (c: string) => {
+    const { citySlug } = resolveAiLocationSlugs(browseCountryCode, c);
+    updatePostDraft({
+      city: c, neighborhood: '', citySlug, districtSlug: undefined, neighborhoodSlug: undefined,
+      ...(postDraft.generated ? { generated: { ...postDraft.generated, city: c } } : {}),
+    });
+  };
+
+  const updateField = (key: 'title' | 'price' | 'description', value: string) => {
     updatePostDraft({ [key]: value, ...(postDraft.generated ? { generated: { ...postDraft.generated, [key]: value } } : {}) });
   };
-  const setTitle = (t: string) => updateField('title', t);
-  const setPrice = (p: string) => updateField('price', p);
-  const setCity = (c: string) => updateField('city', c);
-  const setDescription = (d: string) => updateField('description', d);
 
   const handlePublish = async () => {
-    if (isAdminLoading) return;
-    if (!postDraft) return;
+    if (isAdminLoading || !postDraft) return;
     if (authStatus !== 'authenticated' || isAnonymous) {
       setPendingPublish(browseCountryCode, 'post-ai-review');
       navigateTo('login');
       return;
     }
     if (!requirePhoneForPublish(() => void handlePublish())) return;
-    const { title, price, targetMarket, newListing } = buildNewListingPayload({ postDraft, user: getCurrentUser(), browseCountryCode, activeCurrency, isAdmin });
-    if (!title || !price) return;
-
-    setIsPublishing(true);
-    setError(null);
-
-    // Fire-and-forget: the optimistic temp listing is already in
-    // state.listings (added synchronously by publishListing before the
-    // network call). We navigate to the success screen immediately so
-    // the user gets instant feedback.
-    const publishPromise = publishListing(newListing, targetMarket, isArabic);
-
-    // Immediate navigation — do NOT await.
-    resetPostDraft();
-    capture(EVENTS.LISTING_PUBLISHED, { flow: 'ai' });
-    navigateTo('post-publish-success');
-
-    attachPublishResultHandler(publishPromise, 'ai', isArabic, navigateTo);
+    try {
+      setIsPublishing(true);
+      setError(null);
+      executeAiPublish({ postDraft, browseCountryCode, activeCurrency, isAdmin, isArabic, publishListing, resetPostDraft, navigateTo });
+    } catch (err) {
+      setIsPublishing(false);
+      setError(err instanceof Error ? err.message : (isArabic ? 'بيانات الموقع غير صالحة' : 'Invalid location data'));
+    }
   };
 
   const curT = postDraft.title || postDraft.generated?.title || '';
@@ -89,8 +79,10 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
   const curD = postDraft.description || postDraft.generated?.description || '';
   const missingRequiredLabels = (attributes || []).filter((a) => a.required && !String(a.value || '').trim()).map((a) => a.label);
   const regenerate = useRegenerateListing({ postDraft, updatePostDraft, userId: (user as { id?: string })?.id || user?.email || user?.phone });
+
   return {
-    title: curT, price: curP, city: curC, description: curD, photos, addPhotos, removePhoto, neighborhood, setNeighborhood, setTitle, setPrice, setCity, setDescription,
+    title: curT, price: curP, city: curC, description: curD, photos, addPhotos, removePhoto, neighborhood, setNeighborhood,
+    setTitle: (t) => updateField('title', t), setPrice: (p) => updateField('price', p), setCity, setDescription: (d) => updateField('description', d),
     attributes, setAttributeValue, handlePublish, isPublishing, regenerate, hasMissingParams: !curT || !curP || missingRequiredLabels.length > 0, missingRequiredLabels, error,
   };
 }

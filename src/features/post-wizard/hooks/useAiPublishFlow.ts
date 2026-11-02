@@ -67,6 +67,7 @@ export const useAiPublishFlow = (setIsAnalyzing: (val: boolean) => void) => {
             browseCityAr,
             categoryForAI,
             subForAI,
+            browseCountryCode,
           })
         );
       } catch (err) {
