@@ -53,6 +53,10 @@ Wave 3 — Listing Detail rebuild (v7 system) + Universal Back Arrow audit
 - Verify: `npx tsc --noEmit && npm test -- --run && npm run audit:arch`
 - E2E single: `npx playwright test e2e/golden-paths/post-ad.spec.ts --reporter=line --workers=1`
 
+## Current State (2026-11-01)
+- **Last task**: Completed PR #428 surgical remediation across all 4 verified defects: provider exact validation (no USA substring), canonical default capital slugs (Kuwait City -> al-asimah), MultiPolygon boundary safety, and publish flow integration. Full test suite: 140 files passed, 1,116 passed tests, 0 failed.
+- **Next task**: Await review and approval of PR #428.
+
 ## Recent commits (last 8)
 d406b94 test(infra): add useListings + useChat + useMonetization hook tests (15 tests)
 9793425 test(infra): add useUI + useAuth + useDraft hook tests (16 tests)

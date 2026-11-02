@@ -2,11 +2,12 @@
  * Reverse geocoding via Nominatim (OpenStreetMap).
  *
  * Free, no API key. Usage policy: 1 request/second.
- * Returns MULTIPLE neighborhood candidates (suburb, neighbourhood, ...).
+ * Returns raw address payload and candidates.
  */
 
 export interface ReverseGeocodeResult {
   readonly candidates: readonly string[];
+  readonly rawAddress?: Record<string, unknown>;
 }
 
 export async function reverseGeocode(
@@ -34,7 +35,7 @@ export async function reverseGeocode(
       addr.hamlet,
     ].filter((s): s is string => typeof s === 'string' && s.length > 0);
 
-    return { candidates };
+    return { candidates, rawAddress: addr };
   } catch {
     return { candidates: [] };
   }
