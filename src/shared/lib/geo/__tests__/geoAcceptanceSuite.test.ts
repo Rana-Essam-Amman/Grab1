@@ -180,6 +180,10 @@ describe('FIX H — Geodesic Rigor, Reliability Propagation & Boundary Fixtures'
         },
       ];
 
+      expect(
+        isPointInMultiPolygon(saPoint, nonConvergentSAPolygon).isReliable
+      ).toBe(false);
+
       try {
         const mutableRegistry = MARKET_MULTIPOLYGONS as unknown as Record<MarketCode, GeoMultiPolygon>;
         mutableRegistry['SA'] = nonConvergentSAPolygon;
