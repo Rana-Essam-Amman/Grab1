@@ -29,16 +29,10 @@ export function isProviderCountryMatching(
 
   const exactSet = MARKET_EXACT_IDENTIFIERS[targetMarket];
 
-  let isoMatches = false;
-  if (isoCode) {
-    isoMatches = exactSet.has(isoCode);
-  }
+  const isoMatches = isoCode ? exactSet.has(isoCode) : false;
+  const nameMatches = countryName ? exactSet.has(countryName) : false;
 
-  let nameMatches = false;
-  if (countryName) {
-    nameMatches = exactSet.has(countryName);
-  }
-
+  // Strict contradiction check: if both ISO and country name are present, both must agree
   if (isoCode && countryName) {
     const valid = isoMatches && nameMatches;
     return {
@@ -50,6 +44,7 @@ export function isProviderCountryMatching(
     };
   }
 
+  // Only one is present
   const valid = isoMatches || nameMatches;
   return {
     matches: valid,

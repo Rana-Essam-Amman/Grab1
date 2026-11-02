@@ -1,5 +1,9 @@
 import type { MarketBounds, MarketCode, LatLng } from './geo.types';
-import { MARKET_MULTIPOLYGONS, isPointInMultiPolygon, BOUNDARY_UNCERTAINTY_METERS } from './marketPolygons';
+import {
+  MARKET_MULTIPOLYGONS,
+  isPointInMultiPolygon,
+  BOUNDARY_UNCERTAINTY_METERS,
+} from './marketPolygons';
 
 export const MARKET_BOUNDS: Record<MarketCode, MarketBounds> = {
   JO: { minLat: 29.18, maxLat: 33.38, minLng: 34.88, maxLng: 39.31 },
@@ -10,50 +14,101 @@ export const MARKET_BOUNDS: Record<MarketCode, MarketBounds> = {
   KW: { minLat: 28.52, maxLat: 30.10, minLng: 46.55, maxLng: 48.43 },
 };
 
+export type BoundaryStatus = 'inside' | 'outside' | 'ambiguous' | 'invalid';
+
 export interface BoundaryCheckResult {
+  readonly status: BoundaryStatus;
   readonly isInside: boolean;
   readonly isAmbiguousBuffer: boolean;
   readonly boundaryDistanceMeters: number;
 }
 
+export function isValidLatLng(coords?: LatLng | null): coords is LatLng {
+  if (!coords || typeof coords !== 'object') return false;
+  const { lat, lng } = coords;
+  if (typeof lat !== 'number' || typeof lng !== 'number') return false;
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return false;
+  return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+}
+
+export function isLikelyInvertedForMarket(market: MarketCode, coords: LatLng): boolean {
+  if (!isValidLatLng(coords)) return false;
+  const b = MARKET_BOUNDS[market];
+  if (!b) return false;
+  // Swapped lat & lng
+  const swappedLat = coords.lng;
+  const swappedLng = coords.lat;
+
+  // If original coords are NOT in bounds, but swapped coords ARE in bounds:
+  const originalIn = coords.lat >= b.minLat && coords.lat <= b.maxLat &&
+                     coords.lng >= b.minLng && coords.lng <= b.maxLng;
+  const swappedIn = swappedLat >= b.minLat && swappedLat <= b.maxLat &&
+                    swappedLng >= b.minLng && swappedLng <= b.maxLng;
+
+  return !originalIn && swappedIn;
+}
+
 export function checkMarketBoundary(market: MarketCode, coords: LatLng): BoundaryCheckResult {
-  // Input sanity: detect inversion or out-of-range coords
-  if (coords.lat > 90 || coords.lat < -90 || coords.lng > 180 || coords.lng < -180) {
-    return { isInside: false, isAmbiguousBuffer: false, boundaryDistanceMeters: Infinity };
+  // 1. Rigorous coordinate sanity & inversion check
+  if (!isValidLatLng(coords)) {
+    return {
+      status: 'invalid',
+      isInside: false,
+      isAmbiguousBuffer: false,
+      boundaryDistanceMeters: Infinity,
+    };
   }
-  if (coords.lat > 40 && coords.lng < 35) {
-    return { isInside: false, isAmbiguousBuffer: false, boundaryDistanceMeters: Infinity };
+
+  // Detect likely inversion for target market
+  if (isLikelyInvertedForMarket(market, coords)) {
+    return {
+      status: 'invalid',
+      isInside: false,
+      isAmbiguousBuffer: false,
+      boundaryDistanceMeters: Infinity,
+    };
   }
 
   const b = MARKET_BOUNDS[market];
-  if (!b) return { isInside: false, isAmbiguousBuffer: false, boundaryDistanceMeters: Infinity };
-
-  // Coarse prefilter
-  if (
-    coords.lat < b.minLat ||
-    coords.lat > b.maxLat ||
-    coords.lng < b.minLng ||
-    coords.lng > b.maxLng
-  ) {
-    return { isInside: false, isAmbiguousBuffer: false, boundaryDistanceMeters: Infinity };
+  if (!b) {
+    return {
+      status: 'invalid',
+      isInside: false,
+      isAmbiguousBuffer: false,
+      boundaryDistanceMeters: Infinity,
+    };
   }
 
   const multiPoly = MARKET_MULTIPOLYGONS[market];
   if (!multiPoly) {
-    return { isInside: true, isAmbiguousBuffer: false, boundaryDistanceMeters: Infinity };
+    return {
+      status: 'inside',
+      isInside: true,
+      isAmbiguousBuffer: false,
+      boundaryDistanceMeters: Infinity,
+    };
   }
 
   const { isInside, boundaryDistanceMeters } = isPointInMultiPolygon(coords, multiPoly);
-  // Real 2 km geodesic uncertainty calculation
+  // Real 2,000 meter WGS84 geodesic boundary uncertainty policy
   const isAmbiguousBuffer = boundaryDistanceMeters <= BOUNDARY_UNCERTAINTY_METERS;
 
-  return { isInside, isAmbiguousBuffer, boundaryDistanceMeters };
+  let status: BoundaryStatus;
+  if (isAmbiguousBuffer) {
+    status = 'ambiguous';
+  } else if (isInside) {
+    status = 'inside';
+  } else {
+    status = 'outside';
+  }
+
+  return { status, isInside, isAmbiguousBuffer, boundaryDistanceMeters };
 }
 
 export function isWithinMarketBounds(market: MarketCode, coords: LatLng): boolean {
   const result = checkMarketBoundary(market, coords);
-  // Must be inside and not in ambiguous disputed boundary buffer
-  return result.isInside && !result.isAmbiguousBuffer;
+  // Must be strictly inside and not within the 2,000m ambiguous boundary buffer
+  return result.status === 'inside';
 }
 
 export function detectMarketFromCoords(coords: LatLng): MarketCode | null {

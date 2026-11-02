@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useGeoLocation } from '../hooks/useGeoLocation';
 import { usePostWizard } from '../hooks/usePostWizard';
+import { handleGeoStatusToast } from '../helpers/locationToastHelper';
 import { toast } from 'sonner';
 
 interface Props {
@@ -16,44 +17,19 @@ export const LocationMyLocationButton: React.FC<Props> = ({
   onCityChange,
   onNeighborhoodChange,
 }) => {
-  const {
-    status, canonicalLocation, error, request, reset,
-  } = useGeoLocation(preferredCountry, isArabic);
+  const { status, canonicalLocation, error, requestId, request, reset } = useGeoLocation(preferredCountry, isArabic);
   const { updatePostDraft } = usePostWizard();
-  const requestTimestamp = useRef<number>(0);
-
-  const handleRequest = () => {
-    requestTimestamp.current = Date.now();
-    request();
-  };
+  const lastProcessedRequestIdRef = useRef<number>(0);
 
   useEffect(() => {
-    if (status === 'denied') {
-      toast.error(
-        isArabic
-          ? 'تم رفض صلاحية الوصول للموقع. يرجى تفعيلها من إعدادات المتصفح.'
-          : 'Location permission denied. Please enable it in your browser settings.'
-      );
-    } else if (status === 'unavailable') {
-      toast.error(
-        isArabic
-          ? 'خدمة تحديد الموقع غير متاحة على جهازك.'
-          : 'Location service is not available on your device.'
-      );
-    } else if (status === 'error' && error) {
-      toast.error(
-        isArabic
-          ? 'تعذر تحديد موقعك بدقة. يرجى اختيار المدينة والحي يدوياً.'
-          : 'Could not determine your location accurately. Please select manually.'
-      );
-    }
+    handleGeoStatusToast(status, error, isArabic);
   }, [status, error, isArabic]);
 
-  // Handle Canonical Resolution Atomically (BLOCKER A)
   useEffect(() => {
     if (status !== 'success' || !canonicalLocation) return;
+    if (requestId === 0 || requestId <= lastProcessedRequestIdRef.current) return;
+    lastProcessedRequestIdRef.current = requestId;
 
-    // Safety check 1: Market agreement
     if (canonicalLocation.countryCode !== preferredCountry || canonicalLocation.needsManualSelection) {
       toast.error(
         isArabic
@@ -64,14 +40,10 @@ export const LocationMyLocationButton: React.FC<Props> = ({
       return;
     }
 
-    // Authoritative atomic canonical resolution
-    const finalCity = isArabic
-      ? canonicalLocation.governorateAr || canonicalLocation.governorateEn || ''
-      : canonicalLocation.governorateEn || canonicalLocation.governorateAr || '';
-
-    const finalNeighborhood = isArabic
-      ? canonicalLocation.neighborhoodAr || canonicalLocation.neighborhoodEn || ''
-      : canonicalLocation.neighborhoodEn || canonicalLocation.neighborhoodAr || '';
+    const finalCity = (isArabic ? canonicalLocation.governorateAr : canonicalLocation.governorateEn)
+      || canonicalLocation.governorateEn || canonicalLocation.governorateAr || '';
+    const finalNeighborhood = (isArabic ? canonicalLocation.neighborhoodAr : canonicalLocation.neighborhoodEn)
+      || canonicalLocation.neighborhoodEn || canonicalLocation.neighborhoodAr || '';
 
     if (!finalCity) {
       reset();
@@ -80,7 +52,6 @@ export const LocationMyLocationButton: React.FC<Props> = ({
 
     onCityChange(finalCity);
     onNeighborhoodChange(finalNeighborhood);
-
     updatePostDraft({
       city: finalCity,
       neighborhood: finalNeighborhood,
@@ -88,29 +59,23 @@ export const LocationMyLocationButton: React.FC<Props> = ({
       districtSlug: canonicalLocation.districtSlug ?? undefined,
       neighborhoodSlug: canonicalLocation.neighborhoodSlug ?? undefined,
     });
-
     reset();
-  }, [
-    status, canonicalLocation, preferredCountry, isArabic,
-    onCityChange, onNeighborhoodChange, reset, updatePostDraft,
-  ]);
+  }, [status, canonicalLocation, requestId, preferredCountry, isArabic, onCityChange, onNeighborhoodChange, reset, updatePostDraft]);
 
-  const label =
-    status === 'loading'
-      ? (isArabic ? 'جاري تحديد الموقع...' : 'Locating...')
-      : (isArabic ? 'استخدم موقعي الحالي' : 'Use my location');
+  const label = status === 'loading'
+    ? (isArabic ? 'جاري تحديد الموقع...' : 'Locating...')
+    : (isArabic ? 'استخدم موقعي الحالي' : 'Use my location');
 
   return (
     <div className="flex flex-col gap-1">
       <button
         type="button"
-        onClick={handleRequest}
+        onClick={request}
         disabled={status === 'loading'}
         className="h-11 px-3.5 rounded-xl border border-border bg-surface text-sm font-bold text-ink text-start transition-colors hover:bg-canvas disabled:opacity-50"
       >
         {status === 'loading' ? '… ' : '📍 '}{label}
       </button>
-      
       {error && status === 'error' && (
         <p className="text-[11px] text-danger px-1 mt-0.5">{error}</p>
       )}
