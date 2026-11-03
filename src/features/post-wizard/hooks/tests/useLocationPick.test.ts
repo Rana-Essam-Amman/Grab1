@@ -121,4 +121,148 @@ describe('useLocationPick', () => {
     expect(draftAfter.citySlug).toBeUndefined();
     expect(draftAfter.districtSlug).toBeUndefined();
   });
+
+
+  it('does not restore stale Amman slugs on unresolved custom city', () => {
+    useDraftStore.setState({
+      postDraft: {
+        ...useDraftStore.getState().postDraft,
+        city: 'العاصمة',
+        citySlug: 'amman',
+        districtSlug: 'amman-qasabah',
+        neighborhoodSlug: 'abdun',
+      },
+    });
+    const { result } = renderHook(() => useLocationPick());
+    act(() => {
+      result.current.handleCityChange('أخرى');
+      result.current.setCustomCity('مدينة غير موجودة');
+    });
+    act(() => {
+      result.current.saveAndContinue();
+    });
+    const draft = useDraftStore.getState().postDraft;
+    expect(draft.citySlug).not.toBe('amman');
+    expect(draft.districtSlug).not.toBe('amman-qasabah');
+    expect(draft.neighborhoodSlug).not.toBe('abdun');
+  });
+
+  it('selects valid Zarqa locality and saves Zarqa hierarchy only', () => {
+    useDraftStore.setState({
+      postDraft: {
+        ...useDraftStore.getState().postDraft,
+        city: 'العاصمة',
+        citySlug: 'amman',
+      },
+    });
+    const { result } = renderHook(() => useLocationPick());
+    act(() => {
+      result.current.handleCityChange('الزرقاء');
+      result.current.handleNeighborhoodChange('حي معصوم');
+    });
+    act(() => {
+      result.current.saveAndContinue();
+    });
+    const draft = useDraftStore.getState().postDraft;
+    expect(draft.citySlug).toBe('zarqa');
+    expect(draft.districtSlug).toBe('zarqa-qasabah');
+    expect(draft.neighborhoodSlug).toBe('hayy-ma-sum');
+  });
+
+  it('resolves valid locality with explicit parent compound separator', () => {
+    const { result } = renderHook(() => useLocationPick());
+    act(() => {
+      result.current.handleCityChange('الزرقاء');
+      result.current.handleNeighborhoodChange('حي معصوم — لواء قصبة الزرقاء');
+    });
+    act(() => {
+      result.current.saveAndContinue();
+    });
+    const draft = useDraftStore.getState().postDraft;
+    expect(draft.citySlug).toBe('zarqa');
+    expect(draft.districtSlug).toBe('zarqa-qasabah');
+    expect(draft.neighborhoodSlug).toBe('hayy-ma-sum');
+  });
+
+  it('rejects unknown locality and does not set invalid slugs', () => {
+    useDraftStore.setState({
+      postDraft: {
+        ...useDraftStore.getState().postDraft,
+        city: 'العاصمة',
+        citySlug: 'amman',
+        districtSlug: 'amman-qasabah',
+        neighborhoodSlug: 'abdun',
+      },
+    });
+    const { result } = renderHook(() => useLocationPick());
+    act(() => {
+      result.current.handleCityChange('الزرقاء');
+      result.current.handleNeighborhoodChange('منطقة مجهولة تماما');
+    });
+    act(() => {
+      result.current.saveAndContinue();
+    });
+    const draft = useDraftStore.getState().postDraft;
+    expect(draft.citySlug).toBe('zarqa');
+    expect(draft.districtSlug).toBeUndefined();
+    expect(draft.neighborhoodSlug).toBeUndefined();
+  });
+
+  it('does not allow a locality from another governorate to resolve under Zarqa', () => {
+    const { result } = renderHook(() => useLocationPick());
+    act(() => {
+      result.current.handleCityChange('الزرقاء');
+      // 'طبربور' belongs to Amman, not Zarqa
+      result.current.handleNeighborhoodChange('حي طبربور');
+    });
+    act(() => {
+      result.current.saveAndContinue();
+    });
+    const draft = useDraftStore.getState().postDraft;
+    expect(draft.citySlug).toBe('zarqa');
+    expect(draft.districtSlug).toBeUndefined();
+    expect(draft.neighborhoodSlug).toBeUndefined();
+  });
+
+  it('clears descendants when governorate changes', () => {
+    const { result } = renderHook(() => useLocationPick());
+    act(() => {
+      result.current.handleCityChange('العاصمة');
+      result.current.handleNeighborhoodChange('عبدون');
+    });
+    expect(result.current.selectedNeighborhood).toBe('عبدون');
+    act(() => {
+      result.current.handleCityChange('الزرقاء');
+    });
+    expect(result.current.selectedNeighborhood).toBe('أخرى');
+  });
+
+  it('clears all location slugs on clear', () => {
+    useDraftStore.setState({
+      postDraft: {
+        ...useDraftStore.getState().postDraft,
+        citySlug: 'amman',
+        districtSlug: 'sahab',
+        neighborhoodSlug: 'hayy-tabarbawr',
+      },
+    });
+    const { result } = renderHook(() => useLocationPick());
+    act(() => {
+      result.current.handleCityChange('');
+      result.current.handleNeighborhoodChange('');
+    });
+    // Simulate clear via draft update as done in LocationFields
+    useDraftStore.getState().updatePostDraft({
+      city: '',
+      neighborhood: '',
+      citySlug: undefined,
+      districtSlug: undefined,
+      neighborhoodSlug: undefined,
+    });
+    const draft = useDraftStore.getState().postDraft;
+    expect(draft.citySlug).toBeUndefined();
+    expect(draft.districtSlug).toBeUndefined();
+    expect(draft.neighborhoodSlug).toBeUndefined();
+  });
+
 });
