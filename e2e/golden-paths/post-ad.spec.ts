@@ -37,6 +37,21 @@ async function pickFirstNonEmptyOption(page: Page, testId: string): Promise<void
   await page.waitForTimeout(300);
 }
 
+async function fillPostAdLocation(page: Page): Promise<void> {
+  const jordanInput = page.locator('[data-testid="jordan-location-search-input"]');
+  if (await jordanInput.count() > 0) {
+    await jordanInput.fill('طبربور');
+    await page.waitForTimeout(500);
+    const tabarbour = page.locator('[data-testid^="jordan-loc-item-"]').filter({ hasText: /طبربور|Tabarbawr/i }).first();
+    await expect(tabarbour).toBeVisible({ timeout: 5000 });
+    await tabarbour.click();
+    await page.waitForTimeout(300);
+  } else {
+    await selectSearchableDropdown(page, 'location-city-wrapper', 'العاصمة');
+    await selectSearchableDropdown(page, 'location-neighborhood-wrapper', 'العبدلي');
+  }
+}
+
 async function reachDetailsScreen(page: Page) {
   await page.locator(SELECTORS.postAd.fabButton).first().click();
   const startBtn = page.locator('[data-testid="post-ad-entry-start"], #post-ad-entry-start').first();
@@ -57,18 +72,7 @@ async function reachDetailsScreen(page: Page) {
   await expect(samplePhotoBtn).toBeVisible({ timeout: 5000 });
   await samplePhotoBtn.click();
 
-  const jordanInput = page.locator('[data-testid="jordan-location-search-input"]');
-  if (await jordanInput.count() > 0) {
-    await jordanInput.fill("طابور");
-    await page.waitForTimeout(500);
-    const tabarbour = page.locator('[data-testid^="jordan-loc-item-"]').filter({ hasText: /طبربور|Tabarbawr/i }).first();
-    await expect(tabarbour).toBeVisible({ timeout: 5000 });
-    await tabarbour.click();
-    await page.waitForTimeout(300);
-  } else {
-    await selectSearchableDropdown(page, "location-city-wrapper", "العاصمة");
-    await selectSearchableDropdown(page, "location-neighborhood-wrapper", "العبدلي");
-  }
+  await fillPostAdLocation(page);
 
   const continueBtn = page
     .locator('button')
@@ -185,8 +189,7 @@ test.describe('Golden Path 2 — Post Ad Wizard (Unified Flow)', () => {
     await expect(samplePhotoBtn).toBeVisible({ timeout: 5000 });
     await samplePhotoBtn.click();
 
-    await selectSearchableDropdown(loggedInPage, 'location-city-wrapper', 'العاصمة');
-    await selectSearchableDropdown(loggedInPage, 'location-neighborhood-wrapper', 'العبدلي');
+    await fillPostAdLocation(loggedInPage);
 
     const continueBtn = loggedInPage
       .locator('button')
