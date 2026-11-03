@@ -57,8 +57,18 @@ async function reachDetailsScreen(page: Page) {
   await expect(samplePhotoBtn).toBeVisible({ timeout: 5000 });
   await samplePhotoBtn.click();
 
-  await selectSearchableDropdown(page, 'location-city-wrapper', 'العاصمة');
-  await selectSearchableDropdown(page, 'location-neighborhood-wrapper', 'العبدلي');
+  const jordanInput = page.locator('[data-testid="jordan-location-search-input"]');
+  if (await jordanInput.count() > 0) {
+    await jordanInput.fill("طابور");
+    await page.waitForTimeout(500);
+    const tabarbour = page.locator('[data-testid^="jordan-loc-item-"]').filter({ hasText: /طبربور|Tabarbawr/i }).first();
+    await expect(tabarbour).toBeVisible({ timeout: 5000 });
+    await tabarbour.click();
+    await page.waitForTimeout(300);
+  } else {
+    await selectSearchableDropdown(page, "location-city-wrapper", "العاصمة");
+    await selectSearchableDropdown(page, "location-neighborhood-wrapper", "العبدلي");
+  }
 
   const continueBtn = page
     .locator('button')

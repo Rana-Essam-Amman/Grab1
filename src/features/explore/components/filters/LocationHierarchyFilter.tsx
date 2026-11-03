@@ -55,15 +55,15 @@ export const LocationHierarchyFilter: React.FC<Props> = ({
 
   const handleJordanDirectSelect = (item: JordanLocationSearchResult) => {
     const label = isArabic ? item.nameAr : item.nameEn;
-    onSelect(item.neighborhoodSlug ? label : null);
     onLocationChange?.({
       governorateSlug: item.citySlug,
       districtSlug: item.districtSlug ?? null,
       neighborhoodSlug: item.neighborhoodSlug ?? null,
       label,
-      cityEn: item.type === 'governorate' ? item.nameEn : null,
-      cityAr: item.type === 'governorate' ? item.nameAr : null,
+      cityEn: item.cityEn,
+      cityAr: item.cityAr,
     });
+    onSelect(item.neighborhoodSlug ? label : null);
     setTextFilter('');
   };
 

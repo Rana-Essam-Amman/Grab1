@@ -69,7 +69,8 @@ export const LocationFields: React.FC<Props> = ({
 
   const handleJordanSelect = (res: JordanLocationSearchResult) => {
     const cityName = isArabic ? res.nameAr : res.nameEn;
-    const parentCity = isArabic ? res.city : res.nameEn;
+    const parentCity = isArabic ? res.cityAr : res.cityEn;
+    
     const finalCity = res.type === 'governorate' ? cityName : parentCity;
     const finalNeighborhood = res.type === 'governorate' ? '' : (isArabic ? res.nameAr : res.nameEn);
 
