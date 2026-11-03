@@ -159,11 +159,12 @@ export function useLocationPick(): UseLocationPickReturn {
   const [site, setSite] = useState(postDraft.site || "");
 
   const handleCityChange = useCallback((c: string) => {
+    updatePostDraft({ citySlug: undefined, districtSlug: undefined, neighborhoodSlug: undefined });
     setSelectedCity(c);
     setCustomCity("");
     setSelectedNeighborhood(otherLabel);
     setCustomNeighborhood("");
-  }, [otherLabel]);
+  }, [otherLabel, updatePostDraft]);
 
   const handleNeighborhoodChange = useCallback((n: string) => {
     setSelectedNeighborhood(n);
@@ -268,6 +269,7 @@ export function useLocationPick(): UseLocationPickReturn {
       : selectedNeighborhood;
 
     const { citySlug, districtSlug, neighborhoodSlug } = resolveSlugsAtSave(finalCity, finalNeighborhood);
+
 
     if (!citySlug) {
       toast.error(isArabic ? 'الرجاء اختيار المدينة من القائمة' : 'Please select the city from the list');
