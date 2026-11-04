@@ -76,14 +76,15 @@ function villageCandidate(
   gov: Governorate,
   dist: District,
   village: Village,
-  slot: CanonicalLocationCandidate['canonicalSlot']
+  slot: CanonicalLocationCandidate['canonicalSlot'],
+  levelIndex: number
 ): CanonicalLocationCandidate {
   return {
     marketCode: market,
     nameEn: village.nameEn,
     nameAr: village.nameAr,
     slug: village.slug,
-    levelIndex: 3,
+    levelIndex,
     canonicalSlot: slot,
     citySlug: gov.slug,
     districtSlug: dist.slug,
@@ -104,6 +105,9 @@ export function collectCandidates(
   const level1 = profile.visibleLevels.find((l) => l.levelIndex === 1);
   const level2 = profile.visibleLevels.find((l) => l.levelIndex === 2);
   const level3 = profile.visibleLevels.find((l) => l.levelIndex === 3);
+  // Unified 2-level model: villages participate at level 2 when level 3 is absent.
+  const villageSlot = level3?.canonicalSlot ?? level2?.canonicalSlot;
+  const villageLevelIndex = level3 ? 3 : 2;
   const out: CanonicalLocationCandidate[] = [];
 
   for (const gov of geo.governorates) {
@@ -114,10 +118,10 @@ export function collectCandidates(
       if (level2 && matches(query, dist.nameEn, dist.nameAr, dist.slug)) {
         out.push(distCandidate(profile.marketCode, gov, dist, level2.canonicalSlot));
       }
-      if (!level3) continue;
-      for (const village of dist.villages) {
+      if (!villageSlot) continue;
+      for (const village of dist.villages ?? []) {
         if (matches(query, village.nameEn, village.nameAr, village.slug)) {
-          out.push(villageCandidate(profile.marketCode, gov, dist, village, level3.canonicalSlot));
+          out.push(villageCandidate(profile.marketCode, gov, dist, village, villageSlot, villageLevelIndex));
         }
       }
     }
