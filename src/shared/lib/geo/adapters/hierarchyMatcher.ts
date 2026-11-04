@@ -1,98 +1,82 @@
-import { cleanGeoToken } from './adapterUtils';
 import type { CountryGeo } from '@/data/locations/types';
 import type { CanonicalLocation, LatLng } from '../geo.types';
+import { collectRecognized } from './hierarchyMatcher.collect';
+import { resolveEffectiveDistricts } from './hierarchyMatcher.constraints';
+import {
+  makeExact,
+  makeDistrict,
+  makeGov,
+  unresolved,
+  distKey,
+} from './hierarchyMatcher.results';
+import type { VillageCandidate } from './hierarchyMatcher.results';
+
+type MatchResult = Omit<CanonicalLocation, 'countryCode'>;
 
 export function matchHierarchyPasses(
   geo: CountryGeo,
   cleaned: readonly string[],
   coords?: LatLng
-): Omit<CanonicalLocation, 'countryCode'> | null {
-  // Pass 1: Hierarchy agreement: Gov + District
-  for (const gov of geo.governorates) {
-    const gAr = cleanGeoToken(gov.nameAr);
-    const gEn = cleanGeoToken(gov.nameEn);
-    const hasGov = cleaned.some((t) => t === gAr || t === gEn || t === gov.slug);
-    if (!hasGov) continue;
+): MatchResult | null {
+  if (!cleaned.length) return null;
 
-    for (const dist of gov.districts) {
-      const dAr = cleanGeoToken(dist.nameAr);
-      const dEn = cleanGeoToken(dist.nameEn);
-      const hasDist = cleaned.some((t) => t === dAr || t === dEn || t === dist.slug);
+  const { recognizedGovs, recognizedDists, villageCandidates } = collectRecognized(geo, cleaned);
 
-      for (const v of dist.villages) {
-        const vAr = cleanGeoToken(v.nameAr);
-        const vEn = cleanGeoToken(v.nameEn);
-        if (cleaned.some((t) => t === vAr || t === vEn || t === v.slug)) {
-          return {
-            governorateSlug: gov.slug, governorateEn: gov.nameEn, governorateAr: gov.nameAr,
-            districtSlug: dist.slug, districtEn: dist.nameEn, districtAr: dist.nameAr,
-            neighborhoodSlug: v.slug, neighborhoodEn: v.nameEn, neighborhoodAr: v.nameAr,
-            coordinates: coords ?? null, confidence: 'exact',
-            resolutionSource: 'canonical_match', needsManualSelection: false,
-          };
-        }
-      }
-      if (hasDist) {
-        return {
-          governorateSlug: gov.slug, governorateEn: gov.nameEn, governorateAr: gov.nameAr,
-          districtSlug: dist.slug, districtEn: dist.nameEn, districtAr: dist.nameAr,
-          neighborhoodSlug: null, neighborhoodEn: null, neighborhoodAr: null,
-          coordinates: coords ?? null, confidence: 'high',
-          resolutionSource: 'canonical_match', needsManualSelection: false,
-        };
-      }
+  if (recognizedGovs.size > 1) return unresolved(coords);
+
+  const { effectiveDists, conflict } = resolveEffectiveDistricts(recognizedGovs, recognizedDists, coords);
+  if (conflict) return conflict;
+
+  const hasRecognizedGov = recognizedGovs.size > 0;
+  const hasRecognizedDist = effectiveDists.size > 0;
+  const hasRecognizedVillage = villageCandidates.length > 0;
+
+  const filteredVillages = villageCandidates.filter((c) => {
+    if (hasRecognizedGov && !recognizedGovs.has(c.govSlug)) return false;
+    if (hasRecognizedDist && !effectiveDists.has(distKey(c.govSlug, c.distSlug))) return false;
+    return true;
+  });
+
+  const uniqueVillages = new Map<string, VillageCandidate>();
+  for (const c of filteredVillages) {
+    uniqueVillages.set(`${c.govSlug}|${c.distSlug}|${c.slug}`, c);
+  }
+
+  if (uniqueVillages.size > 1) return unresolved(coords);
+
+  if (uniqueVillages.size === 1) {
+    const c = [...uniqueVillages.values()][0];
+    const gov = geo.governorates.find((g) => g.slug === c.govSlug);
+    const dist = gov?.districts.find((d) => d.slug === c.distSlug);
+    if (gov && dist) {
+      return makeExact(
+        { slug: gov.slug, nameAr: gov.nameAr, nameEn: gov.nameEn },
+        { slug: dist.slug, govSlug: gov.slug, nameAr: dist.nameAr, nameEn: dist.nameEn },
+        c,
+        coords
+      );
     }
   }
 
-  // Pass 2: District standalone
-  for (const gov of geo.governorates) {
-    for (const dist of gov.districts) {
-      const dAr = cleanGeoToken(dist.nameAr);
-      const dEn = cleanGeoToken(dist.nameEn);
-      if (cleaned.some((t) => t === dAr || t === dEn || t === dist.slug)) {
-        return {
-          governorateSlug: gov.slug, governorateEn: gov.nameEn, governorateAr: gov.nameAr,
-          districtSlug: dist.slug, districtEn: dist.nameEn, districtAr: dist.nameAr,
-          neighborhoodSlug: null, neighborhoodEn: null, neighborhoodAr: null,
-          coordinates: coords ?? null, confidence: 'high',
-          resolutionSource: 'canonical_match', needsManualSelection: false,
-        };
-      }
+  if (hasRecognizedVillage && uniqueVillages.size === 0) return unresolved(coords);
+
+  if (hasRecognizedDist && !hasRecognizedVillage) {
+    if (effectiveDists.size !== 1) return unresolved(coords);
+    const rd = [...effectiveDists.values()][0];
+    if (hasRecognizedGov && !recognizedGovs.has(rd.govSlug)) return unresolved(coords);
+    const gov = geo.governorates.find((g) => g.slug === rd.govSlug);
+    if (gov) {
+      return makeDistrict(
+        { slug: gov.slug, nameAr: gov.nameAr, nameEn: gov.nameEn },
+        rd,
+        coords
+      );
     }
   }
 
-  // Pass 3: Village standalone
-  for (const gov of geo.governorates) {
-    for (const dist of gov.districts) {
-      for (const v of dist.villages) {
-        const vAr = cleanGeoToken(v.nameAr);
-        const vEn = cleanGeoToken(v.nameEn);
-        if (cleaned.some((t) => t === vAr || t === vEn || t === v.slug)) {
-          return {
-            governorateSlug: gov.slug, governorateEn: gov.nameEn, governorateAr: gov.nameAr,
-            districtSlug: dist.slug, districtEn: dist.nameEn, districtAr: dist.nameAr,
-            neighborhoodSlug: v.slug, neighborhoodEn: v.nameEn, neighborhoodAr: v.nameAr,
-            coordinates: coords ?? null, confidence: 'exact',
-            resolutionSource: 'canonical_match', needsManualSelection: false,
-          };
-        }
-      }
-    }
-  }
-
-  // Pass 4: Governorate standalone
-  for (const gov of geo.governorates) {
-    const gAr = cleanGeoToken(gov.nameAr);
-    const gEn = cleanGeoToken(gov.nameEn);
-    if (cleaned.some((t) => t === gAr || t === gEn || t === gov.slug)) {
-      return {
-        governorateSlug: gov.slug, governorateEn: gov.nameEn, governorateAr: gov.nameAr,
-        districtSlug: null, districtEn: null, districtAr: null,
-        neighborhoodSlug: null, neighborhoodEn: null, neighborhoodAr: null,
-        coordinates: coords ?? null, confidence: 'approximate',
-        resolutionSource: 'canonical_match', needsManualSelection: false,
-      };
-    }
+  if (hasRecognizedGov && !hasRecognizedVillage && !hasRecognizedDist) {
+    if (recognizedGovs.size !== 1) return unresolved(coords);
+    return makeGov([...recognizedGovs.values()][0], coords);
   }
 
   return null;
