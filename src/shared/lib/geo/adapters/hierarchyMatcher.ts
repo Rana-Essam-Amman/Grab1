@@ -117,34 +117,57 @@ export function matchHierarchyPasses(
 ): MatchResult | null {
   if (!cleaned.length) return null;
 
-  // Recognized parent entities. District identity is (governorateSlug + districtSlug).
+  // A token is assigned to the highest hierarchy level it matches.
+  // This prevents a governorate token (e.g. "amman", "aqaba") from also
+  // creating a spurious village or district candidate.
+  const govTokens = new Set<string>();
+  const distTokens = new Set<string>();
+  const villageTokens = new Set<string>();
+
   const recognizedGovs = new Map<string, RecognizedGov>();
   const recognizedDists = new Map<string, RecognizedDist>();
-
-  // All village candidates that matched any locality token (retain multiples for later filtering)
   const villageCandidates: VillageCandidate[] = [];
 
+  // Pass 1: collect governorate matches and claim those tokens
   for (const g of geo.governorates) {
     const ga = cleanGeoToken(g.nameAr);
     const ge = cleanGeoToken(g.nameEn);
     if (tokenMatches(cleaned, ga, ge, g.slug)) {
       recognizedGovs.set(g.slug, { slug: g.slug, nameAr: g.nameAr, nameEn: g.nameEn });
+      for (const t of cleaned) {
+        if (t === ga || t === ge || t === g.slug) govTokens.add(t);
+      }
     }
+  }
+
+  // Pass 2: collect district matches for tokens not already claimed by a governorate
+  for (const g of geo.governorates) {
     for (const d of g.districts) {
       const da = cleanGeoToken(d.nameAr);
       const de = cleanGeoToken(d.nameEn);
-      if (tokenMatches(cleaned, da, de, d.slug)) {
+      const matching = cleaned.filter((t) => !govTokens.has(t) && (t === da || t === de || t === d.slug));
+      if (matching.length > 0) {
         recognizedDists.set(distKey(g.slug, d.slug), {
           slug: d.slug,
           govSlug: g.slug,
           nameAr: d.nameAr,
           nameEn: d.nameEn,
         });
+        for (const t of matching) distTokens.add(t);
       }
+    }
+  }
+
+  // Pass 3: collect village matches for tokens not claimed by a higher level
+  for (const g of geo.governorates) {
+    for (const d of g.districts) {
       for (const v of d.villages) {
         const va = cleanGeoToken(v.nameAr);
         const ve = cleanGeoToken(v.nameEn);
-        if (tokenMatches(cleaned, va, ve, v.slug)) {
+        const matching = cleaned.filter(
+          (t) => !govTokens.has(t) && !distTokens.has(t) && (t === va || t === ve || t === v.slug)
+        );
+        if (matching.length > 0) {
           villageCandidates.push({
             govSlug: g.slug,
             distSlug: d.slug,
@@ -152,6 +175,7 @@ export function matchHierarchyPasses(
             nameAr: v.nameAr,
             nameEn: v.nameEn,
           });
+          for (const t of matching) villageTokens.add(t);
         }
       }
     }
@@ -178,7 +202,6 @@ export function matchHierarchyPasses(
       const underGov = candidates.filter((d) => d.govSlug === govSlug);
       if (underGov.length === 0) {
         // This recognized district slug has no instance under the recognized governorate.
-        // It is a conflicting district and must not be silently discarded.
         return unresolved(coords);
       }
       if (underGov.length > 1) return unresolved(coords);
@@ -186,15 +209,12 @@ export function matchHierarchyPasses(
     }
     effectiveDists = filtered;
   } else {
-    // No governorate context: multiple distinct district slugs, or multiple
-    // governorates for the same slug, are ambiguous.
     if (distsBySlug.size > 1) return unresolved(coords);
     for (const candidates of distsBySlug.values()) {
       if (candidates.length > 1) return unresolved(coords);
     }
   }
 
-  // Multiple distinct districts remain after governorate restriction → unresolved
   if (effectiveDists.size > 1) return unresolved(coords);
 
   const hasRecognizedGov = recognizedGovs.size > 0;
@@ -202,23 +222,19 @@ export function matchHierarchyPasses(
   const hasRecognizedVillage = villageCandidates.length > 0;
 
   // Filter village candidates by all recognized parent constraints.
-  // A recognized district constrains both governorate and district slug.
   const filteredVillages = villageCandidates.filter((c) => {
     if (hasRecognizedGov && !recognizedGovs.has(c.govSlug)) return false;
     if (hasRecognizedDist && !effectiveDists.has(distKey(c.govSlug, c.distSlug))) return false;
     return true;
   });
 
-  // Deduplicate by full hierarchy path
   const uniqueVillages = new Map<string, VillageCandidate>();
   for (const c of filteredVillages) {
     uniqueVillages.set(`${c.govSlug}|${c.distSlug}|${c.slug}`, c);
   }
 
-  // Multiple distinct locality candidates after parent filtering → unresolved
   if (uniqueVillages.size > 1) return unresolved(coords);
 
-  // Exactly one locality remains → success
   if (uniqueVillages.size === 1) {
     const c = [...uniqueVillages.values()][0];
     const gov = geo.governorates.find((g) => g.slug === c.govSlug);
@@ -233,11 +249,8 @@ export function matchHierarchyPasses(
     }
   }
 
-  // Locality tokens were present but none survived parent filtering → unresolved
   if (hasRecognizedVillage && uniqueVillages.size === 0) return unresolved(coords);
 
-  // District-level (only when no locality token was recognized).
-  // Complete district identity must be unique.
   if (hasRecognizedDist && !hasRecognizedVillage) {
     if (effectiveDists.size !== 1) return unresolved(coords);
     const rd = [...effectiveDists.values()][0];
@@ -252,7 +265,6 @@ export function matchHierarchyPasses(
     }
   }
 
-  // Governorate-level (only when no more-specific recognized token exists)
   if (hasRecognizedGov && !hasRecognizedVillage && !hasRecognizedDist) {
     if (recognizedGovs.size !== 1) return unresolved(coords);
     const rg = [...recognizedGovs.values()][0];
