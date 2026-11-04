@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { resolveAiLocationSlugs } from '../aiLocationResolver';
+import { resolveAiLocationSlugs, uniqueExactCamp } from '../aiLocationResolver';
 import { buildAppliedDraft } from '../../hooks/useAiPublishFlow.helpers';
 import { preserveVerifiedJordanSelection, resolveTraditionalLocationSlugs } from '../traditionalLocationResolver';
 
@@ -65,6 +65,34 @@ describe('AI flow canonical integration', () => {
     expect(child.neighborhoodSlug).toBeUndefined();
   });
 
+
+  it('resolves a unique camp under the selected governorate only', () => {
+    const unique = resolveAiLocationSlugs('PS', 'Jenin', 'Jenin Camp');
+    expect(unique.citySlug).toBe('jenin');
+    expect(unique.neighborhoodSlug).toBe('jenin-camp');
+
+    const otherGov = resolveAiLocationSlugs('PS', 'Nablus', 'Jenin Camp');
+    expect(otherGov.citySlug).toBe('nablus');
+    expect(otherGov.neighborhoodSlug).toBeUndefined();
+  });
+
+  it('duplicate camp names under the same governorate stay unresolved', () => {
+    const camps = [
+      { slug: 'camp-a', nameEn: 'Shared Camp', nameAr: 'مخيم مشترك', governorateSlug: 'jenin' },
+      { slug: 'camp-b', nameEn: 'Shared Camp', nameAr: 'مخيم مشترك', governorateSlug: 'jenin' },
+      { slug: 'camp-c', nameEn: 'Shared Camp', nameAr: 'مخيم مشترك', governorateSlug: 'nablus' },
+    ];
+    expect(uniqueExactCamp(camps, 'jenin', 'Shared Camp')).toBeUndefined();
+    expect(uniqueExactCamp(camps, 'nablus', 'Shared Camp')).toBe('camp-c');
+    expect(uniqueExactCamp(camps, 'jenin', 'Missing Camp')).toBeUndefined();
+  });
+
+  it('does not let camp fallback bypass an ambiguous canonical result', () => {
+    const ambiguous = resolveAiLocationSlugs('JO', 'Maan', 'Al Mansurah');
+    expect(ambiguous.citySlug).toBe('maan');
+    expect(ambiguous.neighborhoodSlug).toBeUndefined();
+    expect(ambiguous.districtSlug).toBeUndefined();
+  });
   it('Kuwait never receives a fabricated neighborhood slug', () => {
     const res = resolveAiLocationSlugs('KW', 'Hawalli', 'Salmiya');
     expect(res.citySlug).toBe('hawalli');

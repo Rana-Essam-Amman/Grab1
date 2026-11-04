@@ -22,13 +22,19 @@ function resolveCitySlug(market: string, cityName: string): string | undefined {
   return uniqueCitySlug(market, cityName);
 }
 
-function exactCampSlug(market: string, citySlug: string, name: string): string | undefined {
+export function uniqueExactCamp(
+  camps: readonly { slug: string; nameEn: string; nameAr: string; governorateSlug: string }[],
+  citySlug: string,
+  name: string
+): string | undefined {
   const clean = normalizeArabic(name.trim().toLowerCase());
-  const camps = getAllCamps(market).filter((c) => c.governorateSlug === citySlug);
-  const match = camps.find(
-    (c) => c.slug === clean || normalizeArabic(c.nameEn.toLowerCase()) === clean || normalizeArabic(c.nameAr) === clean
+  if (!clean) return undefined;
+  const matches = camps.filter(
+    (c) =>
+      c.governorateSlug === citySlug &&
+      (c.slug === clean || normalizeArabic(c.nameEn.toLowerCase()) === clean || normalizeArabic(c.nameAr) === clean)
   );
-  return match?.slug;
+  return matches.length === 1 ? matches[0].slug : undefined;
 }
 
 function resolveChild(
@@ -50,7 +56,8 @@ function resolveChild(
     }
     return {};
   }
-  const campSlug = exactCampSlug(market, citySlug, neighborhoodName);
+  if (resolved.status === 'ambiguous') return {};
+  const campSlug = uniqueExactCamp(getAllCamps(market), citySlug, neighborhoodName);
   return campSlug ? { neighborhoodSlug: campSlug } : {};
 }
 
