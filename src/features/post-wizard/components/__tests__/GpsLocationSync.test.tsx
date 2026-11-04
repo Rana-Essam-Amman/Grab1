@@ -209,6 +209,48 @@ describe('GpsLocationSync', () => {
     expect(onCityChange).toHaveBeenCalledWith('العاصمة');
   });
 
+  it('G. GPS keeps the district name when both district and locality exist', async () => {
+    mockUseGeo.mockReturnValue(makeGeoReturn({
+      status: 'success',
+      canonicalLocation: makeCanonical({
+        countryCode: 'JO',
+        governorateAr: 'العاصمة',
+        governorateEn: 'Amman',
+        districtAr: 'قصبة عمان',
+        districtEn: 'Amman Qasabah',
+        neighborhoodAr: 'طبربور',
+        neighborhoodEn: 'Tabarbour',
+        governorateSlug: 'amman',
+        districtSlug: 'amman-qasabah',
+        neighborhoodSlug: 'tabarbour',
+        needsManualSelection: false,
+      }),
+      error: null,
+      requestId: 1,
+      request: vi.fn(),
+      reset: vi.fn(),
+    }));
+
+    const onNeighborhoodChange = vi.fn();
+    render(
+      <LocationMyLocationButton
+        isArabic={true}
+        preferredCountry="JO"
+        onCityChange={vi.fn()}
+        onNeighborhoodChange={onNeighborhoodChange}
+      />
+    );
+
+    await waitFor(() => {
+      expect(onNeighborhoodChange).toHaveBeenCalledWith('طبربور — قصبة عمان');
+      const draft = useDraftStore.getState().postDraft;
+      expect(draft.citySlug).toBe('amman');
+      expect(draft.districtSlug).toBe('amman-qasabah');
+      expect(draft.neighborhoodSlug).toBe('tabarbour');
+      expect(draft.neighborhood).toBe('طبربور — قصبة عمان');
+    });
+  });
+
   it('F. Non-Jordan GPS behavior remains unchanged', async () => {
     mockUseGeo.mockReturnValue(makeGeoReturn({
       status: 'success',
