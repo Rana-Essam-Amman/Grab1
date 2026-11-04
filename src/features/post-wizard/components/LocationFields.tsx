@@ -11,6 +11,8 @@ import { useUI } from '@/hooks/useUI';
 import { LocationMyLocationButton } from './LocationMyLocationButton';
 import { SearchableDropdown } from '@/shared/ui/SearchableDropdown';
 import { useLiveSearch } from '../hooks/useLiveSearch';
+import { JordanLocationPicker } from './JordanLocationPicker';
+import type { JordanLocationSearchResult } from '../helpers/jordanLocationIndex';
 
 interface Props {
   isArabic: boolean;
@@ -29,6 +31,7 @@ interface Props {
   onSiteChange: (s: string) => void;
   onCustomCityChange: (v: string) => void;
   onCustomNeighborhoodChange: (v: string) => void;
+  onJordanLocationSelect?: (res: JordanLocationSearchResult) => void;
 }
 
 export const LocationFields: React.FC<Props> = ({
@@ -48,13 +51,13 @@ export const LocationFields: React.FC<Props> = ({
   onSiteChange,
   onCustomCityChange,
   onCustomNeighborhoodChange,
+  onJordanLocationSelect,
 }) => {
   const { browseCountryCode } = useUI();
-  const { postDraft } = usePostWizard();
+  const { postDraft, updatePostDraft } = usePostWizard();
   const pinLat = latitude ?? postDraft.latitude;
   const pinLng = longitude ?? postDraft.longitude;
 
-  // Live Search integration (filtered by country to prevent cross-market picks)
   const [liveQuery, setLiveQuery] = useState('');
   const { results: liveResults } = useLiveSearch({
     query: liveQuery,
@@ -62,52 +65,101 @@ export const LocationFields: React.FC<Props> = ({
     countryCode: browseCountryCode,
   });
 
-  // Merge static + live results
   const allNeighborhoods = Array.from(new Set([...neighborhoods, ...liveResults]));
+
+  const handleJordanSelect = (res: JordanLocationSearchResult) => {
+    const cityName = isArabic ? res.nameAr : res.nameEn;
+    const parentCity = isArabic ? res.cityAr : res.cityEn;
+    
+
+    const finalCity = res.type === 'governorate' ? cityName : parentCity;
+    const finalNeighborhood = res.type === 'governorate' ? '' : (isArabic ? res.nameAr : res.nameEn);
+
+    onCityChange(finalCity);
+    onNeighborhoodChange(finalNeighborhood);
+    updatePostDraft({
+      city: finalCity,
+      neighborhood: finalNeighborhood,
+      citySlug: res.citySlug,
+      districtSlug: res.districtSlug,
+      neighborhoodSlug: res.neighborhoodSlug,
+    });
+    onJordanLocationSelect?.(res);
+  };
+
+  const handleJordanClear = () => {
+    onCityChange('');
+    onNeighborhoodChange('');
+    updatePostDraft({
+      city: '',
+      neighborhood: '',
+      citySlug: undefined,
+      districtSlug: undefined,
+      neighborhoodSlug: undefined,
+    });
+  };
 
   return (
     <div className="flex flex-col gap-4">
-      <LocationMyLocationButton isArabic={isArabic} preferredCountry={browseCountryCode} onCityChange={onCityChange} onNeighborhoodChange={onNeighborhoodChange} />
-      <div>
-        <label className="block text-xs font-bold text-ink mb-1.5">{isArabic ? "المحافظة / المدينة" : "Governorate / City"}</label>
-        <div data-testid="location-city-wrapper">
-          <SearchableDropdown
-            options={cities}
-            value={selectedCity}
-            onChange={onCityChange}
-            placeholder={isArabic ? 'ابحث عن محافظة...' : 'Search governorate...'}
-            isArabic={isArabic}
-          />
-        </div>
-      </div>
-      {isOtherValue(selectedCity) && (
-        <Input label={isArabic ? "اكتب اسم المدينة أو المحافظة" : "Type city or governorate name"} type="text" value={customCity} onChange={(e) => onCustomCityChange(e.target.value)} placeholder={isArabic ? "مثال: الطفيلة" : "e.g., Tafilah"} className="h-11" />
-      )}
+      <LocationMyLocationButton
+        isArabic={isArabic}
+        preferredCountry={browseCountryCode}
+        onCityChange={onCityChange}
+        onNeighborhoodChange={onNeighborhoodChange}
+      />
 
-      {neighborhoods.length > 0 && (
-        <div>
-          <label className="block text-xs font-bold text-ink mb-1.5">{isArabic ? "اللواء / المنطقة / الحي" : "District / Area / Neighborhood"}</label>
-          <div data-testid="location-neighborhood-wrapper">
-            <SearchableDropdown
-              options={allNeighborhoods}
-              value={selectedNeighborhood}
-              onChange={onNeighborhoodChange}
-              onSearch={setLiveQuery}
-              placeholder={isArabic ? 'ابحث عن لواء أو حي...' : 'Search district or neighborhood...'}
-              isArabic={isArabic}
-            />
+      {browseCountryCode === 'JO' ? (
+        <JordanLocationPicker
+          isArabic={isArabic}
+          selectedCity={selectedCity}
+          selectedNeighborhood={selectedNeighborhood}
+          onSelect={handleJordanSelect}
+          onClear={handleJordanClear}
+        />
+      ) : (
+        <>
+          <div>
+            <label className="block text-xs font-bold text-ink mb-1.5">{isArabic ? "المحافظة / المدينة" : "Governorate / City"}</label>
+            <div data-testid="location-city-wrapper">
+              <SearchableDropdown
+                options={cities}
+                value={selectedCity}
+                onChange={onCityChange}
+                placeholder={isArabic ? 'ابحث عن محافظة...' : 'Search governorate...'}
+                isArabic={isArabic}
+              />
+            </div>
           </div>
-
-          {!selectedNeighborhood && (
-            <p className="text-xs font-bold text-danger px-1 mt-1">
-              {isArabic ? 'الرجاء اختيار الحي أو اللواء' : 'Please select a district or neighborhood'}
-            </p>
+          {isOtherValue(selectedCity) && (
+            <Input label={isArabic ? "اكتب اسم المدينة أو المحافظة" : "Type city or governorate name"} type="text" value={customCity} onChange={(e) => onCustomCityChange(e.target.value)} placeholder={isArabic ? "مثال: الطفيلة" : "e.g., Tafilah"} className="h-11" />
           )}
 
-          {isOtherValue(selectedNeighborhood) && (
-            <Input label={isArabic ? "اكتب اسم المنطقة أو الحي" : "Type area or neighborhood name"} type="text" value={customNeighborhood} onChange={(e) => onCustomNeighborhoodChange(e.target.value)} placeholder={isArabic ? "مثال: الرابية الجديدة" : "e.g., New Rabieh"} className="h-11" />
+          {neighborhoods.length > 0 && (
+            <div>
+              <label className="block text-xs font-bold text-ink mb-1.5">{isArabic ? "اللواء / المنطقة / الحي" : "District / Area / Neighborhood"}</label>
+              <div data-testid="location-neighborhood-wrapper">
+                <SearchableDropdown
+                  options={allNeighborhoods}
+                  value={selectedNeighborhood}
+                  onChange={onNeighborhoodChange}
+                  onSearch={setLiveQuery}
+                  placeholder={isArabic ? 'ابحث عن لواء أو حي...' : 'Search district or neighborhood...'}
+                  isArabic={isArabic}
+                />
+              </div>
+
+              {!selectedNeighborhood && (
+                <p className="text-xs font-bold text-danger px-1 mt-1">
+                  {isArabic ? 'الرجاء اختيار الحي أو اللواء' : 'Please select a district or neighborhood'}
+                </p>
+              )}
+
+              {isOtherValue(selectedNeighborhood) && (
+                <Input label={isArabic ? "اكتب اسم المنطقة أو الحي" : "Type area or neighborhood name"} type="text" value={customNeighborhood} onChange={(e) => onCustomNeighborhoodChange(e.target.value)} placeholder={isArabic ? "مثال: الرابية الجديدة" : "e.g., New Rabieh"} className="h-11" />
+              )}
+            </div>
           )}
-        </div>
+        </>
       )}
 
       <Input
