@@ -18,6 +18,9 @@ export {
   reconcileLocation
 } from './validator';
 export type {
+  CanonicalIdentitySlot,
+  LocationLevelProfile,
+  MarketProfile,
   CountryLocations,
   AllLocations,
   DefaultCapital,
@@ -35,5 +38,6 @@ import './SY.geo'; // سوريا
 import './KW.geo'; // الكويت
 
 export * from './types';
+export * from './marketProfiles';
 export * from './registry';
 export * from '@/shared/lib/geo';
