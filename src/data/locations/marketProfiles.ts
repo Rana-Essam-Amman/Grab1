@@ -3,15 +3,12 @@ import type { MarketProfile, CanonicalIdentitySlot } from './types';
 /**
  * Presentation-only Market Profiles for FOX's six markets.
  *
- * These describe user-facing visible levels and their labels,
- * mapping each to an existing canonical identity slot
- * (city_slug / district_slug / neighborhood_slug).
+ * Uniform 2-level model matching OpenSooq:
+ *   Level 1 = City / Region (maps to city_slug)
+ *   Level 2 = Neighbourhood / Area (maps to district_slug)
  *
- * They do NOT encode official administrative parent-child facts,
- * do NOT duplicate the location catalog, and do NOT alter
- * persisted identity or resolver behavior.
- *
- * Labels are FOX presentation metadata only.
+ * Note: individual villages (neighborhood_slug) are merged into the level-2
+ * list inside useLocationPick, so the user sees one combined list.
  */
 
 const PROFILES: readonly MarketProfile[] = [
@@ -20,24 +17,17 @@ const PROFILES: readonly MarketProfile[] = [
     visibleLevels: [
       {
         levelIndex: 1,
-        labelEn: 'Governorate',
-        labelAr: 'المحافظة',
+        labelEn: 'City',
+        labelAr: 'المدينة',
         canonicalSlot: 'city_slug',
         optional: false,
       },
       {
         levelIndex: 2,
-        labelEn: 'Area',
-        labelAr: 'المنطقة',
+        labelEn: 'Neighbourhood',
+        labelAr: 'الحي',
         canonicalSlot: 'district_slug',
         optional: false,
-      },
-      {
-        levelIndex: 3,
-        labelEn: 'Locality / Neighborhood',
-        labelAr: 'الحي / المنطقة',
-        canonicalSlot: 'neighborhood_slug',
-        optional: true,
       },
     ],
   },
@@ -58,13 +48,6 @@ const PROFILES: readonly MarketProfile[] = [
         canonicalSlot: 'district_slug',
         optional: false,
       },
-      {
-        levelIndex: 3,
-        labelEn: 'Neighborhood',
-        labelAr: 'الحي',
-        canonicalSlot: 'neighborhood_slug',
-        optional: true,
-      },
     ],
   },
   {
@@ -79,17 +62,10 @@ const PROFILES: readonly MarketProfile[] = [
       },
       {
         levelIndex: 2,
-        labelEn: 'District',
-        labelAr: 'المنطقة الفرعية',
+        labelEn: 'City',
+        labelAr: 'المدينة',
         canonicalSlot: 'district_slug',
         optional: false,
-      },
-      {
-        levelIndex: 3,
-        labelEn: 'Locality',
-        labelAr: 'المحلية',
-        canonicalSlot: 'neighborhood_slug',
-        optional: true,
       },
     ],
   },
@@ -98,24 +74,17 @@ const PROFILES: readonly MarketProfile[] = [
     visibleLevels: [
       {
         levelIndex: 1,
-        labelEn: 'Area',
-        labelAr: 'المنطقة',
+        labelEn: 'Governorate',
+        labelAr: 'المحافظة',
         canonicalSlot: 'city_slug',
         optional: false,
       },
       {
         levelIndex: 2,
         labelEn: 'District',
-        labelAr: 'المنطقة الفرعية',
+        labelAr: 'القضاء',
         canonicalSlot: 'district_slug',
         optional: false,
-      },
-      {
-        levelIndex: 3,
-        labelEn: 'Locality',
-        labelAr: 'المحلية',
-        canonicalSlot: 'neighborhood_slug',
-        optional: true,
       },
     ],
   },
@@ -124,24 +93,17 @@ const PROFILES: readonly MarketProfile[] = [
     visibleLevels: [
       {
         levelIndex: 1,
-        labelEn: 'Area',
-        labelAr: 'المنطقة',
+        labelEn: 'Governorate',
+        labelAr: 'المحافظة',
         canonicalSlot: 'city_slug',
         optional: false,
       },
       {
         levelIndex: 2,
-        labelEn: 'District',
-        labelAr: 'المنطقة الفرعية',
+        labelEn: 'City',
+        labelAr: 'المدينة',
         canonicalSlot: 'district_slug',
         optional: false,
-      },
-      {
-        levelIndex: 3,
-        labelEn: 'Locality',
-        labelAr: 'المحلية',
-        canonicalSlot: 'neighborhood_slug',
-        optional: true,
       },
     ],
   },
@@ -157,8 +119,8 @@ const PROFILES: readonly MarketProfile[] = [
       },
       {
         levelIndex: 2,
-        labelEn: 'Residential Area',
-        labelAr: 'المنطقة السكنية',
+        labelEn: 'Area',
+        labelAr: 'المنطقة',
         canonicalSlot: 'district_slug',
         optional: false,
       },
@@ -176,24 +138,14 @@ const VALID_SLOTS: readonly CanonicalIdentitySlot[] = [
   'neighborhood_slug',
 ] as const;
 
-/**
- * Returns the presentation profile for a known market, or null for unknown codes.
- * Fails safely (returns null) consistent with getCountryGeo.
- */
 export function getMarketProfile(marketCode: string): MarketProfile | null {
   return PROFILE_BY_CODE[marketCode] ?? null;
 }
 
-/**
- * Returns all defined market profiles. Exactly one per supported market.
- */
 export function getAllMarketProfiles(): readonly MarketProfile[] {
   return PROFILES;
 }
 
-/**
- * Validates that a profile only references known canonical identity slots.
- */
 export function isValidCanonicalSlot(slot: string): slot is CanonicalIdentitySlot {
   return (VALID_SLOTS as readonly string[]).includes(slot);
 }
