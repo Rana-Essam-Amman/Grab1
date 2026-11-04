@@ -132,4 +132,42 @@ describe('unified location search — six markets', () => {
     const constrained = matchHierarchyPasses(geo!, ['taybeh', 'al mansurah']);
     expect(constrained?.neighborhoodSlug).toBe('al-mansurah');
   });
+
+  it('search and resolve agree that Amman is ambiguous', () => {
+    const searched = searchLocationsCanonical('JO', 'Amman');
+    const resolved = resolveLocationCanonical('JO', 'Amman');
+    expect(searched.status).toBe('ambiguous');
+    expect(resolved.status).toBe('ambiguous');
+    expect(resolved.confidence).toBe('unresolved');
+    expect(resolved.resolved).toBeNull();
+    expect(resolved.candidates.length).toBeGreaterThan(1);
+  });
+
+  it('search and resolve agree on ambiguity for the same query and parent context', () => {
+    const parent = { districtSlug: 'taybeh' };
+    const searched = searchLocationsCanonical('JO', 'Al Mansurah', parent);
+    const resolved = resolveLocationCanonical('JO', 'Al Mansurah', parent);
+    expect(searched.status).toBe('unique');
+    expect(resolved.status).toBe('unique');
+    expect(resolved.resolved?.neighborhoodSlug).toBe(searched.resolved?.neighborhoodSlug);
+    expect(resolved.resolved?.citySlug).toBe(searched.resolved?.citySlug);
+    expect(resolved.resolved?.districtSlug).toBe(searched.resolved?.districtSlug);
+
+    const ambiguousSearch = searchLocationsCanonical('JO', 'Amman');
+    const ambiguousResolve = resolveLocationCanonical('JO', 'Amman');
+    expect(ambiguousSearch.status).toBe(ambiguousResolve.status);
+    expect(ambiguousResolve.resolved).toBeNull();
+  });
+
+  it('unique locality abdun still resolves and conflicting parent never resolves a candidate', () => {
+    const unique = resolveLocationCanonical('JO', 'abdun');
+    expect(unique.status).toBe('unique');
+    expect(unique.resolved?.neighborhoodSlug).toBe('abdun');
+    expect(unique.resolved?.citySlug).toBe('amman');
+    expect(unique.resolved?.districtSlug).toBe('amman-qasabah');
+
+    const conflict = resolveLocationCanonical('JO', 'Al Mansurah', { citySlug: 'aqaba' });
+    expect(conflict.resolved).toBeNull();
+    expect(conflict.status).not.toBe('unique');
+  });
 });
