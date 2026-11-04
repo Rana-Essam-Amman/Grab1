@@ -56,16 +56,14 @@ describe('six-market hierarchy', () => {
   });
 
   it('uses the authoritative six-market presentation profiles', () => {
-    expect(getMarketProfile('JO')?.visibleLevels.map((level) => level.labelEn)).toEqual([
-      'Governorate', 'Area', 'Locality / Neighborhood',
-    ]);
-    expect(getMarketProfile('JO')?.visibleLevels[1].labelAr).toBe('المنطقة');
-    expect(getMarketProfile('SA')?.visibleLevels.map((level) => level.labelEn)).toEqual(['Region', 'City', 'Neighborhood']);
-    expect(getMarketProfile('PS')?.visibleLevels.map((level) => level.labelEn)).toEqual(['Area', 'District', 'Locality']);
-    expect(getMarketProfile('LB')?.visibleLevels.map((level) => level.labelEn)).toEqual(['Area', 'District', 'Locality']);
-    expect(getMarketProfile('SY')?.visibleLevels.map((level) => level.labelEn)).toEqual(['Area', 'District', 'Locality']);
+    expect(getMarketProfile('JO')?.visibleLevels.map((l) => l.labelEn)).toEqual(['City', 'Neighbourhood']);
+    expect(getMarketProfile('JO')?.visibleLevels[1].labelAr).toBe('الحي');
+    expect(getMarketProfile('SA')?.visibleLevels.map((l) => l.labelEn)).toEqual(['Region', 'City']);
+    expect(getMarketProfile('PS')?.visibleLevels.map((l) => l.labelEn)).toEqual(['Area', 'City']);
+    expect(getMarketProfile('LB')?.visibleLevels.map((l) => l.labelEn)).toEqual(['Governorate', 'District']);
+    expect(getMarketProfile('SY')?.visibleLevels.map((l) => l.labelEn)).toEqual(['Governorate', 'City']);
     expect(getMarketProfile('KW')?.visibleLevels).toHaveLength(2);
-    expect(getMarketProfile('KW')?.visibleLevels.map((level) => level.labelEn)).toEqual(['Governorate', 'Residential Area']);
+    expect(getMarketProfile('KW')?.visibleLevels.map((l) => l.labelEn)).toEqual(['Governorate', 'Area']);
     expect(getMarketProfile('XX')).toBeNull();
   });
 

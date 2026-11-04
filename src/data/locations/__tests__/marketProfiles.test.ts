@@ -38,18 +38,14 @@ describe('Market Profiles — Presentation Metadata', () => {
     }
   });
 
-  it('no profile requires a third level when the market has no third-level catalog', () => {
-    // KW catalog has empty villages (no neighborhood-level entries)
-    const kw = getMarketProfile('KW');
-    expect(kw).not.toBeNull();
-    expect(kw?.visibleLevels).toHaveLength(2);
-    expect(kw?.visibleLevels.some((l) => l.canonicalSlot === 'neighborhood_slug')).toBe(false);
-
-    // Others have third-level catalog entries
-    for (const code of ['JO', 'SA', 'PS', 'LB', 'SY'] as const) {
+  it('all six markets present exactly 2 visible levels after the unification', () => {
+    for (const code of SUPPORTED_MARKETS) {
       const profile = getMarketProfile(code);
-      expect(profile?.visibleLevels.length).toBeGreaterThanOrEqual(3);
-      expect(profile?.visibleLevels.some((l) => l.canonicalSlot === 'neighborhood_slug')).toBe(true);
+      expect(profile).not.toBeNull();
+      expect(profile?.visibleLevels).toHaveLength(2);
+      expect(profile?.visibleLevels[0].canonicalSlot).toBe('city_slug');
+      expect(profile?.visibleLevels[1].canonicalSlot).toBe('district_slug');
+      expect(profile?.visibleLevels.some((l) => l.canonicalSlot === 'neighborhood_slug')).toBe(false);
     }
   });
 
@@ -62,8 +58,8 @@ describe('Market Profiles — Presentation Metadata', () => {
     const joLabels = jo!.visibleLevels.map((l) => l.labelEn);
     const saLabels = sa!.visibleLevels.map((l) => l.labelEn);
 
-    expect(joLabels).toEqual(['Governorate', 'Area', 'Locality / Neighborhood']);
-    expect(saLabels).toEqual(['Region', 'City', 'Neighborhood']);
+    expect(joLabels).toEqual(['City', 'Neighbourhood']);
+    expect(saLabels).toEqual(['Region', 'City']);
     expect(joLabels).not.toEqual(saLabels);
 
     // Both map level1 to city_slug, level2 to district_slug, level3 to neighborhood_slug
