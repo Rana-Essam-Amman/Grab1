@@ -9,6 +9,7 @@ import { googleSearchQuery } from '@/data/mapUrls';
 import { normalizeArabic } from '@/shared/lib/arabicNormalize';
 import { recordNeighborhoodUsage } from '@/services/locations.service';
 import { toast } from 'sonner';
+import { preserveVerifiedJordanSelection, resolveTraditionalLocationSlugs } from '../helpers/traditionalLocationResolver';
 
 export interface UseLocationPickReturn {
   cities: string[];
@@ -212,67 +213,10 @@ export function useLocationPick(): UseLocationPickReturn {
     districtSlug?: string;
     neighborhoodSlug?: string;
   } => {
-    let citySlug: string | undefined = undefined;
-    if (!isOtherValue(cityLabel)) {
-      let gov = rawGovs.find((g) => (isArabic ? g.nameAr : g.nameEn) === cityLabel);
-      if (!gov) gov = rawGovs.find((g) => (isArabic ? g.nameEn : g.nameAr) === cityLabel);
-      citySlug = gov?.slug;
-    }
-
-    let districtSlug: string | undefined = undefined;
-    let neighborhoodSlug: string | undefined = undefined;
-
-    if (citySlug && !isOtherValue(neighborhoodLabel)) {
-      const scopeDistricts = getAllDistricts(browseCountryCode, citySlug);
-      const scopeCamps = getAllCamps(browseCountryCode).filter((c) => c.governorateSlug === citySlug);
-
-      const sepIdx = neighborhoodLabel.indexOf(LABEL_SEPARATOR);
-
-      if (sepIdx > -1) {
-        const villageName = neighborhoodLabel.substring(0, sepIdx);
-        const districtName = neighborhoodLabel.substring(sepIdx + LABEL_SEPARATOR.length);
-
-        let district = scopeDistricts.find((d) => (isArabic ? d.nameAr : d.nameEn) === districtName);
-        let village = district?.villages.find((v) => (isArabic ? v.nameAr : v.nameEn) === villageName);
-        if (!village) {
-          district = scopeDistricts.find((d) => (isArabic ? d.nameEn : d.nameAr) === districtName);
-          village = district?.villages.find((v) => (isArabic ? v.nameEn : v.nameAr) === villageName);
-        }
-        if (district && village) {
-          districtSlug = district.slug;
-          neighborhoodSlug = village.slug;
-        }
-      } else {
-        const normLabel = normalizeArabic(neighborhoodLabel);
-        let camp = scopeCamps.find((c) => normalizeArabic(isArabic ? c.nameAr : c.nameEn) === normLabel);
-        if (!camp) camp = scopeCamps.find((c) => normalizeArabic(isArabic ? c.nameEn : c.nameAr) === normLabel);
-        if (camp) {
-          neighborhoodSlug = camp.slug;
-        } else {
-          let district = scopeDistricts.find((d) => normalizeArabic(isArabic ? d.nameAr : d.nameEn) === normLabel);
-          if (!district) district = scopeDistricts.find((d) => normalizeArabic(isArabic ? d.nameEn : d.nameAr) === normLabel);
-          if (district) {
-            districtSlug = district.slug;
-          } else {
-            const matches: { districtSlug: string; villageSlug: string }[] = [];
-            for (const d of scopeDistricts) {
-              for (const v of d.villages ?? []) {
-                if (normalizeArabic(v.nameAr) === normLabel || normalizeArabic(v.nameEn) === normLabel) {
-                  matches.push({ districtSlug: d.slug, villageSlug: v.slug });
-                }
-              }
-            }
-            if (matches.length === 1) {
-              districtSlug = matches[0].districtSlug;
-              neighborhoodSlug = matches[0].villageSlug;
-            }
-          }
-        }
-      }
-    }
-
-    return { citySlug, districtSlug, neighborhoodSlug };
-  }, [rawGovs, isArabic, browseCountryCode]);
+    const verified = preserveVerifiedJordanSelection(browseCountryCode, cityLabel, neighborhoodLabel, postDraft);
+    if (verified) return verified;
+    return resolveTraditionalLocationSlugs(browseCountryCode, cityLabel, neighborhoodLabel);
+  }, [browseCountryCode, postDraft.city, postDraft.citySlug, postDraft.districtSlug, postDraft.neighborhood, postDraft.neighborhoodSlug]);
 
   const saveAndContinue = useCallback(() => {
     if (validationError) return;

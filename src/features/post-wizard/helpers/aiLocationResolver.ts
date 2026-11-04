@@ -1,8 +1,7 @@
-import { getAllGovernorates, getAllDistricts } from '@/data/locations/registry';
-import { CITY_TO_GOVERNORATE_SLUG } from '@/shared/lib/geo/adapters/cityToGovMap';
+import { searchLocationsCanonical, resolveLocationCanonical } from '@/shared/lib/geo/locationSearch';
+import { getAllCamps } from '@/data/locations/registry';
 import { normalizeArabic } from '@/shared/lib/arabicNormalize';
-import type { MarketCode } from '@/shared/lib/geo/geo.types';
-import { resolveAiNeighborhoodSlug, COMMON_AR_GOV_ALIASES } from './aiLocationResolver.helpers';
+import { COMMON_AR_GOV_ALIASES } from './aiLocationResolver.helpers';
 
 export interface ResolvedAiLocationSlugs {
   readonly citySlug?: string;
@@ -10,42 +9,56 @@ export interface ResolvedAiLocationSlugs {
   readonly neighborhoodSlug?: string;
 }
 
-export function resolveAiGovernorate(countryCode: string, cityName: string) {
-  const cleanCity = normalizeArabic(cityName.trim().toLowerCase());
-  const govs = getAllGovernorates(countryCode);
+function uniqueCitySlug(market: string, query: string): string | undefined {
+  const searched = searchLocationsCanonical(market, query);
+  const cities = searched.candidates.filter((c) => c.canonicalSlot === 'city_slug');
+  return cities.length === 1 ? cities[0].slug : undefined;
+}
 
-  if (COMMON_AR_GOV_ALIASES[cleanCity]) {
-    const gov = govs.find((g) => g.slug === COMMON_AR_GOV_ALIASES[cleanCity]);
-    if (gov) return gov;
-  }
+function resolveCitySlug(market: string, cityName: string): string | undefined {
+  const clean = normalizeArabic(cityName.trim().toLowerCase());
+  const alias = Object.entries(COMMON_AR_GOV_ALIASES).find(([key]) => normalizeArabic(key) === clean)?.[1];
+  if (alias) return uniqueCitySlug(market, alias);
+  return uniqueCitySlug(market, cityName);
+}
 
-  let matchedGov = govs.find(
-    (g) => g.slug === cleanCity || normalizeArabic(g.nameEn.toLowerCase()) === cleanCity || normalizeArabic(g.nameAr) === cleanCity
+export function uniqueExactCamp(
+  camps: readonly { slug: string; nameEn: string; nameAr: string; governorateSlug: string }[],
+  citySlug: string,
+  name: string
+): string | undefined {
+  const clean = normalizeArabic(name.trim().toLowerCase());
+  if (!clean) return undefined;
+  const matches = camps.filter(
+    (c) =>
+      c.governorateSlug === citySlug &&
+      (c.slug === clean || normalizeArabic(c.nameEn.toLowerCase()) === clean || normalizeArabic(c.nameAr) === clean)
   );
+  return matches.length === 1 ? matches[0].slug : undefined;
+}
 
-  if (!matchedGov) {
-    const marketMap = CITY_TO_GOVERNORATE_SLUG[countryCode as MarketCode];
-    if (marketMap) {
-      for (const [key, govSlug] of Object.entries(marketMap)) {
-        if (normalizeArabic(key.toLowerCase()) === cleanCity) {
-          matchedGov = govs.find((g) => g.slug === govSlug);
-          break;
-        }
-      }
+function resolveChild(
+  market: string,
+  citySlug: string,
+  neighborhoodName: string
+): Pick<ResolvedAiLocationSlugs, 'districtSlug' | 'neighborhoodSlug'> {
+  const resolved = resolveLocationCanonical(market, neighborhoodName, { citySlug });
+  if (resolved.status === 'unique' && resolved.resolved) {
+    const slot = resolved.resolved.canonicalSlot;
+    if (slot === 'neighborhood_slug') {
+      return {
+        districtSlug: resolved.resolved.districtSlug ?? undefined,
+        neighborhoodSlug: resolved.resolved.neighborhoodSlug ?? undefined,
+      };
     }
-  }
-
-  if (!matchedGov) {
-    for (const g of govs) {
-      const dists = getAllDistricts(countryCode, g.slug);
-      const matchedDist = dists.find(
-        (d) => d.slug === cleanCity || normalizeArabic(d.nameEn.toLowerCase()) === cleanCity || normalizeArabic(d.nameAr) === cleanCity
-      );
-      if (matchedDist) return g;
+    if (slot === 'district_slug') {
+      return { districtSlug: resolved.resolved.districtSlug ?? undefined };
     }
+    return {};
   }
-
-  return matchedGov;
+  if (resolved.status === 'ambiguous') return {};
+  const campSlug = uniqueExactCamp(getAllCamps(market), citySlug, neighborhoodName);
+  return campSlug ? { neighborhoodSlug: campSlug } : {};
 }
 
 export function resolveAiLocationSlugs(
@@ -54,14 +67,11 @@ export function resolveAiLocationSlugs(
   neighborhoodName?: string
 ): ResolvedAiLocationSlugs {
   const countryCode = market.toUpperCase();
-  if (!cityName) return {};
+  if (!cityName?.trim()) return {};
 
-  const matchedGov = resolveAiGovernorate(countryCode, cityName);
-  if (!matchedGov) return {};
+  const citySlug = resolveCitySlug(countryCode, cityName);
+  if (!citySlug) return {};
+  if (!neighborhoodName?.trim()) return { citySlug };
 
-  const citySlug = matchedGov.slug;
-  if (!neighborhoodName || !neighborhoodName.trim()) return { citySlug };
-
-  const { districtSlug, neighborhoodSlug } = resolveAiNeighborhoodSlug(countryCode, citySlug, neighborhoodName);
-  return { citySlug, districtSlug, neighborhoodSlug };
+  return { citySlug, ...resolveChild(countryCode, citySlug, neighborhoodName) };
 }

@@ -8,7 +8,7 @@ export function buildAppliedDraft(params: AIResultParams) {
   const finalCategory = generated.categorySlug || categoryForAI || 'krakeeb';
   const finalSub = generated.subcategorySlug || subForAI;
   const targetCity = generated.city || params.browseCityAr || '';
-  const targetNeighborhood = generated.city || '';
+  const targetNeighborhood = '';
 
   const { citySlug, districtSlug, neighborhoodSlug } = browseCountryCode
     ? resolveAiLocationSlugs(browseCountryCode, targetCity, targetNeighborhood)
