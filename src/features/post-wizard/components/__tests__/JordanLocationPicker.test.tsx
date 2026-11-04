@@ -13,7 +13,7 @@ describe('JordanLocationPicker (OpenSooq-Style)', () => {
     expect(item.citySlug).toBe('amman');
     expect(item.districtSlug).toBe('sahab');
     expect(item.neighborhoodSlug).toBe('hayy-tabarbawr');
-    expect(item.parentPathAr).toBe('العاصمة — لواء سحاب');
+    expect(item.parentPathAr).toBe('عمان — لواء سحاب');
   });
 
   it('2. Direct search for a canonical Zarqa locality (Hayy Ma\'sum)', () => {
@@ -38,7 +38,7 @@ describe('JordanLocationPicker (OpenSooq-Style)', () => {
     const results = searchJordanLocations('عبدون', true);
     const abdun = results.find((r) => r.neighborhoodSlug === 'abdun');
     expect(abdun).toBeDefined();
-    expect(abdun?.parentPathAr).toBe('العاصمة — لواء قصبة عمان');
+    expect(abdun?.parentPathAr).toBe('عمان — لواء قصبة عمان');
   });
 
   it('5. Correct canonical slugs after selection in UI component', () => {
@@ -79,8 +79,8 @@ describe('JordanLocationPicker (OpenSooq-Style)', () => {
 
     expect(distMatch).toBeDefined();
     expect(villMatch).toBeDefined();
-    expect(distMatch?.parentPathAr).toBe('العاصمة');
-    expect(villMatch?.parentPathAr).toBe('العاصمة — لواء قصبة عمان');
+    expect(distMatch?.parentPathAr).toBe('عمان');
+    expect(villMatch?.parentPathAr).toBe('عمان — لواء قصبة عمان');
     expect(distMatch?.districtSlug).not.toBe(villMatch?.districtSlug);
   });
 
@@ -91,7 +91,7 @@ describe('JordanLocationPicker (OpenSooq-Style)', () => {
     render(
       <JordanLocationPicker
         isArabic={true}
-        selectedCity="العاصمة"
+        selectedCity="عمان"
         selectedNeighborhood="حي طبربور"
         onSelect={onSelect}
         onClear={onClear}
@@ -100,7 +100,7 @@ describe('JordanLocationPicker (OpenSooq-Style)', () => {
 
     const pill = screen.getByTestId('jordan-selected-pill');
     expect(pill).toBeInTheDocument();
-    expect(pill).toHaveTextContent('حي طبربور (العاصمة)');
+    expect(pill).toHaveTextContent('حي طبربور (عمان)');
 
     const clearBtn = screen.getByRole('button', { name: /مسح الموقع/i });
     fireEvent.click(clearBtn);
