@@ -11,8 +11,6 @@ import { useUI } from '@/hooks/useUI';
 import { LocationMyLocationButton } from './LocationMyLocationButton';
 import { SearchableDropdown } from '@/shared/ui/SearchableDropdown';
 import { useLiveSearch } from '../hooks/useLiveSearch';
-import { JordanLocationPicker } from './JordanLocationPicker';
-import type { JordanLocationSearchResult } from '../helpers/jordanLocationIndex';
 import { getMarketProfile } from '@/data/locations/marketProfiles';
 
 interface Props {
@@ -32,7 +30,8 @@ interface Props {
   onSiteChange: (s: string) => void;
   onCustomCityChange: (v: string) => void;
   onCustomNeighborhoodChange: (v: string) => void;
-  onJordanLocationSelect?: (res: JordanLocationSearchResult) => void;
+  /** @deprecated Kept for backward compatibility with PhotoUploadScreen. Unused. */
+  onJordanLocationSelect?: (res: unknown) => void;
 }
 
 export const LocationFields: React.FC<Props> = ({
@@ -52,7 +51,6 @@ export const LocationFields: React.FC<Props> = ({
   onSiteChange,
   onCustomCityChange,
   onCustomNeighborhoodChange,
-  onJordanLocationSelect,
 }) => {
   const { browseCountryCode } = useUI();
   const profile = getMarketProfile(browseCountryCode);
@@ -60,7 +58,7 @@ export const LocationFields: React.FC<Props> = ({
   const areaLevel = profile?.visibleLevels[1];
   const cityLevelLabel = isArabic ? cityLevel?.labelAr : cityLevel?.labelEn;
   const areaLevelLabel = isArabic ? areaLevel?.labelAr : areaLevel?.labelEn;
-  const { postDraft, updatePostDraft } = usePostWizard();
+  const { postDraft } = usePostWizard();
   const pinLat = latitude ?? postDraft.latitude;
   const pinLng = longitude ?? postDraft.longitude;
 
@@ -73,38 +71,6 @@ export const LocationFields: React.FC<Props> = ({
 
   const allNeighborhoods = Array.from(new Set([...neighborhoods, ...liveResults]));
 
-  const handleJordanSelect = (res: JordanLocationSearchResult) => {
-    const cityName = isArabic ? res.nameAr : res.nameEn;
-    const parentCity = isArabic ? res.cityAr : res.cityEn;
-    
-
-    const finalCity = res.type === 'governorate' ? cityName : parentCity;
-    const finalNeighborhood = res.type === 'governorate' ? '' : (isArabic ? res.nameAr : res.nameEn);
-
-    onCityChange(finalCity);
-    onNeighborhoodChange(finalNeighborhood);
-    updatePostDraft({
-      city: finalCity,
-      neighborhood: finalNeighborhood,
-      citySlug: res.citySlug,
-      districtSlug: res.districtSlug,
-      neighborhoodSlug: res.neighborhoodSlug,
-    });
-    onJordanLocationSelect?.(res);
-  };
-
-  const handleJordanClear = () => {
-    onCityChange('');
-    onNeighborhoodChange('');
-    updatePostDraft({
-      city: '',
-      neighborhood: '',
-      citySlug: undefined,
-      districtSlug: undefined,
-      neighborhoodSlug: undefined,
-    });
-  };
-
   return (
     <div className="flex flex-col gap-4">
       <LocationMyLocationButton
@@ -114,66 +80,72 @@ export const LocationFields: React.FC<Props> = ({
         onNeighborhoodChange={onNeighborhoodChange}
       />
 
-      {browseCountryCode === 'JO' ? (
-        <JordanLocationPicker
-          isArabic={isArabic}
-          selectedCity={selectedCity}
-          selectedNeighborhood={selectedNeighborhood}
-          onSelect={handleJordanSelect}
-          onClear={handleJordanClear}
+      <div>
+        <label className="block text-xs font-bold text-ink mb-1.5">
+          {cityLevelLabel || (isArabic ? 'المدينة' : 'City')}
+        </label>
+        <div data-testid="location-city-wrapper">
+          <SearchableDropdown
+            options={cities}
+            value={selectedCity}
+            onChange={onCityChange}
+            placeholder={isArabic ? 'ابحث عن مدينة...' : 'Search city...'}
+            isArabic={isArabic}
+          />
+        </div>
+      </div>
+      {isOtherValue(selectedCity) && (
+        <Input
+          label={isArabic ? 'اكتب اسم المدينة' : 'Type city name'}
+          type="text"
+          value={customCity}
+          onChange={(e) => onCustomCityChange(e.target.value)}
+          placeholder={isArabic ? 'مثال: الطفيلة' : 'e.g., Tafilah'}
+          className="h-11"
         />
-      ) : (
-        <>
-          <div>
-            <label className="block text-xs font-bold text-ink mb-1.5">{cityLevelLabel || (isArabic ? "المحافظة / المدينة" : "Governorate / City")}</label>
-            <div data-testid="location-city-wrapper">
-              <SearchableDropdown
-                options={cities}
-                value={selectedCity}
-                onChange={onCityChange}
-                placeholder={isArabic ? 'ابحث عن محافظة...' : 'Search governorate...'}
-                isArabic={isArabic}
-              />
-            </div>
+      )}
+
+      {neighborhoods.length > 0 && (
+        <div>
+          <label className="block text-xs font-bold text-ink mb-1.5">
+            {areaLevelLabel || (isArabic ? 'الحي' : 'Neighbourhood')}
+          </label>
+          <div data-testid="location-neighborhood-wrapper">
+            <SearchableDropdown
+              options={allNeighborhoods}
+              value={selectedNeighborhood}
+              onChange={onNeighborhoodChange}
+              onSearch={setLiveQuery}
+              placeholder={isArabic ? 'ابحث عن حي...' : 'Search neighbourhood...'}
+              isArabic={isArabic}
+            />
           </div>
-          {isOtherValue(selectedCity) && (
-            <Input label={isArabic ? "اكتب اسم المدينة أو المحافظة" : "Type city or governorate name"} type="text" value={customCity} onChange={(e) => onCustomCityChange(e.target.value)} placeholder={isArabic ? "مثال: الطفيلة" : "e.g., Tafilah"} className="h-11" />
+
+          {!selectedNeighborhood && (
+            <p className="text-xs font-bold text-danger px-1 mt-1">
+              {isArabic ? 'الرجاء اختيار الحي' : 'Please select a neighbourhood'}
+            </p>
           )}
 
-          {neighborhoods.length > 0 && (
-            <div>
-              <label className="block text-xs font-bold text-ink mb-1.5">{areaLevelLabel || (isArabic ? "اللواء / المنطقة / الحي" : "District / Area / Neighborhood")}</label>
-              <div data-testid="location-neighborhood-wrapper">
-                <SearchableDropdown
-                  options={allNeighborhoods}
-                  value={selectedNeighborhood}
-                  onChange={onNeighborhoodChange}
-                  onSearch={setLiveQuery}
-                  placeholder={isArabic ? 'ابحث عن لواء أو حي...' : 'Search district or neighborhood...'}
-                  isArabic={isArabic}
-                />
-              </div>
-
-              {!selectedNeighborhood && (
-                <p className="text-xs font-bold text-danger px-1 mt-1">
-                  {isArabic ? 'الرجاء اختيار الحي أو اللواء' : 'Please select a district or neighborhood'}
-                </p>
-              )}
-
-              {isOtherValue(selectedNeighborhood) && (
-                <Input label={isArabic ? "اكتب اسم المنطقة أو الحي" : "Type area or neighborhood name"} type="text" value={customNeighborhood} onChange={(e) => onCustomNeighborhoodChange(e.target.value)} placeholder={isArabic ? "مثال: الرابية الجديدة" : "e.g., New Rabieh"} className="h-11" />
-              )}
-            </div>
+          {isOtherValue(selectedNeighborhood) && (
+            <Input
+              label={isArabic ? 'اكتب اسم الحي' : 'Type neighbourhood name'}
+              type="text"
+              value={customNeighborhood}
+              onChange={(e) => onCustomNeighborhoodChange(e.target.value)}
+              placeholder={isArabic ? 'مثال: الرابية الجديدة' : 'e.g., New Rabieh'}
+              className="h-11"
+            />
           )}
-        </>
+        </div>
       )}
 
       <Input
-        label={isArabic ? "معلم قريب أو شارع (اختياري)" : "Landmark or Street (Optional)"}
+        label={isArabic ? 'معلم قريب أو شارع (اختياري)' : 'Landmark or Street (Optional)'}
         type="text"
         value={site}
         onChange={(e) => onSiteChange(e.target.value)}
-        placeholder={isArabic ? "مثال: قرب دوار المدينة، مجمع تجاري..." : "e.g., Near City Circle..."}
+        placeholder={isArabic ? 'مثال: قرب دوار المدينة، مجمع تجاري...' : 'e.g., Near City Circle...'}
         className="h-11"
       />
 
@@ -182,7 +154,12 @@ export const LocationFields: React.FC<Props> = ({
           <Icon icon="noto:round-pushpin" width={14} height={14} className="text-primary shrink-0" />
           <span>{mapQuery}</span>
         </div>
-        <StaticMapPreview city={selectedCity} neighborhood={selectedNeighborhood} latitude={pinLat} longitude={pinLng} />
+        <StaticMapPreview
+          city={selectedCity}
+          neighborhood={selectedNeighborhood}
+          latitude={pinLat}
+          longitude={pinLng}
+        />
       </Card>
     </div>
   );
