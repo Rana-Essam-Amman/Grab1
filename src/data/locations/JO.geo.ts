@@ -14,7 +14,7 @@ const JO_GEO: CountryGeo = {
   governorates: [
     {
       slug: 'amman',
-      nameAr: 'العاصمة',
+      nameAr: 'عمان',
       nameEn: 'Amman',
       districts: [
         {
