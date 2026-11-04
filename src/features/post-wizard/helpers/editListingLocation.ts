@@ -39,9 +39,12 @@ export function selectGovernorate(
     city: isArabic ? gov.nameAr : gov.nameEn,
     neighborhood: '',
     citySlug: gov.slug,
-    districtSlug: undefined,
-    neighborhoodSlug: undefined,
+    districtSlug: '',
+    neighborhoodSlug: '',
   };
+}
+export function clearEditLocation(): EditLocationState {
+  return { city: '', neighborhood: '', citySlug: '', districtSlug: '', neighborhoodSlug: '' };
 }
 
 export function selectDistrict(
@@ -54,7 +57,7 @@ export function selectDistrict(
     ...current,
     neighborhood: hasLevel3 ? '' : (isArabic ? district.nameAr : district.nameEn),
     districtSlug: district.slug,
-    neighborhoodSlug: undefined,
+    neighborhoodSlug: '',
   };
 }
 
@@ -72,4 +75,5 @@ export function selectLocality(
   };
 }
 
+export { selectedHierarchyLabels } from './editListingLocation.display';
 export { resolveUniqueChildSlug, selectJordanLocation } from './editListingLocation.jordan';

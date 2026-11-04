@@ -1,6 +1,7 @@
 import React from 'react';
 import { SearchableDropdown } from '@/shared/ui/SearchableDropdown';
 import { JordanLocationPicker } from './JordanLocationPicker';
+import { selectedHierarchyLabels } from '../helpers/editListingLocation';
 import type { useEditListingLocation } from '../hooks/useEditListingLocation';
 
 type LocationController = ReturnType<typeof useEditListingLocation>;
@@ -19,6 +20,7 @@ export const EditListingLocation: React.FC<Props> = ({ isArabic, location }) => 
   const cityOptions = location.governorates.map((item) => isArabic ? item.nameAr : item.nameEn);
   const districtOptions = location.districts.map((item) => isArabic ? item.nameAr : item.nameEn);
   const villageOptions = location.villages.map((item) => isArabic ? item.nameAr : item.nameEn);
+  const selected = selectedHierarchyLabels(isArabic, location.location, location.districts, location.villages);
 
   if (location.marketCode === 'JO') {
     return (
@@ -47,7 +49,7 @@ export const EditListingLocation: React.FC<Props> = ({ isArabic, location }) => 
       {location.location.citySlug && (
         <SearchableDropdown
           options={districtOptions}
-          value={location.hasLevel3 ? '' : location.location.neighborhood}
+          value={selected.districtValue}
           onChange={(value) => {
             const district = location.districts.find((item) => (isArabic ? item.nameAr : item.nameEn) === value);
             if (district) location.onDistrict(district.slug);
@@ -60,7 +62,7 @@ export const EditListingLocation: React.FC<Props> = ({ isArabic, location }) => 
         <div data-testid="edit-location-level-3">
           <SearchableDropdown
             options={villageOptions}
-            value={location.location.neighborhood}
+            value={selected.localityValue}
             onChange={(value) => {
               const locality = location.villages.find((item) => (isArabic ? item.nameAr : item.nameEn) === value);
               if (locality) location.onLocality(locality.slug);

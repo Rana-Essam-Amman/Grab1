@@ -3,7 +3,7 @@ import { getMarketProfile } from '@/data/locations/marketProfiles';
 import { getAllGovernorates, getAllDistricts } from '@/data/locations/registry';
 import type { JordanLocationSearchResult } from '../helpers/jordanLocationIndex';
 import {
-  loadEditLocation, sameEditLocation, selectDistrict, selectGovernorate, selectJordanLocation, selectLocality,
+  clearEditLocation, loadEditLocation, sameEditLocation, selectDistrict, selectGovernorate, selectJordanLocation, selectLocality,
   type EditLocationState,
 } from '../helpers/editListingLocation';
 
@@ -47,6 +47,6 @@ export function useEditListingLocation(
       }
     },
     onJordan: (result: JordanLocationSearchResult) => setLocation(selectJordanLocation(isArabic, result)),
-    onClear: () => setLocation({ city: '', neighborhood: '', citySlug: undefined, districtSlug: undefined, neighborhoodSlug: undefined }),
+    onClear: () => setLocation(clearEditLocation()),
   };
 }

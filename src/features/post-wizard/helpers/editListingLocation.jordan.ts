@@ -11,8 +11,8 @@ export function selectJordanLocation(isArabic: boolean, result: JordanLocationSe
     city,
     neighborhood,
     citySlug: result.citySlug,
-    districtSlug: result.districtSlug,
-    neighborhoodSlug: result.neighborhoodSlug,
+    districtSlug: result.districtSlug || '',
+    neighborhoodSlug: result.neighborhoodSlug || '',
   };
 }
 

@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { ListingSchema } from '@/schemas/listing.schema';
 import { getMarketProfile } from '@/data/locations/marketProfiles';
+import { listingToRow } from '@/features/listings/services/listingsMapper';
 import {
-  loadEditLocation, sameEditLocation, selectDistrict, selectGovernorate, selectJordanLocation, resolveUniqueChildSlug,
+  clearEditLocation, loadEditLocation, sameEditLocation, selectDistrict, selectGovernorate, selectJordanLocation, selectedHierarchyLabels, resolveUniqueChildSlug,
 } from '../editListingLocation';
 
 const baseListing = {
@@ -50,10 +51,10 @@ describe('Edit Listing location state', () => {
 
   it('changing a parent clears dependent children and updates slugs together', () => {
     const next = selectGovernorate(false, { slug: 'zarqa', nameAr: 'الزرقاء', nameEn: 'Zarqa' });
-    expect(next).toEqual({ city: 'Zarqa', neighborhood: '', citySlug: 'zarqa', districtSlug: undefined, neighborhoodSlug: undefined });
+    expect(next).toEqual({ city: 'Zarqa', neighborhood: '', citySlug: 'zarqa', districtSlug: '', neighborhoodSlug: '' });
     const withChild = selectDistrict(next, false, { slug: 'zarqa-qasabah', nameAr: 'قصبة', nameEn: 'Qasabah' }, false);
     expect(withChild.districtSlug).toBe('zarqa-qasabah');
-    expect(withChild.neighborhoodSlug).toBeUndefined();
+    expect(withChild.neighborhoodSlug).toBe('');
   });
 
   it('does not invent a slug for an ambiguous resolver result', () => {
@@ -68,6 +69,45 @@ describe('Edit Listing location state', () => {
     expect(getMarketProfile('SY')?.visibleLevels).toHaveLength(3);
     expect(getMarketProfile('KW')?.visibleLevels).toHaveLength(2);
     expect(getMarketProfile('KW')?.visibleLevels.map((level) => level.labelEn)).toEqual(['Governorate', 'Residential Area']);
+  });
+
+  it('maps parent changes and full clears into remote slug columns', () => {
+    const changedParent = selectGovernorate(false, { slug: 'zarqa', nameAr: 'الزرقاء', nameEn: 'Zarqa' });
+    expect(listingToRow(changedParent)).toEqual(expect.objectContaining({
+      city: 'Zarqa',
+      neighborhood: null,
+      city_slug: 'zarqa',
+      district_slug: null,
+      neighborhood_slug: null,
+    }));
+
+    const cleared = listingToRow(clearEditLocation());
+    expect(cleared.city).toBe('');
+    expect(cleared.neighborhood).toBeNull();
+    expect(cleared.city_slug).toBeNull();
+    expect(cleared.district_slug).toBeNull();
+    expect(cleared.neighborhood_slug).toBeNull();
+
+    const initial = loadEditLocation({ city: 'Amman', neighborhood: 'Abdun', citySlug: 'amman', districtSlug: 'amman-qasabah', neighborhoodSlug: 'abdun' });
+    expect(listingToRow(sameEditLocation(initial, initial) ? {} : initial)).toEqual({});
+  });
+
+  it('three-level profiles show catalog district and locality, not composite text', () => {
+    const location = loadEditLocation({
+      city: 'Riyadh',
+      neighborhood: 'Al Olaya — Riyadh City',
+      citySlug: 'riyadh-region',
+      districtSlug: 'riyadh-city',
+      neighborhoodSlug: 'al-olaya',
+    });
+    const labels = selectedHierarchyLabels(false, location, [
+      { slug: 'riyadh-city', nameAr: 'الرياض', nameEn: 'Riyadh City' },
+    ], [
+      { slug: 'al-olaya', nameAr: 'العليا', nameEn: 'Al Olaya' },
+    ]);
+    expect(labels.districtValue).toBe('Riyadh City');
+    expect(labels.localityValue).toBe('Al Olaya');
+    expect(labels.localityValue).not.toContain('—');
   });
 
   it('Jordan picker selection preserves the exact supplied identity', () => {
