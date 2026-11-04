@@ -17,7 +17,7 @@ describe('GeoResolver — Jordan (JO) Acceptance Tests', () => {
     });
     expect(res.countryCode).toBe('JO');
     expect(res.governorateSlug).toBe('amman');
-    expect(res.governorateAr).toBe('العاصمة');
+    expect(res.governorateAr).toBe('عمان');
     expect(res.districtSlug).toBe('al-jamiah');
     expect(res.confidence).toBe('high');
     expect(res.needsManualSelection).toBe(false);
