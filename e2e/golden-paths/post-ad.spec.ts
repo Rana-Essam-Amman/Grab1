@@ -38,32 +38,8 @@ async function pickFirstNonEmptyOption(page: Page, testId: string): Promise<void
 }
 
 async function fillPostAdLocation(page: Page): Promise<void> {
-  const jordanPicker = page.locator('[data-testid="jordan-location-picker"]');
-  if ((await jordanPicker.count()) > 0) {
-    // If a Selected Pill is active, clear it first
-    const selectedPill = page.locator('[data-testid="jordan-selected-pill"]');
-    if ((await selectedPill.count()) > 0) {
-      const clearBtn = selectedPill.locator('button').first();
-      await clearBtn.click();
-      await page.waitForTimeout(300);
-    }
-
-    const jordanInput = page.locator('[data-testid="jordan-location-search-input"]');
-    await expect(jordanInput).toBeVisible({ timeout: 5000 });
-    await jordanInput.fill('طبربور');
-    await page.waitForTimeout(500);
-
-    const tabarbour = page
-      .locator('[data-testid^="jordan-loc-item-"]')
-      .filter({ hasText: /طبربور|Tabarbawr/i })
-      .first();
-    await expect(tabarbour).toBeVisible({ timeout: 5000 });
-    await tabarbour.click();
-    await page.waitForTimeout(300);
-  } else {
-    await selectSearchableDropdown(page, 'location-city-wrapper', 'العاصمة');
-    await selectSearchableDropdown(page, 'location-neighborhood-wrapper', 'العبدلي');
-  }
+  await selectSearchableDropdown(page, 'location-city-wrapper', 'عمان');
+  await selectSearchableDropdown(page, 'location-neighborhood-wrapper', 'عبدون');
 }
 
 async function reachDetailsScreen(page: Page) {
