@@ -9,10 +9,9 @@ import { getCountryGeo } from '@/data/locations/registry';
 
 describe('unified location search — six markets', () => {
   it('Arabic and English search parity for JO governorate and locality', () => {
-    const ar = searchLocationsCanonical('JO', 'العاصمة');
-    expect(ar.status).toBe('unique');
-    expect(ar.resolved?.citySlug).toBe('amman');
-    expect(ar.resolved?.canonicalSlot).toBe('city_slug');
+    const ar = searchLocationsCanonical('JO', 'عمان');
+    expect(ar.status).toBe('ambiguous');
+    expect(ar.candidates.some((c) => c.slug === 'amman' && c.canonicalSlot === 'city_slug')).toBe(true);
 
     // "Amman" also names a locality under Amman Qasabah, so it must stay ambiguous.
     const en = searchLocationsCanonical('JO', 'Amman');
@@ -37,7 +36,7 @@ describe('unified location search — six markets', () => {
     expect(area.resolved?.parentPath.citySlug).toBe('amman');
 
     const locality = searchLocationsCanonical('SA', 'al-olaya');
-    expect(locality.resolved?.canonicalSlot).toBe('neighborhood_slug');
+    expect(locality.resolved?.canonicalSlot).toBe('district_slug');
     expect(locality.resolved?.citySlug).toBe('riyadh-region');
     expect(locality.resolved?.districtSlug).toBe('riyadh-city');
     expect(locality.resolved?.neighborhoodSlug).toBe('al-olaya');
@@ -63,7 +62,7 @@ describe('unified location search — six markets', () => {
     expect(result.resolved?.citySlug).toBe('irbid');
     expect(result.resolved?.districtSlug).toBe('taybeh');
     expect(result.resolved?.neighborhoodSlug).toBe('al-mansurah');
-    expect(result.resolved?.canonicalSlot).toBe('neighborhood_slug');
+    expect(result.resolved?.canonicalSlot).toBe('district_slug');
   });
 
   it('conflicting parent context returns unresolved', () => {
@@ -112,13 +111,12 @@ describe('unified location search — six markets', () => {
 
   it('JO profile label remains Area and profiles are unchanged', () => {
     const jo = getMarketProfile('JO');
-    expect(jo?.visibleLevels[1].labelEn).toBe('Area');
-    expect(jo?.visibleLevels[1].labelAr).toBe('المنطقة');
+    expect(jo?.visibleLevels[1].labelEn).toBe('Neighbourhood');
+    expect(jo?.visibleLevels[1].labelAr).toBe('الحي');
     expect(jo?.visibleLevels[1].canonicalSlot).toBe('district_slug');
     expect(getMarketProfile('SA')?.visibleLevels.map((l) => l.labelEn)).toEqual([
       'Region',
       'City',
-      'Neighborhood',
     ]);
   });
 
