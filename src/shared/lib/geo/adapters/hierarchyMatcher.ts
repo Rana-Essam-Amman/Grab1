@@ -99,8 +99,10 @@ export function matchHierarchyPasses(
   const districtMatches: MatchResult[] = [];
   const govMatches: MatchResult[] = [];
 
+  // Detect recognized hierarchy tokens in the input
   let inputHasGovToken = false;
   let inputHasDistToken = false;
+  let inputHasVillageToken = false;
   for (const g of geo.governorates) {
     const ga = cleanGeoToken(g.nameAr);
     const ge = cleanGeoToken(g.nameEn);
@@ -109,6 +111,11 @@ export function matchHierarchyPasses(
       const da = cleanGeoToken(d.nameAr);
       const de = cleanGeoToken(d.nameEn);
       if (cleaned.some((t) => t === da || t === de || t === d.slug)) inputHasDistToken = true;
+      for (const v of d.villages) {
+        const va = cleanGeoToken(v.nameAr);
+        const ve = cleanGeoToken(v.nameEn);
+        if (cleaned.some((t) => t === va || t === ve || t === v.slug)) inputHasVillageToken = true;
+      }
     }
   }
 
@@ -129,23 +136,32 @@ export function matchHierarchyPasses(
         const hasVillage = cleaned.some((t) => t === vAr || t === vEn || t === v.slug);
         if (hasVillage) {
           villageHitUnderThisDist = true;
+          // Only accept if every supplied recognized parent constraint is satisfied
           if ((!inputHasGovToken || hasGov) && (!inputHasDistToken || hasDist)) {
             villageMatches.push(makeExact(gov, dist, v, coords));
           }
         }
       }
 
-      if (hasDist && !villageHitUnderThisDist) {
+      // District-level candidate only when no village token was present in the input
+      // (a recognized locality token that failed to match must not be discarded)
+      if (hasDist && !inputHasVillageToken) {
         if (!inputHasGovToken || hasGov) {
           districtMatches.push(makeDistrict(gov, dist, coords));
         }
       }
     }
 
-    if (hasGov) {
+    // Governorate-level candidate only when no more-specific recognized token was supplied
+    if (hasGov && !inputHasVillageToken && !inputHasDistToken) {
       govMatches.push(makeGov(gov, coords));
     }
   }
+
+  // If a more-specific recognized token was supplied but produced no consistent match,
+  // do not fall back to a less-specific success.
+  if (inputHasVillageToken && villageMatches.length === 0) return unresolved(coords);
+  if (inputHasDistToken && !inputHasVillageToken && districtMatches.length === 0) return unresolved(coords);
 
   if (villageMatches.length === 1) return villageMatches[0];
   if (villageMatches.length > 1) return unresolved(coords);
