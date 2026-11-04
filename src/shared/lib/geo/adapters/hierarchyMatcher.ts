@@ -160,16 +160,38 @@ export function matchHierarchyPasses(
   // Conflicting recognized governorates are fatal
   if (recognizedGovs.size > 1) return unresolved(coords);
 
-  // Apply recognized governorate constraint to districts before evaluating district ambiguity.
-  // A single governorate may disambiguate repeated district slugs across governorates.
+  // Group recognized districts by district slug so we can distinguish
+  // repeated copies of the same slug across governorates from genuinely
+  // conflicting distinct district slugs.
+  const distsBySlug = new Map<string, RecognizedDist[]>();
+  for (const d of recognizedDists.values()) {
+    const list = distsBySlug.get(d.slug) ?? [];
+    list.push(d);
+    distsBySlug.set(d.slug, list);
+  }
+
   let effectiveDists = recognizedDists;
   if (recognizedGovs.size === 1) {
     const govSlug = [...recognizedGovs.keys()][0];
-    effectiveDists = new Map(
-      [...recognizedDists.entries()].filter(([, d]) => d.govSlug === govSlug)
-    );
-    // A recognized district whose governorate conflicts with the recognized governorate
-    if (recognizedDists.size > 0 && effectiveDists.size === 0) return unresolved(coords);
+    const filtered = new Map<string, RecognizedDist>();
+    for (const [slug, candidates] of distsBySlug) {
+      const underGov = candidates.filter((d) => d.govSlug === govSlug);
+      if (underGov.length === 0) {
+        // This recognized district slug has no instance under the recognized governorate.
+        // It is a conflicting district and must not be silently discarded.
+        return unresolved(coords);
+      }
+      if (underGov.length > 1) return unresolved(coords);
+      filtered.set(distKey(govSlug, slug), underGov[0]);
+    }
+    effectiveDists = filtered;
+  } else {
+    // No governorate context: multiple distinct district slugs, or multiple
+    // governorates for the same slug, are ambiguous.
+    if (distsBySlug.size > 1) return unresolved(coords);
+    for (const candidates of distsBySlug.values()) {
+      if (candidates.length > 1) return unresolved(coords);
+    }
   }
 
   // Multiple distinct districts remain after governorate restriction → unresolved

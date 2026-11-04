@@ -190,4 +190,33 @@ describe('hierarchyMatcher — duplicate locality ambiguity (JO)', () => {
     expect(result?.districtSlug).toBe('unverified');
     expect(result?.neighborhoodSlug).toBe('hisban');
   });
+
+  it('amman + taybeh returns unresolved (conflicting districts)', () => {
+    const result = matchHierarchyPasses(geo, ['amman', 'taybeh']);
+    expect(result).not.toBeNull();
+    expect(result?.confidence).toBe('unresolved');
+    expect(result?.needsManualSelection).toBe(true);
+    expect(result?.governorateSlug).toBeNull();
+    expect(result?.districtSlug).toBeNull();
+    expect(result?.neighborhoodSlug).toBeNull();
+  });
+
+  it('amman + unverified + taybeh returns unresolved (conflicting district not discarded)', () => {
+    const result = matchHierarchyPasses(geo, ['amman', 'unverified', 'taybeh']);
+    expect(result).not.toBeNull();
+    expect(result?.confidence).toBe('unresolved');
+    expect(result?.needsManualSelection).toBe(true);
+    expect(result?.governorateSlug).toBeNull();
+    expect(result?.districtSlug).toBeNull();
+    expect(result?.neighborhoodSlug).toBeNull();
+  });
+
+  it('reversed token order for amman + unverified + taybeh remains unresolved', () => {
+    const r1 = matchHierarchyPasses(geo, ['amman', 'unverified', 'taybeh']);
+    const r2 = matchHierarchyPasses(geo, ['taybeh', 'unverified', 'amman']);
+    expect(r1?.confidence).toBe('unresolved');
+    expect(r2?.confidence).toBe('unresolved');
+    expect(r1?.governorateSlug).toBeNull();
+    expect(r2?.governorateSlug).toBeNull();
+  });
 });
