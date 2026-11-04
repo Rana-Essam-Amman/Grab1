@@ -3,16 +3,17 @@ import { getMarketProfile } from '@/data/locations/marketProfiles';
 import { getAllGovernorates, getAllDistricts } from '@/data/locations/registry';
 import type { JordanLocationSearchResult } from '../helpers/jordanLocationIndex';
 import {
-  clearEditLocation, loadEditLocation, sameEditLocation, selectDistrict, selectGovernorate, selectJordanLocation, selectLocality,
+  clearEditLocation, sameEditLocation, selectDistrict, selectGovernorate, selectJordanLocation, selectLocality,
   type EditLocationState,
 } from '../helpers/editListingLocation';
+import { resolveLegacyEditLocation } from '../helpers/editListingLocation.legacy';
 
 export function useEditListingLocation(
   listing: { countryCode?: string; city?: string; neighborhood?: string; citySlug?: string; districtSlug?: string; neighborhoodSlug?: string } | null,
   isArabic: boolean
 ) {
   const marketCode = listing?.countryCode || '';
-  const initial = useMemo(() => loadEditLocation(listing), [listing]);
+  const initial = useMemo(() => resolveLegacyEditLocation(marketCode, listing), [listing, marketCode]);
   const [location, setLocation] = useState<EditLocationState>(initial);
   const profile = getMarketProfile(marketCode);
   const hasLevel3 = (profile?.visibleLevels.length ?? 0) >= 3;

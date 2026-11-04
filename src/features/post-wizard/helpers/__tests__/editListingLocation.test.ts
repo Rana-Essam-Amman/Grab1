@@ -1,7 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { ListingSchema } from '@/schemas/listing.schema';
 import { getMarketProfile } from '@/data/locations/marketProfiles';
+import '@/data/locations/JO.geo';
+import '@/data/locations/SA.geo';
+import '@/data/locations/KW.geo';
 import { listingToRow } from '@/features/listings/services/listingsMapper';
+import { resolveLegacyEditLocation } from '../editListingLocation.legacy';
 import {
   clearEditLocation, loadEditLocation, sameEditLocation, selectDistrict, selectGovernorate, selectJordanLocation, selectedHierarchyLabels, resolveUniqueChildSlug,
 } from '../editListingLocation';
@@ -108,6 +112,47 @@ describe('Edit Listing location state', () => {
     expect(labels.districtValue).toBe('Riyadh City');
     expect(labels.localityValue).toBe('Al Olaya');
     expect(labels.localityValue).not.toContain('—');
+  });
+
+  it('resolves a unique legacy city and child only under that parent', () => {
+    const resolved = resolveLegacyEditLocation('SA', {
+      city: 'Riyadh',
+      neighborhood: 'Al-Olaya — Riyadh City',
+    });
+    expect(resolved.city).toBe('Riyadh');
+    expect(resolved.citySlug).toBe('riyadh-region');
+    expect(resolved.districtSlug).toBe('riyadh-city');
+    expect(resolved.neighborhoodSlug).toBe('al-olaya');
+  });
+
+  it('does not invent slugs for ambiguous or unresolvable legacy text', () => {
+    const ambiguousCity = resolveLegacyEditLocation('JO', { city: 'Amman', neighborhood: 'Al Mansurah' });
+    expect(ambiguousCity.city).toBe('Amman');
+    expect(ambiguousCity.citySlug).toBeUndefined();
+    expect(ambiguousCity.neighborhoodSlug).toBeUndefined();
+
+    const ambiguousChild = resolveLegacyEditLocation('SA', { city: 'Riyadh', neighborhood: 'Al-Diriyah' });
+    expect(ambiguousChild.citySlug).toBe('riyadh-region');
+    expect(ambiguousChild.neighborhood).toBe('Al-Diriyah');
+    expect(ambiguousChild.neighborhoodSlug).toBeUndefined();
+
+    const unknown = resolveLegacyEditLocation('SA', { city: 'Not A Real City', neighborhood: 'Somewhere' });
+    expect(unknown.city).toBe('Not A Real City');
+    expect(unknown.citySlug).toBeUndefined();
+    expect(unknown.neighborhood).toBe('Somewhere');
+  });
+
+  it('does not resolve a legacy listing against another market catalog', () => {
+    const resolved = resolveLegacyEditLocation('KW', { city: 'Riyadh', neighborhood: 'Al-Olaya' });
+    expect(resolved.city).toBe('Riyadh');
+    expect(resolved.citySlug).toBeUndefined();
+    expect(resolved.districtSlug).toBeUndefined();
+  });
+
+  it('does not emit an update for an unchanged resolved legacy location', () => {
+    const initial = resolveLegacyEditLocation('SA', { city: 'Riyadh', neighborhood: 'Al-Olaya — Riyadh City' });
+    expect(sameEditLocation(initial, { ...initial })).toBe(true);
+    expect(listingToRow(sameEditLocation(initial, initial) ? {} : initial)).toEqual({});
   });
 
   it('Jordan picker selection preserves the exact supplied identity', () => {
