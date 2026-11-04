@@ -11,6 +11,7 @@ vi.mock('@/data/locations/registry', () => ({
     { slug: 'marka', nameAr: 'ماركا', nameEn: 'Marka', governorateSlug: 'amman', villages: [] },
   ],
   getAllCamps: () => [],
+  registerCountry: () => undefined,
 }));
 
 describe('hierarchy slug state', () => {

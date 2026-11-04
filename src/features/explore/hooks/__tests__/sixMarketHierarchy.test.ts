@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { getAllGovernorates, getAllDistricts } from '@/data/locations/registry';
+import '@/data/locations/JO.geo';
+import '@/data/locations/SA.geo';
+import '@/data/locations/PS.geo';
+import '@/data/locations/LB.geo';
+import '@/data/locations/SY.geo';
+import '@/data/locations/KW.geo';
+import { getMarketProfile } from '@/data/locations/marketProfiles';
 import { normalizeArabic } from '@/shared/lib/arabicNormalize';
 import { buildFiltersQuery, readDraftsFromUrl, type FilterDrafts } from '../useFiltersUrlSync';
 
@@ -46,6 +53,20 @@ describe('six-market hierarchy', () => {
     }
     expect(districts).toBe(expected.dist);
     expect(villages).toBe(expected.villages);
+  });
+
+  it('uses the authoritative six-market presentation profiles', () => {
+    expect(getMarketProfile('JO')?.visibleLevels.map((level) => level.labelEn)).toEqual([
+      'Governorate', 'Area', 'Locality / Neighborhood',
+    ]);
+    expect(getMarketProfile('JO')?.visibleLevels[1].labelAr).toBe('المنطقة');
+    expect(getMarketProfile('SA')?.visibleLevels.map((level) => level.labelEn)).toEqual(['Region', 'City', 'Neighborhood']);
+    expect(getMarketProfile('PS')?.visibleLevels.map((level) => level.labelEn)).toEqual(['Area', 'District', 'Locality']);
+    expect(getMarketProfile('LB')?.visibleLevels.map((level) => level.labelEn)).toEqual(['Area', 'District', 'Locality']);
+    expect(getMarketProfile('SY')?.visibleLevels.map((level) => level.labelEn)).toEqual(['Area', 'District', 'Locality']);
+    expect(getMarketProfile('KW')?.visibleLevels).toHaveLength(2);
+    expect(getMarketProfile('KW')?.visibleLevels.map((level) => level.labelEn)).toEqual(['Governorate', 'Residential Area']);
+    expect(getMarketProfile('XX')).toBeNull();
   });
 
   it('serializes and parses a full hierarchy without losing unrelated params', () => {
