@@ -45,10 +45,10 @@ export const LocationHierarchySections: React.FC<Props> = ({
         onItemSelect={onDistSelect}
       />
     )}
-    {labels.hasLevel3 && selectedDist && labels.level3 && (
+    {selectedDist && filteredVillages.length > 0 && (
       <div data-testid="hierarchy-level-3">
         <LocationFilterSection
-          title={labels.level3}
+          title={labels.level3 || labels.level2 || (isArabic ? 'الحي' : 'Neighbourhood')}
           items={filteredVillages}
           isArabic={isArabic}
           activeNeighborhood={activeNeighborhood}
