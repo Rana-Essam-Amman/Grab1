@@ -4,10 +4,31 @@ import type { CanonicalLocation, LatLng } from '../geo.types';
 
 type MatchResult = Omit<CanonicalLocation, 'countryCode'>;
 
+interface RecognizedGov {
+  slug: string;
+  nameAr: string;
+  nameEn: string;
+}
+
+interface RecognizedDist {
+  slug: string;
+  govSlug: string;
+  nameAr: string;
+  nameEn: string;
+}
+
+interface RecognizedVillage {
+  slug: string;
+  distSlug: string;
+  govSlug: string;
+  nameAr: string;
+  nameEn: string;
+}
+
 function makeExact(
-  gov: { slug: string; nameEn: string; nameAr: string },
-  dist: { slug: string; nameEn: string; nameAr: string },
-  v: { slug: string; nameEn: string; nameAr: string },
+  gov: RecognizedGov,
+  dist: RecognizedDist,
+  v: RecognizedVillage,
   coords?: LatLng
 ): MatchResult {
   return {
@@ -27,11 +48,7 @@ function makeExact(
   };
 }
 
-function makeDistrict(
-  gov: { slug: string; nameEn: string; nameAr: string },
-  dist: { slug: string; nameEn: string; nameAr: string },
-  coords?: LatLng
-): MatchResult {
+function makeDistrict(gov: RecognizedGov, dist: RecognizedDist, coords?: LatLng): MatchResult {
   return {
     governorateSlug: gov.slug,
     governorateEn: gov.nameEn,
@@ -49,10 +66,7 @@ function makeDistrict(
   };
 }
 
-function makeGov(
-  gov: { slug: string; nameEn: string; nameAr: string },
-  coords?: LatLng
-): MatchResult {
+function makeGov(gov: RecognizedGov, coords?: LatLng): MatchResult {
   return {
     governorateSlug: gov.slug,
     governorateEn: gov.nameEn,
@@ -88,6 +102,10 @@ function unresolved(coords?: LatLng): MatchResult {
   };
 }
 
+function tokenMatches(cleaned: readonly string[], ...candidates: string[]): boolean {
+  return cleaned.some((t) => candidates.includes(t));
+}
+
 export function matchHierarchyPasses(
   geo: CountryGeo,
   cleaned: readonly string[],
@@ -95,73 +113,110 @@ export function matchHierarchyPasses(
 ): MatchResult | null {
   if (!cleaned.length) return null;
 
+  // Collect the actual recognized entities (not just booleans)
+  const recognizedGovs = new Map<string, RecognizedGov>();
+  const recognizedDists = new Map<string, RecognizedDist>();
+  const recognizedVillages = new Map<string, RecognizedVillage>();
+
+  for (const g of geo.governorates) {
+    const ga = cleanGeoToken(g.nameAr);
+    const ge = cleanGeoToken(g.nameEn);
+    if (tokenMatches(cleaned, ga, ge, g.slug)) {
+      recognizedGovs.set(g.slug, { slug: g.slug, nameAr: g.nameAr, nameEn: g.nameEn });
+    }
+    for (const d of g.districts) {
+      const da = cleanGeoToken(d.nameAr);
+      const de = cleanGeoToken(d.nameEn);
+      if (tokenMatches(cleaned, da, de, d.slug)) {
+        recognizedDists.set(d.slug, {
+          slug: d.slug,
+          govSlug: g.slug,
+          nameAr: d.nameAr,
+          nameEn: d.nameEn,
+        });
+      }
+      for (const v of d.villages) {
+        const va = cleanGeoToken(v.nameAr);
+        const ve = cleanGeoToken(v.nameEn);
+        if (tokenMatches(cleaned, va, ve, v.slug)) {
+          recognizedVillages.set(v.slug, {
+            slug: v.slug,
+            distSlug: d.slug,
+            govSlug: g.slug,
+            nameAr: v.nameAr,
+            nameEn: v.nameEn,
+          });
+        }
+      }
+    }
+  }
+
+  const hasRecognizedGov = recognizedGovs.size > 0;
+  const hasRecognizedDist = recognizedDists.size > 0;
+  const hasRecognizedVillage = recognizedVillages.size > 0;
+
+  // Conflicting entities at the same level → unresolved
+  if (recognizedGovs.size > 1) return unresolved(coords);
+  if (recognizedDists.size > 1) return unresolved(coords);
+  if (recognizedVillages.size > 1) return unresolved(coords);
+
   const villageMatches: MatchResult[] = [];
   const districtMatches: MatchResult[] = [];
   const govMatches: MatchResult[] = [];
 
-  // Detect recognized hierarchy tokens in the input
-  let inputHasGovToken = false;
-  let inputHasDistToken = false;
-  let inputHasVillageToken = false;
-  for (const g of geo.governorates) {
-    const ga = cleanGeoToken(g.nameAr);
-    const ge = cleanGeoToken(g.nameEn);
-    if (cleaned.some((t) => t === ga || t === ge || t === g.slug)) inputHasGovToken = true;
-    for (const d of g.districts) {
-      const da = cleanGeoToken(d.nameAr);
-      const de = cleanGeoToken(d.nameEn);
-      if (cleaned.some((t) => t === da || t === de || t === d.slug)) inputHasDistToken = true;
-      for (const v of d.villages) {
-        const va = cleanGeoToken(v.nameAr);
-        const ve = cleanGeoToken(v.nameEn);
-        if (cleaned.some((t) => t === va || t === ve || t === v.slug)) inputHasVillageToken = true;
-      }
-    }
-  }
-
   for (const gov of geo.governorates) {
-    const gAr = cleanGeoToken(gov.nameAr);
-    const gEn = cleanGeoToken(gov.nameEn);
-    const hasGov = cleaned.some((t) => t === gAr || t === gEn || t === gov.slug);
+    const govOk = !hasRecognizedGov || recognizedGovs.has(gov.slug);
 
     for (const dist of gov.districts) {
-      const dAr = cleanGeoToken(dist.nameAr);
-      const dEn = cleanGeoToken(dist.nameEn);
-      const hasDist = cleaned.some((t) => t === dAr || t === dEn || t === dist.slug);
+      const distOk = !hasRecognizedDist || recognizedDists.has(dist.slug);
 
-      let villageHitUnderThisDist = false;
       for (const v of dist.villages) {
-        const vAr = cleanGeoToken(v.nameAr);
-        const vEn = cleanGeoToken(v.nameEn);
-        const hasVillage = cleaned.some((t) => t === vAr || t === vEn || t === v.slug);
-        if (hasVillage) {
-          villageHitUnderThisDist = true;
-          // Only accept if every supplied recognized parent constraint is satisfied
-          if ((!inputHasGovToken || hasGov) && (!inputHasDistToken || hasDist)) {
-            villageMatches.push(makeExact(gov, dist, v, coords));
+        const villageOk = !hasRecognizedVillage || recognizedVillages.has(v.slug);
+        if (villageOk && distOk && govOk) {
+          // Extra parent consistency: if a district was recognized, it must belong to this gov
+          const recognizedDist = recognizedDists.get(dist.slug);
+          if (recognizedDist && recognizedDist.govSlug !== gov.slug) continue;
+          const recognizedVillage = recognizedVillages.get(v.slug);
+          if (
+            recognizedVillage &&
+            (recognizedVillage.distSlug !== dist.slug || recognizedVillage.govSlug !== gov.slug)
+          ) {
+            continue;
           }
+          villageMatches.push(
+            makeExact(
+              { slug: gov.slug, nameAr: gov.nameAr, nameEn: gov.nameEn },
+              { slug: dist.slug, govSlug: gov.slug, nameAr: dist.nameAr, nameEn: dist.nameEn },
+              { slug: v.slug, distSlug: dist.slug, govSlug: gov.slug, nameAr: v.nameAr, nameEn: v.nameEn },
+              coords
+            )
+          );
         }
       }
 
-      // District-level candidate only when no village token was present in the input
-      // (a recognized locality token that failed to match must not be discarded)
-      if (hasDist && !inputHasVillageToken) {
-        if (!inputHasGovToken || hasGov) {
-          districtMatches.push(makeDistrict(gov, dist, coords));
-        }
+      // District-level only when no village token was recognized
+      if (distOk && govOk && !hasRecognizedVillage) {
+        const recognizedDist = recognizedDists.get(dist.slug);
+        if (recognizedDist && recognizedDist.govSlug !== gov.slug) continue;
+        districtMatches.push(
+          makeDistrict(
+            { slug: gov.slug, nameAr: gov.nameAr, nameEn: gov.nameEn },
+            { slug: dist.slug, govSlug: gov.slug, nameAr: dist.nameAr, nameEn: dist.nameEn },
+            coords
+          )
+        );
       }
     }
 
-    // Governorate-level candidate only when no more-specific recognized token was supplied
-    if (hasGov && !inputHasVillageToken && !inputHasDistToken) {
-      govMatches.push(makeGov(gov, coords));
+    // Governorate-level only when no more-specific recognized token exists
+    if (govOk && !hasRecognizedVillage && !hasRecognizedDist) {
+      govMatches.push(makeGov({ slug: gov.slug, nameAr: gov.nameAr, nameEn: gov.nameEn }, coords));
     }
   }
 
-  // If a more-specific recognized token was supplied but produced no consistent match,
-  // do not fall back to a less-specific success.
-  if (inputHasVillageToken && villageMatches.length === 0) return unresolved(coords);
-  if (inputHasDistToken && !inputHasVillageToken && districtMatches.length === 0) return unresolved(coords);
+  // More-specific recognized token that produced no consistent match → unresolved
+  if (hasRecognizedVillage && villageMatches.length === 0) return unresolved(coords);
+  if (hasRecognizedDist && !hasRecognizedVillage && districtMatches.length === 0) return unresolved(coords);
 
   if (villageMatches.length === 1) return villageMatches[0];
   if (villageMatches.length > 1) return unresolved(coords);

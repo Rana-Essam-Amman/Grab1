@@ -28,7 +28,6 @@ describe('hierarchyMatcher — duplicate locality ambiguity (JO)', () => {
   });
 
   it('parent-constrained duplicate resolves to the exact canonical record', () => {
-    // "Al Mansurah" under Taybeh (Irbid) is uniquely identified by the district token
     const result = matchHierarchyPasses(geo, ['taybeh', 'al mansurah']);
     expect(result).not.toBeNull();
     expect(result?.confidence).toBe('exact');
@@ -49,7 +48,6 @@ describe('hierarchyMatcher — duplicate locality ambiguity (JO)', () => {
   });
 
   it('conflicting district + locality returns unresolved (no district-only success)', () => {
-    // Abdun is under Amman Qasabah, not under Taybeh
     const result = matchHierarchyPasses(geo, ['taybeh', 'abdun']);
     expect(result).not.toBeNull();
     expect(result?.confidence).toBe('unresolved');
@@ -59,7 +57,69 @@ describe('hierarchyMatcher — duplicate locality ambiguity (JO)', () => {
     expect(result?.neighborhoodSlug).toBeNull();
   });
 
-  it('candidate-order independence: same semantic result regardless of token order', () => {
+  it('conflicting governorate tokens return unresolved', () => {
+    const result = matchHierarchyPasses(geo, ['amman', 'aqaba', 'abdun']);
+    expect(result).not.toBeNull();
+    expect(result?.confidence).toBe('unresolved');
+    expect(result?.needsManualSelection).toBe(true);
+    expect(result?.governorateSlug).toBeNull();
+    expect(result?.districtSlug).toBeNull();
+    expect(result?.neighborhoodSlug).toBeNull();
+  });
+
+  it('conflicting district tokens return unresolved', () => {
+    // taybeh (Irbid) and amman-qasabah (Amman) are different districts; abdun belongs only to the latter
+    const result = matchHierarchyPasses(geo, ['taybeh', 'amman-qasabah', 'abdun']);
+    expect(result).not.toBeNull();
+    expect(result?.confidence).toBe('unresolved');
+    expect(result?.needsManualSelection).toBe(true);
+    expect(result?.governorateSlug).toBeNull();
+    expect(result?.districtSlug).toBeNull();
+    expect(result?.neighborhoodSlug).toBeNull();
+  });
+
+  it('conflicting governorate and district return unresolved', () => {
+    // Aqaba governorate conflicts with Taybeh district (which belongs to Irbid)
+    const result = matchHierarchyPasses(geo, ['aqaba', 'taybeh', 'al mansurah']);
+    expect(result).not.toBeNull();
+    expect(result?.confidence).toBe('unresolved');
+    expect(result?.needsManualSelection).toBe(true);
+    expect(result?.governorateSlug).toBeNull();
+    expect(result?.districtSlug).toBeNull();
+    expect(result?.neighborhoodSlug).toBeNull();
+  });
+
+  it('multiple recognized locality tokens that identify different records return unresolved', () => {
+    const result = matchHierarchyPasses(geo, ['abdun', 'al mansurah']);
+    expect(result).not.toBeNull();
+    expect(result?.confidence).toBe('unresolved');
+    expect(result?.needsManualSelection).toBe(true);
+    expect(result?.governorateSlug).toBeNull();
+    expect(result?.districtSlug).toBeNull();
+    expect(result?.neighborhoodSlug).toBeNull();
+  });
+
+  it('multiple aliases for the same canonical entity resolve successfully', () => {
+    // "amman" and its Arabic form both identify the same governorate; "abdun" is unique under it
+    const result = matchHierarchyPasses(geo, ['amman', 'العاصمة', 'abdun']);
+    expect(result).not.toBeNull();
+    expect(result?.confidence).toBe('exact');
+    expect(result?.needsManualSelection).toBe(false);
+    expect(result?.governorateSlug).toBe('amman');
+    expect(result?.districtSlug).toBe('amman-qasabah');
+    expect(result?.neighborhoodSlug).toBe('abdun');
+  });
+
+  it('arbitrary non-geographic tokens do not invalidate an otherwise valid match', () => {
+    const result = matchHierarchyPasses(geo, ['abdun', 'randomstreet', 'building42']);
+    expect(result).not.toBeNull();
+    expect(result?.confidence).toBe('exact');
+    expect(result?.needsManualSelection).toBe(false);
+    expect(result?.neighborhoodSlug).toBe('abdun');
+    expect(result?.governorateSlug).toBe('amman');
+  });
+
+  it('token order does not affect the semantic result', () => {
     const r1 = matchHierarchyPasses(geo, ['taybeh', 'al mansurah']);
     const r2 = matchHierarchyPasses(geo, ['al mansurah', 'taybeh']);
     expect(r1?.confidence).toBe('exact');
