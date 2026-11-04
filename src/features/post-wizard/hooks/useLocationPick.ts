@@ -159,11 +159,12 @@ export function useLocationPick(): UseLocationPickReturn {
   const [site, setSite] = useState(postDraft.site || "");
 
   const handleCityChange = useCallback((c: string) => {
+    updatePostDraft({ citySlug: undefined, districtSlug: undefined, neighborhoodSlug: undefined });
     setSelectedCity(c);
     setCustomCity("");
     setSelectedNeighborhood(otherLabel);
     setCustomNeighborhood("");
-  }, [otherLabel]);
+  }, [otherLabel, updatePostDraft]);
 
   const handleNeighborhoodChange = useCallback((n: string) => {
     setSelectedNeighborhood(n);
@@ -242,14 +243,30 @@ export function useLocationPick(): UseLocationPickReturn {
           neighborhoodSlug = village.slug;
         }
       } else {
-        let camp = scopeCamps.find((c) => (isArabic ? c.nameAr : c.nameEn) === neighborhoodLabel);
-        if (!camp) camp = scopeCamps.find((c) => (isArabic ? c.nameEn : c.nameAr) === neighborhoodLabel);
+        const normLabel = normalizeArabic(neighborhoodLabel);
+        let camp = scopeCamps.find((c) => normalizeArabic(isArabic ? c.nameAr : c.nameEn) === normLabel);
+        if (!camp) camp = scopeCamps.find((c) => normalizeArabic(isArabic ? c.nameEn : c.nameAr) === normLabel);
         if (camp) {
           neighborhoodSlug = camp.slug;
         } else {
-          let district = scopeDistricts.find((d) => (isArabic ? d.nameAr : d.nameEn) === neighborhoodLabel);
-          if (!district) district = scopeDistricts.find((d) => (isArabic ? d.nameEn : d.nameAr) === neighborhoodLabel);
-          if (district) districtSlug = district.slug;
+          let district = scopeDistricts.find((d) => normalizeArabic(isArabic ? d.nameAr : d.nameEn) === normLabel);
+          if (!district) district = scopeDistricts.find((d) => normalizeArabic(isArabic ? d.nameEn : d.nameAr) === normLabel);
+          if (district) {
+            districtSlug = district.slug;
+          } else {
+            const matches: { districtSlug: string; villageSlug: string }[] = [];
+            for (const d of scopeDistricts) {
+              for (const v of d.villages ?? []) {
+                if (normalizeArabic(v.nameAr) === normLabel || normalizeArabic(v.nameEn) === normLabel) {
+                  matches.push({ districtSlug: d.slug, villageSlug: v.slug });
+                }
+              }
+            }
+            if (matches.length === 1) {
+              districtSlug = matches[0].districtSlug;
+              neighborhoodSlug = matches[0].villageSlug;
+            }
+          }
         }
       }
     }
@@ -268,6 +285,7 @@ export function useLocationPick(): UseLocationPickReturn {
       : selectedNeighborhood;
 
     const { citySlug, districtSlug, neighborhoodSlug } = resolveSlugsAtSave(finalCity, finalNeighborhood);
+
 
     if (!citySlug) {
       toast.error(isArabic ? 'الرجاء اختيار المدينة من القائمة' : 'Please select the city from the list');
