@@ -17,10 +17,10 @@ interface RecognizedDist {
   nameEn: string;
 }
 
-interface RecognizedVillage {
-  slug: string;
-  distSlug: string;
+interface VillageCandidate {
   govSlug: string;
+  distSlug: string;
+  slug: string;
   nameAr: string;
   nameEn: string;
 }
@@ -28,7 +28,7 @@ interface RecognizedVillage {
 function makeExact(
   gov: RecognizedGov,
   dist: RecognizedDist,
-  v: RecognizedVillage,
+  v: VillageCandidate,
   coords?: LatLng
 ): MatchResult {
   return {
@@ -113,10 +113,12 @@ export function matchHierarchyPasses(
 ): MatchResult | null {
   if (!cleaned.length) return null;
 
-  // Collect the actual recognized entities (not just booleans)
+  // Recognized parent entities (these must be unique; conflicts are fatal)
   const recognizedGovs = new Map<string, RecognizedGov>();
   const recognizedDists = new Map<string, RecognizedDist>();
-  const recognizedVillages = new Map<string, RecognizedVillage>();
+
+  // All village candidates that matched any locality token (retain multiples for later filtering)
+  const villageCandidates: VillageCandidate[] = [];
 
   for (const g of geo.governorates) {
     const ga = cleanGeoToken(g.nameAr);
@@ -139,10 +141,10 @@ export function matchHierarchyPasses(
         const va = cleanGeoToken(v.nameAr);
         const ve = cleanGeoToken(v.nameEn);
         if (tokenMatches(cleaned, va, ve, v.slug)) {
-          recognizedVillages.set(v.slug, {
-            slug: v.slug,
-            distSlug: d.slug,
+          villageCandidates.push({
             govSlug: g.slug,
+            distSlug: d.slug,
+            slug: v.slug,
             nameAr: v.nameAr,
             nameEn: v.nameEn,
           });
@@ -151,81 +153,76 @@ export function matchHierarchyPasses(
     }
   }
 
-  const hasRecognizedGov = recognizedGovs.size > 0;
-  const hasRecognizedDist = recognizedDists.size > 0;
-  const hasRecognizedVillage = recognizedVillages.size > 0;
-
-  // Conflicting entities at the same level → unresolved
+  // Conflicting recognized parents are fatal
   if (recognizedGovs.size > 1) return unresolved(coords);
   if (recognizedDists.size > 1) return unresolved(coords);
-  if (recognizedVillages.size > 1) return unresolved(coords);
 
-  const villageMatches: MatchResult[] = [];
-  const districtMatches: MatchResult[] = [];
-  const govMatches: MatchResult[] = [];
+  // If a recognized district's parent governorate conflicts with a recognized governorate, unresolved
+  if (recognizedDists.size === 1 && recognizedGovs.size === 1) {
+    const rd = [...recognizedDists.values()][0];
+    const rg = [...recognizedGovs.values()][0];
+    if (rd.govSlug !== rg.slug) return unresolved(coords);
+  }
 
-  for (const gov of geo.governorates) {
-    const govOk = !hasRecognizedGov || recognizedGovs.has(gov.slug);
+  const hasRecognizedGov = recognizedGovs.size > 0;
+  const hasRecognizedDist = recognizedDists.size > 0;
+  const hasRecognizedVillage = villageCandidates.length > 0;
 
-    for (const dist of gov.districts) {
-      const distOk = !hasRecognizedDist || recognizedDists.has(dist.slug);
+  // Filter village candidates by all recognized parent constraints
+  const filteredVillages = villageCandidates.filter((c) => {
+    if (hasRecognizedGov && !recognizedGovs.has(c.govSlug)) return false;
+    if (hasRecognizedDist && !recognizedDists.has(c.distSlug)) return false;
+    return true;
+  });
 
-      for (const v of dist.villages) {
-        const villageOk = !hasRecognizedVillage || recognizedVillages.has(v.slug);
-        if (villageOk && distOk && govOk) {
-          // Extra parent consistency: if a district was recognized, it must belong to this gov
-          const recognizedDist = recognizedDists.get(dist.slug);
-          if (recognizedDist && recognizedDist.govSlug !== gov.slug) continue;
-          const recognizedVillage = recognizedVillages.get(v.slug);
-          if (
-            recognizedVillage &&
-            (recognizedVillage.distSlug !== dist.slug || recognizedVillage.govSlug !== gov.slug)
-          ) {
-            continue;
-          }
-          villageMatches.push(
-            makeExact(
-              { slug: gov.slug, nameAr: gov.nameAr, nameEn: gov.nameEn },
-              { slug: dist.slug, govSlug: gov.slug, nameAr: dist.nameAr, nameEn: dist.nameEn },
-              { slug: v.slug, distSlug: dist.slug, govSlug: gov.slug, nameAr: v.nameAr, nameEn: v.nameEn },
-              coords
-            )
-          );
-        }
-      }
+  // Deduplicate by full hierarchy path
+  const uniqueVillages = new Map<string, VillageCandidate>();
+  for (const c of filteredVillages) {
+    uniqueVillages.set(`${c.govSlug}|${c.distSlug}|${c.slug}`, c);
+  }
 
-      // District-level only when no village token was recognized
-      if (distOk && govOk && !hasRecognizedVillage) {
-        const recognizedDist = recognizedDists.get(dist.slug);
-        if (recognizedDist && recognizedDist.govSlug !== gov.slug) continue;
-        districtMatches.push(
-          makeDistrict(
-            { slug: gov.slug, nameAr: gov.nameAr, nameEn: gov.nameEn },
-            { slug: dist.slug, govSlug: gov.slug, nameAr: dist.nameAr, nameEn: dist.nameEn },
-            coords
-          )
-        );
-      }
-    }
+  // Multiple distinct locality candidates after parent filtering → unresolved
+  if (uniqueVillages.size > 1) return unresolved(coords);
 
-    // Governorate-level only when no more-specific recognized token exists
-    if (govOk && !hasRecognizedVillage && !hasRecognizedDist) {
-      govMatches.push(makeGov({ slug: gov.slug, nameAr: gov.nameAr, nameEn: gov.nameEn }, coords));
+  // Exactly one locality remains → success
+  if (uniqueVillages.size === 1) {
+    const c = [...uniqueVillages.values()][0];
+    const gov = geo.governorates.find((g) => g.slug === c.govSlug);
+    const dist = gov?.districts.find((d) => d.slug === c.distSlug);
+    if (gov && dist) {
+      return makeExact(
+        { slug: gov.slug, nameAr: gov.nameAr, nameEn: gov.nameEn },
+        { slug: dist.slug, govSlug: gov.slug, nameAr: dist.nameAr, nameEn: dist.nameEn },
+        c,
+        coords
+      );
     }
   }
 
-  // More-specific recognized token that produced no consistent match → unresolved
-  if (hasRecognizedVillage && villageMatches.length === 0) return unresolved(coords);
-  if (hasRecognizedDist && !hasRecognizedVillage && districtMatches.length === 0) return unresolved(coords);
+  // Locality tokens were present but none survived parent filtering → unresolved
+  if (hasRecognizedVillage && uniqueVillages.size === 0) return unresolved(coords);
 
-  if (villageMatches.length === 1) return villageMatches[0];
-  if (villageMatches.length > 1) return unresolved(coords);
+  // District-level (only when no locality token was recognized)
+  if (hasRecognizedDist && !hasRecognizedVillage) {
+    if (recognizedDists.size !== 1) return unresolved(coords);
+    const rd = [...recognizedDists.values()][0];
+    if (hasRecognizedGov && !recognizedGovs.has(rd.govSlug)) return unresolved(coords);
+    const gov = geo.governorates.find((g) => g.slug === rd.govSlug);
+    if (gov) {
+      return makeDistrict(
+        { slug: gov.slug, nameAr: gov.nameAr, nameEn: gov.nameEn },
+        rd,
+        coords
+      );
+    }
+  }
 
-  if (districtMatches.length === 1) return districtMatches[0];
-  if (districtMatches.length > 1) return unresolved(coords);
-
-  if (govMatches.length === 1) return govMatches[0];
-  if (govMatches.length > 1) return unresolved(coords);
+  // Governorate-level (only when no more-specific recognized token exists)
+  if (hasRecognizedGov && !hasRecognizedVillage && !hasRecognizedDist) {
+    if (recognizedGovs.size !== 1) return unresolved(coords);
+    const rg = [...recognizedGovs.values()][0];
+    return makeGov(rg, coords);
+  }
 
   return null;
 }
