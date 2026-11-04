@@ -157,26 +157,33 @@ export function matchHierarchyPasses(
     }
   }
 
-  // Conflicting recognized parents are fatal
+  // Conflicting recognized governorates are fatal
   if (recognizedGovs.size > 1) return unresolved(coords);
-  if (recognizedDists.size > 1) return unresolved(coords);
 
-  // If a recognized district's parent governorate conflicts with a recognized governorate, unresolved
-  if (recognizedDists.size === 1 && recognizedGovs.size === 1) {
-    const rd = [...recognizedDists.values()][0];
-    const rg = [...recognizedGovs.values()][0];
-    if (rd.govSlug !== rg.slug) return unresolved(coords);
+  // Apply recognized governorate constraint to districts before evaluating district ambiguity.
+  // A single governorate may disambiguate repeated district slugs across governorates.
+  let effectiveDists = recognizedDists;
+  if (recognizedGovs.size === 1) {
+    const govSlug = [...recognizedGovs.keys()][0];
+    effectiveDists = new Map(
+      [...recognizedDists.entries()].filter(([, d]) => d.govSlug === govSlug)
+    );
+    // A recognized district whose governorate conflicts with the recognized governorate
+    if (recognizedDists.size > 0 && effectiveDists.size === 0) return unresolved(coords);
   }
 
+  // Multiple distinct districts remain after governorate restriction → unresolved
+  if (effectiveDists.size > 1) return unresolved(coords);
+
   const hasRecognizedGov = recognizedGovs.size > 0;
-  const hasRecognizedDist = recognizedDists.size > 0;
+  const hasRecognizedDist = effectiveDists.size > 0;
   const hasRecognizedVillage = villageCandidates.length > 0;
 
   // Filter village candidates by all recognized parent constraints.
   // A recognized district constrains both governorate and district slug.
   const filteredVillages = villageCandidates.filter((c) => {
     if (hasRecognizedGov && !recognizedGovs.has(c.govSlug)) return false;
-    if (hasRecognizedDist && !recognizedDists.has(distKey(c.govSlug, c.distSlug))) return false;
+    if (hasRecognizedDist && !effectiveDists.has(distKey(c.govSlug, c.distSlug))) return false;
     return true;
   });
 
@@ -210,8 +217,8 @@ export function matchHierarchyPasses(
   // District-level (only when no locality token was recognized).
   // Complete district identity must be unique.
   if (hasRecognizedDist && !hasRecognizedVillage) {
-    if (recognizedDists.size !== 1) return unresolved(coords);
-    const rd = [...recognizedDists.values()][0];
+    if (effectiveDists.size !== 1) return unresolved(coords);
+    const rd = [...effectiveDists.values()][0];
     if (hasRecognizedGov && !recognizedGovs.has(rd.govSlug)) return unresolved(coords);
     const gov = geo.governorates.find((g) => g.slug === rd.govSlug);
     if (gov) {
