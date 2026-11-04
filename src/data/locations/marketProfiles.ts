@@ -27,8 +27,8 @@ const PROFILES: readonly MarketProfile[] = [
       },
       {
         levelIndex: 2,
-        labelEn: 'District / Liwa',
-        labelAr: 'اللواء',
+        labelEn: 'Area',
+        labelAr: 'المنطقة',
         canonicalSlot: 'district_slug',
         optional: false,
       },

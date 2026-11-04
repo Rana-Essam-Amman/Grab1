@@ -62,7 +62,7 @@ describe('Market Profiles — Presentation Metadata', () => {
     const joLabels = jo!.visibleLevels.map((l) => l.labelEn);
     const saLabels = sa!.visibleLevels.map((l) => l.labelEn);
 
-    expect(joLabels).toEqual(['Governorate', 'District / Liwa', 'Locality / Neighborhood']);
+    expect(joLabels).toEqual(['Governorate', 'Area', 'Locality / Neighborhood']);
     expect(saLabels).toEqual(['Region', 'City', 'Neighborhood']);
     expect(joLabels).not.toEqual(saLabels);
 
