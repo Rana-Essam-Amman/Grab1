@@ -8,7 +8,7 @@ vi.mock('@/data/locations/registry', () => {
     JO: [
       {
         slug: 'amman',
-        nameAr: 'العاصمة',
+        nameAr: 'عمان',
         nameEn: 'Amman',
         districts: [
           {
@@ -187,15 +187,15 @@ describe('LocationHierarchyFilter', () => {
     const { rerender } = render(
       <LocationHierarchyFilter countryCode="JO" isArabic={false} activeNeighborhood={null} onSelect={vi.fn()} />
     );
-    expect(screen.getByText('Governorate')).toBeInTheDocument();
+    expect(screen.getByText('City')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /^Amman$/ }));
-    expect(screen.getByText('Area')).toBeInTheDocument();
+    expect(screen.getByText('Neighbourhood')).toBeInTheDocument();
     expect(screen.queryByText('Districts')).not.toBeInTheDocument();
     expect(screen.queryByText('Liwa')).not.toBeInTheDocument();
 
     const arabic = render(<LocationHierarchyFilter countryCode="JO" isArabic={true} activeNeighborhood={null} onSelect={vi.fn()} />);
-    fireEvent.click(arabic.getByRole('button', { name: 'العاصمة' }));
-    expect(arabic.getByText('المنطقة')).toBeInTheDocument();
+    fireEvent.click(arabic.getByRole('button', { name: 'عمان' }));
+    expect(arabic.getByText('الحي')).toBeInTheDocument();
     expect(arabic.queryByText('اللواء')).not.toBeInTheDocument();
     expect(arabic.queryByText('الأقضية')).not.toBeInTheDocument();
     arabic.unmount();
@@ -205,7 +205,7 @@ describe('LocationHierarchyFilter', () => {
     rerender(<LocationHierarchyFilter countryCode="PS" isArabic={false} activeNeighborhood={null} onSelect={vi.fn()} />);
     expect(screen.getByText('Area')).toBeInTheDocument();
     rerender(<LocationHierarchyFilter countryCode="LB" isArabic={false} activeNeighborhood={null} onSelect={vi.fn()} />);
-    expect(screen.getByText('Area')).toBeInTheDocument();
+    expect(screen.getByText('Governorate')).toBeInTheDocument();
     rerender(<LocationHierarchyFilter countryCode="SY" isArabic={false} activeNeighborhood={null} onSelect={vi.fn()} />);
     expect(screen.getByText('Area')).toBeInTheDocument();
 
