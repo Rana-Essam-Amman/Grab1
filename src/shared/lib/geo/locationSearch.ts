@@ -55,8 +55,11 @@ export function searchLocationsCanonical(
   parent?: ParentContext
 ): LocationSearchResult {
   if (!getMarketProfile(marketCode)) return EMPTY(marketCode);
-  const candidates = collectCandidates(marketCode, query, parent);
-  if (candidates.length === 0) return EMPTY(marketCode);
+  const queryMatches = collectCandidates(marketCode, query);
+  if (queryMatches.length === 0) return EMPTY(marketCode);
+
+  const candidates = parent ? collectCandidates(marketCode, query, parent) : queryMatches;
+  if (candidates.length === 0) return ambiguous(marketCode, queryMatches);
   if (candidates.length === 1) {
     return { marketCode, status: 'unique', confidence: 'exact', candidates, resolved: candidates[0] };
   }

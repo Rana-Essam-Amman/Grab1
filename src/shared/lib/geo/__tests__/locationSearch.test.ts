@@ -170,4 +170,38 @@ describe('unified location search — six markets', () => {
     expect(conflict.resolved).toBeNull();
     expect(conflict.status).not.toBe('unique');
   });
+
+  it('search and resolve agree across conflict, disambiguation, ambiguity, and unknown query', () => {
+    const conflictParent = { citySlug: 'aqaba' };
+    const conflictSearch = searchLocationsCanonical('JO', 'Al Mansurah', conflictParent);
+    const conflictResolve = resolveLocationCanonical('JO', 'Al Mansurah', conflictParent);
+    expect(conflictSearch.status).toBe('ambiguous');
+    expect(conflictSearch.confidence).toBe('unresolved');
+    expect(conflictSearch.resolved).toBeNull();
+    expect(conflictResolve.status).toBe(conflictSearch.status);
+    expect(conflictResolve.confidence).toBe(conflictSearch.confidence);
+    expect(conflictResolve.resolved).toBeNull();
+
+    const validParent = { districtSlug: 'taybeh' };
+    const validSearch = searchLocationsCanonical('JO', 'Al Mansurah', validParent);
+    const validResolve = resolveLocationCanonical('JO', 'Al Mansurah', validParent);
+    expect(validSearch.status).toBe('unique');
+    expect(validResolve.status).toBe('unique');
+    expect(validResolve.resolved?.citySlug).toBe('irbid');
+    expect(validResolve.resolved?.districtSlug).toBe('taybeh');
+    expect(validResolve.resolved?.neighborhoodSlug).toBe('al-mansurah');
+    expect(validResolve.resolved?.neighborhoodSlug).toBe(validSearch.resolved?.neighborhoodSlug);
+
+    const ammanSearch = searchLocationsCanonical('JO', 'Amman');
+    const ammanResolve = resolveLocationCanonical('JO', 'Amman');
+    expect(ammanSearch.status).toBe('ambiguous');
+    expect(ammanResolve.status).toBe('ambiguous');
+    expect(ammanResolve.resolved).toBeNull();
+
+    const unknown = 'definitely-not-a-place-xyz';
+    expect(searchLocationsCanonical('JO', unknown).status).toBe('none');
+    expect(resolveLocationCanonical('JO', unknown).status).toBe('none');
+    expect(searchLocationsCanonical('JO', unknown).resolved).toBeNull();
+    expect(resolveLocationCanonical('JO', unknown).resolved).toBeNull();
+  });
 });
