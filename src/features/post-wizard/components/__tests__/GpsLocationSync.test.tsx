@@ -9,8 +9,43 @@ vi.mock('../../hooks/useGeoLocation', () => ({
 }));
 
 import { useGeoLocation } from '../../hooks/useGeoLocation';
+import type { UseGeoLocationReturn } from '../../hooks/useGeoLocation.types';
+import type { CanonicalLocation } from '@/shared/lib/geo/geo.types';
 
-const mockUseGeo = useGeoLocation as any;
+const mockUseGeo = vi.mocked(useGeoLocation);
+
+function makeCanonical(partial: Partial<CanonicalLocation> & Pick<CanonicalLocation, 'countryCode' | 'needsManualSelection'>): CanonicalLocation {
+  return {
+    governorateSlug: null,
+    governorateEn: null,
+    governorateAr: null,
+    districtSlug: null,
+    districtEn: null,
+    districtAr: null,
+    neighborhoodSlug: null,
+    neighborhoodEn: null,
+    neighborhoodAr: null,
+    confidence: 'exact',
+    resolutionSource: 'gps',
+    ...partial,
+  };
+}
+
+function makeGeoReturn(partial: Partial<UseGeoLocationReturn> = {}): UseGeoLocationReturn {
+  return {
+    status: 'idle',
+    match: null,
+    canonicalLocation: null,
+    deviceLat: null,
+    deviceLng: null,
+    candidates: [],
+    error: null,
+    requestId: 0,
+    request: vi.fn(),
+    reset: vi.fn(),
+    ...partial,
+  };
+}
 
 describe('GpsLocationSync', () => {
   beforeEach(() => {
@@ -24,9 +59,9 @@ describe('GpsLocationSync', () => {
   });
 
   it('A. GPS success updates visible Jordan picker selection', async () => {
-    mockUseGeo.mockReturnValue({
+    mockUseGeo.mockReturnValue(makeGeoReturn({
       status: 'success',
-      canonicalLocation: {
+      canonicalLocation: makeCanonical({
         countryCode: 'JO',
         governorateAr: 'العاصمة',
         governorateEn: 'Amman',
@@ -36,12 +71,12 @@ describe('GpsLocationSync', () => {
         districtSlug: 'sahab',
         neighborhoodSlug: 'hayy-tabarbawr',
         needsManualSelection: false,
-      },
+      }),
       error: null,
       requestId: 1,
       request: vi.fn(),
       reset: vi.fn(),
-    });
+    }));
 
     const onCityChange = vi.fn();
     const onNeighborhoodChange = vi.fn();
@@ -61,9 +96,9 @@ describe('GpsLocationSync', () => {
   });
 
   it('B. GPS success produces correct parent city, district, and locality labels', async () => {
-    mockUseGeo.mockReturnValue({
+    mockUseGeo.mockReturnValue(makeGeoReturn({
       status: 'success',
-      canonicalLocation: {
+      canonicalLocation: makeCanonical({
         countryCode: 'JO',
         governorateAr: 'العاصمة',
         governorateEn: 'Amman',
@@ -73,12 +108,12 @@ describe('GpsLocationSync', () => {
         districtSlug: 'wadi-essier',
         neighborhoodSlug: 'hayy-khilda',
         needsManualSelection: false,
-      },
+      }),
       error: null,
       requestId: 1,
       request: vi.fn(),
       reset: vi.fn(),
-    });
+    }));
 
     render(
       <LocationMyLocationButton isArabic={true} preferredCountry="JO" onCityChange={vi.fn()} onNeighborhoodChange={vi.fn()} />
@@ -95,9 +130,9 @@ describe('GpsLocationSync', () => {
   });
 
   it('C. GPS and manual selection of the same place produce identical canonical slugs', async () => {
-    mockUseGeo.mockReturnValue({
+    mockUseGeo.mockReturnValue(makeGeoReturn({
       status: 'success',
-      canonicalLocation: {
+      canonicalLocation: makeCanonical({
         countryCode: 'JO',
         governorateAr: 'العاصمة',
         governorateEn: 'Amman',
@@ -107,12 +142,12 @@ describe('GpsLocationSync', () => {
         districtSlug: 'amman-qasabah',
         neighborhoodSlug: 'abdun',
         needsManualSelection: false,
-      },
+      }),
       error: null,
       requestId: 1,
       request: vi.fn(),
       reset: vi.fn(),
-    });
+    }));
 
     render(
       <LocationMyLocationButton isArabic={true} preferredCountry="JO" onCityChange={vi.fn()} onNeighborhoodChange={vi.fn()} />
@@ -135,14 +170,14 @@ describe('GpsLocationSync', () => {
         city: "العاصمة", neighborhood: "حي طبربور", citySlug: "amman", districtSlug: "sahab", neighborhoodSlug: "hayy-tabarbawr",
       },
     });
-    mockUseGeo.mockReturnValue({
+    mockUseGeo.mockReturnValue(makeGeoReturn({
       status: 'error',
       canonicalLocation: null,
       error: 'failed',
       requestId: 1,
       request: vi.fn(),
       reset: vi.fn(),
-    });
+    }));
 
     render(
       <LocationMyLocationButton isArabic={true} preferredCountry="JO" onCityChange={vi.fn()} onNeighborhoodChange={vi.fn()} />
@@ -156,14 +191,14 @@ describe('GpsLocationSync', () => {
   });
 
   it('E. Manual fallback after GPS failure works', async () => {
-    mockUseGeo.mockReturnValue({
+    mockUseGeo.mockReturnValue(makeGeoReturn({
       status: 'error',
       canonicalLocation: null,
       error: 'failed',
       requestId: 1,
       request: vi.fn(),
       reset: vi.fn(),
-    });
+    }));
 
     const onCityChange = vi.fn();
     render(
@@ -175,9 +210,9 @@ describe('GpsLocationSync', () => {
   });
 
   it('F. Non-Jordan GPS behavior remains unchanged', async () => {
-    mockUseGeo.mockReturnValue({
+    mockUseGeo.mockReturnValue(makeGeoReturn({
       status: 'success',
-      canonicalLocation: {
+      canonicalLocation: makeCanonical({
         countryCode: 'SA',
         governorateAr: 'الرياض',
         governorateEn: 'Riyadh',
@@ -185,12 +220,12 @@ describe('GpsLocationSync', () => {
         neighborhoodEn: 'Neighborhood',
         governorateSlug: 'riyadh',
         needsManualSelection: false,
-      },
+      }),
       error: null,
       requestId: 1,
       request: vi.fn(),
       reset: vi.fn(),
-    });
+    }));
 
     const onCityChange = vi.fn();
     render(

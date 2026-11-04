@@ -49,7 +49,6 @@ describe('ExploreFilterIntegration', () => {
     fireEvent.change(search, { target: { value: 'طبربور' } });
 
     const item = screen.getByTestId('jordan-filter-result-vill-amman-sahab-hayy-tabarbawr');
-    const item = screen.getByTestId('jordan-filter-result-vill-amman-sahab-hayy-tabarbawr');
     fireEvent.click(item);
 
     expect(onLocationChange).toHaveBeenCalled();
