@@ -2,22 +2,17 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { getAllGovernorates, getAllDistricts, getAllCamps } from '@/data/locations/registry';
 import { normalizeArabic } from '@/shared/lib/arabicNormalize';
 import type { Governorate, District, Village, RefugeeCamp } from '@/data/locations/types';
-
-interface LocationSelection {
-  readonly governorateSlug: string | null;
-  readonly districtSlug: string | null;
-  readonly neighborhoodSlug: string | null;
-  readonly label: string | null;
-  readonly cityEn: string | null;
-  readonly cityAr: string | null;
-}
+import { campsForGovernorate } from './locationHierarchyProfile';
+import {
+  campBelongsToGovernorate, childSelection, districtSelection, emptySelection, governorateSelection,
+} from './locationHierarchySelection';
 
 interface Params {
   readonly countryCode: string;
   readonly isArabic: boolean;
   readonly activeNeighborhood: string | null;
   readonly onSelect: (label: string | null) => void;
-  readonly onLocationChange?: (selection: LocationSelection) => void;
+  readonly onLocationChange?: (selection: ReturnType<typeof emptySelection>) => void;
   readonly initialGovSlug?: string | null;
   readonly initialDistSlug?: string | null;
 }
@@ -28,14 +23,11 @@ const filterItems = <T extends { nameAr: string; nameEn: string }>(items: readon
   return items.filter((item) => normalizeArabic(item.nameAr).includes(q) || item.nameEn.toLowerCase().includes(q));
 };
 
+const isActive = (active: string | null, item: { nameAr: string; nameEn: string }): boolean =>
+  active === item.nameAr || active === item.nameEn;
+
 export function useLocationHierarchyFilter({
-  countryCode,
-  isArabic,
-  activeNeighborhood,
-  onSelect,
-  onLocationChange,
-  initialGovSlug = null,
-  initialDistSlug = null,
+  countryCode, isArabic, activeNeighborhood, onSelect, onLocationChange, initialGovSlug = null, initialDistSlug = null,
 }: Params) {
   const [textFilter, setTextFilter] = useState('');
   const [selectedGov, setSelectedGov] = useState<string | null>(initialGovSlug);
@@ -55,87 +47,52 @@ export function useLocationHierarchyFilter({
     setSelectedGov(null);
     setSelectedDist(null);
     onSelect(null);
-    onLocationChange?.({ governorateSlug: null, districtSlug: null, neighborhoodSlug: null, label: null, cityEn: null, cityAr: null });
+    onLocationChange?.(emptySelection());
   }, [countryCode, onSelect, onLocationChange]);
 
   const governorates = useMemo(() => getAllGovernorates(countryCode), [countryCode]);
-  const districts = useMemo(
-    () => (selectedGov ? getAllDistricts(countryCode, selectedGov) : []),
-    [countryCode, selectedGov],
-  );
+  const districts = useMemo(() => (selectedGov ? getAllDistricts(countryCode, selectedGov) : []), [countryCode, selectedGov]);
   const villages = useMemo(
-    () =>
-      selectedGov && selectedDist
-        ? districts.find((d) => d.slug === selectedDist)?.villages ?? []
-        : [],
+    () => (selectedGov && selectedDist ? districts.find((d) => d.slug === selectedDist)?.villages ?? [] : []),
     [selectedGov, selectedDist, districts],
   );
-  const camps = useMemo(() => getAllCamps(countryCode), [countryCode]);
-
+  const camps = useMemo(() => campsForGovernorate(getAllCamps(countryCode), selectedGov), [countryCode, selectedGov]);
   const filteredGovs = useMemo(() => filterItems(governorates, textFilter), [governorates, textFilter]);
   const filteredDistricts = useMemo(() => filterItems(districts, textFilter), [districts, textFilter]);
   const filteredVillages = useMemo(() => filterItems(villages, textFilter), [villages, textFilter]);
   const filteredCamps = useMemo(() => filterItems(camps, textFilter), [camps, textFilter]);
 
   const onGovSelect = (g: Governorate) => {
-    const next = selectedGov === g.slug ? null : g.slug;
-    setSelectedGov(next);
+    const next = selectedGov === g.slug ? null : g;
+    setSelectedGov(next?.slug ?? null);
     setSelectedDist(null);
-    const label = next ? (isArabic ? g.nameAr : g.nameEn) : null;
     onSelect(null);
-    onLocationChange?.({ governorateSlug: next, districtSlug: null, neighborhoodSlug: null, label, cityEn: next ? g.nameEn : null, cityAr: next ? g.nameAr : null });
+    onLocationChange?.(governorateSelection(next, isArabic));
   };
 
   const onDistSelect = (d: District) => {
-    const next = selectedDist === d.slug ? null : d.slug;
-    setSelectedDist(next);
-    const label = next ? (isArabic ? d.nameAr : d.nameEn) : null;
+    const next = selectedDist === d.slug ? null : d;
+    setSelectedDist(next?.slug ?? null);
     onSelect(null);
-    onLocationChange?.({ governorateSlug: selectedGov, districtSlug: next, neighborhoodSlug: null, label, cityEn: null, cityAr: null });
+    onLocationChange?.(districtSelection(selectedGov, next, isArabic));
   };
 
   const onVillageSelect = (v: Village) => {
-    const label = isArabic ? v.nameAr : v.nameEn;
-    const active = activeNeighborhood === v.nameAr || activeNeighborhood === v.nameEn;
-    const next = active ? null : label;
-    onSelect(next);
-    onLocationChange?.({
-      governorateSlug: selectedGov,
-      districtSlug: selectedDist,
-      neighborhoodSlug: next ? v.slug : null,
-      label: next,
-      cityEn: null,
-      cityAr: null,
-    });
+    const next = isActive(activeNeighborhood, v) ? null : v;
+    onSelect(next ? (isArabic ? v.nameAr : v.nameEn) : null);
+    onLocationChange?.(childSelection(selectedGov, selectedDist, next, isArabic));
   };
 
   const onCampSelect = (c: RefugeeCamp) => {
-    const label = isArabic ? c.nameAr : c.nameEn;
-    const active = activeNeighborhood === c.nameAr || activeNeighborhood === c.nameEn;
-    const next = active ? null : label;
-    onSelect(next);
-    onLocationChange?.({
-      governorateSlug: selectedGov,
-      districtSlug: null,
-      neighborhoodSlug: next ? c.slug : null,
-      label: next,
-      cityEn: null,
-      cityAr: null,
-    });
+    if (!campBelongsToGovernorate(c, selectedGov)) return;
+    const next = isActive(activeNeighborhood, c) ? null : c;
+    onSelect(next ? (isArabic ? c.nameAr : c.nameEn) : null);
+    onLocationChange?.(childSelection(selectedGov, null, next, isArabic));
   };
 
   return {
-    textFilter,
-    setTextFilter,
-    selectedGov,
-    selectedDist,
-    filteredGovs,
-    filteredDistricts,
-    filteredVillages,
-    filteredCamps,
-    onGovSelect,
-    onDistSelect,
-    onVillageSelect,
-    onCampSelect,
+    textFilter, setTextFilter, selectedGov, selectedDist,
+    filteredGovs, filteredDistricts, filteredVillages, filteredCamps,
+    onGovSelect, onDistSelect, onVillageSelect, onCampSelect,
   };
 }

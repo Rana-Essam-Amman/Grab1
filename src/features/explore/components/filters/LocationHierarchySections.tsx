@@ -1,9 +1,11 @@
 import React from 'react';
 import { LocationFilterSection } from './LocationHierarchySection';
 import type { Governorate, District, Village, RefugeeCamp } from '@/data/locations/types';
+import type { HierarchyLabels } from './locationHierarchyProfile';
 
 interface Props {
   readonly isArabic: boolean;
+  readonly labels: HierarchyLabels;
   readonly activeNeighborhood: string | null;
   readonly selectedGov: string | null;
   readonly selectedDist: string | null;
@@ -18,31 +20,24 @@ interface Props {
 }
 
 export const LocationHierarchySections: React.FC<Props> = ({
-  isArabic,
-  activeNeighborhood,
-  selectedGov,
-  selectedDist,
-  filteredGovs,
-  filteredDistricts,
-  filteredVillages,
-  filteredCamps,
-  onGovSelect,
-  onDistSelect,
-  onVillageSelect,
-  onCampSelect,
+  isArabic, labels, activeNeighborhood, selectedGov, selectedDist,
+  filteredGovs, filteredDistricts, filteredVillages, filteredCamps,
+  onGovSelect, onDistSelect, onVillageSelect, onCampSelect,
 }) => (
   <>
-    <LocationFilterSection
-      title={isArabic ? 'المحافظة' : 'Governorate'}
-      items={filteredGovs}
-      isArabic={isArabic}
-      activeNeighborhood={activeNeighborhood}
-      selectedSlug={selectedGov}
-      onItemSelect={onGovSelect}
-    />
-    {selectedGov && (
+    {labels.level1 && (
       <LocationFilterSection
-        title={isArabic ? 'الألواء / الأقضية' : 'Districts'}
+        title={labels.level1}
+        items={filteredGovs}
+        isArabic={isArabic}
+        activeNeighborhood={activeNeighborhood}
+        selectedSlug={selectedGov}
+        onItemSelect={onGovSelect}
+      />
+    )}
+    {selectedGov && labels.level2 && (
+      <LocationFilterSection
+        title={labels.level2}
         items={filteredDistricts}
         isArabic={isArabic}
         activeNeighborhood={activeNeighborhood}
@@ -50,21 +45,27 @@ export const LocationHierarchySections: React.FC<Props> = ({
         onItemSelect={onDistSelect}
       />
     )}
-    {selectedDist && (
-      <LocationFilterSection
-        title={isArabic ? 'القرى / المناطق' : 'Villages'}
-        items={filteredVillages}
-        isArabic={isArabic}
-        activeNeighborhood={activeNeighborhood}
-        onItemSelect={onVillageSelect}
-      />
+    {labels.hasLevel3 && selectedDist && labels.level3 && (
+      <div data-testid="hierarchy-level-3">
+        <LocationFilterSection
+          title={labels.level3}
+          items={filteredVillages}
+          isArabic={isArabic}
+          activeNeighborhood={activeNeighborhood}
+          onItemSelect={onVillageSelect}
+        />
+      </div>
     )}
-    <LocationFilterSection
-      title={isArabic ? 'مخيمات' : 'Refugee Camps'}
-      items={filteredCamps}
-      isArabic={isArabic}
-      activeNeighborhood={activeNeighborhood}
-      onItemSelect={onCampSelect}
-    />
+    {selectedGov && (
+      <div data-testid="hierarchy-camps">
+        <LocationFilterSection
+          title={isArabic ? 'مخيمات' : 'Refugee Camps'}
+          items={filteredCamps}
+          isArabic={isArabic}
+          activeNeighborhood={activeNeighborhood}
+          onItemSelect={onCampSelect}
+        />
+      </div>
+    )}
   </>
 );

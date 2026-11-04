@@ -2,6 +2,7 @@ import React from 'react';
 import { useLocationHierarchyFilter } from './useLocationHierarchyFilter';
 import { JordanExploreSearchResults } from './JordanExploreSearchResults';
 import { LocationHierarchySections } from './LocationHierarchySections';
+import { hierarchyLabels } from './locationHierarchyProfile';
 import type { JordanLocationSearchResult } from '@/features/post-wizard/helpers/jordanLocationIndex';
 
 interface Props {
@@ -67,6 +68,7 @@ export const LocationHierarchyFilter: React.FC<Props> = ({
     setTextFilter('');
   };
 
+  const labels = hierarchyLabels(countryCode, isArabic);
   const isJordanDirectSearch = countryCode === 'JO' && textFilter.trim().length > 0;
 
   return (
@@ -85,6 +87,7 @@ export const LocationHierarchyFilter: React.FC<Props> = ({
       ) : (
         <LocationHierarchySections
           isArabic={isArabic}
+          labels={labels}
           activeNeighborhood={activeNeighborhood}
           selectedGov={selectedGov}
           selectedDist={selectedDist}
