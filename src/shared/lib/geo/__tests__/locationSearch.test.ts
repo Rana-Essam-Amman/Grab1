@@ -1,0 +1,135 @@
+import { describe, it, expect } from 'vitest';
+import {
+  searchLocationsCanonical,
+  resolveLocationCanonical,
+} from '../locationSearch';
+import { getMarketProfile } from '@/data/locations/marketProfiles';
+import { matchHierarchyPasses } from '../adapters/hierarchyMatcher';
+import { getCountryGeo } from '@/data/locations/registry';
+
+describe('unified location search — six markets', () => {
+  it('Arabic and English search parity for JO governorate and locality', () => {
+    const ar = searchLocationsCanonical('JO', 'العاصمة');
+    expect(ar.status).toBe('unique');
+    expect(ar.resolved?.citySlug).toBe('amman');
+    expect(ar.resolved?.canonicalSlot).toBe('city_slug');
+
+    // "Amman" also names a locality under Amman Qasabah, so it must stay ambiguous.
+    const en = searchLocationsCanonical('JO', 'Amman');
+    expect(en.status).toBe('ambiguous');
+    expect(en.candidates.some((c) => c.slug === 'amman' && c.canonicalSlot === 'city_slug')).toBe(true);
+    expect(en.candidates.some((c) => c.neighborhoodSlug === 'amman')).toBe(true);
+
+    const locEn = searchLocationsCanonical('JO', 'abdun');
+    const locAr = searchLocationsCanonical('JO', 'عبدون');
+    expect(locEn.resolved?.neighborhoodSlug).toBe('abdun');
+    expect(locAr.resolved?.neighborhoodSlug).toBe('abdun');
+    expect(locEn.resolved?.citySlug).toBe('amman');
+    expect(locEn.resolved?.districtSlug).toBe('amman-qasabah');
+  });
+
+  it('search results include complete parent context and correct slots', () => {
+    const area = searchLocationsCanonical('JO', 'amman-qasabah');
+    expect(area.resolved?.canonicalSlot).toBe('district_slug');
+    expect(area.resolved?.citySlug).toBe('amman');
+    expect(area.resolved?.districtSlug).toBe('amman-qasabah');
+    expect(area.resolved?.neighborhoodSlug).toBeNull();
+    expect(area.resolved?.parentPath.citySlug).toBe('amman');
+
+    const locality = searchLocationsCanonical('SA', 'al-olaya');
+    expect(locality.resolved?.canonicalSlot).toBe('neighborhood_slug');
+    expect(locality.resolved?.citySlug).toBe('riyadh-region');
+    expect(locality.resolved?.districtSlug).toBe('riyadh-city');
+    expect(locality.resolved?.neighborhoodSlug).toBe('al-olaya');
+  });
+
+  it('district result never places district slug in citySlug', () => {
+    const result = searchLocationsCanonical('JO', 'amman-qasabah');
+    expect(result.resolved?.citySlug).not.toBe(result.resolved?.districtSlug);
+    expect(result.resolved?.citySlug).toBe('amman');
+  });
+
+  it('duplicate locality without parent context is ambiguous', () => {
+    const result = resolveLocationCanonical('JO', 'Al Mansurah');
+    expect(result.status).toBe('ambiguous');
+    expect(result.confidence).toBe('unresolved');
+    expect(result.resolved).toBeNull();
+    expect(result.candidates.length).toBeGreaterThan(1);
+  });
+
+  it('duplicate locality with valid parent context resolves exactly', () => {
+    const result = resolveLocationCanonical('JO', 'Al Mansurah', { districtSlug: 'taybeh' });
+    expect(result.status).toBe('unique');
+    expect(result.resolved?.citySlug).toBe('irbid');
+    expect(result.resolved?.districtSlug).toBe('taybeh');
+    expect(result.resolved?.neighborhoodSlug).toBe('al-mansurah');
+    expect(result.resolved?.canonicalSlot).toBe('neighborhood_slug');
+  });
+
+  it('conflicting parent context returns unresolved', () => {
+    const result = resolveLocationCanonical('JO', 'Al Mansurah', { citySlug: 'aqaba' });
+    expect(result.status).toBe('ambiguous');
+    expect(result.confidence).toBe('unresolved');
+    expect(result.resolved).toBeNull();
+  });
+
+  it('unknown market and empty query return no results', () => {
+    expect(searchLocationsCanonical('XX', 'Amman').status).toBe('none');
+    expect(resolveLocationCanonical('XX', 'Amman').candidates).toEqual([]);
+    expect(searchLocationsCanonical('JO', '   ').status).toBe('none');
+    expect(resolveLocationCanonical('JO', '').status).toBe('none');
+  });
+
+  it('Kuwait stays two-level and does not fabricate a neighborhood', () => {
+    const profile = getMarketProfile('KW');
+    expect(profile?.visibleLevels).toHaveLength(2);
+    const gov = searchLocationsCanonical('KW', 'al-asimah');
+    expect(gov.resolved?.canonicalSlot).toBe('city_slug');
+    expect(gov.resolved?.neighborhoodSlug).toBeNull();
+    const area = searchLocationsCanonical('KW', 'al-kuwait-city');
+    expect(area.resolved?.canonicalSlot).toBe('district_slug');
+    expect(area.resolved?.citySlug).toBe('al-asimah');
+    expect(area.resolved?.districtSlug).toBe('al-kuwait-city');
+    expect(area.resolved?.neighborhoodSlug).toBeNull();
+    expect(searchLocationsCanonical('KW', 'nonexistent-village').status).toBe('none');
+  });
+
+  it('covers PS, LB, and SY with parent-preserving results', () => {
+    const ps = searchLocationsCanonical('PS', 'jenin');
+    expect(ps.status).not.toBe('none');
+    expect(ps.candidates.every((c) => c.marketCode === 'PS')).toBe(true);
+
+    const lb = searchLocationsCanonical('LB', 'achrafieh');
+    expect(lb.resolved?.citySlug).toBe('beirut');
+    expect(lb.resolved?.districtSlug).toBe('beirut-city');
+    expect(lb.resolved?.neighborhoodSlug).toBe('achrafieh');
+
+    const sy = searchLocationsCanonical('SY', 'al-midan');
+    expect(sy.resolved?.citySlug).toBe('damascus');
+    expect(sy.resolved?.districtSlug).toBe('damascus-city');
+    expect(sy.resolved?.neighborhoodSlug).toBe('al-midan');
+  });
+
+  it('JO profile label remains Area and profiles are unchanged', () => {
+    const jo = getMarketProfile('JO');
+    expect(jo?.visibleLevels[1].labelEn).toBe('Area');
+    expect(jo?.visibleLevels[1].labelAr).toBe('المنطقة');
+    expect(jo?.visibleLevels[1].canonicalSlot).toBe('district_slug');
+    expect(getMarketProfile('SA')?.visibleLevels.map((l) => l.labelEn)).toEqual([
+      'Region',
+      'City',
+      'Neighborhood',
+    ]);
+  });
+
+  it('preserves hierarchyMatcher fail-closed behavior', () => {
+    const geo = getCountryGeo('JO');
+    expect(geo).not.toBeNull();
+    const unique = matchHierarchyPasses(geo!, ['abdun']);
+    expect(unique?.neighborhoodSlug).toBe('abdun');
+    const ambiguous = matchHierarchyPasses(geo!, ['al mansurah']);
+    expect(ambiguous?.confidence).toBe('unresolved');
+    const constrained = matchHierarchyPasses(geo!, ['taybeh', 'al mansurah']);
+    expect(constrained?.neighborhoodSlug).toBe('al-mansurah');
+  });
+});
