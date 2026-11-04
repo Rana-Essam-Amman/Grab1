@@ -13,6 +13,7 @@ import { SearchableDropdown } from '@/shared/ui/SearchableDropdown';
 import { useLiveSearch } from '../hooks/useLiveSearch';
 import { JordanLocationPicker } from './JordanLocationPicker';
 import type { JordanLocationSearchResult } from '../helpers/jordanLocationIndex';
+import { getMarketProfile } from '@/data/locations/marketProfiles';
 
 interface Props {
   isArabic: boolean;
@@ -54,6 +55,11 @@ export const LocationFields: React.FC<Props> = ({
   onJordanLocationSelect,
 }) => {
   const { browseCountryCode } = useUI();
+  const profile = getMarketProfile(browseCountryCode);
+  const cityLevel = profile?.visibleLevels[0];
+  const areaLevel = profile?.visibleLevels[1];
+  const cityLevelLabel = isArabic ? cityLevel?.labelAr : cityLevel?.labelEn;
+  const areaLevelLabel = isArabic ? areaLevel?.labelAr : areaLevel?.labelEn;
   const { postDraft, updatePostDraft } = usePostWizard();
   const pinLat = latitude ?? postDraft.latitude;
   const pinLng = longitude ?? postDraft.longitude;
@@ -119,7 +125,7 @@ export const LocationFields: React.FC<Props> = ({
       ) : (
         <>
           <div>
-            <label className="block text-xs font-bold text-ink mb-1.5">{isArabic ? "المحافظة / المدينة" : "Governorate / City"}</label>
+            <label className="block text-xs font-bold text-ink mb-1.5">{cityLevelLabel || (isArabic ? "المحافظة / المدينة" : "Governorate / City")}</label>
             <div data-testid="location-city-wrapper">
               <SearchableDropdown
                 options={cities}
@@ -136,7 +142,7 @@ export const LocationFields: React.FC<Props> = ({
 
           {neighborhoods.length > 0 && (
             <div>
-              <label className="block text-xs font-bold text-ink mb-1.5">{isArabic ? "اللواء / المنطقة / الحي" : "District / Area / Neighborhood"}</label>
+              <label className="block text-xs font-bold text-ink mb-1.5">{areaLevelLabel || (isArabic ? "اللواء / المنطقة / الحي" : "District / Area / Neighborhood")}</label>
               <div data-testid="location-neighborhood-wrapper">
                 <SearchableDropdown
                   options={allNeighborhoods}
