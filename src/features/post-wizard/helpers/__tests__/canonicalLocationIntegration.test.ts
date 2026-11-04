@@ -1,7 +1,29 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+import { getAllCamps } from '@/data/locations/registry';
+import { resolveLocationCanonical } from '@/shared/lib/geo/locationSearch';
 import { resolveAiLocationSlugs, uniqueExactCamp } from '../aiLocationResolver';
 import { buildAppliedDraft } from '../../hooks/useAiPublishFlow.helpers';
 import { preserveVerifiedJordanSelection, resolveTraditionalLocationSlugs } from '../traditionalLocationResolver';
+
+const { ambiguousCamp } = vi.hoisted(() => ({
+  ambiguousCamp: {
+    slug: 'al-mansurah-camp',
+    nameEn: 'Al Mansurah',
+    nameAr: 'المنصورة',
+    governorateSlug: 'maan',
+  },
+}));
+
+vi.mock('@/data/locations/registry', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/data/locations/registry')>();
+  return {
+    ...actual,
+    getAllCamps: (countryCode: string) => {
+      const camps = actual.getAllCamps(countryCode);
+      return countryCode === 'JO' ? [...camps, ambiguousCamp] : camps;
+    },
+  };
+});
 
 describe('AI flow canonical integration', () => {
   it('city-only AI output does not copy the city into neighborhood', () => {
@@ -88,10 +110,18 @@ describe('AI flow canonical integration', () => {
   });
 
   it('does not let camp fallback bypass an ambiguous canonical result', () => {
-    const ambiguous = resolveAiLocationSlugs('JO', 'Maan', 'Al Mansurah');
-    expect(ambiguous.citySlug).toBe('maan');
-    expect(ambiguous.neighborhoodSlug).toBeUndefined();
-    expect(ambiguous.districtSlug).toBeUndefined();
+    const canonical = resolveLocationCanonical('JO', 'Al Mansurah', { citySlug: 'maan' });
+    expect(canonical.status).toBe('ambiguous');
+    expect(canonical.resolved).toBeNull();
+
+    const camps = getAllCamps('JO').filter((camp) => camp.governorateSlug === 'maan');
+    expect(camps.some((camp) => camp.slug === ambiguousCamp.slug && camp.nameEn === 'Al Mansurah')).toBe(true);
+    expect(uniqueExactCamp(camps, 'maan', 'Al Mansurah')).toBe(ambiguousCamp.slug);
+
+    const resolved = resolveAiLocationSlugs('JO', 'Maan', 'Al Mansurah');
+    expect(resolved.citySlug).toBe('maan');
+    expect(resolved.neighborhoodSlug).toBeUndefined();
+    expect(resolved.districtSlug).toBeUndefined();
   });
   it('Kuwait never receives a fabricated neighborhood slug', () => {
     const res = resolveAiLocationSlugs('KW', 'Hawalli', 'Salmiya');
