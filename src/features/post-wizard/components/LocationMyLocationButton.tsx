@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useGeoLocation } from '../hooks/useGeoLocation';
 import { usePostWizard } from '../hooks/usePostWizard';
 import { handleGeoStatusToast } from '../helpers/locationToastHelper';
+import { gpsVisibleChild } from '../helpers/gpsVisibleSelection';
 import { toast } from 'sonner';
 
 interface Props {
@@ -42,8 +43,7 @@ export const LocationMyLocationButton: React.FC<Props> = ({
 
     const finalCity = (isArabic ? canonicalLocation.governorateAr : canonicalLocation.governorateEn)
       || canonicalLocation.governorateEn || canonicalLocation.governorateAr || '';
-    const finalNeighborhood = (isArabic ? canonicalLocation.neighborhoodAr : canonicalLocation.neighborhoodEn)
-      || canonicalLocation.neighborhoodEn || canonicalLocation.neighborhoodAr || '';
+    const finalNeighborhood = gpsVisibleChild(preferredCountry, canonicalLocation, isArabic);
 
     if (!finalCity) {
       reset();
