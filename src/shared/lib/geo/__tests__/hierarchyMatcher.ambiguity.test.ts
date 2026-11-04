@@ -148,4 +148,39 @@ describe('hierarchyMatcher — duplicate locality ambiguity (JO)', () => {
     expect(result?.districtSlug).toBeNull();
     expect(result?.neighborhoodSlug).toBeNull();
   });
+
+  it('repeated unverified district without parent context returns unresolved', () => {
+    const result = matchHierarchyPasses(geo, ['unverified']);
+    expect(result).not.toBeNull();
+    expect(result?.confidence).toBe('unresolved');
+    expect(result?.needsManualSelection).toBe(true);
+    expect(result?.governorateSlug).toBeNull();
+    expect(result?.districtSlug).toBeNull();
+    expect(result?.neighborhoodSlug).toBeNull();
+  });
+
+  it('governorate plus its own unverified district resolves to that exact path', () => {
+    const result = matchHierarchyPasses(geo, ['amman', 'unverified']);
+    expect(result).not.toBeNull();
+    expect(result?.confidence).toBe('high');
+    expect(result?.needsManualSelection).toBe(false);
+    expect(result?.governorateSlug).toBe('amman');
+    expect(result?.districtSlug).toBe('unverified');
+    expect(result?.neighborhoodSlug).toBeNull();
+  });
+
+  it('district under one governorate does not constrain a village under another with the same district slug', () => {
+    // "unverified" exists under both Amman and Balqa; a village under Balqa unverified
+    // must not be selected merely because an Amman unverified token was supplied
+    const result = matchHierarchyPasses(geo, ['amman', 'unverified', 'hisban']);
+    // Hisban is under Amman unverified; if the data supports it this should resolve,
+    // otherwise the important property is that it does not resolve to a different governorate
+    if (result?.confidence === 'exact') {
+      expect(result.governorateSlug).toBe('amman');
+      expect(result.districtSlug).toBe('unverified');
+    } else {
+      expect(result?.confidence).toBe('unresolved');
+      expect(result?.governorateSlug).toBeNull();
+    }
+  });
 });

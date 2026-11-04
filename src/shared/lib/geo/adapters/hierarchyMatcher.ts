@@ -106,6 +106,10 @@ function tokenMatches(cleaned: readonly string[], ...candidates: string[]): bool
   return cleaned.some((t) => candidates.includes(t));
 }
 
+function distKey(govSlug: string, distSlug: string): string {
+  return `${govSlug}|${distSlug}`;
+}
+
 export function matchHierarchyPasses(
   geo: CountryGeo,
   cleaned: readonly string[],
@@ -113,7 +117,7 @@ export function matchHierarchyPasses(
 ): MatchResult | null {
   if (!cleaned.length) return null;
 
-  // Recognized parent entities (these must be unique; conflicts are fatal)
+  // Recognized parent entities. District identity is (governorateSlug + districtSlug).
   const recognizedGovs = new Map<string, RecognizedGov>();
   const recognizedDists = new Map<string, RecognizedDist>();
 
@@ -130,7 +134,7 @@ export function matchHierarchyPasses(
       const da = cleanGeoToken(d.nameAr);
       const de = cleanGeoToken(d.nameEn);
       if (tokenMatches(cleaned, da, de, d.slug)) {
-        recognizedDists.set(d.slug, {
+        recognizedDists.set(distKey(g.slug, d.slug), {
           slug: d.slug,
           govSlug: g.slug,
           nameAr: d.nameAr,
@@ -168,10 +172,11 @@ export function matchHierarchyPasses(
   const hasRecognizedDist = recognizedDists.size > 0;
   const hasRecognizedVillage = villageCandidates.length > 0;
 
-  // Filter village candidates by all recognized parent constraints
+  // Filter village candidates by all recognized parent constraints.
+  // A recognized district constrains both governorate and district slug.
   const filteredVillages = villageCandidates.filter((c) => {
     if (hasRecognizedGov && !recognizedGovs.has(c.govSlug)) return false;
-    if (hasRecognizedDist && !recognizedDists.has(c.distSlug)) return false;
+    if (hasRecognizedDist && !recognizedDists.has(distKey(c.govSlug, c.distSlug))) return false;
     return true;
   });
 
@@ -202,7 +207,8 @@ export function matchHierarchyPasses(
   // Locality tokens were present but none survived parent filtering → unresolved
   if (hasRecognizedVillage && uniqueVillages.size === 0) return unresolved(coords);
 
-  // District-level (only when no locality token was recognized)
+  // District-level (only when no locality token was recognized).
+  // Complete district identity must be unique.
   if (hasRecognizedDist && !hasRecognizedVillage) {
     if (recognizedDists.size !== 1) return unresolved(coords);
     const rd = [...recognizedDists.values()][0];
