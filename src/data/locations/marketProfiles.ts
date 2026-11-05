@@ -3,12 +3,10 @@ import type { MarketProfile, CanonicalIdentitySlot } from './types';
 /**
  * Presentation-only Market Profiles for FOX's six markets.
  *
- * Uniform 2-level model matching OpenSooq:
- *   Level 1 = City / Region (maps to city_slug)
- *   Level 2 = Neighbourhood / Area (maps to district_slug)
- *
- * Note: individual villages (neighborhood_slug) are merged into the level-2
- * list inside useLocationPick, so the user sees one combined list.
+ * Uniform 3-level model:
+ *   Level 1 = City / Region / Governorate (maps to city_slug)
+ *   Level 2 = District (maps to district_slug)
+ *   Level 3 = Neighbourhood (maps to neighborhood_slug, optional)
  */
 
 const PROFILES: readonly MarketProfile[] = [
@@ -24,10 +22,17 @@ const PROFILES: readonly MarketProfile[] = [
       },
       {
         levelIndex: 2,
-        labelEn: 'Neighbourhood',
-        labelAr: 'الحي',
+        labelEn: 'District',
+        labelAr: 'المنطقة',
         canonicalSlot: 'district_slug',
         optional: false,
+      },
+      {
+        levelIndex: 3,
+        labelEn: 'Neighbourhood',
+        labelAr: 'الحي',
+        canonicalSlot: 'neighborhood_slug',
+        optional: true,
       },
     ],
   },
@@ -43,10 +48,17 @@ const PROFILES: readonly MarketProfile[] = [
       },
       {
         levelIndex: 2,
-        labelEn: 'City',
-        labelAr: 'المدينة',
+        labelEn: 'District',
+        labelAr: 'المنطقة',
         canonicalSlot: 'district_slug',
         optional: false,
+      },
+      {
+        levelIndex: 3,
+        labelEn: 'Neighbourhood',
+        labelAr: 'الحي',
+        canonicalSlot: 'neighborhood_slug',
+        optional: true,
       },
     ],
   },
@@ -62,10 +74,17 @@ const PROFILES: readonly MarketProfile[] = [
       },
       {
         levelIndex: 2,
-        labelEn: 'City',
-        labelAr: 'المدينة',
+        labelEn: 'District',
+        labelAr: 'المنطقة',
         canonicalSlot: 'district_slug',
         optional: false,
+      },
+      {
+        levelIndex: 3,
+        labelEn: 'Neighbourhood',
+        labelAr: 'الحي',
+        canonicalSlot: 'neighborhood_slug',
+        optional: true,
       },
     ],
   },
@@ -82,9 +101,16 @@ const PROFILES: readonly MarketProfile[] = [
       {
         levelIndex: 2,
         labelEn: 'District',
-        labelAr: 'القضاء',
+        labelAr: 'المنطقة',
         canonicalSlot: 'district_slug',
         optional: false,
+      },
+      {
+        levelIndex: 3,
+        labelEn: 'Neighbourhood',
+        labelAr: 'الحي',
+        canonicalSlot: 'neighborhood_slug',
+        optional: true,
       },
     ],
   },
@@ -100,10 +126,17 @@ const PROFILES: readonly MarketProfile[] = [
       },
       {
         levelIndex: 2,
-        labelEn: 'City',
-        labelAr: 'المدينة',
+        labelEn: 'District',
+        labelAr: 'المنطقة',
         canonicalSlot: 'district_slug',
         optional: false,
+      },
+      {
+        levelIndex: 3,
+        labelEn: 'Neighbourhood',
+        labelAr: 'الحي',
+        canonicalSlot: 'neighborhood_slug',
+        optional: true,
       },
     ],
   },
@@ -119,10 +152,17 @@ const PROFILES: readonly MarketProfile[] = [
       },
       {
         levelIndex: 2,
-        labelEn: 'Area',
+        labelEn: 'District',
         labelAr: 'المنطقة',
         canonicalSlot: 'district_slug',
         optional: false,
+      },
+      {
+        levelIndex: 3,
+        labelEn: 'Neighbourhood',
+        labelAr: 'الحي',
+        canonicalSlot: 'neighborhood_slug',
+        optional: true,
       },
     ],
   },
