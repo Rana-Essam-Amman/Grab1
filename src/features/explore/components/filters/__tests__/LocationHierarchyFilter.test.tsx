@@ -48,7 +48,7 @@ vi.mock('@/data/locations/registry', () => {
     KW: [
       {
         slug: 'al-asimah',
-        nameAr: 'عمان',
+        nameAr: 'العاصمة',
         nameEn: 'Al Asimah',
         districts: [
           {
