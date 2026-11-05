@@ -34,7 +34,7 @@ const JO_GEO: CountryGeo = {
             { slug: 'hayy-ash-shumaysani', nameAr: 'الشميشاني', nameEn: 'Hayy ash Shumaysani' },
             { slug: 'hayy-ar-ruwaq', nameAr: 'حي الرواق', nameEn: 'Hayy ar Ruwaq' },
             { slug: 'hayy-ar-rabahiyah', nameAr: 'الرباحية الشمالية', nameEn: 'Hayy ar Rabahiyah' },
-            { slug: 'amman', nameAr: 'ئاممان', nameEn: 'Amman' },
+            { slug: 'amman', nameAr: 'عمان', nameEn: 'Amman' },
             { slug: 'hayy-al-quwaysimah', nameAr: 'حي القويسمة', nameEn: 'Hayy al Quwaysimah' },
             { slug: 'hayy-al-muqabalayn', nameAr: 'المقابلين', nameEn: 'Hayy al Muqabalayn' },
             { slug: 'hayy-al-bunayyat', nameAr: 'حي البنيات', nameEn: 'Hayy al Bunayyat' },
