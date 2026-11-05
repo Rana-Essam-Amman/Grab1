@@ -40,6 +40,8 @@ export const LocationHierarchyFilter: React.FC<Props> = ({
     filteredDistricts,
     filteredVillages,
     filteredCamps,
+    villagesUnderGov,
+    parentDistrictOf,
     onGovSelect,
     onDistSelect,
     onVillageSelect,
@@ -95,6 +97,9 @@ export const LocationHierarchyFilter: React.FC<Props> = ({
           filteredDistricts={filteredDistricts}
           filteredVillages={filteredVillages}
           filteredCamps={filteredCamps}
+          villagesUnderGov={villagesUnderGov}
+          parentDistrictOf={parentDistrictOf}
+          onFlatVillageSelect={(v, p) => { onDistSelect(p); onVillageSelect(v); onLocationChange?.({ governorateSlug: selectedGov ?? null, districtSlug: p.slug, neighborhoodSlug: v.slug, label: isArabic ? v.nameAr : v.nameEn, cityEn: null, cityAr: null }); }}
           onGovSelect={onGovSelect}
           onDistSelect={onDistSelect}
           onVillageSelect={onVillageSelect}

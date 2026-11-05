@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { getAllGovernorates, getAllDistricts, getAllCamps } from '@/data/locations/registry';
 import { normalizeArabic } from '@/shared/lib/arabicNormalize';
 import type { Governorate, District, Village, RefugeeCamp } from '@/data/locations/types';
@@ -62,6 +62,22 @@ export function useLocationHierarchyFilter({
   const filteredVillages = useMemo(() => filterItems(villages, textFilter), [villages, textFilter]);
   const filteredCamps = useMemo(() => filterItems(camps, textFilter), [camps, textFilter]);
 
+  const villagesUnderGov = useMemo(() => {
+    if (!selectedGov) return [];
+    const gov = filteredGovs.find(g => g.slug === selectedGov) ?? null;
+    if (!gov) return [];
+    return gov.districts.flatMap(d =>
+      d.villages.map(v => ({ ...v, parentDistrict: d }))
+    );
+  }, [selectedGov, filteredGovs]);
+
+  const parentDistrictOf = useCallback((villageSlug: string) => {
+    for (const d of (filteredGovs.find(g => g.slug === selectedGov)?.districts ?? [])) {
+      if (d.villages.some(v => v.slug === villageSlug)) return d;
+    }
+    return null;
+  }, [selectedGov, filteredGovs]);
+
   const onGovSelect = (g: Governorate) => {
     const next = selectedGov === g.slug ? null : g;
     setSelectedGov(next?.slug ?? null);
@@ -92,7 +108,7 @@ export function useLocationHierarchyFilter({
 
   return {
     textFilter, setTextFilter, selectedGov, selectedDist,
-    filteredGovs, filteredDistricts, filteredVillages, filteredCamps,
+    filteredGovs, filteredDistricts, filteredVillages, filteredCamps, villagesUnderGov, parentDistrictOf,
     onGovSelect, onDistSelect, onVillageSelect, onCampSelect,
   };
 }

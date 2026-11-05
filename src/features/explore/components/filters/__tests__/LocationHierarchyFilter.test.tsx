@@ -98,7 +98,7 @@ describe('LocationHierarchyFilter', () => {
     );
 
     fireEvent.click(
-      screen.getByRole('button', { name: 'Amman Qasabah' })
+      screen.getByRole('button', { name: 'Wadi as Sir' })
     );
 
     expect(
@@ -161,16 +161,6 @@ describe('LocationHierarchyFilter', () => {
       cityAr: 'عمان',
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'Amman Qasabah' }));
-    expect(onLocationChange).toHaveBeenLastCalledWith({
-      governorateSlug: 'amman',
-      districtSlug: 'amman-qasabah',
-      neighborhoodSlug: null,
-      label: 'Amman Qasabah',
-      cityEn: null,
-      cityAr: null,
-    });
-
     fireEvent.click(screen.getByRole('button', { name: 'Wadi as Sir' }));
     expect(onLocationChange).toHaveBeenLastCalledWith({
       governorateSlug: 'amman',
@@ -188,7 +178,7 @@ describe('LocationHierarchyFilter', () => {
     );
     expect(screen.getByText('City')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /^Amman$/ }));
-    expect(screen.getByText('District')).toBeInTheDocument();
+    expect(screen.getByText('Area')).toBeInTheDocument();
     expect(screen.queryByText('Districts')).not.toBeInTheDocument();
     expect(screen.queryByText('Liwa')).not.toBeInTheDocument();
 

@@ -3,6 +3,12 @@ import { LocationFilterSection } from './LocationHierarchySection';
 import type { Governorate, District, Village, RefugeeCamp } from '@/data/locations/types';
 import type { HierarchyLabels } from './locationHierarchyProfile';
 
+const stripAdmin = (s: string): string =>
+  s.split(/\s+/)
+   .filter(t => !['لواء','قصبة','قضاء','Liwa','Qada','Qasabah'].includes(t))
+   .join(' ')
+   .trim() || s;
+
 interface Props {
   readonly isArabic: boolean;
   readonly labels: HierarchyLabels;
@@ -13,6 +19,9 @@ interface Props {
   readonly filteredDistricts: readonly District[];
   readonly filteredVillages: readonly Village[];
   readonly filteredCamps: readonly RefugeeCamp[];
+  readonly villagesUnderGov: readonly (Village & { parentDistrict: District })[];
+  readonly parentDistrictOf: (slug: string) => District | null;
+  readonly onFlatVillageSelect?: (v: Village, parent: District) => void;
   readonly onGovSelect: (g: Governorate) => void;
   readonly onDistSelect: (d: District) => void;
   readonly onVillageSelect: (v: Village) => void;
@@ -22,12 +31,13 @@ interface Props {
 export const LocationHierarchySections: React.FC<Props> = ({
   isArabic, labels, activeNeighborhood, selectedGov, selectedDist,
   filteredGovs, filteredDistricts, filteredVillages, filteredCamps,
+  villagesUnderGov, parentDistrictOf, onFlatVillageSelect,
   onGovSelect, onDistSelect, onVillageSelect, onCampSelect,
 }) => (
   <>
     {labels.level1 && (
       <LocationFilterSection
-        title={labels.level1}
+        title={stripAdmin(labels.level1)}
         items={filteredGovs}
         isArabic={isArabic}
         activeNeighborhood={activeNeighborhood}
@@ -35,26 +45,22 @@ export const LocationHierarchySections: React.FC<Props> = ({
         onItemSelect={onGovSelect}
       />
     )}
-    {selectedGov && labels.level2 && (
+    {selectedGov && villagesUnderGov.length > 0 && (
       <LocationFilterSection
-        title={labels.level2}
-        items={filteredDistricts}
+        title={stripAdmin(labels.level2 || (isArabic ? 'المنطقة' : 'Area'))}
+        items={villagesUnderGov}
         isArabic={isArabic}
         activeNeighborhood={activeNeighborhood}
-        selectedSlug={selectedDist}
-        onItemSelect={onDistSelect}
+        onItemSelect={(item) => {
+          if (onFlatVillageSelect) {
+            const parent = parentDistrictOf(item.slug);
+            if (parent) onFlatVillageSelect(item, parent);
+            else onVillageSelect(item);
+          } else {
+            onVillageSelect(item);
+          }
+        }}
       />
-    )}
-    {selectedDist && filteredVillages.length > 0 && (
-      <div data-testid="hierarchy-level-3">
-        <LocationFilterSection
-          title={labels.level3 || labels.level2 || (isArabic ? 'الحي' : 'Neighbourhood')}
-          items={filteredVillages}
-          isArabic={isArabic}
-          activeNeighborhood={activeNeighborhood}
-          onItemSelect={onVillageSelect}
-        />
-      </div>
     )}
     {selectedGov && (
       <div data-testid="hierarchy-camps">

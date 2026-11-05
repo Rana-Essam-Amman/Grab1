@@ -17,6 +17,13 @@ export interface JordanLocationSearchResult {
 }
 
 function buildJordanIndex(): readonly JordanLocationSearchResult[] {
+
+const stripAdmin = (s: string): string =>
+  s.split(/\s+/)
+   .filter(t => !['لواء','قصبة','قضاء','Liwa','Qada','Qasabah'].includes(t))
+   .join(' ')
+   .trim() || s;
+
   const govs = getAllGovernorates('JO');
   if (!govs?.length) return [];
   const list: JordanLocationSearchResult[] = [];
@@ -24,9 +31,9 @@ function buildJordanIndex(): readonly JordanLocationSearchResult[] {
     list.push({ id: `gov-${g.slug}`, nameAr: g.nameAr, nameEn: g.nameEn, parentPathAr: 'الأردن', parentPathEn: 'Jordan', cityAr: g.nameAr, cityEn: g.nameEn, citySlug: g.slug, type: 'governorate' });
     for (const d of getAllDistricts('JO', g.slug)) {
       if (d.slug === 'unverified') continue;
-      list.push({ id: `dist-${g.slug}-${d.slug}`, nameAr: d.nameAr, nameEn: d.nameEn, parentPathAr: g.nameAr, parentPathEn: g.nameEn, cityAr: g.nameAr, cityEn: g.nameEn, citySlug: g.slug, districtSlug: d.slug, type: 'district' });
+      list.push({ id: `dist-${g.slug}-${d.slug}`, nameAr: stripAdmin(d.nameAr), nameEn: stripAdmin(d.nameEn), parentPathAr: g.nameAr, parentPathEn: g.nameEn, cityAr: g.nameAr, cityEn: g.nameEn, citySlug: g.slug, districtSlug: d.slug, type: 'district' });
       for (const v of d.villages || []) {
-        list.push({ id: `vill-${g.slug}-${d.slug}-${v.slug}`, nameAr: v.nameAr, nameEn: v.nameEn, parentPathAr: `${g.nameAr} — ${d.nameAr}`, parentPathEn: `${g.nameEn} — ${d.nameEn}`, cityAr: g.nameAr, cityEn: g.nameEn, citySlug: g.slug, districtSlug: d.slug, neighborhoodSlug: v.slug, type: 'village' });
+        list.push({ id: `vill-${g.slug}-${d.slug}-${v.slug}`, nameAr: v.nameAr, nameEn: v.nameEn, parentPathAr: stripAdmin(`${g.nameAr} — ${d.nameAr}`), parentPathEn: stripAdmin(`${g.nameEn} — ${d.nameEn}`), cityAr: g.nameAr, cityEn: g.nameEn, citySlug: g.slug, districtSlug: d.slug, neighborhoodSlug: v.slug, type: 'village' });
       }
     }
   }
