@@ -9,7 +9,7 @@ describe('useLocationPick', () => {
     useDraftStore.setState({
       postDraft: {
         categorySlug: 'motors', subcategorySlug: 'cars', photos: [],
-        city: 'العاصمة', neighborhood: 'خلدا', site: '', noteText: '',
+        city: 'عمان', neighborhood: 'خلدا', site: '', noteText: '',
       },
     });
     useUIStore.setState({ isArabic: true, browseCountryCode: 'JO', currentScreen: 'post-location', screenHistory: ['main', 'post-location'] });
@@ -48,7 +48,7 @@ describe('useLocationPick', () => {
     const draft = useDraftStore.getState().postDraft;
     expect(draft.site).toBe('Near City Mall');
     expect(draft.city).toBe(result.current.selectedCity);
-    expect(draft.city).toBe('العاصمة');
+    expect(draft.city).toBe('عمان');
   });
 
   it('saveAndContinue handles custom city correctly (Other flow - back navigation)', () => {
@@ -97,7 +97,7 @@ describe('useLocationPick', () => {
     
     // Draft should NOT be updated (still the original value)
     const draft = useDraftStore.getState().postDraft;
-    expect(draft.city).toBe('العاصمة');
+    expect(draft.city).toBe('عمان');
   });
 
   it('saveAndContinue BLOCKS save when user selects Other with unresolved custom text', () => {
@@ -127,7 +127,7 @@ describe('useLocationPick', () => {
     useDraftStore.setState({
       postDraft: {
         ...useDraftStore.getState().postDraft,
-        city: 'العاصمة',
+        city: 'عمان',
         citySlug: 'amman',
         districtSlug: 'amman-qasabah',
         neighborhoodSlug: 'abdun',
@@ -151,7 +151,7 @@ describe('useLocationPick', () => {
     useDraftStore.setState({
       postDraft: {
         ...useDraftStore.getState().postDraft,
-        city: 'العاصمة',
+        city: 'عمان',
         citySlug: 'amman',
       },
     });
@@ -188,7 +188,7 @@ describe('useLocationPick', () => {
     useDraftStore.setState({
       postDraft: {
         ...useDraftStore.getState().postDraft,
-        city: 'العاصمة',
+        city: 'عمان',
         citySlug: 'amman',
         districtSlug: 'amman-qasabah',
         neighborhoodSlug: 'abdun',
@@ -227,7 +227,7 @@ describe('useLocationPick', () => {
   it('clears descendants when governorate changes', () => {
     const { result } = renderHook(() => useLocationPick());
     act(() => {
-      result.current.handleCityChange('العاصمة');
+      result.current.handleCityChange('عمان');
       result.current.handleNeighborhoodChange('عبدون');
     });
     expect(result.current.selectedNeighborhood).toBe('عبدون');
