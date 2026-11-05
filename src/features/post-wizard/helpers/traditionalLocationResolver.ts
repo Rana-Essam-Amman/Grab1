@@ -47,7 +47,7 @@ export function resolveTraditionalLocationSlugs(
   if (child.status !== 'unique' || !child.resolved) return { citySlug };
   if (child.resolved.canonicalSlot === 'district_slug') {
     const { districtSlug, neighborhoodSlug } = child.resolved;
-    return { citySlug, districtSlug, neighborhoodSlug };
+    return { citySlug, districtSlug: districtSlug ?? undefined, neighborhoodSlug: neighborhoodSlug ?? undefined };
   }
   if (child.resolved.canonicalSlot === 'neighborhood_slug') {
     return {

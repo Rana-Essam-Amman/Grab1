@@ -52,7 +52,8 @@ function resolveChild(
       };
     }
     if (slot === 'district_slug') {
-      return { districtSlug: resolved.resolved.districtSlug ?? undefined };
+      const { districtSlug, neighborhoodSlug } = resolved.resolved;
+      return { districtSlug: districtSlug ?? undefined, neighborhoodSlug: neighborhoodSlug ?? undefined };
     }
     return {};
   }
