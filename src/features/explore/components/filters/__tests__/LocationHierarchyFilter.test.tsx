@@ -48,7 +48,7 @@ vi.mock('@/data/locations/registry', () => {
     KW: [
       {
         slug: 'al-asimah',
-        nameAr: 'العاصمة',
+        nameAr: 'عمان',
         nameEn: 'Al Asimah',
         districts: [
           {
@@ -159,7 +159,7 @@ describe('LocationHierarchyFilter', () => {
       neighborhoodSlug: null,
       label: 'Amman',
       cityEn: 'Amman',
-      cityAr: 'العاصمة',
+      cityAr: 'عمان',
     });
 
     fireEvent.click(screen.getByRole('button', { name: 'Amman Qasabah' }));
