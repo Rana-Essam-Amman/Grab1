@@ -46,7 +46,8 @@ export function resolveTraditionalLocationSlugs(
   const child = resolveLocationCanonical(market, neighborhoodLabel, { citySlug });
   if (child.status !== 'unique' || !child.resolved) return { citySlug };
   if (child.resolved.canonicalSlot === 'district_slug') {
-    return { citySlug, districtSlug: child.resolved.districtSlug ?? undefined };
+    const { districtSlug, neighborhoodSlug } = child.resolved;
+    return { citySlug, districtSlug, neighborhoodSlug };
   }
   if (child.resolved.canonicalSlot === 'neighborhood_slug') {
     return {
