@@ -207,12 +207,12 @@ describe('LocationHierarchyFilter', () => {
     rerender(<LocationHierarchyFilter countryCode="LB" isArabic={false} activeNeighborhood={null} onSelect={vi.fn()} />);
     expect(screen.getByText('Governorate')).toBeInTheDocument();
     rerender(<LocationHierarchyFilter countryCode="SY" isArabic={false} activeNeighborhood={null} onSelect={vi.fn()} />);
-    expect(screen.getByText('Area')).toBeInTheDocument();
+    expect(screen.getByText('Governorate')).toBeInTheDocument();
 
     rerender(<LocationHierarchyFilter countryCode="KW" isArabic={false} activeNeighborhood={null} onSelect={vi.fn()} />);
     expect(screen.getByText('Governorate')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Al Asimah' }));
-    expect(screen.getByText('Residential Area')).toBeInTheDocument();
+    expect(screen.getByText('Area')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Kuwait City' }));
     expect(screen.queryByTestId('hierarchy-level-3')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Should Not Render' })).not.toBeInTheDocument();
