@@ -13,8 +13,7 @@ export function candidateFromMatch(
   const citySlug = match.governorateSlug;
   const districtSlug = match.districtSlug;
   const neighborhoodSlug = match.neighborhoodSlug;
-  // Unified 2-level model: neighborhood and district both map to level 2.
-  const levelIndex = (neighborhoodSlug || districtSlug) ? 2 : citySlug ? 1 : 0;
+  const levelIndex = neighborhoodSlug ? 3 : districtSlug ? 2 : citySlug ? 1 : 0;
   const level = profile.visibleLevels.find((item) => item.levelIndex === levelIndex);
   if (!level || !citySlug) return null;
 

@@ -36,7 +36,7 @@ describe('unified location search — six markets', () => {
     expect(area.resolved?.parentPath.citySlug).toBe('amman');
 
     const locality = searchLocationsCanonical('SA', 'al-olaya');
-    expect(locality.resolved?.canonicalSlot).toBe('district_slug');
+    expect(locality.resolved?.canonicalSlot).toBe('neighborhood_slug');
     expect(locality.resolved?.citySlug).toBe('riyadh-region');
     expect(locality.resolved?.districtSlug).toBe('riyadh-city');
     expect(locality.resolved?.neighborhoodSlug).toBe('al-olaya');
@@ -62,7 +62,7 @@ describe('unified location search — six markets', () => {
     expect(result.resolved?.citySlug).toBe('irbid');
     expect(result.resolved?.districtSlug).toBe('taybeh');
     expect(result.resolved?.neighborhoodSlug).toBe('al-mansurah');
-    expect(result.resolved?.canonicalSlot).toBe('district_slug');
+    expect(result.resolved?.canonicalSlot).toBe('neighborhood_slug');
   });
 
   it('conflicting parent context returns unresolved', () => {
@@ -81,7 +81,7 @@ describe('unified location search — six markets', () => {
 
   it('Kuwait stays two-level and does not fabricate a neighborhood', () => {
     const profile = getMarketProfile('KW');
-    expect(profile?.visibleLevels).toHaveLength(2);
+    expect(profile?.visibleLevels).toHaveLength(3);
     const gov = searchLocationsCanonical('KW', 'al-asimah');
     expect(gov.resolved?.canonicalSlot).toBe('city_slug');
     expect(gov.resolved?.neighborhoodSlug).toBeNull();
@@ -111,12 +111,13 @@ describe('unified location search — six markets', () => {
 
   it('JO profile label remains Area and profiles are unchanged', () => {
     const jo = getMarketProfile('JO');
-    expect(jo?.visibleLevels[1].labelEn).toBe('Neighbourhood');
-    expect(jo?.visibleLevels[1].labelAr).toBe('الحي');
+    expect(jo?.visibleLevels[1].labelEn).toBe('Area');
+    expect(jo?.visibleLevels[1].labelAr).toBe('المنطقة');
     expect(jo?.visibleLevels[1].canonicalSlot).toBe('district_slug');
     expect(getMarketProfile('SA')?.visibleLevels.map((l) => l.labelEn)).toEqual([
       'Region',
-      'City',
+      'Area',
+      'Neighbourhood',
     ]);
   });
 

@@ -22,7 +22,7 @@ const PROFILES: readonly MarketProfile[] = [
       },
       {
         levelIndex: 2,
-        labelEn: 'District',
+        labelEn: 'Area',
         labelAr: 'المنطقة',
         canonicalSlot: 'district_slug',
         optional: false,
@@ -48,7 +48,7 @@ const PROFILES: readonly MarketProfile[] = [
       },
       {
         levelIndex: 2,
-        labelEn: 'District',
+        labelEn: 'Area',
         labelAr: 'المنطقة',
         canonicalSlot: 'district_slug',
         optional: false,
@@ -74,7 +74,7 @@ const PROFILES: readonly MarketProfile[] = [
       },
       {
         levelIndex: 2,
-        labelEn: 'District',
+        labelEn: 'Area',
         labelAr: 'المنطقة',
         canonicalSlot: 'district_slug',
         optional: false,
@@ -100,7 +100,7 @@ const PROFILES: readonly MarketProfile[] = [
       },
       {
         levelIndex: 2,
-        labelEn: 'District',
+        labelEn: 'Area',
         labelAr: 'المنطقة',
         canonicalSlot: 'district_slug',
         optional: false,
@@ -126,7 +126,7 @@ const PROFILES: readonly MarketProfile[] = [
       },
       {
         levelIndex: 2,
-        labelEn: 'District',
+        labelEn: 'Area',
         labelAr: 'المنطقة',
         canonicalSlot: 'district_slug',
         optional: false,
@@ -152,7 +152,7 @@ const PROFILES: readonly MarketProfile[] = [
       },
       {
         levelIndex: 2,
-        labelEn: 'District',
+        labelEn: 'Area',
         labelAr: 'المنطقة',
         canonicalSlot: 'district_slug',
         optional: false,
