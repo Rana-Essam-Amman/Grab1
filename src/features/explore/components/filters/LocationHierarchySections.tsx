@@ -3,12 +3,10 @@ import { LocationFilterSection } from './LocationHierarchySection';
 import type { Governorate, District, Village, RefugeeCamp } from '@/data/locations/types';
 import type { HierarchyLabels } from './locationHierarchyProfile';
 import type { AmmanArea } from '@/features/post-wizard/helpers/ammanAreaResolver';
+import { stripAdminWords } from '@/shared/lib/geo/stripAdminWords';
 
-export const stripAdmin = (s: string): string =>
-  s.split(/\s+/)
-   .filter(t => !['لواء','قصبة','قضاء','Liwa','Qada','Qasabah'].includes(t))
-   .join(' ')
-   .trim() || s;
+const stripAdmin = stripAdminWords;
+export { stripAdmin };
 
 interface Props {
   readonly isArabic: boolean;

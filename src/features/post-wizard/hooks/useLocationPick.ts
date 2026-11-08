@@ -7,6 +7,7 @@ import { getAllGovernorates, getAllDistricts, getAllCamps } from '@/data/locatio
 import { isOtherValue, OTHER_AR, OTHER_EN } from '@/data/locations';
 import { googleSearchQuery } from '@/data/mapUrls';
 import { normalizeArabic } from '@/shared/lib/arabicNormalize';
+import { stripAdminWords } from '@/shared/lib/geo/stripAdminWords';
 import { recordNeighborhoodUsage } from '@/services/locations.service';
 import { toast } from 'sonner';
 import { preserveVerifiedJordanSelection, resolveTraditionalLocationSlugs } from '../helpers/traditionalLocationResolver';
@@ -32,15 +33,6 @@ export interface UseLocationPickReturn {
 }
 
 const LABEL_SEPARATOR = ' — ';
-function stripAdminWords(label: string): string {
-  return label
-    .replace(/(^|\s)(لواء|قصبة|قضاء|Liwa|Qasabah|Qada)(?=\s|$)/giu, ' ')
-    .replace(/\s+/g, ' ')
-    .trim() || label;
-}
-
-
-
 function stripSuffix(label: string): string {
   const idx = label.indexOf(LABEL_SEPARATOR);
   return idx > -1 ? label.substring(0, idx) : label;

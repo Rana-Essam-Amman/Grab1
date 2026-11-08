@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { getAllGovernorates, getAllDistricts, getAllCamps } from '@/data/locations/registry';
 import { normalizeArabic } from '@/shared/lib/arabicNormalize';
+import { stripAdminWords } from '@/shared/lib/geo/stripAdminWords';
 import type { Governorate, District, Village, RefugeeCamp } from '@/data/locations/types';
 import { campsForGovernorate } from './locationHierarchyProfile';
 import {
@@ -88,7 +89,7 @@ export function useLocationHierarchyFilter({
     const areas: AmmanArea[] = [];
     for (const d of gov.districts ?? []) {
       if (d.slug === 'unverified') continue;
-      areas.push({ id: `district:${d.slug}`, slug: d.slug, nameAr: d.nameAr, nameEn: d.nameEn, districtSlug: d.slug, neighborhoodSlug: null, source: 'geonames-district' });
+      areas.push({ id: `district:${d.slug}`, slug: d.slug, nameAr: stripAdminWords(d.nameAr), nameEn: stripAdminWords(d.nameEn), districtSlug: d.slug, neighborhoodSlug: null, source: 'geonames-district' });
       for (const v of (d.villages ?? [])) areas.push({ id: `village:${d.slug}:${v.slug}`, slug: v.slug, nameAr: v.nameAr, nameEn: v.nameEn, districtSlug: d.slug, neighborhoodSlug: v.slug, source: 'geonames-village' });
     }
     return areas;

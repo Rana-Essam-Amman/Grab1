@@ -1,5 +1,6 @@
 import { getAllGovernorates, getAllDistricts } from '@/data/locations/registry';
 import { normalizeArabic } from '@/shared/lib/arabicNormalize';
+import { stripAdminWords } from '@/shared/lib/geo/stripAdminWords';
 import '@/data/locations/JO.geo';
 
 export interface JordanLocationSearchResult {
@@ -18,12 +19,6 @@ export interface JordanLocationSearchResult {
 
 function buildJordanIndex(): readonly JordanLocationSearchResult[] {
 
-const stripAdmin = (s: string): string =>
-  s.split(/\s+/)
-   .filter(t => !['لواء','قصبة','قضاء','Liwa','Qada','Qasabah'].includes(t))
-   .join(' ')
-   .trim() || s;
-
   const govs = getAllGovernorates('JO');
   if (!govs?.length) return [];
   const list: JordanLocationSearchResult[] = [];
@@ -31,9 +26,9 @@ const stripAdmin = (s: string): string =>
     list.push({ id: `gov-${g.slug}`, nameAr: g.nameAr, nameEn: g.nameEn, parentPathAr: 'الأردن', parentPathEn: 'Jordan', cityAr: g.nameAr, cityEn: g.nameEn, citySlug: g.slug, type: 'governorate' });
     for (const d of getAllDistricts('JO', g.slug)) {
       if (d.slug === 'unverified') continue;
-      list.push({ id: `dist-${g.slug}-${d.slug}`, nameAr: stripAdmin(d.nameAr), nameEn: stripAdmin(d.nameEn), parentPathAr: g.nameAr, parentPathEn: g.nameEn, cityAr: g.nameAr, cityEn: g.nameEn, citySlug: g.slug, districtSlug: d.slug, type: 'district' });
+      list.push({ id: `dist-${g.slug}-${d.slug}`, nameAr: stripAdminWords(d.nameAr), nameEn: stripAdminWords(d.nameEn), parentPathAr: g.nameAr, parentPathEn: g.nameEn, cityAr: g.nameAr, cityEn: g.nameEn, citySlug: g.slug, districtSlug: d.slug, type: 'district' });
       for (const v of d.villages || []) {
-        list.push({ id: `vill-${g.slug}-${d.slug}-${v.slug}`, nameAr: v.nameAr, nameEn: v.nameEn, parentPathAr: stripAdmin(`${g.nameAr} — ${d.nameAr}`), parentPathEn: stripAdmin(`${g.nameEn} — ${d.nameEn}`), cityAr: g.nameAr, cityEn: g.nameEn, citySlug: g.slug, districtSlug: d.slug, neighborhoodSlug: v.slug, type: 'village' });
+        list.push({ id: `vill-${g.slug}-${d.slug}-${v.slug}`, nameAr: v.nameAr, nameEn: v.nameEn, parentPathAr: stripAdminWords(`${g.nameAr} — ${d.nameAr}`), parentPathEn: stripAdminWords(`${g.nameEn} — ${d.nameEn}`), cityAr: g.nameAr, cityEn: g.nameEn, citySlug: g.slug, districtSlug: d.slug, neighborhoodSlug: v.slug, type: 'village' });
       }
     }
   }

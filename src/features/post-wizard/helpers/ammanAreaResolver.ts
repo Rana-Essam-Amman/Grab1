@@ -1,8 +1,9 @@
 import { JO_AMMAN_OPENSOOQ_AREAS } from '@/data/locations/JO_AMMAN_AREAS';
 import { getAllDistricts } from '@/data/locations/registry';
 import { normalizeArabic } from '@/shared/lib/arabicNormalize';
+import { stripAdminWords } from '@/shared/lib/geo/stripAdminWords';
+export { stripAdminWords };
 
-const ADMIN_WORDS = ['لواء', 'قصبة', 'قضاء', 'Liwa', 'Qasabah', 'Qada'];
 const PREFIX_DEDUPE_WHITELIST: ReadonlySet<string> = new Set([
 'village:amman-qasabah:hayy-wadi-as-sir','village:amman-qasabah:mintaqat-wadi-as-sir','village:wadi-essier:hayy-umm-as-summaq','village:amman-qasabah:hayy-jabal-al-husayn','village:amman-qasabah:hayy-umm-udhaynah-ash-sharqi','village:amman-qasabah:hayy-ar-rawabi',
 'village:amman-qasabah:hayy-ar-radwan','village:amman-qasabah:hayy-jabal-al-luwaybidah','village:amman-qasabah:hayy-jabal-an-nasr','village:amman-qasabah:hayy-jabal-at-taj','village:amman-qasabah:hayy-jabal-al-jawfah','village:amman-qasabah:hayy-jabal-amman',
@@ -14,10 +15,6 @@ const PREFIX_DEDUPE_WHITELIST: ReadonlySet<string> = new Set([
 'village:sahab:hayy-ar-rabwah','village:naoor:qurayyat-salim','village:naoor:hayy-al-ma-adi','village:wadi-essier:hayy-ar-rashid',
 'village:amman-qasabah:amman',
 ]);
-
-export function stripAdminWords(label: string): string {
-  return label.split(/\s+/).filter(t => !ADMIN_WORDS.includes(t)).join(' ').trim() || label;
-}
 
 export interface AmmanArea {
   readonly id: string; readonly slug: string; readonly nameAr: string; readonly nameEn: string;
