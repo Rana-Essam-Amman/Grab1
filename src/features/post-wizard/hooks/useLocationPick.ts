@@ -31,6 +31,14 @@ export interface UseLocationPickReturn {
 }
 
 const LABEL_SEPARATOR = ' — ';
+function stripAdminWords(label: string): string {
+  return label
+    .replace(/(^|\s)(لواء|قصبة|قضاء|Liwa|Qasabah|Qada)(?=\s|$)/giu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim() || label;
+}
+
+
 
 function stripSuffix(label: string): string {
   const idx = label.indexOf(LABEL_SEPARATOR);
@@ -99,11 +107,13 @@ export function useLocationPick(): UseLocationPickReturn {
     const labels: string[] = [];
     const seen = new Set<string>();
     for (const d of rawDistricts) {
-      const name = isArabic ? d.nameAr : d.nameEn;
+      const raw = isArabic ? d.nameAr : d.nameEn;
+      const name = browseCountryCode === 'JO' ? stripAdminWords(raw) : raw;
       if (!seen.has(name)) { labels.push(name); seen.add(name); }
     }
     for (const d of rawDistricts) {
-      const districtName = isArabic ? d.nameAr : d.nameEn;
+      const rawDistrictName = isArabic ? d.nameAr : d.nameEn;
+      const districtName = browseCountryCode === 'JO' ? stripAdminWords(rawDistrictName) : rawDistrictName;
       for (const v of d.villages ?? []) {
         const villageName = isArabic ? v.nameAr : v.nameEn;
         const label = `${villageName}${LABEL_SEPARATOR}${districtName}`;
@@ -115,7 +125,7 @@ export function useLocationPick(): UseLocationPickReturn {
       if (!seen.has(name)) { labels.push(name); seen.add(name); }
     }
     return [...labels.sort((a, b) => a.localeCompare(b, isArabic ? 'ar' : 'en')), otherLabel];
-  }, [selectedCity, rawDistricts, rawCamps, isArabic, otherLabel]);
+  }, [selectedCity, rawDistricts, rawCamps, isArabic, otherLabel, browseCountryCode]);
 
   const resolveNeighborhoodLabel = useCallback((saved: string): string | null => {
     if (!saved) return null;
@@ -123,11 +133,16 @@ export function useLocationPick(): UseLocationPickReturn {
     const normalizedBase = normalizeArabic(baseName);
     
     for (const d of rawDistricts) {
-      if (normalizeArabic(isArabic ? d.nameAr : d.nameEn) === normalizedBase) return isArabic ? d.nameAr : d.nameEn;
-      if (normalizeArabic(isArabic ? d.nameEn : d.nameAr) === normalizedBase) return isArabic ? d.nameAr : d.nameEn;
+      const rawName = isArabic ? d.nameAr : d.nameEn;
+      const displayName = browseCountryCode === 'JO' ? stripAdminWords(rawName) : rawName;
+      if (normalizeArabic(displayName) === normalizedBase) return displayName;
+      const rawOther = isArabic ? d.nameEn : d.nameAr;
+      const displayOther = browseCountryCode === 'JO' ? stripAdminWords(rawOther) : rawOther;
+      if (normalizeArabic(displayOther) === normalizedBase) return displayName;
     }
     for (const d of rawDistricts) {
-      const districtName = isArabic ? d.nameAr : d.nameEn;
+      const rawDistrictName = isArabic ? d.nameAr : d.nameEn;
+      const districtName = browseCountryCode === 'JO' ? stripAdminWords(rawDistrictName) : rawDistrictName;
       for (const v of d.villages ?? []) {
         const mc = normalizeArabic(isArabic ? v.nameAr : v.nameEn) === normalizedBase;
         const mo = normalizeArabic(isArabic ? v.nameEn : v.nameAr) === normalizedBase;
@@ -140,7 +155,7 @@ export function useLocationPick(): UseLocationPickReturn {
       if (mc || mo) return isArabic ? c.nameAr : c.nameEn;
     }
     return null;
-  }, [rawDistricts, rawCamps, isArabic]);
+  }, [rawDistricts, rawCamps, isArabic, browseCountryCode]);
 
   const initialNeighborhoodLabel = useMemo(
     () => resolveNeighborhoodLabel(postDraft.neighborhood || ""),

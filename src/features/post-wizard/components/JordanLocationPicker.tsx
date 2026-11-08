@@ -30,7 +30,7 @@ export const JordanLocationPicker: React.FC<Props> = ({
   return (
     <div className="flex flex-col gap-2" data-testid="jordan-location-picker">
       <label className="block text-xs font-bold text-ink">
-        {isArabic ? 'الموقع (المدينة، اللواء، أو الحي)' : 'Location (City, District, or Area)'}
+        {isArabic ? 'الموقع (المدينة، المنطقة، أو الحي)' : 'Location (City, Area, or Neighbourhood)'}
       </label>
 
       {hasSelection && !isFocused ? (

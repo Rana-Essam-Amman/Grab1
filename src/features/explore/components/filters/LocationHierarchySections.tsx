@@ -3,7 +3,7 @@ import { LocationFilterSection } from './LocationHierarchySection';
 import type { Governorate, District, Village, RefugeeCamp } from '@/data/locations/types';
 import type { HierarchyLabels } from './locationHierarchyProfile';
 
-const stripAdmin = (s: string): string =>
+export const stripAdmin = (s: string): string =>
   s.split(/\s+/)
    .filter(t => !['لواء','قصبة','قضاء','Liwa','Qada','Qasabah'].includes(t))
    .join(' ')
@@ -19,9 +19,20 @@ interface Props {
   readonly filteredDistricts: readonly District[];
   readonly filteredVillages: readonly Village[];
   readonly filteredCamps: readonly RefugeeCamp[];
-  readonly villagesUnderGov: readonly (Village & { parentDistrict: District })[];
-  readonly parentDistrictOf: (slug: string) => District | null;
-  readonly onFlatVillageSelect?: (v: Village, parent: District) => void;
+  readonly flatAreas: readonly {
+    slug: string;
+    nameAr: string;
+    nameEn: string;
+    parentDistrict: District | null;
+    isDistrict: boolean;
+  }[];
+  readonly onFlatAreaSelect?: (area: {
+    slug: string;
+    nameAr: string;
+    nameEn: string;
+    parentDistrict: District | null;
+    isDistrict: boolean;
+  }) => void;
   readonly onGovSelect: (g: Governorate) => void;
   readonly onDistSelect: (d: District) => void;
   readonly onVillageSelect: (v: Village) => void;
@@ -31,7 +42,7 @@ interface Props {
 export const LocationHierarchySections: React.FC<Props> = ({
   isArabic, labels, activeNeighborhood, selectedGov, selectedDist,
   filteredGovs, filteredDistricts, filteredVillages, filteredCamps,
-  villagesUnderGov, parentDistrictOf, onFlatVillageSelect,
+  flatAreas, onFlatAreaSelect,
   onGovSelect, onDistSelect, onVillageSelect, onCampSelect,
 }) => (
   <>
@@ -45,20 +56,29 @@ export const LocationHierarchySections: React.FC<Props> = ({
         onItemSelect={onGovSelect}
       />
     )}
-    {selectedGov && villagesUnderGov.length > 0 && (
+    {selectedGov && flatAreas.length > 0 && (
       <LocationFilterSection
         title={stripAdmin(labels.level2 || (isArabic ? 'المنطقة' : 'Area'))}
-        items={villagesUnderGov}
+        items={flatAreas.map(a => {
+          const raw = isArabic ? a.nameAr : a.nameEn;
+          const districtSuffix = a.parentDistrict
+            ? stripAdmin(isArabic ? a.parentDistrict.nameAr : a.parentDistrict.nameEn)
+            : '';
+          return {
+            slug: a.slug,
+            nameAr: a.isDistrict
+              ? stripAdmin(a.nameAr)
+              : `${a.nameAr}${districtSuffix ? ` — ${districtSuffix}` : ''}`,
+            nameEn: a.isDistrict
+              ? stripAdmin(a.nameEn)
+              : `${a.nameEn}${districtSuffix ? ` — ${districtSuffix}` : ''}`,
+          };
+        })}
         isArabic={isArabic}
         activeNeighborhood={activeNeighborhood}
         onItemSelect={(item) => {
-          if (onFlatVillageSelect) {
-            const parent = parentDistrictOf(item.slug);
-            if (parent) onFlatVillageSelect(item, parent);
-            else onVillageSelect(item);
-          } else {
-            onVillageSelect(item);
-          }
+          const original = flatAreas.find(a => a.slug === item.slug);
+          if (original && onFlatAreaSelect) onFlatAreaSelect(original);
         }}
       />
     )}

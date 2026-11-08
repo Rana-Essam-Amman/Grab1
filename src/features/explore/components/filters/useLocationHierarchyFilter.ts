@@ -64,19 +64,52 @@ export function useLocationHierarchyFilter({
 
   const villagesUnderGov = useMemo(() => {
     if (!selectedGov) return [];
-    const gov = filteredGovs.find(g => g.slug === selectedGov) ?? null;
+    const gov = governorates.find(g => g.slug === selectedGov) ?? null;
     if (!gov) return [];
     return gov.districts.flatMap(d =>
-      d.villages.map(v => ({ ...v, parentDistrict: d }))
+      (d.villages ?? []).map(v => ({ ...v, parentDistrict: d }))
     );
-  }, [selectedGov, filteredGovs]);
+  }, [selectedGov, governorates]);
 
   const parentDistrictOf = useCallback((villageSlug: string) => {
-    for (const d of (filteredGovs.find(g => g.slug === selectedGov)?.districts ?? [])) {
-      if (d.villages.some(v => v.slug === villageSlug)) return d;
+    for (const d of (governorates.find(g => g.slug === selectedGov)?.districts ?? [])) {
+      if ((d.villages ?? []).some(v => v.slug === villageSlug)) return d;
     }
     return null;
-  }, [selectedGov, filteredGovs]);
+  }, [selectedGov, governorates]);
+  const flatAreas = useMemo(() => {
+    if (!selectedGov) return [];
+    const gov = governorates.find(g => g.slug === selectedGov) ?? null;
+    if (!gov) return [];
+    const areas: Array<{
+      slug: string;
+      nameAr: string;
+      nameEn: string;
+      parentDistrict: District | null;
+      isDistrict: boolean;
+    }> = [];
+    for (const d of gov.districts ?? []) {
+      if (d.slug === 'unverified') continue;
+      areas.push({
+        slug: d.slug,
+        nameAr: d.nameAr,
+        nameEn: d.nameEn,
+        parentDistrict: null,
+        isDistrict: true,
+      });
+      for (const v of (d.villages ?? [])) {
+        areas.push({
+          slug: v.slug,
+          nameAr: v.nameAr,
+          nameEn: v.nameEn,
+          parentDistrict: d,
+          isDistrict: false,
+        });
+      }
+    }
+    return areas;
+  }, [selectedGov, governorates]);
+
 
   const onGovSelect = (g: Governorate) => {
     const next = selectedGov === g.slug ? null : g;
@@ -108,7 +141,7 @@ export function useLocationHierarchyFilter({
 
   return {
     textFilter, setTextFilter, selectedGov, selectedDist,
-    filteredGovs, filteredDistricts, filteredVillages, filteredCamps, villagesUnderGov, parentDistrictOf,
+    filteredGovs, filteredDistricts, filteredVillages, filteredCamps, villagesUnderGov, parentDistrictOf, flatAreas,
     onGovSelect, onDistSelect, onVillageSelect, onCampSelect,
   };
 }

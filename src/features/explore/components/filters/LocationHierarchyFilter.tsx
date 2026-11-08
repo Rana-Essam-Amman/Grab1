@@ -1,10 +1,9 @@
 import React from 'react';
 import { useLocationHierarchyFilter } from './useLocationHierarchyFilter';
 import { JordanExploreSearchResults } from './JordanExploreSearchResults';
-import { LocationHierarchySections } from './LocationHierarchySections';
+import { LocationHierarchySections, stripAdmin } from './LocationHierarchySections';
 import { hierarchyLabels } from './locationHierarchyProfile';
 import type { JordanLocationSearchResult } from '@/features/post-wizard/helpers/jordanLocationIndex';
-
 interface Props {
   readonly countryCode: string;
   readonly isArabic: boolean;
@@ -40,8 +39,7 @@ export const LocationHierarchyFilter: React.FC<Props> = ({
     filteredDistricts,
     filteredVillages,
     filteredCamps,
-    villagesUnderGov,
-    parentDistrictOf,
+    flatAreas,
     onGovSelect,
     onDistSelect,
     onVillageSelect,
@@ -79,7 +77,7 @@ export const LocationHierarchyFilter: React.FC<Props> = ({
         type="text"
         value={textFilter}
         onChange={(e) => setTextFilter(e.target.value)}
-        placeholder={isArabic ? 'ابحث عن محافظة أو لواء أو قرية...' : 'Search governorate, district, village...'}
+        placeholder={isArabic ? 'ابحث عن مدينة أو منطقة أو حي...' : 'Search city, area, or neighbourhood...'}
         className="w-full h-9 px-3 rounded-lg border border-border bg-surface text-ink text-xs font-medium focus:outline-none focus:border-accent"
         data-testid="geo-hierarchy-search"
       />
@@ -97,9 +95,14 @@ export const LocationHierarchyFilter: React.FC<Props> = ({
           filteredDistricts={filteredDistricts}
           filteredVillages={filteredVillages}
           filteredCamps={filteredCamps}
-          villagesUnderGov={villagesUnderGov}
-          parentDistrictOf={parentDistrictOf}
-          onFlatVillageSelect={(v, p) => { onDistSelect(p); onVillageSelect(v); onLocationChange?.({ governorateSlug: selectedGov ?? null, districtSlug: p.slug, neighborhoodSlug: v.slug, label: isArabic ? v.nameAr : v.nameEn, cityEn: null, cityAr: null }); }}
+          flatAreas={flatAreas}
+          onFlatAreaSelect={(area) => {
+            const district = area.isDistrict ? { slug: area.slug, nameAr: area.nameAr, nameEn: area.nameEn, villages: [] } : area.parentDistrict;
+            const neighborhoodSlug = area.isDistrict ? null : area.slug;
+            const label = area.isDistrict ? stripAdmin(isArabic ? area.nameAr : area.nameEn) : (isArabic ? area.nameAr : area.nameEn);
+            onLocationChange?.({ governorateSlug: selectedGov ?? null, districtSlug: district?.slug ?? null, neighborhoodSlug, label, cityEn: null, cityAr: null });
+            onSelect(neighborhoodSlug ? label : null); setTextFilter('');
+          }}
           onGovSelect={onGovSelect}
           onDistSelect={onDistSelect}
           onVillageSelect={onVillageSelect}

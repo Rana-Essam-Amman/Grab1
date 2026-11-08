@@ -55,6 +55,7 @@ vi.mock('@/data/locations/registry', () => {
             slug: 'al-kuwait-city',
             nameAr: 'مدينة الكويت',
             nameEn: 'Kuwait City',
+            villages: [],
           },
         ],
       },
@@ -201,7 +202,7 @@ describe('LocationHierarchyFilter', () => {
     rerender(<LocationHierarchyFilter countryCode="KW" isArabic={false} activeNeighborhood={null} onSelect={vi.fn()} />);
     expect(screen.getByText('Governorate')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Al Asimah' }));
-    expect(screen.queryByRole('button', { name: 'Kuwait City' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Kuwait City' })).toBeInTheDocument();
     expect(screen.queryByTestId('hierarchy-level-3')).not.toBeInTheDocument();
   });
 

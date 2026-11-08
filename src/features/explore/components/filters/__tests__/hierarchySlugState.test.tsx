@@ -3,16 +3,17 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { FiltersLocationBlock } from '../FiltersLocationBlock';
 import { useUIStore } from '@/store/ui.slice';
 
-vi.mock('@/data/locations/registry', () => ({
-  getAllGovernorates: () => [
-    { slug: 'amman', nameAr: 'العاصمة', nameEn: 'Amman', districts: [] },
-  ],
-  getAllDistricts: () => [
-    { slug: 'marka', nameAr: 'ماركا', nameEn: 'Marka', governorateSlug: 'amman', villages: [] },
-  ],
-  getAllCamps: () => [],
-  registerCountry: () => undefined,
-}));
+vi.mock('@/data/locations/registry', () => {
+  const marka = { slug: 'marka', nameAr: 'لواء ماركا', nameEn: 'Marka', villages: [] };
+  return {
+    getAllGovernorates: () => [
+      { slug: 'amman', nameAr: 'العاصمة', nameEn: 'Amman', districts: [marka] },
+    ],
+    getAllDistricts: () => [marka],
+    getAllCamps: () => [],
+    registerCountry: () => undefined,
+  };
+});
 
 describe('hierarchy slug state', () => {
   beforeEach(() => {
