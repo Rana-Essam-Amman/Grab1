@@ -7,7 +7,7 @@ import type { CountryGeo } from './types';
 // Localities: GeoNames JO, featureClass=P, countryCode=JO, inside ADM0. Count: 1748.
 // Liwa are District. Qada are only in JO_ADMIN_AUX. No majority inference. No official boundary claims.
 // localityLinks.parentStatus 'source-association' is navigation metadata, not official verification.
-// Excluded outside ADM0: 8. Untranslated Arabic: 91.
+// Excluded outside ADM0: 8. Untranslated Arabic: 0.
 
 const JO_GEO: CountryGeo = {
   countryCode: 'JO',
@@ -117,7 +117,7 @@ const JO_GEO: CountryGeo = {
         },
         {
           slug: 'marka',
-          nameAr: 'ماركا',
+          nameAr: 'لواء ماركا',
           nameEn: 'Marka',
           villages: [
           ],
@@ -147,10 +147,10 @@ const JO_GEO: CountryGeo = {
             { slug: 'hayy-umm-as-summaq', nameAr: 'حي ام السماق', nameEn: 'Hayy Umm as Summaq' },
             { slug: 'tila-al-ali', nameAr: 'تلاع العلي', nameEn: 'Tila` al `Ali' },
             { slug: 'mintaqat-tila-al-ali-wa-umm-as-summaq-wa-khilda', nameAr: 'منطقة تلاع العلي وام السماق وخلدا', nameEn: 'Mintaqat Tila` al `Ali wa Umm as Summaq wa Khilda' },
-            { slug: 'tab-kira', nameAr: 'تاب كراع', nameEn: 'Tab Kira`' },
+            { slug: 'tab-kira', nameAr: 'طاب كراع', nameEn: 'Tab Kira`' },
             { slug: 'mintaqat-suwaylih', nameAr: 'صويلح', nameEn: 'Mintaqat Suwaylih' },
             { slug: 'rujm-maghghijhah', nameAr: 'رجم مغغجة', nameEn: 'Rujm Maghghijhah' },
-            { slug: 'rujm-ash-shara-irah', nameAr: 'رجم الشراعرة', nameEn: 'Rujm ash Shara\'irah' },
+            { slug: 'rujm-ash-shara-irah', nameAr: 'رجم الشرائرة', nameEn: 'Rujm ash Shara\'irah' },
             { slug: 'khirbat-siran', nameAr: 'خربة سيران', nameEn: 'Khirbat Siran' },
             { slug: 'khirbat-badran', nameAr: 'خربة بدران', nameEn: 'Khirbat Badran' },
             { slug: 'khirbat-assaf', nameAr: 'خربة عساف', nameEn: 'Khirbat `Assaf' },
@@ -200,7 +200,7 @@ const JO_GEO: CountryGeo = {
           villages: [
             { slug: 'hayy-tabarbawr', nameAr: 'حي طبربور', nameEn: 'Hayy Tabarbawr' },
             { slug: 'marka', nameAr: 'ماركا', nameEn: 'Marka' },
-            { slug: 'an-nuwayjis', nameAr: 'النويجس', nameEn: 'An Nuwayjis' },
+            { slug: 'an-nuwayjis', nameAr: 'النويجيس', nameEn: 'An Nuwayjis' },
             { slug: 'al-qartu-iyah', nameAr: 'القرطوعية', nameEn: 'Al Qartu`iyah' },
             { slug: 'al-mahattah', nameAr: 'المحطة', nameEn: 'Al Mahattah' },
             { slug: 'al-manakhir', nameAr: 'المناخر', nameEn: 'Al Manakhir' },
@@ -713,7 +713,7 @@ const JO_GEO: CountryGeo = {
           villages: [
             { slug: 'al-fayha', nameAr: 'أم جريسات', nameEn: 'Al Fayha\'' },
             { slug: 'qubur-abd-allah', nameAr: 'قبور عبد الله', nameEn: 'Qubur `Abd Allah' },
-            { slug: 'murayjimat-ibn-hamid', nameAr: 'مريجمات ابن حامد', nameEn: 'Murayjimat Ibn Hamid' },
+            { slug: 'murayjimat-ibn-hamid', nameAr: 'مريجمة بن حامد', nameEn: 'Murayjimat Ibn Hamid' },
             { slug: 'mukawir', nameAr: 'مكاور', nameEn: 'Mukawir' },
             { slug: 'ma-in', nameAr: 'ماعين', nameEn: 'Ma`in' },
             { slug: 'madaba', nameAr: 'مأدبا', nameEn: 'Madaba' },
@@ -1174,7 +1174,7 @@ const JO_GEO: CountryGeo = {
             { slug: 'dimnat-al-humaydi', nameAr: 'دمنة الحميدي', nameEn: 'Dimnat al Humaydi' },
             { slug: 'abu-ath-thalj', nameAr: 'أبو الثلج', nameEn: 'Abu ath Thalj' },
             { slug: 'umm-sararah-ash-sharqi', nameAr: 'أم صرارة الشرقي', nameEn: 'Umm Sararah ash Sharqi' },
-            { slug: 'hamat-gader', nameAr: 'حمامات غادر', nameEn: 'Hamat Gader' },
+            { slug: 'hamat-gader', nameAr: 'هامات غادر', nameEn: 'Hamat Gader' },
             { slug: 'faqaris', nameAr: 'فقارس', nameEn: 'Faqaris' },
             { slug: 'khirbat-ad-dusayri', nameAr: 'خربة الدصيري', nameEn: 'Khirbat ad Dusayri' },
             { slug: 'hatim-2', nameAr: 'حاطم', nameEn: 'Hatim' },
@@ -1247,7 +1247,7 @@ const JO_GEO: CountryGeo = {
             { slug: 'al-ba-ij', nameAr: 'الباعج', nameEn: 'Al Ba`ij' },
             { slug: 'ad-dajaniyah', nameAr: 'الدجنية', nameEn: 'Ad Dajaniyah' },
             { slug: 'al-khalidiyah-2', nameAr: 'الخالدية', nameEn: 'Al Khalidiyah' },
-            { slug: 'az-za-atri', nameAr: 'الزعاطري', nameEn: 'Az Zaatri' },
+            { slug: 'az-za-atri', nameAr: 'الزعتري', nameEn: 'Az Zaatri' },
             { slug: 'al-jaddah', nameAr: 'الجدة', nameEn: 'Al Jaddah' },
             { slug: 'al-haruz', nameAr: 'الحاروز', nameEn: 'Al Haruz' },
             { slug: 'al-mistah', nameAr: 'المصطاح', nameEn: 'Al Mistah' },
@@ -1828,7 +1828,7 @@ const JO_GEO: CountryGeo = {
             { slug: 'sakka', nameAr: 'سكا', nameEn: 'Sakka' },
             { slug: 'rakin', nameAr: 'راكين', nameEn: 'Rakin' },
             { slug: 'mirwad', nameAr: 'مرود', nameEn: 'Mirwad' },
-            { slug: 'mihna', nameAr: 'محنة', nameEn: 'Mihna' },
+            { slug: 'mihna', nameAr: 'محنا', nameEn: 'Mihna' },
             { slug: 'middin', nameAr: 'مدين', nameEn: 'Middin' },
             { slug: 'khirbat-abu-hamid', nameAr: 'خربة أبو حامد', nameEn: 'Khirbat Abu Hamid' },
             { slug: 'umm-rummana', nameAr: 'أم رمانا', nameEn: 'Umm Rummana' },
@@ -2076,7 +2076,7 @@ const JO_GEO: CountryGeo = {
           villages: [
             { slug: 'adhruh', nameAr: 'أذرح', nameEn: 'Adhruh' },
             { slug: 'ma-an', nameAr: 'معان', nameEn: 'Ma\'an' },
-            { slug: 'ba-ir', nameAr: 'باعر', nameEn: 'Ba\'ir' },
+            { slug: 'ba-ir', nameAr: 'باير', nameEn: 'Ba\'ir' },
             { slug: 'isfir-al-mahattah', nameAr: 'اسفير المحطة', nameEn: 'Isfir al Mahattah' },
             { slug: 'al-mudawwarah', nameAr: 'المدورة', nameEn: 'Al Mudawwarah' },
             { slug: 'al-jafr', nameAr: 'الجفر', nameEn: 'Al Jafr' },
@@ -2237,7 +2237,7 @@ const JO_GEO: CountryGeo = {
             { slug: 'ar-rabiyah', nameAr: 'الرابية', nameEn: 'Ar Rabiyah' },
             { slug: 'hayy-al-burayj', nameAr: 'اسكان الميناء', nameEn: 'Hayy al Burayj' },
             { slug: 'tala-bay', nameAr: 'تالا باي', nameEn: 'Tala Bay' },
-            { slug: 'alherafya', nameAr: 'الهرفا', nameEn: 'Alherafya' },
+            { slug: 'alherafya', nameAr: 'المنطقة الحرفية', nameEn: 'Alherafya' },
             { slug: 'hayy-az-zahra-2', nameAr: 'حي الزهراء', nameEn: 'Hayy az Zahra\'' },
             { slug: 'hayy-ar-rawdah-ash-shamali', nameAr: 'حي الروضة الشمالي', nameEn: 'Hayy ar Rawdah ash Shamali' },
             { slug: 'hayy-ar-rawdah-al-awsat', nameAr: 'حي الروضة الاوسط', nameEn: 'Hayy ar Rawdah al Awsat' },
