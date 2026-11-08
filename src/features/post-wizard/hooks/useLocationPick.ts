@@ -129,7 +129,8 @@ export function useLocationPick(): UseLocationPickReturn {
 
   const resolveNeighborhoodLabel = useCallback((saved: string): string | null => {
     if (!saved) return null;
-    const baseName = stripSuffix(saved);
+    const rawBase = stripSuffix(saved);
+    const baseName = browseCountryCode === 'JO' ? stripAdminWords(rawBase) : rawBase;
     const normalizedBase = normalizeArabic(baseName);
     
     for (const d of rawDistricts) {

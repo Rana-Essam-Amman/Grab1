@@ -40,6 +40,8 @@ export const LocationHierarchyFilter: React.FC<Props> = ({
     filteredVillages,
     filteredCamps,
     flatAreas,
+    filteredFlatAreas,
+    setSelectedDistrict,
     onGovSelect,
     onDistSelect,
     onVillageSelect,
@@ -69,6 +71,7 @@ export const LocationHierarchyFilter: React.FC<Props> = ({
   };
 
   const labels = hierarchyLabels(countryCode, isArabic);
+  const selectedGovernorate = filteredGovs.find(g => g.slug === selectedGov) ?? null;
   const isJordanDirectSearch = countryCode === 'JO' && textFilter.trim().length > 0;
 
   return (
@@ -91,15 +94,17 @@ export const LocationHierarchyFilter: React.FC<Props> = ({
           activeNeighborhood={activeNeighborhood}
           selectedGov={selectedGov}
           selectedDist={selectedDist}
+          selectedGovernorate={selectedGovernorate}
           filteredGovs={filteredGovs}
           filteredDistricts={filteredDistricts}
           filteredVillages={filteredVillages}
           filteredCamps={filteredCamps}
-          flatAreas={flatAreas}
+          flatAreas={filteredFlatAreas}
           onFlatAreaSelect={(area) => {
             const district = area.isDistrict ? { slug: area.slug, nameAr: area.nameAr, nameEn: area.nameEn, villages: [] } : area.parentDistrict;
             const neighborhoodSlug = area.isDistrict ? null : area.slug;
             const label = area.isDistrict ? stripAdmin(isArabic ? area.nameAr : area.nameEn) : (isArabic ? area.nameAr : area.nameEn);
+            setSelectedDistrict(district?.slug ?? null);
             onLocationChange?.({ governorateSlug: selectedGov ?? null, districtSlug: district?.slug ?? null, neighborhoodSlug, label, cityEn: null, cityAr: null });
             onSelect(neighborhoodSlug ? label : null); setTextFilter('');
           }}
