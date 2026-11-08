@@ -55,9 +55,10 @@ export const LocationFields: React.FC<Props> = ({
   const { browseCountryCode } = useUI();
   const profile = getMarketProfile(browseCountryCode);
   const cityLevel = profile?.visibleLevels[0];
-  const areaLevel = profile?.visibleLevels[1];
+  const neighborhoodLevel = profile?.visibleLevels[2] || profile?.visibleLevels[1];
+  
   const cityLevelLabel = isArabic ? cityLevel?.labelAr : cityLevel?.labelEn;
-  const areaLevelLabel = isArabic ? areaLevel?.labelAr : areaLevel?.labelEn;
+  const neighborhoodLevelLabel = isArabic ? neighborhoodLevel?.labelAr : neighborhoodLevel?.labelEn;
   const { postDraft } = usePostWizard();
   const pinLat = latitude ?? postDraft.latitude;
   const pinLng = longitude ?? postDraft.longitude;
@@ -108,7 +109,7 @@ export const LocationFields: React.FC<Props> = ({
       {neighborhoods.length > 0 && (
         <div>
           <label className="block text-xs font-bold text-ink mb-1.5">
-            {areaLevelLabel || (isArabic ? 'الحي' : 'Neighbourhood')}
+            {neighborhoodLevelLabel || (isArabic ? 'الحي' : 'Neighbourhood')}
           </label>
           <div data-testid="location-neighborhood-wrapper">
             <SearchableDropdown

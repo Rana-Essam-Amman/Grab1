@@ -38,14 +38,14 @@ describe('Market Profiles — Presentation Metadata', () => {
     }
   });
 
-  it('all six markets present exactly 2 visible levels after the unification', () => {
+  it('all six markets present exactly 3 visible levels', () => {
     for (const code of SUPPORTED_MARKETS) {
       const profile = getMarketProfile(code);
       expect(profile).not.toBeNull();
-      expect(profile?.visibleLevels).toHaveLength(2);
+      expect(profile?.visibleLevels).toHaveLength(3);
       expect(profile?.visibleLevels[0].canonicalSlot).toBe('city_slug');
       expect(profile?.visibleLevels[1].canonicalSlot).toBe('district_slug');
-      expect(profile?.visibleLevels.some((l) => l.canonicalSlot === 'neighborhood_slug')).toBe(false);
+      expect(profile?.visibleLevels.some((l) => l.canonicalSlot === 'neighborhood_slug')).toBe(true);
     }
   });
 
@@ -58,8 +58,8 @@ describe('Market Profiles — Presentation Metadata', () => {
     const joLabels = jo!.visibleLevels.map((l) => l.labelEn);
     const saLabels = sa!.visibleLevels.map((l) => l.labelEn);
 
-    expect(joLabels).toEqual(['City', 'Neighbourhood']);
-    expect(saLabels).toEqual(['Region', 'City']);
+    expect(joLabels).toEqual(['City', 'Area', 'Neighbourhood']);
+    expect(saLabels).toEqual(['Region', 'Area', 'Neighbourhood']);
     expect(joLabels).not.toEqual(saLabels);
 
     // Both map level1 to city_slug, level2 to district_slug, level3 to neighborhood_slug

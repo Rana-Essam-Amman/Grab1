@@ -13,7 +13,7 @@ describe('JordanLocationPicker (OpenSooq-Style)', () => {
     expect(item.citySlug).toBe('amman');
     expect(item.districtSlug).toBe('sahab');
     expect(item.neighborhoodSlug).toBe('hayy-tabarbawr');
-    expect(item.parentPathAr).toBe('عمان');
+    expect(item.parentPathAr).toBe('عمان — سحاب');
   });
 
   it('2. Direct search for a canonical Zarqa locality (Hayy Ma\'sum)', () => {
@@ -24,7 +24,7 @@ describe('JordanLocationPicker (OpenSooq-Style)', () => {
     expect(item.citySlug).toBe('zarqa');
     expect(item.districtSlug).toBe('zarqa-qasabah');
     expect(item.neighborhoodSlug).toBe('hayy-ma-sum');
-    expect(item.parentPathAr).toBe('الزرقاء');
+    expect(item.parentPathAr).toBe('الزرقاء — الزرقاء');
   });
 
   it('3. Arabic and English search parity', () => {
@@ -38,7 +38,7 @@ describe('JordanLocationPicker (OpenSooq-Style)', () => {
     const results = searchJordanLocations('عبدون', true);
     const abdun = results.find((r) => r.neighborhoodSlug === 'abdun');
     expect(abdun).toBeDefined();
-    expect(abdun?.parentPathAr).toBe('عمان');
+    expect(abdun?.parentPathAr).toBe('عمان — عمان');
   });
 
   it('5. Correct canonical slugs after selection in UI component', () => {
@@ -80,7 +80,7 @@ describe('JordanLocationPicker (OpenSooq-Style)', () => {
     expect(distMatch).toBeDefined();
     expect(villMatch).toBeDefined();
     expect(distMatch?.parentPathAr).toBe('عمان');
-    expect(villMatch?.parentPathAr).toBe('عمان');
+    expect(villMatch?.parentPathAr).toBe('عمان — عمان');
     expect(distMatch?.districtSlug).not.toBe(villMatch?.districtSlug);
   });
 
