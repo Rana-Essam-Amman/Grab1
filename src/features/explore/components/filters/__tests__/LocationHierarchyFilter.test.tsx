@@ -99,11 +99,11 @@ describe('LocationHierarchyFilter', () => {
     );
 
     fireEvent.click(
-      screen.getByRole('button', { name: 'Wadi as Sir — Amman' })
+      screen.getByRole('button', { name: 'Wadi as Sir' })
     );
 
     expect(
-      screen.getByRole('button', { name: 'Wadi as Sir — Amman' })
+      screen.getByRole('button', { name: 'Wadi as Sir' })
     ).toBeInTheDocument();
 
     fireEvent.change(screen.getByTestId('geo-hierarchy-search'), {
@@ -162,7 +162,7 @@ describe('LocationHierarchyFilter', () => {
       cityAr: 'عمان',
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'Wadi as Sir — Amman' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Wadi as Sir' }));
     expect(onLocationChange).toHaveBeenLastCalledWith({
       governorateSlug: 'amman',
       districtSlug: 'amman-qasabah',

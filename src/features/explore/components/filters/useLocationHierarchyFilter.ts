@@ -6,6 +6,7 @@ import { campsForGovernorate } from './locationHierarchyProfile';
 import {
   campBelongsToGovernorate, childSelection, districtSelection, emptySelection, governorateSelection,
 } from './locationHierarchySelection';
+import { buildMergedAmmanAreas, type AmmanArea } from '@/features/post-wizard/helpers/ammanAreaResolver';
 
 interface Params {
   readonly countryCode: string;
@@ -18,14 +19,6 @@ interface Params {
 }
 
 
-type FlatArea = {
-  id: string;
-  slug: string;
-  nameAr: string;
-  nameEn: string;
-  parentDistrict: District | null;
-  isDistrict: boolean;
-};
 
 const filterItems = <T extends { nameAr: string; nameEn: string }>(items: readonly T[], term: string): readonly T[] => {
   const q = normalizeArabic(term.trim());
@@ -88,19 +81,18 @@ export function useLocationHierarchyFilter({
     return null;
   }, [selectedGov, governorates]);
   const flatAreas = useMemo(() => {
-    if (!selectedGov) return [];
+    if (!selectedGov) return [] as readonly AmmanArea[];
+    if (countryCode === 'JO' && selectedGov === 'amman') return buildMergedAmmanAreas();
     const gov = governorates.find(g => g.slug === selectedGov) ?? null;
-    if (!gov) return [];
-    const areas: FlatArea[] = [];
+    if (!gov) return [] as readonly AmmanArea[];
+    const areas: AmmanArea[] = [];
     for (const d of gov.districts ?? []) {
       if (d.slug === 'unverified') continue;
-      areas.push({ id: `district:${d.slug}`, slug: d.slug, nameAr: d.nameAr, nameEn: d.nameEn, parentDistrict: null, isDistrict: true });
-      for (const v of (d.villages ?? [])) {
-        areas.push({ id: `village:${d.slug}:${v.slug}`, slug: v.slug, nameAr: v.nameAr, nameEn: v.nameEn, parentDistrict: d, isDistrict: false });
-      }
+      areas.push({ id: `district:${d.slug}`, slug: d.slug, nameAr: d.nameAr, nameEn: d.nameEn, districtSlug: d.slug, neighborhoodSlug: null, source: 'geonames-district' });
+      for (const v of (d.villages ?? [])) areas.push({ id: `village:${d.slug}:${v.slug}`, slug: v.slug, nameAr: v.nameAr, nameEn: v.nameEn, districtSlug: d.slug, neighborhoodSlug: v.slug, source: 'geonames-village' });
     }
     return areas;
-  }, [selectedGov, governorates]);
+  }, [selectedGov, countryCode, governorates]);
 
   const filteredFlatAreas = useMemo(
     () => filterItems(flatAreas, textFilter),

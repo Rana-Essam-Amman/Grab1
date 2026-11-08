@@ -1,24 +1,15 @@
 import React from 'react';
 import { useLocationHierarchyFilter } from './useLocationHierarchyFilter';
 import { JordanExploreSearchResults } from './JordanExploreSearchResults';
-import { LocationHierarchySections, stripAdmin } from './LocationHierarchySections';
+import { LocationHierarchySections } from './LocationHierarchySections';
 import { hierarchyLabels } from './locationHierarchyProfile';
 import type { JordanLocationSearchResult } from '@/features/post-wizard/helpers/jordanLocationIndex';
+import { matchOpenSooqToGeoNames } from '@/features/post-wizard/helpers/ammanAreaResolver';
 interface Props {
-  readonly countryCode: string;
-  readonly isArabic: boolean;
-  readonly activeNeighborhood: string | null;
+  readonly countryCode: string; readonly isArabic: boolean; readonly activeNeighborhood: string | null;
   readonly onSelect: (label: string | null) => void;
-  readonly onLocationChange?: (selection: {
-    readonly governorateSlug: string | null;
-    readonly districtSlug: string | null;
-    readonly neighborhoodSlug: string | null;
-    readonly label: string | null;
-    readonly cityEn: string | null;
-    readonly cityAr: string | null;
-  }) => void;
-  readonly initialGovSlug?: string | null;
-  readonly initialDistSlug?: string | null;
+  readonly onLocationChange?: (selection: { readonly governorateSlug: string | null; readonly districtSlug: string | null; readonly neighborhoodSlug: string | null; readonly label: string | null; readonly cityEn: string | null; readonly cityAr: string | null; }) => void;
+  readonly initialGovSlug?: string | null; readonly initialDistSlug?: string | null;
 }
 
 export const LocationHierarchyFilter: React.FC<Props> = ({
@@ -101,12 +92,15 @@ export const LocationHierarchyFilter: React.FC<Props> = ({
           filteredCamps={filteredCamps}
           flatAreas={filteredFlatAreas}
           onFlatAreaSelect={(area) => {
-            const district = area.isDistrict ? { slug: area.slug, nameAr: area.nameAr, nameEn: area.nameEn, villages: [] } : area.parentDistrict;
-            const neighborhoodSlug = area.isDistrict ? null : area.slug;
-            const label = area.isDistrict ? stripAdmin(isArabic ? area.nameAr : area.nameEn) : (isArabic ? area.nameAr : area.nameEn);
-            setSelectedDistrict(district?.slug ?? null);
-            onLocationChange?.({ governorateSlug: selectedGov ?? null, districtSlug: district?.slug ?? null, neighborhoodSlug, label, cityEn: null, cityAr: null });
-            onSelect(neighborhoodSlug ? label : null); setTextFilter('');
+            const label = isArabic ? area.nameAr : area.nameEn;
+            let districtSlug = area.districtSlug, neighborhoodSlug = area.neighborhoodSlug;
+            if (area.source === 'opensooq' && !districtSlug) {
+              const m = matchOpenSooqToGeoNames(area.nameAr, area.nameEn);
+              if (m) { districtSlug = m.districtSlug; neighborhoodSlug = m.neighborhoodSlug; }
+            }
+            setSelectedDistrict(districtSlug);
+            onLocationChange?.({ governorateSlug: selectedGov ?? null, districtSlug, neighborhoodSlug, label, cityEn: null, cityAr: null });
+            onSelect(neighborhoodSlug || area.source === 'opensooq' ? label : null); setTextFilter('');
           }}
           onGovSelect={onGovSelect}
           onDistSelect={onDistSelect}

@@ -10,6 +10,7 @@ import { normalizeArabic } from '@/shared/lib/arabicNormalize';
 import { recordNeighborhoodUsage } from '@/services/locations.service';
 import { toast } from 'sonner';
 import { preserveVerifiedJordanSelection, resolveTraditionalLocationSlugs } from '../helpers/traditionalLocationResolver';
+import { buildMergedAmmanAreas, matchOpenSooqToGeoNames } from '../helpers/ammanAreaResolver';
 
 export interface UseLocationPickReturn {
   cities: string[];
@@ -106,6 +107,17 @@ export function useLocationPick(): UseLocationPickReturn {
     if (isOtherValue(selectedCity)) return [otherLabel];
     const labels: string[] = [];
     const seen = new Set<string>();
+
+    // Amman: use merged GeoNames + OpenSooq list
+    if (browseCountryCode === 'JO' && currentGovSlug === 'amman') {
+      const merged = buildMergedAmmanAreas();
+      for (const a of merged) {
+        const label = isArabic ? a.nameAr : a.nameEn;
+        if (!seen.has(label)) { labels.push(label); seen.add(label); }
+      }
+      return [...labels.sort((a, b) => a.localeCompare(b, isArabic ? 'ar' : 'en')), otherLabel];
+    }
+
     for (const d of rawDistricts) {
       const raw = isArabic ? d.nameAr : d.nameEn;
       const name = browseCountryCode === 'JO' ? stripAdminWords(raw) : raw;
@@ -125,7 +137,7 @@ export function useLocationPick(): UseLocationPickReturn {
       if (!seen.has(name)) { labels.push(name); seen.add(name); }
     }
     return [...labels.sort((a, b) => a.localeCompare(b, isArabic ? 'ar' : 'en')), otherLabel];
-  }, [selectedCity, rawDistricts, rawCamps, isArabic, otherLabel, browseCountryCode]);
+  }, [selectedCity, rawDistricts, rawCamps, isArabic, otherLabel, browseCountryCode, currentGovSlug]);
 
   const resolveNeighborhoodLabel = useCallback((saved: string): string | null => {
     if (!saved) return null;
@@ -244,7 +256,27 @@ export function useLocationPick(): UseLocationPickReturn {
       ? customNeighborhood.trim()
       : selectedNeighborhood;
 
-    const { citySlug, districtSlug, neighborhoodSlug } = resolveSlugsAtSave(finalCity, finalNeighborhood);
+    let { citySlug, districtSlug, neighborhoodSlug } = resolveSlugsAtSave(finalCity, finalNeighborhood);
+
+    // For Amman, prefer the merged list resolution so OpenSooq entries map correctly
+    if (browseCountryCode === 'JO' && citySlug === 'amman' && finalNeighborhood) {
+      const merged = buildMergedAmmanAreas();
+      const exact = merged.find(a =>
+        normalizeArabic(isArabic ? a.nameAr : a.nameEn) ===
+        normalizeArabic(finalNeighborhood)
+      );
+      if (exact) {
+        let dSlug = exact.districtSlug;
+        let nSlug = exact.neighborhoodSlug;
+        if (exact.source === 'opensooq' && !dSlug) {
+          const m = matchOpenSooqToGeoNames(exact.nameAr, exact.nameEn);
+          if (m) { dSlug = m.districtSlug; nSlug = m.neighborhoodSlug; }
+        }
+        districtSlug = dSlug ?? undefined;
+        neighborhoodSlug = nSlug ?? undefined;
+        // neighborhood display is already finalNeighborhood; strip if needed but keep as-is for now
+      }
+    }
 
 
     if (!citySlug) {

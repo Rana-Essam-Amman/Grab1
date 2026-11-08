@@ -2,6 +2,7 @@ import React from 'react';
 import { LocationFilterSection } from './LocationHierarchySection';
 import type { Governorate, District, Village, RefugeeCamp } from '@/data/locations/types';
 import type { HierarchyLabels } from './locationHierarchyProfile';
+import type { AmmanArea } from '@/features/post-wizard/helpers/ammanAreaResolver';
 
 export const stripAdmin = (s: string): string =>
   s.split(/\s+/)
@@ -20,21 +21,8 @@ interface Props {
   readonly filteredDistricts: readonly District[];
   readonly filteredVillages: readonly Village[];
   readonly filteredCamps: readonly RefugeeCamp[];
-  readonly flatAreas: readonly {
-    id: string;
-    slug: string;
-    nameAr: string;
-    nameEn: string;
-    parentDistrict: District | null;
-    isDistrict: boolean;
-  }[];
-  readonly onFlatAreaSelect?: (area: {
-    slug: string;
-    nameAr: string;
-    nameEn: string;
-    parentDistrict: District | null;
-    isDistrict: boolean;
-  }) => void;
+  readonly flatAreas: readonly AmmanArea[];
+  readonly onFlatAreaSelect?: (area: AmmanArea) => void;
   readonly onGovSelect: (g: Governorate) => void;
   readonly onDistSelect: (d: District) => void;
   readonly onVillageSelect: (v: Village) => void;
@@ -61,29 +49,11 @@ export const LocationHierarchySections: React.FC<Props> = ({
     {selectedGov && flatAreas.length > 0 && (
       <LocationFilterSection
         title={stripAdmin(labels.level2 || (isArabic ? 'المنطقة' : 'Area'))}
-        items={flatAreas.map(a => {
-          const cleanAr = stripAdmin(a.nameAr);
-          const cleanEn = stripAdmin(a.nameEn);
-          const govAr = selectedGovernorate?.nameAr ?? '';
-          const govEn = selectedGovernorate?.nameEn ?? '';
-          const districtCollidesAr = a.isDistrict && cleanAr === govAr;
-          const districtCollidesEn = a.isDistrict && cleanEn === govEn;
-          const districtSuffixAr = a.parentDistrict
-            ? stripAdmin(a.parentDistrict.nameAr)
-            : '';
-          const districtSuffixEn = a.parentDistrict
-            ? stripAdmin(a.parentDistrict.nameEn)
-            : '';
-          return {
-            slug: a.id,
-            nameAr: a.isDistrict
-              ? `${cleanAr}${districtCollidesAr ? ' (منطقة)' : ''}`
-              : `${a.nameAr}${districtSuffixAr ? ` — ${districtSuffixAr}` : ''}`,
-            nameEn: a.isDistrict
-              ? `${cleanEn}${districtCollidesEn ? ' (Area)' : ''}`
-              : `${a.nameEn}${districtSuffixEn ? ` — ${districtSuffixEn}` : ''}`,
-          };
-        })}
+        items={flatAreas.map(a => ({
+          slug: a.id,
+          nameAr: stripAdmin(a.nameAr),
+          nameEn: stripAdmin(a.nameEn),
+        }))}
         isArabic={isArabic}
         activeNeighborhood={activeNeighborhood}
         selectedSlug={selectedDist ? `district:${selectedDist}` : undefined}
