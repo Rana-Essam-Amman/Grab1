@@ -12,6 +12,7 @@ const PREFIX_DEDUPE_WHITELIST: ReadonlySet<string> = new Set([
 'village:amman-qasabah:hayy-al-bunayyat','village:amman-qasabah:hayy-al-madinah-ar-riyadiyah','village:amman-qasabah:mintaqat-badr','village:wadi-essier:hayy-khilda','village:wadi-essier:mintaqat-al-jubayhah','village:wadi-essier:hayy-al-khaznah',
 'village:wadi-essier:hayy-tila-al-ali-ash-shamali','village:wadi-essier:hayy-tila-al-ali-ash-sharqi','village:wadi-essier:hayy-umm-udhaynah-al-gharbi','village:sahab:hayy-tabarbawr','village:sahab:hayy-az-zahra','village:sahab:mintaqat-basman',
 'village:sahab:hayy-ar-rabwah','village:naoor:qurayyat-salim','village:naoor:hayy-al-ma-adi','village:wadi-essier:hayy-ar-rashid',
+'village:amman-qasabah:amman',
 ]);
 
 export function stripAdminWords(label: string): string {
@@ -61,16 +62,4 @@ export function buildMergedAmmanAreas(): readonly AmmanArea[] {
   return final;
 }
 
-export function matchOpenSooqToGeoNames(areaNameAr: string, areaNameEn: string): { districtSlug: string; neighborhoodSlug: string | null } | null {
-  const districts = getAllDistricts('JO', 'amman');
-  const keyAr = normalizeKey(areaNameAr);
-  const keyEn = areaNameEn.toLowerCase().trim();
-  for (const d of districts) {
-    if (d.slug === 'unverified') continue;
-    if (normalizeKey(d.nameAr) === keyAr || d.nameEn.toLowerCase().trim() === keyEn) return { districtSlug: d.slug, neighborhoodSlug: null };
-    for (const v of (d.villages ?? [])) {
-      if (normalizeKey(v.nameAr) === keyAr || v.nameEn.toLowerCase().trim() === keyEn) return { districtSlug: d.slug, neighborhoodSlug: v.slug };
-    }
-  }
-  return null;
-}
+export { matchOpenSooqToGeoNames } from './ammanAreaMatcher';
