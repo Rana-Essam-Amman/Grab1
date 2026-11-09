@@ -125,7 +125,7 @@ describe('LocationHierarchyFilter', () => {
       ).toHaveValue('');
 
       expect(
-        screen.getByRole('button', { name: 'Riyadh' })
+        screen.getByRole('button', { name: 'الرياض' })
       ).toBeInTheDocument();
 
       expect(

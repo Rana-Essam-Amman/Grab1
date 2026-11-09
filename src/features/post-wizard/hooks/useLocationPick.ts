@@ -9,7 +9,7 @@ import { googleSearchQuery } from '@/data/mapUrls';
 import { normalizeArabic } from '@/shared/lib/arabicNormalize';
 import { stripAdminWords } from '@/shared/lib/geo/stripAdminWords';
 import { JO_OPENSOOQ_AREAS } from '@/data/locations/JO_OPENSOOQ_AREAS';
-import { hasOpensooqData, getOpensooqCity } from '@/data/locations/opensooq';
+import { hasOpensooqData, getOpensooqCity, getOpensooqCities } from '@/data/locations/opensooq';
 import { recordNeighborhoodUsage } from '@/services/locations.service';
 import { toast } from 'sonner';
 import { preserveVerifiedJordanSelection, resolveTraditionalLocationSlugs } from '../helpers/traditionalLocationResolver';
@@ -46,7 +46,17 @@ export function useLocationPick(): UseLocationPickReturn {
   const { authStatus, isAnonymous } = useAuth();
   const otherLabel = isArabic ? OTHER_AR : OTHER_EN;
 
-  const rawGovs = useMemo(() => getAllGovernorates(browseCountryCode), [browseCountryCode]);
+  const rawGovs = useMemo(() => {
+    if (hasOpensooqData(browseCountryCode)) {
+      return getOpensooqCities(browseCountryCode).map(c => ({
+        slug: c.slug,
+        nameAr: c.nameAr,
+        nameEn: c.nameAr,
+        districts: [],
+      }));
+    }
+    return getAllGovernorates(browseCountryCode);
+  }, [browseCountryCode]);
   const govsMap = useMemo(() => {
     const map = new Map<string, string>();
     for (const g of rawGovs) map.set(isArabic ? g.nameAr : g.nameEn, g.slug);
