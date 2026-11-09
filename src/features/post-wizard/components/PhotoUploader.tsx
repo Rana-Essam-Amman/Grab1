@@ -18,10 +18,10 @@ export const PhotoUploader: React.FC<Props> = ({ photoCount, isArabic, onFiles }
         onChange={(e) => onFiles(e.target.files)}
         className="hidden"
       />
-      <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
+      <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center">
         <Icon icon="fluent-emoji:camera" width={24} height={24} className="shrink-0" />
       </div>
-      <span className="text-[11px] font-bold text-ink-soft">
+      <span className="text-[12px] font-bold text-ink-soft">
         {isArabic ? 'إضافة صورة' : 'Add Photo'}
       </span>
     </label>

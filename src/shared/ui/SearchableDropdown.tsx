@@ -129,7 +129,7 @@ export const SearchableDropdown: React.FC<Props> = ({
     );
   };
 
-  const menuClasses = `absolute z-50 w-full rounded-xl bg-surface border border-border shadow-lg max-h-72 overflow-hidden flex flex-col ${
+  const menuClasses = `absolute z-50 w-full rounded-xl bg-surface border border-border shadow-lg max-h-80 overflow-hidden flex flex-col ${
     menuPosition === 'above' ? 'bottom-full mb-1' : 'top-full mt-1'
   }`;
 

@@ -82,7 +82,7 @@ export const PhotoUploadScreen: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3">
             <PhotoPreviewList photos={photos} isArabic={isArabic} onRemove={handleRemove} onSetCover={handleSetCover} onImageError={handleImageError} />
             <PhotoUploader photoCount={photos.length} isArabic={isArabic} onFiles={handleFiles} />
           </div>

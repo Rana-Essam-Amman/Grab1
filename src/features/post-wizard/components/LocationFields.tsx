@@ -150,7 +150,7 @@ export const LocationFields: React.FC<Props> = ({
         className="h-11"
       />
 
-      <Card variant="default" className="p-2 border border-border bg-surface rounded-2xl">
+      <Card variant="default" className="p-3 border border-border bg-surface rounded-2xl">
         <div className="flex items-center gap-1.5 text-xs text-ink-muted mb-2 px-1">
           <Icon icon="noto:round-pushpin" width={14} height={14} className="text-primary shrink-0" />
           <span>{mapQuery}</span>
