@@ -8,6 +8,9 @@ export const EXTRA_CITIES: Record<string, readonly OpensooqCity[]> = {};
 // grouped by market → target OpenSooq city slug.
 export const EXTRA_AREAS: Record<string, Record<string, readonly OpensooqArea[]>> = {
   SA: {
+    "mkh": [
+      { slug: "muzdalifah", nameAr: "مزدلفة" },
+    ],
     "alryad": [
       { slug: "alyynh", nameAr: "العيينة" },
       { slug: "alartawyh", nameAr: "الأرطاوية" },
@@ -83,6 +86,7 @@ export const EXTRA_AREAS: Record<string, Record<string, readonly OpensooqArea[]>
       { slug: "dyr-alsl", nameAr: "دير العسل" },
     ],
     "ghzh": [
+      { slug: "al-shawka", nameAr: "الشوكة" },
       { slug: "am-alnasr", nameAr: "أم الناصر" },
       { slug: "alslam", nameAr: "السلام" },
       { slug: "alnasr", nameAr: "الناصر" },
@@ -203,6 +207,11 @@ export const EXTRA_AREAS: Record<string, Record<string, readonly OpensooqArea[]>
     "alqnytrh": [
       { slug: "khan-arnbh", nameAr: "خان أرنبة" },
       { slug: "albth", nameAr: "البعث" },
+    ],
+  },
+  KW: {
+    "mdynh-alkwyt": [
+      { slug: "hadaiq-al-soor", nameAr: "حدائق السور" },
     ],
   },
 };
