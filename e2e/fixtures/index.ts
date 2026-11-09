@@ -1,5 +1,6 @@
 import { test as base, Page } from '@playwright/test';
 import { installChatMocks } from './chat-mocks';
+import { buildFakeSupabaseSession, getSupabaseStorageKey } from './supabaseSession';
 
 const E2E_USER_ID = 'e2e00000-0000-0000-0000-000000000002';
 const E2E_USER = {
@@ -53,7 +54,9 @@ export const test = base.extend<Fixtures>({
   },
 
   loggedInPage: async ({ page }, use) => {
-    await page.addInitScript(({ user }) => {
+    const storageKey = getSupabaseStorageKey();
+    const session = buildFakeSupabaseSession(E2E_USER);
+    await page.addInitScript(({ user, storageKey, session }) => {
       const fakeAuth = {
         state: {
           user,
@@ -68,7 +71,8 @@ export const test = base.extend<Fixtures>({
       localStorage.setItem('catch_user', JSON.stringify(user));
       localStorage.setItem('catch_token', JSON.stringify('e2e-logged-in-token'));
       localStorage.setItem('catch_browse_country', 'JO');
-    }, { user: E2E_USER });
+      localStorage.setItem(storageKey, JSON.stringify(session));
+    }, { user: E2E_USER, storageKey, session });
 
     // 1. اعتراض عام لكل طلبات rest/v1 (أقل أولوية)
     await page.route('**/rest/v1/**', route => {
@@ -106,7 +110,16 @@ export const test = base.extend<Fixtures>({
   },
 
   chatReadyPage: async ({ page }, use) => {
-    await page.addInitScript(() => {
+    const storageKey = getSupabaseStorageKey();
+    const session = buildFakeSupabaseSession({
+      id: 'e2e00000-0000-0000-0000-000000000001',
+      email: 'e2e@example.com',
+      phone: '0790000000',
+      firstName: 'E2E',
+      lastName: 'Test',
+      countryCode: 'JO',
+    });
+    await page.addInitScript(({ storageKey, session }) => {
       const fakeAuth = {
         state: {
           user: {
@@ -123,7 +136,8 @@ export const test = base.extend<Fixtures>({
         version: 0,
       };
       localStorage.setItem('catch_auth', JSON.stringify(fakeAuth));
-    });
+      localStorage.setItem(storageKey, JSON.stringify(session));
+    }, { storageKey, session });
 
     await installChatMocks(page);
     await page.goto('/');
