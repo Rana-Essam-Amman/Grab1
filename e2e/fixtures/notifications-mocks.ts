@@ -1,4 +1,5 @@
 import type { Page, Route } from '@playwright/test';
+import { buildFakeSupabaseSession, getSupabaseStorageKey } from './supabaseSession';
 
 export interface NotificationRow {
   readonly id: string;
@@ -94,7 +95,16 @@ export async function installNotificationsMocks(
 }
 
 export async function installFakeAuth(page: Page): Promise<void> {
-  await page.addInitScript((userId: string) => {
+  const storageKey = getSupabaseStorageKey();
+  const session = buildFakeSupabaseSession({
+    id: FAKE_USER_ID,
+    email: 'e2e@test.local',
+    phone: '0790000000',
+    firstName: 'E2E',
+    lastName: 'User',
+    countryCode: 'JO',
+  });
+  await page.addInitScript(({ userId, storageKey, session }) => {
     const fakeAuth = {
       state: {
         authStatus: 'authenticated',
@@ -113,7 +123,8 @@ export async function installFakeAuth(page: Page): Promise<void> {
       version: 0,
     };
     window.localStorage.setItem('catch_auth', JSON.stringify(fakeAuth));
-  }, FAKE_USER_ID);
+    window.localStorage.setItem(storageKey, JSON.stringify(session));
+  }, { userId: FAKE_USER_ID, storageKey, session });
 }
 
 export const E2E_USER_ID = FAKE_USER_ID;
