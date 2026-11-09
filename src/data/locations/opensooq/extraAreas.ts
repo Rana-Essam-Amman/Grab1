@@ -191,6 +191,9 @@ export const EXTRA_AREAS: Record<string, Record<string, readonly OpensooqArea[]>
       { slug: "kfrshwba", nameAr: "كفرشوبا" },
       { slug: "ynata", nameAr: "عيناتا" },
     ],
+    "aldnyh": [
+      { slug: "seer-al-dinniyeh", nameAr: "سير الضنية" },
+    ],
   },
   SY: {
     "ryf-dmshq": [
@@ -212,6 +215,37 @@ export const EXTRA_AREAS: Record<string, Record<string, readonly OpensooqArea[]>
   KW: {
     "mdynh-alkwyt": [
       { slug: "hadaiq-al-soor", nameAr: "حدائق السور" },
+      { slug: "dahiyat-abdullah-al-salem", nameAr: "ضاحية عبد الله السالم" },
+      { slug: "shamal-gharb-al-sulaibikhat", nameAr: "شمال غرب الصليبيخات" },
+    ],
+    "hwly": [
+      { slug: "al-shati", nameAr: "الشاطئ" },
+      { slug: "anjafa", nameAr: "أنجفة" },
+      { slug: "dahiyat-mubarak-al-abdullah", nameAr: "ضاحية مبارك العبد الله الجابر" },
+      { slug: "al-nuqra", nameAr: "النقرة" },
+    ],
+    "alfrwanyh": [
+      { slug: "jleeb-al-shuyoukh", nameAr: "جليب الشيوخ" },
+      { slug: "new-khaitan", nameAr: "خيطان الجديدة" },
+      { slug: "al-hasawi", nameAr: "الحساوي" },
+      { slug: "dahiyat-abdullah-al-mubarak", nameAr: "ضاحية عبد الله المبارك" },
+    ],
+    "mbark-alkbyr": [
+      { slug: "wista", nameAr: "ويستا" },
+    ],
+    "alahmdy": [
+      { slug: "al-wafra", nameAr: "الوفرة" },
+      { slug: "al-shuaiba", nameAr: "الشعيبة" },
+      { slug: "dahiyat-jaber-al-ali", nameAr: "ضاحية جابر العلي" },
+    ],
+    "aljhra": [
+      { slug: "amghara", nameAr: "أمغرة" },
+      { slug: "madinat-sheikh-nawaf-al-ahmad", nameAr: "مدينة نواف الأحمد" },
+      { slug: "al-qaisariya", nameAr: "القيصرية" },
+      { slug: "old-jahra", nameAr: "الجهراء القديمة" },
+      { slug: "new-jahra", nameAr: "الجهراء الجديدة" },
+      { slug: "madinat-al-hareer", nameAr: "مدينة الحرير" },
+      { slug: "al-rawdatain", nameAr: "الروضتين" },
     ],
   },
 };
