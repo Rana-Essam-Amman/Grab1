@@ -1,7 +1,14 @@
 import { stripAdminWords } from '@/shared/lib/geo/stripAdminWords';
 import { normalizeArabic } from '@/shared/lib/arabicNormalize';
+import { slugify } from '@/shared/lib/slugify';
 import type { Governorate } from '@/data/locations/types';
 import type { AmmanArea } from '@/features/post-wizard/helpers/ammanAreaResolver';
+import { JO_OPENSOOQ_AREAS } from '@/data/locations/JO_OPENSOOQ_AREAS';
+
+function opensooqSlug(nameEn: string, nameAr: string): string {
+  const base = /[a-zA-Z]/.test(nameEn) ? nameEn : nameAr;
+  return slugify(base);
+}
 
 export function buildFlatAreasForGovernorate(
   gov: Governorate,
@@ -44,6 +51,21 @@ export function buildFlatAreasForGovernorate(
         });
       }
     }
+  }
+
+  // OpenSooq extras: same dedupe key, so GeoNames wins; missing names are added as custom.
+  const extras = JO_OPENSOOQ_AREAS[gov.slug] ?? [];
+  for (const extra of extras) {
+    const slug = opensooqSlug(extra.nameEn, extra.nameAr);
+    pushUnique({
+      id: `opensooq:${gov.slug}:${slug}`,
+      slug,
+      nameAr: extra.nameAr,
+      nameEn: extra.nameEn,
+      districtSlug: null,
+      neighborhoodSlug: null,
+      source: 'opensooq',
+    });
   }
 
   return areas;

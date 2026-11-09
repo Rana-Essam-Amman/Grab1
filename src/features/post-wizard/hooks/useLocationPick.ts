@@ -8,6 +8,7 @@ import { isOtherValue, OTHER_AR, OTHER_EN } from '@/data/locations';
 import { googleSearchQuery } from '@/data/mapUrls';
 import { normalizeArabic } from '@/shared/lib/arabicNormalize';
 import { stripAdminWords } from '@/shared/lib/geo/stripAdminWords';
+import { JO_OPENSOOQ_AREAS } from '@/data/locations/JO_OPENSOOQ_AREAS';
 import { recordNeighborhoodUsage } from '@/services/locations.service';
 import { toast } from 'sonner';
 import { preserveVerifiedJordanSelection, resolveTraditionalLocationSlugs } from '../helpers/traditionalLocationResolver';
@@ -127,6 +128,14 @@ export function useLocationPick(): UseLocationPickReturn {
         }
       }
     }
+    // OpenSooq extras for this governorate (deduped against GeoNames by display label)
+    if (browseCountryCode === 'JO' && currentGovSlug) {
+      const extras = JO_OPENSOOQ_AREAS[currentGovSlug] ?? [];
+      for (const extra of extras) {
+        const label = isArabic ? extra.nameAr : extra.nameEn;
+        pushUnique(label);
+      }
+    }
     for (const c of rawCamps) {
       const name = isArabic ? c.nameAr : c.nameEn;
       if (!seen.has(name)) { labels.push(name); seen.add(name); }
@@ -165,8 +174,17 @@ export function useLocationPick(): UseLocationPickReturn {
       const mo = normalizeArabic(isArabic ? c.nameEn : c.nameAr) === normalizedBase;
       if (mc || mo) return isArabic ? c.nameAr : c.nameEn;
     }
+    // OpenSooq extras (custom areas not in GeoNames)
+    if (browseCountryCode === 'JO' && currentGovSlug) {
+      const extras = JO_OPENSOOQ_AREAS[currentGovSlug] ?? [];
+      for (const extra of extras) {
+        if (normalizeArabic(extra.nameAr) === normalizedBase || normalizeArabic(extra.nameEn) === normalizedBase) {
+          return isArabic ? extra.nameAr : extra.nameEn;
+        }
+      }
+    }
     return null;
-  }, [rawDistricts, rawCamps, isArabic, browseCountryCode]);
+  }, [rawDistricts, rawCamps, isArabic, browseCountryCode, currentGovSlug]);
 
   const initialNeighborhoodLabel = useMemo(
     () => resolveNeighborhoodLabel(postDraft.neighborhood || ""),
