@@ -9,7 +9,7 @@ import { googleSearchQuery } from '@/data/mapUrls';
 import { normalizeArabic } from '@/shared/lib/arabicNormalize';
 import { stripAdminWords } from '@/shared/lib/geo/stripAdminWords';
 import { JO_OPENSOOQ_AREAS } from '@/data/locations/JO_OPENSOOQ_AREAS';
-import { hasOpensooqData, getOpensooqCity, getOpensooqCities } from '@/data/locations/opensooq';
+import { hasOpensooqData, getAllOpensooqCities, getAllOpensooqCity, getAllOpensooqAreas } from '@/data/locations/opensooq';
 import { recordNeighborhoodUsage } from '@/services/locations.service';
 import { toast } from 'sonner';
 import { preserveVerifiedJordanSelection, resolveTraditionalLocationSlugs } from '../helpers/traditionalLocationResolver';
@@ -48,7 +48,7 @@ export function useLocationPick(): UseLocationPickReturn {
 
   const rawGovs = useMemo(() => {
     if (hasOpensooqData(browseCountryCode)) {
-      return getOpensooqCities(browseCountryCode).map(c => ({
+      return getAllOpensooqCities(browseCountryCode).map(c => ({
         slug: c.slug,
         nameAr: c.nameAr,
         nameEn: c.nameAr,
@@ -124,11 +124,11 @@ export function useLocationPick(): UseLocationPickReturn {
 
     // OpenSooq markets (SA/PS/LB/SY/KW): pure OpenSooq areas, per-city only
     if (hasOpensooqData(browseCountryCode) && currentGovSlug) {
-      const osCity = getOpensooqCity(browseCountryCode, currentGovSlug);
-      if (osCity) {
+      const areas = getAllOpensooqAreas(browseCountryCode, currentGovSlug);
+      if (areas.length > 0) {
         const osLabels: string[] = [];
         const osSeen = new Set<string>();
-        for (const area of osCity.areas) {
+        for (const area of areas) {
           if (!osSeen.has(area.nameAr)) { osSeen.add(area.nameAr); osLabels.push(area.nameAr); }
         }
         return [...osLabels.sort((a, b) => a.localeCompare(b, isArabic ? 'ar' : 'en')), otherLabel];
@@ -286,11 +286,11 @@ export function useLocationPick(): UseLocationPickReturn {
   } => {
     // OpenSooq markets: save citySlug + areaSlug (no district)
     if (hasOpensooqData(browseCountryCode) && currentGovSlug) {
-      const osCity = getOpensooqCity(browseCountryCode, currentGovSlug);
-      if (osCity) {
+      const areas = getAllOpensooqAreas(browseCountryCode, currentGovSlug);
+      if (areas.length > 0) {
         const norm = (s: string) => normalizeArabic(s).replace(/\s+/g, ' ').trim();
         const target = norm(neighborhoodLabel);
-        const match = osCity.areas.find(a => norm(a.nameAr) === target);
+        const match = areas.find(a => norm(a.nameAr) === target);
         if (match) {
           return {
             citySlug: currentGovSlug,
