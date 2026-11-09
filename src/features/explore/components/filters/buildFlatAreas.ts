@@ -28,28 +28,30 @@ export function buildFlatAreasForGovernorate(
   for (const d of gov.districts ?? []) {
     if (d.slug === 'unverified') continue;
     const villages = d.villages ?? [];
-    if (villages.length === 0) {
+
+    // Always add the parent district as a candidate.
+    // pushUnique() will dedupe it if a village already has the same name.
+    pushUnique({
+      id: `district:${d.slug}`,
+      slug: d.slug,
+      nameAr: stripAdminWords(d.nameAr),
+      nameEn: stripAdminWords(d.nameEn),
+      districtSlug: d.slug,
+      neighborhoodSlug: null,
+      source: 'geonames-district',
+    });
+
+    // Then add all villages (pushUnique dedupes).
+    for (const v of villages) {
       pushUnique({
-        id: `district:${d.slug}`,
-        slug: d.slug,
-        nameAr: stripAdminWords(d.nameAr),
-        nameEn: stripAdminWords(d.nameEn),
+        id: `village:${d.slug}:${v.slug}`,
+        slug: v.slug,
+        nameAr: stripAdminWords(v.nameAr),
+        nameEn: stripAdminWords(v.nameEn),
         districtSlug: d.slug,
-        neighborhoodSlug: null,
-        source: 'geonames-district',
+        neighborhoodSlug: v.slug,
+        source: 'geonames-village',
       });
-    } else {
-      for (const v of villages) {
-        pushUnique({
-          id: `village:${d.slug}:${v.slug}`,
-          slug: v.slug,
-          nameAr: stripAdminWords(v.nameAr),
-          nameEn: stripAdminWords(v.nameEn),
-          districtSlug: d.slug,
-          neighborhoodSlug: v.slug,
-          source: 'geonames-village',
-        });
-      }
     }
   }
 

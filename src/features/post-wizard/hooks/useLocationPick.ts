@@ -117,15 +117,18 @@ export function useLocationPick(): UseLocationPickReturn {
       labels.push(label);
     };
     for (const d of rawDistricts) {
+      const districtLabel = isArabic
+        ? stripAdminWords(d.nameAr)
+        : stripAdminWords(d.nameEn);
+      // Always include the district itself (pushUnique dedupes)
+      pushUnique(districtLabel);
+
       const villages = d.villages ?? [];
-      if (villages.length === 0) {
-        const ar = isArabic ? stripAdminWords(d.nameAr) : stripAdminWords(d.nameEn);
-        pushUnique(ar);
-      } else {
-        for (const v of villages) {
-          const ar = isArabic ? stripAdminWords(v.nameAr) : stripAdminWords(v.nameEn);
-          pushUnique(ar);
-        }
+      for (const v of villages) {
+        const villageLabel = isArabic
+          ? stripAdminWords(v.nameAr)
+          : stripAdminWords(v.nameEn);
+        pushUnique(villageLabel);
       }
     }
     // OpenSooq extras for this governorate (deduped against GeoNames by display label)
