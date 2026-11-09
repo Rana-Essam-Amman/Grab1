@@ -51,10 +51,10 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   }
 
   private resetApp = () => {
-    // 🛡️ Preserve listings — never wipe catch_listings* (they must never vanish).
+    const protectedKeys = new Set(['catch_auth', 'catch_user', 'catch_token']);
     Object.keys(localStorage)
-      .filter((k) => !k.startsWith('catch_listings'))
-      .forEach((k) => { try { localStorage.removeItem(k); } catch {} });
+      .filter((key) => !key.startsWith('catch_listings') && !key.startsWith('sb-') && !protectedKeys.has(key))
+      .forEach((key) => { try { localStorage.removeItem(key); } catch { /* ignore */ } });
     window.location.reload();
   };
 

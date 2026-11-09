@@ -1,25 +1,27 @@
 import { useEffect } from 'react';
 import { hydrateProfile, useAuthStore } from '../store/auth.slice';
 import { onAuthStateChange } from '../services/authService';
-import { ensureAnonymousSession, isAnonymousUser } from '../services/anonymousSession';
+import { isAnonymousUser } from '../services/anonymousSession';
 import { mapSessionToUser, resumePendingNavigation } from './authListenerHelpers';
-import { createSignedOutHandler } from '../helpers/signedOutHandler';
 import { clearAuthState, resumePendingWishlist } from '../helpers/authStateHelpers';
 import { useUIStore } from '@/store/ui.slice';
 
 export function useSupabaseAuthListener(): void {
   useEffect(() => {
-    void ensureAnonymousSession();
-    let isInitialized = false;
-    const signedOutHandler = createSignedOutHandler({ onConfirmedSignOut: clearAuthState });
-
     const { unsubscribe } = onAuthStateChange((event, session) => {
-      if (event === 'INITIAL_SESSION') isInitialized = true;
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') signedOutHandler.cancel();
+      if (event === 'INITIAL_SESSION' && !session) {
+        useAuthStore.setState({
+          user: null,
+          sessionToken: null,
+          authStatus: 'unauthenticated',
+          isAnonymous: false,
+          profileHydrated: false,
+        });
+        return;
+      }
 
       if (event === 'SIGNED_OUT') {
-        if (!isInitialized) return;
-        signedOutHandler.handleSignOut();
+        clearAuthState();
         return;
       }
 
@@ -33,7 +35,11 @@ export function useSupabaseAuthListener(): void {
         return;
       }
 
-      if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'USER_UPDATED') {
+      if (
+        event === 'SIGNED_IN' ||
+        event === 'INITIAL_SESSION' ||
+        event === 'USER_UPDATED'
+      ) {
         const user = mapSessionToUser(session);
         if (!user) return;
 
@@ -71,7 +77,6 @@ export function useSupabaseAuthListener(): void {
     });
 
     return () => {
-      signedOutHandler.cancel();
       unsubscribe();
     };
   }, []);
