@@ -9,6 +9,7 @@ import { googleSearchQuery } from '@/data/mapUrls';
 import { normalizeArabic } from '@/shared/lib/arabicNormalize';
 import { stripAdminWords } from '@/shared/lib/geo/stripAdminWords';
 import { JO_OPENSOOQ_AREAS } from '@/data/locations/JO_OPENSOOQ_AREAS';
+import { hasOpensooqData, getOpensooqCity } from '@/data/locations/opensooq';
 import { recordNeighborhoodUsage } from '@/services/locations.service';
 import { toast } from 'sonner';
 import { preserveVerifiedJordanSelection, resolveTraditionalLocationSlugs } from '../helpers/traditionalLocationResolver';
@@ -109,6 +110,19 @@ export function useLocationPick(): UseLocationPickReturn {
         if (!seen.has(label)) { labels.push(label); seen.add(label); }
       }
       return [...labels.sort((a, b) => a.localeCompare(b, isArabic ? 'ar' : 'en')), otherLabel];
+    }
+
+    // OpenSooq markets (SA/PS/LB/SY/KW): pure OpenSooq areas, per-city only
+    if (hasOpensooqData(browseCountryCode) && currentGovSlug) {
+      const osCity = getOpensooqCity(browseCountryCode, currentGovSlug);
+      if (osCity) {
+        const osLabels: string[] = [];
+        const osSeen = new Set<string>();
+        for (const area of osCity.areas) {
+          if (!osSeen.has(area.nameAr)) { osSeen.add(area.nameAr); osLabels.push(area.nameAr); }
+        }
+        return [...osLabels.sort((a, b) => a.localeCompare(b, isArabic ? 'ar' : 'en')), otherLabel];
+      }
     }
 
     const pushUnique = (label: string) => {
@@ -260,10 +274,32 @@ export function useLocationPick(): UseLocationPickReturn {
     districtSlug?: string;
     neighborhoodSlug?: string;
   } => {
+    // OpenSooq markets: save citySlug + areaSlug (no district)
+    if (hasOpensooqData(browseCountryCode) && currentGovSlug) {
+      const osCity = getOpensooqCity(browseCountryCode, currentGovSlug);
+      if (osCity) {
+        const norm = (s: string) => normalizeArabic(s).replace(/\s+/g, ' ').trim();
+        const target = norm(neighborhoodLabel);
+        const match = osCity.areas.find(a => norm(a.nameAr) === target);
+        if (match) {
+          return {
+            citySlug: currentGovSlug,
+            districtSlug: undefined,
+            neighborhoodSlug: match.slug === 'other' ? undefined : match.slug,
+          };
+        }
+        // Not found → custom under the city
+        return {
+          citySlug: currentGovSlug,
+          districtSlug: undefined,
+          neighborhoodSlug: undefined,
+        };
+      }
+    }
     const verified = preserveVerifiedJordanSelection(browseCountryCode, cityLabel, neighborhoodLabel, postDraft);
     if (verified) return verified;
     return resolveTraditionalLocationSlugs(browseCountryCode, cityLabel, neighborhoodLabel);
-  }, [browseCountryCode, postDraft.city, postDraft.citySlug, postDraft.districtSlug, postDraft.neighborhood, postDraft.neighborhoodSlug]);
+  }, [browseCountryCode, currentGovSlug, postDraft.city, postDraft.citySlug, postDraft.districtSlug, postDraft.neighborhood, postDraft.neighborhoodSlug]);
 
   const saveAndContinue = useCallback(() => {
     if (validationError) return;

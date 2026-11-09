@@ -94,7 +94,7 @@ export const LocationHierarchyFilter: React.FC<Props> = ({
           onFlatAreaSelect={(area) => {
             const label = isArabic ? area.nameAr : area.nameEn;
             let districtSlug = area.districtSlug, neighborhoodSlug = area.neighborhoodSlug;
-            if (area.source === 'opensooq' && !districtSlug) {
+            if (countryCode === 'JO' && area.source === 'opensooq' && !districtSlug) {
               const m = matchOpenSooqToGeoNames(area.nameAr, area.nameEn);
               if (m) { districtSlug = m.districtSlug; neighborhoodSlug = m.neighborhoodSlug; }
             }

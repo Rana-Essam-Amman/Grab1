@@ -9,6 +9,7 @@ import {
 } from './locationHierarchySelection';
 import { buildMergedAmmanAreas, type AmmanArea } from '@/features/post-wizard/helpers/ammanAreaResolver';
 import { buildFlatAreasForGovernorate } from './buildFlatAreas';
+import { opensooqGovernorates, opensooqFlatAreas } from './opensooqAdapter';
 
 interface Params {
   readonly countryCode: string;
@@ -55,7 +56,10 @@ export function useLocationHierarchyFilter({
     onLocationChange?.(emptySelection());
   }, [countryCode, onSelect, onLocationChange]);
 
-  const governorates = useMemo(() => getAllGovernorates(countryCode), [countryCode]);
+  const governorates = useMemo(() => {
+    const os = opensooqGovernorates(countryCode);
+    return os ?? getAllGovernorates(countryCode);
+  }, [countryCode]);
   const districts = useMemo(() => (selectedGov ? getAllDistricts(countryCode, selectedGov) : []), [countryCode, selectedGov]);
   const villages = useMemo(
     () => (selectedGov && selectedDist ? districts.find((d) => d.slug === selectedDist)?.villages ?? [] : []),
@@ -87,6 +91,8 @@ export function useLocationHierarchyFilter({
     if (countryCode === 'JO' && selectedGov === 'amman') {
       return buildMergedAmmanAreas();
     }
+    const os = opensooqFlatAreas(countryCode, selectedGov);
+    if (os) return os;
     const gov = governorates.find(g => g.slug === selectedGov) ?? null;
     if (!gov) return [] as AmmanArea[];
     return buildFlatAreasForGovernorate(gov);
