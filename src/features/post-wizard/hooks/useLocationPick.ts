@@ -110,18 +110,21 @@ export function useLocationPick(): UseLocationPickReturn {
       return [...labels.sort((a, b) => a.localeCompare(b, isArabic ? 'ar' : 'en')), otherLabel];
     }
 
+    const pushUnique = (label: string) => {
+      if (seen.has(label)) return;
+      seen.add(label);
+      labels.push(label);
+    };
     for (const d of rawDistricts) {
-      const raw = isArabic ? d.nameAr : d.nameEn;
-      const name = browseCountryCode === 'JO' ? stripAdminWords(raw) : raw;
-      if (!seen.has(name)) { labels.push(name); seen.add(name); }
-    }
-    for (const d of rawDistricts) {
-      const rawDistrictName = isArabic ? d.nameAr : d.nameEn;
-      const districtName = browseCountryCode === 'JO' ? stripAdminWords(rawDistrictName) : rawDistrictName;
-      for (const v of d.villages ?? []) {
-        const villageName = isArabic ? v.nameAr : v.nameEn;
-        const label = `${villageName}${LABEL_SEPARATOR}${districtName}`;
-        if (!seen.has(label)) { labels.push(label); seen.add(label); }
+      const villages = d.villages ?? [];
+      if (villages.length === 0) {
+        const ar = isArabic ? stripAdminWords(d.nameAr) : stripAdminWords(d.nameEn);
+        pushUnique(ar);
+      } else {
+        for (const v of villages) {
+          const ar = isArabic ? stripAdminWords(v.nameAr) : stripAdminWords(v.nameEn);
+          pushUnique(ar);
+        }
       }
     }
     for (const c of rawCamps) {
@@ -136,24 +139,27 @@ export function useLocationPick(): UseLocationPickReturn {
     const rawBase = stripSuffix(saved);
     const baseName = browseCountryCode === 'JO' ? stripAdminWords(rawBase) : rawBase;
     const normalizedBase = normalizeArabic(baseName);
-    
+
+    // Villages first (flat UX): return plain stripped village name
     for (const d of rawDistricts) {
-      const rawName = isArabic ? d.nameAr : d.nameEn;
-      const displayName = browseCountryCode === 'JO' ? stripAdminWords(rawName) : rawName;
-      if (normalizeArabic(displayName) === normalizedBase) return displayName;
-      const rawOther = isArabic ? d.nameEn : d.nameAr;
-      const displayOther = browseCountryCode === 'JO' ? stripAdminWords(rawOther) : rawOther;
-      if (normalizeArabic(displayOther) === normalizedBase) return displayName;
-    }
-    for (const d of rawDistricts) {
-      const rawDistrictName = isArabic ? d.nameAr : d.nameEn;
-      const districtName = browseCountryCode === 'JO' ? stripAdminWords(rawDistrictName) : rawDistrictName;
       for (const v of d.villages ?? []) {
-        const mc = normalizeArabic(isArabic ? v.nameAr : v.nameEn) === normalizedBase;
-        const mo = normalizeArabic(isArabic ? v.nameEn : v.nameAr) === normalizedBase;
-        if (mc || mo) return `${isArabic ? v.nameAr : v.nameEn}${LABEL_SEPARATOR}${districtName}`;
+        const displayAr = stripAdminWords(v.nameAr);
+        const displayEn = stripAdminWords(v.nameEn);
+        const displayName = isArabic ? displayAr : displayEn;
+        const mc = normalizeArabic(displayAr) === normalizedBase || normalizeArabic(displayEn) === normalizedBase;
+        if (mc) return displayName;
       }
     }
+    // Districts (0-village fallback or exact district match)
+    for (const d of rawDistricts) {
+      const displayAr = stripAdminWords(d.nameAr);
+      const displayEn = stripAdminWords(d.nameEn);
+      const displayName = isArabic ? displayAr : displayEn;
+      if (normalizeArabic(displayAr) === normalizedBase || normalizeArabic(displayEn) === normalizedBase) {
+        return displayName;
+      }
+    }
+    // Camps
     for (const c of rawCamps) {
       const mc = normalizeArabic(isArabic ? c.nameAr : c.nameEn) === normalizedBase;
       const mo = normalizeArabic(isArabic ? c.nameEn : c.nameAr) === normalizedBase;

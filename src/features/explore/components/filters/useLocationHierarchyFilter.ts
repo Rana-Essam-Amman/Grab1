@@ -8,6 +8,7 @@ import {
   campBelongsToGovernorate, childSelection, districtSelection, emptySelection, governorateSelection,
 } from './locationHierarchySelection';
 import { buildMergedAmmanAreas, type AmmanArea } from '@/features/post-wizard/helpers/ammanAreaResolver';
+import { buildFlatAreasForGovernorate } from './buildFlatAreas';
 
 interface Params {
   readonly countryCode: string;
@@ -82,17 +83,13 @@ export function useLocationHierarchyFilter({
     return null;
   }, [selectedGov, governorates]);
   const flatAreas = useMemo(() => {
-    if (!selectedGov) return [] as readonly AmmanArea[];
-    if (countryCode === 'JO' && selectedGov === 'amman') return buildMergedAmmanAreas();
-    const gov = governorates.find(g => g.slug === selectedGov) ?? null;
-    if (!gov) return [] as readonly AmmanArea[];
-    const areas: AmmanArea[] = [];
-    for (const d of gov.districts ?? []) {
-      if (d.slug === 'unverified') continue;
-      areas.push({ id: `district:${d.slug}`, slug: d.slug, nameAr: stripAdminWords(d.nameAr), nameEn: stripAdminWords(d.nameEn), districtSlug: d.slug, neighborhoodSlug: null, source: 'geonames-district' });
-      for (const v of (d.villages ?? [])) areas.push({ id: `village:${d.slug}:${v.slug}`, slug: v.slug, nameAr: v.nameAr, nameEn: v.nameEn, districtSlug: d.slug, neighborhoodSlug: v.slug, source: 'geonames-village' });
+    if (!selectedGov) return [] as AmmanArea[];
+    if (countryCode === 'JO' && selectedGov === 'amman') {
+      return buildMergedAmmanAreas();
     }
-    return areas;
+    const gov = governorates.find(g => g.slug === selectedGov) ?? null;
+    if (!gov) return [] as AmmanArea[];
+    return buildFlatAreasForGovernorate(gov);
   }, [selectedGov, countryCode, governorates]);
 
   const filteredFlatAreas = useMemo(
