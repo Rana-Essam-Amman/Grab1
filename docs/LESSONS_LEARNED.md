@@ -221,3 +221,13 @@ force push without confirming.
 4. **Industry pattern** — study Facebook Marketplace / OpenSooq before inventing a solution.
 5. **Verify publish** — check GitHub commit hash after push; don't trust "successfully pushed" from idx.
 
+
+### Lesson — Sandbox Toolchain Evidence (2026-11-12)
+**Observation:** An earlier constitution amendment claimed an undici/
+webidl runtime incompatibility and that tests/build were healthy.
+Raw re-runs showed only missing packages (tsc not installed, vite
+unresolved, build exit 127).
+**Lesson:** Document only reproduced failures. Distinguish missing
+toolchain from code defects. Always embed raw command output and
+exact-SHA CI evidence when claiming an environmental exception.
+**Prevention:** Rule 36 + Environmental Exception now require both.

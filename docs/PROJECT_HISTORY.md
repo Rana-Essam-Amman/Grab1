@@ -254,3 +254,15 @@ CI Recovery + Rule 43 (2026-09-23)
 
 
 
+
+### 2026-11-12 — Sandbox Exception Correction (PR #441)
+- Clarified Environmental Exception: Sandboxed Execution.
+- Observed failures are missing packages / incomplete node_modules
+  (tsc not installed, vite unresolved, build exit 127, .husky/_ absent).
+- Removed unsupported undici/webidl diagnosis.
+- Exception now requires raw local failure output + exact-SHA CI
+  evidence; CI is substitute verifier, not a waiver of Rule 22.
+- Rule 36 updated so sandbox tasks satisfy VERIFICATION with local
+  failures + CI evidence.
+- Rule 37 (PR-based delivery) preserved.
+- Commit subject includes + docs and [ci-only-verified].

@@ -66,3 +66,11 @@ b6d565d perf(bundle): remove 10 unused radix packages + cmdk + CommandPalette (t
 d2118b4 fix(arch): extract UseAiReviewReturn type (Rule 14 compliance)
 1074364 fix(ai): wire useAiReviewAttributes for brand/model options injection
 fc1bc81 feat(ai): pass subcategorySlug through AI pipeline + fix call sites
+
+## Current State (2026-11-12 correction)
+- Branch: amend-constitution-2 (PR #441)
+- Last task: Corrected Environmental Exception wording and evidence
+  requirements; updated Rule 22/36 clarifications; added + docs.
+- Next: Await CI on the new HEAD SHA, then human approval.
+- Note: Local toolchain unavailable in this sandbox; verification
+  is CI-only against the exact PR HEAD.
