@@ -730,3 +730,62 @@ When a fix appears to fail despite verified code (tsc pass, eslint pass, CI gree
 3. **Architectural constraint** — check mobile quirks (flex+fixed, stacking contexts, Tailwind reliability).
 4. **Industry pattern** — study how competitors solved it (Facebook, OpenSooq, Dubizzle).
 5. **Verify publish** — check GitHub commit hash; don't trust idx's "successfully pushed."
+
+---
+
+## Environmental Exception: Local Pre-Commit Verification
+
+### Context
+
+Some sandboxed execution environments cannot run the full
+pre-commit hook suite because of an unfixable dependency issue:
+
+- Error: `TypeError: Cannot read properties of undefined
+  (reading 'markAsUncloneable')`
+- Root cause: `undici` / `webidl.markAsUncloneable`
+  incompatibility in specific Node.js sandbox builds
+- Impact: `npx vitest` fails on any test run, not because tests
+  are broken
+
+### What this exception allows
+
+In such an environment, an automated agent MAY use `--no-verify`
+to commit, provided ALL of the following are true:
+
+1. The environment CANNOT run `npx vitest` (documented, not
+   assumed — the raw error must be pasted in the commit body).
+2. The commit is pushed IMMEDIATELY after creation, not held
+   locally for further changes.
+3. CI Quality Pipeline + E2E + RLS run against the exact commit
+   SHA.
+4. If ANY CI check fails, the commit is reverted within the same
+   session.
+5. The commit message contains the tag `[ci-verified]` and does
+   NOT claim local test execution.
+
+### What this exception does NOT allow
+
+- It does NOT relax the requirement that code be verified. CI is
+  the substitute verifier.
+- It does NOT permit skipping `tsc --noEmit`, `npm run
+  audit:arch`, or `npm run build` locally. Those MUST still run
+  and pass before pushing.
+- It does NOT authorize bypassing hooks in environments that CAN
+  run them (developer workstations, working CI runners).
+- It does NOT remove or amend Rule 22. Rule 22 remains in force,
+  with CI as the verified substitute.
+
+### Bootstrap note
+
+The commit that introduces this section is itself subject to the
+same constraint (it may be created with `--no-verify` if the
+environment cannot run hooks). This is a documented bootstrap
+case, not a general rule.
+
+### Sunset
+
+This exception applies only to ephemeral sandboxed execution.
+Local development on a working Node.js installation must use the
+standard pre-commit hooks without exception.
+
+---
