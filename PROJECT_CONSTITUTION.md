@@ -181,6 +181,9 @@ Goal: Add, change, or DELETE any detail in < 30 minutes, without hunting through
 22. **Rule 22: Pre-Commit Hook Required**:
     All commits MUST pass: tsc --noEmit, eslint, npm test, npm run audit:arch.
     Enforced via Husky (Sprint R7.0b).
+    In a qualifying ephemeral sandbox (see Environmental Exception), the
+    same checks are executed by CI against the exact PR HEAD SHA; the
+    requirement itself is never waived.
 
 23. **Rule 23: Boot Smoke Test Required**:
     The Boot Smoke Test must pass before any merge. It verifies that all critical stores, hooks, and feature configs load without errors.
@@ -212,6 +215,15 @@ Goal: Add, change, or DELETE any detail in < 30 minutes, without hunting through
     - Contradictory reports (e.g., "tests failing" AND "5/5 complete" in the same response) MUST trigger an immediate READ-ONLY verification.
     - Evidence must be raw command output, NOT a summary or interpretation.
     - The final report MUST be internally consistent. If it is not, the task is REJECTED.
+    - Git evidence (`git log --oneline -3`, `git status --short`,
+      `git ls-remote new-origin refs/heads/main`) is ALWAYS required.
+    - When the local environment can execute tests and build, raw local
+      output is required.
+    - When the Environmental Exception applies, the VERIFICATION block
+      must contain (a) the raw local failure output for each unavailable
+      command and (b) the corresponding raw CI evidence (workflow name,
+      run URL, exact tested SHA, job/step results) for the PR HEAD SHA.
+      CI success must never be represented as a local test or build run.
 
     **Forbidden:**
     - ❌ Claiming completion without raw evidence
@@ -248,26 +260,26 @@ FORBIDDEN:
 Also update Version History:
 - **v1.1.5 (2026-09-18)**: Added Rule 40 (Continuous Documentation Discipline).
 
-### Rule 37: Mandatory GitHub Sync (NON-NEGOTIABLE)
+### Rule 37 — Delivery Workflow (PR-Based)
 
-EVERY task completed by any agent or developer MUST end with these EXACT steps:
+All code changes MUST reach `main` via Pull Request:
 
-1. `git add .` — stage ALL changes (never selective).
-2. `git commit -m "<type>(<scope>): <description>"` — conventional commit.
-3. `git push new-origin main` — push to GitHub `main` branch.
+1. Create a feature branch from `main`:
+   `git checkout -b <type>/<scope>-<short>`
+2. Make commits on the branch (may use multiple small commits).
+3. Push the branch: `git push origin <branch>`
+4. Open a PR against `main` with a summary + test plan.
+5. CI Quality Pipeline + E2E + RLS + Search RPC SQL must pass.
+6. Only after all checks are green may the PR be merged.
+7. Direct pushes to `main` are FORBIDDEN in any environment with
+   active branch protection. If the environment allows it (via
+   admin override), that override MUST NOT be used for feature
+   work.
 
-REQUIREMENTS:
-- No task is "COMPLETE" until the push succeeds.
-- Every report MUST include: `git log --oneline -3`, `git status --short`, `git ls-remote new-origin refs/heads/main`.
-- If remote `new-origin` is missing → recovery protocol in docs/CONVENTIONS.md.
-- Branch MUST be `main`. NEVER `master`.
-- If `git status --short` is not empty → task INCOMPLETE.
-
-FORBIDDEN:
-- ❌ Selective `git add <file>`
-- ❌ Committing to `master`
-- ❌ Uncommitted changes at task end
-- ❌ Claiming completion without push evidence
+**Rationale**: GitHub branch protection enforces PR-based flow.
+Rule 37 aligns with GitHub reality, replacing the prior
+"push directly to main" instruction which caused a bypass event
+on 2026-11-09 (commit 38db110b).
 
 ### Rule 38: Lockfile Discipline (NON-NEGOTIABLE)
 
@@ -733,59 +745,90 @@ When a fix appears to fail despite verified code (tsc pass, eslint pass, CI gree
 
 ---
 
-## Environmental Exception: Local Pre-Commit Verification
+---
+
+## Environmental Exception: Sandboxed Execution
 
 ### Context
 
-Some sandboxed execution environments cannot run the full
-pre-commit hook suite because of an unfixable dependency issue:
+Certain ephemeral sandboxed execution environments used by AI agents
+lack a complete local Node.js toolchain:
 
-- Error: `TypeError: Cannot read properties of undefined
-  (reading 'markAsUncloneable')`
-- Root cause: `undici` / `webidl.markAsUncloneable`
-  incompatibility in specific Node.js sandbox builds
-- Impact: `npx vitest` fails on any test run, not because tests
-  are broken
+- `npx tsc --noEmit` fails because the TypeScript package is not
+  installed (npx reports "This is not the tsc command you are looking
+  for").
+- `npx vitest run` fails because the project dependencies (`vite`,
+  `@vitejs/plugin-react`, `@tailwindcss/vite`, etc.) are not present
+  in `node_modules` (ERR_MODULE_NOT_FOUND / UNRESOLVED_IMPORT).
+- `npm run build` fails because `tsc` is not on PATH (exit 127).
+- Husky pre-commit hooks do not execute because `.husky/_` is absent
+  (the `prepare`/`husky` install step has not run).
+
+A local command failure caused by an unavailable or incomplete
+environment does **not**, by itself, prove a product-code defect.
+It also does **not** prove the code is correct. The failure is
+environmental. Verification must still occur before merge.
 
 ### What this exception allows
 
-In such an environment, an automated agent MAY use `--no-verify`
-to commit, provided ALL of the following are true:
+In such an environment, an automated agent MAY create commits and
+open a Pull Request WITHOUT successful local verification, provided
+ALL of the following are true:
 
-1. The environment CANNOT run `npx vitest` (documented, not
-   assumed — the raw error must be pasted in the commit body).
-2. The commit is pushed IMMEDIATELY after creation, not held
-   locally for further changes.
-3. CI Quality Pipeline + E2E + RLS run against the exact commit
-   SHA.
-4. If ANY CI check fails, the commit is reverted within the same
-   session.
-5. The commit message contains the tag `[ci-verified]` and does
-   NOT claim local test execution.
+1. The environment demonstrably cannot run the local toolchain. The
+   raw, unedited terminal output and exit status for each unavailable
+   command (`npx tsc --noEmit`, `npx vitest run`, `npm run build`,
+   and the Husky directory check) MUST appear in the commit body.
+2. The commit is pushed to a feature branch (NOT directly to `main`).
+3. A Pull Request is opened against `main`.
+4. CI Quality Pipeline + E2E Tests + RLS Check + Search RPC SQL MUST
+   all pass against the **exact** PR HEAD SHA. A result from an
+   earlier SHA does not verify a newer commit.
+5. The PR is merged ONLY after every required check is green.
+6. The commit message contains the tag `[ci-only-verified]` (NOT
+   `[ci-verified]`) to distinguish CI-only verification from local
+   verification.
+7. Rule 36's VERIFICATION block is satisfied by the raw local failure
+   outputs plus the corresponding raw CI evidence (workflow, run URL,
+   tested SHA, job/step results) for the exact HEAD SHA.
 
 ### What this exception does NOT allow
 
-- It does NOT relax the requirement that code be verified. CI is
-  the substitute verifier.
-- It does NOT permit skipping `tsc --noEmit`, `npm run
-  audit:arch`, or `npm run build` locally. Those MUST still run
-  and pass before pushing.
-- It does NOT authorize bypassing hooks in environments that CAN
-  run them (developer workstations, working CI runners).
-- It does NOT remove or amend Rule 22. Rule 22 remains in force,
-  with CI as the verified substitute.
+- It does NOT relax the requirement that the checks defined in Rule 22
+  (tsc, eslint, tests, audit:arch) be verified. CI is the substitute
+  verifier, not a skipped step.
+- It does NOT authorize direct pushes to `main`.
+- It does NOT authorize merging with failing, pending, or missing CI
+  checks.
+- It does NOT authorize bypassing hooks in any environment that can
+  run them (developer workstations, working CI runners, or any session
+  after a proper `npm install`).
+- It does NOT claim that local failures prove the product code is
+  healthy; they only document the environmental limitation.
+- It does NOT remove or amend Rule 22. Rule 22 remains in force.
 
-### Bootstrap note
+### Relationship to Rule 22
 
-The commit that introduces this section is itself subject to the
-same constraint (it may be created with `--no-verify` if the
-environment cannot run hooks). This is a documented bootstrap
-case, not a general rule.
+Rule 22 continues to require TypeScript, ESLint, tests, and
+architecture audit. In a qualifying sandbox the same checks are
+executed by CI against the exact PR HEAD SHA. Local developers and
+any agent with a functioning toolchain must still run the hooks
+locally.
+
+### Bootstrap clarification
+
+An earlier version of this section (commit 38db110b and the first
+version of 5e921f12) incorrectly diagnosed a `undici` /
+`webidl.markAsUncloneable` runtime incompatibility and claimed that
+tests/build were inherently healthy. That diagnosis was not
+reproduced. The observed failures are missing packages / incomplete
+`node_modules`. This section corrects the record.
 
 ### Sunset
 
-This exception applies only to ephemeral sandboxed execution.
-Local development on a working Node.js installation must use the
-standard pre-commit hooks without exception.
+This exception applies only to ephemeral sandboxed AI-agent sessions
+that lack the toolchain. Any environment in which `npm install` can
+succeed must use the standard pre-commit hooks without exception.
 
+---
 ---
