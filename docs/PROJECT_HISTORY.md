@@ -271,3 +271,8 @@ CI Recovery + Rule 43 (2026-09-23)
 - Removed unproven "Verified Seller" / "معلن موثوق" fallback and unconditional TickCircle from SellerProfileScreen.
 - PublicProfileRecord has no verification field (id, nickname, avatar_url, rating_*, vip_store only).
 - Fallback is now بائع / Seller. Real nickname or listing sellerName still preferred.
+
+### 2026-11-12 — Wave 1 HIGH-2: Production sample-photo guard
+- Sample-photo button in PhotoUploadScreen renders only when import.meta.env.DEV && photos.length === 0.
+- handleUseSample returns early unless import.meta.env.DEV.
+- Seed listing assets under src/data/seedListings are static seed data, not the production upload path; left unchanged.
