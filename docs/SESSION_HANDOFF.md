@@ -74,3 +74,8 @@ fc1bc81 feat(ai): pass subcategorySlug through AI pipeline + fix call sites
 - Next: Await CI on the new HEAD SHA, then human approval.
 - Note: Local toolchain unavailable in this sandbox; verification
   is CI-only against the exact PR HEAD.
+
+## Current State (2026-11-12 Wave 1 HIGH-1)
+- Branch: fix/wave1-trust-and-sample-photo-guards
+- Last task: Removed false verified-seller claim (HIGH-1).
+- Next: HIGH-2 sample-photo production guard after Quality Pipeline on this SHA.
