@@ -2,8 +2,8 @@ import { useUI } from '@/hooks/useUI';
 import { useDraft } from '@/hooks/useDraft';
 import React, { useCallback, useMemo, useState } from 'react';
 import { categories } from '@/data/categories';
-import { ArrowLeft, ArrowRight, MagicStar } from 'iconsax-react';
-import { Button } from '@/shared/ui/Button';
+import { MagicStar } from 'iconsax-react';
+import { BackButton } from '@/shared/ui/BackButton';
 import { Card } from '@/shared/ui/Card';
 import { BrandMark } from '@/shared/components/BrandMark';
 import { useAiPublishFlow } from '../hooks/useAiPublishFlow';
@@ -22,8 +22,6 @@ export const CategoryPickScreen: React.FC = () => {
   const visible = noMatch || !isSearching ? categories : matches;
   const { processPublishFlow } = useAiPublishFlow(setIsAnalyzing);
 
-  const BackIcon = isArabic ? ArrowRight : ArrowLeft;
-
   const handleSelect = useCallback(
     (categorySlug: string) => {
       const raw = postDraft.noteText || '';
@@ -36,9 +34,12 @@ export const CategoryPickScreen: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-surface pb-12" dir={isArabic ? 'rtl' : 'ltr'}>
       <div className="px-4 py-4 border-b border-white/10 flex items-center gap-3 bg-brand sticky top-0 z-20">
-        <Button variant="ghost" size="icon" onClick={goBack} className="w-10 h-10 rounded-full bg-surface/15 text-white" disabled={isAnalyzing}>
-          <BackIcon size={18} variant="Linear" color="#FFFFFF" />
-        </Button>
+        <BackButton
+          isArabic={isArabic}
+          onClick={goBack}
+          className="w-10 h-10 rounded-full bg-surface/15 text-white"
+          disabled={isAnalyzing}
+        />
         <div className="flex-1 min-w-0">
           <h2 className="text-lg font-bold text-white">{isArabic ? 'اختر القسم المناسب' : 'Choose the right category'}</h2>
         </div>
