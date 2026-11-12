@@ -85,3 +85,9 @@ fc1bc81 feat(ai): pass subcategorySlug through AI pipeline + fix call sites
 - Branch: fix/wave1-trust-and-sample-photo-guards-final
 - Last task: Production sample-photo guard (HIGH-2) with same-commit docs.
 - Next: E2E real-photo upload path.
+
+## Current State (2026-11-12 Wave 1 E2E final)
+- Branch: fix/wave1-trust-and-sample-photo-guards-final
+- Last task: E2E real-photo upload path with same-commit docs.
+- Next: Push branch. No PR until verification complete. No merge.
+- Note: Local toolchain unavailable; CI is the substitute verifier.
