@@ -1,7 +1,7 @@
 import { useUI } from '@/hooks/useUI';
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { ListingCard } from '@/shared/components';
-import { ArrowLeft, ArrowRight, User, TickCircle } from 'iconsax-react';
+import { ArrowLeft, ArrowRight, User } from 'iconsax-react';
 import { Card } from '@/shared/ui/Card';
 import { Avatar } from '@/shared/ui/Avatar';
 import { EmptyState } from '@/shared/ui/EmptyState';
@@ -13,9 +13,11 @@ import { fetchSellerReviews, type SellerReview } from '../services/sellerReviews
 import { SellerRatingBadge } from '../components/SellerRatingBadge';
 import { ReviewList } from '../components/ReviewList';
 import { useSellerListings } from '../hooks/useSellerListings';
+import { useTranslation } from '@/shared/i18n';
 
 export const SellerProfileScreen: React.FC = () => {
   const { isArabic, goBack, selectedSellerPhone, browseCountryCode } = useUI();
+  const { t } = useTranslation();
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
   const sellerKeyIsUuid = isUuid(selectedSellerPhone);
 
@@ -42,10 +44,13 @@ export const SellerProfileScreen: React.FC = () => {
     loadSellerData();
   }, [loadSellerData]);
 
-  const sellerName = useMemo(
-    () => sellerAds[0]?.sellerName || (isArabic ? 'معلن موثوق' : 'Verified Seller'),
-    [sellerAds, isArabic],
-  );
+  const sellerName = useMemo(() => {
+    const fromProfile = sellerProfile?.nickname?.trim();
+    if (fromProfile) return fromProfile;
+    const fromListing = sellerAds[0]?.sellerName?.trim();
+    if (fromListing) return fromListing;
+    return t('listings.sellerFallback');
+  }, [sellerAds, sellerProfile, t]);
 
   return (
     <div className="flex flex-col min-h-screen bg-background pb-16" dir={isArabic ? 'rtl' : 'ltr'}>
@@ -75,7 +80,6 @@ export const SellerProfileScreen: React.FC = () => {
             <div>
               <div className="flex items-center gap-1.5">
                 <h2 className="text-base font-bold text-ink">{sellerName}</h2>
-                <TickCircle size={15} variant="Linear" color="currentColor" className="text-success" />
               </div>
               {!sellerKeyIsUuid && selectedSellerPhone && (
                 <div className="text-xs text-ink-muted mt-0.5" dir="ltr">{selectedSellerPhone}</div>

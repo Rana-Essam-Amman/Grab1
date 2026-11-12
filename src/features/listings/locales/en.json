@@ -17,5 +17,6 @@
   "noRatingsYet": "No ratings yet",
   "howWasExperience": "How was your experience with",
   "addCommentOptional": "Add a comment (optional)...",
-  "submitReview": "Submit review"
+  "submitReview": "Submit review",
+  "sellerFallback": "Seller"
 }

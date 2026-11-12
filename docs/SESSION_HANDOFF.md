@@ -74,3 +74,35 @@ fc1bc81 feat(ai): pass subcategorySlug through AI pipeline + fix call sites
 - Next: Await CI on the new HEAD SHA, then human approval.
 - Note: Local toolchain unavailable in this sandbox; verification
   is CI-only against the exact PR HEAD.
+
+## Current State (2026-11-12 Wave 1 HIGH-1 final)
+- Branch: fix/wave1-trust-and-sample-photo-guards-final
+- Last task: Removed false verified-seller claim (HIGH-1) with same-commit docs.
+- Next: HIGH-2 sample-photo production guard.
+- Note: Clean reapply from main. Subject ends exactly with "+ docs".
+
+## Current State (2026-11-12 Wave 1 HIGH-2 final)
+- Branch: fix/wave1-trust-and-sample-photo-guards-final
+- Last task: Production sample-photo guard (HIGH-2) with same-commit docs.
+- Next: E2E real-photo upload path.
+
+## Current State (2026-11-12 Wave 1 E2E final)
+- Branch: fix/wave1-trust-and-sample-photo-guards-final
+- Last task: E2E real-photo upload path with same-commit docs.
+- Next: Push branch. No PR until verification complete. No merge.
+- Note: Local toolchain unavailable; CI is the substitute verifier.
+
+## Current State (2026-11-12 Wave 1 test structure correction)
+- Branch: fix/wave1-trust-and-sample-photo-guards-final
+- Last task: Corrected usePhotoUpload.test.ts so all four tests are nested inside the describe block. Same-commit docs.
+- Next: Await CI on this exact SHA. No PR yet. No merge.
+- Note: Local toolchain unavailable. Original three commits preserved.
+
+## Current State (2026-11-12 Wave 1 PR #443 open)
+- Branch: fix/wave1-trust-and-sample-photo-guards-final
+- PR: https://github.com/Rana-Essam-Amman/Grab1/pull/443 (OPEN, not merged)
+- Base: 42ac404cf0b78e16561242b7393bac48e2f99833
+- Last task: Rule 8 localization of seller fallback + corrected stale handoff that said "No PR yet".
+- Prior HEAD 53295951e5dedcf3967740602cb78e02694a0cb0 had all four required workflows green (Quality, E2E, RLS, Search RPC SQL).
+- Next: Await CI on this exact new HEAD. Do not merge until green. PR #442 remains historical and open.
+- Note: Local toolchain unavailable; CI is the substitute verifier (Environmental Exception).

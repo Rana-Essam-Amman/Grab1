@@ -266,3 +266,30 @@ CI Recovery + Rule 43 (2026-09-23)
   failures + CI evidence.
 - Rule 37 (PR-based delivery) preserved.
 - Commit subject includes + docs and [ci-only-verified].
+
+### 2026-11-12 — Wave 1 HIGH-1 (final compliant reapply): Neutral seller fallback
+- Removed unproven "Verified Seller" / "معلن موثوق" fallback and unconditional TickCircle from SellerProfileScreen.
+- PublicProfileRecord has no verification field (id, nickname, avatar_url, rating_*, vip_store only).
+- Fallback is now بائع / Seller. Real nickname or listing sellerName still preferred.
+- New branch: fix/wave1-trust-and-sample-photo-guards-final (from main 42ac404). Prior branches preserved as historical evidence. Original PR #442 not merged.
+
+### 2026-11-12 — Wave 1 HIGH-2 (final compliant reapply): Production sample-photo guard
+- Sample-photo button in PhotoUploadScreen renders only when import.meta.env.DEV && photos.length === 0.
+- handleUseSample returns early unless import.meta.env.DEV.
+- Unit test added: handleUseSample is a no-op when DEV is false. All tests remain inside the existing describe block.
+- Seed listing assets under src/data/seedListings are static seed data, not the production upload path; left unchanged.
+
+### 2026-11-12 — Wave 1 HIGH-3 / E2E (final compliant reapply): Real photo upload
+- E2E golden-path (post-ad.spec.ts) now uses setInputFiles on the real file input with public/assets/listings/car.jpg.
+- Sample-photo button is DEV-only (import.meta.env.DEV); production/preview builds hide it, so tests exercise the real upload path.
+- This branch (fix/wave1-trust-and-sample-photo-guards-final) contains exactly three implementation commits from main. Each subject ends exactly with "+ docs". Original PR #442 and prior branches preserved as historical evidence and not merged.
+
+### 2026-11-12 — Wave 1 final branch: test structure correction
+- Fixed src/features/post-wizard/hooks/tests/usePhotoUpload.test.ts: removed premature closing brace after the third test so all four tests remain inside the existing describe('usePhotoUpload') block.
+- No production-code changes. No test intent changes. Original three implementation commits unchanged.
+
+### 2026-11-12 — Wave 1 PR #443: Rule 8 localization + handoff accuracy
+- Replaced hardcoded seller fallback "بائع" / "Seller" in SellerProfileScreen with t('listings.sellerFallback').
+- Added sellerFallback key to src/features/listings/locales/ar.json and en.json.
+- Seller-name precedence unchanged: nickname, then listing sellerName, then localized fallback. No verification claim.
+- SESSION_HANDOFF updated: PR #443 is open; prior "No PR yet" statement corrected. Historical entries preserved.

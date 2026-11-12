@@ -17,5 +17,6 @@
   "noRatingsYet": "لا توجد تقييمات بعد",
   "howWasExperience": "كيف كانت تجربتك مع",
   "addCommentOptional": "أضف تعليقاً (اختياري)...",
-  "submitReview": "إرسال التقييم"
+  "submitReview": "إرسال التقييم",
+  "sellerFallback": "بائع"
 }
