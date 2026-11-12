@@ -1,8 +1,9 @@
 import { BrandMark } from '@/shared/components/BrandMark';
 import { useUI } from '@/hooks/useUI';
 import { useAiCapture } from '../hooks/useAiCapture';
-import { ArrowLeft, ArrowRight, Microphone2, Add, CloseCircle } from 'iconsax-react';
+import { Microphone2, Add, CloseCircle } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
+import { BackButton } from '@/shared/ui/BackButton';
 import { Icon } from '@iconify/react';
 
 export const AiCaptureScreen: React.FC = () => {
@@ -13,16 +14,18 @@ export const AiCaptureScreen: React.FC = () => {
     handleVoiceToggle, isSupported, errorMsg,
     isAnalyzing, canSubmit, hasPhoto, hasText, handleGenerate
   } = useAiCapture();
-  const BackIcon = isArabic ? ArrowRight : ArrowLeft;
   const triggerUpload = () => fileInputRef.current?.click();
 
   return (
     <div id="ai-capture-screen" className="flex flex-col min-h-screen bg-surface pb-24" dir={isArabic ? 'rtl' : 'ltr'}>
       <input type="file" ref={fileInputRef} onChange={handleImageSelect} accept="image/*" multiple className="hidden" />
       <div className="px-4 py-4 border-b border-white/10 flex items-center gap-3 bg-brand sticky top-0 z-20">
-        <Button id="ai-capture-back-btn" variant="ghost" size="icon" onClick={goBack} className="w-10 h-10 rounded-full bg-surface/15 text-white flex items-center justify-center p-0">
-          <BackIcon size={18} variant="Linear" color="#FFFFFF" />
-        </Button>
+        <BackButton
+          id="ai-capture-back-btn"
+          isArabic={isArabic}
+          onClick={goBack}
+          className="w-10 h-10 rounded-full bg-surface/15 text-white flex items-center justify-center p-0"
+        />
         <Icon icon="fluent-emoji:sparkles" width={20} height={20} />
         <h2 className="text-lg font-bold text-white flex-1">{isArabic ? 'باستخدام الذكاء الاصطناعي' : 'AI Listing Builder'}</h2>
         <BrandMark isArabic={isArabic} />
