@@ -167,6 +167,27 @@ Additionally, Node version mismatch:
 **Regression Test:** `grep -rn "bg-\[#" src/features/ | wc -l` should trend to 0 (existing allowed until refactor sprint).
 **Lesson:** Stale handoff can propagate a wrong pattern for days. Sync docs = reliability.
 
+---
 
+## Bug #009 — Hardcoded Loading-Error UI Strings (2026-11-12)
 
+**Severity:** P2 — Constitution Violation (Rule 8 Localization)
 
+**Symptom:** ListingDetailScreen rendered hardcoded Arabic/English strings for the remote-lookup error state (title, description, and go-back button) instead of translation keys.
+
+**Root Cause:** Initial implementation of the loading/error distinction used ternary isArabic checks with literal strings, bypassing the feature locale files and useTranslation hook required by Rule 8.
+
+**Detection:** Constitution review during surgical remediation of PR #444.
+
+**Impact:** Error UI would not update when locales change; violates localization discipline; harder to maintain bilingual copy.
+
+**Resolution:** Replaced the three literals with t('listings.loadErrorTitle'), t('listings.loadErrorDescription'), and t('listings.goBack'). Added matching keys to both ar.json and en.json. Updated ListingDetailScreen.lookup.test.tsx to mock useTranslation so existing text assertions continue to pass.
+
+**Prevention:**
+1. Rule 8: All user-facing strings MUST live in feature locales/ar.json + en.json and be accessed via useTranslation().
+2. No ternary language literals in screen components for copy.
+3. New error/empty/loading states must ship with locale keys in the same commit.
+
+**Regression Test:** ListingDetailScreen.lookup.test.tsx covers the error state and asserts the localized English title; mock ensures the hook is exercised. Full suite + typecheck + lint + audit must remain green.
+
+**Lesson:** Even small UI states must follow the localization path from day one. Hardcoded bilingual ternaries are a Rule 8 violation.

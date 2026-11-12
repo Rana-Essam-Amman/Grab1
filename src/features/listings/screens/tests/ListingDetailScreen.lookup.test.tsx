@@ -9,6 +9,20 @@ vi.mock('../../hooks/useListingDetail', () => ({ useListingDetail: vi.fn() }));
 vi.mock('@/hooks/useIsAdmin', () => ({ useIsAdmin: () => ({ isAdmin: false }) }));
 vi.mock('@/shared/hooks/useSEO', () => ({ useSEO: vi.fn() }));
 vi.mock('@/shared/analytics/posthog', () => ({ capture: vi.fn() }));
+vi.mock('@/shared/i18n', () => ({
+  useTranslation: () => ({
+    t: (key: string) => {
+      const map: Record<string, string> = {
+        'listings.loadErrorTitle': 'Could not load listing',
+        'listings.loadErrorDescription': 'Please try again later.',
+        'listings.goBack': 'Go back',
+      };
+      return map[key] || key;
+    },
+    locale: 'en',
+    isLoaded: true,
+  }),
+}));
 vi.mock('../../components/ListingDetailHeader', () => ({ ListingDetailHeader: () => <div>header</div> }));
 vi.mock('../../components/ListingAntiFraudBanner', () => ({ ListingAntiFraudBanner: () => null }));
 vi.mock('../../components/ListingImageSlider', () => ({ ListingImageSlider: () => null }));

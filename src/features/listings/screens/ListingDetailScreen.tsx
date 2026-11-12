@@ -22,9 +22,11 @@ import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { DeleteConfirmDialog } from '../components/DeleteConfirmDialog';
 import { ListingIdBadge } from '@/shared/components/ListingIdBadge';
 import { useSEO } from '@/shared/hooks/useSEO';
+import { useTranslation } from '@/shared/i18n';
 
 export const ListingDetailScreen: React.FC = () => {
   const detail = useListingDetail();
+  const { t } = useTranslation();
   const { isAdmin } = useIsAdmin();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -49,11 +51,11 @@ export const ListingDetailScreen: React.FC = () => {
     return (
       <div className="max-w-[440px] mx-auto w-full min-h-[60vh] flex items-center justify-center p-4" dir={detail.isArabic ? 'rtl' : 'ltr'}>
         <EmptyState
-          title={detail.isArabic ? 'تعذّر تحميل الإعلان' : 'Could not load listing'}
-          description={detail.isArabic ? 'حاول مرة أخرى لاحقاً.' : 'Please try again later.'}
+          title={t('listings.loadErrorTitle')}
+          description={t('listings.loadErrorDescription')}
           action={
             <Button variant="primary" size="md" onClick={detail.goBack}>
-              {detail.isArabic ? 'العودة' : 'Go back'}
+              {t('listings.goBack')}
             </Button>
           }
         />
