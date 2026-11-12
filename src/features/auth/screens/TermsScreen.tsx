@@ -1,21 +1,18 @@
 import { useUI } from '@/hooks/useUI';
 import React from 'react';
-import { ArrowLeft, ArrowRight, ShieldTick } from 'iconsax-react';
-import { Button } from '@/shared/ui/Button';
+import { ShieldTick } from 'iconsax-react';
+import { BackButton } from '@/shared/ui/BackButton';
 import { Card } from '@/shared/ui/Card';
 import { BrandMark } from '@/shared/components/BrandMark';
 
 export const TermsScreen: React.FC = () => {
   const { isArabic, goBack } = useUI();
-  const BackIcon = isArabic ? ArrowRight : ArrowLeft;
 
   return (
     <div className="flex flex-col min-h-screen bg-surface pb-12" dir={isArabic ? 'rtl' : 'ltr'}>
       {/* Top Bar */}
       <div className="px-4 py-4 border-b border-border flex items-center gap-3 bg-surface sticky top-0 z-20">
-        <Button variant="ghost" size="icon" onClick={goBack}>
-          <BackIcon size={18} variant="Linear" color="currentColor" className="text-ink" />
-        </Button>
+        <BackButton isArabic={isArabic} onClick={goBack} className="text-ink" />
         <h1 className="text-base font-bold text-ink flex-1">
           {isArabic ? 'شروط الخدمة والخصوصية' : 'Terms & Privacy'}
         </h1>
