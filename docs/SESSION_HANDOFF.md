@@ -91,3 +91,9 @@ fc1bc81 feat(ai): pass subcategorySlug through AI pipeline + fix call sites
 - Last task: E2E real-photo upload path with same-commit docs.
 - Next: Push branch and open new PR against main. Original PR #442 left untouched.
 - Note: Local toolchain unavailable; CI is the substitute verifier.
+
+## Current State (2026-11-12 Wave 1 test syntax + subject correction)
+- Branch: fix/wave1-trust-and-sample-photo-guards-compliant
+- Last task: Fixed usePhotoUpload.test.ts syntax (premature describe close) and recorded Rule 40 subject-suffix requirement. New commit subject ends with "+ docs"; [ci-only-verified] is in the body.
+- Next: Await CI on this exact SHA. Do not open PR until requested. Do not merge.
+- Note: Prior commits on this branch retain their original subjects (no rewrite). Local toolchain unavailable.

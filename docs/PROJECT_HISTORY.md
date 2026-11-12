@@ -283,3 +283,8 @@ CI Recovery + Rule 43 (2026-09-23)
 - E2E golden-path (post-ad.spec.ts) now uses setInputFiles on the real file input with public/assets/listings/car.jpg.
 - Sample-photo button is DEV-only (import.meta.env.DEV); production/preview builds hide it, so tests exercise the real upload path.
 - This reapply uses a new branch from main with Rule 40 same-commit docs in every implementation commit. Original PR #442 remains open as historical evidence and is not merged.
+
+### 2026-11-12 — Wave 1 compliant branch: test syntax + Rule 40 subject correction
+- Fixed src/features/post-wizard/hooks/tests/usePhotoUpload.test.ts: removed premature closing brace so both tests remain inside describe('usePhotoUpload').
+- Rule 40 requires commit subject to end exactly with "+ docs". Prior commits on this branch placed [ci-only-verified] in the subject after the suffix. This corrective commit places the tag in the body only.
+- No history rewrite or force-push (Rule 44). Original PR #442 remains untouched.
