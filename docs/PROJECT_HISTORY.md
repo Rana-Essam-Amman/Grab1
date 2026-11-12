@@ -272,3 +272,9 @@ CI Recovery + Rule 43 (2026-09-23)
 - PublicProfileRecord has no verification field (id, nickname, avatar_url, rating_*, vip_store only).
 - Fallback is now بائع / Seller. Real nickname or listing sellerName still preferred.
 - New branch: fix/wave1-trust-and-sample-photo-guards-final (from main 42ac404). Prior branches preserved as historical evidence. Original PR #442 not merged.
+
+### 2026-11-12 — Wave 1 HIGH-2 (final compliant reapply): Production sample-photo guard
+- Sample-photo button in PhotoUploadScreen renders only when import.meta.env.DEV && photos.length === 0.
+- handleUseSample returns early unless import.meta.env.DEV.
+- Unit test added: handleUseSample is a no-op when DEV is false. All tests remain inside the existing describe block.
+- Seed listing assets under src/data/seedListings are static seed data, not the production upload path; left unchanged.

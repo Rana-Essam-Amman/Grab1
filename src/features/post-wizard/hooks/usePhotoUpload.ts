@@ -66,6 +66,7 @@ export function usePhotoUpload(): UsePhotoUploadReturn {
 
   const handleRemove = (index: number) => updatePostDraft({ photos: photos.filter((_, i) => i !== index) });
   const handleUseSample = (category: string) => {
+    if (!import.meta.env.DEV) return;
     const samples = (category === 'motors' ? ['/assets/listings/car.jpg'] : ['/assets/listings/item.jpg']);
     updatePostDraft({ photos: samples });
   };
