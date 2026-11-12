@@ -293,3 +293,10 @@ CI Recovery + Rule 43 (2026-09-23)
 - Added sellerFallback key to src/features/listings/locales/ar.json and en.json.
 - Seller-name precedence unchanged: nickname, then listing sellerName, then localized fallback. No verification claim.
 - SESSION_HANDOFF updated: PR #443 is open; prior "No PR yet" statement corrected. Historical entries preserved.
+
+### 2026-11-12 — Wave 3 Phase 1: Listing detail loading vs false not-found
+- useFetchMissingListing now returns an explicit status: idle / loading / found / not_found / error.
+- ListingDetailScreen shows a spinner while lookup is pending, the existing not-found UI only after a confirmed miss, and a distinct error state on real request failure.
+- Stale responses are ignored when the listing id changes or the request is cancelled.
+- Local listings still render immediately with no remote fetch.
+- Regression tests: remote pending, genuine missing, request failure, local available, identity change during pending.

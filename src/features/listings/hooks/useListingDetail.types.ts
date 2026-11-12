@@ -2,9 +2,10 @@ import { FormattedPhone } from '@/shared/lib/phoneFormatting';
 import { WhatsAppIntent } from '../helpers/whatsappIntents';
 import { Listing } from '@/types';
 import { ScreenType } from '@/store/ui.slice';
+import type { MissingListingStatus } from '../helpers/resolveDetailLookup';
 
 export interface UseListingDetailReturn {
-  listing: Listing | null; activeCountry: string; isCountryMismatch: boolean;
+  listing: Listing | null; lookupStatus: MissingListingStatus; activeCountry: string; isCountryMismatch: boolean;
   sanitizedLoc: { city: string; neighborhood: string }; locationText: string;
   mapUrl: string; displayCurrency: string; images: string[]; mapQuery: string;
   formattedPhone: FormattedPhone; activePhotoIdx: number; setActivePhotoIdx: (idx: number) => void;

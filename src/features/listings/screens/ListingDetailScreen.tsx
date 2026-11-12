@@ -14,6 +14,9 @@ import { ListingLocationCard } from '../components/ListingLocationCard';
 import { ListingActionBar } from '../components/ListingActionBar';
 import { WhatsAppIntentSheet } from '../components/WhatsAppIntentSheet';
 import { ListingNotFound } from '../components/ListingNotFound';
+import { Spinner } from '@/shared/ui/Spinner';
+import { EmptyState } from '@/shared/ui/EmptyState';
+import { Button } from '@/shared/ui/Button';
 import { ShareModal, ReportModal, ErrorBoundary } from '@/shared/components';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { DeleteConfirmDialog } from '../components/DeleteConfirmDialog';
@@ -33,6 +36,30 @@ export const ListingDetailScreen: React.FC = () => {
   useEffect(() => {
     capture(EVENTS.LISTING_VIEWED);
   }, []);
+
+  if (detail.lookupStatus === 'loading') {
+    return (
+      <div className="max-w-[440px] mx-auto w-full min-h-[60vh] flex items-center justify-center" dir={detail.isArabic ? 'rtl' : 'ltr'}>
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+
+  if (detail.lookupStatus === 'error') {
+    return (
+      <div className="max-w-[440px] mx-auto w-full min-h-[60vh] flex items-center justify-center p-4" dir={detail.isArabic ? 'rtl' : 'ltr'}>
+        <EmptyState
+          title={detail.isArabic ? 'تعذّر تحميل الإعلان' : 'Could not load listing'}
+          description={detail.isArabic ? 'حاول مرة أخرى لاحقاً.' : 'Please try again later.'}
+          action={
+            <Button variant="primary" size="md" onClick={detail.goBack}>
+              {detail.isArabic ? 'العودة' : 'Go back'}
+            </Button>
+          }
+        />
+      </div>
+    );
+  }
 
   if (!detail.listing) return <ListingNotFound isArabic={detail.isArabic} onGoBack={detail.goBack} />;
 
