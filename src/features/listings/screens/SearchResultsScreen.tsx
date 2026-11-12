@@ -4,7 +4,8 @@ import React, { useState, useMemo, useCallback, Dispatch, SetStateAction } from 
 import { useAuth } from '@/hooks/useAuth';
 import { ListingCard } from '@/shared/components';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
-import { ArrowLeft, ArrowRight, SearchNormal1, Grid1, RowVertical } from 'iconsax-react';
+import { SearchNormal1, Grid1, RowVertical } from 'iconsax-react';
+import { BackButton } from '@/shared/ui/BackButton';
 import { FiltersTriggerBar } from '@/features/explore/components/filters/FiltersTriggerBar';
 import { SearchResultsEmpty } from '../components/SearchResultsEmpty';
 import { SearchRelatedBanner } from '../components/SearchRelatedBanner';
@@ -29,8 +30,6 @@ export const SearchResultsScreen: React.FC = () => {
     [feedLayout, setFeedLayoutStore]
   );
   const [filterMode] = useState<'city' | 'all'>('city');
-
-  const BackIcon = isArabic ? ArrowRight : ArrowLeft;
 
   const handleBack = () => {
     setSearchQuery(''); setCategoryFilter(null); setMinPriceFilter(null); setMaxPriceFilter(null); setNeighborhoodFilter(null); navigateTo('main');
@@ -60,9 +59,11 @@ export const SearchResultsScreen: React.FC = () => {
       {/* Search Header (Sticky) */}
       <div className="p-4 pb-2.5 bg-[#1a2238] border-b border-white/10 flex flex-col gap-2 sticky top-0 z-30">
         <div className="flex items-center gap-3">
-          <button onClick={handleBack} aria-label="Back" className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center shrink-0 cursor-pointer">
-            <BackIcon size={18} variant="Linear" color="#FFFFFF" />
-          </button>
+          <BackButton
+            isArabic={isArabic}
+            onClick={handleBack}
+            className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center shrink-0 cursor-pointer text-white"
+          />
 
           <div className="flex-1 relative flex items-center">
             <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={isArabic ? 'ابحث في الصفقات...' : 'Search deals...'} className="w-full h-10 pl-9 pr-9 rounded-xl bg-canvas border border-line text-xs text-ink focus:outline-none focus:border-brand" />
