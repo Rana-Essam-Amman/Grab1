@@ -12,6 +12,7 @@ import { showChatUnavailable, showChatOpenFailed, showChatCrossMarket } from '..
 import { useListingDelete } from './useListingDelete';
 import { useRevealPhone } from './useRevealPhone';
 import { useFetchMissingListing } from './useFetchMissingListing';
+import { resolveDetailLookup } from '../helpers/resolveDetailLookup';
 import type { UseListingDetailReturn } from './useListingDetail.types';
 
 export function useListingDetail(): UseListingDetailReturn {
@@ -26,8 +27,8 @@ export function useListingDetail(): UseListingDetailReturn {
   const [showWhatsAppSheet, setShowWhatsAppSheet] = useState(false);
   
   const localListing = selectedListingId ? getListing(selectedListingId) || null : null;
-  const fetchedListing = useFetchMissingListing(selectedListingId, localListing);
-  const listing = localListing || fetchedListing;
+  const remote = useFetchMissingListing(selectedListingId, localListing);
+  const { listing, lookupStatus } = resolveDetailLookup(localListing, remote);
 
   const activeCountry = isValidMarket(browseCountryCode) ? browseCountryCode : 'JO';
   const isCountryMismatch = useMemo(() => Boolean(listing && listing.countryCode !== activeCountry), [listing, activeCountry]);
@@ -90,7 +91,7 @@ export function useListingDetail(): UseListingDetailReturn {
   const handleEdit = useCallback(() => { if (listing) { setSelectedListingId(listing.id); navigateTo('edit-post'); } }, [listing, setSelectedListingId, navigateTo]);
 
   return {
-    listing, activeCountry, isCountryMismatch, ...derived, activePhotoIdx, setActivePhotoIdx,
+    listing, lookupStatus, activeCountry, isCountryMismatch, ...derived, activePhotoIdx, setActivePhotoIdx,
     showShare, setShowShare, showReport, setShowReport, showWhatsAppSheet, setShowWhatsAppSheet,
     handleStartChat, handleCall, handleWhatsApp, handleWhatsAppClick, handleWhatsAppIntent,
     handleDelete, handleEdit, handleSelectSeller, isAuthenticated, isOwner, isArabic, goBack, navigateTo, isDeleting, isRevealingPhone,

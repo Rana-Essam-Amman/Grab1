@@ -18,5 +18,8 @@
   "howWasExperience": "How was your experience with",
   "addCommentOptional": "Add a comment (optional)...",
   "submitReview": "Submit review",
-  "sellerFallback": "Seller"
+  "sellerFallback": "Seller",
+  "loadErrorTitle": "Could not load listing",
+  "loadErrorDescription": "Please try again later.",
+  "goBack": "Go back"
 }

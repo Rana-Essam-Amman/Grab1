@@ -106,3 +106,10 @@ fc1bc81 feat(ai): pass subcategorySlug through AI pipeline + fix call sites
 - Prior HEAD 53295951e5dedcf3967740602cb78e02694a0cb0 had all four required workflows green (Quality, E2E, RLS, Search RPC SQL).
 - Next: Await CI on this exact new HEAD. Do not merge until green. PR #442 remains historical and open.
 - Note: Local toolchain unavailable; CI is the substitute verifier (Environmental Exception).
+
+## Current State (2026-11-12 Wave 3 Phase 1)
+- Branch: fix/listing-detail-loading-not-found
+- Base: d7e36a3f2d0a3987ce80e50462ab8d5a2831ee5f
+- Last task: Fixed premature ListingNotFound during remote lookup. Explicit loading / found / not_found / error states.
+- Next: Await CI on the PR HEAD. Do not merge until green. Universal Back Arrow is a separate task.
+- Verification (local): focused tests 13 passed (9 new + 4 existing), tsc exit 0, eslint 0 errors, build exit 0, audit:arch 0 violations.

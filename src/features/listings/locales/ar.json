@@ -18,5 +18,8 @@
   "howWasExperience": "كيف كانت تجربتك مع",
   "addCommentOptional": "أضف تعليقاً (اختياري)...",
   "submitReview": "إرسال التقييم",
-  "sellerFallback": "بائع"
+  "sellerFallback": "بائع",
+  "loadErrorTitle": "تعذّر تحميل الإعلان",
+  "loadErrorDescription": "حاول مرة أخرى لاحقاً.",
+  "goBack": "العودة"
 }
