@@ -1,4 +1,5 @@
 export { Button, buttonVariants, type ButtonProps } from './Button';
+export { BackButton, type BackButtonProps } from './BackButton';
 export {
   Card,
   CardHeader,
