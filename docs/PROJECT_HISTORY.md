@@ -278,3 +278,8 @@ CI Recovery + Rule 43 (2026-09-23)
 - handleUseSample returns early unless import.meta.env.DEV.
 - Unit test added: handleUseSample is a no-op when DEV is false.
 - Seed listing assets under src/data/seedListings are static seed data, not the production upload path; left unchanged.
+
+### 2026-11-12 — Wave 1 HIGH-3 / E2E (compliant reapply): Real photo upload
+- E2E golden-path (post-ad.spec.ts) now uses setInputFiles on the real file input with public/assets/listings/car.jpg.
+- Sample-photo button is DEV-only (import.meta.env.DEV); production/preview builds hide it, so tests exercise the real upload path.
+- This reapply uses a new branch from main with Rule 40 same-commit docs in every implementation commit. Original PR #442 remains open as historical evidence and is not merged.
