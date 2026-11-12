@@ -266,3 +266,9 @@ CI Recovery + Rule 43 (2026-09-23)
   failures + CI evidence.
 - Rule 37 (PR-based delivery) preserved.
 - Commit subject includes + docs and [ci-only-verified].
+
+### 2026-11-12 — Wave 1 HIGH-1 (compliant reapply): Neutral seller fallback
+- Removed unproven "Verified Seller" / "معلن موثوق" fallback and unconditional TickCircle from SellerProfileScreen.
+- PublicProfileRecord has no verification field (id, nickname, avatar_url, rating_*, vip_store only).
+- Fallback is now بائع / Seller. Real nickname or listing sellerName still preferred.
+- New branch: fix/wave1-trust-and-sample-photo-guards-compliant (from main 42ac404). Original PR #442 retained as historical evidence and not merged.
