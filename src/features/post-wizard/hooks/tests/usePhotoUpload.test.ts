@@ -40,7 +40,7 @@ describe('usePhotoUpload', () => {
     });
     expect(result.current.photos.length).toBeGreaterThan(0);
   });
-}
+
   it('handleUseSample is a no-op when DEV is false', async () => {
     const env = import.meta.env as { DEV?: boolean };
     const original = env.DEV;

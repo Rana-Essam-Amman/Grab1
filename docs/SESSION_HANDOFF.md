@@ -91,3 +91,9 @@ fc1bc81 feat(ai): pass subcategorySlug through AI pipeline + fix call sites
 - Last task: E2E real-photo upload path with same-commit docs.
 - Next: Push branch. No PR until verification complete. No merge.
 - Note: Local toolchain unavailable; CI is the substitute verifier.
+
+## Current State (2026-11-12 Wave 1 test structure correction)
+- Branch: fix/wave1-trust-and-sample-photo-guards-final
+- Last task: Corrected usePhotoUpload.test.ts so all four tests are nested inside the describe block. Same-commit docs.
+- Next: Await CI on this exact SHA. No PR yet. No merge.
+- Note: Local toolchain unavailable. Original three commits preserved.

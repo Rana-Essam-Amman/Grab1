@@ -283,3 +283,7 @@ CI Recovery + Rule 43 (2026-09-23)
 - E2E golden-path (post-ad.spec.ts) now uses setInputFiles on the real file input with public/assets/listings/car.jpg.
 - Sample-photo button is DEV-only (import.meta.env.DEV); production/preview builds hide it, so tests exercise the real upload path.
 - This branch (fix/wave1-trust-and-sample-photo-guards-final) contains exactly three implementation commits from main. Each subject ends exactly with "+ docs". Original PR #442 and prior branches preserved as historical evidence and not merged.
+
+### 2026-11-12 — Wave 1 final branch: test structure correction
+- Fixed src/features/post-wizard/hooks/tests/usePhotoUpload.test.ts: removed premature closing brace after the third test so all four tests remain inside the existing describe('usePhotoUpload') block.
+- No production-code changes. No test intent changes. Original three implementation commits unchanged.
