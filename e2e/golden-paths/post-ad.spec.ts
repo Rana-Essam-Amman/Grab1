@@ -58,9 +58,11 @@ async function reachDetailsScreen(page: Page) {
   await carsSubcategory.click();
   await page.waitForTimeout(800);
 
-  const samplePhotoBtn = page.locator(SELECTORS.postAd.samplePhotoButton).first();
-  await expect(samplePhotoBtn).toBeVisible({ timeout: 5000 });
-  await samplePhotoBtn.click();
+  // Production build hides the sample-photo button (DEV-only).
+  // Upload a real fixture image instead.
+  const fileInput = page.locator('input[type="file"]').first();
+  await fileInput.setInputFiles('public/assets/listings/car.jpg');
+  await page.waitForTimeout(500);
 
   await fillPostAdLocation(page);
 
@@ -175,9 +177,11 @@ test.describe('Golden Path 2 — Post Ad Wizard (Unified Flow)', () => {
       .first();
     await expect(step2Indicator).toBeVisible({ timeout: 5000 });
 
-    const samplePhotoBtn = loggedInPage.locator(SELECTORS.postAd.samplePhotoButton).first();
-    await expect(samplePhotoBtn).toBeVisible({ timeout: 5000 });
-    await samplePhotoBtn.click();
+    // Production build hides the sample-photo button (DEV-only).
+    // Upload a real fixture image instead.
+    const fileInput = loggedInPage.locator('input[type="file"]').first();
+    await fileInput.setInputFiles('public/assets/listings/car.jpg');
+    await loggedInPage.waitForTimeout(500);
 
     await fillPostAdLocation(loggedInPage);
 

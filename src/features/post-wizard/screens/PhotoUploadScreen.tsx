@@ -89,7 +89,7 @@ export const PhotoUploadScreen: React.FC = () => {
 
           <PhotoUploadErrors errors={errors} />
 
-          {photos.length === 0 && (
+          {import.meta.env.DEV && photos.length === 0 && (
             <Button type="button" variant="outline" size="sm" onClick={() => handleUseSample(postDraft.categorySlug)} className="self-start">
               {isArabic ? 'استخدم صورة تجريبية لهذا القسم' : 'Use sample photo for this category'}
             </Button>

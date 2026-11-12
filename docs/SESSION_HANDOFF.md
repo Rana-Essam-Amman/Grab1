@@ -74,3 +74,19 @@ fc1bc81 feat(ai): pass subcategorySlug through AI pipeline + fix call sites
 - Next: Await CI on the new HEAD SHA, then human approval.
 - Note: Local toolchain unavailable in this sandbox; verification
   is CI-only against the exact PR HEAD.
+
+## Current State (2026-11-12 Wave 1 HIGH-1)
+- Branch: fix/wave1-trust-and-sample-photo-guards
+- Last task: Removed false verified-seller claim (HIGH-1).
+- Next: HIGH-2 sample-photo production guard after Quality Pipeline on this SHA.
+
+## Current State (2026-11-12 Wave 1 HIGH-2)
+- Branch: fix/wave1-trust-and-sample-photo-guards
+- Last task: Production sample-photo guard (HIGH-2).
+- Next: Optional de-AI cleanup, then final CI verification.
+
+## Current State (2026-11-12 Wave 1 docs correction)
+- Branch: fix/wave1-trust-and-sample-photo-guards (PR #442)
+- Last task: Added corrective documentation for E2E real-photo upload (setInputFiles on public/assets/listings/car.jpg) and accurate PR verification status. Local toolchain unavailable; CI on prior SHA 891c190 green for Quality/E2E/RLS/Search RPC. Cloudflare is preview only.
+- Next: Wait for CI on this exact docs commit SHA, then evaluate merge gate (Rule 36 raw evidence + all four workflows green + no blocking comments).
+- Note: This commit satisfies Rule 40 for the prior E2E change. No merge performed yet.

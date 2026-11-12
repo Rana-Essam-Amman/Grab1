@@ -266,3 +266,19 @@ CI Recovery + Rule 43 (2026-09-23)
   failures + CI evidence.
 - Rule 37 (PR-based delivery) preserved.
 - Commit subject includes + docs and [ci-only-verified].
+
+### 2026-11-12 — Wave 1 HIGH-1: Neutral seller fallback
+- Removed unproven "Verified Seller" / "معلن موثوق" fallback and unconditional TickCircle from SellerProfileScreen.
+- PublicProfileRecord has no verification field (id, nickname, avatar_url, rating_*, vip_store only).
+- Fallback is now بائع / Seller. Real nickname or listing sellerName still preferred.
+
+### 2026-11-12 — Wave 1 HIGH-2: Production sample-photo guard
+- Sample-photo button in PhotoUploadScreen renders only when import.meta.env.DEV && photos.length === 0.
+- handleUseSample returns early unless import.meta.env.DEV.
+- Seed listing assets under src/data/seedListings are static seed data, not the production upload path; left unchanged.
+
+### 2026-11-12 — Wave 1 HIGH-3 / E2E: Real photo upload (PR #442)
+- E2E golden-path (post-ad.spec.ts) now uses setInputFiles on the real file input with public/assets/listings/car.jpg.
+- Sample-photo button is DEV-only (import.meta.env.DEV); production/preview builds hide it, so tests exercise the real upload path.
+- PR #442 verification status (as of corrective docs commit): local toolchain unavailable (tsc exit 1, vitest exit 1, build exit 127, .husky/_ absent). CI on prior HEAD 891c190 was green for all four workflows (Quality, E2E, RLS, Search RPC). Cloudflare deployments are preview URLs only.
+- Remaining: this corrective docs commit must pass CI; no merge until all Rule 36/40/37 requirements are met on the exact final SHA. PR left open.
