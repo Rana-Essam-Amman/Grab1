@@ -287,3 +287,9 @@ CI Recovery + Rule 43 (2026-09-23)
 ### 2026-11-12 — Wave 1 final branch: test structure correction
 - Fixed src/features/post-wizard/hooks/tests/usePhotoUpload.test.ts: removed premature closing brace after the third test so all four tests remain inside the existing describe('usePhotoUpload') block.
 - No production-code changes. No test intent changes. Original three implementation commits unchanged.
+
+### 2026-11-12 — Wave 1 PR #443: Rule 8 localization + handoff accuracy
+- Replaced hardcoded seller fallback "بائع" / "Seller" in SellerProfileScreen with t('listings.sellerFallback').
+- Added sellerFallback key to src/features/listings/locales/ar.json and en.json.
+- Seller-name precedence unchanged: nickname, then listing sellerName, then localized fallback. No verification claim.
+- SESSION_HANDOFF updated: PR #443 is open; prior "No PR yet" statement corrected. Historical entries preserved.

@@ -97,3 +97,12 @@ fc1bc81 feat(ai): pass subcategorySlug through AI pipeline + fix call sites
 - Last task: Corrected usePhotoUpload.test.ts so all four tests are nested inside the describe block. Same-commit docs.
 - Next: Await CI on this exact SHA. No PR yet. No merge.
 - Note: Local toolchain unavailable. Original three commits preserved.
+
+## Current State (2026-11-12 Wave 1 PR #443 open)
+- Branch: fix/wave1-trust-and-sample-photo-guards-final
+- PR: https://github.com/Rana-Essam-Amman/Grab1/pull/443 (OPEN, not merged)
+- Base: 42ac404cf0b78e16561242b7393bac48e2f99833
+- Last task: Rule 8 localization of seller fallback + corrected stale handoff that said "No PR yet".
+- Prior HEAD 53295951e5dedcf3967740602cb78e02694a0cb0 had all four required workflows green (Quality, E2E, RLS, Search RPC SQL).
+- Next: Await CI on this exact new HEAD. Do not merge until green. PR #442 remains historical and open.
+- Note: Local toolchain unavailable; CI is the substitute verifier (Environmental Exception).

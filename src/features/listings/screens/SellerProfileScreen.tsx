@@ -13,9 +13,11 @@ import { fetchSellerReviews, type SellerReview } from '../services/sellerReviews
 import { SellerRatingBadge } from '../components/SellerRatingBadge';
 import { ReviewList } from '../components/ReviewList';
 import { useSellerListings } from '../hooks/useSellerListings';
+import { useTranslation } from '@/shared/i18n';
 
 export const SellerProfileScreen: React.FC = () => {
   const { isArabic, goBack, selectedSellerPhone, browseCountryCode } = useUI();
+  const { t } = useTranslation();
   const BackIcon = isArabic ? ArrowRight : ArrowLeft;
   const sellerKeyIsUuid = isUuid(selectedSellerPhone);
 
@@ -47,8 +49,8 @@ export const SellerProfileScreen: React.FC = () => {
     if (fromProfile) return fromProfile;
     const fromListing = sellerAds[0]?.sellerName?.trim();
     if (fromListing) return fromListing;
-    return isArabic ? 'بائع' : 'Seller';
-  }, [sellerAds, sellerProfile, isArabic]);
+    return t('listings.sellerFallback');
+  }, [sellerAds, sellerProfile, t]);
 
   return (
     <div className="flex flex-col min-h-screen bg-background pb-16" dir={isArabic ? 'rtl' : 'ltr'}>
