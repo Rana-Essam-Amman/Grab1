@@ -80,3 +80,8 @@ fc1bc81 feat(ai): pass subcategorySlug through AI pipeline + fix call sites
 - Last task: Removed false verified-seller claim (HIGH-1) with same-commit docs.
 - Next: HIGH-2 sample-photo production guard.
 - Note: This is a clean reapply from main. Original PR #442 is historical only.
+
+## Current State (2026-11-12 Wave 1 HIGH-2 compliant)
+- Branch: fix/wave1-trust-and-sample-photo-guards-compliant
+- Last task: Production sample-photo guard (HIGH-2) with same-commit docs.
+- Next: E2E real-photo upload path.
