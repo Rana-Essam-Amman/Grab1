@@ -3,7 +3,8 @@ import { useAuth } from '@/hooks/useAuth';
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/shared/lib/supabase';
 import { Button } from '@/shared/ui/Button';
-import { ArrowLeft, ArrowRight, Global, Location, ArrowRight2, ArrowLeft2 } from 'iconsax-react';
+import { Global, Location, ArrowRight2, ArrowLeft2 } from 'iconsax-react';
+import { BackButton } from '@/shared/ui/BackButton';
 import { SettingsProfileCard } from '../components/SettingsProfileCard';
 import { SettingsLegalSection } from '../components/SettingsLegalSection';
 import { SettingsThemeSection } from '../components/SettingsThemeSection';
@@ -42,15 +43,16 @@ export const SettingsScreen: React.FC = () => {
   const handleAboutNav = useCallback(() => navigateTo('about'), [navigateTo]);
   const handleLogout = useCallback(() => logout(), [logout]);
 
-  const BackIcon = isArabic ? ArrowRight : ArrowLeft;
   const ChevronIcon = isArabic ? ArrowLeft2 : ArrowRight2;
 
   return (
     <div className="flex flex-col min-h-screen bg-surface pb-16" dir={isArabic ? 'rtl' : 'ltr'}>
       <div className="px-4 py-4 bg-brand border-b border-white/10 flex items-center gap-3 sticky top-0 z-20">
-        <Button variant="ghost" size="icon" onClick={goBack} aria-label="Back" className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 flex items-center justify-center p-0">
-          <BackIcon size={18} variant="Linear" color="#FFFFFF" />
-        </Button>
+        <BackButton
+          isArabic={isArabic}
+          onClick={goBack}
+          className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 flex items-center justify-center p-0 text-white"
+        />
         <h1 className="text-lg font-bold text-white flex-1">{isArabic ? 'الإعدادات والحساب' : 'Settings & Account'}</h1>
         <BrandMark isArabic={isArabic} />
       </div>
