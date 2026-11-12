@@ -1,6 +1,6 @@
 import React from 'react';
-import { Call, ArrowLeft, ArrowRight } from 'iconsax-react';
-import { Button } from '@/shared/ui/Button';
+import { Call } from 'iconsax-react';
+import { BackButton } from '@/shared/ui/BackButton';
 
 interface ThreadHeaderProps {
   isArabic: boolean;
@@ -25,14 +25,14 @@ export const ThreadHeader: React.FC<ThreadHeaderProps> = ({
   isTyping,
   isOtherOnline,
 }) => {
-  const BackIcon = isArabic ? ArrowRight : ArrowLeft;
-
   return (
     <div className="p-3 bg-brand border-b border-white/10 flex items-center justify-between shrink-0 z-20">
       <div className="flex items-center gap-2.5 min-w-0">
-        <Button variant="ghost" size="icon" onClick={goBack} aria-label="Back" className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 shrink-0 p-0">
-          <BackIcon size={18} variant="Linear" color="#FFFFFF" />
-        </Button>
+        <BackButton
+          isArabic={isArabic}
+          onClick={goBack}
+          className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 shrink-0 p-0 text-white"
+        />
         <div onClick={handleViewListing} className="flex items-center gap-2 cursor-pointer min-w-0">
           <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-surface/15 border border-white/20 shrink-0">
             <img src={imageUrl} alt={title} className="w-full h-full object-cover" onError={handleImageError} />
