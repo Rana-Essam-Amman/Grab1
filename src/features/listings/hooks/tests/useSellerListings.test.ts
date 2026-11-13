@@ -48,9 +48,10 @@ describe('useSellerListings', () => {
   });
 
   it('does not fetch and clears state when the seller key is null or empty', async () => {
+    const initialProps: { key: string | null } = { key: null };
     const { result, rerender } = renderHook(
       ({ key }: { key: string | null }) => useSellerListings(key, 'JO'),
-      { initialProps: { key: null } },
+      { initialProps },
     );
     expect(fetchListingsBySeller).not.toHaveBeenCalled();
     expect(result.current.listings).toEqual([]);
@@ -139,9 +140,10 @@ describe('useSellerListings', () => {
   it('cancels an in-flight request when the seller key is cleared', async () => {
     const pending = deferred<SellerListingsResult>();
     vi.mocked(fetchListingsBySeller).mockReturnValue(pending.promise);
+    const initialProps: { key: string | null } = { key: 'seller-1' };
     const { result, rerender } = renderHook(
       ({ key }: { key: string | null }) => useSellerListings(key, 'JO'),
-      { initialProps: { key: 'seller-1' } },
+      { initialProps },
     );
     expect(result.current.isLoading).toBe(true);
     rerender({ key: null });
