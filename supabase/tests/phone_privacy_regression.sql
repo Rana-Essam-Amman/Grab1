@@ -468,6 +468,59 @@ BEGIN
     RAISE EXCEPTION 'FAIL C4: search_listings returned non-null seller_phone';
   END IF;
   RAISE NOTICE 'PASS C4: search_listings masks seller_phone (% rows)', v_count;
+
+  SELECT count(*), count(*) FILTER (WHERE seller_phone IS NOT NULL)
+  INTO v_count, v_leaked
+  FROM public.search_listings_v2('PhonePrivacySynthetic', NULL, 10, 0);
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'FAIL C5: search_listings_v2 returned zero rows';
+  END IF;
+  IF v_leaked > 0 THEN
+    RAISE EXCEPTION 'FAIL C5: search_listings_v2 returned non-null seller_phone';
+  END IF;
+  RAISE NOTICE 'PASS C5: search_listings_v2 masks seller_phone (% rows)', v_count;
+
+  SELECT count(*), count(*) FILTER (WHERE seller_phone IS NOT NULL)
+  INTO v_count, v_leaked
+  FROM public.search_listings_v2_intent('PhonePrivacySynthetic', NULL, 10, 0);
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'FAIL C6: search_listings_v2_intent returned zero rows';
+  END IF;
+  IF v_leaked > 0 THEN
+    RAISE EXCEPTION 'FAIL C6: search_listings_v2_intent returned non-null seller_phone';
+  END IF;
+  RAISE NOTICE 'PASS C6: search_listings_v2_intent masks seller_phone (% rows)', v_count;
+
+  -- typo delegated path: exact token is found by v2_intent, so typo returns that path.
+  SELECT count(*), count(*) FILTER (WHERE seller_phone IS NOT NULL)
+  INTO v_count, v_leaked
+  FROM public.search_listings_v2_intent_typo('PhonePrivacySynthetic', NULL, 10, 0);
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'FAIL C7: typo delegated path returned zero rows';
+  END IF;
+  IF v_leaked > 0 THEN
+    RAISE EXCEPTION 'FAIL C7: typo delegated path returned non-null seller_phone';
+  END IF;
+  RAISE NOTICE 'PASS C7: typo delegated path masks seller_phone (% rows)', v_count;
+
+  -- typo fallback: a near-miss that v2_intent does not return, but the
+  -- strict fuzzy fallback can. Assert masking if the fallback produces rows.
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v2_intent('PhonePrivacySyntheic', NULL, 10, 0);
+  IF v_count = 0 THEN
+    SELECT count(*), count(*) FILTER (WHERE seller_phone IS NOT NULL)
+    INTO v_count, v_leaked
+    FROM public.search_listings_v2_intent_typo('PhonePrivacySyntheic', NULL, 10, 0);
+    IF v_count = 0 THEN
+      RAISE EXCEPTION 'FAIL C8: typo fallback returned zero rows';
+    END IF;
+    IF v_leaked > 0 THEN
+      RAISE EXCEPTION 'FAIL C8: typo fallback returned non-null seller_phone';
+    END IF;
+    RAISE NOTICE 'PASS C8: typo fallback masks seller_phone (% rows)', v_count;
+  ELSE
+    RAISE EXCEPTION 'FAIL C8: misspelled query hit delegated path; fallback not isolated';
+  END IF;
   RESET ROLE;
 END $$;
 
