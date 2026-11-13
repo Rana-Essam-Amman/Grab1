@@ -2,18 +2,19 @@ import { ZodSchema } from 'zod';
 
 // NOTE (Rule 11 — as-built):
 // This module reads/writes RAW localStorage WITHOUT a market prefix.
-// Intended for AUTH + global preferences only.
-//
-// CURRENT REALITY (as of 2026-09-28):
-// marketStorage() exists but has ZERO consumers. Market-scoped data
-// (listings, wishlists) is stored with GLOBAL keys and filtered by
-// `filterListingsByMarket` (countryCode field) at read time. This works
-// correctly but does NOT match the original design intent.
-//
-// MIGRATION PLAN:
-// The Supabase migration will re-architect storage with RLS per market.
-// Until then, the read-time filter is the compensating control.
-// See BACKEND_INTEGRATION.md for details.
+// Market-scoped callers must prefix the key first (see marketStorage).
+// LocalStorageDraftAdapter is a current marketStorage consumer.
+
+export interface WriteValidatedOptions {
+  readonly cleanupOnQuota?: boolean;
+}
+
+function isQuotaError(error: unknown): boolean {
+  if (typeof error !== 'object' || error === null) return false;
+  const name = 'name' in error ? error.name : undefined;
+  const code = 'code' in error ? error.code : undefined;
+  return name === 'QuotaExceededError' || code === 22;
+}
 
 /**
  * Safely reads and validates data from localStorage using a Zod schema.
@@ -22,17 +23,10 @@ import { ZodSchema } from 'zod';
 export function readValidated<T>(key: string, schema: ZodSchema<T>, fallback: T): T {
   try {
     const raw = localStorage.getItem(key);
-    if (!raw) {
-      return fallback;
-    }
-
+    if (!raw) return fallback;
     const parsedJson = JSON.parse(raw);
     const result = schema.safeParse(parsedJson);
-
-    if (result.success) {
-      return result.data;
-    }
-
+    if (result.success) return result.data;
     if (import.meta.env?.DEV) {
       console.warn(`[safeStorage] Validation failed for key "${key}":`, result.error);
     }
@@ -45,53 +39,56 @@ export function readValidated<T>(key: string, schema: ZodSchema<T>, fallback: T)
   }
 }
 
+function persist(key: string, json: string, cleanupOnQuota: boolean): boolean {
+  try {
+    localStorage.setItem(key, json);
+    return true;
+  } catch (quotaError: unknown) {
+    if (!isQuotaError(quotaError)) throw quotaError;
+    console.warn('[safeStorage] Quota exceeded for ' + key + '.');
+    if (!cleanupOnQuota) return false;
+    try {
+      localStorage.removeItem('chat_conversations');
+      localStorage.setItem(key, json);
+      return true;
+    } catch {
+      console.error('[safeStorage] Quota still exceeded. Data not saved.');
+      return false;
+    }
+  }
+}
+
 /**
- * Safely validates and writes data to localStorage using a Zod schema.
- * If validation fails, logs an error in dev mode and skips writing.
+ * Validates and writes data. Returns true only when the value is persisted.
+ * cleanupOnQuota defaults to true. Market-scoped callers must disable it.
  */
-export function writeValidated<T>(key: string, schema: ZodSchema<T>, value: T): void {
+export function writeValidated<T>(key: string, schema: ZodSchema<T>, value: T, options?: WriteValidatedOptions): boolean {
   try {
     const result = schema.safeParse(value);
     if (!result.success) {
       if (import.meta.env?.DEV) {
         console.error(`[safeStorage] Validation failed before writing key "${key}":`, result.error);
       }
-      return;
+      return false;
     }
-
-    try {
-      localStorage.setItem(key, JSON.stringify(result.data));
-    } catch (quotaError: unknown) {
-      const error = quotaError as Error & { code?: number };
-      if (error?.name === 'QuotaExceededError' || error?.code === 22) {
-        console.warn('[safeStorage] Quota exceeded for ' + key + '. Attempting cleanup.');
-        // Attempt to clear stale data
-        try {
-          localStorage.removeItem('chat_conversations'); // Clear non-critical high-volume keys
-          localStorage.setItem(key, JSON.stringify(result.data));
-        } catch {
-          console.error('[safeStorage] Quota still exceeded. Data not saved.');
-        }
-      } else {
-        throw quotaError;
-      }
-    }
+    return persist(key, JSON.stringify(result.data), options?.cleanupOnQuota !== false);
   } catch (error) {
     if (import.meta.env?.DEV) {
       console.error(`[safeStorage] Failed to write key "${key}":`, error);
     }
+    return false;
   }
 }
 
-/**
- * Safely removes a key from localStorage.
- */
-export function removeStored(key: string): void {
+/** Removes a key. Returns true when removal did not throw. */
+export function removeStored(key: string): boolean {
   try {
     localStorage.removeItem(key);
+    return true;
   } catch (error) {
     if (import.meta.env?.DEV) {
       console.error(`[safeStorage] Failed to remove key "${key}":`, error);
     }
+    return false;
   }
 }
