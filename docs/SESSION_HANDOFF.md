@@ -113,3 +113,17 @@ fc1bc81 feat(ai): pass subcategorySlug through AI pipeline + fix call sites
 - Last task: Fixed premature ListingNotFound during remote lookup. Explicit loading / found / not_found / error states.
 - Next: Await CI on the PR HEAD. Do not merge until green. Universal Back Arrow is a separate task.
 - Verification (local): focused tests 13 passed (9 new + 4 existing), tsc exit 0, eslint 0 errors, build exit 0, audit:arch 0 violations.
+
+## Current State (2026-11-13 PostDetails validation feedback)
+- Branch: fix/post-details-validation-feedback
+- Base: bb90008ed0d83940d09790265dc08ee466543a07
+- Last task: Surfaced missing title, price, and required attributes on PostDetails via MissingFieldsNotice. Validation rules unchanged.
+- Next: Await CI on the PR HEAD. Do not merge until green.
+- Note: Local toolchain unavailable in this sandbox; CI is the substitute verifier (Environmental Exception).
+
+## Current State (2026-11-13 PostDetails validation remediation)
+- Branch: fix/post-details-validation-feedback
+- Base: bb90008ed0d83940d09790265dc08ee466543a07
+- Last task: Rule 8 localization of missing title/price labels; original validation semantics restored exactly. Hook tests added.
+- Next: Await review. Do not create or merge PR until authorized.
+- Note: Local toolchain unavailable; CI is NOT RUN (no PR-triggered workflow yet).

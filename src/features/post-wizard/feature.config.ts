@@ -64,4 +64,8 @@ export default defineFeature({
       guard: 'public',
     },
   },
+  locales: {
+    ar: () => import('./locales/ar.json').then((m) => ({ default: m.default })),
+    en: () => import('./locales/en.json').then((m) => ({ default: m.default })),
+  },
 });

@@ -14,6 +14,7 @@ const { mockToastError } = vi.hoisted(() => ({
   mockToastError: vi.fn(),
 }));
 
+let mockIsArabic = false;
 let mockAuthStatus = 'authenticated';
 let mockPostDraft = {
   photos: [] as string[],
@@ -36,7 +37,25 @@ vi.mock('@/hooks/useUI', () => ({
     setActiveTab: mockSetActiveTab,
     browseCountryCode: 'JO',
     activeCurrency: 'JOD',
-    isArabic: false,
+    isArabic: mockIsArabic,
+  }),
+}));
+
+vi.mock('@/shared/i18n', () => ({
+  useTranslation: () => ({
+    t: (key: string) => {
+      const en: Record<string, string> = {
+        'post-wizard.missingTitle': 'Listing Title',
+        'post-wizard.missingPrice': 'Price',
+      };
+      const ar: Record<string, string> = {
+        'post-wizard.missingTitle': 'عنوان الإعلان',
+        'post-wizard.missingPrice': 'السعر',
+      };
+      return (mockIsArabic ? ar : en)[key] ?? key;
+    },
+    locale: mockIsArabic ? 'ar' : 'en',
+    isLoaded: true,
   }),
 }));
 
@@ -89,6 +108,7 @@ describe('useAiReview', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockPhoneModalOpen.mockClear();
+    mockIsArabic = false;
     mockAuthStatus = 'authenticated';
     mockPublishListing.mockResolvedValue({ success: true, remoteId: 'remote-1', error: null });
     mockPostDraft = {
@@ -244,5 +264,42 @@ describe('useAiReview', () => {
     expect(result.current.isPublishing).toBe(false);
     expect(result.current.error).toBeTruthy();
     expect(mockPublishListing).not.toHaveBeenCalled();
+  });
+
+  it('reports missing title in English and sets hasMissingParams', () => {
+    mockPostDraft.title = '';
+    mockPostDraft.generated = { fields: [{ key: 'year', label: 'Year', value: '2020', required: true }] };
+    const { result } = renderHook(() => useAiReview());
+    expect(result.current.hasMissingParams).toBe(true);
+    expect(result.current.missingRequiredLabels).toContain('Listing Title');
+  });
+
+  it('reports missing price in English and sets hasMissingParams', () => {
+    mockPostDraft.price = '';
+    const { result } = renderHook(() => useAiReview());
+    expect(result.current.hasMissingParams).toBe(true);
+    expect(result.current.missingRequiredLabels).toContain('Price');
+  });
+
+  it('reports missing required attribute labels', () => {
+    mockPostDraft.generated = { fields: [{ key: 'year', label: 'Year', value: '', required: true }] };
+    const { result } = renderHook(() => useAiReview());
+    expect(result.current.hasMissingParams).toBe(true);
+    expect(result.current.missingRequiredLabels).toContain('Year');
+  });
+
+  it('reports Arabic labels when isArabic is true', () => {
+    mockIsArabic = true;
+    mockPostDraft.title = '';
+    mockPostDraft.price = '';
+    const { result } = renderHook(() => useAiReview());
+    expect(result.current.missingRequiredLabels).toContain('عنوان الإعلان');
+    expect(result.current.missingRequiredLabels).toContain('السعر');
+  });
+
+  it('hasMissingParams is false and labels are empty when title, price, and required attributes are present', () => {
+    const { result } = renderHook(() => useAiReview());
+    expect(result.current.hasMissingParams).toBe(false);
+    expect(result.current.missingRequiredLabels).toEqual([]);
   });
 });

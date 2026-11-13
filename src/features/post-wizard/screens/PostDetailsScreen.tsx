@@ -15,6 +15,7 @@ import { DynamicFieldRenderer } from '../components/DynamicFieldRenderer';
 import { StaticMapPreview } from '../components/StaticMapPreview';
 import { formatPrice } from '@/shared/lib/formatPrice';
 import { stripEmojisFromInput } from '@/shared/lib/stripEmojis';
+import { MissingFieldsNotice } from '@/shared/ui/MissingFieldsNotice';
 
 export const PostDetailsScreen: React.FC = () => {
   const { isArabic, goBack, activeCurrency, browseCountryCode } = useUI();
@@ -26,7 +27,7 @@ export const PostDetailsScreen: React.FC = () => {
     title, price, city, neighborhood, description, photos,
     hasMissingParams, isPublishing, attributes, setAttributeValue,
     setTitle, setPrice, setCity, setDescription,
-    handlePublish, error,
+    handlePublish, error, missingRequiredLabels,
   } = useAiReview();
   const [isCityDrawerOpen, setIsCityDrawerOpen] = useState(false);
 
@@ -123,6 +124,7 @@ export const PostDetailsScreen: React.FC = () => {
 
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-24px)] max-w-[440px] z-30 flex flex-col gap-2 pointer-events-none">
         {error && <div className="rounded-xl border border-danger/30 bg-danger/5 px-3 py-2 text-xs text-danger shadow-md pointer-events-auto">{error}</div>}
+        <MissingFieldsNotice isArabic={isArabic} fields={missingRequiredLabels} className="pointer-events-auto" />
         <button
           type="button"
           id="post-publish-btn"

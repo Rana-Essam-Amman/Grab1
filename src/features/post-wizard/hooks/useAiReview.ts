@@ -5,6 +5,7 @@ import { useUI } from '@/hooks/useUI';
 import { useListings } from '@/hooks/useListings';
 import { useDraft } from '@/hooks/useDraft';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
+import { useTranslation } from '@/shared/i18n';
 import { setPendingPublish } from '../helpers/pendingPublishFlags';
 import { MONETIZATION_MATRIX } from '@/data/monetization';
 import { useAiReviewAttributes } from './useAiReviewAttributes';
@@ -14,6 +15,7 @@ import { requirePhoneForPublish } from '@/features/auth/helpers/publishPhoneGuar
 import { resolveAiLocationSlugs } from '../helpers/aiLocationResolver';
 import { executeAiPublish } from '../helpers/aiReviewPublishHandler';
 import { updateAiDraftAttribute } from '../helpers/aiReviewAttributeUpdater';
+import { buildMissingRequiredLabels } from '../helpers/missingRequiredLabels';
 
 export type { UseAiReviewReturn } from './useAiReview.types';
 
@@ -22,6 +24,7 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
   const { resetPostDraft } = useDraft();
   const { authStatus, user, isAnonymous } = useAuth();
   const { navigateTo, browseCountryCode, activeCurrency, isArabic } = useUI();
+  const { t } = useTranslation();
   const { publishListing } = useListings();
   const { isAdmin, isLoading: isAdminLoading } = useIsAdmin();
   const [isPublishing, setIsPublishing] = useState(false);
@@ -81,12 +84,15 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
   const curP = postDraft.price || postDraft.generated?.price || '';
   const curC = postDraft.city || '';
   const curD = postDraft.description || postDraft.generated?.description || '';
-  const missingRequiredLabels = (attributes || []).filter((a) => a.required && !String(a.value || '').trim()).map((a) => a.label);
+  const missingAttrLabels = (attributes || []).filter((a) => a.required && !String(a.value || '').trim()).map((a) => a.label);
+  const missingRequiredLabels = buildMissingRequiredLabels(curT, curP, t('post-wizard.missingTitle'), t('post-wizard.missingPrice'), missingAttrLabels);
   const regenerate = useRegenerateListing({ postDraft, updatePostDraft, userId: (user as { id?: string })?.id || user?.email || user?.phone });
 
   return {
     title: curT, price: curP, city: curC, description: curD, photos, addPhotos, removePhoto, neighborhood, setNeighborhood,
     setTitle: (t) => updateField('title', t), setPrice: (p) => updateField('price', p), setCity, setDescription: (d) => updateField('description', d),
-    attributes, setAttributeValue, handlePublish, isPublishing, regenerate, hasMissingParams: !curT || !curP || missingRequiredLabels.length > 0, missingRequiredLabels, error,
+    attributes, setAttributeValue, handlePublish, isPublishing, regenerate,
+    hasMissingParams: !curT || !curP || missingAttrLabels.length > 0,
+    missingRequiredLabels, error,
   };
 }

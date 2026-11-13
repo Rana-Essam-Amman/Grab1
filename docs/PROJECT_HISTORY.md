@@ -300,3 +300,16 @@ CI Recovery + Rule 43 (2026-09-23)
 - Stale responses are ignored when the listing id changes or the request is cancelled.
 - Local listings still render immediately with no remote fetch.
 - Regression tests: remote pending, genuine missing, request failure, local available, identity change during pending.
+
+### 2026-11-13 — PostDetails validation feedback
+- PostDetailsScreen uses useAiReview (not usePostDetails). Publish was disabled on missing title, price, or required attributes with no visible explanation.
+- Competitor pattern (OpenSooq / Dubizzle / OLX): compact inline list of missing fields above the disabled CTA. Reused existing MissingFieldsNotice.
+- useAiReview now includes localized title and price labels in missingRequiredLabels. Conditions unchanged (empty title, empty price, required attributes).
+- PostDetailsScreen renders MissingFieldsNotice above the Publish button. Auth, publish, and market isolation untouched.
+- Regression tests: missing title, missing price, missing required attribute, valid submission enables button and hides notice.
+
+### 2026-11-13 — PostDetails validation feedback remediation
+- Removed hardcoded title/price labels from useAiReview. Added post-wizard locales (ar.json, en.json) with missingTitle / missingPrice and registered them in feature.config.ts.
+- Labels now come from useTranslation() as post-wizard.missingTitle and post-wizard.missingPrice.
+- Restored exact original validation: hasMissingParams = !curT || !curP || missingAttrLabels.length > 0. No .trim() change for title or price.
+- Hook tests cover missing title, price, required attribute, Arabic/English labels, and valid values. Screen tests retained.
