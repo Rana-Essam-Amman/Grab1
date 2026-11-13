@@ -141,3 +141,10 @@ fc1bc81 feat(ai): pass subcategorySlug through AI pipeline + fix call sites
 - Last task: Fixed quota test order so the one-shot setItem spy is not consumed by the seed write.
 - Next: Await CI on the new HEAD. Do not merge until the four required workflows are green.
 - Note: Local toolchain unavailable; CI is the substitute verifier (Environmental Exception).
+
+## Current State (2026-11-13 LocalStorageDraftAdapter contract)
+- Branch: fix/local-storage-draft-contract
+- Base: e8e45693952ade019309a72afeedb1c957b2d88d
+- Last task: Enforced market isolation for drafts. Disabled quota cleanup on market-scoped writes.
+- Next: Await CI on the PR HEAD. Do not merge until green.
+- Note: Local toolchain unavailable; adapter coverage is CANNOT_VERIFY until CI or a local Vitest coverage run.

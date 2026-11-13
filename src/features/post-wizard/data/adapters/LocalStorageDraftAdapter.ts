@@ -1,4 +1,4 @@
-import { globalStorage, marketStorage } from '@/shared/lib/marketStorage';
+import { marketStorage } from '@/shared/lib/marketStorage';
 import type { DraftRepository } from '../repositories/DraftRepository';
 import type { PostDraftWithMeta } from '../../domain';
 import { z } from 'zod';
@@ -16,7 +16,7 @@ const GENERATED_SCHEMA = z.object({
   missing: z.array(z.string()),
 }).passthrough();
 
-const DRAFT_SCHEMA = z.object({
+const DRAFT_SCHEMA: z.ZodType<PostDraftWithMeta> = z.object({
   categorySlug: z.string(),
   subcategorySlug: z.string(),
   photos: z.array(z.string()),
@@ -41,34 +41,30 @@ const DRAFT_SCHEMA = z.object({
  * to market switches at runtime (rather than snapshot at construction).
  */
 export class LocalStorageDraftAdapter implements DraftRepository {
-  constructor(private readonly resolveMarket: () => string | undefined = () => undefined) {}
+  constructor(private readonly resolveMarket: () => string | undefined) {}
 
-  private getStore() {
-    const m = this.resolveMarket();
-    return isValidMarketCode(m) ? marketStorage(m as MarketCode) : globalStorage();
+  private requireMarket(): MarketCode {
+    const market = this.resolveMarket();
+    if (!isValidMarketCode(market)) {
+      throw new Error(`[Draft] Invalid or missing market: ${String(market)}`);
+    }
+    return market;
   }
 
   async getCurrent(): Promise<PostDraftWithMeta | null> {
-    const raw = this.getStore().get<unknown>(STORAGE_KEY);
-    if (raw == null) return null;
-    const parsed = DRAFT_SCHEMA.safeParse(raw);
-    return parsed.success ? (parsed.data as PostDraftWithMeta) : null;
+    return marketStorage(this.requireMarket()).readValidated(STORAGE_KEY, DRAFT_SCHEMA, null);
   }
 
   async save(draft: PostDraftWithMeta): Promise<void> {
+    const market = this.requireMarket();
     const parsed = DRAFT_SCHEMA.safeParse(draft);
     if (!parsed.success) return;
-    try {
-      this.getStore().set(STORAGE_KEY, parsed.data);
-    } catch (error) {
-      if (error instanceof Error && error.name === 'QuotaExceededError') {
-        console.error('[Draft] Storage full. Cannot save draft.');
-      }
-      throw error;
-    }
+    const stored = marketStorage(market).writeValidated(STORAGE_KEY, DRAFT_SCHEMA, parsed.data);
+    if (!stored) throw new Error('[Draft] Failed to persist draft.');
   }
 
   async clear(): Promise<void> {
-    this.getStore().remove(STORAGE_KEY);
+    const removed = marketStorage(this.requireMarket()).removeValidated(STORAGE_KEY);
+    if (!removed) throw new Error('[Draft] Failed to remove draft.');
   }
 }

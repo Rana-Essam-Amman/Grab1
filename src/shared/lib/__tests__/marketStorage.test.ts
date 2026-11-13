@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { z } from 'zod';
 import { marketStorage, globalStorage } from '../marketStorage';
 
 describe('marketStorage & globalStorage', () => {
@@ -84,6 +85,30 @@ describe('marketStorage & globalStorage', () => {
       storage.remove('session');
       expect(storage.get('session')).toBeNull();
       expect(localStorage.getItem('catch_session')).toBeNull();
+    });
+
+    it('readValidated and writeValidated use the market prefix and skip quota cleanup', () => {
+      const schema = z.object({ title: z.string() });
+      const storage = marketStorage('JO');
+      expect(storage.writeValidated('draft', schema, { title: 'Car' })).toBe(true);
+      expect(localStorage.getItem('catch_JO_draft')).toBe(JSON.stringify({ title: 'Car' }));
+      expect(storage.readValidated('draft', schema, { title: 'fallback' })).toEqual({ title: 'Car' });
+      localStorage.setItem('chat_conversations', 'keep');
+      vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+        const err = new Error('quota');
+        err.name = 'QuotaExceededError';
+        throw err;
+      });
+      expect(storage.writeValidated('draft', schema, { title: 'Nope' })).toBe(false);
+      expect(localStorage.getItem('chat_conversations')).toBe('keep');
+    });
+
+    it('removeValidated reports failure', () => {
+      const storage = marketStorage('JO');
+      vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {
+        throw new Error('remove failed');
+      });
+      expect(storage.removeValidated('draft')).toBe(false);
     });
   });
 });

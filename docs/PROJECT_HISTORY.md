@@ -325,3 +325,9 @@ CI Recovery + Rule 43 (2026-09-23)
 - The one-shot exception was previously consumed by the seed write.
 - Assertions unchanged: cleanup of chat_conversations and successful retry write.
 - Production safeStorage.ts untouched.
+
+### 2026-11-13 — LocalStorageDraftAdapter storage contract
+- Removed the globalStorage fallback. Missing or invalid market now throws.
+- writeValidated/removeStored return boolean. Market-scoped writes disable quota cleanup so drafts never delete chat_conversations.
+- marketStorage gained readValidated, writeValidated, and removeValidated using the catch_{market}_ prefix.
+- Corrected the stale note that marketStorage had zero consumers.
