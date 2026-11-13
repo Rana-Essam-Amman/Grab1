@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useFetchMissingListing } from '../useFetchMissingListing';
 import { supabase } from '@/shared/lib/supabase';
 import type { Listing } from '@/types';
+import type { SupabaseListingRow } from '../../services/listingsMapper';
 
 vi.mock('@/shared/lib/supabase', () => ({
   supabase: { from: vi.fn() },
@@ -18,12 +19,38 @@ function deferred<T>() {
   return { promise, resolve, reject };
 }
 
-function mockSingle(result: Promise<{ data: Listing | null; error: { code?: string; message?: string } | null }>) {
+function mockSingle(result: Promise<{ data: SupabaseListingRow | null; error: { code?: string; message?: string } | null }>) {
   const single = vi.fn(() => result);
   const eq = vi.fn(() => ({ single }));
   const select = vi.fn(() => ({ eq }));
   (supabase.from as ReturnType<typeof vi.fn>).mockReturnValue({ select });
   return { single, eq, select };
+}
+
+function makeRow(overrides: Partial<SupabaseListingRow> = {}): SupabaseListingRow {
+  return {
+    id: 'remote-1',
+    user_id: 'user-1',
+    is_demo: false,
+    title: 'Remote car',
+    description: 'desc',
+    price: '100',
+    currency: 'JOD',
+    country_code: 'JO',
+    city: 'Amman',
+    neighborhood: 'Khalda',
+    category_slug: 'motors',
+    subcategory_slug: 'cars',
+    images: ['/assets/listings/car.jpg'],
+    attributes: [],
+    status: 'active',
+    views: 0,
+    seller_name: 'Sam',
+    created_at: '2026-01-01T00:00:00.000Z',
+    updated_at: '2026-01-01T00:00:00.000Z',
+    is_premium: false,
+    ...overrides,
+  };
 }
 
 function makeListing(overrides: Partial<Listing>): Listing {
@@ -42,12 +69,24 @@ function makeListing(overrides: Partial<Listing>): Listing {
     images: ['/assets/listings/car.jpg'],
     sellerPhone: '',
     sellerName: 'Sam',
-    createdAt: '2026-01-01T00:00:00.000Z',
+    createdAt: '2026-01-01',
     views: 0,
     attributes: [],
     status: 'active',
     ...overrides,
   };
+}
+
+const FORBIDDEN_COLUMNS = ['seller_phone', 'bumps_today', 'bumps_reset_date', 'auto_bump_active', 'auto_bump_expires_at'];
+
+function assertSafeColumns(select: ReturnType<typeof vi.fn>) {
+  expect(select).toHaveBeenCalled();
+  const columns = select.mock.calls[0][0] as string;
+  expect(columns).toContain('is_premium');
+  expect(columns).toContain('premium_expires_at');
+  for (const col of FORBIDDEN_COLUMNS) {
+    expect(columns).not.toContain(col);
+  }
 }
 
 describe('useFetchMissingListing', () => {
@@ -56,14 +95,17 @@ describe('useFetchMissingListing', () => {
   });
 
   it('stays loading and does not resolve while the remote request is pending', async () => {
-    const gate = deferred<{ data: Listing | null; error: null }>();
-    mockSingle(gate.promise);
+    const gate = deferred<{ data: SupabaseListingRow | null; error: null }>();
+    const { select } = mockSingle(gate.promise);
     const { result } = renderHook(() => useFetchMissingListing('remote-1', null));
     await waitFor(() => expect(result.current.status).toBe('loading'));
     expect(result.current.listing).toBeNull();
-    gate.resolve({ data: makeListing({ id: 'remote-1' }), error: null });
+    assertSafeColumns(select);
+    gate.resolve({ data: makeRow({ id: 'remote-1' }), error: null });
     await waitFor(() => expect(result.current.status).toBe('found'));
     expect(result.current.listing?.id).toBe('remote-1');
+    expect(result.current.listing?.sellerPhone).toBe('');
+    expect(result.current.listing?.isPremium).toBe(false);
   });
 
   it('returns not_found only after the lookup completes with no row', async () => {
@@ -91,8 +133,8 @@ describe('useFetchMissingListing', () => {
   });
 
   it('ignores a stale response after the listing id changes', async () => {
-    const first = deferred<{ data: Listing | null; error: null }>();
-    const second = deferred<{ data: Listing | null; error: null }>();
+    const first = deferred<{ data: SupabaseListingRow | null; error: null }>();
+    const second = deferred<{ data: SupabaseListingRow | null; error: null }>();
     const single = vi.fn()
       .mockImplementationOnce(() => first.promise)
       .mockImplementationOnce(() => second.promise);
@@ -110,14 +152,15 @@ describe('useFetchMissingListing', () => {
     await waitFor(() => expect(eq).toHaveBeenCalledTimes(2));
 
     await act(async () => {
-      first.resolve({ data: makeListing({ id: 'A' }), error: null });
+      first.resolve({ data: makeRow({ id: 'A' }), error: null });
     });
     expect(result.current.listing?.id).not.toBe('A');
 
     await act(async () => {
-      second.resolve({ data: makeListing({ id: 'B', title: 'B listing' }), error: null });
+      second.resolve({ data: makeRow({ id: 'B', title: 'B listing' }), error: null });
     });
     await waitFor(() => expect(result.current.status).toBe('found'));
     expect(result.current.listing?.id).toBe('B');
+    expect(result.current.listing?.title).toBe('B listing');
   });
 });
