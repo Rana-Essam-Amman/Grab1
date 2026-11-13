@@ -1,13 +1,14 @@
+import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { BackButton } from '../BackButton';
 
 // Deterministic mocks so we can assert the exact icon component used
 vi.mock('iconsax-react', () => {
-  const ArrowLeft = (props: Record<string, unknown>) => (
+  const ArrowLeft = (props: React.SVGProps<SVGSVGElement>) => (
     <svg data-testid="arrow-left" aria-hidden={props['aria-hidden']} />
   );
-  const ArrowRight = (props: Record<string, unknown>) => (
+  const ArrowRight = (props: React.SVGProps<SVGSVGElement>) => (
     <svg data-testid="arrow-right" aria-hidden={props['aria-hidden']} />
   );
   return { ArrowLeft, ArrowRight };
