@@ -331,3 +331,11 @@ CI Recovery + Rule 43 (2026-09-23)
 - writeValidated/removeStored return boolean. Market-scoped writes disable quota cleanup so drafts never delete chat_conversations.
 - marketStorage gained readValidated, writeValidated, and removeValidated using the catch_{market}_ prefix.
 - Corrected the stale note that marketStorage had zero consumers.
+
+### Edit Listing Location (2026-11-13)
+- Added seller-facing location editor in Edit Listing flow.
+- Supports all configured markets (JO uses existing picker; others use hierarchy).
+- Preserves canonical fields, clears invalid descendants, safe legacy handling.
+- Location-only edits save via existing update path; unchanged locations omitted.
+- New files: useEditListingLocation, EditListingLocation, editListingLocation helpers + tests.
+- Integrated into useEditListing and EditListingScreen. No SQL changes.
