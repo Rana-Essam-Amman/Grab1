@@ -313,3 +313,9 @@ CI Recovery + Rule 43 (2026-09-23)
 - Labels now come from useTranslation() as post-wizard.missingTitle and post-wizard.missingPrice.
 - Restored exact original validation: hasMissingParams = !curT || !curP || missingAttrLabels.length > 0. No .trim() change for title or price.
 - Hook tests cover missing title, price, required attribute, Arabic/English labels, and valid values. Screen tests retained.
+
+### 2026-11-13 — safeStorage test coverage
+- Test-only. Production safeStorage semantics unchanged.
+- Removed all any/as any from safeStorage.test.ts.
+- Added coverage for getItem throw, removeItem throw, QuotaExceededError cleanup of chat_conversations, DOMException code 22, quota retry failure, and non-quota write failure.
+- Corrected the quota test, which asserted catch_conversations instead of the production cleanup key chat_conversations.
