@@ -1,8 +1,14 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { supabase } from '@/shared/lib/supabase';
 import { toast } from 'sonner';
 import { getFormattedLocalPhone } from '@/shared/lib/phoneFormatting';
 import { ensureAnonymousSessionForPhone } from '@/features/auth/services/anonymousSession';
+
+interface RevealState {
+  readonly listingId: string | undefined;
+  readonly phone: string | null;
+  readonly isRevealing: boolean;
+}
 
 export function useRevealPhone(
   listingId: string | undefined,
@@ -10,22 +16,40 @@ export function useRevealPhone(
   isArabic: boolean,
   countryCode?: string
 ) {
-  const [phone, setPhone] = useState<string | null>(initialPhone || null);
-  const [isRevealing, setIsRevealing] = useState(false);
+  const [state, setState] = useState<RevealState>({
+    listingId,
+    phone: initialPhone || null,
+    isRevealing: false,
+  });
+  const listingIdRef = useRef(listingId);
+  const tokenRef = useRef(0);
+  listingIdRef.current = listingId;
+
+  const isCurrent = state.listingId === listingId;
+  const phone = isCurrent ? state.phone : (initialPhone || null);
+  const isRevealing = isCurrent && state.isRevealing;
+
+  const isStale = (token: number, requestedId: string): boolean =>
+    token !== tokenRef.current || listingIdRef.current !== requestedId;
 
   const revealPhone = async (): Promise<string | null> => {
-    if (phone) return phone;
-    if (isRevealing || !listingId) return null;
+    const requestedId = listingId;
+    if (!requestedId) return null;
+    if (isCurrent && phone) return phone;
+    if (isRevealing) return null;
 
-    setIsRevealing(true);
+    const token = ++tokenRef.current;
+    setState({ listingId: requestedId, phone: initialPhone || null, isRevealing: true });
     try {
       const sessionResult = await ensureAnonymousSessionForPhone();
+      if (isStale(token, requestedId)) return null;
       if (sessionResult.error) {
         toast.error(isArabic ? 'فشل الاتصال بالسيرفر.' : 'Connection failed.');
         return null;
       }
 
-      const { data, error } = await supabase.rpc('get_listing_phone', { p_listing_id: listingId });
+      const { data, error } = await supabase.rpc('get_listing_phone', { p_listing_id: requestedId });
+      if (isStale(token, requestedId)) return null;
 
       if (error) {
         if (error.message.includes('RATE_LIMIT_EXCEEDED')) {
@@ -38,18 +62,19 @@ export function useRevealPhone(
 
       if (data) {
         const formatted = getFormattedLocalPhone(data, countryCode);
-        // Return dialable number (+966..., +962...) so tel: works internationally
-        // and WhatsApp works seamlessly.
         const dialableNumber = formatted.dialNumber || data;
-        setPhone(dialableNumber);
+        setState({ listingId: requestedId, phone: dialableNumber, isRevealing: false });
         return dialableNumber;
       }
       return null;
-    } catch (err) {
+    } catch {
+      if (isStale(token, requestedId)) return null;
       toast.error(isArabic ? 'حدث خطأ غير متوقع.' : 'Unexpected error.');
       return null;
     } finally {
-      setIsRevealing(false);
+      if (!isStale(token, requestedId)) {
+        setState((current) => current.listingId === requestedId ? { ...current, isRevealing: false } : current);
+      }
     }
   };
 
