@@ -41,6 +41,31 @@ ON CONFLICT (id) DO UPDATE SET
   status = 'active',
   is_demo = false;
 
+INSERT INTO public.listings (
+  id, user_id, title, description, price, currency, country_code,
+  city, category_slug, status, seller_name, seller_phone, is_demo, created_at
+) VALUES
+  (
+    '44444444-4444-4444-4444-444444444444',
+    '00000000-0000-0000-0000-0000000000a1',
+    'PhonePrivacyInactive',
+    'Synthetic inactive listing',
+    '10', 'JOD', 'JO', 'Amman', 'electronics', 'sold',
+    'SyntheticSeller', '0793333333', false, now()
+  ),
+  (
+    '55555555-5555-5555-5555-555555555555',
+    '00000000-0000-0000-0000-0000000000a1',
+    'PhonePrivacyDemo',
+    'Synthetic demo listing',
+    '10', 'JOD', 'JO', 'Amman', 'electronics', 'active',
+    'SyntheticSeller', '0794444444', true, now()
+  )
+ON CONFLICT (id) DO UPDATE SET
+  status = EXCLUDED.status,
+  is_demo = EXCLUDED.is_demo,
+  seller_phone = EXCLUDED.seller_phone;
+
 -- Orphan-phone fixture. user_id is NOT NULL in the checked-in schema, so the
 -- fallback branch is otherwise unreachable. Drop the constraint only inside
 -- this rolled-back transaction.
@@ -410,6 +435,29 @@ BEGIN
   END IF;
   RAISE NOTICE 'PASS B-tiered-slugs: masks seller_phone (at least one row, zero non-null phones)';
   RESET ROLE;
+
+  v_sig := 'public.search_listings_v4_tiered_v2(text,text,integer,integer,text,text,numeric,numeric,text,text,jsonb,integer)';
+  IF to_regprocedure(v_sig) IS NULL THEN
+    RAISE EXCEPTION 'FAIL B-tiered-v2: required function % is missing', v_sig;
+  END IF;
+  SET LOCAL ROLE anon;
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_tiered_v2(
+    'PhonePrivacySynthetic', NULL, 10, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 5
+  );
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'FAIL B-tiered-v2: returned zero rows';
+  END IF;
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_tiered_v2(
+    'PhonePrivacySynthetic', NULL, 10, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 5
+  )
+  WHERE seller_phone IS NOT NULL;
+  IF v_count > 0 THEN
+    RAISE EXCEPTION 'FAIL B-tiered-v2: % row(s) with non-null seller_phone', v_count;
+  END IF;
+  RAISE NOTICE 'PASS B-tiered-v2: masks seller_phone (at least one row, zero non-null phones)';
+  RESET ROLE;
 END $$;
 
 -- ---------------------------------------------------------------------------
@@ -525,13 +573,15 @@ BEGIN
 END $$;
 
 -- ---------------------------------------------------------------------------
--- D. Authorized phone reveal
+-- D. Authorized phone reveal, restrictions, and rate limit
 -- ---------------------------------------------------------------------------
 DO $$
 DECLARE
   v_ok boolean;
+  v_phone text;
+  v_i int;
 BEGIN
-  -- D1: unauthenticated must be rejected (do not swallow the test's own exception)
+  -- D1: unauthenticated must be rejected
   SET LOCAL ROLE anon;
   BEGIN
     PERFORM public.get_listing_phone('22222222-2222-2222-2222-222222222222');
@@ -540,8 +590,6 @@ BEGIN
     WHEN insufficient_privilege THEN
       RAISE NOTICE 'PASS D1: unauthenticated get_listing_phone rejected with insufficient_privilege';
     WHEN OTHERS THEN
-      -- Any other rejection (e.g. custom exception from the function) is also acceptable
-      -- as long as it is not the success path.
       IF SQLERRM LIKE 'FAIL D1%' THEN
         RAISE;
       END IF;
@@ -556,9 +604,105 @@ BEGIN
   END IF;
   RAISE NOTICE 'PASS D2: authenticated has EXECUTE on get_listing_phone';
 
-  -- Rate-limit and demo/admin behavior are defined in 20261111_revoke_phone_scraping.sql
-  -- (max 20 reveals / 24h, active + non-demo, admin exception). Full enforcement
-  -- requires a real auth.uid() session and is covered by the existing phone tests.
+  -- D3: authenticated role with no identity is rejected
+  SET LOCAL ROLE authenticated;
+  BEGIN
+    PERFORM public.get_listing_phone('22222222-2222-2222-2222-222222222222');
+    RAISE EXCEPTION 'FAIL D3: authenticated with null auth.uid() revealed a phone';
+  EXCEPTION
+    WHEN insufficient_privilege THEN
+      RAISE NOTICE 'PASS D3: missing identity rejected';
+    WHEN OTHERS THEN
+      IF SQLERRM LIKE 'FAIL D3%' THEN
+        RAISE;
+      END IF;
+      IF SQLERRM NOT LIKE '%NOT_AUTHENTICATED%' THEN
+        RAISE EXCEPTION 'FAIL D3: unexpected rejection (%)', SQLERRM;
+      END IF;
+      RAISE NOTICE 'PASS D3: missing identity rejected';
+  END;
+  RESET ROLE;
+
+  -- D4: non-owner authenticated caller gets the synthetic active phone.
+  -- Ownership is not a restriction: this is the buyer reveal path.
+  PERFORM set_config(
+    'request.jwt.claims',
+    '{"sub":"00000000-0000-0000-0000-0000000000a2","email":"phone-test-auth@example.com"}',
+    true
+  );
+  SET LOCAL ROLE authenticated;
+  v_phone := public.get_listing_phone('22222222-2222-2222-2222-222222222222');
+  IF v_phone IS NULL OR v_phone <> '0791111111' THEN
+    RAISE EXCEPTION 'FAIL D4: authorized reveal did not return the synthetic phone';
+  END IF;
+  RAISE NOTICE 'PASS D4: authorized non-owner reveal returned the synthetic phone';
+
+  -- D5: inactive listing returns NULL and does not count as a reveal
+  v_phone := public.get_listing_phone('44444444-4444-4444-4444-444444444444');
+  IF v_phone IS NOT NULL THEN
+    RAISE EXCEPTION 'FAIL D5: inactive listing returned a phone';
+  END IF;
+  RAISE NOTICE 'PASS D5: inactive listing returns NULL';
+
+  -- D6: demo listing returns NULL
+  v_phone := public.get_listing_phone('55555555-5555-5555-5555-555555555555');
+  IF v_phone IS NOT NULL THEN
+    RAISE EXCEPTION 'FAIL D6: demo listing returned a phone';
+  END IF;
+  RAISE NOTICE 'PASS D6: demo listing returns NULL';
+  RESET ROLE;
+
+  -- D7: admin has no demo bypass on get_listing_phone
+  INSERT INTO public.admins (email)
+  VALUES ('phone-test-auth@example.com')
+  ON CONFLICT (email) DO NOTHING;
+  PERFORM set_config(
+    'request.jwt.claims',
+    '{"sub":"00000000-0000-0000-0000-0000000000a2","email":"phone-test-auth@example.com"}',
+    true
+  );
+  IF NOT public.is_admin() THEN
+    RAISE EXCEPTION 'FAIL D7: synthetic admin was not recognized';
+  END IF;
+  SET LOCAL ROLE authenticated;
+  v_phone := public.get_listing_phone('55555555-5555-5555-5555-555555555555');
+  IF v_phone IS NOT NULL THEN
+    RAISE EXCEPTION 'FAIL D7: admin bypass returned a demo phone';
+  END IF;
+  RAISE NOTICE 'PASS D7: admin has no demo bypass on get_listing_phone';
+  RESET ROLE;
+
+  -- D8: rate limit allows the 20th reveal and rejects the 21st.
+  -- D4 already consumed 1 reveal for a2. Use a fresh caller.
+  INSERT INTO auth.users (id, email)
+  VALUES ('00000000-0000-0000-0000-0000000000a3', 'phone-test-limit@example.com')
+  ON CONFLICT (id) DO NOTHING;
+  PERFORM set_config(
+    'request.jwt.claims',
+    '{"sub":"00000000-0000-0000-0000-0000000000a3","email":"phone-test-limit@example.com"}',
+    true
+  );
+  SET LOCAL ROLE authenticated;
+  FOR v_i IN 1..20 LOOP
+    v_phone := public.get_listing_phone('22222222-2222-2222-2222-222222222222');
+    IF v_phone IS NULL THEN
+      RAISE EXCEPTION 'FAIL D8: reveal % of 20 returned NULL', v_i;
+    END IF;
+  END LOOP;
+  BEGIN
+    PERFORM public.get_listing_phone('22222222-2222-2222-2222-222222222222');
+    RAISE EXCEPTION 'FAIL D8: 21st reveal succeeded';
+  EXCEPTION
+    WHEN OTHERS THEN
+      IF SQLERRM LIKE 'FAIL D8%' THEN
+        RAISE;
+      END IF;
+      IF SQLERRM NOT LIKE '%RATE_LIMIT_EXCEEDED%' THEN
+        RAISE EXCEPTION 'FAIL D8: 21st reveal rejected with %', SQLERRM;
+      END IF;
+  END;
+  RAISE NOTICE 'PASS D8: 20th reveal allowed, 21st rejected with RATE_LIMIT_EXCEEDED';
+  RESET ROLE;
 END $$;
 
 ROLLBACK;

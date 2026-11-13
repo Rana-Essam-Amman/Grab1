@@ -125,7 +125,7 @@ DECLARE
   v_threshold integer;
 BEGIN
   v_norm := btrim(public.normalize_search_text(coalesce(p_query, '')));
-  -- Fold Persian yeh/kaf so measured typos like كمري match كامري.
+  -- Fold Persian yeh/kaf so measured typos like كمری match كامري.
   v_norm := translate(v_norm, 'یک', 'يك');
   IF v_norm = '' OR length(v_norm) < 3 THEN
     RETURN;
@@ -404,7 +404,7 @@ BEGIN
   -- Normalize query EXACTLY as v4 does (Constraint 1).
   -- Copied from 20261093_search_v4_typo_threshold.sql lines 47-50.
   v_norm_query := btrim(public.normalize_search_text(coalesce(p_query, '')));
-  -- Fold Persian yeh/kaf so measured typos like كمري match كامري.
+  -- Fold Persian yeh/kaf so measured typos like كمری match كامري.
   v_norm_query := translate(v_norm_query, 'یک', 'يك');
 
   -- Extract meaningful tokens exactly as v4's exact stage does
@@ -454,7 +454,7 @@ BEGIN
     v4r.status,
     v4r.views,
     v4r.seller_name,
-    NULL::text AS seller_phone,
+    v4r.seller_phone,
     v4r.created_at,
     v4r.updated_at,
     v4r.is_demo,
@@ -629,7 +629,7 @@ BEGIN
     c.id, c.user_id, c.title, c.description, c.price, c.currency,
     c.country_code, c.city, c.neighborhood, c.category_slug,
     c.subcategory_slug, c.images, c.attributes, c.status, c.views,
-    c.seller_name, NULL::text AS seller_phone, c.created_at, c.updated_at,
+    c.seller_name, c.seller_phone, c.created_at, c.updated_at,
     c.is_demo, c.match_kind, c.matched_tokens,
     c.total_matched_tokens, c.tier, c.tier_reason,
     c.ord AS c1_order
@@ -657,128 +657,164 @@ BEGIN
   FROM _c2_c1_rows
   WHERE tier = 2;
 
-  v_excluded_ids := v_tier1_ids || v_tier2_ids_c1;
-  v_has_tier1 := cardinality(v_tier1_ids) > 0;
+  v_has_tier1 := (cardinality(v_tier1_ids) > 0);
+
+  IF v_has_tier1 THEN
+    SELECT subcategory_slug, city
+    INTO v_top_tier1_subcategory, v_top_tier1_city
+    FROM _c2_c1_rows
+    WHERE tier = 1
+    ORDER BY c1_order ASC
+    LIMIT 1;
+
+    SELECT percentile_cont(0.5) WITHIN GROUP (
+      ORDER BY CASE
+        WHEN price ~ '^[0-9]+(\.[0-9]+)?$'
+        THEN price::numeric
+        ELSE NULL
+      END
+    )
+    INTO v_median_tier1_price
+    FROM _c2_c1_rows
+    WHERE tier = 1;
+  END IF;
 
   IF p_category_slug IS NOT NULL THEN
     v_tier2_category := p_category_slug;
-    IF v_has_tier1 THEN
-      SELECT subcategory_slug, city
-      INTO v_top_tier1_subcategory, v_top_tier1_city
-      FROM _c2_c1_rows
-      WHERE tier = 1
-      ORDER BY c1_order
-      LIMIT 1;
-    END IF;
   ELSIF v_has_tier1 THEN
-    SELECT category_slug, subcategory_slug, city
-    INTO v_tier2_category, v_top_tier1_subcategory, v_top_tier1_city
+    SELECT category_slug
+    INTO v_tier2_category
     FROM _c2_c1_rows
     WHERE tier = 1
-    ORDER BY c1_order
+    ORDER BY c1_order ASC
     LIMIT 1;
   ELSE
     v_tier2_category := public.detect_query_category(v_norm_query);
   END IF;
 
-  SELECT percentile_cont(0.5) WITHIN GROUP (ORDER BY
-    CASE WHEN price ~ '^[0-9]+(\.[0-9]+)?$' THEN price::numeric ELSE NULL END
-  )
-  INTO v_median_tier1_price
-  FROM _c2_c1_rows
-  WHERE tier = 1;
+  v_excluded_ids := v_tier1_ids || v_tier2_ids_c1;
+
+  SELECT COALESCE(MAX(rn), 0)
+  INTO v_c1_tier2_max_rank
+  FROM (
+    SELECT row_number() OVER (ORDER BY c1_order) AS rn
+    FROM _c2_c1_rows
+    WHERE tier = 2
+  ) t;
 
   IF v_tier2_category IS NOT NULL AND v_tier2_limit_clamped > 0 THEN
-    INSERT INTO _c2_c1_rows (
-      id, user_id, title, description, price, currency, country_code,
-      city, neighborhood, category_slug, subcategory_slug, images,
-      attributes, status, views, seller_name, seller_phone,
-      created_at, updated_at, is_demo, match_kind, matched_tokens,
-      total_matched_tokens, tier, tier_reason, c1_order
+    RETURN QUERY
+    WITH c1_ranked AS (
+      SELECT
+        r.*,
+        row_number() OVER (PARTITION BY r.tier ORDER BY r.c1_order)::integer AS rank_in_tier
+      FROM _c2_c1_rows r
+    ),
+    independent AS (
+      SELECT * FROM (
+        SELECT
+          l.id,
+          l.user_id,
+          l.title,
+          l.description,
+          l.price,
+          l.currency,
+          l.country_code,
+          l.city,
+          l.neighborhood,
+          l.category_slug,
+          l.subcategory_slug,
+          l.images,
+          l.attributes,
+          l.status,
+          l.views,
+          l.seller_name,
+          NULL::text AS seller_phone,
+          l.created_at,
+          l.updated_at,
+          l.is_demo,
+          NULL::text AS match_kind,
+          NULL::text[] AS matched_tokens,
+          0 AS total_matched_tokens,
+          2 AS tier,
+          'similar_category'::text AS tier_reason,
+          (v_c1_tier2_max_rank + row_number() OVER (
+            ORDER BY
+              CASE WHEN v_has_tier1 THEN (l.subcategory_slug = v_top_tier1_subcategory)::int ELSE 0 END DESC NULLS LAST,
+              CASE WHEN v_has_tier1 THEN abs(
+                CASE WHEN l.price ~ '^[0-9]+(\.[0-9]+)?$' THEN l.price::numeric ELSE NULL END
+                - COALESCE(v_median_tier1_price, 0)
+              ) ELSE 0 END ASC NULLS LAST,
+              CASE WHEN v_has_tier1 THEN (l.city = v_top_tier1_city)::int ELSE 0 END DESC NULLS LAST,
+              l.created_at DESC,
+              l.id ASC
+          ))::integer AS rank_in_tier
+        FROM public.listings l
+        WHERE l.status = 'active'
+          AND (l.is_demo = false OR public.is_admin())
+          AND (p_market IS NULL OR l.country_code = upper(p_market))
+          AND l.category_slug = v_tier2_category
+          AND l.id <> ALL(v_excluded_ids)
+          AND public.listing_passes_filters(
+            l, v_tier2_category, p_subcategory_slug,
+            p_min_price, p_max_price,
+            CASE WHEN p_city_slug IS NULL THEN p_city ELSE NULL END,
+            CASE WHEN p_neighborhood_slug IS NULL AND p_district_slug IS NULL THEN p_neighborhood ELSE NULL END,
+            p_attrs
+          )
+          AND public.listing_matches_slugs(l, p_city_slug, p_district_slug, p_neighborhood_slug, p_city, p_neighborhood)
+      ) ranked
+      ORDER BY
+        CASE WHEN v_has_tier1 THEN (subcategory_slug = v_top_tier1_subcategory)::int ELSE 0 END DESC NULLS LAST,
+        CASE WHEN v_has_tier1 THEN abs(
+          CASE WHEN price ~ '^[0-9]+(\.[0-9]+)?$' THEN price::numeric ELSE NULL END
+          - COALESCE(v_median_tier1_price, 0)
+        ) ELSE 0 END ASC NULLS LAST,
+        CASE WHEN v_has_tier1 THEN (city = v_top_tier1_city)::int ELSE 0 END DESC NULLS LAST,
+        created_at DESC,
+        id ASC
+      LIMIT v_tier2_limit_clamped
     )
     SELECT
-      l.id, l.user_id, l.title, l.description, l.price, l.currency,
-      l.country_code, l.city, l.neighborhood, l.category_slug,
-      l.subcategory_slug, l.images, l.attributes, l.status, l.views,
-      l.seller_name, NULL::text AS seller_phone, l.created_at, l.updated_at,
-      l.is_demo,
-      'related'::text,
-      NULL::text[],
-      0,
-      2,
-      'similar_category',
-      10000 + row_number() OVER ()::integer
-    FROM public.listings AS l
-    WHERE l.status = 'active'
-      AND (l.is_demo = false OR public.is_admin())
-      AND (p_market IS NULL OR l.country_code = upper(p_market))
-      AND l.category_slug = v_tier2_category
-      AND NOT (l.id = ANY(v_excluded_ids))
-      AND public.listing_passes_filters(
-        l, NULL, NULL, p_min_price, p_max_price,
-        CASE WHEN p_city_slug IS NULL THEN p_city ELSE NULL END,
-        CASE WHEN p_neighborhood_slug IS NULL AND p_district_slug IS NULL THEN p_neighborhood ELSE NULL END,
-        p_attrs
-      )
-      AND public.listing_matches_slugs(l, p_city_slug, p_district_slug, p_neighborhood_slug, p_city, p_neighborhood)
-    ORDER BY
-      CASE WHEN l.subcategory_slug = v_top_tier1_subcategory THEN 0 ELSE 1 END,
-      CASE WHEN l.city = v_top_tier1_city THEN 0 ELSE 1 END,
-      abs(coalesce(
-        CASE WHEN l.price ~ '^[0-9]+(\.[0-9]+)?$' THEN l.price::numeric ELSE NULL END,
-        0
-      ) - coalesce(v_median_tier1_price, 0)),
-      l.created_at DESC, l.id ASC
-    LIMIT v_tier2_limit_clamped;
-  END IF;
-
-  IF v_has_tier1 THEN
-    SELECT COALESCE(max(c1_order), 0)
-    INTO v_c1_tier2_max_rank
-    FROM _c2_c1_rows
-    WHERE tier = 2;
-  END IF;
-
-  RETURN QUERY
-  WITH ranked AS (
+      c.id, c.user_id, c.title, c.description, c.price, c.currency, c.country_code,
+      c.city, c.neighborhood, c.category_slug, c.subcategory_slug, c.images,
+      c.attributes, c.status, c.views, c.seller_name, c.seller_phone,
+      c.created_at, c.updated_at, c.is_demo, c.match_kind, c.matched_tokens,
+      c.total_matched_tokens, c.tier, c.tier_reason, c.rank_in_tier,
+      l.city_slug, l.district_slug, l.neighborhood_slug
+    FROM (
+      SELECT
+        id, user_id, title, description, price, currency, country_code,
+        city, neighborhood, category_slug, subcategory_slug, images,
+        attributes, status, views, seller_name, seller_phone,
+        created_at, updated_at, is_demo, match_kind, matched_tokens,
+        total_matched_tokens, tier, tier_reason, rank_in_tier::integer
+      FROM c1_ranked
+      UNION ALL
+      SELECT
+        id, user_id, title, description, price, currency, country_code,
+        city, neighborhood, category_slug, subcategory_slug, images,
+        attributes, status, views, seller_name, seller_phone,
+        created_at, updated_at, is_demo, match_kind, matched_tokens,
+        total_matched_tokens, tier, tier_reason, rank_in_tier::integer
+      FROM independent
+    ) c
+    JOIN public.listings l ON l.id = c.id
+    ORDER BY c.tier ASC, c.rank_in_tier ASC;
+  ELSE
+    RETURN QUERY
     SELECT
-      r.*,
-      row_number() OVER (PARTITION BY r.tier ORDER BY r.c1_order) AS rank_in_tier
+      r.id, r.user_id, r.title, r.description, r.price, r.currency, r.country_code,
+      r.city, r.neighborhood, r.category_slug, r.subcategory_slug, r.images,
+      r.attributes, r.status, r.views, r.seller_name, r.seller_phone,
+      r.created_at, r.updated_at, r.is_demo, r.match_kind, r.matched_tokens,
+      r.total_matched_tokens, r.tier, r.tier_reason,
+      row_number() OVER (PARTITION BY r.tier ORDER BY r.c1_order)::integer AS rank_in_tier,
+      l.city_slug, l.district_slug, l.neighborhood_slug
     FROM _c2_c1_rows r
-  )
-  SELECT
-    ranked.id,
-    ranked.user_id,
-    ranked.title,
-    ranked.description,
-    ranked.price,
-    ranked.currency,
-    ranked.country_code,
-    ranked.city,
-    ranked.neighborhood,
-    ranked.category_slug,
-    ranked.subcategory_slug,
-    ranked.images,
-    ranked.attributes,
-    ranked.status,
-    ranked.views,
-    ranked.seller_name,
-    NULL::text AS seller_phone,
-    ranked.created_at,
-    ranked.updated_at,
-    ranked.is_demo,
-    ranked.match_kind,
-    ranked.matched_tokens,
-    ranked.total_matched_tokens,
-    ranked.tier,
-    ranked.tier_reason,
-    ranked.rank_in_tier::integer,
-    l.city_slug,
-    l.district_slug,
-    l.neighborhood_slug
-  FROM ranked
-  JOIN public.listings l ON l.id = ranked.id
-  ORDER BY ranked.tier ASC, ranked.rank_in_tier ASC;
+    JOIN public.listings l ON l.id = r.id
+    ORDER BY r.tier ASC, r.c1_order ASC;
+  END IF;
 END;
 $func$;
 

@@ -31,7 +31,7 @@ BEGIN
     AND NOT EXISTS (SELECT 1 FROM unnest(v_tokens) required(token) WHERE strpos(public.normalize_search_text(coalesce(l.search_text,'')),required.token)=0);
   IF v_exact_count>0 THEN
     IF current_setting('app.v4_trace',true)='on' AND to_regclass('public.search_v4_trace') IS NOT NULL THEN INSERT INTO public.search_v4_trace(branch) VALUES ('exact'); END IF;
-    RETURN QUERY SELECT l.id,l.user_id,l.title,l.description,l.price,l.currency,l.country_code,l.city,l.neighborhood,l.category_slug,l.subcategory_slug,l.images,l.attributes,l.status,l.views,l.seller_name,NULL::text AS seller_phone,l.created_at,l.updated_at,l.is_demo,'exact'::text,v_tokens,v_n
+    RETURN QUERY SELECT l.id,l.user_id,l.title,l.description,l.price,l.currency,l.country_code,l.city,l.neighborhood,l.category_slug,l.subcategory_slug,l.images,l.attributes,l.status,l.views,l.seller_name,l.seller_phone,l.created_at,l.updated_at,l.is_demo,'exact'::text,v_tokens,v_n
     FROM public.listings l WHERE l.status='active' AND l.is_demo = false AND (p_market IS NULL OR l.country_code=upper(p_market))
       AND public.listing_passes_filters(l,p_category_slug,p_subcategory_slug,p_min_price,p_max_price,p_city,p_neighborhood,p_attrs)
       AND NOT EXISTS (SELECT 1 FROM unnest(v_tokens) required(token) WHERE strpos(public.normalize_search_text(coalesce(l.search_text,'')),required.token)=0)
@@ -44,7 +44,7 @@ BEGIN
       AND strict_word_similarity(v_norm,public.normalize_search_text(coalesce(l.search_text,'')))>=0.35;
     IF v_trigram_count>0 THEN
       IF current_setting('app.v4_trace',true)='on' AND to_regclass('public.search_v4_trace') IS NOT NULL THEN INSERT INTO public.search_v4_trace(branch) VALUES ('trigram'); END IF;
-      RETURN QUERY SELECT l.id,l.user_id,l.title,l.description,l.price,l.currency,l.country_code,l.city,l.neighborhood,l.category_slug,l.subcategory_slug,l.images,l.attributes,l.status,l.views,l.seller_name,NULL::text AS seller_phone,l.created_at,l.updated_at,l.is_demo,'exact'::text,v_tokens,v_n
+      RETURN QUERY SELECT l.id,l.user_id,l.title,l.description,l.price,l.currency,l.country_code,l.city,l.neighborhood,l.category_slug,l.subcategory_slug,l.images,l.attributes,l.status,l.views,l.seller_name,l.seller_phone,l.created_at,l.updated_at,l.is_demo,'exact'::text,v_tokens,v_n
       FROM public.listings l WHERE l.status='active' AND l.is_demo = false AND (p_market IS NULL OR l.country_code=upper(p_market))
         AND public.listing_passes_filters(l,p_category_slug,p_subcategory_slug,p_min_price,p_max_price,p_city,p_neighborhood,p_attrs)
         AND strict_word_similarity(v_norm,public.normalize_search_text(coalesce(l.search_text,'')))>=0.35
@@ -54,7 +54,7 @@ BEGIN
   v_threshold := CASE WHEN v_n<=1 THEN NULL WHEN v_n=2 THEN 2 WHEN v_n=3 THEN 2 WHEN v_n=4 THEN 3 ELSE ceil(v_n*0.6)::integer END;
   IF v_threshold IS NULL THEN RETURN; END IF;
   IF current_setting('app.v4_trace',true)='on' AND to_regclass('public.search_v4_trace') IS NOT NULL THEN INSERT INTO public.search_v4_trace(branch) VALUES ('related'); END IF;
-  RETURN QUERY SELECT s.id,s.user_id,s.title,s.description,s.price,s.currency,s.country_code,s.city,s.neighborhood,s.category_slug,s.subcategory_slug,s.images,s.attributes,s.status,s.views,s.seller_name,NULL::text AS seller_phone,s.created_at,s.updated_at,s.is_demo,'related'::text,s.matched_tokens,s.total_matched_tokens
+  RETURN QUERY SELECT s.id,s.user_id,s.title,s.description,s.price,s.currency,s.country_code,s.city,s.neighborhood,s.category_slug,s.subcategory_slug,s.images,s.attributes,s.status,s.views,s.seller_name,s.seller_phone,s.created_at,s.updated_at,s.is_demo,'related'::text,s.matched_tokens,s.total_matched_tokens
   FROM (
     SELECT l.*,(SELECT array_agg(required.token ORDER BY required.token) FROM unnest(v_tokens) required(token) WHERE strpos(public.normalize_search_text(coalesce(l.search_text,'')),required.token)>0) AS matched_tokens,
       (SELECT count(*)::integer FROM unnest(v_tokens) required(token) WHERE strpos(public.normalize_search_text(coalesce(l.search_text,'')),required.token)>0) AS total_matched_tokens
@@ -86,7 +86,7 @@ BEGIN
   ) ON COMMIT DROP;
   TRUNCATE _c2_c1_rows;
   INSERT INTO _c2_c1_rows (id,user_id,title,description,price,currency,country_code,city,neighborhood,category_slug,subcategory_slug,images,attributes,status,views,seller_name,seller_phone,created_at,updated_at,is_demo,match_kind,matched_tokens,total_matched_tokens,tier,tier_reason,c1_order)
-  SELECT c.id,c.user_id,c.title,c.description,c.price,c.currency,c.country_code,c.city,c.neighborhood,c.category_slug,c.subcategory_slug,c.images,c.attributes,c.status,c.views,c.seller_name,NULL::text AS seller_phone,c.created_at,c.updated_at,c.is_demo,c.match_kind,c.matched_tokens,c.total_matched_tokens,c.tier,c.tier_reason,row_number() OVER ()::integer
+  SELECT c.id,c.user_id,c.title,c.description,c.price,c.currency,c.country_code,c.city,c.neighborhood,c.category_slug,c.subcategory_slug,c.images,c.attributes,c.status,c.views,c.seller_name,c.seller_phone,c.created_at,c.updated_at,c.is_demo,c.match_kind,c.matched_tokens,c.total_matched_tokens,c.tier,c.tier_reason,row_number() OVER ()::integer
   FROM public.search_listings_v4_tiered(p_query,p_market,p_limit,p_offset,p_category_slug,p_subcategory_slug,p_min_price,p_max_price,p_city,p_neighborhood,p_attrs) c;
   SELECT array_agg(id) FILTER (WHERE tier=1) INTO v_tier1_ids FROM _c2_c1_rows;
   SELECT array_agg(id) FILTER (WHERE tier=2) INTO v_tier2_ids_c1 FROM _c2_c1_rows;
@@ -101,13 +101,13 @@ BEGIN
   SELECT percentile_cont(0.5) WITHIN GROUP (ORDER BY price::numeric) INTO v_median_tier1_price FROM _c2_c1_rows WHERE tier=1 AND price ~ '^[0-9.]+$';
   IF v_tier2_category IS NOT NULL AND v_tier2_limit_clamped>0 THEN
     INSERT INTO _c2_c1_rows (id,user_id,title,description,price,currency,country_code,city,neighborhood,category_slug,subcategory_slug,images,attributes,status,views,seller_name,seller_phone,created_at,updated_at,is_demo,match_kind,matched_tokens,total_matched_tokens,tier,tier_reason,c1_order)
-    SELECT l.id,l.user_id,l.title,l.description,l.price,l.currency,l.country_code,l.city,l.neighborhood,l.category_slug,l.subcategory_slug,l.images,l.attributes,l.status,l.views,l.seller_name,NULL::text AS seller_phone,l.created_at,l.updated_at,l.is_demo,'related'::text,NULL::text[],0,2,'similar_category',10000+row_number() OVER ()::integer
+    SELECT l.id,l.user_id,l.title,l.description,l.price,l.currency,l.country_code,l.city,l.neighborhood,l.category_slug,l.subcategory_slug,l.images,l.attributes,l.status,l.views,l.seller_name,l.seller_phone,l.created_at,l.updated_at,l.is_demo,'related'::text,NULL::text[],0,2,'similar_category',10000+row_number() OVER ()::integer
     FROM public.listings l WHERE l.status='active' AND l.is_demo = false AND (p_market IS NULL OR l.country_code=upper(p_market)) AND l.category_slug=v_tier2_category AND NOT (l.id=ANY(v_excluded_ids))
       AND public.listing_passes_filters(l,NULL,NULL,p_min_price,p_max_price,p_city,p_neighborhood,p_attrs)
     ORDER BY CASE WHEN l.subcategory_slug=v_top_tier1_subcategory THEN 0 ELSE 1 END,CASE WHEN l.city=v_top_tier1_city THEN 0 ELSE 1 END,
       abs(coalesce(l.price::numeric,0)-coalesce(v_median_tier1_price,0)),l.created_at DESC,l.id ASC LIMIT v_tier2_limit_clamped;
   END IF;
-  RETURN QUERY SELECT r.id,r.user_id,r.title,r.description,r.price,r.currency,r.country_code,r.city,r.neighborhood,r.category_slug,r.subcategory_slug,r.images,r.attributes,r.status,r.views,r.seller_name,NULL::text AS seller_phone,r.created_at,r.updated_at,r.is_demo,r.match_kind,r.matched_tokens,r.total_matched_tokens,r.tier,r.tier_reason,row_number() OVER (PARTITION BY r.tier ORDER BY r.c1_order)::integer AS rank_in_tier
+  RETURN QUERY SELECT r.id,r.user_id,r.title,r.description,r.price,r.currency,r.country_code,r.city,r.neighborhood,r.category_slug,r.subcategory_slug,r.images,r.attributes,r.status,r.views,r.seller_name,r.seller_phone,r.created_at,r.updated_at,r.is_demo,r.match_kind,r.matched_tokens,r.total_matched_tokens,r.tier,r.tier_reason,row_number() OVER (PARTITION BY r.tier ORDER BY r.c1_order)::integer AS rank_in_tier
   FROM _c2_c1_rows r ORDER BY r.tier ASC,r.c1_order ASC;
 END;
 $function$;
