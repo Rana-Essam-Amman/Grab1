@@ -15,6 +15,7 @@ import { requirePhoneForPublish } from '@/features/auth/helpers/publishPhoneGuar
 import { resolveAiLocationSlugs } from '../helpers/aiLocationResolver';
 import { executeAiPublish } from '../helpers/aiReviewPublishHandler';
 import { updateAiDraftAttribute } from '../helpers/aiReviewAttributeUpdater';
+import { buildMissingRequiredLabels } from '../helpers/missingRequiredLabels';
 
 export type { UseAiReviewReturn } from './useAiReview.types';
 
@@ -84,11 +85,7 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
   const curC = postDraft.city || '';
   const curD = postDraft.description || postDraft.generated?.description || '';
   const missingAttrLabels = (attributes || []).filter((a) => a.required && !String(a.value || '').trim()).map((a) => a.label);
-  const missingRequiredLabels = [
-    ...(!curT ? [t('post-wizard.missingTitle')] : []),
-    ...(!curP ? [t('post-wizard.missingPrice')] : []),
-    ...missingAttrLabels,
-  ];
+  const missingRequiredLabels = buildMissingRequiredLabels(curT, curP, t('post-wizard.missingTitle'), t('post-wizard.missingPrice'), missingAttrLabels);
   const regenerate = useRegenerateListing({ postDraft, updatePostDraft, userId: (user as { id?: string })?.id || user?.email || user?.phone });
 
   return {
