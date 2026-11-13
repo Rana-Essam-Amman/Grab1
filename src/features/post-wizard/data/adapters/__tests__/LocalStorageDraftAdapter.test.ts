@@ -42,10 +42,10 @@ describe('LocalStorageDraftAdapter', () => {
   };
 
   beforeEach(() => {
+    vi.restoreAllMocks();
     localStorage.clear();
     market = TEST_MARKET;
     adapter = new LocalStorageDraftAdapter(() => market);
-    vi.clearAllMocks();
   });
 
   describe('getCurrent', () => {

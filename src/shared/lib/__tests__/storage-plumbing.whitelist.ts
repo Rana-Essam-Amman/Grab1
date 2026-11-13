@@ -9,6 +9,7 @@
 export const STORAGE_PLUMBING_FILES: readonly string[] = [
   'src/shared/lib/marketStorage.ts',
   'src/shared/lib/safeStorage.ts',
+  'src/shared/lib/safeStorage.persist.ts',
   'src/shared/lib/migrations/draftsMigration.ts',
   'src/shared/lib/migrations/chatsMigration.ts',
   'src/shared/lib/migrations/pendingFlagsCleanup.ts',
