@@ -45,15 +45,16 @@ export async function getListingsByIds(
   try {
     const { data, error } = await supabase
       .from('listings')
-      .select('id, title, images, seller_phone, country_code')
+      .select('id, title, images, country_code')
       .in('id', Array.from(ids));
     if (error) return { data: map, error: error.message };
-    (data || []).forEach((row: { id: string; title: string; images: string[] | null; seller_phone: string | null; country_code: MarketCode }) => {
+    (data || []).forEach((row: { id: string; title: string; images: string[] | null; country_code: MarketCode }) => {
       map.set(row.id, {
         id: row.id,
         title: row.title,
         imageUrl: row.images?.[0] ?? '',
-        sellerPhone: row.seller_phone ?? '',
+        // Phone is never selected client-side. Reveal only via get_listing_phone.
+        sellerPhone: '',
         countryCode: row.country_code,
       });
     });

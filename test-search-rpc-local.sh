@@ -125,6 +125,12 @@ run_sql supabase/tests/search_raw_stopword_guard.sql
 # Canonical location slug regressions. Must run before v4 rollback.
 run_sql supabase/tests/location_slug_pre_pagination.sql
 
+# P1 phone privacy. Must run while v4 exact/tiered, hybrid, semantic,
+# listings_by_seller, and get_listing_phone still exist. The later
+# v4 rollback drops search_listings_v4_exact. Test rolls back its own
+# synthetic fixtures. run_sql uses psql -v ON_ERROR_STOP=1.
+run_sql supabase/tests/phone_privacy_regression.sql
+
 # v4 rollback idempotence — run twice, then assert function is gone.
 run_sql supabase/tests/search_v4_rollback_idempotence.sql
 

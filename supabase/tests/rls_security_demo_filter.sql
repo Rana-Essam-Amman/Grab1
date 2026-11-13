@@ -132,18 +132,20 @@ END
 $t5$;
 
 
--- T6: search_listings_semantic excludes demo fixture
+-- T6: search_listings_semantic is internal-only after 20261206.
+-- Anon must be denied EXECUTE. That is stricter than the previous
+-- "callable but filters demo" check, and matches the privacy migration.
 DO $t6$
 BEGIN
-  IF EXISTS (
-    SELECT 1 FROM public.search_listings_semantic(
+  BEGIN
+    PERFORM 1 FROM public.search_listings_semantic(
       array_fill(0::real, ARRAY[384])::extensions.vector, 'JO', 100, 0, NULL
-    )
-    WHERE id = '90000000-0000-4000-8000-000000000001'::uuid
-  ) THEN
-    RAISE EXCEPTION 'T6 FAIL: search_listings_semantic returned demo fixture';
-  END IF;
-  RAISE NOTICE 'PASS T6: search_listings_semantic excludes demo fixture';
+    ) LIMIT 1;
+    RAISE EXCEPTION 'T6 FAIL: anon can execute search_listings_semantic';
+  EXCEPTION
+    WHEN insufficient_privilege THEN
+      RAISE NOTICE 'PASS T6: anon cannot execute search_listings_semantic';
+  END;
 END
 $t6$;
 
