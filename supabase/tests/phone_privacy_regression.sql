@@ -540,7 +540,7 @@ BEGIN
   END IF;
   RAISE NOTICE 'PASS D2: authenticated has EXECUTE on get_listing_phone';
 
-  -- D3: authenticated role with no identity is rejected
+  -- D3: authenticated role with no identity is rejected with AUTHENTICATION_REQUIRED
   SET LOCAL ROLE authenticated;
   BEGIN
     PERFORM public.get_listing_phone('22222222-2222-2222-2222-222222222222');
@@ -552,10 +552,10 @@ BEGIN
       IF SQLERRM LIKE 'FAIL D3%' THEN
         RAISE;
       END IF;
-      IF SQLERRM NOT LIKE '%NOT_AUTHENTICATED%' THEN
+      IF SQLERRM NOT LIKE '%AUTHENTICATION_REQUIRED%' THEN
         RAISE EXCEPTION 'FAIL D3: unexpected rejection (%)', SQLERRM;
       END IF;
-      RAISE NOTICE 'PASS D3: missing identity rejected';
+      RAISE NOTICE 'PASS D3: missing identity rejected with AUTHENTICATION_REQUIRED';
   END;
   RESET ROLE;
 
@@ -605,6 +605,14 @@ BEGIN
     RAISE EXCEPTION 'FAIL D7: admin could not reveal synthetic active demo listing phone';
   END IF;
   RAISE NOTICE 'PASS D7: admin can reveal active demo listing phone (synthetic only)';
+  -- Admin can perform at least 21 successful reveals (rate limit bypass)
+  FOR v_i IN 1..21 LOOP
+    v_phone := public.get_listing_phone('55555555-5555-5555-5555-555555555555');
+    IF v_phone IS NULL THEN
+      RAISE EXCEPTION 'FAIL D7b: admin reveal % of 21 returned NULL', v_i;
+    END IF;
+  END LOOP;
+  RAISE NOTICE 'PASS D7b: admin performed 21 successful demo reveals without rate limit';
   RESET ROLE;
 
   -- D8: rate limit allows the 20th reveal and rejects the 21st.
