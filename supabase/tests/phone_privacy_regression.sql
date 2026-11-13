@@ -158,8 +158,77 @@ BEGIN
   RAISE NOTICE 'PASS B-seller: masks seller_phone (% rows)', v_count;
   RESET ROLE;
 
-  -- Additional paths that exist in the migration chain (exact-slugs, tiered-slugs)
-  -- are covered by the v4_tiered_v4 contract used by the application.
+  -- Legacy v3 wrapper (15-arg signature)
+  v_sig := 'public.search_listings_v4_tiered_v3(text,text,integer,integer,text,text,numeric,numeric,text,text,jsonb,integer,text,text,text)';
+  IF to_regprocedure(v_sig) IS NULL THEN
+    RAISE EXCEPTION 'FAIL B-tiered-v3: required function % is missing', v_sig;
+  END IF;
+  SET LOCAL ROLE anon;
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_tiered_v3(
+    'PhonePrivacySynthetic', NULL, 10, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 5, NULL, NULL, NULL
+  );
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'FAIL B-tiered-v3: returned zero rows';
+  END IF;
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_tiered_v3(
+    'PhonePrivacySynthetic', NULL, 10, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 5, NULL, NULL, NULL
+  )
+  WHERE seller_phone IS NOT NULL;
+  IF v_count > 0 THEN
+    RAISE EXCEPTION 'FAIL B-tiered-v3: % row(s) with non-null seller_phone', v_count;
+  END IF;
+  RAISE NOTICE 'PASS B-tiered-v3: masks seller_phone (at least one row, zero non-null phones)';
+  RESET ROLE;
+
+  -- Exact slug-aware RPC
+  v_sig := 'public.search_listings_v4_exact_slugs(text,text,integer,integer,text,text,numeric,numeric,text,text,jsonb,text,text,text)';
+  IF to_regprocedure(v_sig) IS NULL THEN
+    RAISE EXCEPTION 'FAIL B-exact-slugs: required function % is missing', v_sig;
+  END IF;
+  SET LOCAL ROLE anon;
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_exact_slugs(
+    'PhonePrivacySynthetic', NULL, 10, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+  );
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'FAIL B-exact-slugs: returned zero rows';
+  END IF;
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_exact_slugs(
+    'PhonePrivacySynthetic', NULL, 10, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+  )
+  WHERE seller_phone IS NOT NULL;
+  IF v_count > 0 THEN
+    RAISE EXCEPTION 'FAIL B-exact-slugs: % row(s) with non-null seller_phone', v_count;
+  END IF;
+  RAISE NOTICE 'PASS B-exact-slugs: masks seller_phone (at least one row, zero non-null phones)';
+  RESET ROLE;
+
+  -- Tiered slug-aware RPC
+  v_sig := 'public.search_listings_v4_tiered_slugs(text,text,integer,integer,text,text,numeric,numeric,text,text,jsonb,text,text,text)';
+  IF to_regprocedure(v_sig) IS NULL THEN
+    RAISE EXCEPTION 'FAIL B-tiered-slugs: required function % is missing', v_sig;
+  END IF;
+  SET LOCAL ROLE anon;
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_tiered_slugs(
+    'PhonePrivacySynthetic', NULL, 10, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+  );
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'FAIL B-tiered-slugs: returned zero rows';
+  END IF;
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v4_tiered_slugs(
+    'PhonePrivacySynthetic', NULL, 10, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+  )
+  WHERE seller_phone IS NOT NULL;
+  IF v_count > 0 THEN
+    RAISE EXCEPTION 'FAIL B-tiered-slugs: % row(s) with non-null seller_phone', v_count;
+  END IF;
+  RAISE NOTICE 'PASS B-tiered-slugs: masks seller_phone (at least one row, zero non-null phones)';
+  RESET ROLE;
 END $$;
 
 -- ---------------------------------------------------------------------------
