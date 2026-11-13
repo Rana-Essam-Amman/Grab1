@@ -96,6 +96,123 @@ BEGIN
 END $$;
 
 -- ---------------------------------------------------------------------------
+-- A4. Privilege matrix after column-level revoke + re-grant
+-- ---------------------------------------------------------------------------
+DO $$
+DECLARE
+  v_can boolean;
+  v_col text;
+  v_internal text[] := ARRAY[
+    'seller_phone',
+    'bumps_today',
+    'bumps_reset_date',
+    'auto_bump_active',
+    'auto_bump_expires_at',
+    'search_text',
+    'fts',
+    'search_chars',
+    'search_version'
+  ];
+  v_public text[] := ARRAY[
+    'id',
+    'title',
+    'seller_name',
+    'is_premium',
+    'premium_expires_at',
+    'is_demo',
+    'city_slug'
+  ];
+BEGIN
+  -- Table-level SELECT must be gone for anon and authenticated
+  IF has_table_privilege('anon', 'public.listings', 'SELECT') THEN
+    RAISE EXCEPTION 'FAIL A4: anon still has table-level SELECT on listings';
+  END IF;
+  IF has_table_privilege('authenticated', 'public.listings', 'SELECT') THEN
+    RAISE EXCEPTION 'FAIL A4: authenticated still has table-level SELECT on listings';
+  END IF;
+  RAISE NOTICE 'PASS A4: table-level SELECT revoked for anon and authenticated';
+
+  -- Internal columns must not be selectable
+  FOREACH v_col IN ARRAY v_internal LOOP
+    SELECT has_column_privilege('anon', 'public.listings', v_col, 'SELECT') INTO v_can;
+    IF v_can THEN
+      RAISE EXCEPTION 'FAIL A5: anon has column SELECT on %', v_col;
+    END IF;
+    SELECT has_column_privilege('authenticated', 'public.listings', v_col, 'SELECT') INTO v_can;
+    IF v_can THEN
+      RAISE EXCEPTION 'FAIL A5: authenticated has column SELECT on %', v_col;
+    END IF;
+  END LOOP;
+  RAISE NOTICE 'PASS A5: internal columns (phone, bumps, search helpers) not selectable';
+
+  -- Approved public columns, including premium display fields, remain selectable
+  FOREACH v_col IN ARRAY v_public LOOP
+    SELECT has_column_privilege('anon', 'public.listings', v_col, 'SELECT') INTO v_can;
+    IF NOT v_can THEN
+      RAISE EXCEPTION 'FAIL A6: anon missing column SELECT on %', v_col;
+    END IF;
+    SELECT has_column_privilege('authenticated', 'public.listings', v_col, 'SELECT') INTO v_can;
+    IF NOT v_can THEN
+      RAISE EXCEPTION 'FAIL A6: authenticated missing column SELECT on %', v_col;
+    END IF;
+  END LOOP;
+  RAISE NOTICE 'PASS A6: safe public columns including is_premium remain selectable';
+
+  -- Direct SELECT of an internal column must fail; premium column must succeed
+  SET LOCAL ROLE anon;
+  BEGIN
+    PERFORM bumps_today FROM public.listings WHERE id = '22222222-2222-2222-2222-222222222222';
+    RAISE EXCEPTION 'FAIL A7: anon SELECT bumps_today succeeded';
+  EXCEPTION
+    WHEN insufficient_privilege THEN
+      NULL;
+  END;
+  PERFORM is_premium FROM public.listings WHERE id = '22222222-2222-2222-2222-222222222222';
+  RAISE NOTICE 'PASS A7: anon cannot read bumps_today; can read is_premium';
+  RESET ROLE;
+
+  -- INSERT/UPDATE privileges must be unchanged (column-level grants from 20261068)
+  SELECT has_column_privilege('authenticated', 'public.listings', 'title', 'INSERT') INTO v_can;
+  IF NOT v_can THEN
+    RAISE EXCEPTION 'FAIL A8: authenticated lost INSERT on title';
+  END IF;
+  SELECT has_column_privilege('authenticated', 'public.listings', 'title', 'UPDATE') INTO v_can;
+  IF NOT v_can THEN
+    RAISE EXCEPTION 'FAIL A8: authenticated lost UPDATE on title';
+  END IF;
+  SELECT has_column_privilege('authenticated', 'public.listings', 'seller_phone', 'INSERT') INTO v_can;
+  IF NOT v_can THEN
+    RAISE EXCEPTION 'FAIL A8: authenticated lost INSERT on seller_phone';
+  END IF;
+  SELECT has_column_privilege('anon', 'public.listings', 'title', 'INSERT') INTO v_can;
+  IF v_can THEN
+    RAISE EXCEPTION 'FAIL A8: anon unexpectedly has INSERT on title';
+  END IF;
+  RAISE NOTICE 'PASS A8: INSERT/UPDATE privileges unchanged';
+
+  -- RLS policies still present
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE schemaname = 'public' AND tablename = 'listings' AND policyname = 'listings_read_all'
+  ) THEN
+    RAISE EXCEPTION 'FAIL A9: listings_read_all policy missing';
+  END IF;
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE schemaname = 'public' AND tablename = 'listings' AND policyname = 'listings_insert_own'
+  ) THEN
+    RAISE EXCEPTION 'FAIL A9: listings_insert_own policy missing';
+  END IF;
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE schemaname = 'public' AND tablename = 'listings' AND policyname = 'listings_update_own'
+  ) THEN
+    RAISE EXCEPTION 'FAIL A9: listings_update_own policy missing';
+  END IF;
+  RAISE NOTICE 'PASS A9: RLS policies unchanged';
+END $$;
+
+-- ---------------------------------------------------------------------------
 -- B. Public RPC outputs must return NULL for seller_phone
 --    Required RPCs fail the test if the function is missing.
 -- ---------------------------------------------------------------------------

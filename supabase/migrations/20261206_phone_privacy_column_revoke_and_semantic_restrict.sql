@@ -2,12 +2,17 @@
 -- P1 CRITICAL: Close public seller-phone exposure paths (corrected)
 --
 -- Table-level SELECT implicitly grants access to every column. A column-level
--- REVOKE does not override an existing table-level GRANT. Therefore we:
---   1. Revoke table-level SELECT from anon and authenticated.
---   2. Explicitly GRANT column-level SELECT only on the approved public columns.
---   3. Never grant seller_phone to PUBLIC / anon / authenticated.
+-- REVOKE does not override an existing table-level GRANT, and a table-level
+-- REVOKE does not remove existing column-level SELECT grants. Therefore we:
+--   1. Revoke table-level SELECT from anon, authenticated, and PUBLIC.
+--   2. Explicitly revoke column-level SELECT on every current listings column
+--      from anon, authenticated, and PUBLIC (covers seller_phone, bump fields,
+--      premium fields, search helper fields, and any other existing column).
+--   3. Re-grant column-level SELECT only on the approved public columns.
+--   4. Never grant seller_phone, bump/auto-bump fields, or search helpers.
 --
 -- RLS policies remain unchanged and continue to filter rows.
+-- INSERT/UPDATE privileges are not modified.
 -- search_listings_semantic is restricted to internal use only.
 -- ============================================================================
 
@@ -18,10 +23,37 @@ REVOKE SELECT ON TABLE public.listings FROM anon;
 REVOKE SELECT ON TABLE public.listings FROM authenticated;
 REVOKE SELECT ON TABLE public.listings FROM PUBLIC;
 
--- 2. Grant column-level SELECT only on safe public listing columns.
+-- 2. Explicitly revoke any existing column-level SELECT grants.
+--    Table-level REVOKE alone does not clear column ACLs.
+--    The loop covers every column present at migration time, including:
+--    seller_phone, bumps_today, bumps_reset_date, is_premium, premium_expires_at,
+--    auto_bump_active, auto_bump_expires_at, search_text, fts, search_chars,
+--    search_version, and all other existing columns.
+DO $$
+DECLARE
+  col text;
+BEGIN
+  FOR col IN
+    SELECT a.attname
+    FROM pg_attribute a
+    WHERE a.attrelid = 'public.listings'::regclass
+      AND a.attnum > 0
+      AND NOT a.attisdropped
+    ORDER BY a.attnum
+  LOOP
+    EXECUTE format(
+      'REVOKE SELECT (%I) ON TABLE public.listings FROM anon, authenticated, PUBLIC',
+      col
+    );
+  END LOOP;
+END $$;
+
+-- 3. Grant column-level SELECT only on safe public listing columns.
 --    These are the columns required by public listing reads, search RPCs,
 --    seller profile listing results, and existing RLS-visible fields.
---    seller_phone is deliberately omitted.
+--    is_premium and premium_expires_at are included so frontend listing
+--    presentation continues to work. seller_phone, bump/auto-bump fields,
+--    and search helper fields are deliberately omitted.
 GRANT SELECT (
   id,
   user_id,
@@ -47,21 +79,20 @@ GRANT SELECT (
   image_height,
   city_slug,
   district_slug,
-  neighborhood_slug
+  neighborhood_slug,
+  is_premium,
+  premium_expires_at
 ) ON TABLE public.listings TO anon, authenticated;
 
--- Internal / monetization / search-helper columns (bumps_*, is_premium*, search_text, fts, etc.)
--- remain without public SELECT. They are accessed only through SECURITY DEFINER RPCs
--- or service-role paths that do not expose them to the client.
-
--- 3. Restrict search_listings_semantic (internal helper only)
+-- 4. Restrict search_listings_semantic (internal helper only)
 REVOKE EXECUTE ON FUNCTION public.search_listings_semantic(
   extensions.vector, text, integer, integer, double precision
 ) FROM PUBLIC, anon, authenticated;
 
 -- Owner retains the ability to call it from search_listings_hybrid and similar.
 
--- 4. get_listing_phone remains the only authenticated, rate-limited path to the phone.
+-- 5. get_listing_phone remains the only authenticated, rate-limited path to the phone.
 --    No change to its definition or grants.
+--    INSERT/UPDATE privileges and RLS policies are intentionally untouched.
 
 COMMIT;
