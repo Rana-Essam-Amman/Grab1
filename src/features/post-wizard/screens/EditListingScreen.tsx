@@ -9,13 +9,14 @@ import { Lock } from 'iconsax-react';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { AdminImageEditor } from '../components/AdminImageEditor';
 import { AdminActionsPanel } from '../components/AdminActionsPanel';
+import { EditListingLocation } from '../components/EditListingLocation';
 
 export const EditListingScreen: React.FC = () => {
   const { isArabic, goBack } = useUI();
   const {
     listing, title, setTitle, price, setPrice, description, setDescription,
     values, setField, fields, missingRequired, canSave, handleSave, submitAttempted,
-    isSaving, saveError, images, setImages,
+    isSaving, saveError, images, setImages, editLocation,
   } = useEditListing();
   const { isAdmin } = useIsAdmin();
 
@@ -49,6 +50,8 @@ export const EditListingScreen: React.FC = () => {
               : 'Category is locked. To change it, delete this ad and create a new one.'}
           </div>
         </div>
+
+        <EditListingLocation isArabic={isArabic} location={editLocation} />
 
         <PostDetailsFormFields
           isArabic={isArabic}

@@ -3,6 +3,7 @@ import { useUI } from '@/hooks/useUI';
 import { useListings } from '@/hooks/useListings';
 import { getFieldsForListing } from '@/data/subcategoryFields';
 import { getBrandOptions, getModelOptions } from '@/data/brands';
+import { useEditListingLocation } from './useEditListingLocation';
 
 export function useEditListing() {
   const { selectedListingId, goBack, isArabic } = useUI();
@@ -25,6 +26,7 @@ export function useEditListing() {
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const editLocation = useEditListingLocation(listing ?? null, isArabic);
 
   const categorySlug = listing?.categorySlug || '';
   const subcategorySlug = listing?.subcategorySlug || '';
@@ -74,6 +76,7 @@ export function useEditListing() {
         description: description.trim(),
         attributes,
         images,
+        ...editLocation.payload,
       });
       if (!result.success) {
         setSaveError(isArabic
@@ -85,11 +88,11 @@ export function useEditListing() {
     } finally {
       setIsSaving(false);
     }
-  }, [canSave, listing, isSaving, fields, values, isArabic, title, price, description, images, saveListingEdits, goBack]);
+  }, [canSave, listing, isSaving, fields, values, isArabic, title, price, description, images, editLocation.payload, saveListingEdits, goBack]);
 
   return {
     listing, title, setTitle, price, setPrice, description, setDescription, images, setImages,
     values, setField, fields, missingRequired: missing, canSave, handleSave,
-    isArabic, submitAttempted, isSaving, saveError,
+    isArabic, submitAttempted, isSaving, saveError, editLocation,
   };
 }
