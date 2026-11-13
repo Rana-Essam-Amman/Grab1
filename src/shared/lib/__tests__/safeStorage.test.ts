@@ -170,4 +170,33 @@ describe('safeStorage', () => {
       expect(readValidated(key, schema, fallback)).toEqual(fallback);
     });
   });
+
+  describe('return values and quota options', () => {
+    it('returns true only when a valid value is persisted', () => {
+      expect(writeValidated(key, schema, { id: 'ok', count: 1 })).toBe(true);
+      expect(writeValidated(key, strict, { id: 'no', count: 1 })).toBe(false);
+    });
+
+    it('does not delete chat_conversations when cleanupOnQuota is false', () => {
+      localStorage.setItem('chat_conversations', 'keep');
+      vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+        const err = new QuotaError();
+        throw err;
+      });
+      expect(writeValidated(key, schema, { id: '789', count: 20 }, { cleanupOnQuota: false })).toBe(false);
+      expect(localStorage.getItem('chat_conversations')).toBe('keep');
+    });
+
+    it('returns false when removal throws', () => {
+      vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {
+        throw new Error('remove failed');
+      });
+      expect(removeStored(key)).toBe(false);
+    });
+
+    it('returns true when removal succeeds', () => {
+      localStorage.setItem(key, 'x');
+      expect(removeStored(key)).toBe(true);
+    });
+  });
 });
