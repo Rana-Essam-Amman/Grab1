@@ -167,8 +167,14 @@ GRANT EXECUTE ON FUNCTION public.search_listings_v4_tiered_v2(
   text, text, integer, integer, text, text, numeric, numeric, text, text, jsonb, integer
 ) TO anon, authenticated;
 
--- Reject a reveal with no identity. The function is granted to authenticated,
--- but a session without auth.uid() is not an authorized reveal.
+-- Preserve verified production get_listing_phone semantics:
+-- * Requires auth.uid()
+-- * Calls public.is_admin()
+-- * 20 reveals / 24h rate limit applies ONLY to non-admins
+-- * Admins may reveal active demo listing phones
+-- * Non-admins cannot reveal demo listing phones
+-- * Successful reveals are logged for both admins and non-admins
+-- * authenticated has EXECUTE; anon does not
 CREATE OR REPLACE FUNCTION public.get_listing_phone(p_listing_id uuid)
 RETURNS text
 LANGUAGE plpgsql
@@ -179,25 +185,36 @@ DECLARE
   v_phone text;
   v_reveal_count int;
   v_uid uuid;
+  v_is_admin boolean;
 BEGIN
   v_uid := auth.uid();
   IF v_uid IS NULL THEN
     RAISE EXCEPTION 'NOT_AUTHENTICATED' USING ERRCODE = '42501';
   END IF;
 
-  PERFORM pg_advisory_xact_lock(hashtext(v_uid::text));
+  v_is_admin := public.is_admin();
 
-  SELECT count(*) INTO v_reveal_count
-  FROM public.phone_reveal_logs
-  WHERE user_id = v_uid AND revealed_at > now() - interval '24 hours';
+  IF NOT v_is_admin THEN
+    PERFORM pg_advisory_xact_lock(hashtext(v_uid::text));
 
-  IF v_reveal_count >= 20 THEN
-    RAISE EXCEPTION 'RATE_LIMIT_EXCEEDED' USING ERRCODE = 'P0001';
+    SELECT count(*) INTO v_reveal_count
+    FROM public.phone_reveal_logs
+    WHERE user_id = v_uid AND revealed_at > now() - interval '24 hours';
+
+    IF v_reveal_count >= 20 THEN
+      RAISE EXCEPTION 'RATE_LIMIT_EXCEEDED' USING ERRCODE = 'P0001';
+    END IF;
   END IF;
 
-  SELECT seller_phone INTO v_phone
-  FROM public.listings
-  WHERE id = p_listing_id AND status = 'active' AND is_demo = false;
+  IF v_is_admin THEN
+    SELECT seller_phone INTO v_phone
+    FROM public.listings
+    WHERE id = p_listing_id AND status = 'active';
+  ELSE
+    SELECT seller_phone INTO v_phone
+    FROM public.listings
+    WHERE id = p_listing_id AND status = 'active' AND is_demo = false;
+  END IF;
 
   IF v_phone IS NOT NULL THEN
     INSERT INTO public.phone_reveal_logs (user_id, listing_id)
