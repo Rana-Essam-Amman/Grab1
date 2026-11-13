@@ -213,3 +213,25 @@ Additionally, Node version mismatch:
 **Regression Test:** The two corrected quota tests.
 
 **Lesson:** mockImplementationOnce must be installed after the setup writes it would otherwise intercept.
+
+---
+
+## Bug #011 — Stale phone reveal across listings (2026-11-13)
+
+**Severity:** P1 — Cross-listing data leak
+
+**Symptom:** After revealing a phone on listing A, navigating to listing B could show A's phone or A's loading state. A response from A's request could also clear B's revealing state.
+
+**Root Cause:** useRevealPhone stored phone and isRevealing in hook state keyed only by render lifetime, not by listingId. The async reveal closed over the old listing and its finally always cleared isRevealing.
+
+**Detection:** Confirmed stale-phone state and asynchronous response race in useRevealPhone.
+
+**Impact:** A user could see or dial the previous listing's phone, or a stale request could reset the current listing's loading indicator.
+
+**Resolution:** Scope cached phone and revealing state to listingId. Track a request token and the current listingId in a ref. Stale session or RPC work returns null and cannot update or clear a newer listing's state.
+
+**Prevention:** Any cached async result shown in a detail view must be keyed to the entity id. Completion handlers must no-op when the id or request token no longer matches.
+
+**Regression Test:** src/features/listings/hooks/tests/useRevealPhone.test.ts covers matching initial phone, A-to-B isolation, stale response ignore, B's RPC id, stale finally, session failure, and RPC failure.
+
+**Lesson:** Detail-screen async state is entity-scoped. A finally that always clears loading is a race.
