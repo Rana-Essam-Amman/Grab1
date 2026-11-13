@@ -237,3 +237,9 @@ exact-SHA CI evidence when claiming an environmental exception.
 **Root Cause:** hasMissingParams blocked the button, but missingRequiredLabels only covered attributes and the screen never rendered them.
 **Fix:** Include localized title and price in missingRequiredLabels; render MissingFieldsNotice above the CTA (same pattern as AI review path).
 **Prevention:** Any disabled primary action must name the blocking condition in both languages. Reuse existing notice components rather than inventing new ones.
+
+### Lesson — Preserve original validation when adding feedback (2026-11-13)
+**Symptom:** Feedback labels used .trim() and hardcoded strings while the original hasMissingParams used truthiness only.
+**Root Cause:** Feedback logic drifted from the existing condition.
+**Fix:** Drive labels from the same !curT / !curP checks. Move strings into feature locales and use useTranslation.
+**Prevention:** When surfacing an existing condition, do not change its predicate. Localize via the feature registry locales.
