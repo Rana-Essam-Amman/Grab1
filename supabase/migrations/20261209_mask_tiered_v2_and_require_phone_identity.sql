@@ -175,6 +175,7 @@ GRANT EXECUTE ON FUNCTION public.search_listings_v4_tiered_v2(
 -- * Non-admins cannot reveal demo listing phones
 -- * Successful reveals are logged for both admins and non-admins
 -- * authenticated has EXECUTE; anon does not
+-- * Unauthenticated callers raise AUTHENTICATION_REQUIRED
 CREATE OR REPLACE FUNCTION public.get_listing_phone(p_listing_id uuid)
 RETURNS text
 LANGUAGE plpgsql
@@ -189,7 +190,7 @@ DECLARE
 BEGIN
   v_uid := auth.uid();
   IF v_uid IS NULL THEN
-    RAISE EXCEPTION 'NOT_AUTHENTICATED' USING ERRCODE = '42501';
+    RAISE EXCEPTION 'AUTHENTICATION_REQUIRED' USING ERRCODE = '42501';
   END IF;
 
   v_is_admin := public.is_admin();
