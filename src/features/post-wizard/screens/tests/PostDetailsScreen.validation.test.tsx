@@ -77,6 +77,15 @@ vi.mock('@/shared/lib/formatPrice', () => ({
   formatPrice: (p: string) => p,
 }));
 
+function getNoticeContainer(): HTMLElement {
+  const heading = screen.getByText(/Required fields:/);
+  const container = heading.parentElement;
+  if (!container) {
+    throw new Error('MissingFieldsNotice container not found');
+  }
+  return container;
+}
+
 describe('PostDetailsScreen validation feedback', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -99,8 +108,8 @@ describe('PostDetailsScreen validation feedback', () => {
     mockState.missingRequiredLabels = ['Listing Title'];
     mockState.hasMissingParams = true;
     render(<PostDetailsScreen />);
-    expect(screen.getByText(/Required fields:/)).toBeInTheDocument();
-    expect(screen.getByText(/Listing Title/)).toBeInTheDocument();
+    const notice = getNoticeContainer();
+    expect(notice).toHaveTextContent('Listing Title');
     expect(screen.getByTestId('post-details-publish-btn')).toBeDisabled();
   });
 
@@ -110,7 +119,8 @@ describe('PostDetailsScreen validation feedback', () => {
     mockState.missingRequiredLabels = ['Price'];
     mockState.hasMissingParams = true;
     render(<PostDetailsScreen />);
-    expect(screen.getByText(/Price/)).toBeInTheDocument();
+    const notice = getNoticeContainer();
+    expect(notice).toHaveTextContent('Price');
     expect(screen.getByTestId('post-details-publish-btn')).toBeDisabled();
   });
 
@@ -121,7 +131,8 @@ describe('PostDetailsScreen validation feedback', () => {
     mockState.missingRequiredLabels = ['Year'];
     mockState.hasMissingParams = true;
     render(<PostDetailsScreen />);
-    expect(screen.getByText(/Year/)).toBeInTheDocument();
+    const notice = getNoticeContainer();
+    expect(notice).toHaveTextContent('Year');
     expect(screen.getByTestId('post-details-publish-btn')).toBeDisabled();
   });
 
