@@ -10,6 +10,7 @@ import { showChatUnavailable, showChatOpenFailed, showChatCrossMarket } from '..
 import { getWhatsAppUrl } from '../../helpers/listingDerivedData';
 import type { Listing, UserProfile, CountryDef } from '@/types';
 import type { WhatsAppIntent } from '../../helpers/whatsappIntents';
+import type { ConversationView } from '@/features/chat/services/chatService.types';
 import type { ScreenType, TabType } from '@/store/ui.slice';
 import type { MarketCode } from '@/shared/lib/marketGate';
 
@@ -254,9 +255,9 @@ describe('useListingDetail', () => {
     vi.mocked(useAuth).mockReturnValue(buildAuth());
     vi.mocked(useListings).mockReturnValue(buildListings());
     vi.mocked(useChat).mockReturnValue(buildChat());
-    vi.mocked(supabase.rpc).mockResolvedValue({ data: '+962791234567', error: null });
-    vi.mocked(supabase.auth.getSession).mockResolvedValue({ data: { session: null } });
-    vi.mocked(supabase.auth.signInAnonymously).mockResolvedValue({ error: null });
+    vi.mocked(supabase.rpc).mockResolvedValue({ data: '+962791234567', error: null, success: true, count: null, status: 200, statusText: 'OK' });
+    vi.mocked(supabase.auth.getSession).mockResolvedValue({ data: { session: null }, error: null });
+    vi.mocked(supabase.auth.signInAnonymously).mockResolvedValue({ data: { user: null, session: null }, error: null });
   });
 
   it('applies the listingDerivedData mock', () => {
@@ -359,7 +360,17 @@ describe('useListingDetail', () => {
   });
 
   it('opens the thread after a successful conversation', async () => {
-    openConversationMock.mockResolvedValue({ id: 'conv-1' });
+    const conversation: ConversationView = {
+      id: 'conv-1',
+      listingId: 'item-123',
+      buyerId: 'buyer-1',
+      sellerId: 'seller-1',
+      marketCode: 'JO',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+      listing: null,
+    };
+    openConversationMock.mockResolvedValue(conversation);
     const { result } = renderHook(() => useListingDetail());
     await act(async () => {
       await result.current.handleStartChat();
