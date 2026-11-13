@@ -783,9 +783,67 @@ END;
 $func$;
 
 GRANT EXECUTE ON FUNCTION public.search_listings_v4_tiered_v4(
-  text, text, integer, integer, text, text,
-  numeric, numeric, text, text, jsonb,
-  integer, text, text, text
+  text, text, integer, integer, text, text, numeric, numeric, text, text, jsonb, integer, text, text, text
+) TO anon, authenticated;
+
+
+-- v3 keeps its signature for older clients, but delegates to the
+-- pre-pagination v4 implementation so slug filters are not applied after LIMIT.
+CREATE OR REPLACE FUNCTION public.search_listings_v4_tiered_v3(
+  p_query text, p_market text DEFAULT NULL, p_limit integer DEFAULT 20, p_offset integer DEFAULT 0,
+  p_category_slug text DEFAULT NULL, p_subcategory_slug text DEFAULT NULL,
+  p_min_price numeric DEFAULT NULL, p_max_price numeric DEFAULT NULL,
+  p_city text DEFAULT NULL, p_neighborhood text DEFAULT NULL, p_attrs jsonb DEFAULT NULL,
+  p_tier2_limit integer DEFAULT 5, p_city_slug text DEFAULT NULL,
+  p_district_slug text DEFAULT NULL, p_neighborhood_slug text DEFAULT NULL
+)
+RETURNS TABLE (
+  id uuid, user_id uuid, title text, description text, price text, currency text,
+  country_code text, city text, neighborhood text, category_slug text, subcategory_slug text,
+  images text[], attributes jsonb, status text, views integer, seller_name text,
+  seller_phone text, created_at timestamptz, updated_at timestamptz, is_demo boolean,
+  match_kind text, matched_tokens text[], total_matched_tokens integer,
+  tier integer, tier_reason text, rank_in_tier integer,
+  city_slug text, district_slug text, neighborhood_slug text
+)
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public
+AS $v3$
+  SELECT * FROM public.search_listings_v4_tiered_v4(
+    p_query, p_market, p_limit, p_offset, p_category_slug, p_subcategory_slug,
+    p_min_price, p_max_price, p_city, p_neighborhood, p_attrs, p_tier2_limit,
+    p_city_slug, p_district_slug, p_neighborhood_slug
+  );
+$v3$;
+
+REVOKE ALL ON FUNCTION public.search_listings_v4_tiered_v4(
+  text, text, integer, integer, text, text, numeric, numeric, text, text, jsonb, integer, text, text, text
+) FROM PUBLIC;
+
+GRANT EXECUTE ON FUNCTION public.search_listings_v4_tiered_v4(
+  text, text, integer, integer, text, text, numeric, numeric, text, text, jsonb, integer, text, text, text
+) TO anon, authenticated;
+
+REVOKE ALL ON FUNCTION public.search_listings_v4_tiered_v3(
+  text, text, integer, integer, text, text, numeric, numeric, text, text, jsonb, integer, text, text, text
+) FROM PUBLIC;
+
+-- Corrected: the v3 function has 15 arguments, including numeric price bounds.
+GRANT EXECUTE ON FUNCTION public.search_listings_v4_tiered_v3(
+  text,
+  text,
+  integer,
+  integer,
+  text,
+  text,
+  numeric,
+  numeric,
+  text,
+  text,
+  jsonb,
+  integer,
+  text,
+  text,
+  text
 ) TO anon, authenticated;
 
 NOTIFY pgrst, 'reload schema';
