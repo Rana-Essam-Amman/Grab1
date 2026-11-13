@@ -190,24 +190,27 @@ BEGIN
   END IF;
   RAISE NOTICE 'PASS A8: INSERT/UPDATE privileges unchanged';
 
-  -- RLS policies still present
+  -- RLS policies still present (current names after later migrations)
   IF NOT EXISTS (
     SELECT 1 FROM pg_policies
-    WHERE schemaname = 'public' AND tablename = 'listings' AND policyname = 'listings_read_all'
+    WHERE schemaname = 'public' AND tablename = 'listings'
+      AND policyname = 'listings_select_public_or_owner_or_admin'
   ) THEN
-    RAISE EXCEPTION 'FAIL A9: listings_read_all policy missing';
+    RAISE EXCEPTION 'FAIL A9: listings_select_public_or_owner_or_admin policy missing';
   END IF;
   IF NOT EXISTS (
     SELECT 1 FROM pg_policies
-    WHERE schemaname = 'public' AND tablename = 'listings' AND policyname = 'listings_insert_own'
+    WHERE schemaname = 'public' AND tablename = 'listings'
+      AND policyname = 'Allow authenticated insert with admin bypass'
   ) THEN
-    RAISE EXCEPTION 'FAIL A9: listings_insert_own policy missing';
+    RAISE EXCEPTION 'FAIL A9: listings insert policy missing';
   END IF;
   IF NOT EXISTS (
     SELECT 1 FROM pg_policies
-    WHERE schemaname = 'public' AND tablename = 'listings' AND policyname = 'listings_update_own'
+    WHERE schemaname = 'public' AND tablename = 'listings'
+      AND policyname = 'listings_update_own_or_admin'
   ) THEN
-    RAISE EXCEPTION 'FAIL A9: listings_update_own policy missing';
+    RAISE EXCEPTION 'FAIL A9: listings_update_own_or_admin policy missing';
   END IF;
   RAISE NOTICE 'PASS A9: RLS policies unchanged';
 END $$;
@@ -373,7 +376,10 @@ BEGIN
   END;
   RESET ROLE;
 
-  IF to_regprocedure('public.search_listings_hybrid(text,text,integer,integer)') IS NULL THEN
+  -- Hybrid signature is (text, extensions.vector, text, integer, integer, ...)
+  -- with defaults. The previous (text,text,integer,integer) lookup matched
+  -- no function and would fail before the callability assertion.
+  IF to_regprocedure('public.search_listings_hybrid(text,extensions.vector,text,integer,integer,double precision,text,text,text,numeric,numeric,text,text,jsonb)') IS NULL THEN
     RAISE EXCEPTION 'FAIL C3: search_listings_hybrid is missing';
   END IF;
   SET LOCAL ROLE anon;
