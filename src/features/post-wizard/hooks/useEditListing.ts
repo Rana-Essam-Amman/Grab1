@@ -3,11 +3,13 @@ import { useUI } from '@/hooks/useUI';
 import { useListings } from '@/hooks/useListings';
 import { getFieldsForListing } from '@/data/subcategoryFields';
 import { getBrandOptions, getModelOptions } from '@/data/brands';
+import { useEditListingLocation } from './useEditListingLocation';
 
 export function useEditListing() {
   const { selectedListingId, goBack, isArabic } = useUI();
   const { getListing, saveListingEdits } = useListings();
   const listing = selectedListingId ? getListing(selectedListingId) : null;
+  const locationCtrl = useEditListingLocation(listing, isArabic);
 
   const [title, setTitle] = useState(listing?.title || '');
   const [price, setPrice] = useState(listing?.price?.toString() || '');
@@ -16,9 +18,7 @@ export function useEditListing() {
   const [values, setValues] = useState<Record<string, string>>(() => {
     const out: Record<string, string> = {};
     (listing?.attributes as Array<{ key?: string; label?: string; value?: unknown }> | undefined)?.forEach((a) => {
-      if (a.key) {
-        out[a.key] = String(a.value ?? '');
-      }
+      if (a.key) out[a.key] = String(a.value ?? '');
     });
     return out;
   });
@@ -28,35 +28,28 @@ export function useEditListing() {
 
   const categorySlug = listing?.categorySlug || '';
   const subcategorySlug = listing?.subcategorySlug || '';
-
   const cBrand = values.make || values.brand || values.carMake || '';
   const bOpts = useMemo(() => getBrandOptions(categorySlug, isArabic), [categorySlug, isArabic]);
-  const mOpts = useMemo(() => cBrand ? getModelOptions(categorySlug, cBrand, isArabic) : [], [categorySlug, cBrand, isArabic]);
+  const mOpts = useMemo(() => (cBrand ? getModelOptions(categorySlug, cBrand, isArabic) : []), [categorySlug, cBrand, isArabic]);
 
   const fields = useMemo(() => getFieldsForListing(categorySlug, subcategorySlug).map((f) => {
-    // Prefer rich options if present (new registry), fall back to legacy strings
     if (f.richOptions && f.richOptions.length > 0) {
-      const richOpts = f.richOptions.map((o) => (isArabic ? o.labelAr : o.labelEn));
-      return { ...f, options: richOpts };
+      return { ...f, options: f.richOptions.map((o) => (isArabic ? o.labelAr : o.labelEn)) };
     }
     if (f.key === 'make' || f.key === 'brand' || f.key === 'carMake') {
-      // Category has brand catalog → dropdown; otherwise → free text
-      return bOpts.length > 0
-        ? { ...f, type: 'select' as const, options: bOpts }
-        : { ...f, type: 'text' as const };
+      return bOpts.length > 0 ? { ...f, type: 'select' as const, options: bOpts } : { ...f, type: 'text' as const };
     }
     if (f.key === 'model') {
-      // Free text when: no brand yet, brand is "أخرى", or brand has no models
       if (!cBrand || cBrand === 'أخرى' || cBrand === 'Other' || mOpts.length === 0) {
         return { ...f, type: 'text' as const };
       }
       return { ...f, type: 'select' as const, options: mOpts };
     }
     return f;
-  }), [categorySlug, subcategorySlug, bOpts, mOpts, cBrand]);
+  }), [categorySlug, subcategorySlug, bOpts, mOpts, cBrand, isArabic]);
 
   const setField = useCallback((k: string, v: string) => setValues((p) => ({ ...p, [k]: v })), []);
-  const missing = fields.filter((f) => f.required && !(values[f.key] || '').trim()).map((f) => isArabic ? f.labelAr : f.labelEn);
+  const missing = fields.filter((f) => f.required && !(values[f.key] || '').trim()).map((f) => (isArabic ? f.labelAr : f.labelEn));
   const canSave = title.trim().length >= 5 && price.trim().length > 0 && description.trim().length >= 10 && missing.length === 0;
 
   const handleSave = useCallback(async () => {
@@ -74,22 +67,21 @@ export function useEditListing() {
         description: description.trim(),
         attributes,
         images,
+        ...locationCtrl.payload,
       });
       if (!result.success) {
-        setSaveError(isArabic
-          ? 'تعذّر حفظ التعديلات — جرب مرة ثانية'
-          : 'Failed to save. Please try again.');
+        setSaveError(isArabic ? 'تعذّر حفظ التعديلات — جرب مرة ثانية' : 'Failed to save. Please try again.');
         return;
       }
       goBack();
     } finally {
       setIsSaving(false);
     }
-  }, [canSave, listing, isSaving, fields, values, isArabic, title, price, description, images, saveListingEdits, goBack]);
+  }, [canSave, listing, isSaving, fields, values, isArabic, title, price, description, images, locationCtrl.payload, saveListingEdits, goBack]);
 
   return {
     listing, title, setTitle, price, setPrice, description, setDescription, images, setImages,
     values, setField, fields, missingRequired: missing, canSave, handleSave,
-    isArabic, submitAttempted, isSaving, saveError,
+    isArabic, submitAttempted, isSaving, saveError, locationCtrl,
   };
 }
