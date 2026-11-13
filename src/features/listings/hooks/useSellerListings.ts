@@ -31,6 +31,7 @@ export function useSellerListings(
   useEffect(() => {
     if (!sellerKey) {
       setListings([]);
+      setIsLoading(false);
       setError(null);
       return;
     }
