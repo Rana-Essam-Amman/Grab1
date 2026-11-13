@@ -243,3 +243,15 @@ exact-SHA CI evidence when claiming an environmental exception.
 **Root Cause:** Feedback logic drifted from the existing condition.
 **Fix:** Drive labels from the same !curT / !curP checks. Move strings into feature locales and use useTranslation.
 **Prevention:** When surfacing an existing condition, do not change its predicate. Localize via the feature registry locales.
+
+### Lesson — Assert the real cleanup key (safeStorage) — 2026-11-13
+**Symptom:** The quota test expected catch_conversations to be cleared.
+**Root Cause:** Production removes chat_conversations. The assertion never exercised the cleanup branch.
+**Fix:** Assert the production key and the successful retry write.
+**Prevention:** Failure-path tests must name the exact key and side effect in production code.
+
+### Lesson — One-shot spies must be installed after setup writes (2026-11-13)
+**Symptom:** Quota tests threw before writeValidated ran.
+**Root Cause:** mockImplementationOnce was installed before the chat_conversations seed, so the seed consumed the exception.
+**Fix:** Seed first, then install the spy.
+**Prevention:** Setup writes that use the same method as the spy must happen before the spy is installed.

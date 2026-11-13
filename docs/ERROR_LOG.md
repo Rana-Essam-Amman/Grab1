@@ -191,3 +191,25 @@ Additionally, Node version mismatch:
 **Regression Test:** ListingDetailScreen.lookup.test.tsx covers the error state and asserts the localized English title; mock ensures the hook is exercised. Full suite + typecheck + lint + audit must remain green.
 
 **Lesson:** Even small UI states must follow the localization path from day one. Hardcoded bilingual ternaries are a Rule 8 violation.
+
+---
+
+## Bug #010 — Quota tests consumed the spy before writeValidated (2026-11-13)
+
+**Severity:** P2 — False regression coverage
+
+**Symptom:** CI failed on "clears chat_conversations and retries after QuotaExceededError" and "treats DOMException code 22 as a quota error". The seeded chat_conversations key was not present when writeValidated ran.
+
+**Root Cause:** Both tests installed a Storage.prototype.setItem mockImplementationOnce before localStorage.setItem('chat_conversations', 'stale'). The seed call consumed the one-shot exception, so the throw escaped outside writeValidated and the cleanup/retry path was never exercised.
+
+**Detection:** GitHub Actions CI Quality Pipeline on PR #448.
+
+**Impact:** Quota cleanup and retry were not actually tested. CI red.
+
+**Resolution:** Seed chat_conversations before installing the setItem spy in both tests. Assertions unchanged: chat_conversations is removed, and the retry write succeeds.
+
+**Prevention:** When a one-shot spy wraps a method also used for setup, perform setup first. Do not let fixture writes consume the mock under test.
+
+**Regression Test:** The two corrected quota tests.
+
+**Lesson:** mockImplementationOnce must be installed after the setup writes it would otherwise intercept.

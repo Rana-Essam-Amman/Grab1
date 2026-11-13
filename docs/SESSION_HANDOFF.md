@@ -127,3 +127,17 @@ fc1bc81 feat(ai): pass subcategorySlug through AI pipeline + fix call sites
 - Last task: Rule 8 localization of missing title/price labels; original validation semantics restored exactly. Hook tests added.
 - Next: Await review. Do not create or merge PR until authorized.
 - Note: Local toolchain unavailable; CI is NOT RUN (no PR-triggered workflow yet).
+
+## Current State (2026-11-13 safeStorage coverage)
+- Branch: test/safe-storage-coverage
+- Base: 8c424de9045f56780334c0be71064c790a3556a7
+- Last task: Strengthened safeStorage tests. Removed unsafe assertions. Covered read/write/remove failures and quota paths.
+- Next: Await CI on the PR HEAD. Do not merge until green.
+- Note: Local toolchain unavailable; CI is the substitute verifier (Environmental Exception).
+
+## Current State (2026-11-13 safeStorage quota test fix)
+- Branch: test/safe-storage-coverage
+- Base: 8c424de9045f56780334c0be71064c790a3556a7
+- Last task: Fixed quota test order so the one-shot setItem spy is not consumed by the seed write.
+- Next: Await CI on the new HEAD. Do not merge until the four required workflows are green.
+- Note: Local toolchain unavailable; CI is the substitute verifier (Environmental Exception).
