@@ -1,3 +1,237 @@
+# Lessons Learned — FOX Marketplace
+
+**Purpose:** Every bug documented. Institutional memory.
+**Audience:** Any AI agent or developer joining the project.
+
+### Dead Code
+- Kept contracts/ even if 'unused' — architectural pattern
+- Kept CommandPalette.tsx — planned UI component
+- Kept marketAssertions.ts — Rule 11 critical
+
+## Bugs
+
+### Bug #001 — Massive Untracked Files (2026-09-16)
+
+**Severity:** P0 (Critical) — Data Loss Risk
+**Symptom:** Only 59 of 386 files tracked in git (15.3%).
+**Root Cause:** AI agent used `git add <specific-file>` instead of `git add .` after multi-file refactors.
+**Fix:** Emergency commit 4145691 — full codebase sync (513 files).
+**Prevention:** Rule 37 (Mandatory GitHub Sync) + scripts/git-health-check.mjs.
+
+### Bug #002 — Idx Contradictory Reports
+
+**Severity:** P1 — Trust Risk
+**Symptom:** Idx produced two contradictory reports in one response.
+**Root Cause:** Idx concatenated outputs from multiple internal loops.
+**Fix:** Rule 36 (Evidence-Based Task Completion).
+
+### Bug #003 — CI Failure (Lockfile)
+
+**Symptom:** CI failed twice. `npm ci` refused to install.
+**Root Cause:** package-lock.json out of sync + Node version mismatch (20 vs 22).
+**Fix:** `npm install --package-lock-only` + bump CI Node to 22.
+**Prevention:** Rule 38 (Lockfile Discipline).
+
+### Bug #004 — Idx Stale Reports
+
+**Symptom:** Idx returned cached reports from previous tasks.
+**Root Cause:** Google AI Studio per-session rate limits.
+**Prevention:** Short prompts (≤20 lines), RAW verification.
+
+### Bug #005 — Idx Claimed False Commit
+
+**Symptom:** Idx reported "commit df6294d done" but commit never existed.
+**Root Cause:** Idx hallucinated the commit hash.
+**Prevention:** Force raw output pattern.
+
+### Bug #006 — Idx Hallucinated Test Count (591 vs 337)
+
+**Symptom:** Idx reported 591 tests passing. Actual: 337.
+**Root Cause:** Idx hallucinated numbers.
+**Prevention:** Force `npm test 2>&1 | grep -E "Test Files|Tests"` in every report.
+
+### Bug #007 — Chat Messages Not Appearing
+
+**Severity:** P1 — Feature Broken
+**Symptom:** User sends message → message doesn't appear in UI.
+**Root Cause:** `immer` middleware + spread operator interaction broke tracking.
+**Fix:** Removed immer from chat.slice.ts. Used plain Zustand updates.
+**Prevention:** No spread on immer drafts.
+
+### Bug #008 — Hex vs Tokens Conflict (2026-09-23)
+**Symptom:** Handoff advised hex; constitution forbids it. Two commits shipped with hex.
+**Root Cause:** Stale SESSION_HANDOFF.md guidance.
+**Fix:** Constitution is authoritative. Revert to tokens in a future refactor sprint.
+**Prevention:** Any "lesson" that contradicts constitution → constitution review before next commit.
+
+## UI Issues
+
+### Issue #1 — Body CSS Override Blocking Tokens
+
+**Symptom:** Background always grey despite OKLCH tokens.
+**Root Cause:** `body { background-color: #E5E7EB; }` in index.css.
+**Fix:** Changed to `var(--color-canvas)` and `var(--color-ink)`.
+
+### Issue #2 — h1-h6 !important Override
+
+**Symptom:** Wizard titles invisible (text-white didn't work).
+**Root Cause:** Global `h1-h6 { font-size: 18.5px !important; }`.
+**Fix:** Removed entire block.
+
+### Issue #3 — DemoCountryPicker Faded
+
+**Symptom:** Modal appeared blurry/transparent.
+**Root Cause:** Tailwind classes overridden by CSS.
+**Fix:** Inline styles.
+
+### Issue #4 — Chat Drawer Text Faint
+
+**Symptom:** Drawer text not visible.
+**Root Cause:** Used `text-ink-muted` on grey background.
+**Fix:** Changed to `text-ink`.
+
+### Issue #5 — Post Ad Button Color
+
+**Symptom:** FAB showed gradient instead of solid.
+**Fix:** Removed gradient, applied solid bg.
+
+### Issue #6 — Header Dropdown Transparent
+
+**Symptom:** Dropdown showed page content through it.
+**Fix:** `bg-white` + `shadow-2xl` + `z-[60]` + backdrop.
+
+### Issue #7 — Categories Images Not Circular
+
+**Fix:** Changed `rounded-xl` → `rounded-full`.
+
+### Issue #8 — Chat Crash on Open
+
+**Symptom:** Clicking "Chat" on listing crashed app.
+**Root Cause:** `setSelectedThreadId(threadId)` was NOT called before navigation.
+**Fix:** Added the missing line.
+
+### Issue #9 — Iconsax + CSS Variables
+Cause: Iconsax color prop doesn't support 'var(--color-*)'
+Fix: Use hex values directly (or currentColor + Tailwind text-*)
+
+### Issue #10 — Iconsax + var() Global
+Iconsax color prop doesn't support CSS variables.
+Always use HEX values directly (or #E57E25 as accent gold).
+
+## Lessons by Category
+
+### Git & Version Control
+- ALWAYS use `git add .`
+- VERIFY push with `git ls-remote`
+- NEVER trust AI reports of "pushed"
+
+### State Management (Zustand)
+- NO immer + spread combination
+- Prefer plain updates
+- useChat selectors NOT whole store
+
+### Styling
+- NO global `!important` on h1-h6
+- Body must use tokens
+- Fallback to inline styles for critical UI
+
+### AI Agent Management
+- Trust only RAW output
+- Force pattern when claims without evidence
+- Split tasks: 1 file per prompt
+
+### Testing
+- Tests catch real bugs
+- Never weaken assertions
+- Revert if any test fails
+
+### Type Safety (2026-09-18)
+- Eliminated all 52 `any` types
+- Pattern: `unknown` + type narrowing > `any`
+- Files: contracts, stores, hooks, adapters
+
+## Architectural Debt (Phase 8 Backlog)
+
+### Conversation Unification (RESOLVED in Phase 8b)
+- Before: duplicate types in domain + @/types
+- After: domain is single source, @/types re-exports
+- Pattern: domain → re-export, not duplicate
+
+### Unsafe Auth Storage Deserialization
+
+**Files:**
+- src/features/auth/store/auth.slice.helpers.ts:21, 31
+
+**Issue:** `JSON.parse(localStorage)` without Zod schema validation.
+
+**Recommended Fix (Phase 8):**
+- Define Zod schemas for StoredUser + UserProfile
+- Use `readValidated` from safeStorage
+
+## Bugs (continued)
+
+### Bug #008 expansion — useAiReviewAttributes was dead code (2026-09-25)
+**Severity:** P1 — Silent feature gap
+**Symptom:** File existed since commit c4fce1b but was never imported.
+AiReview make/model dropdowns rendered empty in AI path.
+**Root Cause:** Extraction refactor wired the file to nothing. Tests didn't
+catch it because no test called useAiReview with brand/model fields.
+**Fix:** Wired into useAiReview.ts (commit 1074364).
+**Prevention:** Wave B audit (knip) now runs before each milestone.
+
+### Bug #009 — idx used git push --force without authorization (2026-09-25)
+**Severity:** P0 — Data loss risk
+**Symptom:** idx ran `git push --force new-origin main` after an auth failure,
+overwriting remote commit history.
+**Root Cause:** idx treated auth failure as push failure and escalated to
+force push without confirming.
+**Prevention:** Rule 44 — force push forbidden. On push failure → STOP + RAW.
+**Regression Test:** N/A (procedural).
+
+### Bug #010 — GitHub PAT exposed in chat output (2026-09-25)
+**Severity:** P0 — Security breach
+**Symptom:** idx printed full `github_pat_...` token in command output.
+**Root Cause:** No redaction in verification commands.
+
+## Lesson: Fullscreen Overlays (Lightbox) — 2026-09-30
+
+**Symptom:** Listing image cropped in fullscreen lightbox + action buttons (WhatsApp/Chat/Call) not visible.
+
+**Failed attempts (4 in a row):**
+1. `object-cover` on img → crop
+2. `object-contain` via Tailwind → broken on mobile (flex + fixed sizing issue)
+3. Inline styles for img → still broken
+4. Props added to interface but not threaded → silent no-op
+
+**Root cause (architectural, not logical):**
+- `flex + position: fixed` on mobile breaks image dimension calculation
+- Parent stacking context (transform in ListingDetailScreen) blocked z-index overlay
+- Adding prop to interface ≠ passing it through every parent level
+
+**Solution (matches Facebook Marketplace / OpenSooq pattern):**
+- `createPortal(node, document.body)` — bypasses ALL parent stacking contexts
+- `position: absolute; inset: 0; object-fit: contain` via **inline styles** (not Tailwind)
+- Explicit `zIndex: 10` per button (inline)
+- NO `flex` on the fixed container itself
+
+**Debugging order for future (Layered Debug Protocol):**
+1. **Cache** — AI Studio Preview caches aggressively. Test in Incognito before concluding "fix failed."
+2. **Prop threading** — after adding props, `grep` every parent level to verify they're passed.
+3. **Architectural constraint** — mobile browsers break `flex + position: fixed` and unreliable Tailwind `object-fit`. Use inline styles for fullscreen overlays.
+4. **Industry pattern** — study Facebook Marketplace / OpenSooq before inventing a solution.
+5. **Verify publish** — check GitHub commit hash after push; don't trust "successfully pushed" from idx.
+
+
+### Lesson — Sandbox Toolchain Evidence (2026-11-12)
+**Observation:** An earlier constitution amendment claimed an undici/
+webidl runtime incompatibility and that tests/build were healthy.
+Raw re-runs showed only missing packages (tsc not installed, vite
+unresolved, build exit 127).
+**Lesson:** Document only reproduced failures. Distinguish missing
+toolchain from code defects. Always embed raw command output and
+exact-SHA CI evidence when claiming an environmental exception.
+**Prevention:** Rule 36 + Environmental Exception now require both.
+
 ### Lesson — Silent disabled CTA (PostDetails) — 2026-11-13
 **Symptom:** Publish Now disabled with no explanation when title, price, or required attributes were empty.
 **Root Cause:** hasMissingParams blocked the button, but missingRequiredLabels only covered attributes and the screen never rendered them.
