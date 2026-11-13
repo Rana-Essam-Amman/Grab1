@@ -4,6 +4,7 @@ import { MissingFieldsNotice } from '@/shared/ui/MissingFieldsNotice';
 import { useUI } from '@/hooks/useUI';
 import { PostFlowHeader } from '../components/PostFlowHeader';
 import { PostDetailsFormFields } from '../components/PostDetailsFormFields';
+import { EditListingLocation } from '../components/EditListingLocation';
 import { useEditListing } from '../hooks/useEditListing';
 import { Lock } from 'iconsax-react';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
@@ -15,7 +16,7 @@ export const EditListingScreen: React.FC = () => {
   const {
     listing, title, setTitle, price, setPrice, description, setDescription,
     values, setField, fields, missingRequired, canSave, handleSave, submitAttempted,
-    isSaving, saveError, images, setImages,
+    isSaving, saveError, images, setImages, locationCtrl,
   } = useEditListing();
   const { isAdmin } = useIsAdmin();
 
@@ -63,6 +64,8 @@ export const EditListingScreen: React.FC = () => {
           fields={fields}
           submitAttempted={submitAttempted}
         />
+
+        <EditListingLocation isArabic={isArabic} location={locationCtrl} />
 
         {isAdmin && (
           <>
