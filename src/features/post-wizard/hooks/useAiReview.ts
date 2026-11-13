@@ -81,12 +81,19 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
   const curP = postDraft.price || postDraft.generated?.price || '';
   const curC = postDraft.city || '';
   const curD = postDraft.description || postDraft.generated?.description || '';
-  const missingRequiredLabels = (attributes || []).filter((a) => a.required && !String(a.value || '').trim()).map((a) => a.label);
+  const missingAttrLabels = (attributes || []).filter((a) => a.required && !String(a.value || '').trim()).map((a) => a.label);
+  const missingRequiredLabels = [
+    ...(!curT.trim() ? [isArabic ? 'عنوان الإعلان' : 'Listing Title'] : []),
+    ...(!curP.trim() ? [isArabic ? 'السعر' : 'Price'] : []),
+    ...missingAttrLabels,
+  ];
   const regenerate = useRegenerateListing({ postDraft, updatePostDraft, userId: (user as { id?: string })?.id || user?.email || user?.phone });
 
   return {
     title: curT, price: curP, city: curC, description: curD, photos, addPhotos, removePhoto, neighborhood, setNeighborhood,
     setTitle: (t) => updateField('title', t), setPrice: (p) => updateField('price', p), setCity, setDescription: (d) => updateField('description', d),
-    attributes, setAttributeValue, handlePublish, isPublishing, regenerate, hasMissingParams: !curT || !curP || missingRequiredLabels.length > 0, missingRequiredLabels, error,
+    attributes, setAttributeValue, handlePublish, isPublishing, regenerate,
+    hasMissingParams: missingRequiredLabels.length > 0,
+    missingRequiredLabels, error,
   };
 }
