@@ -13,7 +13,7 @@ interface RpcError {
   hint: string;
   code: string;
   name: string;
-  toJSON: () => { message: string; details: string; hint: string; code: string };
+  toJSON: () => { name: string; message: string; details: string; hint: string; code: string };
 }
 
 interface RpcSuccess {
@@ -53,7 +53,7 @@ function rpcError(message: string): RpcError {
     hint: '',
     code: 'P0001',
     name: 'PostgrestError',
-    toJSON: () => ({ message, details: '', hint: '', code: 'P0001' }),
+    toJSON: () => ({ name: 'PostgrestError', message, details: '', hint: '', code: 'P0001' }),
   };
 }
 
