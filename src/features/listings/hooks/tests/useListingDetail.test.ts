@@ -7,8 +7,11 @@ import { useAuth } from '@/hooks/useAuth';
 import { useChat } from '@/hooks/useChat';
 import { supabase } from '@/shared/lib/supabase';
 import { showChatUnavailable, showChatOpenFailed, showChatCrossMarket } from '../../helpers/chatErrorToast';
-import type { Listing } from '@/types';
+import { getWhatsAppUrl } from '../../helpers/listingDerivedData';
+import type { Listing, UserProfile, CountryDef } from '@/types';
 import type { WhatsAppIntent } from '../../helpers/whatsappIntents';
+import type { ScreenType, TabType } from '@/store/ui.slice';
+import type { MarketCode } from '@/shared/lib/marketGate';
 
 type UIReturn = ReturnType<typeof useUI>;
 type AuthReturn = ReturnType<typeof useAuth>;
@@ -19,16 +22,24 @@ interface LocationStub {
   href: string;
 }
 
-const navigateToMock = vi.fn();
-const setSelectedListingIdMock = vi.fn();
-const setSelectedThreadIdMock = vi.fn();
-const setSelectedSellerPhoneMock = vi.fn();
-const goBackMock = vi.fn();
-const openConversationMock = vi.fn();
-const handleDeleteRawMock = vi.fn();
+const navigateToMock = vi.fn<(screen: ScreenType) => void>();
+const setSelectedListingIdMock = vi.fn<(id: string | null) => void>();
+const setSelectedThreadIdMock = vi.fn<(id: string | null) => void>();
+const setSelectedSellerPhoneMock = vi.fn<(phone: string | null) => void>();
+const goBackMock = vi.fn<() => void>();
+const openConversationMock = vi.fn<ChatReturn['openConversation']>();
+const handleDeleteRawMock = vi.fn<(id: string, onSuccess: () => void) => Promise<void>>();
 
 const locationStub: LocationStub = { href: '' };
 const originalLocation = window.location;
+
+const jordan: CountryDef = {
+  code: 'JO',
+  nameEn: 'Jordan',
+  nameAr: 'الأردن',
+  flagUrl: '/flags/jo.jpg',
+  currencies: [{ code: 'JOD', nameEn: 'Jordanian Dinar', nameAr: 'دينار أردني' }],
+};
 
 vi.mock('@/hooks/useUI', () => ({ useUI: vi.fn() }));
 vi.mock('@/hooks/useListings', () => ({ useListings: vi.fn() }));
@@ -37,7 +48,7 @@ vi.mock('@/hooks/useChat', () => ({ useChat: vi.fn() }));
 vi.mock('@/shared/lib/supabase', () => ({
   supabase: { rpc: vi.fn(), auth: { getSession: vi.fn(), signInAnonymously: vi.fn() } },
 }));
-vi.mock('../helpers/listingDerivedData', () => ({
+vi.mock('../../helpers/listingDerivedData', () => ({
   useListingDerivedData: vi.fn(() => ({
     formattedPhone: { dialNumber: '+962791234567' },
     images: [],
@@ -82,49 +93,141 @@ function makeListing(overrides: Partial<Listing> = {}): Listing {
   };
 }
 
+function makeUser(overrides: Partial<UserProfile> = {}): UserProfile {
+  return {
+    id: 'buyer-1',
+    firstName: 'B',
+    lastName: 'U',
+    email: 'b@example.com',
+    phone: '+962700000000',
+    ...overrides,
+  };
+}
+
 let currentListing: Listing = makeListing();
 
-function mockUI(overrides: Partial<UIReturn> = {}): void {
-  vi.mocked(useUI).mockReturnValue({
+function buildUI(overrides: Partial<UIReturn> = {}): UIReturn {
+  const base: UIReturn = {
+    locale: 'ar',
     isArabic: true,
+    setLocale: vi.fn<(locale: 'en' | 'ar') => void>(),
+    currentScreen: 'listing-detail',
+    activeTab: 'explore',
+    screenHistory: [],
+    navigateTo: navigateToMock,
     goBack: goBackMock,
+    setActiveTab: vi.fn<(tab: TabType) => void>(),
     selectedListingId: 'item-123',
     setSelectedListingId: setSelectedListingIdMock,
+    selectedThreadId: null,
     setSelectedThreadId: setSelectedThreadIdMock,
+    selectedSellerPhone: null,
     setSelectedSellerPhone: setSelectedSellerPhoneMock,
-    navigateTo: navigateToMock,
+    searchQuery: '',
+    setSearchQuery: vi.fn<(query: string) => void>(),
+    categoryFilter: null,
+    setCategoryFilter: vi.fn<(category: string | null) => void>(),
+    subcategoryFilter: null,
+    setSubcategoryFilter: vi.fn<(subcategory: string | null) => void>(),
+    sortBy: 'newest',
+    setSortBy: vi.fn<(sortBy: 'newest' | 'price-asc' | 'price-desc') => void>(),
+    attrsFilter: {},
+    setAttrsFilter: vi.fn<(attrs: Record<string, string>) => void>(),
+    selectedParentCategory: null,
+    setSelectedParentCategory: vi.fn<(category: string | null) => void>(),
+    maxPriceFilter: null,
+    setMaxPriceFilter: vi.fn<(price: number | null) => void>(),
+    minPriceFilter: null,
+    setMinPriceFilter: vi.fn<(price: number | null) => void>(),
+    neighborhoodFilter: null,
+    neighborhoodSlugFilter: null,
+    browseGovernorateSlug: null,
+    browseDistrictSlug: null,
+    setNeighborhoodFilter: vi.fn<(neighborhood: string | null) => void>(),
     browseCountryCode: 'JO',
-    ...overrides,
-  } as UIReturn);
+    browseMarketOverride: null,
+    setBrowseMarketOverrideLocal: vi.fn<(market: MarketCode) => void>(),
+    clearBrowseMarketOverride: vi.fn<() => void>(),
+    geoUnsupported: false,
+    setGeoUnsupported: vi.fn<(v: boolean) => void>(),
+    pendingWishlistId: null,
+    setPendingWishlistId: vi.fn<(id: string | null) => void>(),
+    browseCountry: jordan,
+    browseCityEn: 'Amman',
+    browseCityAr: 'عمان',
+    activeCurrency: 'JOD',
+    setBrowseLocation: vi.fn<(countryCode: MarketCode, cityEn: string, cityAr: string) => void>(),
+    setActiveCurrency: vi.fn<(currency: string) => void>(),
+    isAiFocused: false,
+    setIsAiFocused: vi.fn<(focused: boolean) => void>(),
+    isCountrySheetOpen: false,
+    setIsCountrySheetOpen: vi.fn<(open: boolean) => void>(),
+    isSearchFocused: false,
+    setIsSearchFocused: vi.fn<(focused: boolean) => void>(),
+    aiFlowPending: false,
+    setAiFlowPending: vi.fn<(v: boolean) => void>(),
+  };
+  return { ...base, ...overrides };
 }
 
-function mockAuth(overrides: Partial<AuthReturn> = {}): void {
-  vi.mocked(useAuth).mockReturnValue({
+function buildAuth(overrides: Partial<AuthReturn> = {}): AuthReturn {
+  const base: AuthReturn = {
     authStatus: 'authenticated',
     isAnonymous: false,
-    user: { id: 'buyer-1', firstName: 'B', lastName: 'U', email: 'b@example.com', phone: '+962700000000' },
+    user: makeUser(),
     registered: true,
     sessionToken: 'token',
-    logout: vi.fn(),
-    verifySession: vi.fn(),
-    updateUser: vi.fn(),
-    updateAvatar: vi.fn(),
+    logout: vi.fn<() => void>(),
+    verifySession: vi.fn<() => Promise<boolean>>(async () => true),
+    updateUser: vi.fn<(updates: Partial<UserProfile>) => void>(),
+    updateAvatar: vi.fn<(dataUrl: string | null) => void>(),
     feedLayout: 'list',
-    setFeedLayout: vi.fn(),
-    ...overrides,
-  } as AuthReturn);
+    setFeedLayout: vi.fn<(layout: 'list' | 'grid') => void>(),
+  };
+  return { ...base, ...overrides };
 }
 
-function mockListings(): void {
-  vi.mocked(useListings).mockReturnValue({
-    getListing: vi.fn(() => currentListing),
-  } as unknown as ListingsReturn);
+function buildListings(): ListingsReturn {
+  return {
+    listings: [currentListing],
+    wishlist: [],
+    favorites: [],
+    wishlistListings: [],
+    isQuotaExhausted: false,
+    isWishlisted: () => false,
+    clearWishlist: vi.fn<() => void>(),
+    setWishlistForCountry: vi.fn<(country: string) => void>(),
+    toggleWishlist: vi.fn<(id: string, countryCode?: string) => void>(),
+    toggleFavorite: vi.fn<(id: string, countryCode?: string) => void>(),
+    addListing: vi.fn<(listing: Listing, activeCountry: string, isArabic?: boolean) => void>(),
+    publishListing: vi.fn<(listing: Listing, activeCountry: string, isArabic?: boolean) => Promise<{ success: boolean; remoteId: string | null; error: string | null }>>(async () => ({ success: true, remoteId: null, error: null })),
+    updateListing: vi.fn<(id: string, updates: Partial<Listing>) => void>(),
+    saveListingEdits: vi.fn<(id: string, updates: Partial<Listing>) => Promise<{ success: boolean; error: string | null }>>(async () => ({ success: true, error: null })),
+    deleteListing: vi.fn<(id: string) => Promise<{ success: boolean; error: string | null }>>(async () => ({ success: true, error: null })),
+    getListing: () => currentListing,
+    getUserListings: () => [currentListing],
+    userListings: [currentListing],
+    setIsQuotaExhausted: vi.fn<(exhausted: boolean) => void>(),
+    validateAdQuotaAvailability: vi.fn<(categorySlug: string, userId?: string, countryCode?: string) => boolean>(() => true),
+    hasMore: false,
+    isLoadingMore: false,
+    loadMore: vi.fn<() => Promise<void>>(async () => undefined),
+    searchFromSupabase: vi.fn<() => Promise<void>>(async () => undefined),
+    activeSearchQuery: null,
+    searchBanner: null,
+    searchRelatedHeader: null,
+    tier2Listings: [],
+  };
 }
 
-function mockChat(): void {
-  vi.mocked(useChat).mockReturnValue({
+function buildChat(): ChatReturn {
+  return {
+    conversations: [],
+    isTyping: () => false,
     openConversation: openConversationMock,
-  } as unknown as ChatReturn);
+    sendChatMessage: () => undefined,
+    sendChatMessageAsync: vi.fn<ChatReturn['sendChatMessageAsync']>(),
+  };
 }
 
 describe('useListingDetail', () => {
@@ -147,17 +250,27 @@ describe('useListingDetail', () => {
     locationStub.href = '';
     currentListing = makeListing();
     vi.spyOn(window, 'open').mockImplementation(() => null);
-    mockUI();
-    mockAuth();
-    mockListings();
-    mockChat();
+    vi.mocked(useUI).mockReturnValue(buildUI());
+    vi.mocked(useAuth).mockReturnValue(buildAuth());
+    vi.mocked(useListings).mockReturnValue(buildListings());
+    vi.mocked(useChat).mockReturnValue(buildChat());
     vi.mocked(supabase.rpc).mockResolvedValue({ data: '+962791234567', error: null });
     vi.mocked(supabase.auth.getSession).mockResolvedValue({ data: { session: null } });
     vi.mocked(supabase.auth.signInAnonymously).mockResolvedValue({ error: null });
   });
 
+  it('applies the listingDerivedData mock', () => {
+    expect(vi.isMockFunction(getWhatsAppUrl)).toBe(true);
+    expect(getWhatsAppUrl({
+      countryCode: 'JO',
+      dialNumber: '+962791234567',
+      listingTitle: 'Test',
+      isArabic: true,
+    })).toBe('https://wa.me/962791234567');
+  });
+
   it('handleCall with unauthenticated user (guest) reveals phone and sets tel: link', async () => {
-    mockAuth({ authStatus: 'unauthenticated', user: null, isAnonymous: false });
+    vi.mocked(useAuth).mockReturnValue(buildAuth({ authStatus: 'unauthenticated', user: null, isAnonymous: false }));
     const { result } = renderHook(() => useListingDetail());
     await act(async () => {
       await result.current.handleCall();
@@ -177,7 +290,7 @@ describe('useListingDetail', () => {
   });
 
   it('handleWhatsApp with unauthenticated user (guest) reveals phone and opens WhatsApp', async () => {
-    mockAuth({ authStatus: 'unauthenticated', user: null, isAnonymous: false });
+    vi.mocked(useAuth).mockReturnValue(buildAuth({ authStatus: 'unauthenticated', user: null, isAnonymous: false }));
     const { result } = renderHook(() => useListingDetail());
     await act(async () => {
       await result.current.handleWhatsApp();
@@ -198,7 +311,7 @@ describe('useListingDetail', () => {
 
   it('redirects guest to login and stores pending chat listing', async () => {
     const setItem = vi.spyOn(Storage.prototype, 'setItem');
-    mockAuth({ authStatus: 'unauthenticated', user: null, isAnonymous: false });
+    vi.mocked(useAuth).mockReturnValue(buildAuth({ authStatus: 'unauthenticated', user: null, isAnonymous: false }));
     const { result } = renderHook(() => useListingDetail());
     await act(async () => {
       await result.current.handleStartChat();
@@ -209,7 +322,11 @@ describe('useListingDetail', () => {
   });
 
   it('redirects anonymous user to login', async () => {
-    mockAuth({ authStatus: 'authenticated', isAnonymous: true, user: { id: 'anon', firstName: 'A', lastName: 'N', email: '', phone: '' } });
+    vi.mocked(useAuth).mockReturnValue(buildAuth({
+      authStatus: 'authenticated',
+      isAnonymous: true,
+      user: makeUser({ id: 'anon', firstName: 'A', lastName: 'N', email: '', phone: '' }),
+    }));
     const { result } = renderHook(() => useListingDetail());
     await act(async () => {
       await result.current.handleStartChat();
@@ -219,7 +336,9 @@ describe('useListingDetail', () => {
   });
 
   it('does not start chat when the viewer is the owner', async () => {
-    mockAuth({ user: { id: 'seller-1', firstName: 'S', lastName: 'E', email: 's@example.com', phone: '' } });
+    vi.mocked(useAuth).mockReturnValue(buildAuth({
+      user: makeUser({ id: 'seller-1', firstName: 'S', lastName: 'E', email: 's@example.com', phone: '' }),
+    }));
     const { result } = renderHook(() => useListingDetail());
     expect(result.current.isOwner).toBe(true);
     await act(async () => {
