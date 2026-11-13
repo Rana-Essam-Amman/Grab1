@@ -217,16 +217,16 @@ BEGIN
     FROM (VALUES
       ('search_listings',
        'p_query text, p_market text, p_limit integer, p_offset integer, p_category_slug text, p_subcategory_slug text, p_min_price numeric, p_max_price numeric, p_city text, p_neighborhood text, p_attrs jsonb',
-       'SETOF listings'),
+       'TABLE(id uuid, user_id uuid, title text, description text, price text, currency text, country_code text, city text, neighborhood text, category_slug text, subcategory_slug text, images text[], attributes jsonb, status text, views integer, seller_name text, seller_phone text, created_at timestamp with time zone, updated_at timestamp with time zone, bumps_today integer, bumps_reset_date date, is_premium boolean, premium_expires_at timestamp with time zone, auto_bump_active boolean, auto_bump_expires_at timestamp with time zone, image_width integer, image_height integer, search_text text, fts tsvector, search_chars text[], search_version integer, last_bumped_at timestamp with time zone, is_demo boolean)'),
       ('search_listings_v2',
        'p_query text, p_market text, p_limit integer, p_offset integer, p_category_slug text, p_subcategory_slug text, p_min_price numeric, p_max_price numeric, p_city text, p_neighborhood text, p_attrs jsonb',
-       'SETOF listings'),
+       'TABLE(id uuid, user_id uuid, title text, description text, price text, currency text, country_code text, city text, neighborhood text, category_slug text, subcategory_slug text, images text[], attributes jsonb, status text, views integer, seller_name text, seller_phone text, created_at timestamp with time zone, updated_at timestamp with time zone, bumps_today integer, bumps_reset_date date, is_premium boolean, premium_expires_at timestamp with time zone, auto_bump_active boolean, auto_bump_expires_at timestamp with time zone, image_width integer, image_height integer, search_text text, fts tsvector, search_chars text[], search_version integer, last_bumped_at timestamp with time zone, is_demo boolean)'),
       ('search_listings_v2_intent',
        'p_query text, p_market text, p_limit integer, p_offset integer, p_category_slug text, p_subcategory_slug text, p_min_price numeric, p_max_price numeric, p_city text, p_neighborhood text, p_attrs jsonb',
-       'SETOF listings'),
+       'TABLE(id uuid, user_id uuid, title text, description text, price text, currency text, country_code text, city text, neighborhood text, category_slug text, subcategory_slug text, images text[], attributes jsonb, status text, views integer, seller_name text, seller_phone text, created_at timestamp with time zone, updated_at timestamp with time zone, bumps_today integer, bumps_reset_date date, is_premium boolean, premium_expires_at timestamp with time zone, auto_bump_active boolean, auto_bump_expires_at timestamp with time zone, image_width integer, image_height integer, search_text text, fts tsvector, search_chars text[], search_version integer, last_bumped_at timestamp with time zone, is_demo boolean)'),
       ('search_listings_v2_intent_typo',
        'p_query text, p_market text, p_limit integer, p_offset integer, p_category_slug text, p_subcategory_slug text, p_min_price numeric, p_max_price numeric, p_city text, p_neighborhood text, p_attrs jsonb',
-       'SETOF listings')
+       'TABLE(id uuid, user_id uuid, title text, description text, price text, currency text, country_code text, city text, neighborhood text, category_slug text, subcategory_slug text, images text[], attributes jsonb, status text, views integer, seller_name text, seller_phone text, created_at timestamp with time zone, updated_at timestamp with time zone, bumps_today integer, bumps_reset_date date, is_premium boolean, premium_expires_at timestamp with time zone, auto_bump_active boolean, auto_bump_expires_at timestamp with time zone, image_width integer, image_height integer, search_text text, fts tsvector, search_chars text[], search_version integer, last_bumped_at timestamp with time zone, is_demo boolean)')
     ) AS expected(function_name, identity_args, result_type)
   LOOP
     SELECT p.oid,
@@ -279,13 +279,13 @@ BEGIN
     FROM (VALUES
       ('search_listings_hybrid',
        'p_query text, p_query_vector vector, p_market text, p_limit integer, p_offset integer, p_max_distance double precision, p_category_hint text, p_category_slug text, p_subcategory_slug text, p_min_price numeric, p_max_price numeric, p_city text, p_neighborhood text, p_attrs jsonb',
-       'SETOF listings'),
+       'TABLE(id uuid, user_id uuid, title text, description text, price text, currency text, country_code text, city text, neighborhood text, category_slug text, subcategory_slug text, images text[], attributes jsonb, status text, views integer, seller_name text, seller_phone text, created_at timestamp with time zone, updated_at timestamp with time zone, bumps_today integer, bumps_reset_date date, is_premium boolean, premium_expires_at timestamp with time zone, auto_bump_active boolean, auto_bump_expires_at timestamp with time zone, image_width integer, image_height integer, search_text text, fts tsvector, search_chars text[], search_version integer, last_bumped_at timestamp with time zone, is_demo boolean)'),
       ('search_listings_semantic',
        'p_query_vector vector, p_market text, p_limit integer, p_offset integer, p_max_distance double precision',
        'SETOF listings'),
       ('listings_by_seller',
        'p_seller_key text, p_market text, p_limit integer, p_offset integer',
-       'SETOF listings'),
+       'TABLE(id uuid, user_id uuid, title text, description text, price text, currency text, country_code text, city text, neighborhood text, category_slug text, subcategory_slug text, images text[], attributes jsonb, status text, views integer, seller_name text, seller_phone text, created_at timestamp with time zone, updated_at timestamp with time zone, bumps_today integer, bumps_reset_date date, is_premium boolean, premium_expires_at timestamp with time zone, auto_bump_active boolean, auto_bump_expires_at timestamp with time zone, image_width integer, image_height integer, search_text text, fts tsvector, search_chars text[], search_version integer, last_bumped_at timestamp with time zone, is_demo boolean)'),
       ('listing_passes_filters',
        'p_row listings, p_category_slug text, p_subcategory_slug text, p_min_price numeric, p_max_price numeric, p_city text, p_neighborhood text, p_attrs jsonb',
        'boolean')
