@@ -14,16 +14,16 @@
 - `authenticated` has EXECUTE; `anon` does not.
 
 ### Search / listing RPCs
-The following functions use an explicit 33-column `RETURNS TABLE(...)` contract in production. Every public result path projects `NULL::text AS seller_phone`:
+The following six functions use an explicit 33-column `RETURNS TABLE(...)` contract. Every public result path projects `NULL::text AS seller_phone`:
 
-- `listings_by_seller`
-- `search_listings`
-- `search_listings_hybrid`
+- `listings_by_seller` (UUID, phone-key, and orphan-phone paths)
+- `search_listings` (all fallback paths)
+- `search_listings_hybrid` (FTS-only and fused paths)
 - `search_listings_v2`
-- `search_listings_v2_intent`
-- `search_listings_v2_intent_typo`
+- `search_listings_v2_intent` (delegates to corrected `search_listings_v2`)
+- `search_listings_v2_intent_typo` (delegates to corrected `search_listings_v2_intent`)
 
-`search_listings_v4_tiered_v2` retains its distinct 26-column contract (including tier metadata) and must not be forced into the 33-column shape.
+`search_listings_v4_tiered_v2` retains its distinct 26-column contract (including tier metadata) and is not modified.
 
 ### ACLs
 - Neither `anon` nor `authenticated` has table-level SELECT on `public.listings`.
@@ -40,9 +40,9 @@ The following functions use an explicit 33-column `RETURNS TABLE(...)` contract 
 | 20261208 | mask_v2_search_seller_phone | Additional SETOF masking |
 | 20261209 | mask_tiered_v2_and_require_phone_identity | tiered_v2 (26-col) + get_listing_phone admin exception |
 | 20261210 | mask_typo_intent_rpc_production_contract | 33-col contract for v2_intent_typo |
-| 20261211 | fix_phone_mask_projection_live_table_contracts | 33-col contracts for remaining RPCs |
+| 20261211 | fix_phone_mask_projection_live_table_contracts | 33-col contracts for the remaining five RPCs |
 
-Production applied all six. The repository baseline contained only 06–09. Forward migrations 10 and 11 restore the verified final contracts on a clean database.
+All six 33-column functions are fully implemented in the migration chain. No CASCADE is used. Dependencies are handled by deliberate DROP order inside the migration transaction.
 
 ## Why contracts differ
 
@@ -60,4 +60,4 @@ The script refuses non-loopback hosts and runs `supabase/tests/phone_privacy_reg
 
 ## Validation status (this change)
 
-Local PostgreSQL / Supabase CLI was not available in the implementation environment. SQL migration tests and the phone privacy regression were **NOT RUN**. Static review of the migration chain and the corrected `get_listing_phone` body was performed. Production was not contacted or modified.
+Local PostgreSQL / Supabase CLI was not available in the implementation environment. SQL migration tests and the phone privacy regression were **NOT RUN**. Static review of the complete migration chain, all six 33-column projections, the 26-column contract, and the corrected `get_listing_phone` body was performed. Production was not contacted or modified.
