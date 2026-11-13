@@ -6,7 +6,7 @@ import { categoryBySlug, categories } from '@/data/categories';
 import { subcategoriesByCategory } from '@/data/subcategories';
 import { SubcategoryDef } from '@/types';
 import { filterListingsByMarket } from '@/shared/lib/marketGate';
-import { ArrowLeft, ArrowRight } from 'iconsax-react';
+import { BackButton } from '@/shared/ui/BackButton';
 import { ParentCategoryBanner } from '../components/ParentCategoryBanner';
 import { SubCategoriesList } from '../components/SubCategoriesList';
 
@@ -29,8 +29,6 @@ export const SubCategoriesScreen: React.FC = () => {
     () => subcategoriesByCategory(parentSlug),
     [parentSlug]
   );
-
-  const BackIcon = isArabic ? ArrowRight : ArrowLeft;
 
   const countryListings = useMemo(
     () => filterListingsByMarket(listings, browseCountryCode),
@@ -85,9 +83,11 @@ export const SubCategoriesScreen: React.FC = () => {
       {/* Top Header Navigation Bar */}
       <div className="sticky top-0 z-30 bg-brand border-b border-white/10 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button type="button" onClick={goBack} aria-label="Back" className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 flex items-center justify-center cursor-pointer active:scale-95">
-            <BackIcon size={18} variant="Linear" color="#FFFFFF" />
-          </button>
+          <BackButton
+            isArabic={isArabic}
+            onClick={goBack}
+            className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 flex items-center justify-center cursor-pointer active:scale-95 text-white"
+          />
           <div className="flex flex-col flex-1 min-w-0">
             <h1 className="text-base sm:text-lg font-bold text-white font-cairo leading-snug">
               {isArabic ? parentCategory.nameAr : parentCategory.nameEn}

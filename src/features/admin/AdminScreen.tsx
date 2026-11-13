@@ -4,7 +4,7 @@ import { useUI } from '@/hooks/useUI';
 import { useAdmin } from './useAdmin';
 import { AdminOverview } from './AdminOverview';
 import { AdminTabs } from './AdminTabs';
-import { ArrowRight, ArrowLeft } from 'iconsax-react';
+import { BackButton } from '@/shared/ui/BackButton';
 
 const ADMIN_EMAIL = 'sufyanyounis83@gmail.com';
 
@@ -33,19 +33,11 @@ export const AdminScreen: React.FC = () => {
     );
   }
 
-  const BackIcon = isArabic ? ArrowRight : ArrowLeft;
-
   return (
-    <div className="flex flex-col min-h-screen bg-background" dir="rtl">
+    <div className="flex flex-col min-h-screen bg-background" dir={isArabic ? 'rtl' : 'ltr'}>
       <div className="sticky top-0 z-10 bg-surface border-b border-border px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button
-            onClick={goBack}
-            className="p-1 text-ink hover:text-primary transition-colors cursor-pointer"
-            aria-label="الرجوع"
-          >
-            <BackIcon size={20} />
-          </button>
+          <BackButton isArabic={isArabic} onClick={goBack} className="p-1 text-ink hover:text-primary" />
           <h1 className="text-base font-bold text-ink">لوحة التحكم</h1>
         </div>
         <button

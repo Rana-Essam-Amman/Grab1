@@ -3,7 +3,8 @@ import { useUI } from '@/hooks/useUI';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/shared/ui/Button';
 import { Input } from '@/shared/ui/Input';
-import { ArrowLeft, ArrowRight, Lock1 } from 'iconsax-react';
+import { Lock1 } from 'iconsax-react';
+import { BackButton } from '@/shared/ui/BackButton';
 import { EditProfileAvatarSection } from '../components/EditProfileAvatarSection';
 import { BrandMark } from '@/shared/components/BrandMark';
 import { ProfileToast } from '../components/ProfileToast';
@@ -23,8 +24,6 @@ export const EditProfileScreen: React.FC = () => {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-
-  const BackIcon = isArabic ? ArrowRight : ArrowLeft;
 
   const handleSave = useCallback(async () => {
     if (!draft.firstName.trim() || !user?.id || isSaving) return;
@@ -67,9 +66,11 @@ export const EditProfileScreen: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-background pb-16 font-cairo relative" dir={isArabic ? 'rtl' : 'ltr'}>
       <div className="px-4 py-4 bg-brand border-b border-white/10 flex items-center gap-3 sticky top-0 z-20">
-        <button onClick={goBack} aria-label="Back" className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 flex items-center justify-center cursor-pointer">
-          <BackIcon size={18} variant="Linear" color="#FFFFFF" />
-        </button>
+        <BackButton
+          isArabic={isArabic}
+          onClick={goBack}
+          className="w-10 h-10 rounded-full bg-surface/15 hover:bg-surface/25 flex items-center justify-center cursor-pointer text-white"
+        />
         <h1 className="text-lg font-bold text-white flex-1">{isArabic ? 'تعديل الملف الشخصي' : 'Edit Profile'}</h1>
         <BrandMark isArabic={isArabic} />
       </div>
