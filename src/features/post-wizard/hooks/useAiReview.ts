@@ -5,6 +5,7 @@ import { useUI } from '@/hooks/useUI';
 import { useListings } from '@/hooks/useListings';
 import { useDraft } from '@/hooks/useDraft';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
+import { useTranslation } from '@/shared/i18n';
 import { setPendingPublish } from '../helpers/pendingPublishFlags';
 import { MONETIZATION_MATRIX } from '@/data/monetization';
 import { useAiReviewAttributes } from './useAiReviewAttributes';
@@ -22,6 +23,7 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
   const { resetPostDraft } = useDraft();
   const { authStatus, user, isAnonymous } = useAuth();
   const { navigateTo, browseCountryCode, activeCurrency, isArabic } = useUI();
+  const { t } = useTranslation();
   const { publishListing } = useListings();
   const { isAdmin, isLoading: isAdminLoading } = useIsAdmin();
   const [isPublishing, setIsPublishing] = useState(false);
@@ -83,8 +85,8 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
   const curD = postDraft.description || postDraft.generated?.description || '';
   const missingAttrLabels = (attributes || []).filter((a) => a.required && !String(a.value || '').trim()).map((a) => a.label);
   const missingRequiredLabels = [
-    ...(!curT.trim() ? [isArabic ? 'عنوان الإعلان' : 'Listing Title'] : []),
-    ...(!curP.trim() ? [isArabic ? 'السعر' : 'Price'] : []),
+    ...(!curT ? [t('post-wizard.missingTitle')] : []),
+    ...(!curP ? [t('post-wizard.missingPrice')] : []),
     ...missingAttrLabels,
   ];
   const regenerate = useRegenerateListing({ postDraft, updatePostDraft, userId: (user as { id?: string })?.id || user?.email || user?.phone });
@@ -93,7 +95,7 @@ export function useAiReview(): UseAiReviewReturn & { readonly regenerate: () => 
     title: curT, price: curP, city: curC, description: curD, photos, addPhotos, removePhoto, neighborhood, setNeighborhood,
     setTitle: (t) => updateField('title', t), setPrice: (p) => updateField('price', p), setCity, setDescription: (d) => updateField('description', d),
     attributes, setAttributeValue, handlePublish, isPublishing, regenerate,
-    hasMissingParams: missingRequiredLabels.length > 0,
+    hasMissingParams: !curT || !curP || missingAttrLabels.length > 0,
     missingRequiredLabels, error,
   };
 }
