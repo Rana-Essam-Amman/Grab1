@@ -87,11 +87,11 @@ describe('safeStorage', () => {
 
     it('clears chat_conversations and retries after QuotaExceededError', () => {
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      localStorage.setItem('chat_conversations', 'stale');
       const spySet = vi.spyOn(Storage.prototype, 'setItem');
       spySet.mockImplementationOnce(() => {
         throw new QuotaError();
       });
-      localStorage.setItem('chat_conversations', 'stale');
       writeValidated(key, schema, { id: '789', count: 20 });
       expect(localStorage.getItem('chat_conversations')).toBeNull();
       expect(JSON.parse(localStorage.getItem(key) || '{}')).toEqual({ id: '789', count: 20 });
@@ -99,13 +99,13 @@ describe('safeStorage', () => {
     });
 
     it('treats DOMException code 22 as a quota error', () => {
+      localStorage.setItem('chat_conversations', 'stale');
       const spySet = vi.spyOn(Storage.prototype, 'setItem');
       spySet.mockImplementationOnce(() => {
         const err = new QuotaError();
         Object.defineProperty(err, 'name', { value: 'NS_ERROR_DOM_QUOTA_REACHED' });
         throw err;
       });
-      localStorage.setItem('chat_conversations', 'stale');
       writeValidated(key, schema, { id: '789', count: 20 });
       expect(localStorage.getItem('chat_conversations')).toBeNull();
       expect(JSON.parse(localStorage.getItem(key) || '{}')).toEqual({ id: '789', count: 20 });

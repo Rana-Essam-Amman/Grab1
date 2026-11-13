@@ -319,3 +319,9 @@ CI Recovery + Rule 43 (2026-09-23)
 - Removed all any/as any from safeStorage.test.ts.
 - Added coverage for getItem throw, removeItem throw, QuotaExceededError cleanup of chat_conversations, DOMException code 22, quota retry failure, and non-quota write failure.
 - Corrected the quota test, which asserted catch_conversations instead of the production cleanup key chat_conversations.
+
+### 2026-11-13 — safeStorage quota test order fix
+- Seed chat_conversations before installing the setItem spy in both quota tests.
+- The one-shot exception was previously consumed by the seed write.
+- Assertions unchanged: cleanup of chat_conversations and successful retry write.
+- Production safeStorage.ts untouched.
