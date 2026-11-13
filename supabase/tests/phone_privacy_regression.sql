@@ -41,6 +41,35 @@ ON CONFLICT (id) DO UPDATE SET
   status = 'active',
   is_demo = false;
 
+-- Orphan-phone fixture. user_id is NOT NULL in the checked-in schema, so the
+-- fallback branch is otherwise unreachable. Drop the constraint only inside
+-- this rolled-back transaction.
+ALTER TABLE public.listings ALTER COLUMN user_id DROP NOT NULL;
+INSERT INTO public.listings (
+  id, user_id, title, description, price, currency, country_code,
+  city, category_slug, status, seller_name, seller_phone, is_demo, created_at
+) VALUES (
+  '33333333-3333-3333-3333-333333333333',
+  NULL,
+  'PhonePrivacyOrphan',
+  'Synthetic orphan-phone listing',
+  '90',
+  'JOD',
+  'JO',
+  'Amman',
+  'electronics',
+  'active',
+  'OrphanSeller',
+  '0792222222',
+  false,
+  now()
+)
+ON CONFLICT (id) DO UPDATE SET
+  user_id = NULL,
+  seller_phone = EXCLUDED.seller_phone,
+  status = 'active',
+  is_demo = false;
+
 -- ---------------------------------------------------------------------------
 -- A. Direct column access
 -- ---------------------------------------------------------------------------
@@ -223,6 +252,7 @@ DO $$
 DECLARE
   v_phone text;
   v_count int;
+  v_leaked int;
   v_sig text;
 BEGIN
   -- Exact path
@@ -261,21 +291,52 @@ BEGIN
   RAISE NOTICE 'PASS B-tiered-v4: masks seller_phone (% rows)', v_count;
   RESET ROLE;
 
-  -- Seller listings
+  -- Seller listings: UUID key, phone key, and orphan-phone fallback.
   v_sig := 'public.listings_by_seller(text,text,integer,integer)';
   IF to_regprocedure(v_sig) IS NULL THEN
     RAISE EXCEPTION 'FAIL B-seller: required function % is missing', v_sig;
   END IF;
+
+  -- Branch 1: UUID seller key.
   SET LOCAL ROLE anon;
-  SELECT count(*), max(seller_phone) INTO v_count, v_phone
+  SELECT count(*), count(*) FILTER (WHERE seller_phone IS NOT NULL)
+  INTO v_count, v_leaked
   FROM public.listings_by_seller('00000000-0000-0000-0000-0000000000a1', NULL, 10, 0);
   IF v_count = 0 THEN
-    RAISE EXCEPTION 'FAIL B-seller: returned zero rows';
+    RAISE EXCEPTION 'FAIL B-seller-uuid: returned zero rows';
   END IF;
-  IF v_phone IS NOT NULL THEN
-    RAISE EXCEPTION 'FAIL B-seller: non-null seller_phone';
+  IF v_leaked > 0 THEN
+    RAISE EXCEPTION 'FAIL B-seller-uuid: non-null seller_phone';
   END IF;
-  RAISE NOTICE 'PASS B-seller: masks seller_phone (% rows)', v_count;
+  RAISE NOTICE 'PASS B-seller-uuid: masks seller_phone (% rows)', v_count;
+  RESET ROLE;
+
+  -- Branch 2: phone key resolved to user_id.
+  SET LOCAL ROLE anon;
+  SELECT count(*), count(*) FILTER (WHERE seller_phone IS NOT NULL)
+  INTO v_count, v_leaked
+  FROM public.listings_by_seller('0791111111', NULL, 10, 0);
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'FAIL B-seller-phone: returned zero rows';
+  END IF;
+  IF v_leaked > 0 THEN
+    RAISE EXCEPTION 'FAIL B-seller-phone: non-null seller_phone';
+  END IF;
+  RAISE NOTICE 'PASS B-seller-phone: masks seller_phone (% rows)', v_count;
+  RESET ROLE;
+
+  -- Branch 3: orphan phone (no non-null user_id for this phone).
+  SET LOCAL ROLE anon;
+  SELECT count(*), count(*) FILTER (WHERE seller_phone IS NOT NULL)
+  INTO v_count, v_leaked
+  FROM public.listings_by_seller('0792222222', NULL, 10, 0);
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'FAIL B-seller-orphan: returned zero rows';
+  END IF;
+  IF v_leaked > 0 THEN
+    RAISE EXCEPTION 'FAIL B-seller-orphan: non-null seller_phone';
+  END IF;
+  RAISE NOTICE 'PASS B-seller-orphan: masks seller_phone (% rows)', v_count;
   RESET ROLE;
 
   -- Legacy v3 wrapper (15-arg signature)
@@ -352,9 +413,12 @@ BEGIN
 END $$;
 
 -- ---------------------------------------------------------------------------
--- C. Semantic restriction + hybrid still callable
+-- C. Semantic restriction + hybrid still callable and masks phone
 -- ---------------------------------------------------------------------------
 DO $$
+DECLARE
+  v_count int;
+  v_leaked int;
 BEGIN
   SET LOCAL ROLE anon;
   BEGIN
@@ -383,8 +447,27 @@ BEGIN
     RAISE EXCEPTION 'FAIL C3: search_listings_hybrid is missing';
   END IF;
   SET LOCAL ROLE anon;
-  PERFORM 1 FROM public.search_listings_hybrid('PhonePrivacySynthetic', NULL, 5, 0) LIMIT 1;
-  RAISE NOTICE 'PASS C3: search_listings_hybrid remains callable by anon after semantic revoke';
+  SELECT count(*), count(*) FILTER (WHERE seller_phone IS NOT NULL)
+  INTO v_count, v_leaked
+  FROM public.search_listings_hybrid('PhonePrivacySynthetic', NULL, NULL, 10, 0);
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'FAIL C3: hybrid returned zero rows for synthetic listing';
+  END IF;
+  IF v_leaked > 0 THEN
+    RAISE EXCEPTION 'FAIL C3: hybrid returned % row(s) with non-null seller_phone', v_leaked;
+  END IF;
+  RAISE NOTICE 'PASS C3: hybrid callable and masks seller_phone (% rows)', v_count;
+
+  SELECT count(*), count(*) FILTER (WHERE seller_phone IS NOT NULL)
+  INTO v_count, v_leaked
+  FROM public.search_listings('PhonePrivacySynthetic', NULL, 10, 0);
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'FAIL C4: search_listings returned zero rows';
+  END IF;
+  IF v_leaked > 0 THEN
+    RAISE EXCEPTION 'FAIL C4: search_listings returned non-null seller_phone';
+  END IF;
+  RAISE NOTICE 'PASS C4: search_listings masks seller_phone (% rows)', v_count;
   RESET ROLE;
 END $$;
 
