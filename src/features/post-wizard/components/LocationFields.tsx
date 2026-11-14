@@ -30,6 +30,9 @@ interface Props {
   onSiteChange: (s: string) => void;
   onCustomCityChange: (v: string) => void;
   onCustomNeighborhoodChange: (v: string) => void;
+  /** Optional free-text neighbourhood name (not the canonical area). */
+  neighborhoodName?: string;
+  onNeighborhoodNameChange?: (v: string) => void;
   /** @deprecated Kept for backward compatibility with PhotoUploadScreen. Unused. */
   onJordanLocationSelect?: (res: unknown) => void;
 }
@@ -51,6 +54,8 @@ export const LocationFields: React.FC<Props> = ({
   onSiteChange,
   onCustomCityChange,
   onCustomNeighborhoodChange,
+  neighborhoodName = '',
+  onNeighborhoodNameChange,
 }) => {
   const { browseCountryCode } = useUI();
   const profile = getMarketProfile(browseCountryCode);
@@ -92,6 +97,7 @@ export const LocationFields: React.FC<Props> = ({
             onChange={onCityChange}
             placeholder={isArabic ? 'ابحث عن مدينة...' : 'Search city...'}
             isArabic={isArabic}
+            autoFocusSearch={false}
           />
         </div>
       </div>
@@ -119,6 +125,7 @@ export const LocationFields: React.FC<Props> = ({
               onSearch={setLiveQuery}
               placeholder={isArabic ? 'ابحث عن حي...' : 'Search neighbourhood...'}
               isArabic={isArabic}
+              autoFocusSearch={false}
             />
           </div>
 
@@ -139,6 +146,17 @@ export const LocationFields: React.FC<Props> = ({
             />
           )}
         </div>
+      )}
+
+      {onNeighborhoodNameChange && (
+        <Input
+          label={isArabic ? 'اسم الحي (اختياري)' : 'Neighbourhood name (optional)'}
+          type="text"
+          value={neighborhoodName}
+          onChange={(e) => onNeighborhoodNameChange(e.target.value)}
+          placeholder={isArabic ? 'مثلاً: حي الصالحين' : 'e.g., Al-Saliheen'}
+          className="h-11"
+        />
       )}
 
       <Input
