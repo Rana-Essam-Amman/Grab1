@@ -74,7 +74,6 @@ GRANT SELECT (
   created_at,
   updated_at,
   is_demo,
-  last_bumped_at,
   image_width,
   image_height,
   city_slug,
