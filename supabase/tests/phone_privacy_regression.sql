@@ -162,6 +162,7 @@ DECLARE
     'bumps_reset_date',
     'auto_bump_active',
     'auto_bump_expires_at',
+    'last_bumped_at',
     'search_text',
     'fts',
     'search_chars',
@@ -267,6 +268,42 @@ BEGIN
     RAISE EXCEPTION 'FAIL A9: listings_update_own_or_admin policy missing';
   END IF;
   RAISE NOTICE 'PASS A9: RLS policies unchanged';
+END $$;
+
+
+-- ---------------------------------------------------------------------------
+-- A10. Explicit PUBLIC ACL catalog inspection
+--      PUBLIC is not an ordinary role. Inspect pg_class.relacl and
+--      pg_attribute.attacl via aclexplode. grantee = 0 means PUBLIC.
+-- ---------------------------------------------------------------------------
+DO $$
+DECLARE
+  v_count int;
+BEGIN
+  -- No table-level SELECT grant remains for PUBLIC on public.listings
+  SELECT count(*) INTO v_count
+  FROM aclexplode((
+    SELECT relacl FROM pg_class WHERE oid = 'public.listings'::regclass
+  ))
+  WHERE privilege_type = 'SELECT' AND grantee = 0;
+  IF v_count > 0 THEN
+    RAISE EXCEPTION 'FAIL A10: PUBLIC still has table-level SELECT on listings (count=%)', v_count;
+  END IF;
+  RAISE NOTICE 'PASS A10: no table-level SELECT grant for PUBLIC on listings';
+
+  -- No column-level SELECT grant remains for PUBLIC on any listings column
+  SELECT count(*) INTO v_count
+  FROM pg_attribute a
+  CROSS JOIN LATERAL aclexplode(a.attacl) acl
+  WHERE a.attrelid = 'public.listings'::regclass
+    AND a.attnum > 0
+    AND NOT a.attisdropped
+    AND acl.privilege_type = 'SELECT'
+    AND acl.grantee = 0;
+  IF v_count > 0 THEN
+    RAISE EXCEPTION 'FAIL A11: PUBLIC has column-level SELECT on % listings column(s)', v_count;
+  END IF;
+  RAISE NOTICE 'PASS A11: no column-level SELECT grant for PUBLIC on any listings column';
 END $$;
 
 -- ---------------------------------------------------------------------------
@@ -497,14 +534,78 @@ BEGIN
   SET LOCAL ROLE anon;
   SELECT count(*), count(*) FILTER (WHERE seller_phone IS NOT NULL)
   INTO v_count, v_leaked
-  FROM public.search_listings_hybrid('PhonePrivacySynthetic');
+  FROM public.search_listings_hybrid('PhonePrivacySynthetic', NULL, NULL, 10, 0);
   IF v_count = 0 THEN
-    RAISE EXCEPTION 'FAIL C3: hybrid returned zero rows';
+    RAISE EXCEPTION 'FAIL C3: hybrid returned zero rows for synthetic listing';
   END IF;
   IF v_leaked > 0 THEN
-    RAISE EXCEPTION 'FAIL C3: hybrid returned non-null seller_phone';
+    RAISE EXCEPTION 'FAIL C3: hybrid returned % row(s) with non-null seller_phone', v_leaked;
   END IF;
-  RAISE NOTICE 'PASS C3: hybrid masks seller_phone (% rows)', v_count;
+  RAISE NOTICE 'PASS C3: hybrid callable and masks seller_phone (% rows)', v_count;
+
+  SELECT count(*), count(*) FILTER (WHERE seller_phone IS NOT NULL)
+  INTO v_count, v_leaked
+  FROM public.search_listings('PhonePrivacySynthetic', NULL, 10, 0);
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'FAIL C4: search_listings returned zero rows';
+  END IF;
+  IF v_leaked > 0 THEN
+    RAISE EXCEPTION 'FAIL C4: search_listings returned non-null seller_phone';
+  END IF;
+  RAISE NOTICE 'PASS C4: search_listings masks seller_phone (% rows)', v_count;
+
+  SELECT count(*), count(*) FILTER (WHERE seller_phone IS NOT NULL)
+  INTO v_count, v_leaked
+  FROM public.search_listings_v2('PhonePrivacySynthetic', NULL, 10, 0);
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'FAIL C5: search_listings_v2 returned zero rows';
+  END IF;
+  IF v_leaked > 0 THEN
+    RAISE EXCEPTION 'FAIL C5: search_listings_v2 returned non-null seller_phone';
+  END IF;
+  RAISE NOTICE 'PASS C5: search_listings_v2 masks seller_phone (% rows)', v_count;
+
+  SELECT count(*), count(*) FILTER (WHERE seller_phone IS NOT NULL)
+  INTO v_count, v_leaked
+  FROM public.search_listings_v2_intent('PhonePrivacySynthetic', NULL, 10, 0);
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'FAIL C6: search_listings_v2_intent returned zero rows';
+  END IF;
+  IF v_leaked > 0 THEN
+    RAISE EXCEPTION 'FAIL C6: search_listings_v2_intent returned non-null seller_phone';
+  END IF;
+  RAISE NOTICE 'PASS C6: search_listings_v2_intent masks seller_phone (% rows)', v_count;
+
+  -- typo delegated path: exact token is found by v2_intent, so typo returns that path.
+  SELECT count(*), count(*) FILTER (WHERE seller_phone IS NOT NULL)
+  INTO v_count, v_leaked
+  FROM public.search_listings_v2_intent_typo('PhonePrivacySynthetic', NULL, 10, 0);
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'FAIL C7: typo delegated path returned zero rows';
+  END IF;
+  IF v_leaked > 0 THEN
+    RAISE EXCEPTION 'FAIL C7: typo delegated path returned non-null seller_phone';
+  END IF;
+  RAISE NOTICE 'PASS C7: typo delegated path masks seller_phone (% rows)', v_count;
+
+  -- typo fallback: a near-miss that v2_intent does not return, but the
+  -- strict fuzzy fallback can. Assert masking if the fallback produces rows.
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v2_intent('PhonePrivacySyntheic', NULL, 10, 0);
+  IF v_count = 0 THEN
+    SELECT count(*), count(*) FILTER (WHERE seller_phone IS NOT NULL)
+    INTO v_count, v_leaked
+    FROM public.search_listings_v2_intent_typo('PhonePrivacySyntheic', NULL, 10, 0);
+    IF v_count = 0 THEN
+      RAISE EXCEPTION 'FAIL C8: typo fallback returned zero rows';
+    END IF;
+    IF v_leaked > 0 THEN
+      RAISE EXCEPTION 'FAIL C8: typo fallback returned non-null seller_phone';
+    END IF;
+    RAISE NOTICE 'PASS C8: typo fallback masks seller_phone (% rows)', v_count;
+  ELSE
+    RAISE EXCEPTION 'FAIL C8: misspelled query hit delegated path; fallback not isolated';
+  END IF;
   RESET ROLE;
 END $$;
 

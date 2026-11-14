@@ -1,3 +1,4 @@
+
 name: Search RPC SQL (disposable Postgres)
 
 # Free GitHub Actions + pgvector official image only.
@@ -34,10 +35,12 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 10
+
     env:
       # Loopback only. Matches the guard in test-search-rpc-local.sh.
       # Local password is a disposable container credential, not a secret.
       DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/postgres
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
