@@ -89,3 +89,7 @@ jobs:
         run: |
           chmod +x test-search-rpc-local.sh
           ./test-search-rpc-local.sh
+
+      - name: Run P1 phone privacy SQL regression suite
+        run: |
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/phone_privacy_regression.sql
