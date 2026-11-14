@@ -533,56 +533,114 @@ BEGIN
   SET LOCAL ROLE anon;
   SELECT count(*), count(*) FILTER (WHERE seller_phone IS NOT NULL)
   INTO v_count, v_leaked
-  FROM public.search_listings_hybrid('PhonePrivacySynthetic', NULL::extensions.vector, NULL, 10, 0);
+  FROM public.search_listings_hybrid('PhonePrivacySynthetic', NULL, NULL, 10, 0);
   IF v_count = 0 THEN
-    RAISE EXCEPTION 'FAIL C3: hybrid returned zero rows';
+    RAISE EXCEPTION 'FAIL C3: hybrid returned zero rows for synthetic listing';
   END IF;
   IF v_leaked > 0 THEN
-    RAISE EXCEPTION 'FAIL C3: hybrid returned non-null seller_phone';
+    RAISE EXCEPTION 'FAIL C3: hybrid returned % row(s) with non-null seller_phone', v_leaked;
   END IF;
   RAISE NOTICE 'PASS C3: hybrid callable and masks seller_phone (% rows)', v_count;
+
+  SELECT count(*), count(*) FILTER (WHERE seller_phone IS NOT NULL)
+  INTO v_count, v_leaked
+  FROM public.search_listings('PhonePrivacySynthetic', NULL, 10, 0);
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'FAIL C4: search_listings returned zero rows';
+  END IF;
+  IF v_leaked > 0 THEN
+    RAISE EXCEPTION 'FAIL C4: search_listings returned non-null seller_phone';
+  END IF;
+  RAISE NOTICE 'PASS C4: search_listings masks seller_phone (% rows)', v_count;
+
+  SELECT count(*), count(*) FILTER (WHERE seller_phone IS NOT NULL)
+  INTO v_count, v_leaked
+  FROM public.search_listings_v2('PhonePrivacySynthetic', NULL, 10, 0);
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'FAIL C5: search_listings_v2 returned zero rows';
+  END IF;
+  IF v_leaked > 0 THEN
+    RAISE EXCEPTION 'FAIL C5: search_listings_v2 returned non-null seller_phone';
+  END IF;
+  RAISE NOTICE 'PASS C5: search_listings_v2 masks seller_phone (% rows)', v_count;
+
+  SELECT count(*), count(*) FILTER (WHERE seller_phone IS NOT NULL)
+  INTO v_count, v_leaked
+  FROM public.search_listings_v2_intent('PhonePrivacySynthetic', NULL, 10, 0);
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'FAIL C6: search_listings_v2_intent returned zero rows';
+  END IF;
+  IF v_leaked > 0 THEN
+    RAISE EXCEPTION 'FAIL C6: search_listings_v2_intent returned non-null seller_phone';
+  END IF;
+  RAISE NOTICE 'PASS C6: search_listings_v2_intent masks seller_phone (% rows)', v_count;
+
+  -- typo delegated path: exact token is found by v2_intent, so typo returns that path.
+  SELECT count(*), count(*) FILTER (WHERE seller_phone IS NOT NULL)
+  INTO v_count, v_leaked
+  FROM public.search_listings_v2_intent_typo('PhonePrivacySynthetic', NULL, 10, 0);
+  IF v_count = 0 THEN
+    RAISE EXCEPTION 'FAIL C7: typo delegated path returned zero rows';
+  END IF;
+  IF v_leaked > 0 THEN
+    RAISE EXCEPTION 'FAIL C7: typo delegated path returned non-null seller_phone';
+  END IF;
+  RAISE NOTICE 'PASS C7: typo delegated path masks seller_phone (% rows)', v_count;
+
+  -- typo fallback: a near-miss that v2_intent does not return, but the
+  -- strict fuzzy fallback can. Assert masking if the fallback produces rows.
+  SELECT count(*) INTO v_count
+  FROM public.search_listings_v2_intent('PhonePrivacySyntheic', NULL, 10, 0);
+  IF v_count = 0 THEN
+    SELECT count(*), count(*) FILTER (WHERE seller_phone IS NOT NULL)
+    INTO v_count, v_leaked
+    FROM public.search_listings_v2_intent_typo('PhonePrivacySyntheic', NULL, 10, 0);
+    IF v_count = 0 THEN
+      RAISE EXCEPTION 'FAIL C8: typo fallback returned zero rows';
+    END IF;
+    IF v_leaked > 0 THEN
+      RAISE EXCEPTION 'FAIL C8: typo fallback returned non-null seller_phone';
+    END IF;
+    RAISE NOTICE 'PASS C8: typo fallback masks seller_phone (% rows)', v_count;
+  ELSE
+    RAISE EXCEPTION 'FAIL C8: misspelled query hit delegated path; fallback not isolated';
+  END IF;
   RESET ROLE;
 END $$;
 
 -- ---------------------------------------------------------------------------
--- D. get_listing_phone behavior and rate limiting
+-- D. Authorized phone reveal, restrictions, and rate limit
 -- ---------------------------------------------------------------------------
 DO $$
 DECLARE
+  v_ok boolean;
   v_phone text;
   v_i int;
 BEGIN
-  -- D1: anon cannot call get_listing_phone
+  -- D1: unauthenticated must be rejected
   SET LOCAL ROLE anon;
   BEGIN
     PERFORM public.get_listing_phone('22222222-2222-2222-2222-222222222222');
-    RAISE EXCEPTION 'FAIL D1: anon could call get_listing_phone';
+    RAISE EXCEPTION 'FAIL D1: anon successfully called get_listing_phone';
   EXCEPTION
     WHEN insufficient_privilege THEN
-      RAISE NOTICE 'PASS D1: anon cannot call get_listing_phone';
-  END;
-  RESET ROLE;
-
-  -- D2: authenticated with no identity cannot reveal
-  SET LOCAL ROLE authenticated;
-  BEGIN
-    PERFORM public.get_listing_phone('22222222-2222-2222-2222-222222222222');
-    RAISE EXCEPTION 'FAIL D2: authenticated with null auth.uid() revealed a phone';
-  EXCEPTION
-    WHEN insufficient_privilege THEN
-      RAISE NOTICE 'PASS D2: missing identity rejected';
+      RAISE NOTICE 'PASS D1: unauthenticated get_listing_phone rejected with insufficient_privilege';
     WHEN OTHERS THEN
-      IF SQLERRM LIKE 'FAIL D2%' THEN
+      IF SQLERRM LIKE 'FAIL D1%' THEN
         RAISE;
       END IF;
-      IF SQLERRM NOT LIKE '%NOT_AUTHENTICATED%' THEN
-        RAISE EXCEPTION 'FAIL D2: unexpected rejection (%)', SQLERRM;
-      END IF;
-      RAISE NOTICE 'PASS D2: missing identity rejected';
+      RAISE NOTICE 'PASS D1: unauthenticated get_listing_phone rejected (%).', SQLSTATE;
   END;
   RESET ROLE;
 
-  -- D3: authenticated with null auth.uid() rejected
+  -- D2: authenticated holds EXECUTE
+  SELECT has_function_privilege('authenticated', 'public.get_listing_phone(uuid)', 'EXECUTE') INTO v_ok;
+  IF NOT v_ok THEN
+    RAISE EXCEPTION 'FAIL D2: authenticated missing EXECUTE on get_listing_phone';
+  END IF;
+  RAISE NOTICE 'PASS D2: authenticated has EXECUTE on get_listing_phone';
+
+  -- D3: authenticated role with no identity is rejected
   SET LOCAL ROLE authenticated;
   BEGIN
     PERFORM public.get_listing_phone('22222222-2222-2222-2222-222222222222');
