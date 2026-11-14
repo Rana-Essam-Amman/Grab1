@@ -4,7 +4,7 @@ import { usePhotoUpload } from '../hooks/usePhotoUpload';
 import { useLocationPick } from '../hooks/useLocationPick';
 import React, { useCallback } from 'react';
 import { listingMinPhotos } from '@/data/photoRules';
-import { ArrowLeft, ArrowRight, Warning2 } from 'iconsax-react';
+import { ArrowLeft, ArrowRight } from 'iconsax-react';
 import { Button } from '@/shared/ui/Button';
 import { PhotoPreviewList } from '../components/PhotoPreviewList';
 import { PhotoUploader } from '../components/PhotoUploader';
@@ -56,6 +56,10 @@ export const PhotoUploadScreen: React.FC = () => {
       'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="%23E5E7EB"/></svg>';
   }, []);
 
+  const handleNeighborhoodNameChange = useCallback((v: string) => {
+    updatePostDraft({ neighborhoodName: v });
+  }, [updatePostDraft]);
+
   return (
     <div className="flex flex-col min-h-screen bg-surface pb-12" dir={isArabic ? 'rtl' : 'ltr'}>
       <PostFlowHeader
@@ -72,17 +76,17 @@ export const PhotoUploadScreen: React.FC = () => {
         subcategoryNameEn={sub?.nameEn}
       />
 
-      <div className="p-4 flex-1 flex flex-col gap-6">
-        {/* Section 1: Photos */}
-        <section className="flex flex-col gap-4">
-          <div className="p-3.5 rounded-2xl bg-warning/10 border border-warning/20 flex items-start gap-2.5">
-            <Warning2 size={16} variant="Bold" className="shrink-0 mt-0.5 text-warning" />
-            <div className="text-[12px] font-medium text-ink leading-relaxed">
-              {isArabic ? 'يجب إضافة صورة واحدة على الأقل. الصور الواضحة تضاعف سرعة بيع السلعة.' : 'Add at least 1 photo. Clear photos increase buyer interest.'}
-            </div>
-          </div>
+      <div className="p-4 flex-1 flex flex-col gap-5">
+        {/* Photos — compact */}
+        <section className="flex flex-col gap-3">
+          <h2 className="text-base font-semibold text-ink">
+            {isArabic ? 'أضف صور إعلانك' : 'Add your listing photos'}
+          </h2>
+          <p className="text-xs text-ink-muted">
+            {isArabic ? 'الصورة الواضحة تساعد المشتري يتعرف على سلعتك.' : 'Clear photos help buyers recognise your item.'}
+          </p>
 
-          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
             <PhotoPreviewList photos={photos} isArabic={isArabic} onRemove={handleRemove} onSetCover={handleSetCover} onImageError={handleImageError} />
             <PhotoUploader photoCount={photos.length} isArabic={isArabic} onFiles={handleFiles} />
           </div>
@@ -91,20 +95,20 @@ export const PhotoUploadScreen: React.FC = () => {
 
           {import.meta.env.DEV && photos.length === 0 && (
             <Button type="button" variant="outline" size="sm" onClick={() => handleUseSample(postDraft.categorySlug)} className="self-start">
-              {isArabic ? 'استخدم صورة تجريبية لهذا القسم' : 'Use sample photo for this category'}
+              {isArabic ? 'استخدم صورة تجريبية' : 'Use sample photo'}
             </Button>
           )}
         </section>
 
-        <div className="border-t border-line" />
+        {/* Location — friendly section */}
+        <section className="flex flex-col gap-3">
+          <h2 className="text-base font-semibold text-ink">
+            {isArabic ? 'وين موقع إعلانك؟' : 'Where is your listing?'}
+          </h2>
+          <p className="text-xs text-ink-muted">
+            {isArabic ? 'اختَر المدينة والمنطقة، وإذا بتحب اكتب اسم الحي.' : 'Choose the city and area. You can optionally add a neighbourhood name.'}
+          </p>
 
-        {/* Section 2: Location */}
-        <section className="flex flex-col gap-4">
-          <h3 className="font-bold text-ink px-1 flex items-center gap-2">
-            <span className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center text-accent text-sm">📍</span>
-            {isArabic ? 'الموقع' : 'Location'}
-          </h3>
-          
           <LocationFields
             isArabic={isArabic}
             selectedCity={selectedCity}
@@ -120,17 +124,19 @@ export const PhotoUploadScreen: React.FC = () => {
             onSiteChange={handleSiteChange}
             onCustomCityChange={setCustomCity}
             onCustomNeighborhoodChange={setCustomNeighborhood}
+            neighborhoodName={postDraft.neighborhoodName ?? ''}
+            onNeighborhoodNameChange={handleNeighborhoodNameChange}
           />
         </section>
 
-        <div className="mt-8">
+        <div className="mt-4">
           <Button
             variant="primary"
             fullWidth
             size="lg"
             disabled={photos.length < listingMinPhotos}
             onClick={handleContinue}
-            className={`gap-2 ${photos.length >= listingMinPhotos ? 'animate-[halo-pulse_2s_ease-in-out_infinite]' : ''}`}
+            className="gap-2"
           >
             <span>{isArabic ? 'متابعة لتفاصيل الإعلان' : 'Continue to Details'}</span>
             <NextIcon size={18} variant="Linear" />
