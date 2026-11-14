@@ -52,6 +52,7 @@ export function buildNewListingPayload({
     countryCode: targetMarket as Listing['countryCode'],
     city: rawCity,
     neighborhood: rawNeighborhood,
+    neighborhoodName: postDraft.neighborhoodName?.trim() || undefined,
     citySlug: postDraft.citySlug,
     districtSlug: postDraft.districtSlug,
     neighborhoodSlug: postDraft.neighborhoodSlug,
