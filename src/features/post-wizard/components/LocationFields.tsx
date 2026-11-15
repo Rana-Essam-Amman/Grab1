@@ -1,3 +1,4 @@
+
 // RULE-14-EXCEPTION: LocationFields must remain a single component to preserve state cohesion across city/neighborhood/site inputs + Live Search integration + static map preview. Splitting would require props drilling through 5+ levels.
 
 import React, { useState } from 'react';
