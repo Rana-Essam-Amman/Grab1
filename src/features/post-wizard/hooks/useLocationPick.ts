@@ -9,7 +9,7 @@ import { googleSearchQuery } from '@/data/mapUrls';
 import { normalizeArabic } from '@/shared/lib/arabicNormalize';
 import { stripAdminWords } from '@/shared/lib/geo/stripAdminWords';
 import { JO_OPENSOOQ_AREAS } from '@/data/locations/JO_OPENSOOQ_AREAS';
-import { hasOpensooqData, getAllOpensooqCities, getAllOpensooqCity, getAllOpensooqAreas } from '@/data/locations/opensooq';
+import { hasOpensooqData, getAllOpensooqCities, getAllOpensooqAreas } from '@/data/locations/opensooq';
 import { recordNeighborhoodUsage } from '@/services/locations.service';
 import { toast } from 'sonner';
 import { preserveVerifiedJordanSelection, resolveTraditionalLocationSlugs } from '../helpers/traditionalLocationResolver';
@@ -35,6 +35,7 @@ export interface UseLocationPickReturn {
 }
 
 const LABEL_SEPARATOR = ' — ';
+
 function stripSuffix(label: string): string {
   const idx = label.indexOf(LABEL_SEPARATOR);
   return idx > -1 ? label.substring(0, idx) : label;
@@ -57,9 +58,12 @@ export function useLocationPick(): UseLocationPickReturn {
     }
     return getAllGovernorates(browseCountryCode);
   }, [browseCountryCode]);
+
   const govsMap = useMemo(() => {
     const map = new Map<string, string>();
-    for (const g of rawGovs) map.set(isArabic ? g.nameAr : g.nameEn, g.slug);
+    for (const g of rawGovs) {
+      map.set(isArabic ? g.nameAr : g.nameEn, g.slug);
+    }
     return map;
   }, [rawGovs, isArabic]);
 
@@ -70,68 +74,101 @@ export function useLocationPick(): UseLocationPickReturn {
 
   const resolveCityLabel = useCallback((saved: string): string | null => {
     if (!saved) return null;
+
     const normalizedSaved = normalizeArabic(saved);
-    
-    const currentMatch = rawGovs.find((g) => normalizeArabic(isArabic ? g.nameAr : g.nameEn) === normalizedSaved);
+
+    const currentMatch = rawGovs.find(
+      (g) => normalizeArabic(isArabic ? g.nameAr : g.nameEn) === normalizedSaved
+    );
+
     if (currentMatch) return isArabic ? currentMatch.nameAr : currentMatch.nameEn;
-    
-    const otherMatch = rawGovs.find((g) => normalizeArabic(isArabic ? g.nameEn : g.nameAr) === normalizedSaved);
+
+    const otherMatch = rawGovs.find(
+      (g) => normalizeArabic(isArabic ? g.nameEn : g.nameAr) === normalizedSaved
+    );
+
     if (otherMatch) return isArabic ? otherMatch.nameAr : otherMatch.nameEn;
-    
+
     return null;
   }, [rawGovs, isArabic]);
 
   const initialCityLabel = useMemo(
-    () => resolveCityLabel(postDraft.city || ""),
+    () => resolveCityLabel(postDraft.city || ''),
     [resolveCityLabel, postDraft.city]
   );
 
   const [selectedCity, setSelectedCity] = useState<string>(() => {
-    if (!postDraft.city) return cities[0] || "";
+    if (!postDraft.city) return cities[0] || '';
     return initialCityLabel || otherLabel;
   });
 
   const [customCity, setCustomCity] = useState<string>(() => {
-    if (!postDraft.city) return "";
-    return initialCityLabel ? "" : postDraft.city;
+    if (!postDraft.city) return '';
+    return initialCityLabel ? '' : postDraft.city;
   });
 
-  const currentGovSlug = useMemo(() => govsMap.get(selectedCity) || null, [govsMap, selectedCity]);
+  const currentGovSlug = useMemo(
+    () => govsMap.get(selectedCity) || null,
+    [govsMap, selectedCity]
+  );
 
   const rawDistricts = useMemo(
     () => (currentGovSlug ? getAllDistricts(browseCountryCode, currentGovSlug) : []),
     [browseCountryCode, currentGovSlug]
   );
+
   const rawCamps = useMemo(
-    () => (currentGovSlug ? getAllCamps(browseCountryCode).filter((c) => c.governorateSlug === currentGovSlug) : []),
+    () => (
+      currentGovSlug
+        ? getAllCamps(browseCountryCode).filter((c) => c.governorateSlug === currentGovSlug)
+        : []
+    ),
     [browseCountryCode, currentGovSlug]
   );
 
   const neighborhoods = useMemo(() => {
     if (isOtherValue(selectedCity)) return [otherLabel];
+
     const labels: string[] = [];
     const seen = new Set<string>();
 
     // Amman: use merged GeoNames + OpenSooq list
     if (browseCountryCode === 'JO' && currentGovSlug === 'amman') {
       const merged = buildMergedAmmanAreas();
+
       for (const a of merged) {
         const label = isArabic ? a.nameAr : a.nameEn;
-        if (!seen.has(label)) { labels.push(label); seen.add(label); }
+        if (!seen.has(label)) {
+          labels.push(label);
+          seen.add(label);
+        }
       }
-      return [...labels.sort((a, b) => a.localeCompare(b, isArabic ? 'ar' : 'en')), otherLabel];
+
+      return [
+        ...labels.sort((a, b) => a.localeCompare(b, isArabic ? 'ar' : 'en')),
+        otherLabel,
+      ];
     }
 
-    // OpenSooq markets (SA/PS/LB/SY/KW): pure OpenSooq areas, per-city only
+    // OpenSooq markets: pure OpenSooq areas, per-city only
     if (hasOpensooqData(browseCountryCode) && currentGovSlug) {
       const areas = getAllOpensooqAreas(browseCountryCode, currentGovSlug);
+
       if (areas.length > 0) {
         const osLabels: string[] = [];
         const osSeen = new Set<string>();
+
         for (const area of areas) {
-          if (!osSeen.has(area.nameAr)) { osSeen.add(area.nameAr); osLabels.push(area.nameAr); }
+          if (!osSeen.has(area.nameAr)) {
+            osSeen.add(area.nameAr);
+            osLabels.push(area.nameAr);
+          }
         }
-        return [...osLabels.sort((a, b) => a.localeCompare(b, isArabic ? 'ar' : 'en')), otherLabel];
+
+        return [
+          ...osLabels.sort((a, b) => a.localeCompare(b, isArabic ? 'ar' : 'en')),
+          otherLabel,
+        ];
       }
     }
 
@@ -140,110 +177,154 @@ export function useLocationPick(): UseLocationPickReturn {
       seen.add(label);
       labels.push(label);
     };
+
     for (const d of rawDistricts) {
       const districtLabel = isArabic
         ? stripAdminWords(d.nameAr)
         : stripAdminWords(d.nameEn);
-      // Always include the district itself (pushUnique dedupes)
+
       pushUnique(districtLabel);
 
       const villages = d.villages ?? [];
+
       for (const v of villages) {
         const villageLabel = isArabic
           ? stripAdminWords(v.nameAr)
           : stripAdminWords(v.nameEn);
+
         pushUnique(villageLabel);
       }
     }
-    // OpenSooq extras for this governorate (deduped against GeoNames by display label)
+
+    // OpenSooq extras for this governorate
     if (browseCountryCode === 'JO' && currentGovSlug) {
       const extras = JO_OPENSOOQ_AREAS[currentGovSlug] ?? [];
+
       for (const extra of extras) {
         const label = isArabic ? extra.nameAr : extra.nameEn;
         pushUnique(label);
       }
     }
+
     for (const c of rawCamps) {
       const name = isArabic ? c.nameAr : c.nameEn;
-      if (!seen.has(name)) { labels.push(name); seen.add(name); }
+
+      if (!seen.has(name)) {
+        labels.push(name);
+        seen.add(name);
+      }
     }
-    return [...labels.sort((a, b) => a.localeCompare(b, isArabic ? 'ar' : 'en')), otherLabel];
-  }, [selectedCity, rawDistricts, rawCamps, isArabic, otherLabel, browseCountryCode, currentGovSlug]);
+
+    return [
+      ...labels.sort((a, b) => a.localeCompare(b, isArabic ? 'ar' : 'en')),
+      otherLabel,
+    ];
+  }, [
+    selectedCity,
+    rawDistricts,
+    rawCamps,
+    isArabic,
+    otherLabel,
+    browseCountryCode,
+    currentGovSlug,
+  ]);
 
   const resolveNeighborhoodLabel = useCallback((saved: string): string | null => {
     if (!saved) return null;
+
     const rawBase = stripSuffix(saved);
     const baseName = browseCountryCode === 'JO' ? stripAdminWords(rawBase) : rawBase;
     const normalizedBase = normalizeArabic(baseName);
 
-    // Villages first (flat UX): return plain stripped village name
+    // Villages first
     for (const d of rawDistricts) {
       for (const v of d.villages ?? []) {
         const displayAr = stripAdminWords(v.nameAr);
         const displayEn = stripAdminWords(v.nameEn);
         const displayName = isArabic ? displayAr : displayEn;
-        const mc = normalizeArabic(displayAr) === normalizedBase || normalizeArabic(displayEn) === normalizedBase;
+
+        const mc =
+          normalizeArabic(displayAr) === normalizedBase ||
+          normalizeArabic(displayEn) === normalizedBase;
+
         if (mc) return displayName;
       }
     }
-    // Districts (0-village fallback or exact district match)
+
+    // Districts
     for (const d of rawDistricts) {
       const displayAr = stripAdminWords(d.nameAr);
       const displayEn = stripAdminWords(d.nameEn);
       const displayName = isArabic ? displayAr : displayEn;
-      if (normalizeArabic(displayAr) === normalizedBase || normalizeArabic(displayEn) === normalizedBase) {
+
+      if (
+        normalizeArabic(displayAr) === normalizedBase ||
+        normalizeArabic(displayEn) === normalizedBase
+      ) {
         return displayName;
       }
     }
+
     // Camps
     for (const c of rawCamps) {
       const mc = normalizeArabic(isArabic ? c.nameAr : c.nameEn) === normalizedBase;
       const mo = normalizeArabic(isArabic ? c.nameEn : c.nameAr) === normalizedBase;
+
       if (mc || mo) return isArabic ? c.nameAr : c.nameEn;
     }
-    // OpenSooq extras (custom areas not in GeoNames)
+
+    // OpenSooq extras
     if (browseCountryCode === 'JO' && currentGovSlug) {
       const extras = JO_OPENSOOQ_AREAS[currentGovSlug] ?? [];
+
       for (const extra of extras) {
-        if (normalizeArabic(extra.nameAr) === normalizedBase || normalizeArabic(extra.nameEn) === normalizedBase) {
+        if (
+          normalizeArabic(extra.nameAr) === normalizedBase ||
+          normalizeArabic(extra.nameEn) === normalizedBase
+        ) {
           return isArabic ? extra.nameAr : extra.nameEn;
         }
       }
     }
+
     return null;
   }, [rawDistricts, rawCamps, isArabic, browseCountryCode, currentGovSlug]);
 
   const initialNeighborhoodLabel = useMemo(
-    () => resolveNeighborhoodLabel(postDraft.neighborhood || ""),
+    () => resolveNeighborhoodLabel(postDraft.neighborhood || ''),
     [resolveNeighborhoodLabel, postDraft.neighborhood]
   );
 
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<string>(() => {
-    if (!postDraft.neighborhood) return neighborhoods[0] || "";
+    if (!postDraft.neighborhood) return '';
     return initialNeighborhoodLabel || otherLabel;
   });
 
   const [customNeighborhood, setCustomNeighborhood] = useState<string>(() => {
-    if (!postDraft.neighborhood) return "";
-    return initialNeighborhoodLabel ? "" : postDraft.neighborhood;
+    if (!postDraft.neighborhood) return '';
+    return initialNeighborhoodLabel ? '' : postDraft.neighborhood;
   });
 
-  const [site, setSite] = useState(postDraft.site || "");
+  const [site, setSite] = useState(postDraft.site || '');
 
   const handleCityChange = useCallback((c: string) => {
-    updatePostDraft({ citySlug: undefined, districtSlug: undefined, neighborhoodSlug: undefined });
+    updatePostDraft({
+      citySlug: undefined,
+      districtSlug: undefined,
+      neighborhoodSlug: undefined,
+    });
+
     setSelectedCity(c);
-    setCustomCity("");
-    setSelectedNeighborhood(otherLabel);
-    setCustomNeighborhood("");
-  }, [otherLabel, updatePostDraft]);
+    setCustomCity('');
+    setSelectedNeighborhood('');
+    setCustomNeighborhood('');
+  }, [updatePostDraft]);
 
   const handleNeighborhoodChange = useCallback((n: string) => {
     setSelectedNeighborhood(n);
-    setCustomNeighborhood("");
-    
-    // Crowdsourcing (Fire-and-forget)
-    // Guard: only authenticated non-anonymous users can contribute
+    setCustomNeighborhood('');
+
+    // Crowdsourcing: authenticated non-anonymous users only
     if (
       n &&
       !isOtherValue(n) &&
@@ -265,32 +346,39 @@ export function useLocationPick(): UseLocationPickReturn {
     const area = isOtherValue(selectedNeighborhood) && customNeighborhood.trim()
       ? customNeighborhood.trim()
       : stripSuffix(selectedNeighborhood);
+
     const city = isOtherValue(selectedCity) && customCity.trim()
       ? customCity.trim()
       : selectedCity;
+
     return googleSearchQuery({ city, area, site });
   }, [selectedCity, customCity, selectedNeighborhood, customNeighborhood, site]);
 
   const validationError = useMemo(() => {
-    if (isOtherValue(selectedCity) && !customCity.trim())
+    if (isOtherValue(selectedCity) && !customCity.trim()) {
       return isArabic ? 'يرجى كتابة اسم المدينة' : 'Please enter the city name';
-    if (isOtherValue(selectedNeighborhood) && !customNeighborhood.trim())
-      return isArabic ? 'يرجى كتابة اسم الحي' : 'Please enter the neighborhood name';
-    return null;
-  }, [selectedCity, customCity, selectedNeighborhood, customNeighborhood, isArabic]);
+    }
 
-  const resolveSlugsAtSave = useCallback((cityLabel: string, neighborhoodLabel: string): {
+    return null;
+  }, [selectedCity, customCity, isArabic]);
+
+  const resolveSlugsAtSave = useCallback((
+    cityLabel: string,
+    neighborhoodLabel: string
+  ): {
     citySlug?: string;
     districtSlug?: string;
     neighborhoodSlug?: string;
   } => {
-    // OpenSooq markets: save citySlug + areaSlug (no district)
+    // OpenSooq markets: citySlug + optional area slug
     if (hasOpensooqData(browseCountryCode) && currentGovSlug) {
       const areas = getAllOpensooqAreas(browseCountryCode, currentGovSlug);
+
       if (areas.length > 0) {
         const norm = (s: string) => normalizeArabic(s).replace(/\s+/g, ' ').trim();
         const target = norm(neighborhoodLabel);
         const match = areas.find(a => norm(a.nameAr) === target);
+
         if (match) {
           return {
             citySlug: currentGovSlug,
@@ -298,7 +386,8 @@ export function useLocationPick(): UseLocationPickReturn {
             neighborhoodSlug: match.slug === 'other' ? undefined : match.slug,
           };
         }
-        // Not found → custom under the city
+
+        // Empty or custom area: retain city only
         return {
           citySlug: currentGovSlug,
           districtSlug: undefined,
@@ -306,10 +395,30 @@ export function useLocationPick(): UseLocationPickReturn {
         };
       }
     }
-    const verified = preserveVerifiedJordanSelection(browseCountryCode, cityLabel, neighborhoodLabel, postDraft);
+
+    const verified = preserveVerifiedJordanSelection(
+      browseCountryCode,
+      cityLabel,
+      neighborhoodLabel,
+      postDraft
+    );
+
     if (verified) return verified;
-    return resolveTraditionalLocationSlugs(browseCountryCode, cityLabel, neighborhoodLabel);
-  }, [browseCountryCode, currentGovSlug, postDraft.city, postDraft.citySlug, postDraft.districtSlug, postDraft.neighborhood, postDraft.neighborhoodSlug]);
+
+    return resolveTraditionalLocationSlugs(
+      browseCountryCode,
+      cityLabel,
+      neighborhoodLabel
+    );
+  }, [
+    browseCountryCode,
+    currentGovSlug,
+    postDraft.city,
+    postDraft.citySlug,
+    postDraft.districtSlug,
+    postDraft.neighborhood,
+    postDraft.neighborhoodSlug,
+  ]);
 
   const saveAndContinue = useCallback(() => {
     if (validationError) return;
@@ -317,41 +426,53 @@ export function useLocationPick(): UseLocationPickReturn {
     const finalCity = isOtherValue(selectedCity) && customCity.trim()
       ? customCity.trim()
       : selectedCity;
-    const finalNeighborhood = isOtherValue(selectedNeighborhood) && customNeighborhood.trim()
+
+    const finalNeighborhood = isOtherValue(selectedNeighborhood)
       ? customNeighborhood.trim()
-      : selectedNeighborhood;
+      : selectedNeighborhood.trim();
 
-    let { citySlug, districtSlug, neighborhoodSlug } = resolveSlugsAtSave(finalCity, finalNeighborhood);
+    let { citySlug, districtSlug, neighborhoodSlug } = resolveSlugsAtSave(
+      finalCity,
+      finalNeighborhood
+    );
 
-    // For Amman, prefer the merged list resolution so OpenSooq entries map correctly
-    if (browseCountryCode === 'JO' && citySlug === 'amman' && finalNeighborhood) {
+    // Amman: preserve verified merged-list resolution when an area is selected
+    if (
+      browseCountryCode === 'JO' &&
+      citySlug === 'amman' &&
+      finalNeighborhood
+    ) {
       const merged = buildMergedAmmanAreas();
+
       const exact = merged.find(a =>
         normalizeArabic(isArabic ? a.nameAr : a.nameEn) ===
         normalizeArabic(finalNeighborhood)
       );
+
       if (exact) {
         let dSlug = exact.districtSlug;
         let nSlug = exact.neighborhoodSlug;
+
         if (exact.source === 'opensooq' && !dSlug) {
           const m = matchOpenSooqToGeoNames(exact.nameAr, exact.nameEn);
-          if (m) { dSlug = m.districtSlug; nSlug = m.neighborhoodSlug; }
+
+          if (m) {
+            dSlug = m.districtSlug;
+            nSlug = m.neighborhoodSlug;
+          }
         }
+
         districtSlug = dSlug ?? undefined;
         neighborhoodSlug = nSlug ?? undefined;
-        // neighborhood display is already finalNeighborhood; strip if needed but keep as-is for now
       }
     }
 
-
     if (!citySlug) {
-      toast.error(isArabic ? 'الرجاء اختيار المدينة من القائمة' : 'Please select the city from the list');
-      return;
-    }
-    
-    // Allow publishing with live-search neighborhoods (no static slug)
-    if (!districtSlug && !neighborhoodSlug && !finalNeighborhood) {
-      toast.error(isArabic ? 'الرجاء اختيار المنطقة من القائمة' : 'Please select the area from the list');
+      toast.error(
+        isArabic
+          ? 'الرجاء اختيار المدينة من القائمة'
+          : 'Please select the city from the list'
+      );
       return;
     }
 
@@ -363,12 +484,38 @@ export function useLocationPick(): UseLocationPickReturn {
       districtSlug,
       neighborhoodSlug,
     });
-    navigateTo("post-details");
-  }, [validationError, selectedCity, selectedNeighborhood, customCity, customNeighborhood, site, resolveSlugsAtSave, updatePostDraft, navigateTo, isArabic]);
+
+    navigateTo('post-details');
+  }, [
+    validationError,
+    selectedCity,
+    selectedNeighborhood,
+    customCity,
+    customNeighborhood,
+    site,
+    resolveSlugsAtSave,
+    updatePostDraft,
+    navigateTo,
+    isArabic,
+    browseCountryCode,
+  ]);
 
   return {
-    cities, neighborhoods, selectedCity, selectedNeighborhood, site, customCity, setCustomCity,
-    customNeighborhood, setCustomNeighborhood, handleCityChange, handleNeighborhoodChange,
-    handleSiteChange, mapQuery, saveAndContinue, canContinue: validationError === null, validationError,
+    cities,
+    neighborhoods,
+    selectedCity,
+    selectedNeighborhood,
+    site,
+    customCity,
+    setCustomCity,
+    customNeighborhood,
+    setCustomNeighborhood,
+    handleCityChange,
+    handleNeighborhoodChange,
+    handleSiteChange,
+    mapQuery,
+    saveAndContinue,
+    canContinue: validationError === null,
+    validationError,
   };
-    }
+}
