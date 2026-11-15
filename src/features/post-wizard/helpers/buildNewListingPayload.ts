@@ -26,13 +26,13 @@ export function buildNewListingPayload({
 
   const rawCity = (postDraft.city || '').trim();
   const rawNeighborhood = (postDraft.neighborhood || '').trim();
-  
+
   if (!rawCity || !rawNeighborhood || isOtherValue(rawCity) || isOtherValue(rawNeighborhood)) {
     throw new Error(
       'buildNewListingPayload: city and neighborhood are required and must not be "Other"'
     );
   }
-  
+
   if (!postDraft.citySlug) {
     throw new Error('Location slug missing: cannot publish listing without a valid city');
   }
