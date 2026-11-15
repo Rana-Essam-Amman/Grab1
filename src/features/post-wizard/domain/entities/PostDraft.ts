@@ -1,3 +1,4 @@
+
 import type { GeneratedListing } from '@/types';
 
 export type DraftStep =
@@ -14,6 +15,8 @@ export interface PostDraft {
   readonly photos: readonly string[];
   readonly city: string;
   readonly neighborhood: string;
+  /** Optional free-text neighbourhood name; not a canonical location value. */
+  readonly neighborhoodName?: string;
   readonly citySlug?: string;
   readonly districtSlug?: string;
   readonly neighborhoodSlug?: string;
