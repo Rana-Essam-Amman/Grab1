@@ -36,7 +36,7 @@ export const PhotoUploadScreen: React.FC = () => {
     mapQuery,
     saveAndContinue,
   } = useLocationPick();
-  
+
   const NextIcon = isArabic ? ArrowLeft : ArrowRight;
 
   const handleContinue = useCallback(() => {
