@@ -53,7 +53,7 @@ export const SearchableDropdown: React.FC<Props> = ({
       const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
       const spaceBelow = viewportHeight - rect.bottom;
       const spaceAbove = rect.top;
-      
+
       if (spaceBelow < 320 && spaceAbove > spaceBelow) {
         setMenuPosition('above');
       } else {
