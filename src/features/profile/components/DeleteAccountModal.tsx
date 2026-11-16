@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Modal } from '@/shared/ui/Modal';
 import { Button } from '@/shared/ui/Button';
@@ -30,7 +31,7 @@ export const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
         <div className="w-16 h-16 rounded-full bg-danger/10 flex items-center justify-center text-danger shrink-0 animate-pulse">
           <Warning2 size={48} variant="Bold" color="currentColor" />
         </div>
-        
+
         <div className="flex flex-col gap-2">
           <p className="text-sm font-bold text-ink leading-relaxed font-cairo">
             {isArabic
@@ -46,7 +47,9 @@ export const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
 
         {error && (
           <p className="text-xs text-danger font-bold leading-relaxed font-cairo" role="alert">
-            {error}
+            {isArabic
+              ? 'تعذّر إتمام حذف الحساب. لم نتمكن من تأكيد النتيجة؛ أعد تحميل التطبيق وتحقق من حالة حسابك قبل المحاولة مرة أخرى.'
+              : 'We could not confirm whether account deletion completed. Reload the app and check your account status before trying again.'}
           </p>
         )}
 
