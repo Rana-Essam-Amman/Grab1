@@ -1,3 +1,4 @@
+
 import { useUI } from '@/hooks/useUI';
 import { usePostWizard } from '../hooks/usePostWizard';
 import { usePhotoUpload } from '../hooks/usePhotoUpload';
@@ -20,6 +21,7 @@ export const PhotoUploadScreen: React.FC = () => {
   const cat = categories.find((c) => c.slug === postDraft.categorySlug);
   const sub = findSubcategoryBySlug(postDraft.subcategorySlug);
   const { photos, errors, handleFiles, handleRemove, handleUseSample } = usePhotoUpload();
+
   const {
     cities,
     neighborhoods,
@@ -87,14 +89,30 @@ export const PhotoUploadScreen: React.FC = () => {
           </p>
 
           <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
-            <PhotoPreviewList photos={photos} isArabic={isArabic} onRemove={handleRemove} onSetCover={handleSetCover} onImageError={handleImageError} />
-            <PhotoUploader photoCount={photos.length} isArabic={isArabic} onFiles={handleFiles} />
+            <PhotoPreviewList
+              photos={photos}
+              isArabic={isArabic}
+              onRemove={handleRemove}
+              onSetCover={handleSetCover}
+              onImageError={handleImageError}
+            />
+            <PhotoUploader
+              photoCount={photos.length}
+              isArabic={isArabic}
+              onFiles={handleFiles}
+            />
           </div>
 
           <PhotoUploadErrors errors={errors} />
 
           {import.meta.env.DEV && photos.length === 0 && (
-            <Button type="button" variant="outline" size="sm" onClick={() => handleUseSample(postDraft.categorySlug)} className="self-start">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => handleUseSample(postDraft.categorySlug)}
+              className="self-start"
+            >
               {isArabic ? 'استخدم صورة تجريبية' : 'Use sample photo'}
             </Button>
           )}
@@ -106,11 +124,14 @@ export const PhotoUploadScreen: React.FC = () => {
             {isArabic ? 'وين موقع إعلانك؟' : 'Where is your listing?'}
           </h2>
           <p className="text-xs text-ink-muted">
-            {isArabic ? 'اختَر المدينة والمنطقة، وإذا بتحب اكتب اسم الحي.' : 'Choose the city and area. You can optionally add a neighbourhood name.'}
+            {isArabic
+              ? 'اختَر المدينة والمنطقة، وإذا بتحب اكتب اسم الحي.'
+              : 'Choose the city and area. You can optionally add a neighbourhood name.'}
           </p>
 
           <LocationFields
             isArabic={isArabic}
+            autoFocusSearch={false}
             selectedCity={selectedCity}
             cities={cities}
             selectedNeighborhood={selectedNeighborhood}
