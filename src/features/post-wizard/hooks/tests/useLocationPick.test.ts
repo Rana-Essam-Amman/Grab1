@@ -1,3 +1,4 @@
+
 import { describe, it, expect, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useLocationPick } from '../useLocationPick';
@@ -24,11 +25,11 @@ describe('useLocationPick', () => {
   it('handleCityChange updates neighborhood and resets custom fields', () => {
     const { result } = renderHook(() => useLocationPick());
     const nextCity = result.current.cities[1] || result.current.cities[0];
-    
+
     act(() => {
       result.current.handleCityChange(nextCity);
     });
-    
+
     expect(result.current.selectedCity).toBe(nextCity);
     expect(result.current.selectedNeighborhood).toBe('أخرى');
     expect(result.current.customCity).toBe('');
@@ -37,65 +38,94 @@ describe('useLocationPick', () => {
 
   it('saveAndContinue writes city/neighborhood/site to draft (standard flow)', () => {
     const { result } = renderHook(() => useLocationPick());
-    
+
     act(() => {
       result.current.handleSiteChange('Near City Mall');
     });
     act(() => {
       result.current.saveAndContinue();
     });
-    
+
     const draft = useDraftStore.getState().postDraft;
     expect(draft.site).toBe('Near City Mall');
     expect(draft.city).toBe(result.current.selectedCity);
     expect(draft.city).toBe('عمان');
   });
 
+  it('allows continuing with a valid city and an empty optional area', () => {
+    useDraftStore.setState({
+      postDraft: {
+        categorySlug: 'motors',
+        subcategorySlug: 'cars',
+        photos: [],
+        city: 'عمان',
+        neighborhood: '',
+        site: '',
+        noteText: '',
+      },
+    });
+
+    const { result } = renderHook(() => useLocationPick());
+
+    expect(result.current.selectedCity).toBe('عمان');
+    expect(result.current.selectedNeighborhood).toBe('');
+    expect(result.current.canContinue).toBe(true);
+    expect(result.current.validationError).toBeNull();
+
+    act(() => {
+      result.current.saveAndContinue();
+    });
+
+    const draft = useDraftStore.getState().postDraft;
+
+    expect(draft.city).toBe('عمان');
+    expect(draft.neighborhood).toBe('');
+    expect(draft.citySlug).toBe('amman');
+    expect(draft.districtSlug).toBeUndefined();
+    expect(draft.neighborhoodSlug).toBeUndefined();
+  });
+
   it('saveAndContinue handles custom city correctly (Other flow - back navigation)', () => {
     const fakeCity = 'مدينة_وهمية_للامتحان';
     const fakeNeighborhood = 'حي_وهمي_للامتحان';
-    
+
     useDraftStore.setState({
       postDraft: {
         categorySlug: 'motors', subcategorySlug: 'cars', photos: [],
         city: fakeCity, neighborhood: fakeNeighborhood, site: '', noteText: '',
       },
     });
-    
+
     const { result } = renderHook(() => useLocationPick());
-    
+
     expect(result.current.selectedCity).toBe('أخرى');
     expect(result.current.customCity).toBe(fakeCity);
     expect(result.current.selectedNeighborhood).toBe('أخرى');
     expect(result.current.customNeighborhood).toBe(fakeNeighborhood);
-    
+
     act(() => {
       result.current.saveAndContinue();
     });
-    
+
     const draft = useDraftStore.getState().postDraft;
     expect(draft.city).toBe(fakeCity);
     expect(draft.neighborhood).toBe(fakeNeighborhood);
   });
 
   it('saveAndContinue BLOCKS save when city is Other but custom text is missing', () => {
-    // Real-world test: user selects "Other" but forgets to type the custom city name.
-    // The validation must block save and NOT write garbage to the draft.
     const { result } = renderHook(() => useLocationPick());
-    
+
     act(() => {
       result.current.handleCityChange('أخرى');
     });
-    
-    // customCity is empty, customNeighborhood is empty → validation should fail
+
     expect(result.current.canContinue).toBe(false);
     expect(result.current.validationError).not.toBeNull();
-    
+
     act(() => {
       result.current.saveAndContinue();
     });
-    
-    // Draft should NOT be updated (still the original value)
+
     const draft = useDraftStore.getState().postDraft;
     expect(draft.city).toBe('عمان');
   });
@@ -122,7 +152,6 @@ describe('useLocationPick', () => {
     expect(draftAfter.districtSlug).toBeUndefined();
   });
 
-
   it('does not restore stale Amman slugs on unresolved custom city', () => {
     useDraftStore.setState({
       postDraft: {
@@ -133,6 +162,7 @@ describe('useLocationPick', () => {
         neighborhoodSlug: 'abdun',
       },
     });
+
     const { result } = renderHook(() => useLocationPick());
     act(() => {
       result.current.handleCityChange('أخرى');
@@ -141,6 +171,7 @@ describe('useLocationPick', () => {
     act(() => {
       result.current.saveAndContinue();
     });
+
     const draft = useDraftStore.getState().postDraft;
     expect(draft.citySlug).not.toBe('amman');
     expect(draft.districtSlug).not.toBe('amman-qasabah');
@@ -155,6 +186,7 @@ describe('useLocationPick', () => {
         citySlug: 'amman',
       },
     });
+
     const { result } = renderHook(() => useLocationPick());
     act(() => {
       result.current.handleCityChange('الزرقاء');
@@ -163,6 +195,7 @@ describe('useLocationPick', () => {
     act(() => {
       result.current.saveAndContinue();
     });
+
     const draft = useDraftStore.getState().postDraft;
     expect(draft.citySlug).toBe('zarqa');
     expect(draft.districtSlug).toBe('zarqa-qasabah');
@@ -178,6 +211,7 @@ describe('useLocationPick', () => {
     act(() => {
       result.current.saveAndContinue();
     });
+
     const draft = useDraftStore.getState().postDraft;
     expect(draft.citySlug).toBe('zarqa');
     expect(draft.districtSlug).toBe('zarqa-qasabah');
@@ -194,6 +228,7 @@ describe('useLocationPick', () => {
         neighborhoodSlug: 'abdun',
       },
     });
+
     const { result } = renderHook(() => useLocationPick());
     act(() => {
       result.current.handleCityChange('الزرقاء');
@@ -202,6 +237,7 @@ describe('useLocationPick', () => {
     act(() => {
       result.current.saveAndContinue();
     });
+
     const draft = useDraftStore.getState().postDraft;
     expect(draft.citySlug).toBe('zarqa');
     expect(draft.districtSlug).toBeUndefined();
@@ -212,12 +248,12 @@ describe('useLocationPick', () => {
     const { result } = renderHook(() => useLocationPick());
     act(() => {
       result.current.handleCityChange('الزرقاء');
-      // 'طبربور' belongs to Amman, not Zarqa
       result.current.handleNeighborhoodChange('حي طبربور');
     });
     act(() => {
       result.current.saveAndContinue();
     });
+
     const draft = useDraftStore.getState().postDraft;
     expect(draft.citySlug).toBe('zarqa');
     expect(draft.districtSlug).toBeUndefined();
@@ -230,10 +266,13 @@ describe('useLocationPick', () => {
       result.current.handleCityChange('عمان');
       result.current.handleNeighborhoodChange('عبدون');
     });
+
     expect(result.current.selectedNeighborhood).toBe('عبدون');
+
     act(() => {
       result.current.handleCityChange('الزرقاء');
     });
+
     expect(result.current.selectedNeighborhood).toBe('أخرى');
   });
 
@@ -246,12 +285,13 @@ describe('useLocationPick', () => {
         neighborhoodSlug: 'hayy-tabarbawr',
       },
     });
+
     const { result } = renderHook(() => useLocationPick());
     act(() => {
       result.current.handleCityChange('');
       result.current.handleNeighborhoodChange('');
     });
-    // Simulate clear via draft update as done in LocationFields
+
     useDraftStore.getState().updatePostDraft({
       city: '',
       neighborhood: '',
@@ -259,10 +299,10 @@ describe('useLocationPick', () => {
       districtSlug: undefined,
       neighborhoodSlug: undefined,
     });
+
     const draft = useDraftStore.getState().postDraft;
     expect(draft.citySlug).toBeUndefined();
     expect(draft.districtSlug).toBeUndefined();
     expect(draft.neighborhoodSlug).toBeUndefined();
   });
-
 });
