@@ -9,15 +9,27 @@ describe('useLocationPick', () => {
   beforeEach(() => {
     useDraftStore.setState({
       postDraft: {
-        categorySlug: 'motors', subcategorySlug: 'cars', photos: [],
-        city: 'عمان', neighborhood: 'خلدا', site: '', noteText: '',
+        categorySlug: 'motors',
+        subcategorySlug: 'cars',
+        photos: [],
+        city: 'عمان',
+        neighborhood: 'خلدا',
+        site: '',
+        noteText: '',
       },
     });
-    useUIStore.setState({ isArabic: true, browseCountryCode: 'JO', currentScreen: 'post-location', screenHistory: ['main', 'post-location'] });
+
+    useUIStore.setState({
+      isArabic: true,
+      browseCountryCode: 'JO',
+      currentScreen: 'post-location',
+      screenHistory: ['main', 'post-location'],
+    });
   });
 
   it('exposes cities list from browseCountryCode', () => {
     const { result } = renderHook(() => useLocationPick());
+
     expect(Array.isArray(result.current.cities)).toBe(true);
     expect(result.current.cities.length).toBeGreaterThan(0);
   });
@@ -31,7 +43,7 @@ describe('useLocationPick', () => {
     });
 
     expect(result.current.selectedCity).toBe(nextCity);
-    expect(result.current.selectedNeighborhood).toBe('أخرى');
+    expect(result.current.selectedNeighborhood).toBe('');
     expect(result.current.customCity).toBe('');
     expect(result.current.customNeighborhood).toBe('');
   });
@@ -42,11 +54,13 @@ describe('useLocationPick', () => {
     act(() => {
       result.current.handleSiteChange('Near City Mall');
     });
+
     act(() => {
       result.current.saveAndContinue();
     });
 
     const draft = useDraftStore.getState().postDraft;
+
     expect(draft.site).toBe('Near City Mall');
     expect(draft.city).toBe(result.current.selectedCity);
     expect(draft.city).toBe('عمان');
@@ -91,8 +105,13 @@ describe('useLocationPick', () => {
 
     useDraftStore.setState({
       postDraft: {
-        categorySlug: 'motors', subcategorySlug: 'cars', photos: [],
-        city: fakeCity, neighborhood: fakeNeighborhood, site: '', noteText: '',
+        categorySlug: 'motors',
+        subcategorySlug: 'cars',
+        photos: [],
+        city: fakeCity,
+        neighborhood: fakeNeighborhood,
+        site: '',
+        noteText: '',
       },
     });
 
@@ -108,6 +127,7 @@ describe('useLocationPick', () => {
     });
 
     const draft = useDraftStore.getState().postDraft;
+
     expect(draft.city).toBe(fakeCity);
     expect(draft.neighborhood).toBe(fakeNeighborhood);
   });
@@ -127,11 +147,13 @@ describe('useLocationPick', () => {
     });
 
     const draft = useDraftStore.getState().postDraft;
+
     expect(draft.city).toBe('عمان');
   });
 
   it('saveAndContinue BLOCKS save when user selects Other with unresolved custom text', () => {
     const { result } = renderHook(() => useLocationPick());
+
     act(() => {
       result.current.handleCityChange('أخرى');
       result.current.setCustomCity('مدينة_مخصصة_جديدة');
@@ -147,6 +169,7 @@ describe('useLocationPick', () => {
     });
 
     const draftAfter = useDraftStore.getState().postDraft;
+
     expect(draftAfter.city).toBe(cityBefore);
     expect(draftAfter.citySlug).toBeUndefined();
     expect(draftAfter.districtSlug).toBeUndefined();
@@ -164,15 +187,18 @@ describe('useLocationPick', () => {
     });
 
     const { result } = renderHook(() => useLocationPick());
+
     act(() => {
       result.current.handleCityChange('أخرى');
       result.current.setCustomCity('مدينة غير موجودة');
     });
+
     act(() => {
       result.current.saveAndContinue();
     });
 
     const draft = useDraftStore.getState().postDraft;
+
     expect(draft.citySlug).not.toBe('amman');
     expect(draft.districtSlug).not.toBe('amman-qasabah');
     expect(draft.neighborhoodSlug).not.toBe('abdun');
@@ -188,15 +214,18 @@ describe('useLocationPick', () => {
     });
 
     const { result } = renderHook(() => useLocationPick());
+
     act(() => {
       result.current.handleCityChange('الزرقاء');
       result.current.handleNeighborhoodChange('حي معصوم');
     });
+
     act(() => {
       result.current.saveAndContinue();
     });
 
     const draft = useDraftStore.getState().postDraft;
+
     expect(draft.citySlug).toBe('zarqa');
     expect(draft.districtSlug).toBe('zarqa-qasabah');
     expect(draft.neighborhoodSlug).toBe('hayy-ma-sum');
@@ -204,15 +233,18 @@ describe('useLocationPick', () => {
 
   it('resolves valid locality with explicit parent compound separator', () => {
     const { result } = renderHook(() => useLocationPick());
+
     act(() => {
       result.current.handleCityChange('الزرقاء');
       result.current.handleNeighborhoodChange('حي معصوم — لواء قصبة الزرقاء');
     });
+
     act(() => {
       result.current.saveAndContinue();
     });
 
     const draft = useDraftStore.getState().postDraft;
+
     expect(draft.citySlug).toBe('zarqa');
     expect(draft.districtSlug).toBe('zarqa-qasabah');
     expect(draft.neighborhoodSlug).toBe('hayy-ma-sum');
@@ -230,15 +262,18 @@ describe('useLocationPick', () => {
     });
 
     const { result } = renderHook(() => useLocationPick());
+
     act(() => {
       result.current.handleCityChange('الزرقاء');
       result.current.handleNeighborhoodChange('منطقة مجهولة تماما');
     });
+
     act(() => {
       result.current.saveAndContinue();
     });
 
     const draft = useDraftStore.getState().postDraft;
+
     expect(draft.citySlug).toBe('zarqa');
     expect(draft.districtSlug).toBeUndefined();
     expect(draft.neighborhoodSlug).toBeUndefined();
@@ -246,15 +281,18 @@ describe('useLocationPick', () => {
 
   it('does not allow a locality from another governorate to resolve under Zarqa', () => {
     const { result } = renderHook(() => useLocationPick());
+
     act(() => {
       result.current.handleCityChange('الزرقاء');
       result.current.handleNeighborhoodChange('حي طبربور');
     });
+
     act(() => {
       result.current.saveAndContinue();
     });
 
     const draft = useDraftStore.getState().postDraft;
+
     expect(draft.citySlug).toBe('zarqa');
     expect(draft.districtSlug).toBeUndefined();
     expect(draft.neighborhoodSlug).toBeUndefined();
@@ -262,6 +300,7 @@ describe('useLocationPick', () => {
 
   it('clears descendants when governorate changes', () => {
     const { result } = renderHook(() => useLocationPick());
+
     act(() => {
       result.current.handleCityChange('عمان');
       result.current.handleNeighborhoodChange('عبدون');
@@ -273,7 +312,7 @@ describe('useLocationPick', () => {
       result.current.handleCityChange('الزرقاء');
     });
 
-    expect(result.current.selectedNeighborhood).toBe('أخرى');
+    expect(result.current.selectedNeighborhood).toBe('');
   });
 
   it('clears all location slugs on clear', () => {
@@ -287,6 +326,7 @@ describe('useLocationPick', () => {
     });
 
     const { result } = renderHook(() => useLocationPick());
+
     act(() => {
       result.current.handleCityChange('');
       result.current.handleNeighborhoodChange('');
@@ -301,6 +341,7 @@ describe('useLocationPick', () => {
     });
 
     const draft = useDraftStore.getState().postDraft;
+
     expect(draft.citySlug).toBeUndefined();
     expect(draft.districtSlug).toBeUndefined();
     expect(draft.neighborhoodSlug).toBeUndefined();
