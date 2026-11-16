@@ -34,6 +34,8 @@ interface Props {
   /** Optional free-text neighbourhood name (not the canonical area). */
   neighborhoodName?: string;
   onNeighborhoodNameChange?: (v: string) => void;
+  /** Controls whether opening a dropdown automatically focuses its search input. */
+  autoFocusSearch?: boolean;
   /** @deprecated Kept for backward compatibility with PhotoUploadScreen. Unused. */
   onJordanLocationSelect?: (res: unknown) => void;
 }
@@ -57,12 +59,13 @@ export const LocationFields: React.FC<Props> = ({
   onCustomNeighborhoodChange,
   neighborhoodName = '',
   onNeighborhoodNameChange,
+  autoFocusSearch = true,
 }) => {
   const { browseCountryCode } = useUI();
   const profile = getMarketProfile(browseCountryCode);
   const cityLevel = profile?.visibleLevels[0];
   const neighborhoodLevel = profile?.visibleLevels[1];
-  
+
   const cityLevelLabel = isArabic ? cityLevel?.labelAr : cityLevel?.labelEn;
   const neighborhoodLevelLabel = isArabic ? neighborhoodLevel?.labelAr : neighborhoodLevel?.labelEn;
   const { postDraft } = usePostWizard();
@@ -98,10 +101,11 @@ export const LocationFields: React.FC<Props> = ({
             onChange={onCityChange}
             placeholder={isArabic ? 'ابحث عن مدينة...' : 'Search city...'}
             isArabic={isArabic}
-            autoFocusSearch={false}
+            autoFocusSearch={autoFocusSearch}
           />
         </div>
       </div>
+
       {isOtherValue(selectedCity) && (
         <Input
           label={isArabic ? 'اكتب اسم المدينة' : 'Type city name'}
@@ -124,21 +128,15 @@ export const LocationFields: React.FC<Props> = ({
               value={selectedNeighborhood}
               onChange={onNeighborhoodChange}
               onSearch={setLiveQuery}
-              placeholder={isArabic ? 'ابحث عن حي...' : 'Search neighbourhood...'}
+              placeholder={isArabic ? 'ابحث عن منطقة...' : 'Search area...'}
               isArabic={isArabic}
-              autoFocusSearch={false}
+              autoFocusSearch={autoFocusSearch}
             />
           </div>
 
-          {!selectedNeighborhood && (
-            <p className="text-xs font-bold text-danger px-1 mt-1">
-              {isArabic ? 'الرجاء اختيار الحي' : 'Please select a neighbourhood'}
-            </p>
-          )}
-
           {isOtherValue(selectedNeighborhood) && (
             <Input
-              label={isArabic ? 'اكتب اسم الحي' : 'Type neighbourhood name'}
+              label={isArabic ? 'اكتب اسم المنطقة' : 'Type area name'}
               type="text"
               value={customNeighborhood}
               onChange={(e) => onCustomNeighborhoodChange(e.target.value)}
