@@ -1,10 +1,13 @@
+
 import type { Listing } from '@/types';
 import { supabase } from '@/shared/lib/supabase';
 import { removeListingImages } from './storageService';
 import { rowToListing, listingToRow, type SupabaseListingRow } from './listingsMapper';
 import type { SearchListingsParams } from './searchListings.types';
+import type { CreateListingInput } from './createListing.types';
 
 export type { SearchListingsParams } from './searchListings.types';
+export type { CreateListingInput } from './createListing.types';
 
 export interface FetchListingsParams { readonly market?: string; readonly offset?: number; readonly limit?: number; }
 
@@ -47,17 +50,6 @@ export async function searchListings(
   } catch (err) {
     return { data: null, error: err instanceof Error ? err.message : 'Unknown error' };
   }
-}
-
-export interface CreateListingInput {
-  readonly title: string; readonly description: string; readonly price: string; readonly currency: string;
-  readonly countryCode: "JO" | "LB" | "PS" | "SY" | "SA" | "KW"; readonly city: string; readonly neighborhood?: string;
-  readonly neighborhoodName?: string;
-  readonly citySlug?: string; readonly districtSlug?: string; readonly neighborhoodSlug?: string;
-  readonly categorySlug: string; readonly subcategorySlug?: string; readonly images: string[];
-  readonly imageWidth?: number; readonly imageHeight?: number;
-  readonly attributes?: Array<{ key?: string; label: string; value: string }>;
-  readonly sellerName?: string; readonly sellerPhone?: string;
 }
 
 export async function createListing(input: CreateListingInput): Promise<{ data: Listing | null; error: string | null }> {
