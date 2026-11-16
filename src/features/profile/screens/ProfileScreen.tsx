@@ -15,8 +15,6 @@ import { ProfileQuotaCard } from '../components/ProfileQuotaCard';
 import { ProfileActiveListings } from '../components/ProfileActiveListings';
 import { ProfileAccountMenu } from '../components/ProfileAccountMenu';
 
-// Credits are MARKET-SCOPED. A shared device with two markets must not
-// share the daily AI quota across them. Also registered for GDPR cleanup.
 const STORAGE_KEY_CREDITS = 'daily_ai_credits';
 const STORAGE_KEY_DATE = 'daily_ai_date';
 
@@ -51,7 +49,7 @@ export const ProfileScreen: React.FC = () => {
   const { t } = useTranslation();
   const { userListings } = useListings();
   const { user } = useAuth();
-  const { handleLogout, handleDeleteAccount } = useProfileActions();
+  const { handleLogout, handleDeleteAccount, isDeleting, deleteError, clearDeleteError } = useProfileActions();
 
   const [dailyAiCredits] = useState<number>(getInitialDailyCredits);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -69,17 +67,12 @@ export const ProfileScreen: React.FC = () => {
       try {
         await navigator.share({ title: 'FOX Marketplace', text, url: shareUrl });
         return;
-      } catch {
-        // fall through
-      }
+      } catch {}
     }
 
-    // Fallback: copy link
     try {
       await navigator.clipboard.writeText(shareUrl);
-    } catch {
-      // Intentional: quota/parse failures are non-fatal; fall back silently.
-    }
+    } catch {}
   }, [isArabic]);
 
   return (
@@ -128,10 +121,16 @@ export const ProfileScreen: React.FC = () => {
 
       <DeleteAccountModal
         open={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
+        isLoading={isDeleting}
+        error={deleteError}
+        onClose={() => {
+          if (!isDeleting) {
+            setShowDeleteModal(false);
+            clearDeleteError();
+          }
+        }}
         onConfirm={() => {
-          setShowDeleteModal(false);
-          handleDeleteAccount();
+          void handleDeleteAccount();
         }}
       />
     </div>

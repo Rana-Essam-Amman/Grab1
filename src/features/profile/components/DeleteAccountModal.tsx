@@ -7,19 +7,23 @@ interface DeleteAccountModalProps {
   open: boolean;
   onClose: () => void;
   onConfirm: () => void;
+  isLoading?: boolean;
+  error?: string | null;
 }
 
 export const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
   open,
   onClose,
   onConfirm,
+  isLoading = false,
+  error = null,
 }) => {
   const isArabic = typeof document !== 'undefined' && document.documentElement.dir === 'rtl';
 
   return (
     <Modal
       open={open}
-      onClose={onClose}
+      onClose={isLoading ? () => {} : onClose}
       title={isArabic ? 'حذف الحساب نهائياً' : 'Delete Account Permanently'}
     >
       <div className="flex flex-col items-center text-center gap-4 py-3" dir={isArabic ? 'rtl' : 'ltr'}>
@@ -40,10 +44,17 @@ export const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
           </p>
         </div>
 
+        {error && (
+          <p className="text-xs text-danger font-bold leading-relaxed font-cairo" role="alert">
+            {error}
+          </p>
+        )}
+
         <div className="flex flex-col sm:flex-row gap-2.5 w-full mt-4">
           <Button
             variant="ghost"
             onClick={onClose}
+            disabled={isLoading}
             className="w-full justify-center order-2 sm:order-1 font-bold"
           >
             {isArabic ? 'إلغاء' : 'Cancel'}
@@ -51,9 +62,12 @@ export const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
           <Button
             variant="danger"
             onClick={onConfirm}
+            disabled={isLoading}
             className="w-full justify-center order-1 sm:order-2 font-bold"
           >
-            {isArabic ? 'نعم، احذف حسابي' : 'Yes, Delete My Account'}
+            {isLoading
+              ? (isArabic ? 'جاري الحذف...' : 'Deleting...')
+              : (isArabic ? 'نعم، احذف حسابي' : 'Yes, Delete My Account')}
           </Button>
         </div>
       </div>
