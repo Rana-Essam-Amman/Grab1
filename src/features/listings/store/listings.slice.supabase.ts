@@ -1,14 +1,3 @@
-import type { Listing } from '@/types';
-import { fetchListings, createListing, searchListings } from '../services/listingsService';
-import { uploadListingImages, removeListingImages } from '../services/storageService';
-import { sanitizeListingData } from './listings.slice.helpers';
-import { supabase } from '@/shared/lib/supabase';
-
-export interface SupabasePublishResult {
-  readonly remoteListing: Listing | null;
-  readonly error: string | null;
-  readonly fallbackToLocal?: boolean;
-}
 
 export async function performSupabasePublish(
   listing: Listing,
@@ -55,6 +44,7 @@ export async function performSupabasePublish(
       countryCode: sanitized.countryCode,
       city: sanitized.city,
       neighborhood: sanitized.neighborhood,
+      neighborhoodName: sanitized.neighborhoodName,
       citySlug: sanitized.citySlug,
       districtSlug: sanitized.districtSlug,
       neighborhoodSlug: sanitized.neighborhoodSlug,
@@ -76,38 +66,9 @@ export async function performSupabasePublish(
 
     return { remoteListing: data, error: null };
   } catch (err) {
-    return { remoteListing: null, error: err instanceof Error ? err.message : 'خطأ غير معروف' };
+    return {
+      remoteListing: null,
+      error: err instanceof Error ? err.message : 'خطأ غير معروف',
+    };
   }
-}
-
-export interface SupabaseSyncResult {
-  readonly listings: Listing[] | null;
-  readonly error: string | null;
-}
-
-export interface SupabaseSyncParams {
-  readonly market?: string;
-  readonly offset?: number;
-  readonly limit?: number;
-}
-
-export async function performSupabaseSync(params: SupabaseSyncParams = {}): Promise<SupabaseSyncResult> {
-  const { data, error } = await fetchListings(params);
-  if (error || !data) return { listings: null, error: error || 'fetch failed' };
-  return { listings: data, error: null };
-}
-
-export interface SupabaseSearchParams {
-  readonly query: string;
-  readonly market?: string;
-  readonly offset?: number;
-  readonly limit?: number;
-}
-
-export async function performSupabaseSearch(
-  params: SupabaseSearchParams
-): Promise<SupabaseSyncResult> {
-  const { data, error } = await searchListings(params);
-  if (error || !data) return { listings: null, error: error || 'search failed' };
-  return { listings: data, error: null };
 }
