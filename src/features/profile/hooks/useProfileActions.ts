@@ -1,4 +1,5 @@
-import { useCallback, useState } from 'react';
+
+import { useCallback, useRef, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useUI } from '@/hooks/useUI';
 import { supabase } from '@/shared/lib/supabase';
@@ -15,6 +16,7 @@ export function useProfileActions() {
   const { navigateTo, setActiveTab } = useUI();
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const deleteInFlightRef = useRef(false);
 
   const handleLogout = useCallback(() => {
     logout();
@@ -51,7 +53,9 @@ export function useProfileActions() {
   }, []);
 
   const handleDeleteAccount = useCallback(async () => {
-    if (isDeleting || !user) return;
+    if (deleteInFlightRef.current || !user) return;
+
+    deleteInFlightRef.current = true;
     setIsDeleting(true);
     setDeleteError(null);
 
@@ -73,9 +77,10 @@ export function useProfileActions() {
     } catch (err) {
       setDeleteError(err instanceof Error ? err.message : 'Network error');
     } finally {
+      deleteInFlightRef.current = false;
       setIsDeleting(false);
     }
-  }, [isDeleting, user, clearLocalUserData, logout, setActiveTab, navigateTo]);
+  }, [user, clearLocalUserData, logout, setActiveTab, navigateTo]);
 
   const clearDeleteError = useCallback(() => setDeleteError(null), []);
 
