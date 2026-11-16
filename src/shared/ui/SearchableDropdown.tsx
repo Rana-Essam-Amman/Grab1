@@ -10,11 +10,14 @@ interface Props {
   readonly placeholder?: string;
   readonly isArabic?: boolean;
   readonly disabled?: boolean;
-  readonly onSearch?: (query: string) => void; // ✅ خاصية جديدة للبحث الحي
+  readonly onSearch?: (query: string) => void;
+  /** When false, the search input does not auto-focus on open (prevents mobile keyboard). Default true for backward compatibility. */
+  readonly autoFocusSearch?: boolean;
 }
 
 export const SearchableDropdown: React.FC<Props> = ({
   options, value, onChange, placeholder, isArabic = false, disabled = false, onSearch,
+  autoFocusSearch = true,
 }) => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -50,7 +53,7 @@ export const SearchableDropdown: React.FC<Props> = ({
       const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
       const spaceBelow = viewportHeight - rect.bottom;
       const spaceAbove = rect.top;
-      
+
       if (spaceBelow < 320 && spaceAbove > spaceBelow) {
         setMenuPosition('above');
       } else {
@@ -111,7 +114,7 @@ export const SearchableDropdown: React.FC<Props> = ({
   const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setQuery(val);
-    if (onSearch) onSearch(val); // ✅ إرسال النص للـ API لو الخاصية موجودة
+    if (onSearch) onSearch(val);
   };
 
   const renderOptionLabel = (option: string): React.ReactNode => {
@@ -166,7 +169,7 @@ export const SearchableDropdown: React.FC<Props> = ({
               aria-expanded="true"
               aria-controls={listId}
               className="w-full min-h-10 px-3 rounded-lg bg-canvas border border-border text-sm text-ink focus:outline-none focus:border-primary"
-              autoFocus
+              autoFocus={autoFocusSearch}
               dir={isArabic ? 'rtl' : 'ltr'}
             />
           </div>

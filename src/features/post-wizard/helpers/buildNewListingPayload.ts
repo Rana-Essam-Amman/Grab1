@@ -26,22 +26,23 @@ export function buildNewListingPayload({
 
   const rawCity = (postDraft.city || '').trim();
   const rawNeighborhood = (postDraft.neighborhood || '').trim();
-  
-  if (!rawCity || !rawNeighborhood || isOtherValue(rawCity) || isOtherValue(rawNeighborhood)) {
+
+  if (
+    !rawCity ||
+    isOtherValue(rawCity) ||
+    (rawNeighborhood !== '' && isOtherValue(rawNeighborhood))
+  ) {
     throw new Error(
-      'buildNewListingPayload: city and neighborhood are required and must not be "Other"'
+      'buildNewListingPayload: city is required and location values must not be "Other"'
     );
   }
-  
+
   if (!postDraft.citySlug) {
     throw new Error('Location slug missing: cannot publish listing without a valid city');
   }
 
-  // NOTE: districtSlug and neighborhoodSlug are OPTIONAL.
-  // Live-search neighborhoods (via Photon/OSM) do not have a static slug,
-  // so we allow publishing with just the neighborhood text.
-  // The listing will still be searchable because `search_text` (DB) and 
-  // `scoreListing` (client) both index the neighborhood string directly.
+  // District/area and neighborhood slugs are optional.
+  // Free-text neighbourhood names remain separate from canonical location values.
 
   const newListing: Listing = {
     id: `listing-${crypto.randomUUID()}`,
@@ -52,6 +53,7 @@ export function buildNewListingPayload({
     countryCode: targetMarket as Listing['countryCode'],
     city: rawCity,
     neighborhood: rawNeighborhood,
+    neighborhoodName: postDraft.neighborhoodName?.trim() || undefined,
     citySlug: postDraft.citySlug,
     districtSlug: postDraft.districtSlug,
     neighborhoodSlug: postDraft.neighborhoodSlug,

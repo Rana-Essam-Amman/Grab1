@@ -62,6 +62,7 @@ try {
         subcategorySlug: draft.subcategorySlug,
         photos: [...draft.photos],
         city: draft.city, neighborhood: draft.neighborhood,
+        neighborhoodName: draft.neighborhoodName,
         citySlug: draft.citySlug,
         districtSlug: draft.districtSlug,
         neighborhoodSlug: draft.neighborhoodSlug,

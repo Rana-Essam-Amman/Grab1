@@ -22,6 +22,7 @@ const DRAFT_SCHEMA: z.ZodType<PostDraftWithMeta> = z.object({
   photos: z.array(z.string()),
   city: z.string(),
   neighborhood: z.string(),
+  neighborhoodName: z.string().optional(),
   citySlug: z.string().optional(),
   districtSlug: z.string().optional(),
   neighborhoodSlug: z.string().optional(),

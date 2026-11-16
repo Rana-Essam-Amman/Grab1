@@ -48,6 +48,8 @@ export interface Listing {
   countryCode: 'JO' | 'LB' | 'PS' | 'SY' | 'SA' | 'KW';
   city: string;
   neighborhood: string;
+  /** Optional free-text neighbourhood name entered by the user. Not a canonical slug. */
+  neighborhoodName?: string;
   citySlug?: string;
   districtSlug?: string;
   neighborhoodSlug?: string;
@@ -186,6 +188,8 @@ export interface PostDraft {
   photos: string[];
   city: string;
   neighborhood: string;
+  /** Optional free-text neighbourhood name. Distinct from the canonical area (neighborhood). */
+  neighborhoodName?: string;
   citySlug?: string;
   districtSlug?: string;
   neighborhoodSlug?: string;

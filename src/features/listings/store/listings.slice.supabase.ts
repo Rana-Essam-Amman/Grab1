@@ -1,3 +1,4 @@
+
 import type { Listing } from '@/types';
 import { fetchListings, createListing, searchListings } from '../services/listingsService';
 import { uploadListingImages, removeListingImages } from '../services/storageService';
@@ -55,6 +56,7 @@ export async function performSupabasePublish(
       countryCode: sanitized.countryCode,
       city: sanitized.city,
       neighborhood: sanitized.neighborhood,
+      neighborhoodName: sanitized.neighborhoodName,
       citySlug: sanitized.citySlug,
       districtSlug: sanitized.districtSlug,
       neighborhoodSlug: sanitized.neighborhoodSlug,
