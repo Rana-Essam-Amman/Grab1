@@ -1,95 +1,113 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { globalStorage } from '@/shared/lib/marketStorage';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { renderHook, act } from '@testing-library/react';
+import { useProfileActions } from '../useProfileActions';
 import { scopedKey } from '@/data/markets/storage';
 import {
   ALL_MARKETS,
   USER_GLOBAL_KEYS,
-  USER_LEGACY_KEYS,
-  getAllUserKeysForMarket,
 } from '@/shared/lib/userDataRegistry';
 
-function simulateAccountDeletion(): void {
-  for (const key of USER_GLOBAL_KEYS) {
-    localStorage.removeItem(key);
-  }
-  for (const market of ALL_MARKETS) {
-    for (const key of getAllUserKeysForMarket(market)) {
-      localStorage.removeItem(key);
-    }
-  }
-  for (const key of USER_LEGACY_KEYS) {
-    localStorage.removeItem(key);
-  }
-}
+vi.mock('@/shared/lib/supabase', () => ({
+  supabase: {
+    functions: {
+      invoke: vi.fn(),
+    },
+  },
+}));
+
+vi.mock('@/hooks/useAuth', () => ({
+  useAuth: () => ({
+    logout: vi.fn(),
+    user: { id: 'u1', phone: '791234567' },
+  }),
+}));
+
+vi.mock('@/hooks/useUI', () => ({
+  useUI: () => ({
+    navigateTo: vi.fn(),
+    setActiveTab: vi.fn(),
+  }),
+}));
+
+import { supabase } from '@/shared/lib/supabase';
 
 describe('GDPR: Account Deletion Completeness', () => {
   beforeEach(() => {
     localStorage.clear();
+    vi.clearAllMocks();
   });
 
-  it('deletes wishlist written via canonical scopedKey', () => {
+  it('does not write catch_deletion_fingerprint on deletion', async () => {
+    (supabase.functions.invoke as ReturnType<typeof vi.fn>).mockResolvedValue({
+      data: { success: true },
+      error: null,
+    });
+
+    const { result } = renderHook(() => useProfileActions());
+    await act(async () => {
+      await result.current.handleDeleteAccount();
+    });
+
+    const keys = Object.keys(localStorage);
+    expect(keys.some((k) => k.startsWith('catch_deletion_fingerprint_'))).toBe(false);
+  });
+
+  it('clears user-scoped keys only after confirmed success', async () => {
     for (const m of ALL_MARKETS) {
-      globalStorage().set('__noop', true);
       localStorage.setItem(scopedKey(m, 'wishlist'), JSON.stringify(['x']));
     }
+    for (const k of USER_GLOBAL_KEYS) {
+      localStorage.setItem(k, '1');
+    }
 
-    simulateAccountDeletion();
+    (supabase.functions.invoke as ReturnType<typeof vi.fn>).mockResolvedValue({
+      data: { success: true },
+      error: null,
+    });
+
+    const { result } = renderHook(() => useProfileActions());
+    await act(async () => {
+      await result.current.handleDeleteAccount();
+    });
 
     for (const m of ALL_MARKETS) {
       expect(localStorage.getItem(scopedKey(m, 'wishlist'))).toBeNull();
     }
-  });
-
-  it('deletes legacy wishlist key catch_wishlist_<MARKET>', () => {
-    for (const m of ALL_MARKETS) {
-      localStorage.setItem(`catch_wishlist_${m}`, JSON.stringify(['x']));
-    }
-
-    simulateAccountDeletion();
-
-    for (const m of ALL_MARKETS) {
-      expect(localStorage.getItem(`catch_wishlist_${m}`)).toBeNull();
-    }
-  });
-
-  it('deletes global favorites, wishlist, listings, conversations', () => {
-    const globals = [
-      'catch_listings',
-      'catch_wishlist',
-      'catch_favorites',
-      'catch_conversations',
-      'catch_ai_last_error',
-    ];
-    for (const k of globals) {
-      localStorage.setItem(k, JSON.stringify({ dummy: true }));
-    }
-
-    simulateAccountDeletion();
-
-    for (const k of globals) {
+    for (const k of USER_GLOBAL_KEYS) {
       expect(localStorage.getItem(k)).toBeNull();
     }
   });
 
-  it('deletes market-scoped drafts and chats', () => {
-    for (const m of ALL_MARKETS) {
-      localStorage.setItem(scopedKey(m, 'post_draft_v1'), '{}');
-      localStorage.setItem(scopedKey(m, 'chat_conversations_v1'), '[]');
-    }
-
-    simulateAccountDeletion();
-
-    for (const m of ALL_MARKETS) {
-      expect(localStorage.getItem(scopedKey(m, 'post_draft_v1'))).toBeNull();
-      expect(localStorage.getItem(scopedKey(m, 'chat_conversations_v1'))).toBeNull();
-    }
-  });
-
-  it('does NOT touch unrelated keys (locale is global but excluded)', () => {
+  it('preserves locale on success', async () => {
     localStorage.setItem('catch_locale', 'en');
 
-    simulateAccountDeletion();
+    (supabase.functions.invoke as ReturnType<typeof vi.fn>).mockResolvedValue({
+      data: { success: true },
+      error: null,
+    });
+
+    const { result } = renderHook(() => useProfileActions());
+    await act(async () => {
+      await result.current.handleDeleteAccount();
+    });
 
     expect(localStorage.getItem('catch_locale')).toBe('en');
+  });
+
+  it('does not clear data when deletion fails', async () => {
+    localStorage.setItem('catch_wishlist', '["x"]');
+
+    (supabase.functions.invoke as ReturnType<typeof vi.fn>).mockResolvedValue({
+      data: null,
+      error: { message: 'Storage cleanup failed' },
+    });
+
+    const { result } = renderHook(() => useProfileActions());
+    await act(async () => {
+      await result.current.handleDeleteAccount();
+    });
+
+    expect(localStorage.getItem('catch_wishlist')).toBe('["x"]');
+    expect(result.current.deleteError).toBeTruthy();
   });
 });
