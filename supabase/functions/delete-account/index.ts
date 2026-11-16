@@ -221,6 +221,18 @@ Deno.serve(async (req: Request) => {
   });
 
   try {
+    // 0. Acquire the durable deletion lock before touching Storage or user data.
+    // The RPC is idempotent, so a retry can safely resume cleanup.
+    const { error: lockError } = await adminClient.rpc(
+      "begin_account_deletion",
+      { p_user_id: verifiedUserId },
+    );
+
+    if (lockError) {
+      console.error("Account deletion lock acquisition failed");
+      throw new Error("Account deletion lock could not be acquired");
+    }
+
     // 1. Remove all user-owned Storage objects.
     await deleteUserStorage(adminClient, verifiedUserId);
 
