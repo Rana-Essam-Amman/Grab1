@@ -1,7 +1,7 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useUI } from '@/hooks/useUI';
-import { globalStorage } from '@/shared/lib/marketStorage';
+import { supabase } from '@/shared/lib/supabase';
 import {
   ALL_MARKETS,
   USER_GLOBAL_KEYS,
@@ -13,6 +13,8 @@ import {
 export function useProfileActions() {
   const { logout, user } = useAuth();
   const { navigateTo, setActiveTab } = useUI();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const handleLogout = useCallback(() => {
     logout();
@@ -20,18 +22,7 @@ export function useProfileActions() {
     navigateTo('main');
   }, [logout, setActiveTab, navigateTo]);
 
-  const handleDeleteAccount = useCallback(() => {
-    try {
-      const phoneHash = user?.phone
-        ? btoa(user.phone).replace(/=/g, '').slice(0, 16)
-        : 'unknown';
-      const fingerprint = {
-        phoneHash,
-        deletedAt: new Date().toISOString(),
-      };
-      globalStorage().set(`catch_deletion_fingerprint_${phoneHash}`, fingerprint);
-    } catch {}
-
+  const clearLocalUserData = useCallback(() => {
     for (const key of USER_GLOBAL_KEYS) {
       try { localStorage.removeItem(key); } catch {}
     }
@@ -43,7 +34,6 @@ export function useProfileActions() {
       }
     }
 
-    // Remove bump counters (dynamic keys not enumerable via the registry).
     try {
       const toRemove: string[] = [];
       for (let i = 0; i < localStorage.length; i++) {
@@ -58,11 +48,42 @@ export function useProfileActions() {
     for (const key of USER_LEGACY_KEYS) {
       try { localStorage.removeItem(key); } catch {}
     }
+  }, []);
 
-    logout();
-    setActiveTab('explore');
-    navigateTo('main');
-  }, [logout, setActiveTab, navigateTo, user?.phone]);
+  const handleDeleteAccount = useCallback(async () => {
+    if (isDeleting || !user) return;
+    setIsDeleting(true);
+    setDeleteError(null);
 
-  return { handleLogout, handleDeleteAccount };
+    try {
+      const { data, error } = await supabase.functions.invoke('delete-account', {
+        method: 'POST',
+      });
+
+      if (error || !data?.success) {
+        const msg = error?.message || data?.error || 'Deletion failed';
+        setDeleteError(msg);
+        return;
+      }
+
+      clearLocalUserData();
+      logout();
+      setActiveTab('explore');
+      navigateTo('main');
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : 'Network error');
+    } finally {
+      setIsDeleting(false);
+    }
+  }, [isDeleting, user, clearLocalUserData, logout, setActiveTab, navigateTo]);
+
+  const clearDeleteError = useCallback(() => setDeleteError(null), []);
+
+  return {
+    handleLogout,
+    handleDeleteAccount,
+    isDeleting,
+    deleteError,
+    clearDeleteError,
+  };
 }
